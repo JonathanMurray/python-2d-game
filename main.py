@@ -8,9 +8,9 @@ from enum import Enum
 
 BG_COLOR = (200,200,200)
 PLAYER_COLOR = (200,100,100)
-SCREEN_SIZE = (200,200)
+SCREEN_SIZE = (500,500)
 PLAYER_SPEED = 9
-PLAYER_SIZE = (50, 25)
+PLAYER_SIZE = (50, 50)
 PLAYER_START_POS = (100, 100)
 
 class Box:
@@ -47,6 +47,10 @@ class Direction(Enum):
 pygame.init()
 screen = pygame.display.set_mode(SCREEN_SIZE)
 player = PlayerBox(Box(PLAYER_START_POS, PLAYER_SIZE, PLAYER_COLOR), Direction.RIGHT, 0, PLAYER_SPEED)
+enemy = Box((150, 350), (30, 30), (50, 50, 100))
+
+def render_box(screen, box):
+	pygame.draw.rect(screen, box.color, box.rect())
 
 while(True):
 	for event in pygame.event.get():
@@ -75,6 +79,7 @@ while(True):
 		player.box.y = min(player.box.y + player.speed, SCREEN_SIZE[1] - player.box.h)
 
 	screen.fill(BG_COLOR)
-	pygame.draw.rect(screen, player.box.color, player.box.rect())
+	render_box(screen, player.box)
+	render_box(screen, enemy)
 	pygame.display.update()
 
