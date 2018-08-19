@@ -14,11 +14,12 @@ PLAYER_SIZE = (50, 25)
 PLAYER_START_POS = (100, 100)
 
 class Box:
-	def __init__(self, start_pos, size):
-		self.x = start_pos[0]
-		self.y = start_pos[1]
+	def __init__(self, pos, size, color):
+		self.x = pos[0]
+		self.y = pos[1]
 		self.w = size[0]
 		self.h = size[1]
+		self.color = color
 
 	def rect(self):
 		return (self.x, self.y, self.w, self.h)
@@ -45,7 +46,7 @@ class Direction(Enum):
 
 pygame.init()
 screen = pygame.display.set_mode(SCREEN_SIZE)
-player = PlayerBox(Box(PLAYER_START_POS, PLAYER_SIZE), Direction.RIGHT, 0, PLAYER_SPEED)
+player = PlayerBox(Box(PLAYER_START_POS, PLAYER_SIZE, PLAYER_COLOR), Direction.RIGHT, 0, PLAYER_SPEED)
 
 while(True):
 	for event in pygame.event.get():
@@ -74,6 +75,6 @@ while(True):
 		player.box.y = min(player.box.y + player.speed, SCREEN_SIZE[1] - player.box.h)
 
 	screen.fill(BG_COLOR)
-	pygame.draw.rect(screen, PLAYER_COLOR, player.box.rect())
+	pygame.draw.rect(screen, player.box.color, player.box.rect())
 	pygame.display.update()
 
