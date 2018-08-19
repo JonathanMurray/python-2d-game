@@ -4,6 +4,7 @@
 import pygame
 import time
 import sys
+from enum import Enum
 
 BG_COLOR = (200,200,200)
 PLAYER_COLOR = (200,100,100)
@@ -22,10 +23,17 @@ class Box:
 	def rect(self):
 		return (self.x, self.y, self.w, self.h)
 
+class Direction(Enum):
+	LEFT = 1
+	RIGHT = 2
+	UP = 3
+	DOWN = 4
+
 pygame.init()
 screen = pygame.display.set_mode(SCREEN_SIZE)
 player = Box(PLAYER_START_POS, PLAYER_SIZE)
-dx = 0
+direction = Direction.RIGHT
+speed = 0
 while(True):
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -33,17 +41,37 @@ while(True):
 			sys.exit()
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_LEFT:
-				dx = -PLAYER_SPEED
+				direction = Direction.LEFT
+				speed = PLAYER_SPEED
 			elif event.key == pygame.K_RIGHT:
-				dx = PLAYER_SPEED
+				direction = Direction.RIGHT
+				speed = PLAYER_SPEED
+			elif event.key == pygame.K_UP:
+				direction = Direction.UP
+				speed = PLAYER_SPEED
+			elif event.key == pygame.K_DOWN:
+				direction = Direction.DOWN
+				speed = PLAYER_SPEED
 		if event.type == pygame.KEYUP:
-			dx = 0
+			speed = 0
 
-	player.x += dx
+	if direction == Direction.LEFT:
+		player.x -= speed
+	elif direction == Direction.RIGHT:
+		player.x += speed
+	elif direction == Direction.UP:
+		player.y -= speed
+	elif direction == Direction.DOWN:
+		player.y += speed
+
 	if player.x < 0:
 		player.x = 0
-	if player.x > SCREEN_SIZE[0] - player.w:
+	elif player.x > SCREEN_SIZE[0] - player.w:
 		player.x = SCREEN_SIZE[0] - player.w
+	if player.y < 0:
+		player.y = 0
+	elif player.y > SCREEN_SIZE[1] - player.h:
+		player.y = SCREEN_SIZE[1] - player.h
 
 	screen.fill(BG_COLOR)
 	pygame.draw.rect(screen, PLAYER_COLOR, player.rect())
