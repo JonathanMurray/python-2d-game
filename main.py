@@ -47,10 +47,16 @@ class Direction(Enum):
 pygame.init()
 screen = pygame.display.set_mode(SCREEN_SIZE)
 player = PlayerBox(Box(PLAYER_START_POS, PLAYER_SIZE, PLAYER_COLOR), Direction.RIGHT, 0, PLAYER_SPEED)
-enemy = Box((150, 350), (30, 30), (50, 50, 100))
+food_boxes = [Box((150, 350), (30, 30), (50, 50, 100)), Box((250, 300), (30, 30), (50, 100, 50))]
 
 def render_box(screen, box):
 	pygame.draw.rect(screen, box.color, box.rect())
+
+def ranges_overlap(a_min, a_max, b_min, b_max):
+    return (a_min <= b_max) and (b_min <= a_max)
+
+def rects_intersect(r1, r2):
+    return ranges_overlap(r1.x, r1.x + r1.w, r2.x, r2.x + r2.w) and ranges_overlap(r1.y, r1.y + r1.h, r2.y, r2.y + r2.h)
 
 while(True):
 	for event in pygame.event.get():
@@ -78,8 +84,16 @@ while(True):
 	elif player.direction == Direction.DOWN:
 		player.box.y = min(player.box.y + player.speed, SCREEN_SIZE[1] - player.box.h)
 
+	food_boxes_to_delete = []
+	for box in food_boxes:
+		if rects_intersect(player.box, box):
+			food_boxes_to_delete.append(box)
+			# TODO: Reward for eating food
+	food_boxes = [b for b in food_boxes if b not in food_boxes_to_delete]
+
 	screen.fill(BG_COLOR)
 	render_box(screen, player.box)
-	render_box(screen, enemy)
+	for box in food_boxes:
+		render_box(screen, box)
 	pygame.display.update()
 
