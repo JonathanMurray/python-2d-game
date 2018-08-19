@@ -3,6 +3,7 @@
 
 import pygame
 import time
+import sys
 
 BG_COLOR = (200,200,200)
 PLAYER_COLOR = (200,100,100)
