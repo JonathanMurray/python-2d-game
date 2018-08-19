@@ -8,10 +8,10 @@ from enum import Enum
 
 BG_COLOR = (200,200,200)
 PLAYER_COLOR = (200,100,100)
-SCREEN_SIZE = (500,500)
+SCREEN_SIZE = (200,200)
 PLAYER_SPEED = 9
-PLAYER_SIZE = (50, 50)
-PLAYER_START_POS = (100, 400)
+PLAYER_SIZE = (50, 25)
+PLAYER_START_POS = (100, 100)
 
 class Box:
 	def __init__(self, start_pos, size):
@@ -23,6 +23,20 @@ class Box:
 	def rect(self):
 		return (self.x, self.y, self.w, self.h)
 
+class PlayerBox:
+	def __init__(self, box, direction, speed, max_speed):
+		self.box = box
+		self.direction = direction
+		self.speed = speed
+		self.max_speed = max_speed
+
+	def set_moving_in_dir(self, direction):
+		self.direction = direction
+		self.speed = self.max_speed
+
+	def set_not_moving(self):
+		self.speed = 0
+
 class Direction(Enum):
 	LEFT = 1
 	RIGHT = 2
@@ -31,9 +45,8 @@ class Direction(Enum):
 
 pygame.init()
 screen = pygame.display.set_mode(SCREEN_SIZE)
-player = Box(PLAYER_START_POS, PLAYER_SIZE)
-direction = Direction.RIGHT
-speed = 0
+player = PlayerBox(Box(PLAYER_START_POS, PLAYER_SIZE), Direction.RIGHT, 0, PLAYER_SPEED)
+
 while(True):
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -41,39 +54,26 @@ while(True):
 			sys.exit()
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_LEFT:
-				direction = Direction.LEFT
-				speed = PLAYER_SPEED
+				player.set_moving_in_dir(Direction.LEFT)
 			elif event.key == pygame.K_RIGHT:
-				direction = Direction.RIGHT
-				speed = PLAYER_SPEED
+				player.set_moving_in_dir(Direction.RIGHT)
 			elif event.key == pygame.K_UP:
-				direction = Direction.UP
-				speed = PLAYER_SPEED
+				player.set_moving_in_dir(Direction.UP)
 			elif event.key == pygame.K_DOWN:
-				direction = Direction.DOWN
-				speed = PLAYER_SPEED
+				player.set_moving_in_dir(Direction.DOWN)
 		if event.type == pygame.KEYUP:
-			speed = 0
+			player.set_not_moving()
 
-	if direction == Direction.LEFT:
-		player.x -= speed
-	elif direction == Direction.RIGHT:
-		player.x += speed
-	elif direction == Direction.UP:
-		player.y -= speed
-	elif direction == Direction.DOWN:
-		player.y += speed
-
-	if player.x < 0:
-		player.x = 0
-	elif player.x > SCREEN_SIZE[0] - player.w:
-		player.x = SCREEN_SIZE[0] - player.w
-	if player.y < 0:
-		player.y = 0
-	elif player.y > SCREEN_SIZE[1] - player.h:
-		player.y = SCREEN_SIZE[1] - player.h
+	if player.direction == Direction.LEFT:
+		player.box.x = max(player.box.x - player.speed, 0)
+	elif player.direction == Direction.RIGHT:
+		player.box.x = min(player.box.x + player.speed, SCREEN_SIZE[0] - player.box.w)
+	elif player.direction == Direction.UP:
+		player.box.y = max(player.box.y - player.speed, 0)
+	elif player.direction == Direction.DOWN:
+		player.box.y = min(player.box.y + player.speed, SCREEN_SIZE[1] - player.box.h)
 
 	screen.fill(BG_COLOR)
-	pygame.draw.rect(screen, PLAYER_COLOR, player.rect())
+	pygame.draw.rect(screen, PLAYER_COLOR, player.box.rect())
 	pygame.display.update()
 
