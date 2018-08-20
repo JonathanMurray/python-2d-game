@@ -44,7 +44,8 @@ def ranges_overlap(a_min, a_max, b_min, b_max):
     return (a_min <= b_max) and (b_min <= a_max)
 
 def rects_intersect(r1, r2):
-    return ranges_overlap(r1.x, r1.x + r1.w, r2.x, r2.x + r2.w) and ranges_overlap(r1.y, r1.y + r1.h, r2.y, r2.y + r2.h)
+    return ranges_overlap(r1.x, r1.x + r1.w, r2.x, r2.x + r2.w) \
+    	and ranges_overlap(r1.y, r1.y + r1.h, r2.y, r2.y + r2.h)
 
 BG_COLOR = (200,200,200)
 SCREEN_SIZE = (500,500)
@@ -88,7 +89,8 @@ while(True):
 	elif player.direction == Direction.DOWN:
 		player.box.y = min(player.box.y + player.speed, GAME_WORLD_SIZE[1] - player.box.h)
 
-	camera_pos = (min(max(player.box.x - CAMERA_SIZE[0] / 2, 0), GAME_WORLD_SIZE[0] - CAMERA_SIZE[0]), min(max(player.box.y - CAMERA_SIZE[1] / 2, 0), GAME_WORLD_SIZE[1] - CAMERA_SIZE[1]))
+	camera_pos = (min(max(player.box.x - CAMERA_SIZE[0] / 2, 0), GAME_WORLD_SIZE[0] - CAMERA_SIZE[0]), \
+		min(max(player.box.y - CAMERA_SIZE[1] / 2, 0), GAME_WORLD_SIZE[1] - CAMERA_SIZE[1]))
 
 
 	food_boxes_to_delete = []
@@ -109,7 +111,8 @@ while(True):
 	render_box(screen, player.box, camera_pos)
 	for box in food_boxes + enemy_boxes:
 		render_box(screen, box, camera_pos)
-	text_surface = font.render("[" + str(health) + " HP]    [position (" + str(player.box.x) + ", " + str(player.box.y) + ")]", False, (0, 0, 0))
+	ui_text = "[" + str(health) + " HP]    [position (" + str(player.box.x) + ", " + str(player.box.y) + ")]"
+	text_surface = font.render(ui_text, False, (0, 0, 0))
 	screen.blit(text_surface, (100, 475))
 	pygame.draw.rect(screen, (0, 0, 100), (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
 	pygame.display.update()
