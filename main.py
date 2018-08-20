@@ -47,20 +47,16 @@ def rects_intersect(r1, r2):
     return ranges_overlap(r1.x, r1.x + r1.w, r2.x, r2.x + r2.w) and ranges_overlap(r1.y, r1.y + r1.h, r2.y, r2.y + r2.h)
 
 BG_COLOR = (200,200,200)
-PLAYER_COLOR = (250,250,250)
 SCREEN_SIZE = (500,500)
-PLAYER_SPEED = 9
-PLAYER_SIZE = (50, 50)
-PLAYER_START_POS = (100, 100)
 
 pygame.init()
 pygame.font.init()
 font = pygame.font.SysFont('Arial', 30)
 screen = pygame.display.set_mode(SCREEN_SIZE)
-player = PlayerBox(Box(PLAYER_START_POS, PLAYER_SIZE, PLAYER_COLOR), Direction.RIGHT, 0, PLAYER_SPEED)
+
+player = PlayerBox(Box((100, 100), (50, 50), (250,250,250)), Direction.RIGHT, 0, 9)
 food_boxes = [Box((150, 350), (30, 30), (50, 200, 50)), Box((250, 300), (30, 30), (50, 200, 50))]
 enemy_boxes = [Box((320, 220), (50, 50), (250, 0, 0))]
-
 health = 3
 
 while(True):
