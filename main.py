@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-
+import math
 import pygame
 import sys
 from enum import Enum
@@ -65,10 +65,12 @@ player = PlayerBox(Box((100, 100), (50, 50), (250,250,250)), Direction.RIGHT, 0,
 food_boxes = [Box(pos, FOOD_SIZE, FOOD_COLOR) for pos in [(150, 350), (450, 300), (560, 550), (30, 520), \
 	(200, 500), (300, 500), (410, 420)]]
 enemy_boxes = [Box(pos, ENEMY_SIZE, ENEMY_COLOR) for pos in [(320, 220), (370, 320), (420, 10)]]
+max_health = 20
 health = 3
 mana = 0
-mana_float = 0
-max_mana = 8
+mana_float = 6
+max_mana = 20
+heal_mana_cost = 3
 
 while(True):
 	for event in pygame.event.get():
@@ -84,6 +86,10 @@ while(True):
 				player.set_moving_in_dir(Direction.UP)
 			elif event.key == pygame.K_DOWN:
 				player.set_moving_in_dir(Direction.DOWN)
+			elif event.key == pygame.K_a:
+				if mana_float > heal_mana_cost:
+					mana_float -= heal_mana_cost
+					health = min(health + 10, max_health)
 		if event.type == pygame.KEYUP:
 			player.set_not_moving()
 
@@ -104,7 +110,7 @@ while(True):
 	for box in food_boxes:
 		if rects_intersect(player.box, box):
 			food_boxes_to_delete.append(box)
-			health += 1
+			health = min(health + 1, max_health)
 	food_boxes = [b for b in food_boxes if b not in food_boxes_to_delete]
 
 	enemy_boxes_to_delete = []
@@ -114,8 +120,8 @@ while(True):
 			health -= 1
 	enemy_boxes = [b for b in enemy_boxes if b not in enemy_boxes_to_delete]
 
-	mana_float = min(mana_float + 0.04, max_mana)
-	mana = int(mana_float)
+	mana_float = min(mana_float + 0.01, max_mana)
+	mana = int(math.floor(mana_float))
 
 	screen.fill(BG_COLOR)
 	render_box(screen, player.box, camera_pos)
@@ -123,9 +129,9 @@ while(True):
 		render_box(screen, box, camera_pos)
 	pygame.draw.rect(screen, (0, 0, 0), (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
 	pygame.draw.rect(screen, (0, 0, 0), (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
-	ui_text = "[" + str(health) + " HP]   " + \
+	ui_text = "[" + str(health) + "/" + str(max_health) + " HP]   " + \
 		"[" + str(mana) + "/" + str(max_mana) + " mana]   " + \
-		"[position (" + str(player.box.x) + ", " + str(player.box.y) + ")]"
+		"['A' to heal (" + str(heal_mana_cost) + "mana)]"
 
 	text_surface = font.render(ui_text, False, (250, 250, 250))
 	screen.blit(text_surface, (20, 475))
