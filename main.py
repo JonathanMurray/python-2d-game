@@ -68,6 +68,10 @@ def rects_intersect(r1, r2):
     return ranges_overlap(r1.x, r1.x + r1.w, r2.x, r2.x + r2.w) \
     	and ranges_overlap(r1.y, r1.y + r1.h, r2.y, r2.y + r2.h)
 
+def render_stat_bar(screen, x, y, w, h, stat, max_stat, color):
+	pygame.draw.rect(screen, (250, 250, 250), (x - 2, y - 2, w + 3, h + 3), 2)
+	pygame.draw.rect(screen, color, (x, y, w * stat / max_stat, h))
+
 BG_COLOR = (200,200,200)
 SCREEN_SIZE = (500,500)
 CAMERA_SIZE = (500, 430)
@@ -147,11 +151,8 @@ while(True):
 	pygame.draw.rect(screen, (0, 0, 0), (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
 	pygame.draw.rect(screen, (0, 0, 0), (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
 
-	pygame.draw.rect(screen, (250, 250, 250), (10 - 2, 440 - 2, 100 + 3, 15 + 3), 2)
-	pygame.draw.rect(screen, (250, 0, 0), (10, 440, 100 * player_stats.health / player_stats.max_health, 15))
-
-	pygame.draw.rect(screen, (250, 250, 250), (130 - 2, 440 - 2, 100 + 3, 15 + 3), 2)
-	pygame.draw.rect(screen, (0, 0, 250), (130, 440, 100 * player_stats.mana / player_stats.max_mana, 15))
+	render_stat_bar(screen, 10, 440, 100, 25, player_stats.health, player_stats.max_health, (250, 0, 0))
+	render_stat_bar(screen, 130, 440, 100, 25, player_stats.mana, player_stats.max_mana, (0, 0, 250))
 
 	ui_text = "[" + str(player_stats.health) + "/" + str(player_stats.max_health) + " HP]   " + \
 		"[" + str(player_stats.mana) + "/" + str(player_stats.max_mana) + " mana]   " + \
