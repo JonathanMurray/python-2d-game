@@ -137,30 +137,38 @@ while(True):
 			player.set_not_moving()
 
 	update_moving_box_position(player, True)
+
 	projectiles_to_delete = []
+	food_boxes_to_delete = []
+	enemy_boxes_to_delete = []
+
 	for projectile in projectiles:
 		update_moving_box_position(projectile, False)
 		if not boxes_intersect(projectile.box, GAME_WORLD_BOX):
 			projectiles_to_delete.append(projectile)
-	projectiles = [p for p in projectiles if p not in projectiles_to_delete]
-
-	camera_pos = (min(max(player.box.x - CAMERA_SIZE[0] / 2, 0), GAME_WORLD_SIZE[0] - CAMERA_SIZE[0]), \
-		min(max(player.box.y - CAMERA_SIZE[1] / 2, 0), GAME_WORLD_SIZE[1] - CAMERA_SIZE[1]))
-
-	food_boxes_to_delete = []
+	
 	for box in food_boxes:
 		if boxes_intersect(player.box, box):
 			food_boxes_to_delete.append(box)
 			player_stats.gain_health(1)
-	food_boxes = [b for b in food_boxes if b not in food_boxes_to_delete]
-	enemy_boxes_to_delete = []
+
 	for box in enemy_boxes:
 		if boxes_intersect(player.box, box):
 			enemy_boxes_to_delete.append(box)
 			player_stats.lose_health(2)
+		for projectile in projectiles:
+			if boxes_intersect(box, projectile.box):
+				enemy_boxes_to_delete.append(box)
+				projectiles_to_delete.append(projectile)
+
+	projectiles = [p for p in projectiles if p not in projectiles_to_delete]
+	food_boxes = [b for b in food_boxes if b not in food_boxes_to_delete]
 	enemy_boxes = [b for b in enemy_boxes if b not in enemy_boxes_to_delete]
 
 	player_stats.gain_mana(0.03)
+
+	camera_pos = (min(max(player.box.x - CAMERA_SIZE[0] / 2, 0), GAME_WORLD_SIZE[0] - CAMERA_SIZE[0]), \
+		min(max(player.box.y - CAMERA_SIZE[1] / 2, 0), GAME_WORLD_SIZE[1] - CAMERA_SIZE[1]))
 
 	screen.fill(BG_COLOR)
 	for box in food_boxes + enemy_boxes + [player.box] + [p.box for p in projectiles]:
