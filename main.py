@@ -54,9 +54,12 @@ PLAYER_SIZE = (50, 50)
 PLAYER_START_POS = (100, 100)
 
 pygame.init()
+pygame.font.init()
+font = pygame.font.SysFont('Arial', 30)
 screen = pygame.display.set_mode(SCREEN_SIZE)
 player = PlayerBox(Box(PLAYER_START_POS, PLAYER_SIZE, PLAYER_COLOR), Direction.RIGHT, 0, PLAYER_SPEED)
 food_boxes = [Box((150, 350), (30, 30), (50, 50, 100)), Box((250, 300), (30, 30), (50, 100, 50))]
+num_foods_eaten = 0
 
 while(True):
 	for event in pygame.event.get():
@@ -88,6 +91,7 @@ while(True):
 	for box in food_boxes:
 		if rects_intersect(player.box, box):
 			food_boxes_to_delete.append(box)
+			num_foods_eaten += 1
 			# TODO: Reward for eating food
 	food_boxes = [b for b in food_boxes if b not in food_boxes_to_delete]
 
@@ -95,5 +99,7 @@ while(True):
 	render_box(screen, player.box)
 	for box in food_boxes:
 		render_box(screen, box)
+	text_surface = font.render(str(num_foods_eaten) + " foods eaten", False, (0, 0, 0))
+	screen.blit(text_surface, (100, 480))
 	pygame.display.update()
 
