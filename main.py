@@ -47,7 +47,7 @@ def rects_intersect(r1, r2):
     return ranges_overlap(r1.x, r1.x + r1.w, r2.x, r2.x + r2.w) and ranges_overlap(r1.y, r1.y + r1.h, r2.y, r2.y + r2.h)
 
 BG_COLOR = (200,200,200)
-PLAYER_COLOR = (200,100,100)
+PLAYER_COLOR = (250,250,250)
 SCREEN_SIZE = (500,500)
 PLAYER_SPEED = 9
 PLAYER_SIZE = (50, 50)
@@ -58,8 +58,10 @@ pygame.font.init()
 font = pygame.font.SysFont('Arial', 30)
 screen = pygame.display.set_mode(SCREEN_SIZE)
 player = PlayerBox(Box(PLAYER_START_POS, PLAYER_SIZE, PLAYER_COLOR), Direction.RIGHT, 0, PLAYER_SPEED)
-food_boxes = [Box((150, 350), (30, 30), (50, 50, 100)), Box((250, 300), (30, 30), (50, 100, 50))]
-num_foods_eaten = 0
+food_boxes = [Box((150, 350), (30, 30), (50, 200, 50)), Box((250, 300), (30, 30), (50, 200, 50))]
+enemy_boxes = [Box((320, 220), (50, 50), (250, 0, 0))]
+
+health = 3
 
 while(True):
 	for event in pygame.event.get():
@@ -91,15 +93,21 @@ while(True):
 	for box in food_boxes:
 		if rects_intersect(player.box, box):
 			food_boxes_to_delete.append(box)
-			num_foods_eaten += 1
-			# TODO: Reward for eating food
+			health += 1
 	food_boxes = [b for b in food_boxes if b not in food_boxes_to_delete]
+
+	enemy_boxes_to_delete = []
+	for box in enemy_boxes:
+		if rects_intersect(player.box, box):
+			enemy_boxes_to_delete.append(box)
+			health -= 1
+	enemy_boxes = [b for b in enemy_boxes if b not in enemy_boxes_to_delete]
 
 	screen.fill(BG_COLOR)
 	render_box(screen, player.box)
-	for box in food_boxes:
+	for box in food_boxes + enemy_boxes:
 		render_box(screen, box)
-	text_surface = font.render(str(num_foods_eaten) + " foods eaten", False, (0, 0, 0))
+	text_surface = font.render(str(health) + " HP", False, (0, 0, 0))
 	screen.blit(text_surface, (100, 480))
 	pygame.display.update()
 
