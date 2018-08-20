@@ -70,7 +70,7 @@ def rects_intersect(r1, r2):
 
 BG_COLOR = (200,200,200)
 SCREEN_SIZE = (500,500)
-CAMERA_SIZE = (500, 470)
+CAMERA_SIZE = (500, 430)
 GAME_WORLD_SIZE = (600,600)
 FOOD_SIZE = (30, 30)
 FOOD_COLOR = (50, 200, 50)
@@ -146,11 +146,18 @@ while(True):
 		render_box(screen, box, camera_pos)
 	pygame.draw.rect(screen, (0, 0, 0), (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
 	pygame.draw.rect(screen, (0, 0, 0), (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
+
+	pygame.draw.rect(screen, (250, 250, 250), (10 - 2, 440 - 2, 100 + 3, 15 + 3), 2)
+	pygame.draw.rect(screen, (250, 0, 0), (10, 440, 100 * player_stats.health / player_stats.max_health, 15))
+
+	pygame.draw.rect(screen, (250, 250, 250), (130 - 2, 440 - 2, 100 + 3, 15 + 3), 2)
+	pygame.draw.rect(screen, (0, 0, 250), (130, 440, 100 * player_stats.mana / player_stats.max_mana, 15))
+
 	ui_text = "[" + str(player_stats.health) + "/" + str(player_stats.max_health) + " HP]   " + \
 		"[" + str(player_stats.mana) + "/" + str(player_stats.max_mana) + " mana]   " + \
 		"['A' to heal (" + str(heal_mana_cost) + "mana)]"
-
 	text_surface = font.render(ui_text, False, (250, 250, 250))
 	screen.blit(text_surface, (20, 475))
+	
 	pygame.display.update()
 
