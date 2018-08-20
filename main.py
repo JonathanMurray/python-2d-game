@@ -16,7 +16,7 @@ class Box:
 	def rect(self):
 		return (self.x, self.y, self.w, self.h)
 
-class PlayerBox:
+class MovingBox:
 	def __init__(self, box, direction, speed, max_speed):
 		self.box = box
 		self.direction = direction
@@ -64,7 +64,7 @@ def render_box(screen, box, camera_pos):
 def ranges_overlap(a_min, a_max, b_min, b_max):
     return (a_min <= b_max) and (b_min <= a_max)
 
-def rects_intersect(r1, r2):
+def boxes_intersect(r1, r2):
     return ranges_overlap(r1.x, r1.x + r1.w, r2.x, r2.x + r2.w) \
     	and ranges_overlap(r1.y, r1.y + r1.h, r2.y, r2.y + r2.h)
 
@@ -72,10 +72,24 @@ def render_stat_bar(screen, x, y, w, h, stat, max_stat, color):
 	pygame.draw.rect(screen, (250, 250, 250), (x - 2, y - 2, w + 3, h + 3), 2)
 	pygame.draw.rect(screen, color, (x, y, w * stat / max_stat, h))
 
+def update_moving_box_position(moving_box, collide_with_game_boundary):
+	if moving_box.direction == Direction.LEFT:
+		moving_box.box.x -= moving_box.speed
+	elif moving_box.direction == Direction.RIGHT:
+		moving_box.box.x += moving_box.speed
+	elif moving_box.direction == Direction.UP:
+		moving_box.box.y -= moving_box.speed
+	elif moving_box.direction == Direction.DOWN:
+		moving_box.box.y += moving_box.speed
+	if collide_with_game_boundary:
+		moving_box.box.x = min(max(moving_box.box.x, 0), GAME_WORLD_SIZE[0] - moving_box.box.w)
+		moving_box.box.y = min(max(moving_box.box.y, 0), GAME_WORLD_SIZE[1] - moving_box.box.h)
+
 BG_COLOR = (200,200,200)
 SCREEN_SIZE = (500,500)
 CAMERA_SIZE = (500, 430)
 GAME_WORLD_SIZE = (600,600)
+GAME_WORLD_BOX = Box((0, 0), GAME_WORLD_SIZE, (0,0,0))
 FOOD_SIZE = (30, 30)
 FOOD_COLOR = (50, 200, 50)
 ENEMY_SIZE = (50, 50)
@@ -87,12 +101,14 @@ font = pygame.font.SysFont('Arial', 30)
 screen = pygame.display.set_mode(SCREEN_SIZE)
 
 camera_pos = (0, 0)
-player = PlayerBox(Box((100, 100), (50, 50), (250,250,250)), Direction.RIGHT, 0, 9)
+player = MovingBox(Box((100, 100), (50, 50), (250,250,250)), Direction.RIGHT, 0, 9)
+projectiles = []
 food_boxes = [Box(pos, FOOD_SIZE, FOOD_COLOR) for pos in [(150, 350), (450, 300), (560, 550), (30, 520), \
 	(200, 500), (300, 500), (410, 420)]]
 enemy_boxes = [Box(pos, ENEMY_SIZE, ENEMY_COLOR) for pos in [(320, 220), (370, 320), (420, 10)]]
 player_stats = PlayerStats(3, 20, 6, 15)
 heal_mana_cost = 3
+attack_mana_cost = 5
 
 while(True):
 
@@ -113,38 +129,41 @@ while(True):
 				if player_stats.mana >= heal_mana_cost:
 					player_stats.lose_mana(heal_mana_cost)
 					player_stats.gain_health(10)
+			elif event.key == pygame.K_f:
+				if player_stats.mana >= attack_mana_cost:
+					player_stats.lose_mana(attack_mana_cost)
+					projectiles.append(MovingBox(Box((player.box.x, player.box.y), (50, 50), (200, 5, 200)), player.direction, 4, 4))
 		if event.type == pygame.KEYUP:
 			player.set_not_moving()
 
-	if player.direction == Direction.LEFT:
-		player.box.x = max(player.box.x - player.speed, 0)
-	elif player.direction == Direction.RIGHT:
-		player.box.x = min(player.box.x + player.speed, GAME_WORLD_SIZE[0] - player.box.w)
-	elif player.direction == Direction.UP:
-		player.box.y = max(player.box.y - player.speed, 0)
-	elif player.direction == Direction.DOWN:
-		player.box.y = min(player.box.y + player.speed, GAME_WORLD_SIZE[1] - player.box.h)
+	update_moving_box_position(player, True)
+	projectiles_to_delete = []
+	for projectile in projectiles:
+		update_moving_box_position(projectile, False)
+		if not boxes_intersect(projectile.box, GAME_WORLD_BOX):
+			projectiles_to_delete.append(projectile)
+	projectiles = [p for p in projectiles if p not in projectiles_to_delete]
 
 	camera_pos = (min(max(player.box.x - CAMERA_SIZE[0] / 2, 0), GAME_WORLD_SIZE[0] - CAMERA_SIZE[0]), \
 		min(max(player.box.y - CAMERA_SIZE[1] / 2, 0), GAME_WORLD_SIZE[1] - CAMERA_SIZE[1]))
 
 	food_boxes_to_delete = []
 	for box in food_boxes:
-		if rects_intersect(player.box, box):
+		if boxes_intersect(player.box, box):
 			food_boxes_to_delete.append(box)
 			player_stats.gain_health(1)
 	food_boxes = [b for b in food_boxes if b not in food_boxes_to_delete]
 	enemy_boxes_to_delete = []
 	for box in enemy_boxes:
-		if rects_intersect(player.box, box):
+		if boxes_intersect(player.box, box):
 			enemy_boxes_to_delete.append(box)
 			player_stats.lose_health(2)
 	enemy_boxes = [b for b in enemy_boxes if b not in enemy_boxes_to_delete]
 
-	player_stats.gain_mana(0.01)
+	player_stats.gain_mana(0.03)
 
 	screen.fill(BG_COLOR)
-	for box in food_boxes + enemy_boxes + [player.box]:
+	for box in food_boxes + enemy_boxes + [player.box] + [p.box for p in projectiles]:
 		render_box(screen, box, camera_pos)
 	pygame.draw.rect(screen, (0, 0, 0), (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
 	pygame.draw.rect(screen, (0, 0, 0), (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
@@ -152,9 +171,10 @@ while(True):
 	render_stat_bar(screen, 10, 440, 100, 25, player_stats.health, player_stats.max_health, (250, 0, 0))
 	render_stat_bar(screen, 130, 440, 100, 25, player_stats.mana, player_stats.max_mana, (0, 0, 250))
 
-	ui_text = "[" + str(player_stats.health) + "/" + str(player_stats.max_health) + " HP]   " + \
-		"[" + str(player_stats.mana) + "/" + str(player_stats.max_mana) + " mana]   " + \
-		"['A' to heal (" + str(heal_mana_cost) + "mana)]"
+	ui_text = "[" + str(player_stats.health) + "/" + str(player_stats.max_health) + "] " + \
+		"[" + str(player_stats.mana) + "/" + str(player_stats.max_mana) + "] " + \
+		"['A' to heal (" + str(heal_mana_cost) + ")] " + \
+		"['F' to attack (" + str(attack_mana_cost) + ")]"
 	text_surface = font.render(ui_text, False, (250, 250, 250))
 	screen.blit(text_surface, (20, 475))
 	
