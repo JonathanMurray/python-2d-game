@@ -36,6 +36,28 @@ class Direction(Enum):
 	UP = 3
 	DOWN = 4
 
+class PlayerStats:
+	def __init__(self, health, max_health, mana, max_mana):
+		self.health = health
+		self.max_health = max_health
+		self.mana = mana
+		self.mana_float = mana
+		self.max_mana = max_mana
+
+	def gain_health(self, amount):
+		self.health = min(self.health + amount, self.max_health)
+
+	def lose_health(self, amount):
+		player_stats.health -= amount
+
+	def gain_mana(self, amount):
+		self.mana_float = min(self.mana_float + amount, self.max_mana)
+		self.mana = int(math.floor(self.mana_float))
+
+	def lose_mana(self, amount):
+		self.mana_float -= amount
+		self.mana = int(math.floor(self.mana_float))
+
 def render_box(screen, box, camera_pos):
 	pygame.draw.rect(screen, box.color, (box.x - camera_pos[0], box.y - camera_pos[1], box.w, box.h))
 
@@ -65,11 +87,7 @@ player = PlayerBox(Box((100, 100), (50, 50), (250,250,250)), Direction.RIGHT, 0,
 food_boxes = [Box(pos, FOOD_SIZE, FOOD_COLOR) for pos in [(150, 350), (450, 300), (560, 550), (30, 520), \
 	(200, 500), (300, 500), (410, 420)]]
 enemy_boxes = [Box(pos, ENEMY_SIZE, ENEMY_COLOR) for pos in [(320, 220), (370, 320), (420, 10)]]
-max_health = 20
-health = 3
-mana = 0
-mana_float = 6
-max_mana = 20
+player_stats = PlayerStats(3, 20, 6, 15)
 heal_mana_cost = 3
 
 while(True):
@@ -87,9 +105,9 @@ while(True):
 			elif event.key == pygame.K_DOWN:
 				player.set_moving_in_dir(Direction.DOWN)
 			elif event.key == pygame.K_a:
-				if mana_float > heal_mana_cost:
-					mana_float -= heal_mana_cost
-					health = min(health + 10, max_health)
+				if player_stats.mana >= heal_mana_cost:
+					player_stats.lose_mana(heal_mana_cost)
+					player_stats.gain_health(10)
 		if event.type == pygame.KEYUP:
 			player.set_not_moving()
 
@@ -110,18 +128,17 @@ while(True):
 	for box in food_boxes:
 		if rects_intersect(player.box, box):
 			food_boxes_to_delete.append(box)
-			health = min(health + 1, max_health)
+			player_stats.gain_health(1)
 	food_boxes = [b for b in food_boxes if b not in food_boxes_to_delete]
 
 	enemy_boxes_to_delete = []
 	for box in enemy_boxes:
 		if rects_intersect(player.box, box):
 			enemy_boxes_to_delete.append(box)
-			health -= 1
+			player_stats.lose_health(2)
 	enemy_boxes = [b for b in enemy_boxes if b not in enemy_boxes_to_delete]
 
-	mana_float = min(mana_float + 0.01, max_mana)
-	mana = int(math.floor(mana_float))
+	player_stats.gain_mana(0.01)
 
 	screen.fill(BG_COLOR)
 	render_box(screen, player.box, camera_pos)
@@ -129,8 +146,8 @@ while(True):
 		render_box(screen, box, camera_pos)
 	pygame.draw.rect(screen, (0, 0, 0), (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
 	pygame.draw.rect(screen, (0, 0, 0), (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
-	ui_text = "[" + str(health) + "/" + str(max_health) + " HP]   " + \
-		"[" + str(mana) + "/" + str(max_mana) + " mana]   " + \
+	ui_text = "[" + str(player_stats.health) + "/" + str(player_stats.max_health) + " HP]   " + \
+		"[" + str(player_stats.mana) + "/" + str(player_stats.max_mana) + " mana]   " + \
 		"['A' to heal (" + str(heal_mana_cost) + "mana)]"
 
 	text_surface = font.render(ui_text, False, (250, 250, 250))
