@@ -6,13 +6,6 @@ import time
 import sys
 from enum import Enum
 
-BG_COLOR = (200,200,200)
-PLAYER_COLOR = (200,100,100)
-SCREEN_SIZE = (500,500)
-PLAYER_SPEED = 9
-PLAYER_SIZE = (50, 50)
-PLAYER_START_POS = (100, 100)
-
 class Box:
 	def __init__(self, pos, size, color):
 		self.x = pos[0]
@@ -44,11 +37,6 @@ class Direction(Enum):
 	UP = 3
 	DOWN = 4
 
-pygame.init()
-screen = pygame.display.set_mode(SCREEN_SIZE)
-player = PlayerBox(Box(PLAYER_START_POS, PLAYER_SIZE, PLAYER_COLOR), Direction.RIGHT, 0, PLAYER_SPEED)
-food_boxes = [Box((150, 350), (30, 30), (50, 50, 100)), Box((250, 300), (30, 30), (50, 100, 50))]
-
 def render_box(screen, box):
 	pygame.draw.rect(screen, box.color, box.rect())
 
@@ -57,6 +45,18 @@ def ranges_overlap(a_min, a_max, b_min, b_max):
 
 def rects_intersect(r1, r2):
     return ranges_overlap(r1.x, r1.x + r1.w, r2.x, r2.x + r2.w) and ranges_overlap(r1.y, r1.y + r1.h, r2.y, r2.y + r2.h)
+
+BG_COLOR = (200,200,200)
+PLAYER_COLOR = (200,100,100)
+SCREEN_SIZE = (500,500)
+PLAYER_SPEED = 9
+PLAYER_SIZE = (50, 50)
+PLAYER_START_POS = (100, 100)
+
+pygame.init()
+screen = pygame.display.set_mode(SCREEN_SIZE)
+player = PlayerBox(Box(PLAYER_START_POS, PLAYER_SIZE, PLAYER_COLOR), Direction.RIGHT, 0, PLAYER_SPEED)
+food_boxes = [Box((150, 350), (30, 30), (50, 50, 100)), Box((250, 300), (30, 30), (50, 100, 50))]
 
 while(True):
 	for event in pygame.event.get():
