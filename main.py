@@ -95,6 +95,7 @@ player_stats = PlayerStats(3, 20, 6, 15)
 heal_mana_cost = 3
 
 while(True):
+
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			pygame.quit()
@@ -127,14 +128,12 @@ while(True):
 	camera_pos = (min(max(player.box.x - CAMERA_SIZE[0] / 2, 0), GAME_WORLD_SIZE[0] - CAMERA_SIZE[0]), \
 		min(max(player.box.y - CAMERA_SIZE[1] / 2, 0), GAME_WORLD_SIZE[1] - CAMERA_SIZE[1]))
 
-
 	food_boxes_to_delete = []
 	for box in food_boxes:
 		if rects_intersect(player.box, box):
 			food_boxes_to_delete.append(box)
 			player_stats.gain_health(1)
 	food_boxes = [b for b in food_boxes if b not in food_boxes_to_delete]
-
 	enemy_boxes_to_delete = []
 	for box in enemy_boxes:
 		if rects_intersect(player.box, box):
@@ -145,8 +144,7 @@ while(True):
 	player_stats.gain_mana(0.01)
 
 	screen.fill(BG_COLOR)
-	render_box(screen, player.box, camera_pos)
-	for box in food_boxes + enemy_boxes:
+	for box in food_boxes + enemy_boxes + [player.box]:
 		render_box(screen, box, camera_pos)
 	pygame.draw.rect(screen, (0, 0, 0), (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
 	pygame.draw.rect(screen, (0, 0, 0), (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
