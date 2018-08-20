@@ -2,7 +2,6 @@
 
 
 import pygame
-import time
 import sys
 from enum import Enum
 
@@ -67,6 +66,9 @@ food_boxes = [Box(pos, FOOD_SIZE, FOOD_COLOR) for pos in [(150, 350), (450, 300)
 	(200, 500), (300, 500), (410, 420)]]
 enemy_boxes = [Box(pos, ENEMY_SIZE, ENEMY_COLOR) for pos in [(320, 220), (370, 320), (420, 10)]]
 health = 3
+mana = 0
+mana_float = 0
+max_mana = 8
 
 while(True):
 	for event in pygame.event.get():
@@ -112,14 +114,20 @@ while(True):
 			health -= 1
 	enemy_boxes = [b for b in enemy_boxes if b not in enemy_boxes_to_delete]
 
+	mana_float = min(mana_float + 0.04, max_mana)
+	mana = int(mana_float)
+
 	screen.fill(BG_COLOR)
 	render_box(screen, player.box, camera_pos)
 	for box in food_boxes + enemy_boxes:
 		render_box(screen, box, camera_pos)
 	pygame.draw.rect(screen, (0, 0, 0), (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
 	pygame.draw.rect(screen, (0, 0, 0), (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
-	ui_text = "[" + str(health) + " HP]    [position (" + str(player.box.x) + ", " + str(player.box.y) + ")]"
+	ui_text = "[" + str(health) + " HP]   " + \
+		"[" + str(mana) + "/" + str(max_mana) + " mana]   " + \
+		"[position (" + str(player.box.x) + ", " + str(player.box.y) + ")]"
+
 	text_surface = font.render(ui_text, False, (250, 250, 250))
-	screen.blit(text_surface, (100, 475))
+	screen.blit(text_surface, (20, 475))
 	pygame.display.update()
 
