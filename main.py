@@ -51,6 +51,10 @@ BG_COLOR = (200,200,200)
 SCREEN_SIZE = (500,500)
 CAMERA_SIZE = (500, 470)
 GAME_WORLD_SIZE = (600,600)
+FOOD_SIZE = (30, 30)
+FOOD_COLOR = (50, 200, 50)
+ENEMY_SIZE = (50, 50)
+ENEMY_COLOR = (250, 0, 0)
 
 pygame.init()
 pygame.font.init()
@@ -59,8 +63,9 @@ screen = pygame.display.set_mode(SCREEN_SIZE)
 
 camera_pos = (0, 0)
 player = PlayerBox(Box((100, 100), (50, 50), (250,250,250)), Direction.RIGHT, 0, 9)
-food_boxes = [Box((150, 350), (30, 30), (50, 200, 50)), Box((450, 300), (30, 30), (50, 200, 50))]
-enemy_boxes = [Box((320, 220), (50, 50), (250, 0, 0))]
+food_boxes = [Box(pos, FOOD_SIZE, FOOD_COLOR) for pos in [(150, 350), (450, 300), (560, 550), (30, 520), \
+	(200, 500), (300, 500), (410, 420)]]
+enemy_boxes = [Box(pos, ENEMY_SIZE, ENEMY_COLOR) for pos in [(320, 220), (370, 320), (420, 10)]]
 health = 3
 
 while(True):
@@ -111,9 +116,10 @@ while(True):
 	render_box(screen, player.box, camera_pos)
 	for box in food_boxes + enemy_boxes:
 		render_box(screen, box, camera_pos)
+	pygame.draw.rect(screen, (0, 0, 0), (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
+	pygame.draw.rect(screen, (0, 0, 0), (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
 	ui_text = "[" + str(health) + " HP]    [position (" + str(player.box.x) + ", " + str(player.box.y) + ")]"
-	text_surface = font.render(ui_text, False, (0, 0, 0))
+	text_surface = font.render(ui_text, False, (250, 250, 250))
 	screen.blit(text_surface, (100, 475))
-	pygame.draw.rect(screen, (0, 0, 100), (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
 	pygame.display.update()
 
