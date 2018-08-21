@@ -30,6 +30,12 @@ class MovingBox:
 	def set_not_moving(self):
 		self.speed = 0
 
+class MortalEntity:
+	def __init__(self, box, health, max_health):
+		self.box = box
+		self.health = health
+		self.max_health = max_health
+
 class Direction(Enum):
 	LEFT = 1
 	RIGHT = 2
@@ -105,12 +111,16 @@ player = MovingBox(Box((100, 100), (50, 50), (250,250,250)), Direction.RIGHT, 0,
 projectiles = []
 food_boxes = [Box(pos, FOOD_SIZE, FOOD_COLOR) for pos in [(150, 350), (450, 300), (560, 550), (30, 520), \
 	(200, 500), (300, 500), (410, 420)]]
-enemy_boxes = [Box(pos, ENEMY_SIZE, ENEMY_COLOR) for pos in [(320, 220), (370, 320), (420, 10)]]
+enemies = [MortalEntity(Box(pos, ENEMY_SIZE, ENEMY_COLOR), 3, 3) for pos in [(320, 220), (370, 320), (420, 10)]]
 player_stats = PlayerStats(3, 20, 6, 15)
 heal_mana_cost = 3
 attack_mana_cost = 5
 
 while(True):
+
+	# ------------------------------------
+	#         HANDLE EVENTS
+	# ------------------------------------
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -136,43 +146,72 @@ while(True):
 		if event.type == pygame.KEYUP:
 			player.set_not_moving()
 
+
+	# ------------------------------------
+	#         UPDATE PLAYER POSITION
+	# ------------------------------------
+
 	update_moving_box_position(player, True)
+
+
+	# ------------------------------------
+	#         HANDLE COLLISIONS
+	# ------------------------------------
 
 	projectiles_to_delete = []
 	food_boxes_to_delete = []
-	enemy_boxes_to_delete = []
-
+	enemies_to_delete = []
 	for projectile in projectiles:
 		update_moving_box_position(projectile, False)
 		if not boxes_intersect(projectile.box, GAME_WORLD_BOX):
 			projectiles_to_delete.append(projectile)
-	
 	for box in food_boxes:
 		if boxes_intersect(player.box, box):
 			food_boxes_to_delete.append(box)
 			player_stats.gain_health(1)
-
-	for box in enemy_boxes:
+	for enemy in enemies:
+		box = enemy.box
 		if boxes_intersect(player.box, box):
-			enemy_boxes_to_delete.append(box)
+			enemies_to_delete.append(enemy)
 			player_stats.lose_health(2)
 		for projectile in projectiles:
 			if boxes_intersect(box, projectile.box):
-				enemy_boxes_to_delete.append(box)
+				enemy.health -= 1
+				if enemy.health <= 0:
+					enemies_to_delete.append(enemy)
 				projectiles_to_delete.append(projectile)
-
 	projectiles = [p for p in projectiles if p not in projectiles_to_delete]
 	food_boxes = [b for b in food_boxes if b not in food_boxes_to_delete]
-	enemy_boxes = [b for b in enemy_boxes if b not in enemy_boxes_to_delete]
+	enemies = [b for b in enemies if b not in enemies_to_delete]
+
+
+	# ------------------------------------
+	#         REGEN MANA
+	# ------------------------------------
 
 	player_stats.gain_mana(0.03)
+
+
+	# ------------------------------------
+	#         UPDATE CAMERA POSITION
+	# ------------------------------------
 
 	camera_pos = (min(max(player.box.x - CAMERA_SIZE[0] / 2, 0), GAME_WORLD_SIZE[0] - CAMERA_SIZE[0]), \
 		min(max(player.box.y - CAMERA_SIZE[1] / 2, 0), GAME_WORLD_SIZE[1] - CAMERA_SIZE[1]))
 
+
+	# ------------------------------------
+	#         RENDERING
+	# ------------------------------------
+
 	screen.fill(BG_COLOR)
-	for box in food_boxes + enemy_boxes + [player.box] + [p.box for p in projectiles]:
+	for box in food_boxes + [e.box for e in enemies] + [player.box] + [p.box for p in projectiles]:
 		render_box(screen, box, camera_pos)
+
+	for enemy in enemies:
+		render_stat_bar(screen, enemy.box.x - camera_pos[0] + 1, enemy.box.y - camera_pos[1] - 10, \
+			enemy.box.w - 2, 5, enemy.health, enemy.max_health, (250, 0, 0))
+
 	pygame.draw.rect(screen, (0, 0, 0), (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
 	pygame.draw.rect(screen, (0, 0, 0), (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
 
