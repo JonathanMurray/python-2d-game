@@ -111,7 +111,8 @@ player = MovingBox(Box((100, 100), (50, 50), (250,250,250)), Direction.RIGHT, 0,
 projectiles = []
 food_boxes = [Box(pos, FOOD_SIZE, FOOD_COLOR) for pos in [(150, 350), (450, 300), (560, 550), (30, 520), \
 	(200, 500), (300, 500), (410, 420)]]
-enemies = [MortalEntity(MovingBox(Box(pos, ENEMY_SIZE, ENEMY_COLOR), Direction.LEFT, 1, 1), 3, 3) for pos in [(320, 220), (370, 320), (420, 10)]]
+enemies = [MortalEntity(MovingBox(Box(pos, ENEMY_SIZE, ENEMY_COLOR), Direction.LEFT, 1, 1), 3, 3) for pos \
+	in [(320, 220), (370, 320), (420, 10)]]
 player_stats = PlayerStats(3, 20, 12, 15)
 heal_mana_cost = 3
 attack_mana_cost = 5
@@ -142,7 +143,8 @@ while(True):
 			elif event.key == pygame.K_f:
 				if player_stats.mana >= attack_mana_cost:
 					player_stats.lose_mana(attack_mana_cost)
-					projectiles.append(MovingBox(Box((player.box.x, player.box.y), (50, 50), (200, 5, 200)), player.direction, 4, 4))
+					proj_box = Box((player.box.x, player.box.y), (50, 50), (200, 5, 200))
+					projectiles.append(MovingBox(proj_box, player.direction, 4, 4))
 		if event.type == pygame.KEYUP:
 			player.set_not_moving()
 
