@@ -31,8 +31,8 @@ class MovingBox:
 		self.speed = 0
 
 class MortalEntity:
-	def __init__(self, box, health, max_health):
-		self.box = box
+	def __init__(self, moving_box, health, max_health):
+		self.moving_box = moving_box
 		self.health = health
 		self.max_health = max_health
 
@@ -111,8 +111,8 @@ player = MovingBox(Box((100, 100), (50, 50), (250,250,250)), Direction.RIGHT, 0,
 projectiles = []
 food_boxes = [Box(pos, FOOD_SIZE, FOOD_COLOR) for pos in [(150, 350), (450, 300), (560, 550), (30, 520), \
 	(200, 500), (300, 500), (410, 420)]]
-enemies = [MortalEntity(Box(pos, ENEMY_SIZE, ENEMY_COLOR), 3, 3) for pos in [(320, 220), (370, 320), (420, 10)]]
-player_stats = PlayerStats(3, 20, 6, 15)
+enemies = [MortalEntity(MovingBox(Box(pos, ENEMY_SIZE, ENEMY_COLOR), Direction.LEFT, 1, 1), 3, 3) for pos in [(320, 220), (370, 320), (420, 10)]]
+player_stats = PlayerStats(3, 20, 12, 15)
 heal_mana_cost = 3
 attack_mana_cost = 5
 
@@ -148,9 +148,11 @@ while(True):
 
 
 	# ------------------------------------
-	#         UPDATE PLAYER POSITION
+	#         UPDATE MOVING ENTITIES
 	# ------------------------------------
 
+	for e in enemies:
+		update_moving_box_position(e.moving_box, True)
 	update_moving_box_position(player, True)
 
 
@@ -170,7 +172,7 @@ while(True):
 			food_boxes_to_delete.append(box)
 			player_stats.gain_health(1)
 	for enemy in enemies:
-		box = enemy.box
+		box = enemy.moving_box.box
 		if boxes_intersect(player.box, box):
 			enemies_to_delete.append(enemy)
 			player_stats.lose_health(2)
@@ -201,16 +203,16 @@ while(True):
 
 
 	# ------------------------------------
-	#         RENDERING
+	#         RENDER EVERYTHING
 	# ------------------------------------
 
 	screen.fill(BG_COLOR)
-	for box in food_boxes + [e.box for e in enemies] + [player.box] + [p.box for p in projectiles]:
+	for box in food_boxes + [e.moving_box.box for e in enemies] + [player.box] + [p.box for p in projectiles]:
 		render_box(screen, box, camera_pos)
 
 	for enemy in enemies:
-		render_stat_bar(screen, enemy.box.x - camera_pos[0] + 1, enemy.box.y - camera_pos[1] - 10, \
-			enemy.box.w - 2, 5, enemy.health, enemy.max_health, (250, 0, 0))
+		render_stat_bar(screen, enemy.moving_box.box.x - camera_pos[0] + 1, enemy.moving_box.box.y - camera_pos[1] - 10, \
+			enemy.moving_box.box.w - 2, 5, enemy.health, enemy.max_health, (250, 0, 0))
 
 	pygame.draw.rect(screen, (0, 0, 0), (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
 	pygame.draw.rect(screen, (0, 0, 0), (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
