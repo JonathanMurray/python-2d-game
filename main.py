@@ -122,7 +122,11 @@ player_stats = PlayerStats(3, 20, 50, 100)
 heal_mana_cost = 10
 attack_mana_cost = 20
 
-health_potion = True
+health_potions = {
+	1: True,
+	2: False,
+	3: True
+}
 
 while(True):
 
@@ -153,8 +157,16 @@ while(True):
 					proj_box = Box((player.box.x, player.box.y), (50, 50), (200, 5, 200))
 					projectiles.append(MovingBox(proj_box, player.direction, 4, 4))
 			elif event.key == pygame.K_1:
-				if health_potion:
-					health_potion = False
+				if health_potions[1]:
+					health_potions[1] = False
+					player_stats.gain_health(10)
+			elif event.key == pygame.K_2:
+				if health_potions[2]:
+					health_potions[2] = False
+					player_stats.gain_health(10)
+			elif event.key == pygame.K_3:
+				if health_potions[3]:
+					health_potions[3] = False
 					player_stats.gain_health(10)
 		if event.type == pygame.KEYUP:
 			player.set_not_moving()
@@ -238,9 +250,19 @@ while(True):
 	screen.blit(font.render(mana_text, False, COLOR_WHITE), (150, 443))
 
 	pygame.draw.rect(screen, (100, 100, 100), (250, 439, 27, 27), 3)
-	if health_potion:
+	if health_potions[1]:
 		pygame.draw.rect(screen, (250, 50, 50), (250, 439, 27, 27))
 	screen.blit(font.render("1", False, COLOR_WHITE), (258, 444))
+
+	pygame.draw.rect(screen, (100, 100, 100), (300, 439, 27, 27), 3)
+	if health_potions[2]:
+		pygame.draw.rect(screen, (250, 50, 50), (300, 439, 27, 27))
+	screen.blit(font.render("2", False, COLOR_WHITE), (308, 444))
+
+	pygame.draw.rect(screen, (100, 100, 100), (350, 439, 27, 27), 3)
+	if health_potions[3]:
+		pygame.draw.rect(screen, (250, 50, 50), (350, 439, 27, 27))
+	screen.blit(font.render("3", False, COLOR_WHITE), (358, 444))
 
 	ui_text = "['A' to heal (" + str(heal_mana_cost) + ")] " + \
 		"['F' to attack (" + str(attack_mana_cost) + ")]"
