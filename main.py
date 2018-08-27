@@ -91,6 +91,17 @@ def update_moving_box_position(moving_box, collide_with_game_boundary):
 		moving_box.box.x = min(max(moving_box.box.x, 0), GAME_WORLD_SIZE[0] - moving_box.box.w)
 		moving_box.box.y = min(max(moving_box.box.y, 0), GAME_WORLD_SIZE[1] - moving_box.box.h)
 
+def try_use_health_potion(number):
+	if health_potions[number]:
+		health_potions[number] = False
+		player_stats.gain_health(10)
+
+def render_ui_potion(screen, x, y, w, h, potion_number):
+	pygame.draw.rect(screen, (100, 100, 100), (x, y, w, h), 3)
+	if health_potions[potion_number]:
+		pygame.draw.rect(screen, (250, 50, 50), (x, y, w, h))
+	screen.blit(font.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + 5))
+
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
 COLOR_RED = (250, 0, 0)
@@ -125,7 +136,9 @@ attack_mana_cost = 20
 health_potions = {
 	1: True,
 	2: False,
-	3: True
+	3: True,
+	4: True,
+	5: True
 }
 
 while(True):
@@ -157,17 +170,15 @@ while(True):
 					proj_box = Box((player.box.x, player.box.y), (50, 50), (200, 5, 200))
 					projectiles.append(MovingBox(proj_box, player.direction, 4, 4))
 			elif event.key == pygame.K_1:
-				if health_potions[1]:
-					health_potions[1] = False
-					player_stats.gain_health(10)
+				try_use_health_potion(1)
 			elif event.key == pygame.K_2:
-				if health_potions[2]:
-					health_potions[2] = False
-					player_stats.gain_health(10)
+				try_use_health_potion(2)
 			elif event.key == pygame.K_3:
-				if health_potions[3]:
-					health_potions[3] = False
-					player_stats.gain_health(10)
+				try_use_health_potion(3)
+			elif event.key == pygame.K_4:
+				try_use_health_potion(4)
+			elif event.key == pygame.K_5:
+				try_use_health_potion(5)
 		if event.type == pygame.KEYUP:
 			player.set_not_moving()
 
@@ -249,20 +260,11 @@ while(True):
 	mana_text = str(player_stats.mana) + "/" + str(player_stats.max_mana)
 	screen.blit(font.render(mana_text, False, COLOR_WHITE), (150, 443))
 
-	pygame.draw.rect(screen, (100, 100, 100), (250, 439, 27, 27), 3)
-	if health_potions[1]:
-		pygame.draw.rect(screen, (250, 50, 50), (250, 439, 27, 27))
-	screen.blit(font.render("1", False, COLOR_WHITE), (258, 444))
-
-	pygame.draw.rect(screen, (100, 100, 100), (300, 439, 27, 27), 3)
-	if health_potions[2]:
-		pygame.draw.rect(screen, (250, 50, 50), (300, 439, 27, 27))
-	screen.blit(font.render("2", False, COLOR_WHITE), (308, 444))
-
-	pygame.draw.rect(screen, (100, 100, 100), (350, 439, 27, 27), 3)
-	if health_potions[3]:
-		pygame.draw.rect(screen, (250, 50, 50), (350, 439, 27, 27))
-	screen.blit(font.render("3", False, COLOR_WHITE), (358, 444))
+	render_ui_potion(screen, 250, 439, 27, 27, 1)
+	render_ui_potion(screen, 300, 439, 27, 27, 2)
+	render_ui_potion(screen, 350, 439, 27, 27, 3)
+	render_ui_potion(screen, 400, 439, 27, 27, 4)
+	render_ui_potion(screen, 450, 439, 27, 27, 5)
 
 	ui_text = "['A' to heal (" + str(heal_mana_cost) + ")] " + \
 		"['F' to attack (" + str(attack_mana_cost) + ")]"
