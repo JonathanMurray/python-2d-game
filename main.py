@@ -100,6 +100,7 @@ FOOD_SIZE = (30, 30)
 FOOD_COLOR = (50, 200, 50)
 ENEMY_SIZE = (50, 50)
 ENEMY_COLOR = (250, 0, 0)
+MANA_REGEN = 0.03
 
 pygame.init()
 pygame.font.init()
@@ -113,9 +114,9 @@ food_boxes = [Box(pos, FOOD_SIZE, FOOD_COLOR) for pos in [(150, 350), (450, 300)
 	(200, 500), (300, 500), (410, 420)]]
 enemies = [MortalEntity(MovingBox(Box(pos, ENEMY_SIZE, ENEMY_COLOR), Direction.LEFT, 1, 1), 3, 3) for pos \
 	in [(320, 220), (370, 320), (420, 10)]]
-player_stats = PlayerStats(3, 20, 12, 15)
-heal_mana_cost = 3
-attack_mana_cost = 5
+player_stats = PlayerStats(3, 20, 50, 100)
+heal_mana_cost = 10
+attack_mana_cost = 20
 
 while(True):
 
@@ -193,7 +194,7 @@ while(True):
 	#         REGEN MANA
 	# ------------------------------------
 
-	player_stats.gain_mana(0.03)
+	player_stats.gain_mana(MANA_REGEN)
 
 
 	# ------------------------------------
@@ -220,11 +221,14 @@ while(True):
 	pygame.draw.rect(screen, (0, 0, 0), (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
 
 	render_stat_bar(screen, 10, 440, 100, 25, player_stats.health, player_stats.max_health, (250, 0, 0))
+	health_text = str(player_stats.health) + "/" + str(player_stats.max_health)
+	screen.blit(font.render(health_text, False, (250, 250, 250)), (30, 443))
 	render_stat_bar(screen, 130, 440, 100, 25, player_stats.mana, player_stats.max_mana, (0, 0, 250))
+	mana_text = str(player_stats.mana) + "/" + str(player_stats.max_mana)
+	screen.blit(font.render(mana_text, False, (250, 250, 250)), (150, 443))
 
-	ui_text = "[" + str(player_stats.health) + "/" + str(player_stats.max_health) + "] " + \
-		"[" + str(player_stats.mana) + "/" + str(player_stats.max_mana) + "] " + \
-		"['A' to heal (" + str(heal_mana_cost) + ")] " + \
+
+	ui_text = "['A' to heal (" + str(heal_mana_cost) + ")] " + \
 		"['F' to attack (" + str(attack_mana_cost) + ")]"
 	text_surface = font.render(ui_text, False, (250, 250, 250))
 	screen.blit(text_surface, (20, 475))
