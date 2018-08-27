@@ -102,6 +102,17 @@ def render_ui_potion(screen, x, y, w, h, potion_number):
 		pygame.draw.rect(screen, (250, 50, 50), (x, y, w, h))
 	screen.blit(font.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + 5))
 
+#Returns whether or not potion was picked up (not picked up if no space for it)
+def pick_up_potion():
+	empty_slots = [slot for slot in health_potions if not health_potions[slot]]
+	if len(empty_slots) > 0:
+		slot = empty_slots[0]
+		health_potions[slot] = True
+		return True
+	else:
+		return False
+
+
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
 COLOR_RED = (250, 0, 0)
@@ -205,8 +216,9 @@ while(True):
 			projectiles_to_delete.append(projectile)
 	for box in food_boxes:
 		if boxes_intersect(player.box, box):
-			food_boxes_to_delete.append(box)
-			player_stats.gain_health(1)
+			did_pick_up = pick_up_potion()
+			if did_pick_up:
+				food_boxes_to_delete.append(box)
 	for enemy in enemies:
 		box = enemy.moving_box.box
 		if boxes_intersect(player.box, box):
