@@ -122,6 +122,8 @@ player_stats = PlayerStats(3, 20, 50, 100)
 heal_mana_cost = 10
 attack_mana_cost = 20
 
+health_potion = True
+
 while(True):
 
 	# ------------------------------------
@@ -150,6 +152,10 @@ while(True):
 					player_stats.lose_mana(attack_mana_cost)
 					proj_box = Box((player.box.x, player.box.y), (50, 50), (200, 5, 200))
 					projectiles.append(MovingBox(proj_box, player.direction, 4, 4))
+			elif event.key == pygame.K_1:
+				if health_potion:
+					health_potion = False
+					player_stats.gain_health(10)
 		if event.type == pygame.KEYUP:
 			player.set_not_moving()
 
@@ -230,6 +236,11 @@ while(True):
 	render_stat_bar(screen, 130, 440, 100, 25, player_stats.mana, player_stats.max_mana, COLOR_BLUE)
 	mana_text = str(player_stats.mana) + "/" + str(player_stats.max_mana)
 	screen.blit(font.render(mana_text, False, COLOR_WHITE), (150, 443))
+
+	pygame.draw.rect(screen, (100, 100, 100), (250, 439, 27, 27), 3)
+	if health_potion:
+		pygame.draw.rect(screen, (250, 50, 50), (250, 439, 27, 27))
+	screen.blit(font.render("1", False, COLOR_WHITE), (258, 444))
 
 	ui_text = "['A' to heal (" + str(heal_mana_cost) + ")] " + \
 		"['F' to attack (" + str(attack_mana_cost) + ")]"
