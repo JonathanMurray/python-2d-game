@@ -69,6 +69,9 @@ class PlayerStats:
 def render_box(screen, box, camera_pos):
 	pygame.draw.rect(screen, box.color, (box.x - camera_pos[0], box.y - camera_pos[1], box.w, box.h))
 
+def render_circle(screen, box, camera_pos):
+	pygame.draw.ellipse(screen, COLOR_BLUE, (box.x - camera_pos[0], box.y - camera_pos[1], box.w, box.h))
+
 def ranges_overlap(a_min, a_max, b_min, b_max):
     return (a_min <= b_max) and (b_min <= a_max)
 
@@ -258,8 +261,11 @@ while(True):
 	# ------------------------------------
 
 	screen.fill(BG_COLOR)
-	for box in food_boxes + [e.moving_box.box for e in enemies] + [player.box] + [p.box for p in projectiles]:
+	for box in food_boxes + [e.moving_box.box for e in enemies] + [p.box for p in projectiles]:
 		render_box(screen, box, camera_pos)
+
+	render_box(screen, player.box, camera_pos)
+	render_circle(screen, player.box, camera_pos)
 
 	for enemy in enemies:
 		render_stat_bar(screen, enemy.moving_box.box.x - camera_pos[0] + 1, enemy.moving_box.box.y - camera_pos[1] - 10, \
