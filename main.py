@@ -75,7 +75,7 @@ def boxes_intersect(r1, r2):
     	and ranges_overlap(r1.y, r1.y + r1.h, r2.y, r2.y + r2.h)
 
 def render_stat_bar(screen, x, y, w, h, stat, max_stat, color):
-	pygame.draw.rect(screen, (250, 250, 250), (x - 2, y - 2, w + 3, h + 3), 2)
+	pygame.draw.rect(screen, COLOR_WHITE, (x - 2, y - 2, w + 3, h + 3), 2)
 	pygame.draw.rect(screen, color, (x, y, w * stat / max_stat, h))
 
 def update_moving_box_position(moving_box, collide_with_game_boundary):
@@ -91,6 +91,10 @@ def update_moving_box_position(moving_box, collide_with_game_boundary):
 		moving_box.box.x = min(max(moving_box.box.x, 0), GAME_WORLD_SIZE[0] - moving_box.box.w)
 		moving_box.box.y = min(max(moving_box.box.y, 0), GAME_WORLD_SIZE[1] - moving_box.box.h)
 
+COLOR_WHITE = (250, 250, 250)
+COLOR_BLACK = (0, 0, 0)
+COLOR_RED = (250, 0, 0)
+COLOR_BLUE = (0, 0, 250)
 BG_COLOR = (200,200,200)
 SCREEN_SIZE = (500,500)
 CAMERA_SIZE = (500, 430)
@@ -99,7 +103,7 @@ GAME_WORLD_BOX = Box((0, 0), GAME_WORLD_SIZE, (0,0,0))
 FOOD_SIZE = (30, 30)
 FOOD_COLOR = (50, 200, 50)
 ENEMY_SIZE = (50, 50)
-ENEMY_COLOR = (250, 0, 0)
+ENEMY_COLOR = COLOR_RED
 MANA_REGEN = 0.03
 
 pygame.init()
@@ -215,22 +219,21 @@ while(True):
 
 	for enemy in enemies:
 		render_stat_bar(screen, enemy.moving_box.box.x - camera_pos[0] + 1, enemy.moving_box.box.y - camera_pos[1] - 10, \
-			enemy.moving_box.box.w - 2, 5, enemy.health, enemy.max_health, (250, 0, 0))
+			enemy.moving_box.box.w - 2, 5, enemy.health, enemy.max_health, COLOR_RED)
 
-	pygame.draw.rect(screen, (0, 0, 0), (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
-	pygame.draw.rect(screen, (0, 0, 0), (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
+	pygame.draw.rect(screen, COLOR_BLACK, (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
+	pygame.draw.rect(screen, COLOR_BLACK, (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
 
-	render_stat_bar(screen, 10, 440, 100, 25, player_stats.health, player_stats.max_health, (250, 0, 0))
+	render_stat_bar(screen, 10, 440, 100, 25, player_stats.health, player_stats.max_health, COLOR_RED)
 	health_text = str(player_stats.health) + "/" + str(player_stats.max_health)
-	screen.blit(font.render(health_text, False, (250, 250, 250)), (30, 443))
-	render_stat_bar(screen, 130, 440, 100, 25, player_stats.mana, player_stats.max_mana, (0, 0, 250))
+	screen.blit(font.render(health_text, False, COLOR_WHITE), (30, 443))
+	render_stat_bar(screen, 130, 440, 100, 25, player_stats.mana, player_stats.max_mana, COLOR_BLUE)
 	mana_text = str(player_stats.mana) + "/" + str(player_stats.max_mana)
-	screen.blit(font.render(mana_text, False, (250, 250, 250)), (150, 443))
-
+	screen.blit(font.render(mana_text, False, COLOR_WHITE), (150, 443))
 
 	ui_text = "['A' to heal (" + str(heal_mana_cost) + ")] " + \
 		"['F' to attack (" + str(attack_mana_cost) + ")]"
-	text_surface = font.render(ui_text, False, (250, 250, 250))
+	text_surface = font.render(ui_text, False, COLOR_WHITE)
 	screen.blit(text_surface, (20, 475))
 	
 	pygame.display.update()
