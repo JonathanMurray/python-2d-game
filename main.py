@@ -142,7 +142,7 @@ def pick_up_potion():
 	else:
 		return False
 
-
+COLOR_ATTACK_PROJ = (200, 5, 200)
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
 COLOR_RED = (250, 0, 0)
@@ -154,9 +154,12 @@ GAME_WORLD_SIZE = (600,600)
 GAME_WORLD_BOX = Box((0, 0), GAME_WORLD_SIZE, (0,0,0))
 FOOD_SIZE = (30, 30)
 FOOD_COLOR = (50, 200, 50)
-ENEMY_SIZE = (50, 50)
+ENEMY_SIZE = (30, 30)
 ENEMY_COLOR = COLOR_RED
+ENEMY_SPEED = 0.4
 MANA_REGEN = 0.03
+PLAYER_SPEED = 2
+ATTACK_PROJ_SIZE = (35, 35)
 
 pygame.init()
 pygame.font.init()
@@ -166,15 +169,15 @@ screen = pygame.display.set_mode(SCREEN_SIZE)
 clock = pygame.time.Clock()
 
 camera_pos = (0, 0)
-player = MovingBox(Box((100, 100), (50, 50), (250,250,250)), Direction.RIGHT, 0, 9)
+player = MovingBox(Box((100, 100), (50, 50), (250,250,250)), Direction.RIGHT, 0, PLAYER_SPEED)
 projectiles = []
 food_boxes = [Box(pos, FOOD_SIZE, FOOD_COLOR) for pos in [(150, 350), (450, 300), (560, 550), (30, 520), \
 	(200, 500), (300, 500), (410, 420)]]
-enemies = [Enemy(MovingBox(Box(pos, ENEMY_SIZE, ENEMY_COLOR), Direction.LEFT, 1, 1), 3, 3) for pos \
+enemies = [Enemy(MovingBox(Box(pos, ENEMY_SIZE, ENEMY_COLOR), Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 3, 3) for pos \
 	in [(320, 220), (370, 320), (420, 10)]]
 player_stats = PlayerStats(3, 20, 50, 100)
 heal_mana_cost = 10
-attack_mana_cost = 20
+attack_mana_cost = 5
 ticks_since_ai_ran = 0
 AI_RUN_INTERVAL = 750
 
@@ -212,7 +215,9 @@ while(True):
 			elif event.key == pygame.K_f:
 				if player_stats.mana >= attack_mana_cost:
 					player_stats.lose_mana(attack_mana_cost)
-					proj_box = Box((player.box.x, player.box.y), (50, 50), (200, 5, 200))
+					proj_box = Box((player.box.x + player.box.w / 2 - ATTACK_PROJ_SIZE[0] / 2, \
+						player.box.y + player.box.h / 2 - ATTACK_PROJ_SIZE[1] / 2), \
+						ATTACK_PROJ_SIZE, COLOR_ATTACK_PROJ)
 					projectiles.append(MovingBox(proj_box, player.direction, 4, 4))
 			elif event.key == pygame.K_1:
 				try_use_health_potion(1)
