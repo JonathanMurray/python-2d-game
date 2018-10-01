@@ -38,7 +38,7 @@ class Enemy:
 		self.health = health
 		self.max_health = max_health
 
-	def set_direction_towards(self, box):
+	def run_ai(self, box):
 		dx = box.x - self.moving_box.box.x
 		dy = box.y - self.moving_box.box.y
 		if abs(dx) > abs(dy):
@@ -153,6 +153,7 @@ pygame.font.init()
 FONT_LARGE = pygame.font.SysFont('Arial', 30)
 FONT_SMALL = pygame.font.Font(None, 25)
 screen = pygame.display.set_mode(SCREEN_SIZE)
+clock = pygame.time.Clock()
 
 camera_pos = (0, 0)
 player = MovingBox(Box((100, 100), (50, 50), (250,250,250)), Direction.RIGHT, 0, 9)
@@ -164,6 +165,8 @@ enemies = [Enemy(MovingBox(Box(pos, ENEMY_SIZE, ENEMY_COLOR), Direction.LEFT, 1,
 player_stats = PlayerStats(3, 20, 50, 100)
 heal_mana_cost = 10
 attack_mana_cost = 20
+ticks_since_ai_ran = 0
+AI_RUN_INTERVAL = 1000
 
 health_potions = {
 	1: True,
@@ -219,8 +222,16 @@ while(True):
 	#         UPDATE MOVING ENTITIES
 	# ------------------------------------
 
+	clock.tick()
+	ticks_since_ai_ran += clock.get_time()
+	if(ticks_since_ai_ran > AI_RUN_INTERVAL):
+		ticks_since_ai_ran = 0
+		should_run_enemy_ai = True
+	else:
+		should_run_enemy_ai = False
 	for e in enemies:
-		e.set_direction_towards(player.box)
+		if should_run_enemy_ai:
+			e.run_ai(player.box)
 		update_moving_box_position(e.moving_box, True)
 	update_moving_box_position(player, True)
 
