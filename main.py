@@ -4,6 +4,7 @@ import math
 import pygame
 import sys
 from enum import Enum
+import random
 
 
 
@@ -37,6 +38,7 @@ class Enemy:
 		self.moving_box = moving_box
 		self.health = health
 		self.max_health = max_health
+		self.movement_error_chance = 0.2
 
 	def run_ai(self, box):
 		dx = box.x - self.moving_box.box.x
@@ -51,6 +53,8 @@ class Enemy:
 				direction = Direction.UP
 			else:
 				direction = Direction.DOWN
+		if random.random() < self.movement_error_chance:
+			direction = random.choice(get_perpendicular_directions(direction))
 		self.moving_box.set_moving_in_dir(direction)
 
 class Direction(Enum):
@@ -58,6 +62,12 @@ class Direction(Enum):
 	RIGHT = 2
 	UP = 3
 	DOWN = 4
+
+def get_perpendicular_directions(direction):
+	if direction == direction.LEFT or direction == direction.RIGHT:
+		return [Direction.UP, Direction.DOWN]
+	else:
+		return [Direction.LEFT, Direction.RIGHT]
 
 class PlayerStats:
 	def __init__(self, health, max_health, mana, max_mana):
@@ -166,7 +176,7 @@ player_stats = PlayerStats(3, 20, 50, 100)
 heal_mana_cost = 10
 attack_mana_cost = 20
 ticks_since_ai_ran = 0
-AI_RUN_INTERVAL = 1000
+AI_RUN_INTERVAL = 750
 
 health_potions = {
 	1: True,
