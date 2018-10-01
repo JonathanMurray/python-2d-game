@@ -169,6 +169,28 @@ DIRECTION_BY_PYGAME_MOVEMENT_KEY = {
 	pygame.K_DOWN: Direction.DOWN
 }
 
+# ------------------------------------
+#         READ MAP FROM TEXT FILE
+# ------------------------------------
+
+enemy_positions = []
+potion_positions = []
+with open("map.txt") as map_file:
+	row_index = 0
+	for line in map_file:
+		col_index = 0
+		for char in line:
+			game_world_pos = (GAME_WORLD_SIZE[0] * col_index / 100, GAME_WORLD_SIZE[1] * row_index / 50)
+			if char == 'P':
+				player_pos = game_world_pos
+			if char == 'E':
+				enemy_positions.append(game_world_pos)
+			if char == 'H':
+				potion_positions.append(game_world_pos)
+			col_index += 1
+		row_index += 1
+
+
 pygame.init()
 pygame.font.init()
 FONT_LARGE = pygame.font.SysFont('Arial', 30)
@@ -177,12 +199,11 @@ screen = pygame.display.set_mode(SCREEN_SIZE)
 clock = pygame.time.Clock()
 
 camera_pos = (0, 0)
-player = MovingBox(Box((100, 100), (50, 50), (250,250,250)), Direction.RIGHT, 0, PLAYER_SPEED)
+player = MovingBox(Box(player_pos, (50, 50), (250,250,250)), Direction.RIGHT, 0, PLAYER_SPEED)
 projectiles = []
-food_boxes = [Box(pos, FOOD_SIZE, FOOD_COLOR) for pos in [(150, 350), (450, 300), (560, 550), (30, 520), \
-	(200, 500), (300, 500), (410, 420)]]
-enemies = [Enemy(MovingBox(Box(pos, ENEMY_SIZE, ENEMY_COLOR), Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 3, 3) for pos \
-	in [(320, 220), (370, 320), (420, 10)]]
+food_boxes = [Box(pos, FOOD_SIZE, FOOD_COLOR) for pos in potion_positions]
+enemies = [Enemy(MovingBox(Box(pos, ENEMY_SIZE, ENEMY_COLOR), Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 2, 2) for pos \
+	in enemy_positions]
 player_stats = PlayerStats(3, 20, 50, 100)
 heal_mana_cost = 10
 attack_mana_cost = 5
