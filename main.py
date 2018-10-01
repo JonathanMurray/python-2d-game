@@ -32,11 +32,26 @@ class MovingBox:
 	def set_not_moving(self):
 		self.speed = 0
 
-class MortalEntity:
+class Enemy:
 	def __init__(self, moving_box, health, max_health):
 		self.moving_box = moving_box
 		self.health = health
 		self.max_health = max_health
+
+	def set_direction_towards(self, box):
+		dx = box.x - self.moving_box.box.x
+		dy = box.y - self.moving_box.box.y
+		if abs(dx) > abs(dy):
+			if dx > 0:
+				direction = Direction.RIGHT
+			else:
+				direction = Direction.LEFT
+		else:
+			if dy < 0:
+				direction = Direction.UP
+			else:
+				direction = Direction.DOWN
+		self.moving_box.set_moving_in_dir(direction)
 
 class Direction(Enum):
 	LEFT = 1
@@ -144,7 +159,7 @@ player = MovingBox(Box((100, 100), (50, 50), (250,250,250)), Direction.RIGHT, 0,
 projectiles = []
 food_boxes = [Box(pos, FOOD_SIZE, FOOD_COLOR) for pos in [(150, 350), (450, 300), (560, 550), (30, 520), \
 	(200, 500), (300, 500), (410, 420)]]
-enemies = [MortalEntity(MovingBox(Box(pos, ENEMY_SIZE, ENEMY_COLOR), Direction.LEFT, 1, 1), 3, 3) for pos \
+enemies = [Enemy(MovingBox(Box(pos, ENEMY_SIZE, ENEMY_COLOR), Direction.LEFT, 1, 1), 3, 3) for pos \
 	in [(320, 220), (370, 320), (420, 10)]]
 player_stats = PlayerStats(3, 20, 50, 100)
 heal_mana_cost = 10
@@ -205,6 +220,7 @@ while(True):
 	# ------------------------------------
 
 	for e in enemies:
+		e.set_direction_towards(player.box)
 		update_moving_box_position(e.moving_box, True)
 	update_moving_box_position(player, True)
 
