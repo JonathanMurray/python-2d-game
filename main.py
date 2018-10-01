@@ -148,9 +148,10 @@ COLOR_BLACK = (0, 0, 0)
 COLOR_RED = (250, 0, 0)
 COLOR_BLUE = (0, 0, 250)
 BG_COLOR = (200,200,200)
-SCREEN_SIZE = (500,500)
-CAMERA_SIZE = (500, 400)
-GAME_WORLD_SIZE = (600,600)
+SCREEN_SIZE = (700, 600)
+CAMERA_SIZE = (700, 500)
+UI_BOX = Box((0, CAMERA_SIZE[1]), (SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]), (0,0,0))
+GAME_WORLD_SIZE = (1000, 1000)
 GAME_WORLD_BOX = Box((0, 0), GAME_WORLD_SIZE, (0,0,0))
 FOOD_SIZE = (30, 30)
 FOOD_COLOR = (50, 200, 50)
@@ -328,27 +329,29 @@ while(True):
 	pygame.draw.rect(screen, COLOR_BLACK, (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
 
 
-	screen.blit(FONT_LARGE.render("Health", False, COLOR_WHITE), (10, 410))
-	render_stat_bar(screen, 10, 440, 100, 25, player_stats.health, player_stats.max_health, COLOR_RED)
+	screen.blit(FONT_LARGE.render("Health", False, COLOR_WHITE), (UI_BOX.x + 10, UI_BOX.y + 10))
+	render_stat_bar(screen, UI_BOX.x + 10, UI_BOX.y + 40, 100, 25, player_stats.health, player_stats.max_health, COLOR_RED)
 	health_text = str(player_stats.health) + "/" + str(player_stats.max_health)
-	screen.blit(FONT_LARGE.render(health_text, False, COLOR_WHITE), (30, 443))
+	screen.blit(FONT_LARGE.render(health_text, False, COLOR_WHITE), (UI_BOX.x + 30, UI_BOX.y + 43))
 
-	screen.blit(FONT_LARGE.render("Mana", False, COLOR_WHITE), (130, 410))
-	render_stat_bar(screen, 130, 440, 100, 25, player_stats.mana, player_stats.max_mana, COLOR_BLUE)
+	screen.blit(FONT_LARGE.render("Mana", False, COLOR_WHITE), (UI_BOX.x + 130, UI_BOX.y + 10))
+	render_stat_bar(screen, UI_BOX.x + 130, UI_BOX.y + 40, 100, 25, player_stats.mana, player_stats.max_mana, COLOR_BLUE)
 	mana_text = str(player_stats.mana) + "/" + str(player_stats.max_mana)
-	screen.blit(FONT_LARGE.render(mana_text, False, COLOR_WHITE), (150, 443))
+	screen.blit(FONT_LARGE.render(mana_text, False, COLOR_WHITE), (UI_BOX.x + 150, UI_BOX.y + 43))
 
-	screen.blit(FONT_LARGE.render("Potions", False, COLOR_WHITE), (250, 410))
-	render_ui_potion(screen, 250, 439, 27, 27, 1)
-	render_ui_potion(screen, 280, 439, 27, 27, 2)
-	render_ui_potion(screen, 310, 439, 27, 27, 3)
-	render_ui_potion(screen, 340, 439, 27, 27, 4)
-	render_ui_potion(screen, 370, 439, 27, 27, 5)
+	screen.blit(FONT_LARGE.render("Potions", False, COLOR_WHITE), (UI_BOX.x + 250, UI_BOX.y + 10))
+	render_ui_potion(screen, UI_BOX.x + 250, UI_BOX.y + 39, 27, 27, 1)
+	render_ui_potion(screen, UI_BOX.x + 280, UI_BOX.y + 39, 27, 27, 2)
+	render_ui_potion(screen, UI_BOX.x + 310, UI_BOX.y + 39, 27, 27, 3)
+	render_ui_potion(screen, UI_BOX.x + 340, UI_BOX.y + 39, 27, 27, 4)
+	render_ui_potion(screen, UI_BOX.x + 370, UI_BOX.y + 39, 27, 27, 5)
 
 	ui_text = "['A' to heal (" + str(heal_mana_cost) + ")] " + \
 		"['F' to attack (" + str(attack_mana_cost) + ")]"
 	text_surface = FONT_SMALL.render(ui_text, False, COLOR_WHITE)
-	screen.blit(text_surface, (20, 475))
+	screen.blit(text_surface, (UI_BOX.x + 20, UI_BOX.y + 75))
+
+	pygame.draw.rect(screen, COLOR_WHITE, UI_BOX.rect(), 1)
 	
 	pygame.display.update()
 
