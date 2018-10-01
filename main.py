@@ -160,6 +160,13 @@ ENEMY_SPEED = 0.4
 MANA_REGEN = 0.03
 PLAYER_SPEED = 2
 ATTACK_PROJ_SIZE = (35, 35)
+PYGAME_MOVEMENT_KEYS = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
+DIRECTION_BY_PYGAME_MOVEMENT_KEY = {
+	pygame.K_LEFT: Direction.LEFT,
+	pygame.K_RIGHT: Direction.RIGHT,
+	pygame.K_UP: Direction.UP,
+	pygame.K_DOWN: Direction.DOWN
+}
 
 pygame.init()
 pygame.font.init()
@@ -189,6 +196,8 @@ health_potions = {
 	5: True
 }
 
+movement_keys_down = []
+
 while(True):
 
 	# ------------------------------------
@@ -200,14 +209,10 @@ while(True):
 			pygame.quit()
 			sys.exit()
 		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_LEFT:
-				player.set_moving_in_dir(Direction.LEFT)
-			elif event.key == pygame.K_RIGHT:
-				player.set_moving_in_dir(Direction.RIGHT)
-			elif event.key == pygame.K_UP:
-				player.set_moving_in_dir(Direction.UP)
-			elif event.key == pygame.K_DOWN:
-				player.set_moving_in_dir(Direction.DOWN)
+			if event.key in PYGAME_MOVEMENT_KEYS:
+				if event.key in movement_keys_down:
+					movement_keys_down.remove(event.key)
+				movement_keys_down.append(event.key)
 			elif event.key == pygame.K_a:
 				if player_stats.mana >= heal_mana_cost:
 					player_stats.lose_mana(heal_mana_cost)
@@ -230,6 +235,12 @@ while(True):
 			elif event.key == pygame.K_5:
 				try_use_health_potion(5)
 		if event.type == pygame.KEYUP:
+			if event.key in  PYGAME_MOVEMENT_KEYS:
+				movement_keys_down.remove(event.key)
+		if movement_keys_down:
+			last_pressed_movement_key = movement_keys_down[-1]
+			player.set_moving_in_dir(DIRECTION_BY_PYGAME_MOVEMENT_KEY[last_pressed_movement_key])
+		else:
 			player.set_not_moving()
 
 
