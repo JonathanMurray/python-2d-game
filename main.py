@@ -24,20 +24,19 @@ class ScreenArea:
 	def rect(self):
 		return (self.x, self.y, self.w, self.h)
 
-class Box:
-	def __init__(self, pos, size, color):
+class Direction(Enum):
+	LEFT = 1
+	RIGHT = 2
+	UP = 3
+	DOWN = 4
+
+class MovingBox:
+	def __init__(self, pos, size, color, direction=Direction.LEFT, speed=0, max_speed=0):
 		self.x = pos[0]
 		self.y = pos[1]
 		self.w = size[0]
 		self.h = size[1]
 		self.color = color
-
-	def rect(self):
-		return (self.x, self.y, self.w, self.h)
-
-class MovingBox:
-	def __init__(self, box, direction, speed, max_speed):
-		self.box = box
 		self.direction = direction
 		self.speed = speed
 		self.max_speed = max_speed
@@ -57,8 +56,8 @@ class Enemy:
 		self.movement_error_chance = 0.2
 
 	def run_ai(self, box):
-		dx = box.x - self.moving_box.box.x
-		dy = box.y - self.moving_box.box.y
+		dx = box.x - self.moving_box.x
+		dy = box.y - self.moving_box.y
 		if abs(dx) > abs(dy):
 			if dx > 0:
 				direction = Direction.RIGHT
@@ -72,12 +71,6 @@ class Enemy:
 		if random.random() < self.movement_error_chance:
 			direction = random.choice(get_perpendicular_directions(direction))
 		self.moving_box.set_moving_in_dir(direction)
-
-class Direction(Enum):
-	LEFT = 1
-	RIGHT = 2
-	UP = 3
-	DOWN = 4
 
 def get_perpendicular_directions(direction):
 	if direction == direction.LEFT or direction == direction.RIGHT:
@@ -126,18 +119,18 @@ def render_stat_bar(screen, x, y, w, h, stat, max_stat, color):
 
 def update_moving_box_position(moving_box):
 	if moving_box.direction == Direction.LEFT:
-		moving_box.box.x -= moving_box.speed
+		moving_box.x -= moving_box.speed
 	elif moving_box.direction == Direction.RIGHT:
-		moving_box.box.x += moving_box.speed
+		moving_box.x += moving_box.speed
 	elif moving_box.direction == Direction.UP:
-		moving_box.box.y -= moving_box.speed
+		moving_box.y -= moving_box.speed
 	elif moving_box.direction == Direction.DOWN:
-		moving_box.box.y += moving_box.speed
+		moving_box.y += moving_box.speed
 
 def update_moving_box_position_within_game_boundary(moving_box):
 	update_moving_box_position(moving_box)
-	moving_box.box.x = min(max(moving_box.box.x, 0), GAME_WORLD_SIZE[0] - moving_box.box.w)
-	moving_box.box.y = min(max(moving_box.box.y, 0), GAME_WORLD_SIZE[1] - moving_box.box.h)	
+	moving_box.x = min(max(moving_box.x, 0), GAME_WORLD_SIZE[0] - moving_box.w)
+	moving_box.y = min(max(moving_box.y, 0), GAME_WORLD_SIZE[1] - moving_box.h)
 
 def try_use_health_potion(number):
 	if health_potions[number]:
@@ -218,10 +211,10 @@ screen = pygame.display.set_mode(SCREEN_SIZE)
 clock = pygame.time.Clock()
 
 camera_world_area = WorldArea((0,0), CAMERA_SIZE)
-player = MovingBox(Box(player_pos, (50, 50), (250,250,250)), Direction.RIGHT, 0, PLAYER_SPEED)
+player = MovingBox(player_pos, (50, 50), (250,250,250), Direction.RIGHT, 0, PLAYER_SPEED)
 projectiles = []
-food_boxes = [Box(pos, FOOD_SIZE, FOOD_COLOR) for pos in potion_positions]
-enemies = [Enemy(MovingBox(Box(pos, ENEMY_SIZE, ENEMY_COLOR), Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 2, 2) for pos \
+food_boxes = [MovingBox(pos, FOOD_SIZE, FOOD_COLOR) for pos in potion_positions]
+enemies = [Enemy(MovingBox(pos, ENEMY_SIZE, ENEMY_COLOR, Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 2, 2) for pos \
 	in enemy_positions]
 player_stats = PlayerStats(3, 20, 50, 100)
 heal_mana_cost = 10
@@ -261,10 +254,9 @@ while(True):
 			elif event.key == pygame.K_f:
 				if player_stats.mana >= attack_mana_cost:
 					player_stats.lose_mana(attack_mana_cost)
-					proj_box = Box((player.box.x + player.box.w / 2 - ATTACK_PROJ_SIZE[0] / 2, \
-						player.box.y + player.box.h / 2 - ATTACK_PROJ_SIZE[1] / 2), \
-						ATTACK_PROJ_SIZE, COLOR_ATTACK_PROJ)
-					projectiles.append(MovingBox(proj_box, player.direction, 4, 4))
+					proj_pos = (player.x + player.w / 2 - ATTACK_PROJ_SIZE[0] / 2, \
+						player.y + player.h / 2 - ATTACK_PROJ_SIZE[1] / 2)
+					projectiles.append(MovingBox(proj_pos, ATTACK_PROJ_SIZE, COLOR_ATTACK_PROJ, player.direction, 4, 4))
 			elif event.key == pygame.K_1:
 				try_use_health_potion(1)
 			elif event.key == pygame.K_2:
@@ -294,7 +286,7 @@ while(True):
 	if(ticks_since_ai_ran > AI_RUN_INTERVAL):
 		ticks_since_ai_ran = 0
 		for e in enemies:
-			e.run_ai(player.box)
+			e.run_ai(player)
 
 
 	# ------------------------------------
@@ -303,7 +295,7 @@ while(True):
 
 	for e in enemies:
 		# Enemies shouldn't move towards player when they are out of sight
-		if boxes_intersect(e.moving_box.box, camera_world_area):
+		if boxes_intersect(e.moving_box, camera_world_area):
 			update_moving_box_position_within_game_boundary(e.moving_box)
 	update_moving_box_position_within_game_boundary(player)
 
@@ -317,20 +309,20 @@ while(True):
 	enemies_to_delete = []
 	for projectile in projectiles:
 		update_moving_box_position(projectile)
-		if not boxes_intersect(projectile.box, ENTIRE_WORLD_AREA):
+		if not boxes_intersect(projectile, ENTIRE_WORLD_AREA):
 			projectiles_to_delete.append(projectile)
 	for box in food_boxes:
-		if boxes_intersect(player.box, box):
+		if boxes_intersect(player, box):
 			did_pick_up = try_pick_up_potion()
 			if did_pick_up:
 				food_boxes_to_delete.append(box)
 	for enemy in enemies:
-		box = enemy.moving_box.box
-		if boxes_intersect(player.box, box):
+		box = enemy.moving_box
+		if boxes_intersect(player, box):
 			enemies_to_delete.append(enemy)
 			player_stats.lose_health(2)
 		for projectile in projectiles:
-			if boxes_intersect(box, projectile.box):
+			if boxes_intersect(box, projectile):
 				enemy.health -= 1
 				if enemy.health <= 0:
 					enemies_to_delete.append(enemy)
@@ -351,8 +343,8 @@ while(True):
 	#         UPDATE CAMERA POSITION
 	# ------------------------------------
 
-	camera_world_area.x = min(max(player.box.x - CAMERA_SIZE[0] / 2, 0), GAME_WORLD_SIZE[0] - CAMERA_SIZE[0]) 
-	camera_world_area.y = min(max(player.box.y - CAMERA_SIZE[1] / 2, 0), GAME_WORLD_SIZE[1] - CAMERA_SIZE[1])
+	camera_world_area.x = min(max(player.x - CAMERA_SIZE[0] / 2, 0), GAME_WORLD_SIZE[0] - CAMERA_SIZE[0]) 
+	camera_world_area.y = min(max(player.y - CAMERA_SIZE[1] / 2, 0), GAME_WORLD_SIZE[1] - CAMERA_SIZE[1])
 
 
 	# ------------------------------------
@@ -360,15 +352,15 @@ while(True):
 	# ------------------------------------
 
 	screen.fill(BG_COLOR)
-	for box in food_boxes + [e.moving_box.box for e in enemies] + [p.box for p in projectiles]:
+	for box in food_boxes + [e.moving_box for e in enemies] + [p for p in projectiles]:
 		render_box(screen, box, camera_world_area)
 
-	render_box(screen, player.box, camera_world_area)
-	render_circle(screen, player.box, camera_world_area)
+	render_box(screen, player, camera_world_area)
+	render_circle(screen, player, camera_world_area)
 
 	for enemy in enemies:
-		render_stat_bar(screen, enemy.moving_box.box.x - camera_world_area.x + 1, enemy.moving_box.box.y - camera_world_area.y - 10, \
-			enemy.moving_box.box.w - 2, 5, enemy.health, enemy.max_health, COLOR_RED)
+		render_stat_bar(screen, enemy.moving_box.x - camera_world_area.x + 1, enemy.moving_box.y - camera_world_area.y - 10, \
+			enemy.moving_box.w - 2, 5, enemy.health, enemy.max_health, COLOR_RED)
 
 	pygame.draw.rect(screen, COLOR_BLACK, (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
 	pygame.draw.rect(screen, COLOR_BLACK, (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
