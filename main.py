@@ -178,6 +178,10 @@ def render_ui_potion(x_in_ui, y_in_ui, w, h, potion_number):
     SCREEN.blit(FONT_LARGE.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + 5))
 
 
+def render_ui_text(font, text, x, y):
+    SCREEN.blit(font.render(text, False, COLOR_WHITE), (UI_SCREEN_AREA.x + x, UI_SCREEN_AREA.y + y))
+
+
 def ranges_overlap(a_min, a_max, b_min, b_max):
     return (a_min <= b_max) and (b_min <= a_max)
 
@@ -408,18 +412,18 @@ while True:
     pygame.draw.rect(SCREEN, COLOR_BLACK, (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
     pygame.draw.rect(SCREEN, COLOR_BLACK, (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
 
-    SCREEN.blit(FONT_LARGE.render("Health", False, COLOR_WHITE), (UI_SCREEN_AREA.x + 10, UI_SCREEN_AREA.y + 10))
+    render_ui_text(FONT_LARGE, "Health", 10, 10)
     render_stat_bar_in_ui(10, 40, 100, 25, game_state.player_stats.health, game_state.player_stats.max_health,
                           COLOR_RED)
     health_text = str(game_state.player_stats.health) + "/" + str(game_state.player_stats.max_health)
-    SCREEN.blit(FONT_LARGE.render(health_text, False, COLOR_WHITE), (UI_SCREEN_AREA.x + 30, UI_SCREEN_AREA.y + 43))
+    render_ui_text(FONT_LARGE, health_text, 30, 43)
 
-    SCREEN.blit(FONT_LARGE.render("Mana", False, COLOR_WHITE), (UI_SCREEN_AREA.x + 130, UI_SCREEN_AREA.y + 10))
+    render_ui_text(FONT_LARGE, "Mana", 130, 10)
     render_stat_bar_in_ui(130, 40, 100, 25, game_state.player_stats.mana, game_state.player_stats.max_mana, COLOR_BLUE)
     mana_text = str(game_state.player_stats.mana) + "/" + str(game_state.player_stats.max_mana)
-    SCREEN.blit(FONT_LARGE.render(mana_text, False, COLOR_WHITE), (UI_SCREEN_AREA.x + 150, UI_SCREEN_AREA.y + 43))
+    render_ui_text(FONT_LARGE, mana_text, 150, 43)
 
-    SCREEN.blit(FONT_LARGE.render("Potions", False, COLOR_WHITE), (UI_SCREEN_AREA.x + 250, UI_SCREEN_AREA.y + 10))
+    render_ui_text(FONT_LARGE, "Potions", 250, 10)
     render_ui_potion(250, 39, 27, 27, 1)
     render_ui_potion(280, 39, 27, 27, 2)
     render_ui_potion(310, 39, 27, 27, 3)
@@ -428,8 +432,7 @@ while True:
 
     ui_text = "['A' to heal (" + str(HEAL_ABILITY_MANA_COST) + ")] " + \
               "['F' to attack (" + str(ATTACK_ABILITY_MANA_COST) + ")]"
-    text_surface = FONT_SMALL.render(ui_text, False, COLOR_WHITE)
-    SCREEN.blit(text_surface, (UI_SCREEN_AREA.x + 20, UI_SCREEN_AREA.y + 75))
+    render_ui_text(FONT_SMALL, ui_text, 20, 75)
 
     pygame.draw.rect(SCREEN, COLOR_WHITE, UI_SCREEN_AREA.rect(), 1)
     pygame.display.update()
