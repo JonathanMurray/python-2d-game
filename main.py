@@ -108,7 +108,7 @@ def render_stat_bar(screen, x, y, w, h, stat, max_stat, color):
 	pygame.draw.rect(screen, COLOR_WHITE, (x - 2, y - 2, w + 3, h + 3), 2)
 	pygame.draw.rect(screen, color, (x, y, w * stat / max_stat, h))
 
-def update_moving_box_position(moving_box, collide_with_game_boundary):
+def update_moving_box_position(moving_box):
 	if moving_box.direction == Direction.LEFT:
 		moving_box.box.x -= moving_box.speed
 	elif moving_box.direction == Direction.RIGHT:
@@ -117,9 +117,11 @@ def update_moving_box_position(moving_box, collide_with_game_boundary):
 		moving_box.box.y -= moving_box.speed
 	elif moving_box.direction == Direction.DOWN:
 		moving_box.box.y += moving_box.speed
-	if collide_with_game_boundary:
-		moving_box.box.x = min(max(moving_box.box.x, 0), GAME_WORLD_SIZE[0] - moving_box.box.w)
-		moving_box.box.y = min(max(moving_box.box.y, 0), GAME_WORLD_SIZE[1] - moving_box.box.h)
+
+def update_moving_box_position_within_game_boundary(moving_box):
+	update_moving_box_position(moving_box)
+	moving_box.box.x = min(max(moving_box.box.x, 0), GAME_WORLD_SIZE[0] - moving_box.box.w)
+	moving_box.box.y = min(max(moving_box.box.y, 0), GAME_WORLD_SIZE[1] - moving_box.box.h)	
 
 def try_use_health_potion(number):
 	if health_potions[number]:
@@ -280,8 +282,8 @@ while(True):
 	for e in enemies:
 		if should_run_enemy_ai:
 			e.run_ai(player.box)
-		update_moving_box_position(e.moving_box, True)
-	update_moving_box_position(player, True)
+		update_moving_box_position_within_game_boundary(e.moving_box)
+	update_moving_box_position_within_game_boundary(player)
 
 
 	# ------------------------------------
@@ -292,7 +294,7 @@ while(True):
 	food_boxes_to_delete = []
 	enemies_to_delete = []
 	for projectile in projectiles:
-		update_moving_box_position(projectile, False)
+		update_moving_box_position(projectile)
 		if not boxes_intersect(projectile.box, GAME_WORLD_BOX):
 			projectiles_to_delete.append(projectile)
 	for box in food_boxes:
