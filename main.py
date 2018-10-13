@@ -269,19 +269,22 @@ while(True):
 
 
 	# ------------------------------------
-	#         UPDATE MOVING ENTITIES
+	#         RUN ENEMY AI
 	# ------------------------------------
 
 	clock.tick()
 	ticks_since_ai_ran += clock.get_time()
 	if(ticks_since_ai_ran > AI_RUN_INTERVAL):
 		ticks_since_ai_ran = 0
-		should_run_enemy_ai = True
-	else:
-		should_run_enemy_ai = False
-	for e in enemies:
-		if should_run_enemy_ai:
+		for e in enemies:
 			e.run_ai(player.box)
+
+
+	# ------------------------------------
+	#         UPDATE MOVING ENTITIES
+	# ------------------------------------
+
+	for e in enemies:
 		update_moving_box_position_within_game_boundary(e.moving_box)
 	update_moving_box_position_within_game_boundary(player)
 
