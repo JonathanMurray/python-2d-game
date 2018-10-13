@@ -229,6 +229,14 @@ def render_ui_text(font, text, x, y):
     SCREEN.blit(font.render(text, False, COLOR_WHITE), (UI_SCREEN_AREA.x + x, UI_SCREEN_AREA.y + y))
 
 
+def render_rect(color, rect, width):
+    pygame.draw.rect(SCREEN, color, rect, width)
+
+
+def render_rect_filled(color, rect):
+    pygame.draw.rect(SCREEN, color, rect)
+
+
 def ranges_overlap(a_min, a_max, b_min, b_max):
     return (a_min <= b_max) and (b_min <= a_max)
 
@@ -421,8 +429,8 @@ while True:
     for enemy in game_state.enemies:
         render_stat_bar_for_entity(enemy.world_entity, 5, enemy.health, enemy.max_health, COLOR_RED)
 
-    pygame.draw.rect(SCREEN, COLOR_BLACK, (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
-    pygame.draw.rect(SCREEN, COLOR_BLACK, (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
+    render_rect(COLOR_BLACK, (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
+    render_rect_filled(COLOR_BLACK, (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
 
     render_ui_text(FONT_LARGE, "Health", 10, 10)
     render_stat_bar_in_ui(10, 40, 100, 25, game_state.player_stats.health, game_state.player_stats.max_health,
@@ -446,5 +454,5 @@ while True:
               "['F' to attack (" + str(ATTACK_ABILITY_MANA_COST) + ")]"
     render_ui_text(FONT_SMALL, ui_text, 20, 75)
 
-    pygame.draw.rect(SCREEN, COLOR_WHITE, UI_SCREEN_AREA.rect(), 1)
+    render_rect(COLOR_WHITE, UI_SCREEN_AREA.rect(), 1)
     pygame.display.update()
