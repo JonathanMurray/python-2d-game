@@ -141,6 +141,11 @@ class GameState:
             5: True
         }
 
+    def remove_entities(self, entities_to_remove):
+        self.projectile_entities = [p for p in self.projectile_entities if p not in entities_to_remove]
+        self.potion_entities = [p for p in self.potion_entities if p not in entities_to_remove]
+        self.enemies = [e for e in self.enemies if e not in entities_to_remove]
+
 
 def render_entity(entity):
     rect = (entity.x - game_state.camera_world_area.x, entity.y - game_state.camera_world_area.y, entity.w, entity.h)
@@ -353,31 +358,27 @@ while True:
     #         HANDLE COLLISIONS
     # ------------------------------------
 
-    projectiles_to_delete = []
-    potions_to_delete = []
-    enemies_to_delete = []
+    entities_to_remove = []
     for projectile in game_state.projectile_entities:
         projectile.update_position_according_to_dir_and_speed()
         if not boxes_intersect(projectile, ENTIRE_WORLD_AREA):
-            projectiles_to_delete.append(projectile)
+            entities_to_remove.append(projectile)
     for potion in game_state.potion_entities:
         if boxes_intersect(game_state.player_entity, potion):
             did_pick_up = try_pick_up_potion()
             if did_pick_up:
-                potions_to_delete.append(potion)
+                entities_to_remove.append(potion)
     for enemy in game_state.enemies:
         if boxes_intersect(game_state.player_entity, enemy.world_entity):
-            enemies_to_delete.append(enemy)
+            entities_to_remove.append(enemy)
             game_state.player_stats.lose_health(2)
         for projectile in game_state.projectile_entities:
             if boxes_intersect(enemy.world_entity, projectile):
                 enemy.health -= 1
                 if enemy.health <= 0:
-                    enemies_to_delete.append(enemy)
-                projectiles_to_delete.append(projectile)
-    game_state.projectile_entities = [p for p in game_state.projectile_entities if p not in projectiles_to_delete]
-    game_state.potion_entities = [p for p in game_state.potion_entities if p not in potions_to_delete]
-    game_state.enemies = [e for e in game_state.enemies if e not in enemies_to_delete]
+                    entities_to_remove.append(enemy)
+                entities_to_remove.append(projectile)
+    game_state.remove_entities(entities_to_remove)
 
     # ------------------------------------
     #         REGEN MANA
