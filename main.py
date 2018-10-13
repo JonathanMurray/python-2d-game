@@ -353,6 +353,8 @@ while True:
         if boxes_intersect(e.world_entity, game_state.camera_world_area):
             update_world_entity_position_within_game_boundary(e.world_entity)
     update_world_entity_position_within_game_boundary(game_state.player_entity)
+    for projectile in game_state.projectile_entities:
+        projectile.update_position_according_to_dir_and_speed()
 
     # ------------------------------------
     #         HANDLE COLLISIONS
@@ -360,7 +362,6 @@ while True:
 
     entities_to_remove = []
     for projectile in game_state.projectile_entities:
-        projectile.update_position_according_to_dir_and_speed()
         if not boxes_intersect(projectile, ENTIRE_WORLD_AREA):
             entities_to_remove.append(projectile)
     for potion in game_state.potion_entities:
