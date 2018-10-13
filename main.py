@@ -108,11 +108,13 @@ class PlayerStats:
 
 
 def render_entity(screen, entity, camera_world_area):
-    pygame.draw.rect(screen, entity.color, (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h))
+    pygame.draw.rect(screen, entity.color,
+                     (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h))
 
 
 def render_circle(screen, entity, camera_world_area):
-    pygame.draw.ellipse(screen, COLOR_BLUE, (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h))
+    pygame.draw.ellipse(screen, COLOR_BLUE,
+                        (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h))
 
 
 def ranges_overlap(a_min, a_max, b_min, b_max):
@@ -121,7 +123,7 @@ def ranges_overlap(a_min, a_max, b_min, b_max):
 
 def boxes_intersect(r1, r2):
     return ranges_overlap(r1.x, r1.x + r1.w, r2.x, r2.x + r2.w) \
-        and ranges_overlap(r1.y, r1.y + r1.h, r2.y, r2.y + r2.h)
+           and ranges_overlap(r1.y, r1.y + r1.h, r2.y, r2.y + r2.h)
 
 
 def render_stat_bar(screen, x, y, w, h, stat, max_stat, color):
@@ -221,7 +223,6 @@ with open("map.txt") as map_file:
             col_index += 1
         row_index += 1
 
-
 pygame.init()
 pygame.font.init()
 FONT_LARGE = pygame.font.SysFont('Arial', 30)
@@ -233,8 +234,8 @@ camera_world_area = WorldArea((0, 0), CAMERA_SIZE)
 player_entity = WorldEntity(player_pos, (50, 50), (250, 250, 250), Direction.RIGHT, 0, PLAYER_SPEED)
 projectile_entities = []
 potion_entities = [WorldEntity(pos, POTION_ENTITY_SIZE, POTION_ENTITY_COLOR) for pos in potion_positions]
-enemies = [Enemy(WorldEntity(pos, ENEMY_SIZE, ENEMY_COLOR, Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 2, 2) for pos \
-           in enemy_positions]
+enemies = [Enemy(WorldEntity(pos, ENEMY_SIZE, ENEMY_COLOR, Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 2, 2)
+           for pos in enemy_positions]
 player_stats = PlayerStats(3, 20, 50, 100)
 heal_mana_cost = 10
 attack_mana_cost = 5
@@ -275,7 +276,8 @@ while True:
                     player_stats.lose_mana(attack_mana_cost)
                     proj_pos = (player_entity.x + player_entity.w / 2 - ATTACK_PROJECTILE_SIZE[0] / 2,
                                 player_entity.y + player_entity.h / 2 - ATTACK_PROJECTILE_SIZE[1] / 2)
-                    projectile_entities.append(WorldEntity(proj_pos, ATTACK_PROJECTILE_SIZE, COLOR_ATTACK_PROJECTILE, player_entity.direction, 4, 4))
+                    projectile_entities.append(WorldEntity(proj_pos, ATTACK_PROJECTILE_SIZE, COLOR_ATTACK_PROJECTILE,
+                                                           player_entity.direction, 4, 4))
             elif event.key == pygame.K_1:
                 try_use_health_potion(1)
             elif event.key == pygame.K_2:
@@ -371,19 +373,22 @@ while True:
     render_circle(screen, player_entity, camera_world_area)
 
     for enemy in enemies:
-        render_stat_bar(screen, enemy.world_entity.x - camera_world_area.x + 1, enemy.world_entity.y - camera_world_area.y - 10,
+        render_stat_bar(screen, enemy.world_entity.x - camera_world_area.x + 1,
+                        enemy.world_entity.y - camera_world_area.y - 10,
                         enemy.world_entity.w - 2, 5, enemy.health, enemy.max_health, COLOR_RED)
 
     pygame.draw.rect(screen, COLOR_BLACK, (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
     pygame.draw.rect(screen, COLOR_BLACK, (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
 
     screen.blit(FONT_LARGE.render("Health", False, COLOR_WHITE), (UI_SCREEN_AREA.x + 10, UI_SCREEN_AREA.y + 10))
-    render_stat_bar(screen, UI_SCREEN_AREA.x + 10, UI_SCREEN_AREA.y + 40, 100, 25, player_stats.health, player_stats.max_health, COLOR_RED)
+    render_stat_bar(screen, UI_SCREEN_AREA.x + 10, UI_SCREEN_AREA.y + 40, 100, 25, player_stats.health,
+                    player_stats.max_health, COLOR_RED)
     health_text = str(player_stats.health) + "/" + str(player_stats.max_health)
     screen.blit(FONT_LARGE.render(health_text, False, COLOR_WHITE), (UI_SCREEN_AREA.x + 30, UI_SCREEN_AREA.y + 43))
 
     screen.blit(FONT_LARGE.render("Mana", False, COLOR_WHITE), (UI_SCREEN_AREA.x + 130, UI_SCREEN_AREA.y + 10))
-    render_stat_bar(screen, UI_SCREEN_AREA.x + 130, UI_SCREEN_AREA.y + 40, 100, 25, player_stats.mana, player_stats.max_mana, COLOR_BLUE)
+    render_stat_bar(screen, UI_SCREEN_AREA.x + 130, UI_SCREEN_AREA.y + 40, 100, 25, player_stats.mana,
+                    player_stats.max_mana, COLOR_BLUE)
     mana_text = str(player_stats.mana) + "/" + str(player_stats.max_mana)
     screen.blit(FONT_LARGE.render(mana_text, False, COLOR_WHITE), (UI_SCREEN_AREA.x + 150, UI_SCREEN_AREA.y + 43))
 
@@ -395,10 +400,9 @@ while True:
     render_ui_potion(screen, UI_SCREEN_AREA.x + 370, UI_SCREEN_AREA.y + 39, 27, 27, 5)
 
     ui_text = "['A' to heal (" + str(heal_mana_cost) + ")] " + \
-        "['F' to attack (" + str(attack_mana_cost) + ")]"
+              "['F' to attack (" + str(attack_mana_cost) + ")]"
     text_surface = FONT_SMALL.render(ui_text, False, COLOR_WHITE)
     screen.blit(text_surface, (UI_SCREEN_AREA.x + 20, UI_SCREEN_AREA.y + 75))
 
     pygame.draw.rect(screen, COLOR_WHITE, UI_SCREEN_AREA.rect(), 1)
     pygame.display.update()
-
