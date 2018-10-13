@@ -91,11 +91,11 @@ class PlayerStats:
 		self.mana_float -= amount
 		self.mana = int(math.floor(self.mana_float))
 
-def render_box(screen, box, camera_pos):
-	pygame.draw.rect(screen, box.color, (box.x - camera_pos[0], box.y - camera_pos[1], box.w, box.h))
+def render_box(screen, box, camera_box):
+	pygame.draw.rect(screen, box.color, (box.x - camera_box.x, box.y - camera_box.y, box.w, box.h))
 
-def render_circle(screen, box, camera_pos):
-	pygame.draw.ellipse(screen, COLOR_BLUE, (box.x - camera_pos[0], box.y - camera_pos[1], box.w, box.h))
+def render_circle(screen, box, camera_box):
+	pygame.draw.ellipse(screen, COLOR_BLUE, (box.x - camera_box.x, box.y - camera_box.y, box.w, box.h))
 
 def ranges_overlap(a_min, a_max, b_min, b_max):
     return (a_min <= b_max) and (b_min <= a_max)
@@ -153,6 +153,7 @@ BG_COLOR = (200,200,200)
 SCREEN_SIZE = (700, 600)
 CAMERA_SIZE = (700, 500)
 UI_BOX = Box((0, CAMERA_SIZE[1]), (SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]), (0,0,0)) # Screen coordinates
+
 GAME_WORLD_SIZE = (1000, 1000)
 GAME_WORLD_BOX = Box((0, 0), GAME_WORLD_SIZE, (0,0,0))
 FOOD_SIZE = (30, 30)
@@ -200,7 +201,7 @@ FONT_SMALL = pygame.font.Font(None, 25)
 screen = pygame.display.set_mode(SCREEN_SIZE)
 clock = pygame.time.Clock()
 
-camera_pos = (0, 0)
+camera_box = Box((0,0), CAMERA_SIZE, (0,0,0))
 player = MovingBox(Box(player_pos, (50, 50), (250,250,250)), Direction.RIGHT, 0, PLAYER_SPEED)
 projectiles = []
 food_boxes = [Box(pos, FOOD_SIZE, FOOD_COLOR) for pos in potion_positions]
@@ -332,8 +333,8 @@ while(True):
 	#         UPDATE CAMERA POSITION
 	# ------------------------------------
 
-	camera_pos = (min(max(player.box.x - CAMERA_SIZE[0] / 2, 0), GAME_WORLD_SIZE[0] - CAMERA_SIZE[0]), \
-		min(max(player.box.y - CAMERA_SIZE[1] / 2, 0), GAME_WORLD_SIZE[1] - CAMERA_SIZE[1]))
+	camera_box.x = min(max(player.box.x - CAMERA_SIZE[0] / 2, 0), GAME_WORLD_SIZE[0] - CAMERA_SIZE[0]) 
+	camera_box.y = min(max(player.box.y - CAMERA_SIZE[1] / 2, 0), GAME_WORLD_SIZE[1] - CAMERA_SIZE[1])
 
 
 	# ------------------------------------
@@ -342,13 +343,13 @@ while(True):
 
 	screen.fill(BG_COLOR)
 	for box in food_boxes + [e.moving_box.box for e in enemies] + [p.box for p in projectiles]:
-		render_box(screen, box, camera_pos)
+		render_box(screen, box, camera_box)
 
-	render_box(screen, player.box, camera_pos)
-	render_circle(screen, player.box, camera_pos)
+	render_box(screen, player.box, camera_box)
+	render_circle(screen, player.box, camera_box)
 
 	for enemy in enemies:
-		render_stat_bar(screen, enemy.moving_box.box.x - camera_pos[0] + 1, enemy.moving_box.box.y - camera_pos[1] - 10, \
+		render_stat_bar(screen, enemy.moving_box.box.x - camera_box.x + 1, enemy.moving_box.box.y - camera_box.y - 10, \
 			enemy.moving_box.box.w - 2, 5, enemy.health, enemy.max_health, COLOR_RED)
 
 	pygame.draw.rect(screen, COLOR_BLACK, (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
