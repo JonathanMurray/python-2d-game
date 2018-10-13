@@ -51,6 +51,16 @@ class WorldEntity:
     def set_not_moving(self):
         self.speed = 0
 
+    def update_position_according_to_dir_and_speed(self):
+        if self.direction == Direction.LEFT:
+            self.x -= self.speed
+        elif self.direction == Direction.RIGHT:
+            self.x += self.speed
+        elif self.direction == Direction.UP:
+            self.y -= self.speed
+        elif self.direction == Direction.DOWN:
+            self.y += self.speed
+
 
 class Enemy:
     def __init__(self, world_entity, health, max_health):
@@ -117,6 +127,18 @@ def render_circle(screen, entity, camera_world_area):
                         (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h))
 
 
+def render_stat_bar(screen, x, y, w, h, stat, max_stat, color):
+    pygame.draw.rect(screen, COLOR_WHITE, (x - 2, y - 2, w + 3, h + 3), 2)
+    pygame.draw.rect(screen, color, (x, y, w * stat / max_stat, h))
+
+
+def render_ui_potion(screen, x, y, w, h, potion_number):
+    pygame.draw.rect(screen, (100, 100, 100), (x, y, w, h), 3)
+    if health_potion_slots[potion_number]:
+        pygame.draw.rect(screen, (250, 50, 50), (x, y, w, h))
+    screen.blit(FONT_LARGE.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + 5))
+
+
 def ranges_overlap(a_min, a_max, b_min, b_max):
     return (a_min <= b_max) and (b_min <= a_max)
 
@@ -126,47 +148,24 @@ def boxes_intersect(r1, r2):
            and ranges_overlap(r1.y, r1.y + r1.h, r2.y, r2.y + r2.h)
 
 
-def render_stat_bar(screen, x, y, w, h, stat, max_stat, color):
-    pygame.draw.rect(screen, COLOR_WHITE, (x - 2, y - 2, w + 3, h + 3), 2)
-    pygame.draw.rect(screen, color, (x, y, w * stat / max_stat, h))
-
-
-def update_world_entity_position(world_entity):
-    if world_entity.direction == Direction.LEFT:
-        world_entity.x -= world_entity.speed
-    elif world_entity.direction == Direction.RIGHT:
-        world_entity.x += world_entity.speed
-    elif world_entity.direction == Direction.UP:
-        world_entity.y -= world_entity.speed
-    elif world_entity.direction == Direction.DOWN:
-        world_entity.y += world_entity.speed
-
-
 def update_world_entity_position_within_game_boundary(world_entity):
-    update_world_entity_position(world_entity)
+    world_entity.update_position_according_to_dir_and_speed()
     world_entity.x = min(max(world_entity.x, 0), GAME_WORLD_SIZE[0] - world_entity.w)
     world_entity.y = min(max(world_entity.y, 0), GAME_WORLD_SIZE[1] - world_entity.h)
 
 
 def try_use_health_potion(number):
-    if health_potions[number]:
-        health_potions[number] = False
+    if health_potion_slots[number]:
+        health_potion_slots[number] = False
         player_stats.gain_health(10)
-
-
-def render_ui_potion(screen, x, y, w, h, potion_number):
-    pygame.draw.rect(screen, (100, 100, 100), (x, y, w, h), 3)
-    if health_potions[potion_number]:
-        pygame.draw.rect(screen, (250, 50, 50), (x, y, w, h))
-    screen.blit(FONT_LARGE.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + 5))
 
 
 # Returns whether or not potion was picked up (not picked up if no space for it)
 def try_pick_up_potion():
-    empty_slots = [slot for slot in health_potions if not health_potions[slot]]
+    empty_slots = [slot for slot in health_potion_slots if not health_potion_slots[slot]]
     if len(empty_slots) > 0:
         slot = empty_slots[0]
-        health_potions[slot] = True
+        health_potion_slots[slot] = True
         return True
     else:
         return False
@@ -244,16 +243,16 @@ potion_entities = [WorldEntity(pos, POTION_ENTITY_SIZE, POTION_ENTITY_COLOR) for
 enemies = [Enemy(WorldEntity(pos, ENEMY_SIZE, ENEMY_COLOR, Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 2, 2)
            for pos in enemy_positions]
 player_stats = PlayerStats(3, 20, 50, 100)
-ticks_since_ai_ran = 0
-AI_RUN_INTERVAL = 750
-
-health_potions = {
+health_potion_slots = {
     1: True,
     2: False,
     3: True,
     4: True,
     5: True
 }
+
+ticks_since_ai_ran = 0
+AI_RUN_INTERVAL = 750
 
 movement_keys_down = []
 
@@ -332,7 +331,7 @@ while True:
     potions_to_delete = []
     enemies_to_delete = []
     for projectile in projectile_entities:
-        update_world_entity_position(projectile)
+        projectile.update_position_according_to_dir_and_speed()
         if not boxes_intersect(projectile, ENTIRE_WORLD_AREA):
             projectiles_to_delete.append(projectile)
     for potion in potion_entities:
