@@ -6,8 +6,6 @@ import sys
 from enum import Enum
 import random
 
-# TODO: Rename variables -> world_entity instead of box
-
 
 class WorldArea:
     def __init__(self, pos, size):
@@ -55,15 +53,15 @@ class WorldEntity:
 
 
 class Enemy:
-    def __init__(self, moving_box, health, max_health):
-        self.moving_box = moving_box
+    def __init__(self, world_entity, health, max_health):
+        self.world_entity = world_entity
         self.health = health
         self.max_health = max_health
         self.movement_error_chance = 0.2
 
-    def run_ai(self, box):
-        dx = box.x - self.moving_box.x
-        dy = box.y - self.moving_box.y
+    def run_ai_with_target(self, target_entity):
+        dx = target_entity.x - self.world_entity.x
+        dy = target_entity.y - self.world_entity.y
         if abs(dx) > abs(dy):
             if dx > 0:
                 direction = Direction.RIGHT
@@ -76,7 +74,7 @@ class Enemy:
                 direction = Direction.DOWN
         if random.random() < self.movement_error_chance:
             direction = random.choice(get_perpendicular_directions(direction))
-        self.moving_box.set_moving_in_dir(direction)
+        self.world_entity.set_moving_in_dir(direction)
 
 
 def get_perpendicular_directions(direction):
@@ -91,7 +89,7 @@ class PlayerStats:
         self.health = health
         self.max_health = max_health
         self.mana = mana
-        self.mana_float = mana
+        self._mana_float = mana
         self.max_mana = max_mana
 
     def gain_health(self, amount):
@@ -101,20 +99,20 @@ class PlayerStats:
         self.health -= amount
 
     def gain_mana(self, amount):
-        self.mana_float = min(self.mana_float + amount, self.max_mana)
-        self.mana = int(math.floor(self.mana_float))
+        self._mana_float = min(self._mana_float + amount, self.max_mana)
+        self.mana = int(math.floor(self._mana_float))
 
     def lose_mana(self, amount):
-        self.mana_float -= amount
-        self.mana = int(math.floor(self.mana_float))
+        self._mana_float -= amount
+        self.mana = int(math.floor(self._mana_float))
 
 
-def render_box(screen, box, camera_world_area):
-    pygame.draw.rect(screen, box.color, (box.x - camera_world_area.x, box.y - camera_world_area.y, box.w, box.h))
+def render_entity(screen, entity, camera_world_area):
+    pygame.draw.rect(screen, entity.color, (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h))
 
 
-def render_circle(screen, box, camera_world_area):
-    pygame.draw.ellipse(screen, COLOR_BLUE, (box.x - camera_world_area.x, box.y - camera_world_area.y, box.w, box.h))
+def render_circle(screen, entity, camera_world_area):
+    pygame.draw.ellipse(screen, COLOR_BLUE, (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h))
 
 
 def ranges_overlap(a_min, a_max, b_min, b_max):
@@ -131,21 +129,21 @@ def render_stat_bar(screen, x, y, w, h, stat, max_stat, color):
     pygame.draw.rect(screen, color, (x, y, w * stat / max_stat, h))
 
 
-def update_moving_box_position(moving_box):
-    if moving_box.direction == Direction.LEFT:
-        moving_box.x -= moving_box.speed
-    elif moving_box.direction == Direction.RIGHT:
-        moving_box.x += moving_box.speed
-    elif moving_box.direction == Direction.UP:
-        moving_box.y -= moving_box.speed
-    elif moving_box.direction == Direction.DOWN:
-        moving_box.y += moving_box.speed
+def update_world_entity_position(world_entity):
+    if world_entity.direction == Direction.LEFT:
+        world_entity.x -= world_entity.speed
+    elif world_entity.direction == Direction.RIGHT:
+        world_entity.x += world_entity.speed
+    elif world_entity.direction == Direction.UP:
+        world_entity.y -= world_entity.speed
+    elif world_entity.direction == Direction.DOWN:
+        world_entity.y += world_entity.speed
 
 
-def update_moving_box_position_within_game_boundary(moving_box):
-    update_moving_box_position(moving_box)
-    moving_box.x = min(max(moving_box.x, 0), GAME_WORLD_SIZE[0] - moving_box.w)
-    moving_box.y = min(max(moving_box.y, 0), GAME_WORLD_SIZE[1] - moving_box.h)
+def update_world_entity_position_within_game_boundary(world_entity):
+    update_world_entity_position(world_entity)
+    world_entity.x = min(max(world_entity.x, 0), GAME_WORLD_SIZE[0] - world_entity.w)
+    world_entity.y = min(max(world_entity.y, 0), GAME_WORLD_SIZE[1] - world_entity.h)
 
 
 def try_use_health_potion(number):
@@ -172,26 +170,27 @@ def try_pick_up_potion():
         return False
 
 
-COLOR_ATTACK_PROJ = (200, 5, 200)
+COLOR_ATTACK_PROJECTILE = (200, 5, 200)
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
 COLOR_RED = (250, 0, 0)
 COLOR_BLUE = (0, 0, 250)
-BG_COLOR = (200,200,200)
+COLOR_BACKGROUND = (200, 200, 200)
+
 SCREEN_SIZE = (700, 600)
 CAMERA_SIZE = (700, 500)
 UI_SCREEN_AREA = ScreenArea((0, CAMERA_SIZE[1]), (SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
-
 GAME_WORLD_SIZE = (1000, 1000)
 ENTIRE_WORLD_AREA = WorldArea((0, 0), GAME_WORLD_SIZE)
-FOOD_SIZE = (30, 30)
-FOOD_COLOR = (50, 200, 50)
+
+POTION_ENTITY_SIZE = (30, 30)
+POTION_ENTITY_COLOR = (50, 200, 50)
 ENEMY_SIZE = (30, 30)
 ENEMY_COLOR = COLOR_RED
 ENEMY_SPEED = 0.4
-MANA_REGEN = 0.03
+PLAYER_MANA_REGEN = 0.03
 PLAYER_SPEED = 2
-ATTACK_PROJ_SIZE = (35, 35)
+ATTACK_PROJECTILE_SIZE = (35, 35)
 PYGAME_MOVEMENT_KEYS = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
 DIRECTION_BY_PYGAME_MOVEMENT_KEY = {
     pygame.K_LEFT: Direction.LEFT,
@@ -230,10 +229,10 @@ FONT_SMALL = pygame.font.Font(None, 25)
 screen = pygame.display.set_mode(SCREEN_SIZE)
 clock = pygame.time.Clock()
 
-camera_world_area = WorldArea((0,0), CAMERA_SIZE)
-player = WorldEntity(player_pos, (50, 50), (250,250,250), Direction.RIGHT, 0, PLAYER_SPEED)
-projectiles = []
-food_boxes = [WorldEntity(pos, FOOD_SIZE, FOOD_COLOR) for pos in potion_positions]
+camera_world_area = WorldArea((0, 0), CAMERA_SIZE)
+player_entity = WorldEntity(player_pos, (50, 50), (250, 250, 250), Direction.RIGHT, 0, PLAYER_SPEED)
+projectile_entities = []
+potion_entities = [WorldEntity(pos, POTION_ENTITY_SIZE, POTION_ENTITY_COLOR) for pos in potion_positions]
 enemies = [Enemy(WorldEntity(pos, ENEMY_SIZE, ENEMY_COLOR, Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 2, 2) for pos \
            in enemy_positions]
 player_stats = PlayerStats(3, 20, 50, 100)
@@ -274,9 +273,9 @@ while True:
             elif event.key == pygame.K_f:
                 if player_stats.mana >= attack_mana_cost:
                     player_stats.lose_mana(attack_mana_cost)
-                    proj_pos = (player.x + player.w / 2 - ATTACK_PROJ_SIZE[0] / 2,
-                        player.y + player.h / 2 - ATTACK_PROJ_SIZE[1] / 2)
-                    projectiles.append(WorldEntity(proj_pos, ATTACK_PROJ_SIZE, COLOR_ATTACK_PROJ, player.direction, 4, 4))
+                    proj_pos = (player_entity.x + player_entity.w / 2 - ATTACK_PROJECTILE_SIZE[0] / 2,
+                                player_entity.y + player_entity.h / 2 - ATTACK_PROJECTILE_SIZE[1] / 2)
+                    projectile_entities.append(WorldEntity(proj_pos, ATTACK_PROJECTILE_SIZE, COLOR_ATTACK_PROJECTILE, player_entity.direction, 4, 4))
             elif event.key == pygame.K_1:
                 try_use_health_potion(1)
             elif event.key == pygame.K_2:
@@ -288,13 +287,13 @@ while True:
             elif event.key == pygame.K_5:
                 try_use_health_potion(5)
         if event.type == pygame.KEYUP:
-            if event.key in  PYGAME_MOVEMENT_KEYS:
+            if event.key in PYGAME_MOVEMENT_KEYS:
                 movement_keys_down.remove(event.key)
         if movement_keys_down:
             last_pressed_movement_key = movement_keys_down[-1]
-            player.set_moving_in_dir(DIRECTION_BY_PYGAME_MOVEMENT_KEY[last_pressed_movement_key])
+            player_entity.set_moving_in_dir(DIRECTION_BY_PYGAME_MOVEMENT_KEY[last_pressed_movement_key])
         else:
-            player.set_not_moving()
+            player_entity.set_not_moving()
 
     # ------------------------------------
     #         RUN ENEMY AI
@@ -305,7 +304,7 @@ while True:
     if ticks_since_ai_ran > AI_RUN_INTERVAL:
         ticks_since_ai_ran = 0
         for e in enemies:
-            e.run_ai(player)
+            e.run_ai_with_target(player_entity)
 
     # ------------------------------------
     #         UPDATE MOVING ENTITIES
@@ -313,68 +312,67 @@ while True:
 
     for e in enemies:
         # Enemies shouldn't move towards player when they are out of sight
-        if boxes_intersect(e.moving_box, camera_world_area):
-            update_moving_box_position_within_game_boundary(e.moving_box)
-    update_moving_box_position_within_game_boundary(player)
+        if boxes_intersect(e.world_entity, camera_world_area):
+            update_world_entity_position_within_game_boundary(e.world_entity)
+    update_world_entity_position_within_game_boundary(player_entity)
 
     # ------------------------------------
     #         HANDLE COLLISIONS
     # ------------------------------------
 
     projectiles_to_delete = []
-    food_boxes_to_delete = []
+    potions_to_delete = []
     enemies_to_delete = []
-    for projectile in projectiles:
-        update_moving_box_position(projectile)
+    for projectile in projectile_entities:
+        update_world_entity_position(projectile)
         if not boxes_intersect(projectile, ENTIRE_WORLD_AREA):
             projectiles_to_delete.append(projectile)
-    for box in food_boxes:
-        if boxes_intersect(player, box):
+    for potion in potion_entities:
+        if boxes_intersect(player_entity, potion):
             did_pick_up = try_pick_up_potion()
             if did_pick_up:
-                food_boxes_to_delete.append(box)
+                potions_to_delete.append(potion)
     for enemy in enemies:
-        box = enemy.moving_box
-        if boxes_intersect(player, box):
+        if boxes_intersect(player_entity, enemy.world_entity):
             enemies_to_delete.append(enemy)
             player_stats.lose_health(2)
-        for projectile in projectiles:
-            if boxes_intersect(box, projectile):
+        for projectile in projectile_entities:
+            if boxes_intersect(enemy.world_entity, projectile):
                 enemy.health -= 1
                 if enemy.health <= 0:
                     enemies_to_delete.append(enemy)
                 projectiles_to_delete.append(projectile)
-    projectiles = [p for p in projectiles if p not in projectiles_to_delete]
-    food_boxes = [b for b in food_boxes if b not in food_boxes_to_delete]
-    enemies = [b for b in enemies if b not in enemies_to_delete]
+    projectile_entities = [p for p in projectile_entities if p not in projectiles_to_delete]
+    potion_entities = [p for p in potion_entities if p not in potions_to_delete]
+    enemies = [e for e in enemies if e not in enemies_to_delete]
 
     # ------------------------------------
     #         REGEN MANA
     # ------------------------------------
 
-    player_stats.gain_mana(MANA_REGEN)
+    player_stats.gain_mana(PLAYER_MANA_REGEN)
 
     # ------------------------------------
     #         UPDATE CAMERA POSITION
     # ------------------------------------
 
-    camera_world_area.x = min(max(player.x - CAMERA_SIZE[0] / 2, 0), GAME_WORLD_SIZE[0] - CAMERA_SIZE[0]) 
-    camera_world_area.y = min(max(player.y - CAMERA_SIZE[1] / 2, 0), GAME_WORLD_SIZE[1] - CAMERA_SIZE[1])
+    camera_world_area.x = min(max(player_entity.x - CAMERA_SIZE[0] / 2, 0), GAME_WORLD_SIZE[0] - CAMERA_SIZE[0])
+    camera_world_area.y = min(max(player_entity.y - CAMERA_SIZE[1] / 2, 0), GAME_WORLD_SIZE[1] - CAMERA_SIZE[1])
 
     # ------------------------------------
     #         RENDER EVERYTHING
     # ------------------------------------
 
-    screen.fill(BG_COLOR)
-    for box in food_boxes + [e.moving_box for e in enemies] + [p for p in projectiles]:
-        render_box(screen, box, camera_world_area)
+    screen.fill(COLOR_BACKGROUND)
+    for potion in potion_entities + [e.world_entity for e in enemies] + [p for p in projectile_entities]:
+        render_entity(screen, potion, camera_world_area)
 
-    render_box(screen, player, camera_world_area)
-    render_circle(screen, player, camera_world_area)
+    render_entity(screen, player_entity, camera_world_area)
+    render_circle(screen, player_entity, camera_world_area)
 
     for enemy in enemies:
-        render_stat_bar(screen, enemy.moving_box.x - camera_world_area.x + 1, enemy.moving_box.y - camera_world_area.y - 10, \
-            enemy.moving_box.w - 2, 5, enemy.health, enemy.max_health, COLOR_RED)
+        render_stat_bar(screen, enemy.world_entity.x - camera_world_area.x + 1, enemy.world_entity.y - camera_world_area.y - 10,
+                        enemy.world_entity.w - 2, 5, enemy.health, enemy.max_health, COLOR_RED)
 
     pygame.draw.rect(screen, COLOR_BLACK, (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
     pygame.draw.rect(screen, COLOR_BLACK, (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
@@ -402,6 +400,5 @@ while True:
     screen.blit(text_surface, (UI_SCREEN_AREA.x + 20, UI_SCREEN_AREA.y + 75))
 
     pygame.draw.rect(screen, COLOR_WHITE, UI_SCREEN_AREA.rect(), 1)
-    
     pygame.display.update()
 
