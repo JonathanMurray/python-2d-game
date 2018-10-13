@@ -61,6 +61,12 @@ class WorldEntity:
         elif self.direction == Direction.DOWN:
             self.y += self.speed
 
+    def get_center_x(self):
+        return self.x + self.w / 2
+
+    def get_center_y(self):
+        return self.y + self.h / 2
+
 
 class Enemy:
     def __init__(self, world_entity, health, max_health):
@@ -117,26 +123,51 @@ class PlayerStats:
         self.mana = int(math.floor(self._mana_float))
 
 
-def render_entity(screen, entity, camera_world_area):
-    pygame.draw.rect(screen, entity.color,
-                     (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h))
+class GameState:
+    def __init__(self, player_pos, potion_positions, enemy_positions):
+        self.camera_world_area = WorldArea((0, 0), CAMERA_SIZE)
+        self.player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, PLAYER_ENTITY_COLOR, Direction.RIGHT, 0,
+                                         PLAYER_ENTITY_SPEED)
+        self.projectile_entities = []
+        self.potion_entities = [WorldEntity(pos, POTION_ENTITY_SIZE, POTION_ENTITY_COLOR) for pos in potion_positions]
+        self.enemies = [Enemy(WorldEntity(pos, ENEMY_SIZE, ENEMY_COLOR, Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 2, 2)
+                        for pos in enemy_positions]
+        self.player_stats = PlayerStats(3, 20, 50, 100)
+        self.health_potion_slots = {
+            1: True,
+            2: False,
+            3: True,
+            4: True,
+            5: True
+        }
 
 
-def render_circle(screen, entity, camera_world_area):
-    pygame.draw.ellipse(screen, COLOR_BLUE,
-                        (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h))
+def render_entity(entity):
+    rect = (entity.x - game_state.camera_world_area.x, entity.y - game_state.camera_world_area.y, entity.w, entity.h)
+    pygame.draw.rect(SCREEN, entity.color, rect)
 
 
-def render_stat_bar(screen, x, y, w, h, stat, max_stat, color):
-    pygame.draw.rect(screen, COLOR_WHITE, (x - 2, y - 2, w + 3, h + 3), 2)
-    pygame.draw.rect(screen, color, (x, y, w * stat / max_stat, h))
+def render_circle(entity):
+    rect = (entity.x - game_state.camera_world_area.x, entity.y - game_state.camera_world_area.y, entity.w, entity.h)
+    pygame.draw.ellipse(SCREEN, COLOR_BLUE, rect)
 
 
-def render_ui_potion(screen, x, y, w, h, potion_number):
-    pygame.draw.rect(screen, (100, 100, 100), (x, y, w, h), 3)
-    if health_potion_slots[potion_number]:
-        pygame.draw.rect(screen, (250, 50, 50), (x, y, w, h))
-    screen.blit(FONT_LARGE.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + 5))
+def render_stat_bar(x, y, w, h, stat, max_stat, color):
+    pygame.draw.rect(SCREEN, COLOR_WHITE, (x - 2, y - 2, w + 3, h + 3), 2)
+    pygame.draw.rect(SCREEN, color, (x, y, w * stat / max_stat, h))
+
+
+def render_stat_bar_for_entity(world_entity, h, stat, max_stat, color):
+    render_stat_bar(world_entity.x - game_state.camera_world_area.x + 1,
+                    world_entity.y - game_state.camera_world_area.y - 10,
+                    world_entity.w - 2, h, stat, max_stat, color)
+
+
+def render_ui_potion(x, y, w, h, potion_number):
+    pygame.draw.rect(SCREEN, (100, 100, 100), (x, y, w, h), 3)
+    if game_state.health_potion_slots[potion_number]:
+        pygame.draw.rect(SCREEN, (250, 50, 50), (x, y, w, h))
+    SCREEN.blit(FONT_LARGE.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + 5))
 
 
 def ranges_overlap(a_min, a_max, b_min, b_max):
@@ -155,20 +186,41 @@ def update_world_entity_position_within_game_boundary(world_entity):
 
 
 def try_use_health_potion(number):
-    if health_potion_slots[number]:
-        health_potion_slots[number] = False
-        player_stats.gain_health(10)
+    if game_state.health_potion_slots[number]:
+        game_state.health_potion_slots[number] = False
+        game_state.player_stats.gain_health(10)
 
 
 # Returns whether or not potion was picked up (not picked up if no space for it)
 def try_pick_up_potion():
-    empty_slots = [slot for slot in health_potion_slots if not health_potion_slots[slot]]
+    empty_slots = [slot for slot in game_state.health_potion_slots if not game_state.health_potion_slots[slot]]
     if len(empty_slots) > 0:
         slot = empty_slots[0]
-        health_potion_slots[slot] = True
+        game_state.health_potion_slots[slot] = True
         return True
     else:
         return False
+
+
+def init_game_state_from_file():
+    enemy_positions = []
+    potion_positions = []
+    player_pos = (0, 0)
+    with open("map.txt") as map_file:
+        row_index = 0
+        for line in map_file:
+            col_index = 0
+            for char in line:
+                game_world_pos = (GAME_WORLD_SIZE[0] * col_index / 100, GAME_WORLD_SIZE[1] * row_index / 50)
+                if char == 'P':
+                    player_pos = game_world_pos
+                if char == 'E':
+                    enemy_positions.append(game_world_pos)
+                if char == 'H':
+                    potion_positions.append(game_world_pos)
+                col_index += 1
+            row_index += 1
+    return GameState(player_pos, potion_positions, enemy_positions)
 
 
 COLOR_ATTACK_PROJECTILE = (200, 5, 200)
@@ -206,51 +258,13 @@ DIRECTION_BY_PYGAME_MOVEMENT_KEY = {
     pygame.K_DOWN: Direction.DOWN
 }
 
-# ------------------------------------
-#         READ MAP FROM TEXT FILE
-# ------------------------------------
-
-enemy_positions = []
-potion_positions = []
-player_pos = (0, 0)
-with open("map.txt") as map_file:
-    row_index = 0
-    for line in map_file:
-        col_index = 0
-        for char in line:
-            game_world_pos = (GAME_WORLD_SIZE[0] * col_index / 100, GAME_WORLD_SIZE[1] * row_index / 50)
-            if char == 'P':
-                player_pos = game_world_pos
-            if char == 'E':
-                enemy_positions.append(game_world_pos)
-            if char == 'H':
-                potion_positions.append(game_world_pos)
-            col_index += 1
-        row_index += 1
-
+game_state = init_game_state_from_file()
 pygame.init()
 pygame.font.init()
 FONT_LARGE = pygame.font.SysFont('Arial', 30)
 FONT_SMALL = pygame.font.Font(None, 25)
-screen = pygame.display.set_mode(SCREEN_SIZE)
+SCREEN = pygame.display.set_mode(SCREEN_SIZE)
 clock = pygame.time.Clock()
-
-camera_world_area = WorldArea((0, 0), CAMERA_SIZE)
-player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, PLAYER_ENTITY_COLOR, Direction.RIGHT, 0,
-                            PLAYER_ENTITY_SPEED)
-projectile_entities = []
-potion_entities = [WorldEntity(pos, POTION_ENTITY_SIZE, POTION_ENTITY_COLOR) for pos in potion_positions]
-enemies = [Enemy(WorldEntity(pos, ENEMY_SIZE, ENEMY_COLOR, Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 2, 2)
-           for pos in enemy_positions]
-player_stats = PlayerStats(3, 20, 50, 100)
-health_potion_slots = {
-    1: True,
-    2: False,
-    3: True,
-    4: True,
-    5: True
-}
-
 ticks_since_ai_ran = 0
 AI_RUN_INTERVAL = 750
 
@@ -272,17 +286,17 @@ while True:
                     movement_keys_down.remove(event.key)
                 movement_keys_down.append(event.key)
             elif event.key == pygame.K_a:
-                if player_stats.mana >= HEAL_ABILITY_MANA_COST:
-                    player_stats.lose_mana(HEAL_ABILITY_MANA_COST)
-                    player_stats.gain_health(HEAL_ABILITY_AMOUNT)
+                if game_state.player_stats.mana >= HEAL_ABILITY_MANA_COST:
+                    game_state.player_stats.lose_mana(HEAL_ABILITY_MANA_COST)
+                    game_state.player_stats.gain_health(HEAL_ABILITY_AMOUNT)
             elif event.key == pygame.K_f:
-                if player_stats.mana >= ATTACK_ABILITY_MANA_COST:
-                    player_stats.lose_mana(ATTACK_ABILITY_MANA_COST)
-                    proj_pos = (player_entity.x + player_entity.w / 2 - ATTACK_PROJECTILE_SIZE[0] / 2,
-                                player_entity.y + player_entity.h / 2 - ATTACK_PROJECTILE_SIZE[1] / 2)
-                    projectile_entities.append(
-                        WorldEntity(proj_pos, ATTACK_PROJECTILE_SIZE, COLOR_ATTACK_PROJECTILE,
-                                    player_entity.direction, ATTACK_PROJECTILE_SPEED, ATTACK_PROJECTILE_SPEED))
+                if game_state.player_stats.mana >= ATTACK_ABILITY_MANA_COST:
+                    game_state.player_stats.lose_mana(ATTACK_ABILITY_MANA_COST)
+                    proj_pos = (game_state.player_entity.get_center_x() - ATTACK_PROJECTILE_SIZE[0] / 2,
+                                game_state.player_entity.get_center_y() - ATTACK_PROJECTILE_SIZE[1] / 2)
+                    game_state.projectile_entities.append(WorldEntity(
+                        proj_pos, ATTACK_PROJECTILE_SIZE, COLOR_ATTACK_PROJECTILE, game_state.player_entity.direction,
+                        ATTACK_PROJECTILE_SPEED, ATTACK_PROJECTILE_SPEED))
             elif event.key == pygame.K_1:
                 try_use_health_potion(1)
             elif event.key == pygame.K_2:
@@ -298,9 +312,9 @@ while True:
                 movement_keys_down.remove(event.key)
         if movement_keys_down:
             last_pressed_movement_key = movement_keys_down[-1]
-            player_entity.set_moving_in_dir(DIRECTION_BY_PYGAME_MOVEMENT_KEY[last_pressed_movement_key])
+            game_state.player_entity.set_moving_in_dir(DIRECTION_BY_PYGAME_MOVEMENT_KEY[last_pressed_movement_key])
         else:
-            player_entity.set_not_moving()
+            game_state.player_entity.set_not_moving()
 
     # ------------------------------------
     #         RUN ENEMY AI
@@ -310,18 +324,18 @@ while True:
     ticks_since_ai_ran += clock.get_time()
     if ticks_since_ai_ran > AI_RUN_INTERVAL:
         ticks_since_ai_ran = 0
-        for e in enemies:
-            e.run_ai_with_target(player_entity)
+        for e in game_state.enemies:
+            e.run_ai_with_target(game_state.player_entity)
 
     # ------------------------------------
     #         UPDATE MOVING ENTITIES
     # ------------------------------------
 
-    for e in enemies:
+    for e in game_state.enemies:
         # Enemies shouldn't move towards player when they are out of sight
-        if boxes_intersect(e.world_entity, camera_world_area):
+        if boxes_intersect(e.world_entity, game_state.camera_world_area):
             update_world_entity_position_within_game_boundary(e.world_entity)
-    update_world_entity_position_within_game_boundary(player_entity)
+    update_world_entity_position_within_game_boundary(game_state.player_entity)
 
     # ------------------------------------
     #         HANDLE COLLISIONS
@@ -330,84 +344,85 @@ while True:
     projectiles_to_delete = []
     potions_to_delete = []
     enemies_to_delete = []
-    for projectile in projectile_entities:
+    for projectile in game_state.projectile_entities:
         projectile.update_position_according_to_dir_and_speed()
         if not boxes_intersect(projectile, ENTIRE_WORLD_AREA):
             projectiles_to_delete.append(projectile)
-    for potion in potion_entities:
-        if boxes_intersect(player_entity, potion):
+    for potion in game_state.potion_entities:
+        if boxes_intersect(game_state.player_entity, potion):
             did_pick_up = try_pick_up_potion()
             if did_pick_up:
                 potions_to_delete.append(potion)
-    for enemy in enemies:
-        if boxes_intersect(player_entity, enemy.world_entity):
+    for enemy in game_state.enemies:
+        if boxes_intersect(game_state.player_entity, enemy.world_entity):
             enemies_to_delete.append(enemy)
-            player_stats.lose_health(2)
-        for projectile in projectile_entities:
+            game_state.player_stats.lose_health(2)
+        for projectile in game_state.projectile_entities:
             if boxes_intersect(enemy.world_entity, projectile):
                 enemy.health -= 1
                 if enemy.health <= 0:
                     enemies_to_delete.append(enemy)
                 projectiles_to_delete.append(projectile)
-    projectile_entities = [p for p in projectile_entities if p not in projectiles_to_delete]
-    potion_entities = [p for p in potion_entities if p not in potions_to_delete]
-    enemies = [e for e in enemies if e not in enemies_to_delete]
+    game_state.projectile_entities = [p for p in game_state.projectile_entities if p not in projectiles_to_delete]
+    game_state.potion_entities = [p for p in game_state.potion_entities if p not in potions_to_delete]
+    game_state.enemies = [e for e in game_state.enemies if e not in enemies_to_delete]
 
     # ------------------------------------
     #         REGEN MANA
     # ------------------------------------
 
-    player_stats.gain_mana(PLAYER_MANA_REGEN)
+    game_state.player_stats.gain_mana(PLAYER_MANA_REGEN)
 
     # ------------------------------------
     #         UPDATE CAMERA POSITION
     # ------------------------------------
 
-    camera_world_area.x = min(max(player_entity.x - CAMERA_SIZE[0] / 2, 0), GAME_WORLD_SIZE[0] - CAMERA_SIZE[0])
-    camera_world_area.y = min(max(player_entity.y - CAMERA_SIZE[1] / 2, 0), GAME_WORLD_SIZE[1] - CAMERA_SIZE[1])
+    game_state.camera_world_area.x = min(max(game_state.player_entity.x - CAMERA_SIZE[0] / 2, 0),
+                                         GAME_WORLD_SIZE[0] - CAMERA_SIZE[0])
+    game_state.camera_world_area.y = min(max(game_state.player_entity.y - CAMERA_SIZE[1] / 2, 0),
+                                         GAME_WORLD_SIZE[1] - CAMERA_SIZE[1])
 
     # ------------------------------------
     #         RENDER EVERYTHING
     # ------------------------------------
 
-    screen.fill(COLOR_BACKGROUND)
-    for potion in potion_entities + [e.world_entity for e in enemies] + [p for p in projectile_entities]:
-        render_entity(screen, potion, camera_world_area)
+    SCREEN.fill(COLOR_BACKGROUND)
+    for entity in game_state.potion_entities + [e.world_entity for e in game_state.enemies] \
+                  + [p for p in game_state.projectile_entities]:
+        render_entity(entity)
 
-    render_entity(screen, player_entity, camera_world_area)
-    render_circle(screen, player_entity, camera_world_area)
+    render_entity(game_state.player_entity)
+    render_circle(game_state.player_entity)
 
-    for enemy in enemies:
-        render_stat_bar(screen, enemy.world_entity.x - camera_world_area.x + 1,
-                        enemy.world_entity.y - camera_world_area.y - 10,
-                        enemy.world_entity.w - 2, 5, enemy.health, enemy.max_health, COLOR_RED)
+    for enemy in game_state.enemies:
+        render_stat_bar_for_entity(enemy.world_entity, 5, enemy.health, enemy.max_health, COLOR_RED)
 
-    pygame.draw.rect(screen, COLOR_BLACK, (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
-    pygame.draw.rect(screen, COLOR_BLACK, (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
+    pygame.draw.rect(SCREEN, COLOR_BLACK, (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
+    pygame.draw.rect(SCREEN, COLOR_BLACK, (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
 
-    screen.blit(FONT_LARGE.render("Health", False, COLOR_WHITE), (UI_SCREEN_AREA.x + 10, UI_SCREEN_AREA.y + 10))
-    render_stat_bar(screen, UI_SCREEN_AREA.x + 10, UI_SCREEN_AREA.y + 40, 100, 25, player_stats.health,
-                    player_stats.max_health, COLOR_RED)
-    health_text = str(player_stats.health) + "/" + str(player_stats.max_health)
-    screen.blit(FONT_LARGE.render(health_text, False, COLOR_WHITE), (UI_SCREEN_AREA.x + 30, UI_SCREEN_AREA.y + 43))
+    SCREEN.blit(FONT_LARGE.render("Health", False, COLOR_WHITE), (UI_SCREEN_AREA.x + 10, UI_SCREEN_AREA.y + 10))
+    render_stat_bar(UI_SCREEN_AREA.x + 10, UI_SCREEN_AREA.y + 40, 100, 25, game_state.player_stats.health,
+                    game_state.player_stats.max_health, COLOR_RED)
+    health_text = str(game_state.player_stats.health) + "/" + str(game_state.player_stats.max_health)
+    SCREEN.blit(FONT_LARGE.render(health_text, False, COLOR_WHITE), (UI_SCREEN_AREA.x + 30, UI_SCREEN_AREA.y + 43))
 
-    screen.blit(FONT_LARGE.render("Mana", False, COLOR_WHITE), (UI_SCREEN_AREA.x + 130, UI_SCREEN_AREA.y + 10))
-    render_stat_bar(screen, UI_SCREEN_AREA.x + 130, UI_SCREEN_AREA.y + 40, 100, 25, player_stats.mana,
-                    player_stats.max_mana, COLOR_BLUE)
-    mana_text = str(player_stats.mana) + "/" + str(player_stats.max_mana)
-    screen.blit(FONT_LARGE.render(mana_text, False, COLOR_WHITE), (UI_SCREEN_AREA.x + 150, UI_SCREEN_AREA.y + 43))
+    SCREEN.blit(FONT_LARGE.render("Mana", False, COLOR_WHITE), (UI_SCREEN_AREA.x + 130, UI_SCREEN_AREA.y + 10))
+    render_stat_bar(UI_SCREEN_AREA.x + 130, UI_SCREEN_AREA.y + 40, 100, 25, game_state.player_stats.mana,
+                    game_state.player_stats.max_mana, COLOR_BLUE)
+    mana_text = str(game_state.player_stats.mana) + "/" + str(game_state.player_stats.max_mana)
+    SCREEN.blit(FONT_LARGE.render(mana_text, False, COLOR_WHITE), (UI_SCREEN_AREA.x + 150, UI_SCREEN_AREA.y + 43))
 
-    screen.blit(FONT_LARGE.render("Potions", False, COLOR_WHITE), (UI_SCREEN_AREA.x + 250, UI_SCREEN_AREA.y + 10))
-    render_ui_potion(screen, UI_SCREEN_AREA.x + 250, UI_SCREEN_AREA.y + 39, 27, 27, 1)
-    render_ui_potion(screen, UI_SCREEN_AREA.x + 280, UI_SCREEN_AREA.y + 39, 27, 27, 2)
-    render_ui_potion(screen, UI_SCREEN_AREA.x + 310, UI_SCREEN_AREA.y + 39, 27, 27, 3)
-    render_ui_potion(screen, UI_SCREEN_AREA.x + 340, UI_SCREEN_AREA.y + 39, 27, 27, 4)
-    render_ui_potion(screen, UI_SCREEN_AREA.x + 370, UI_SCREEN_AREA.y + 39, 27, 27, 5)
+    SCREEN.blit(FONT_LARGE.render("Potions", False, COLOR_WHITE), (UI_SCREEN_AREA.x + 250, UI_SCREEN_AREA.y + 10))
+    render_ui_potion(UI_SCREEN_AREA.x + 250, UI_SCREEN_AREA.y + 39, 27, 27, 1)
+    render_ui_potion(UI_SCREEN_AREA.x + 280, UI_SCREEN_AREA.y + 39, 27, 27, 2)
+    render_ui_potion(UI_SCREEN_AREA.x + 310, UI_SCREEN_AREA.y + 39, 27, 27, 3)
+    render_ui_potion(UI_SCREEN_AREA.x + 340, UI_SCREEN_AREA.y + 39, 27, 27, 4)
+    render_ui_potion(UI_SCREEN_AREA.x + 370, UI_SCREEN_AREA.y + 39, 27, 27, 5)
 
     ui_text = "['A' to heal (" + str(HEAL_ABILITY_MANA_COST) + ")] " + \
               "['F' to attack (" + str(ATTACK_ABILITY_MANA_COST) + ")]"
     text_surface = FONT_SMALL.render(ui_text, False, COLOR_WHITE)
-    screen.blit(text_surface, (UI_SCREEN_AREA.x + 20, UI_SCREEN_AREA.y + 75))
+    SCREEN.blit(text_surface, (UI_SCREEN_AREA.x + 20, UI_SCREEN_AREA.y + 75))
 
-    pygame.draw.rect(screen, COLOR_WHITE, UI_SCREEN_AREA.rect(), 1)
+    pygame.draw.rect(SCREEN, COLOR_WHITE, UI_SCREEN_AREA.rect(), 1)
     pygame.display.update()
