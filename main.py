@@ -175,6 +175,20 @@ class GameState:
                 proj_pos, ATTACK_PROJECTILE_SIZE, COLOR_ATTACK_PROJECTILE, self.player_entity.direction,
                 ATTACK_PROJECTILE_SPEED, ATTACK_PROJECTILE_SPEED))
 
+    def get_all_entities(self):
+        return [self.player_entity] + self.projectile_entities + self.potion_entities + [e.world_entity for e in
+                                                                                         self.enemies]
+
+    def center_camera_on_player(self):
+        self.camera_world_area.x = min(max(self.player_entity.x - CAMERA_SIZE[0] / 2, 0),
+                                       GAME_WORLD_SIZE[0] - CAMERA_SIZE[0])
+        self.camera_world_area.y = min(max(self.player_entity.y - CAMERA_SIZE[1] / 2, 0),
+                                       GAME_WORLD_SIZE[1] - CAMERA_SIZE[1])
+
+    def get_all_projectiles_that_intersect_with(self, entity):
+        return [p for p in self.projectile_entities if boxes_intersect(entity, p)]
+
+
 def render_entity(entity):
     rect = (entity.x - game_state.camera_world_area.x, entity.y - game_state.camera_world_area.y, entity.w, entity.h)
     pygame.draw.rect(SCREEN, entity.color, rect)
@@ -376,12 +390,11 @@ while True:
         if boxes_intersect(game_state.player_entity, enemy.world_entity):
             entities_to_remove.append(enemy)
             game_state.player_stats.lose_health(2)
-        for projectile in game_state.projectile_entities:
-            if boxes_intersect(enemy.world_entity, projectile):
-                enemy.health -= 1
-                if enemy.health <= 0:
-                    entities_to_remove.append(enemy)
-                entities_to_remove.append(projectile)
+        for projectile in game_state.get_all_projectiles_that_intersect_with(enemy.world_entity):
+            enemy.health -= 1
+            if enemy.health <= 0:
+                entities_to_remove.append(enemy)
+            entities_to_remove.append(projectile)
     game_state.remove_entities(entities_to_remove)
 
     # ------------------------------------
@@ -394,21 +407,15 @@ while True:
     #         UPDATE CAMERA POSITION
     # ------------------------------------
 
-    game_state.camera_world_area.x = min(max(game_state.player_entity.x - CAMERA_SIZE[0] / 2, 0),
-                                         GAME_WORLD_SIZE[0] - CAMERA_SIZE[0])
-    game_state.camera_world_area.y = min(max(game_state.player_entity.y - CAMERA_SIZE[1] / 2, 0),
-                                         GAME_WORLD_SIZE[1] - CAMERA_SIZE[1])
+    game_state.center_camera_on_player()
 
     # ------------------------------------
     #         RENDER EVERYTHING
     # ------------------------------------
 
     SCREEN.fill(COLOR_BACKGROUND)
-    for entity in game_state.potion_entities + [e.world_entity for e in game_state.enemies] \
-                  + [p for p in game_state.projectile_entities]:
+    for entity in game_state.get_all_entities():
         render_entity(entity)
-
-    render_entity(game_state.player_entity)
     render_circle(game_state.player_entity)
 
     for enemy in game_state.enemies:
