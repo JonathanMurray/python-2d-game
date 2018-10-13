@@ -286,7 +286,9 @@ while(True):
 	# ------------------------------------
 
 	for e in enemies:
-		update_moving_box_position_within_game_boundary(e.moving_box)
+		# Enemies shouldn't move towards player when they are out of sight
+		if boxes_intersect(e.moving_box.box, camera_box):
+			update_moving_box_position_within_game_boundary(e.moving_box)
 	update_moving_box_position_within_game_boundary(player)
 
 
