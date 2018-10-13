@@ -161,6 +161,19 @@ class GameState:
         else:
             return False
 
+    def try_use_heal_ability(self):
+        if self.player_stats.mana >= HEAL_ABILITY_MANA_COST:
+            self.player_stats.lose_mana(HEAL_ABILITY_MANA_COST)
+            self.player_stats.gain_health(HEAL_ABILITY_AMOUNT)
+
+    def try_use_attack_ability(self):
+        if self.player_stats.mana >= ATTACK_ABILITY_MANA_COST:
+            self.player_stats.lose_mana(ATTACK_ABILITY_MANA_COST)
+            proj_pos = (self.player_entity.get_center_x() - ATTACK_PROJECTILE_SIZE[0] / 2,
+                        self.player_entity.get_center_y() - ATTACK_PROJECTILE_SIZE[1] / 2)
+            self.projectile_entities.append(WorldEntity(
+                proj_pos, ATTACK_PROJECTILE_SIZE, COLOR_ATTACK_PROJECTILE, self.player_entity.direction,
+                ATTACK_PROJECTILE_SPEED, ATTACK_PROJECTILE_SPEED))
 
 def render_entity(entity):
     rect = (entity.x - game_state.camera_world_area.x, entity.y - game_state.camera_world_area.y, entity.w, entity.h)
@@ -301,17 +314,9 @@ while True:
                     movement_keys_down.remove(event.key)
                 movement_keys_down.append(event.key)
             elif event.key == pygame.K_a:
-                if game_state.player_stats.mana >= HEAL_ABILITY_MANA_COST:
-                    game_state.player_stats.lose_mana(HEAL_ABILITY_MANA_COST)
-                    game_state.player_stats.gain_health(HEAL_ABILITY_AMOUNT)
+                game_state.try_use_heal_ability()
             elif event.key == pygame.K_f:
-                if game_state.player_stats.mana >= ATTACK_ABILITY_MANA_COST:
-                    game_state.player_stats.lose_mana(ATTACK_ABILITY_MANA_COST)
-                    proj_pos = (game_state.player_entity.get_center_x() - ATTACK_PROJECTILE_SIZE[0] / 2,
-                                game_state.player_entity.get_center_y() - ATTACK_PROJECTILE_SIZE[1] / 2)
-                    game_state.projectile_entities.append(WorldEntity(
-                        proj_pos, ATTACK_PROJECTILE_SIZE, COLOR_ATTACK_PROJECTILE, game_state.player_entity.direction,
-                        ATTACK_PROJECTILE_SPEED, ATTACK_PROJECTILE_SPEED))
+                game_state.try_use_attack_ability()
             elif event.key == pygame.K_1:
                 game_state.try_use_health_potion(1)
             elif event.key == pygame.K_2:
