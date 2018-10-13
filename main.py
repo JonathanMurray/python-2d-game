@@ -146,6 +146,21 @@ class GameState:
         self.potion_entities = [p for p in self.potion_entities if p not in entities_to_remove]
         self.enemies = [e for e in self.enemies if e not in entities_to_remove]
 
+    def try_use_health_potion(self, number):
+        if self.health_potion_slots[number]:
+            self.health_potion_slots[number] = False
+            self.player_stats.gain_health(10)
+
+    # Returns whether or not potion was picked up (not picked up if no space for it)
+    def try_pick_up_potion(self):
+        empty_slots = [slot for slot in self.health_potion_slots if not self.health_potion_slots[slot]]
+        if len(empty_slots) > 0:
+            slot = empty_slots[0]
+            self.health_potion_slots[slot] = True
+            return True
+        else:
+            return False
+
 
 def render_entity(entity):
     rect = (entity.x - game_state.camera_world_area.x, entity.y - game_state.camera_world_area.y, entity.w, entity.h)
@@ -200,23 +215,6 @@ def update_world_entity_position_within_game_boundary(world_entity):
     world_entity.update_position_according_to_dir_and_speed()
     world_entity.x = min(max(world_entity.x, 0), GAME_WORLD_SIZE[0] - world_entity.w)
     world_entity.y = min(max(world_entity.y, 0), GAME_WORLD_SIZE[1] - world_entity.h)
-
-
-def try_use_health_potion(number):
-    if game_state.health_potion_slots[number]:
-        game_state.health_potion_slots[number] = False
-        game_state.player_stats.gain_health(10)
-
-
-# Returns whether or not potion was picked up (not picked up if no space for it)
-def try_pick_up_potion():
-    empty_slots = [slot for slot in game_state.health_potion_slots if not game_state.health_potion_slots[slot]]
-    if len(empty_slots) > 0:
-        slot = empty_slots[0]
-        game_state.health_potion_slots[slot] = True
-        return True
-    else:
-        return False
 
 
 def init_game_state_from_file():
@@ -315,15 +313,15 @@ while True:
                         proj_pos, ATTACK_PROJECTILE_SIZE, COLOR_ATTACK_PROJECTILE, game_state.player_entity.direction,
                         ATTACK_PROJECTILE_SPEED, ATTACK_PROJECTILE_SPEED))
             elif event.key == pygame.K_1:
-                try_use_health_potion(1)
+                game_state.try_use_health_potion(1)
             elif event.key == pygame.K_2:
-                try_use_health_potion(2)
+                game_state.try_use_health_potion(2)
             elif event.key == pygame.K_3:
-                try_use_health_potion(3)
+                game_state.try_use_health_potion(3)
             elif event.key == pygame.K_4:
-                try_use_health_potion(4)
+                game_state.try_use_health_potion(4)
             elif event.key == pygame.K_5:
-                try_use_health_potion(5)
+                game_state.try_use_health_potion(5)
         if event.type == pygame.KEYUP:
             if event.key in PYGAME_MOVEMENT_KEYS:
                 movement_keys_down.remove(event.key)
@@ -366,7 +364,7 @@ while True:
             entities_to_remove.append(projectile)
     for potion in game_state.potion_entities:
         if boxes_intersect(game_state.player_entity, potion):
-            did_pick_up = try_pick_up_potion()
+            did_pick_up = game_state.try_pick_up_potion()
             if did_pick_up:
                 entities_to_remove.append(potion)
     for enemy in game_state.enemies:
