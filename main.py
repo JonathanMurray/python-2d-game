@@ -191,8 +191,14 @@ ENEMY_SIZE = (30, 30)
 ENEMY_COLOR = COLOR_RED
 ENEMY_SPEED = 0.4
 PLAYER_MANA_REGEN = 0.03
-PLAYER_SPEED = 2
+PLAYER_ENTITY_SIZE = (50, 50)
+PLAYER_ENTITY_COLOR = (250, 250, 250)
+PLAYER_ENTITY_SPEED = 2
 ATTACK_PROJECTILE_SIZE = (35, 35)
+ATTACK_PROJECTILE_SPEED = 4
+HEAL_ABILITY_MANA_COST = 10
+HEAL_ABILITY_AMOUNT = 10
+ATTACK_ABILITY_MANA_COST = 5
 PYGAME_MOVEMENT_KEYS = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
 DIRECTION_BY_PYGAME_MOVEMENT_KEY = {
     pygame.K_LEFT: Direction.LEFT,
@@ -231,14 +237,13 @@ screen = pygame.display.set_mode(SCREEN_SIZE)
 clock = pygame.time.Clock()
 
 camera_world_area = WorldArea((0, 0), CAMERA_SIZE)
-player_entity = WorldEntity(player_pos, (50, 50), (250, 250, 250), Direction.RIGHT, 0, PLAYER_SPEED)
+player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, PLAYER_ENTITY_COLOR, Direction.RIGHT, 0,
+                            PLAYER_ENTITY_SPEED)
 projectile_entities = []
 potion_entities = [WorldEntity(pos, POTION_ENTITY_SIZE, POTION_ENTITY_COLOR) for pos in potion_positions]
 enemies = [Enemy(WorldEntity(pos, ENEMY_SIZE, ENEMY_COLOR, Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 2, 2)
            for pos in enemy_positions]
 player_stats = PlayerStats(3, 20, 50, 100)
-heal_mana_cost = 10
-attack_mana_cost = 5
 ticks_since_ai_ran = 0
 AI_RUN_INTERVAL = 750
 
@@ -268,16 +273,17 @@ while True:
                     movement_keys_down.remove(event.key)
                 movement_keys_down.append(event.key)
             elif event.key == pygame.K_a:
-                if player_stats.mana >= heal_mana_cost:
-                    player_stats.lose_mana(heal_mana_cost)
-                    player_stats.gain_health(10)
+                if player_stats.mana >= HEAL_ABILITY_MANA_COST:
+                    player_stats.lose_mana(HEAL_ABILITY_MANA_COST)
+                    player_stats.gain_health(HEAL_ABILITY_AMOUNT)
             elif event.key == pygame.K_f:
-                if player_stats.mana >= attack_mana_cost:
-                    player_stats.lose_mana(attack_mana_cost)
+                if player_stats.mana >= ATTACK_ABILITY_MANA_COST:
+                    player_stats.lose_mana(ATTACK_ABILITY_MANA_COST)
                     proj_pos = (player_entity.x + player_entity.w / 2 - ATTACK_PROJECTILE_SIZE[0] / 2,
                                 player_entity.y + player_entity.h / 2 - ATTACK_PROJECTILE_SIZE[1] / 2)
-                    projectile_entities.append(WorldEntity(proj_pos, ATTACK_PROJECTILE_SIZE, COLOR_ATTACK_PROJECTILE,
-                                                           player_entity.direction, 4, 4))
+                    projectile_entities.append(
+                        WorldEntity(proj_pos, ATTACK_PROJECTILE_SIZE, COLOR_ATTACK_PROJECTILE,
+                                    player_entity.direction, ATTACK_PROJECTILE_SPEED, ATTACK_PROJECTILE_SPEED))
             elif event.key == pygame.K_1:
                 try_use_health_potion(1)
             elif event.key == pygame.K_2:
@@ -399,8 +405,8 @@ while True:
     render_ui_potion(screen, UI_SCREEN_AREA.x + 340, UI_SCREEN_AREA.y + 39, 27, 27, 4)
     render_ui_potion(screen, UI_SCREEN_AREA.x + 370, UI_SCREEN_AREA.y + 39, 27, 27, 5)
 
-    ui_text = "['A' to heal (" + str(heal_mana_cost) + ")] " + \
-              "['F' to attack (" + str(attack_mana_cost) + ")]"
+    ui_text = "['A' to heal (" + str(HEAL_ABILITY_MANA_COST) + ")] " + \
+              "['F' to attack (" + str(ATTACK_ABILITY_MANA_COST) + ")]"
     text_surface = FONT_SMALL.render(ui_text, False, COLOR_WHITE)
     screen.blit(text_surface, (UI_SCREEN_AREA.x + 20, UI_SCREEN_AREA.y + 75))
 
