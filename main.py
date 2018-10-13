@@ -6,6 +6,8 @@ import sys
 from enum import Enum
 import random
 
+# TODO: Rename variables -> world_entity instead of box
+
 
 class WorldArea:
 	def __init__(self, pos, size):
@@ -30,7 +32,7 @@ class Direction(Enum):
 	UP = 3
 	DOWN = 4
 
-class MovingBox:
+class WorldEntity:
 	def __init__(self, pos, size, color, direction=Direction.LEFT, speed=0, max_speed=0):
 		self.x = pos[0]
 		self.y = pos[1]
@@ -211,10 +213,10 @@ screen = pygame.display.set_mode(SCREEN_SIZE)
 clock = pygame.time.Clock()
 
 camera_world_area = WorldArea((0,0), CAMERA_SIZE)
-player = MovingBox(player_pos, (50, 50), (250,250,250), Direction.RIGHT, 0, PLAYER_SPEED)
+player = WorldEntity(player_pos, (50, 50), (250,250,250), Direction.RIGHT, 0, PLAYER_SPEED)
 projectiles = []
-food_boxes = [MovingBox(pos, FOOD_SIZE, FOOD_COLOR) for pos in potion_positions]
-enemies = [Enemy(MovingBox(pos, ENEMY_SIZE, ENEMY_COLOR, Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 2, 2) for pos \
+food_boxes = [WorldEntity(pos, FOOD_SIZE, FOOD_COLOR) for pos in potion_positions]
+enemies = [Enemy(WorldEntity(pos, ENEMY_SIZE, ENEMY_COLOR, Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 2, 2) for pos \
 	in enemy_positions]
 player_stats = PlayerStats(3, 20, 50, 100)
 heal_mana_cost = 10
@@ -256,7 +258,7 @@ while(True):
 					player_stats.lose_mana(attack_mana_cost)
 					proj_pos = (player.x + player.w / 2 - ATTACK_PROJ_SIZE[0] / 2, \
 						player.y + player.h / 2 - ATTACK_PROJ_SIZE[1] / 2)
-					projectiles.append(MovingBox(proj_pos, ATTACK_PROJ_SIZE, COLOR_ATTACK_PROJ, player.direction, 4, 4))
+					projectiles.append(WorldEntity(proj_pos, ATTACK_PROJ_SIZE, COLOR_ATTACK_PROJ, player.direction, 4, 4))
 			elif event.key == pygame.K_1:
 				try_use_health_potion(1)
 			elif event.key == pygame.K_2:
