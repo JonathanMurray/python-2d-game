@@ -152,18 +152,26 @@ def render_circle(entity):
     pygame.draw.ellipse(SCREEN, COLOR_BLUE, rect)
 
 
-def render_stat_bar(x, y, w, h, stat, max_stat, color):
+def _render_stat_bar(x, y, w, h, stat, max_stat, color):
     pygame.draw.rect(SCREEN, COLOR_WHITE, (x - 2, y - 2, w + 3, h + 3), 2)
     pygame.draw.rect(SCREEN, color, (x, y, w * stat / max_stat, h))
 
 
 def render_stat_bar_for_entity(world_entity, h, stat, max_stat, color):
-    render_stat_bar(world_entity.x - game_state.camera_world_area.x + 1,
-                    world_entity.y - game_state.camera_world_area.y - 10,
-                    world_entity.w - 2, h, stat, max_stat, color)
+    _render_stat_bar(world_entity.x - game_state.camera_world_area.x + 1,
+                     world_entity.y - game_state.camera_world_area.y - 10,
+                     world_entity.w - 2, h, stat, max_stat, color)
 
 
-def render_ui_potion(x, y, w, h, potion_number):
+def render_stat_bar_in_ui(x_in_ui, y_in_ui, w, h, stat, max_stat, color):
+    x = UI_SCREEN_AREA.x + x_in_ui
+    y = UI_SCREEN_AREA.y + y_in_ui
+    _render_stat_bar(x, y, w, h, stat, max_stat, color)
+
+
+def render_ui_potion(x_in_ui, y_in_ui, w, h, potion_number):
+    x = UI_SCREEN_AREA.x + x_in_ui
+    y = UI_SCREEN_AREA.y + y_in_ui
     pygame.draw.rect(SCREEN, (100, 100, 100), (x, y, w, h), 3)
     if game_state.health_potion_slots[potion_number]:
         pygame.draw.rect(SCREEN, (250, 50, 50), (x, y, w, h))
@@ -401,23 +409,22 @@ while True:
     pygame.draw.rect(SCREEN, COLOR_BLACK, (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
 
     SCREEN.blit(FONT_LARGE.render("Health", False, COLOR_WHITE), (UI_SCREEN_AREA.x + 10, UI_SCREEN_AREA.y + 10))
-    render_stat_bar(UI_SCREEN_AREA.x + 10, UI_SCREEN_AREA.y + 40, 100, 25, game_state.player_stats.health,
-                    game_state.player_stats.max_health, COLOR_RED)
+    render_stat_bar_in_ui(10, 40, 100, 25, game_state.player_stats.health, game_state.player_stats.max_health,
+                          COLOR_RED)
     health_text = str(game_state.player_stats.health) + "/" + str(game_state.player_stats.max_health)
     SCREEN.blit(FONT_LARGE.render(health_text, False, COLOR_WHITE), (UI_SCREEN_AREA.x + 30, UI_SCREEN_AREA.y + 43))
 
     SCREEN.blit(FONT_LARGE.render("Mana", False, COLOR_WHITE), (UI_SCREEN_AREA.x + 130, UI_SCREEN_AREA.y + 10))
-    render_stat_bar(UI_SCREEN_AREA.x + 130, UI_SCREEN_AREA.y + 40, 100, 25, game_state.player_stats.mana,
-                    game_state.player_stats.max_mana, COLOR_BLUE)
+    render_stat_bar_in_ui(130, 40, 100, 25, game_state.player_stats.mana, game_state.player_stats.max_mana, COLOR_BLUE)
     mana_text = str(game_state.player_stats.mana) + "/" + str(game_state.player_stats.max_mana)
     SCREEN.blit(FONT_LARGE.render(mana_text, False, COLOR_WHITE), (UI_SCREEN_AREA.x + 150, UI_SCREEN_AREA.y + 43))
 
     SCREEN.blit(FONT_LARGE.render("Potions", False, COLOR_WHITE), (UI_SCREEN_AREA.x + 250, UI_SCREEN_AREA.y + 10))
-    render_ui_potion(UI_SCREEN_AREA.x + 250, UI_SCREEN_AREA.y + 39, 27, 27, 1)
-    render_ui_potion(UI_SCREEN_AREA.x + 280, UI_SCREEN_AREA.y + 39, 27, 27, 2)
-    render_ui_potion(UI_SCREEN_AREA.x + 310, UI_SCREEN_AREA.y + 39, 27, 27, 3)
-    render_ui_potion(UI_SCREEN_AREA.x + 340, UI_SCREEN_AREA.y + 39, 27, 27, 4)
-    render_ui_potion(UI_SCREEN_AREA.x + 370, UI_SCREEN_AREA.y + 39, 27, 27, 5)
+    render_ui_potion(250, 39, 27, 27, 1)
+    render_ui_potion(280, 39, 27, 27, 2)
+    render_ui_potion(310, 39, 27, 27, 3)
+    render_ui_potion(340, 39, 27, 27, 4)
+    render_ui_potion(370, 39, 27, 27, 5)
 
     ui_text = "['A' to heal (" + str(HEAL_ABILITY_MANA_COST) + ")] " + \
               "['F' to attack (" + str(ATTACK_ABILITY_MANA_COST) + ")]"
