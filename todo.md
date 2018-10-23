@@ -13,3 +13,7 @@
 * More enemies with different types of AI
 * Save functionality
     * save the current game_state into a JSON file and load it on startup
+* Introduce "items" (wearables that give you some buff)
+    * Increased health/mana regen
+    * Unlocks a new ability
+    * Invisibility (enemies will not react to your presence)
