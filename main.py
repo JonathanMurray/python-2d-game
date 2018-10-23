@@ -1,18 +1,9 @@
 #!/usr/bin/env python3
 
-import math
 import pygame
 import sys
-from enum import Enum
-import random
-
-
-class WorldArea:
-    def __init__(self, pos, size):
-        self.x = pos[0]
-        self.y = pos[1]
-        self.w = size[0]
-        self.h = size[1]
+from common import Direction, boxes_intersect
+from game_state import GameState, WorldArea, WorldEntity, Enemy, PlayerAbilityStats
 
 
 class ScreenArea:
@@ -24,169 +15,6 @@ class ScreenArea:
 
     def rect(self):
         return self.x, self.y, self.w, self.h
-
-
-class Direction(Enum):
-    LEFT = 1
-    RIGHT = 2
-    UP = 3
-    DOWN = 4
-
-
-class WorldEntity:
-    def __init__(self, pos, size, color, direction=Direction.LEFT, speed=0, max_speed=0):
-        self.x = pos[0]
-        self.y = pos[1]
-        self.w = size[0]
-        self.h = size[1]
-        self.color = color
-        self.direction = direction
-        self.speed = speed
-        self.max_speed = max_speed
-
-    def set_moving_in_dir(self, direction):
-        self.direction = direction
-        self.speed = self.max_speed
-
-    def set_not_moving(self):
-        self.speed = 0
-
-    def update_position_according_to_dir_and_speed(self):
-        if self.direction == Direction.LEFT:
-            self.x -= self.speed
-        elif self.direction == Direction.RIGHT:
-            self.x += self.speed
-        elif self.direction == Direction.UP:
-            self.y -= self.speed
-        elif self.direction == Direction.DOWN:
-            self.y += self.speed
-
-    def get_center_x(self):
-        return self.x + self.w / 2
-
-    def get_center_y(self):
-        return self.y + self.h / 2
-
-
-class Enemy:
-    def __init__(self, world_entity, health, max_health):
-        self.world_entity = world_entity
-        self.health = health
-        self.max_health = max_health
-        self.movement_error_chance = 0.2
-
-    def run_ai_with_target(self, target_entity):
-        dx = target_entity.x - self.world_entity.x
-        dy = target_entity.y - self.world_entity.y
-        if abs(dx) > abs(dy):
-            if dx > 0:
-                direction = Direction.RIGHT
-            else:
-                direction = Direction.LEFT
-        else:
-            if dy < 0:
-                direction = Direction.UP
-            else:
-                direction = Direction.DOWN
-        if random.random() < self.movement_error_chance:
-            direction = random.choice(get_perpendicular_directions(direction))
-        self.world_entity.set_moving_in_dir(direction)
-
-
-def get_perpendicular_directions(direction):
-    if direction == direction.LEFT or direction == direction.RIGHT:
-        return [Direction.UP, Direction.DOWN]
-    else:
-        return [Direction.LEFT, Direction.RIGHT]
-
-
-class PlayerStats:
-    def __init__(self, health, max_health, mana, max_mana):
-        self.health = health
-        self.max_health = max_health
-        self.mana = mana
-        self._mana_float = mana
-        self.max_mana = max_mana
-
-    def gain_health(self, amount):
-        self.health = min(self.health + amount, self.max_health)
-
-    def lose_health(self, amount):
-        self.health -= amount
-
-    def gain_mana(self, amount):
-        self._mana_float = min(self._mana_float + amount, self.max_mana)
-        self.mana = int(math.floor(self._mana_float))
-
-    def lose_mana(self, amount):
-        self._mana_float -= amount
-        self.mana = int(math.floor(self._mana_float))
-
-
-class GameState:
-    def __init__(self, player_pos, potion_positions, enemy_positions):
-        self.camera_world_area = WorldArea((0, 0), CAMERA_SIZE)
-        self.player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, PLAYER_ENTITY_COLOR, Direction.RIGHT, 0,
-                                         PLAYER_ENTITY_SPEED)
-        self.projectile_entities = []
-        self.potion_entities = [WorldEntity(pos, POTION_ENTITY_SIZE, POTION_ENTITY_COLOR) for pos in potion_positions]
-        self.enemies = [Enemy(WorldEntity(pos, ENEMY_SIZE, ENEMY_COLOR, Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 2, 2)
-                        for pos in enemy_positions]
-        self.player_stats = PlayerStats(3, 20, 50, 100)
-        self.health_potion_slots = {
-            1: True,
-            2: False,
-            3: True,
-            4: True,
-            5: True
-        }
-
-    def remove_entities(self, entities_to_remove):
-        self.projectile_entities = [p for p in self.projectile_entities if p not in entities_to_remove]
-        self.potion_entities = [p for p in self.potion_entities if p not in entities_to_remove]
-        self.enemies = [e for e in self.enemies if e not in entities_to_remove]
-
-    def try_use_health_potion(self, number):
-        if self.health_potion_slots[number]:
-            self.health_potion_slots[number] = False
-            self.player_stats.gain_health(10)
-
-    # Returns whether or not potion was picked up (not picked up if no space for it)
-    def try_pick_up_potion(self):
-        empty_slots = [slot for slot in self.health_potion_slots if not self.health_potion_slots[slot]]
-        if len(empty_slots) > 0:
-            slot = empty_slots[0]
-            self.health_potion_slots[slot] = True
-            return True
-        else:
-            return False
-
-    def try_use_heal_ability(self):
-        if self.player_stats.mana >= HEAL_ABILITY_MANA_COST:
-            self.player_stats.lose_mana(HEAL_ABILITY_MANA_COST)
-            self.player_stats.gain_health(HEAL_ABILITY_AMOUNT)
-
-    def try_use_attack_ability(self):
-        if self.player_stats.mana >= ATTACK_ABILITY_MANA_COST:
-            self.player_stats.lose_mana(ATTACK_ABILITY_MANA_COST)
-            proj_pos = (self.player_entity.get_center_x() - ATTACK_PROJECTILE_SIZE[0] / 2,
-                        self.player_entity.get_center_y() - ATTACK_PROJECTILE_SIZE[1] / 2)
-            self.projectile_entities.append(WorldEntity(
-                proj_pos, ATTACK_PROJECTILE_SIZE, COLOR_ATTACK_PROJECTILE, self.player_entity.direction,
-                ATTACK_PROJECTILE_SPEED, ATTACK_PROJECTILE_SPEED))
-
-    def get_all_entities(self):
-        return [self.player_entity] + self.projectile_entities + self.potion_entities + [e.world_entity for e in
-                                                                                         self.enemies]
-
-    def center_camera_on_player(self):
-        self.camera_world_area.x = min(max(self.player_entity.x - CAMERA_SIZE[0] / 2, 0),
-                                       GAME_WORLD_SIZE[0] - CAMERA_SIZE[0])
-        self.camera_world_area.y = min(max(self.player_entity.y - CAMERA_SIZE[1] / 2, 0),
-                                       GAME_WORLD_SIZE[1] - CAMERA_SIZE[1])
-
-    def get_all_projectiles_that_intersect_with(self, entity):
-        return [p for p in self.projectile_entities if boxes_intersect(entity, p)]
 
 
 def render_entity(entity):
@@ -237,15 +65,6 @@ def render_rect_filled(color, rect):
     pygame.draw.rect(SCREEN, color, rect)
 
 
-def ranges_overlap(a_min, a_max, b_min, b_max):
-    return (a_min <= b_max) and (b_min <= a_max)
-
-
-def boxes_intersect(r1, r2):
-    return ranges_overlap(r1.x, r1.x + r1.w, r2.x, r2.x + r2.w) \
-           and ranges_overlap(r1.y, r1.y + r1.h, r2.y, r2.y + r2.h)
-
-
 def update_world_entity_position_within_game_boundary(world_entity):
     world_entity.update_position_according_to_dir_and_speed()
     world_entity.x = min(max(world_entity.x, 0), GAME_WORLD_SIZE[0] - world_entity.w)
@@ -270,7 +89,14 @@ def init_game_state_from_file():
                     potion_positions.append(game_world_pos)
                 col_index += 1
             row_index += 1
-    return GameState(player_pos, potion_positions, enemy_positions)
+    player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, PLAYER_ENTITY_COLOR, Direction.RIGHT, 0,
+                                PLAYER_ENTITY_SPEED)
+    potion_entities = [WorldEntity(pos, POTION_ENTITY_SIZE, POTION_ENTITY_COLOR) for pos in potion_positions]
+    enemies = [Enemy(WorldEntity(pos, ENEMY_SIZE, ENEMY_COLOR, Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 2, 2)
+               for pos in enemy_positions]
+    player_ability_stats = PlayerAbilityStats(HEAL_ABILITY_MANA_COST, HEAL_ABILITY_AMOUNT, ATTACK_ABILITY_MANA_COST,
+                                              ATTACK_PROJECTILE_SIZE, COLOR_ATTACK_PROJECTILE, ATTACK_PROJECTILE_SPEED)
+    return GameState(player_entity, potion_entities, enemies, CAMERA_SIZE, GAME_WORLD_SIZE, player_ability_stats)
 
 
 COLOR_ATTACK_PROJECTILE = (200, 5, 200)
@@ -283,7 +109,7 @@ COLOR_BACKGROUND = (200, 200, 200)
 SCREEN_SIZE = (700, 600)
 CAMERA_SIZE = (700, 500)
 UI_SCREEN_AREA = ScreenArea((0, CAMERA_SIZE[1]), (SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
-GAME_WORLD_SIZE = (1000, 1000)
+GAME_WORLD_SIZE = (1000, 1000)  # TODO move fully into game_state.py?
 ENTIRE_WORLD_AREA = WorldArea((0, 0), GAME_WORLD_SIZE)
 
 POTION_ENTITY_SIZE = (30, 30)
