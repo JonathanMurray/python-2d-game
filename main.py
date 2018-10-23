@@ -7,6 +7,7 @@ from common import boxes_intersect
 from game_world_init import init_game_state_from_file
 from user_input import *
 from view import View, ScreenArea
+from enemy_behavior import run_ai_for_enemy_against_target
 
 GAME_WORLD_SIZE = (1000, 1000)
 SCREEN_SIZE = (700, 600)
@@ -54,7 +55,8 @@ while True:
     if ticks_since_ai_ran > AI_RUN_INTERVAL:
         ticks_since_ai_ran = 0
         for e in game_state.enemies:
-            e.run_ai_with_target(game_state.player_entity)
+            direction = run_ai_for_enemy_against_target(e.world_entity, game_state.player_entity)
+            e.world_entity.set_moving_in_dir(direction)
 
     # ------------------------------------
     #         UPDATE MOVING ENTITIES

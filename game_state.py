@@ -1,5 +1,4 @@
 import math
-import random
 from common import Direction, boxes_intersect
 
 
@@ -51,24 +50,6 @@ class Enemy:
         self.world_entity = world_entity
         self.health = health
         self.max_health = max_health
-        self.movement_error_chance = 0.2
-
-    def run_ai_with_target(self, target_entity):
-        dx = target_entity.x - self.world_entity.x
-        dy = target_entity.y - self.world_entity.y
-        if abs(dx) > abs(dy):
-            if dx > 0:
-                direction = Direction.RIGHT
-            else:
-                direction = Direction.LEFT
-        else:
-            if dy < 0:
-                direction = Direction.UP
-            else:
-                direction = Direction.DOWN
-        if random.random() < self.movement_error_chance:
-            direction = random.choice(get_perpendicular_directions(direction))
-        self.world_entity.set_moving_in_dir(direction)
 
 
 class PlayerStats:
@@ -181,10 +162,3 @@ class GameState:
 
     def is_within_game_world(self, box):
         return boxes_intersect(box, self.entire_world_area)
-
-
-def get_perpendicular_directions(direction):
-    if direction == direction.LEFT or direction == direction.RIGHT:
-        return [Direction.UP, Direction.DOWN]
-    else:
-        return [Direction.LEFT, Direction.RIGHT]
