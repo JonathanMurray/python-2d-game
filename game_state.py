@@ -124,6 +124,7 @@ class GameState:
         }
         self.game_world_size = game_world_size
         self.player_ability_stats = player_ability_stats
+        self.entire_world_area = WorldArea((0, 0), self.game_world_size)
 
     def remove_entities(self, entities_to_remove):
         self.projectile_entities = [p for p in self.projectile_entities if p not in entities_to_remove]
@@ -172,6 +173,14 @@ class GameState:
 
     def get_all_projectiles_that_intersect_with(self, entity):
         return [p for p in self.projectile_entities if boxes_intersect(entity, p)]
+
+    def update_world_entity_position_within_game_world(self, world_entity):
+        world_entity.update_position_according_to_dir_and_speed()
+        world_entity.x = min(max(world_entity.x, 0), self.game_world_size[0] - world_entity.w)
+        world_entity.y = min(max(world_entity.y, 0), self.game_world_size[1] - world_entity.h)
+
+    def is_within_game_world(self, box):
+        return boxes_intersect(box, self.entire_world_area)
 
 
 def get_perpendicular_directions(direction):

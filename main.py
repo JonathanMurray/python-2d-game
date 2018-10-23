@@ -4,22 +4,12 @@ import pygame
 import sys
 
 from common import Direction, boxes_intersect
-from game_state import WorldArea
 from game_world_init import init_game_state_from_file
 from view import View, ScreenArea
 
-
-def update_world_entity_position_within_game_boundary(world_entity):
-    world_entity.update_position_according_to_dir_and_speed()
-    world_entity.x = min(max(world_entity.x, 0), GAME_WORLD_SIZE[0] - world_entity.w)
-    world_entity.y = min(max(world_entity.y, 0), GAME_WORLD_SIZE[1] - world_entity.h)
-
-
+GAME_WORLD_SIZE = (1000, 1000)
 SCREEN_SIZE = (700, 600)
 CAMERA_SIZE = (700, 500)
-
-GAME_WORLD_SIZE = (1000, 1000)  # TODO move fully into game_state.py?
-ENTIRE_WORLD_AREA = WorldArea((0, 0), GAME_WORLD_SIZE)  # TODO Move into game_state.py? (stop depending on WorldArea)
 
 PYGAME_MOVEMENT_KEYS = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
 DIRECTION_BY_PYGAME_MOVEMENT_KEY = {
@@ -98,8 +88,8 @@ while True:
     for e in game_state.enemies:
         # Enemies shouldn't move towards player when they are out of sight
         if boxes_intersect(e.world_entity, game_state.camera_world_area):
-            update_world_entity_position_within_game_boundary(e.world_entity)
-    update_world_entity_position_within_game_boundary(game_state.player_entity)
+            game_state.update_world_entity_position_within_game_world(e.world_entity)
+    game_state.update_world_entity_position_within_game_world(game_state.player_entity)
     for projectile in game_state.projectile_entities:
         projectile.update_position_according_to_dir_and_speed()
 
@@ -109,7 +99,7 @@ while True:
 
     entities_to_remove = []
     for projectile in game_state.projectile_entities:
-        if not boxes_intersect(projectile, ENTIRE_WORLD_AREA):
+        if not game_state.is_within_game_world(projectile):
             entities_to_remove.append(projectile)
     for potion in game_state.potion_entities:
         if boxes_intersect(game_state.player_entity, potion):
