@@ -65,6 +65,46 @@ def render_rect_filled(color, rect):
     pygame.draw.rect(SCREEN, color, rect)
 
 
+def render_everything(all_entities, camera_world_area, player_entity, enemies, player_health, player_max_health,
+                      player_mana, player_max_mana, health_potion_slots):
+    SCREEN.fill(COLOR_BACKGROUND)
+    for entity in all_entities:
+        render_entity(entity, camera_world_area)
+    render_circle(player_entity, camera_world_area)
+
+    for enemy in enemies:
+        render_stat_bar_for_entity(enemy.world_entity, 5, enemy.health, enemy.max_health, COLOR_RED,
+                                   camera_world_area)
+
+    render_rect(COLOR_BLACK, (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
+    render_rect_filled(COLOR_BLACK, (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
+
+    render_ui_text(FONT_LARGE, "Health", 10, 10)
+    render_stat_bar_in_ui(10, 40, 100, 25, player_health, player_max_health,
+                          COLOR_RED)
+    health_text = str(player_health) + "/" + str(player_max_health)
+    render_ui_text(FONT_LARGE, health_text, 30, 43)
+
+    render_ui_text(FONT_LARGE, "Mana", 130, 10)
+    render_stat_bar_in_ui(130, 40, 100, 25, player_mana, player_max_mana, COLOR_BLUE)
+    mana_text = str(player_mana) + "/" + str(player_max_mana)
+    render_ui_text(FONT_LARGE, mana_text, 150, 43)
+
+    render_ui_text(FONT_LARGE, "Potions", 250, 10)
+    render_ui_potion(250, 39, 27, 27, 1, has_potion=health_potion_slots[1])
+    render_ui_potion(280, 39, 27, 27, 2, has_potion=health_potion_slots[2])
+    render_ui_potion(310, 39, 27, 27, 3, has_potion=health_potion_slots[3])
+    render_ui_potion(340, 39, 27, 27, 4, has_potion=health_potion_slots[4])
+    render_ui_potion(370, 39, 27, 27, 5, has_potion=health_potion_slots[5])
+
+    ui_text = "['A' to heal (" + str(HEAL_ABILITY_MANA_COST) + ")] " + \
+              "['F' to attack (" + str(ATTACK_ABILITY_MANA_COST) + ")]"
+    render_ui_text(FONT_SMALL, ui_text, 20, 75)
+
+    render_rect(COLOR_WHITE, UI_SCREEN_AREA.rect(), 1)
+    pygame.display.update()
+
+
 def update_world_entity_position_within_game_boundary(world_entity):
     world_entity.update_position_according_to_dir_and_speed()
     world_entity.x = min(max(world_entity.x, 0), GAME_WORLD_SIZE[0] - world_entity.w)
@@ -247,39 +287,7 @@ while True:
     #         RENDER EVERYTHING
     # ------------------------------------
 
-    SCREEN.fill(COLOR_BACKGROUND)
-    for entity in game_state.get_all_entities():
-        render_entity(entity, game_state.camera_world_area)
-    render_circle(game_state.player_entity, game_state.camera_world_area)
-
-    for enemy in game_state.enemies:
-        render_stat_bar_for_entity(enemy.world_entity, 5, enemy.health, enemy.max_health, COLOR_RED,
-                                   game_state.camera_world_area)
-
-    render_rect(COLOR_BLACK, (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
-    render_rect_filled(COLOR_BLACK, (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
-
-    render_ui_text(FONT_LARGE, "Health", 10, 10)
-    render_stat_bar_in_ui(10, 40, 100, 25, game_state.player_stats.health, game_state.player_stats.max_health,
-                          COLOR_RED)
-    health_text = str(game_state.player_stats.health) + "/" + str(game_state.player_stats.max_health)
-    render_ui_text(FONT_LARGE, health_text, 30, 43)
-
-    render_ui_text(FONT_LARGE, "Mana", 130, 10)
-    render_stat_bar_in_ui(130, 40, 100, 25, game_state.player_stats.mana, game_state.player_stats.max_mana, COLOR_BLUE)
-    mana_text = str(game_state.player_stats.mana) + "/" + str(game_state.player_stats.max_mana)
-    render_ui_text(FONT_LARGE, mana_text, 150, 43)
-
-    render_ui_text(FONT_LARGE, "Potions", 250, 10)
-    render_ui_potion(250, 39, 27, 27, 1, has_potion=game_state.health_potion_slots[1])
-    render_ui_potion(280, 39, 27, 27, 2, has_potion=game_state.health_potion_slots[2])
-    render_ui_potion(310, 39, 27, 27, 3, has_potion=game_state.health_potion_slots[3])
-    render_ui_potion(340, 39, 27, 27, 4, has_potion=game_state.health_potion_slots[4])
-    render_ui_potion(370, 39, 27, 27, 5, has_potion=game_state.health_potion_slots[5])
-
-    ui_text = "['A' to heal (" + str(HEAL_ABILITY_MANA_COST) + ")] " + \
-              "['F' to attack (" + str(ATTACK_ABILITY_MANA_COST) + ")]"
-    render_ui_text(FONT_SMALL, ui_text, 20, 75)
-
-    render_rect(COLOR_WHITE, UI_SCREEN_AREA.rect(), 1)
-    pygame.display.update()
+    render_everything(game_state.get_all_entities(), game_state.camera_world_area,
+                      game_state.player_entity, game_state.enemies, game_state.player_stats.health,
+                      game_state.player_stats.max_health, game_state.player_stats.mana, 
+                      game_state.player_stats.max_mana, game_state.health_potion_slots)
