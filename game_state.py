@@ -72,12 +72,13 @@ class Enemy:
 
 
 class PlayerStats:
-    def __init__(self, health, max_health, mana, max_mana):
+    def __init__(self, health, max_health, mana, max_mana, mana_regen):
         self.health = health
         self.max_health = max_health
         self.mana = mana
         self._mana_float = mana
         self.max_mana = max_mana
+        self.mana_regen = mana_regen
 
     def gain_health(self, amount):
         self.health = min(self.health + amount, self.max_health)
@@ -113,7 +114,7 @@ class GameState:
         self.projectile_entities = []
         self.potion_entities = potion_entities
         self.enemies = enemies
-        self.player_stats = PlayerStats(3, 20, 50, 100)
+        self.player_stats = PlayerStats(3, 20, 50, 100, 0.03)
         self.health_potion_slots = {
             1: True,
             2: False,

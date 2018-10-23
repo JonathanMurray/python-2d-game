@@ -21,8 +21,6 @@ CAMERA_SIZE = (700, 500)
 GAME_WORLD_SIZE = (1000, 1000)  # TODO move fully into game_state.py?
 ENTIRE_WORLD_AREA = WorldArea((0, 0), GAME_WORLD_SIZE)  # TODO Move into game_state.py? (stop depending on WorldArea)
 
-PLAYER_MANA_REGEN = 0.03  # TODO This value should be kept in game_state.py
-
 PYGAME_MOVEMENT_KEYS = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
 DIRECTION_BY_PYGAME_MOVEMENT_KEY = {
     pygame.K_LEFT: Direction.LEFT,
@@ -133,7 +131,7 @@ while True:
     #         REGEN MANA
     # ------------------------------------
 
-    game_state.player_stats.gain_mana(PLAYER_MANA_REGEN)
+    game_state.player_stats.gain_mana(game_state.player_stats.mana_regen)
 
     # ------------------------------------
     #         UPDATE CAMERA POSITION
