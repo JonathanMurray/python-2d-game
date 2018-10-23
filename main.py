@@ -17,13 +17,13 @@ class ScreenArea:
         return self.x, self.y, self.w, self.h
 
 
-def render_entity(entity):
-    rect = (entity.x - game_state.camera_world_area.x, entity.y - game_state.camera_world_area.y, entity.w, entity.h)
+def render_entity(entity, camera_world_area):
+    rect = (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h)
     pygame.draw.rect(SCREEN, entity.color, rect)
 
 
-def render_circle(entity):
-    rect = (entity.x - game_state.camera_world_area.x, entity.y - game_state.camera_world_area.y, entity.w, entity.h)
+def render_circle(entity, camera_world_area):
+    rect = (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h)
     pygame.draw.ellipse(SCREEN, COLOR_BLUE, rect)
 
 
@@ -32,9 +32,9 @@ def _render_stat_bar(x, y, w, h, stat, max_stat, color):
     pygame.draw.rect(SCREEN, color, (x, y, w * stat / max_stat, h))
 
 
-def render_stat_bar_for_entity(world_entity, h, stat, max_stat, color):
-    _render_stat_bar(world_entity.x - game_state.camera_world_area.x + 1,
-                     world_entity.y - game_state.camera_world_area.y - 10,
+def render_stat_bar_for_entity(world_entity, h, stat, max_stat, color, camera_world_area):
+    _render_stat_bar(world_entity.x - camera_world_area.x + 1,
+                     world_entity.y - camera_world_area.y - 10,
                      world_entity.w - 2, h, stat, max_stat, color)
 
 
@@ -44,11 +44,11 @@ def render_stat_bar_in_ui(x_in_ui, y_in_ui, w, h, stat, max_stat, color):
     _render_stat_bar(x, y, w, h, stat, max_stat, color)
 
 
-def render_ui_potion(x_in_ui, y_in_ui, w, h, potion_number):
+def render_ui_potion(x_in_ui, y_in_ui, w, h, potion_number, has_potion):
     x = UI_SCREEN_AREA.x + x_in_ui
     y = UI_SCREEN_AREA.y + y_in_ui
     pygame.draw.rect(SCREEN, (100, 100, 100), (x, y, w, h), 3)
-    if game_state.health_potion_slots[potion_number]:
+    if has_potion:
         pygame.draw.rect(SCREEN, (250, 50, 50), (x, y, w, h))
     SCREEN.blit(FONT_LARGE.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + 5))
 
@@ -249,11 +249,12 @@ while True:
 
     SCREEN.fill(COLOR_BACKGROUND)
     for entity in game_state.get_all_entities():
-        render_entity(entity)
-    render_circle(game_state.player_entity)
+        render_entity(entity, game_state.camera_world_area)
+    render_circle(game_state.player_entity, game_state.camera_world_area)
 
     for enemy in game_state.enemies:
-        render_stat_bar_for_entity(enemy.world_entity, 5, enemy.health, enemy.max_health, COLOR_RED)
+        render_stat_bar_for_entity(enemy.world_entity, 5, enemy.health, enemy.max_health, COLOR_RED,
+                                   game_state.camera_world_area)
 
     render_rect(COLOR_BLACK, (0, 0, CAMERA_SIZE[0], CAMERA_SIZE[1]), 3)
     render_rect_filled(COLOR_BLACK, (0, CAMERA_SIZE[1], SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
@@ -270,11 +271,11 @@ while True:
     render_ui_text(FONT_LARGE, mana_text, 150, 43)
 
     render_ui_text(FONT_LARGE, "Potions", 250, 10)
-    render_ui_potion(250, 39, 27, 27, 1)
-    render_ui_potion(280, 39, 27, 27, 2)
-    render_ui_potion(310, 39, 27, 27, 3)
-    render_ui_potion(340, 39, 27, 27, 4)
-    render_ui_potion(370, 39, 27, 27, 5)
+    render_ui_potion(250, 39, 27, 27, 1, has_potion=game_state.health_potion_slots[1])
+    render_ui_potion(280, 39, 27, 27, 2, has_potion=game_state.health_potion_slots[2])
+    render_ui_potion(310, 39, 27, 27, 3, has_potion=game_state.health_potion_slots[3])
+    render_ui_potion(340, 39, 27, 27, 4, has_potion=game_state.health_potion_slots[4])
+    render_ui_potion(370, 39, 27, 27, 5, has_potion=game_state.health_potion_slots[5])
 
     ui_text = "['A' to heal (" + str(HEAL_ABILITY_MANA_COST) + ")] " + \
               "['F' to attack (" + str(ATTACK_ABILITY_MANA_COST) + ")]"
