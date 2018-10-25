@@ -49,6 +49,8 @@ def get_user_actions():
                 actions.append(ActionTryUseAbility(AbilityType.ATTACK))
             elif event.key == pygame.K_w:
                 actions.append(ActionTryUseAbility(AbilityType.HEAL))
+            elif event.key == pygame.K_e:
+                actions.append(ActionTryUseAbility(AbilityType.AOE_ATTACK))
             elif event.key == pygame.K_1:
                 actions.append(ActionTryUsePotion(1))
             elif event.key == pygame.K_2:

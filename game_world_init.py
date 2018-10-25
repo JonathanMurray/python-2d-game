@@ -17,6 +17,7 @@ ATTACK_PROJECTILE_SPEED = 4
 HEAL_ABILITY_MANA_COST = 10
 HEAL_ABILITY_AMOUNT = 10
 ATTACK_ABILITY_MANA_COST = 5
+AOE_ATTACK_ABILITY_MANA_COST = 5
 
 
 def init_game_state_from_file(game_world_size, camera_size):
@@ -49,5 +50,6 @@ def init_game_state_from_file(game_world_size, camera_size):
               [Enemy(WorldEntity(pos, ENEMY_SIZE, ENEMY_2_COLOR, Direction.LEFT, ENEMY_2_SPEED, ENEMY_2_SPEED), 5, 5,
                      EnemyBehavior.SMART) for pos in smart_enemy_positions]
     player_ability_stats = PlayerAbilityStats(HEAL_ABILITY_MANA_COST, HEAL_ABILITY_AMOUNT, ATTACK_ABILITY_MANA_COST,
-                                              ATTACK_PROJECTILE_SIZE, COLOR_ATTACK_PROJECTILE, ATTACK_PROJECTILE_SPEED)
+                                              ATTACK_PROJECTILE_SIZE, COLOR_ATTACK_PROJECTILE, ATTACK_PROJECTILE_SPEED,
+                                              AOE_ATTACK_ABILITY_MANA_COST)
     return GameState(player_entity, potions, enemies, camera_size, game_world_size, player_ability_stats)

@@ -73,7 +73,7 @@ class View:
 
     def render_everything(self, all_entities, camera_world_area, player_entity, enemies, player_health,
                           player_max_health, player_mana, player_max_mana, potion_slots, heal_ability_mana_cost,
-                          attack_ability_mana_cost):
+                          attack_ability_mana_cost, aoe_attack_ability_mana_cost):
         self.screen.fill(COLOR_BACKGROUND)
         for entity in all_entities:
             self._render_entity(entity, camera_world_area)
@@ -106,7 +106,8 @@ class View:
         self._render_ui_potion(370, 39, 27, 27, 5, potion_type=potion_slots[5])
 
         ui_text = "Abilities: Q(" + str(attack_ability_mana_cost) + ") " + \
-                  "W(" + str(heal_ability_mana_cost) + ")"
+                  "W(" + str(heal_ability_mana_cost) + ") " + \
+                  "E(" + str(aoe_attack_ability_mana_cost) + ")"
         self._render_ui_text(self.font_small, ui_text, 20, 75)
 
         self._render_rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)

@@ -51,6 +51,21 @@ class WorldEntity:
         return self.y + self.h / 2
 
 
+class Projectile:
+    def __init__(self, world_entity, time_until_active, time_until_expiration):
+        self.world_entity = world_entity
+        self.time_until_active = time_until_active
+        self.time_until_expiration = time_until_expiration
+        self.active = self.time_until_active <= 0
+        self.has_expired = self.time_until_expiration <= 0
+
+    def notify_time_passed(self, time_passed):
+        self.time_until_active -= time_passed
+        self.active = self.time_until_active <= 0
+        self.time_until_expiration -= time_passed
+        self.has_expired = self.time_until_expiration <= 0
+
+
 class Enemy:
     def __init__(self, world_entity, health, max_health, enemy_behavior):
         self.world_entity = world_entity
@@ -109,13 +124,14 @@ class PlayerStats:
 
 class PlayerAbilityStats:
     def __init__(self, heal_ability_mana_cost, heal_ability_amount, attack_ability_mana_cost, attack_projectile_size,
-                 attack_projectile_color, attack_projectile_speed):
+                 attack_projectile_color, attack_projectile_speed, aoe_attack_ability_mana_cost):
         self.heal_ability_mana_cost = heal_ability_mana_cost
         self.heal_ability_amount = heal_ability_amount
         self.attack_ability_mana_cost = attack_ability_mana_cost
         self.attack_projectile_size = attack_projectile_size
         self.attack_projectile_color = attack_projectile_color
         self.attack_projectile_speed = attack_projectile_speed
+        self.aoe_attack_ability_mana_cost = aoe_attack_ability_mana_cost
 
 
 class GameState:
@@ -142,6 +158,10 @@ class GameState:
             self._try_use_attack_ability()
         elif ability_type == AbilityType.HEAL:
             self._try_use_heal_ability()
+        elif ability_type == AbilityType.AOE_ATTACK:
+            self._try_use_aoe_attack_ability()
+        else:
+            raise Exception("Unhandled ability type: " + str(ability_type))
 
     def _try_use_heal_ability(self):
         if self.player_stats.mana >= self.player_ability_stats.heal_ability_mana_cost:
@@ -153,14 +173,36 @@ class GameState:
             self.player_stats.lose_mana(self.player_ability_stats.attack_ability_mana_cost)
             proj_pos = (self.player_entity.get_center_x() - self.player_ability_stats.attack_projectile_size[0] / 2,
                         self.player_entity.get_center_y() - self.player_ability_stats.attack_projectile_size[1] / 2)
-            self.projectile_entities.append(WorldEntity(
-                proj_pos, self.player_ability_stats.attack_projectile_size,
-                self.player_ability_stats.attack_projectile_color, self.player_entity.direction,
-                self.player_ability_stats.attack_projectile_speed, self.player_ability_stats.attack_projectile_speed))
+            entity = WorldEntity(proj_pos, self.player_ability_stats.attack_projectile_size,
+                                 self.player_ability_stats.attack_projectile_color, self.player_entity.direction,
+                                 self.player_ability_stats.attack_projectile_speed,
+                                 self.player_ability_stats.attack_projectile_speed)
+            self.projectile_entities.append(Projectile(entity, 0, 3000))
+
+    def _try_use_aoe_attack_ability(self):
+        if self.player_stats.mana >= self.player_ability_stats.aoe_attack_ability_mana_cost:
+            self.player_stats.lose_mana(self.player_ability_stats.aoe_attack_ability_mana_cost)
+            direction = self.player_entity.direction
+            x = self.player_entity.get_center_x()
+            y = self.player_entity.get_center_y()
+            box_w = 100
+            distance = 100
+            if direction == Direction.RIGHT:
+                aoe_pos = (x + distance - box_w / 2, y - box_w / 2)
+            elif direction == Direction.DOWN:
+                aoe_pos = (x - box_w / 2, y + distance - box_w / 2)
+            elif direction == Direction.LEFT:
+                aoe_pos = (x - distance - box_w / 2, y - box_w / 2)
+            elif direction == Direction.UP:
+                aoe_pos = (x - box_w / 2, y - distance - box_w / 2)
+            projectile_speed = 3
+            entity = WorldEntity(aoe_pos, (box_w, box_w), self.player_ability_stats.attack_projectile_color,
+                                 self.player_entity.direction, projectile_speed, projectile_speed)
+            self.projectile_entities.append(Projectile(entity, 150, 350))
 
     def get_all_entities(self):
-        return [self.player_entity] + self.projectile_entities + [p.world_entity for p in self.potions] + \
-               [e.world_entity for e in self.enemies]
+        return [self.player_entity] + [p.world_entity for p in self.projectile_entities] + \
+               [p.world_entity for p in self.potions] + [e.world_entity for e in self.enemies]
 
     def center_camera_on_player(self):
         self.camera_world_area.x = min(max(self.player_entity.x - self.camera_size[0] / 2, 0),
@@ -168,8 +210,8 @@ class GameState:
         self.camera_world_area.y = min(max(self.player_entity.y - self.camera_size[1] / 2, 0),
                                        self.game_world_size[1] - self.camera_size[1])
 
-    def get_all_projectiles_that_intersect_with(self, entity):
-        return [p for p in self.projectile_entities if boxes_intersect(entity, p)]
+    def get_all_active_projectiles_that_intersect_with(self, entity):
+        return [p for p in self.projectile_entities if boxes_intersect(entity, p.world_entity) and p.active]
 
     def update_world_entity_position_within_game_world(self, world_entity):
         world_entity.update_position_according_to_dir_and_speed()

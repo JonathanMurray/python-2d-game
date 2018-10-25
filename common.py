@@ -30,3 +30,4 @@ class EnemyBehavior(Enum):
 class AbilityType(Enum):
     HEAL = 1
     ATTACK = 2
+    AOE_ATTACK = 3

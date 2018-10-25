@@ -49,7 +49,8 @@ while True:
     # ------------------------------------
 
     clock.tick()
-    ticks_since_ai_ran += clock.get_time()
+    time_passed = clock.get_time()
+    ticks_since_ai_ran += time_passed
     if ticks_since_ai_ran > AI_RUN_INTERVAL:
         ticks_since_ai_ran = 0
         for e in game_state.enemies:
@@ -66,7 +67,7 @@ while True:
             game_state.update_world_entity_position_within_game_world(e.world_entity)
     game_state.update_world_entity_position_within_game_world(game_state.player_entity)
     for projectile in game_state.projectile_entities:
-        projectile.update_position_according_to_dir_and_speed()
+        projectile.world_entity.update_position_according_to_dir_and_speed()
 
     # ------------------------------------
     #         HANDLE COLLISIONS
@@ -74,7 +75,10 @@ while True:
 
     entities_to_remove = []
     for projectile in game_state.projectile_entities:
-        if not game_state.is_within_game_world(projectile):
+        projectile.notify_time_passed(time_passed)
+        if projectile.has_expired:
+            entities_to_remove.append(projectile)
+        if not game_state.is_within_game_world(projectile.world_entity):
             entities_to_remove.append(projectile)
     for potion in game_state.potions:
         if boxes_intersect(game_state.player_entity, potion.world_entity):
@@ -85,7 +89,7 @@ while True:
         if boxes_intersect(game_state.player_entity, enemy.world_entity):
             entities_to_remove.append(enemy)
             game_state.player_stats.lose_health(2)
-        for projectile in game_state.get_all_projectiles_that_intersect_with(enemy.world_entity):
+        for projectile in game_state.get_all_active_projectiles_that_intersect_with(enemy.world_entity):
             enemy.health -= 1
             if enemy.health <= 0:
                 entities_to_remove.append(enemy)
@@ -118,4 +122,5 @@ while True:
                            player_max_mana=game_state.player_stats.max_mana,
                            potion_slots=game_state.player_stats.potion_slots,
                            heal_ability_mana_cost=game_state.player_ability_stats.heal_ability_mana_cost,
-                           attack_ability_mana_cost=game_state.player_ability_stats.attack_ability_mana_cost)
+                           attack_ability_mana_cost=game_state.player_ability_stats.attack_ability_mana_cost,
+                           aoe_attack_ability_mana_cost=game_state.player_ability_stats.aoe_attack_ability_mana_cost)
