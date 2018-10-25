@@ -1,5 +1,7 @@
 import pygame
 
+from common import PotionType
+
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
 COLOR_RED = (250, 0, 0)
@@ -50,12 +52,14 @@ class View:
         y = self.ui_screen_area.y + y_in_ui
         self._render_stat_bar(x, y, w, h, stat, max_stat, color)
 
-    def _render_ui_potion(self, x_in_ui, y_in_ui, w, h, potion_number, has_potion):
+    def _render_ui_potion(self, x_in_ui, y_in_ui, w, h, potion_number, potion_type):
         x = self.ui_screen_area.x + x_in_ui
         y = self.ui_screen_area.y + y_in_ui
         pygame.draw.rect(self.screen, (100, 100, 100), (x, y, w, h), 3)
-        if has_potion:
+        if potion_type == PotionType.HEALTH:
             pygame.draw.rect(self.screen, (250, 50, 50), (x, y, w, h))
+        if potion_type == PotionType.MANA:
+            pygame.draw.rect(self.screen, (50, 50, 250), (x, y, w, h))
         self.screen.blit(self.font_large.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + 5))
 
     def _render_ui_text(self, font, text, x, y):
@@ -68,8 +72,7 @@ class View:
         pygame.draw.rect(self.screen, color, rect)
 
     def render_everything(self, all_entities, camera_world_area, player_entity, enemies, player_health,
-                          player_max_health,
-                          player_mana, player_max_mana, health_potion_slots, heal_ability_mana_cost,
+                          player_max_health, player_mana, player_max_mana, potion_slots, heal_ability_mana_cost,
                           attack_ability_mana_cost):
         self.screen.fill(COLOR_BACKGROUND)
         for entity in all_entities:
@@ -96,11 +99,11 @@ class View:
         self._render_ui_text(self.font_large, mana_text, 150, 43)
 
         self._render_ui_text(self.font_large, "Potions", 250, 10)
-        self._render_ui_potion(250, 39, 27, 27, 1, has_potion=health_potion_slots[1])
-        self._render_ui_potion(280, 39, 27, 27, 2, has_potion=health_potion_slots[2])
-        self._render_ui_potion(310, 39, 27, 27, 3, has_potion=health_potion_slots[3])
-        self._render_ui_potion(340, 39, 27, 27, 4, has_potion=health_potion_slots[4])
-        self._render_ui_potion(370, 39, 27, 27, 5, has_potion=health_potion_slots[5])
+        self._render_ui_potion(250, 39, 27, 27, 1, potion_type=potion_slots[1])
+        self._render_ui_potion(280, 39, 27, 27, 2, potion_type=potion_slots[2])
+        self._render_ui_potion(310, 39, 27, 27, 3, potion_type=potion_slots[3])
+        self._render_ui_potion(340, 39, 27, 27, 4, potion_type=potion_slots[4])
+        self._render_ui_potion(370, 39, 27, 27, 5, potion_type=potion_slots[5])
 
         ui_text = "['A' to heal (" + str(heal_ability_mana_cost) + ")] " + \
                   "['F' to attack (" + str(attack_ability_mana_cost) + ")]"

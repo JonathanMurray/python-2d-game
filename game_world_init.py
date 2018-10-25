@@ -1,5 +1,5 @@
-from game_state import WorldEntity, Enemy, PlayerAbilityStats, GameState
-from common import Direction
+from game_state import WorldEntity, Enemy, PlayerAbilityStats, GameState, Potion
+from common import Direction, PotionType
 
 COLOR_ATTACK_PROJECTILE = (200, 5, 200)
 POTION_ENTITY_SIZE = (30, 30)
@@ -37,9 +37,10 @@ def init_game_state_from_file(game_world_size, camera_size):
             row_index += 1
     player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, PLAYER_ENTITY_COLOR, Direction.RIGHT, 0,
                                 PLAYER_ENTITY_SPEED)
-    potion_entities = [WorldEntity(pos, POTION_ENTITY_SIZE, POTION_ENTITY_COLOR) for pos in potion_positions]
+    potions = [Potion(WorldEntity(pos, POTION_ENTITY_SIZE, POTION_ENTITY_COLOR), PotionType.HEALTH)
+               for pos in potion_positions]
     enemies = [Enemy(WorldEntity(pos, ENEMY_SIZE, ENEMY_COLOR, Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 2, 2)
                for pos in enemy_positions]
     player_ability_stats = PlayerAbilityStats(HEAL_ABILITY_MANA_COST, HEAL_ABILITY_AMOUNT, ATTACK_ABILITY_MANA_COST,
                                               ATTACK_PROJECTILE_SIZE, COLOR_ATTACK_PROJECTILE, ATTACK_PROJECTILE_SPEED)
-    return GameState(player_entity, potion_entities, enemies, camera_size, game_world_size, player_ability_stats)
+    return GameState(player_entity, potions, enemies, camera_size, game_world_size, player_ability_stats)

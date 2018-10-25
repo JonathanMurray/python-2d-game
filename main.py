@@ -40,7 +40,7 @@ while True:
         elif isinstance(action, ActionTryUseAttackAbility):
             game_state.try_use_attack_ability()
         elif isinstance(action, ActionTryUseHealthPotion):
-            game_state.player_stats.try_use_health_potion(action.slot_number)
+            game_state.player_stats.try_use_potion(action.slot_number)
         elif isinstance(action, ActionMoveInDirection):
             game_state.player_entity.set_moving_in_dir(action.direction)
         elif isinstance(action, ActionStopMoving):
@@ -78,9 +78,9 @@ while True:
     for projectile in game_state.projectile_entities:
         if not game_state.is_within_game_world(projectile):
             entities_to_remove.append(projectile)
-    for potion in game_state.potion_entities:
-        if boxes_intersect(game_state.player_entity, potion):
-            did_pick_up = game_state.player_stats.try_pick_up_potion()
+    for potion in game_state.potions:
+        if boxes_intersect(game_state.player_entity, potion.world_entity):
+            did_pick_up = game_state.player_stats.try_pick_up_potion(potion.potion_type)
             if did_pick_up:
                 entities_to_remove.append(potion)
     for enemy in game_state.enemies:
@@ -118,6 +118,6 @@ while True:
                            player_max_health=game_state.player_stats.max_health,
                            player_mana=game_state.player_stats.mana,
                            player_max_mana=game_state.player_stats.max_mana,
-                           health_potion_slots=game_state.player_stats.health_potion_slots,
+                           potion_slots=game_state.player_stats.potion_slots,
                            heal_ability_mana_cost=game_state.player_ability_stats.heal_ability_mana_cost,
                            attack_ability_mana_cost=game_state.player_ability_stats.attack_ability_mana_cost)

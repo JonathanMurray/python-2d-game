@@ -1,5 +1,11 @@
 import math
-from common import Direction, boxes_intersect
+from common import Direction, boxes_intersect, PotionType
+
+
+class Potion:
+    def __init__(self, world_entity, potion_type):
+        self.world_entity = world_entity
+        self.potion_type = potion_type
 
 
 class WorldArea:
@@ -60,12 +66,12 @@ class PlayerStats:
         self._mana_float = mana
         self.max_mana = max_mana
         self.mana_regen = mana_regen
-        self.health_potion_slots = {
-            1: True,
-            2: False,
-            3: True,
-            4: True,
-            5: True
+        self.potion_slots = {
+            1: PotionType.HEALTH,
+            2: None,
+            3: PotionType.HEALTH,
+            4: PotionType.MANA,
+            5: PotionType.MANA
         }
 
     def gain_health(self, amount):
@@ -82,17 +88,19 @@ class PlayerStats:
         self._mana_float -= amount
         self.mana = int(math.floor(self._mana_float))
 
-    def try_use_health_potion(self, number):
-        if self.health_potion_slots[number]:
-            self.health_potion_slots[number] = False
+    def try_use_potion(self, number):
+        if self.potion_slots[number] == PotionType.HEALTH:
             self.gain_health(10)
+        elif self.potion_slots[number] == PotionType.MANA:
+            self.gain_mana(25)
+        self.potion_slots[number] = None
 
     # Returns whether or not potion was picked up (not picked up if no space for it)
-    def try_pick_up_potion(self):
-        empty_slots = [slot for slot in self.health_potion_slots if not self.health_potion_slots[slot]]
+    def try_pick_up_potion(self, potion_type):
+        empty_slots = [slot for slot in self.potion_slots if not self.potion_slots[slot]]
         if len(empty_slots) > 0:
             slot = empty_slots[0]
-            self.health_potion_slots[slot] = True
+            self.potion_slots[slot] = potion_type
             return True
         else:
             return False
@@ -110,21 +118,22 @@ class PlayerAbilityStats:
 
 
 class GameState:
-    def __init__(self, player_entity, potion_entities, enemies, camera_size, game_world_size, player_ability_stats):
+    def __init__(self, player_entity, potions, enemies, camera_size, game_world_size, player_ability_stats):
         self.camera_size = camera_size
         self.camera_world_area = WorldArea((0, 0), self.camera_size)
         self.player_entity = player_entity
         self.projectile_entities = []
-        self.potion_entities = potion_entities
+        self.potions = potions
         self.enemies = enemies
         self.player_stats = PlayerStats(3, 20, 50, 100, 0.03)
         self.game_world_size = game_world_size
         self.player_ability_stats = player_ability_stats
         self.entire_world_area = WorldArea((0, 0), self.game_world_size)
 
+    # entities_to_remove aren't necessarily of the class WorldEntity
     def remove_entities(self, entities_to_remove):
         self.projectile_entities = [p for p in self.projectile_entities if p not in entities_to_remove]
-        self.potion_entities = [p for p in self.potion_entities if p not in entities_to_remove]
+        self.potions = [p for p in self.potions if p not in entities_to_remove]
         self.enemies = [e for e in self.enemies if e not in entities_to_remove]
 
     def try_use_heal_ability(self):
@@ -143,8 +152,8 @@ class GameState:
                 self.player_ability_stats.attack_projectile_speed, self.player_ability_stats.attack_projectile_speed))
 
     def get_all_entities(self):
-        return [self.player_entity] + self.projectile_entities + self.potion_entities + [e.world_entity for e in
-                                                                                         self.enemies]
+        return [self.player_entity] + self.projectile_entities + [p.world_entity for p in self.potions] + \
+               [e.world_entity for e in self.enemies]
 
     def center_camera_on_player(self):
         self.camera_world_area.x = min(max(self.player_entity.x - self.camera_size[0] / 2, 0),
