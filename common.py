@@ -20,3 +20,8 @@ def boxes_intersect(r1, r2):
 class PotionType(Enum):
     HEALTH = 1
     MANA = 2
+
+
+class EnemyBehavior(Enum):
+    DUMB = 1
+    SMART = 2

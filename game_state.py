@@ -52,10 +52,11 @@ class WorldEntity:
 
 
 class Enemy:
-    def __init__(self, world_entity, health, max_health):
+    def __init__(self, world_entity, health, max_health, enemy_behavior):
         self.world_entity = world_entity
         self.health = health
         self.max_health = max_health
+        self.enemy_behavior = enemy_behavior
 
 
 class PlayerStats:
