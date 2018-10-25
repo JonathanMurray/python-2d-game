@@ -3,7 +3,7 @@
 import pygame
 import sys
 
-from common import boxes_intersect
+from abilities import try_use_ability
 from game_world_init import init_game_state_from_file
 from user_input import *
 from view import View, ScreenArea
@@ -36,7 +36,7 @@ while True:
             pygame.quit()
             sys.exit()
         elif isinstance(action, ActionTryUseAbility):
-            game_state.try_use_ability(action.ability_type)
+            try_use_ability(game_state, action.ability_type)
         elif isinstance(action, ActionTryUsePotion):
             game_state.player_stats.try_use_potion(action.slot_number)
         elif isinstance(action, ActionMoveInDirection):
@@ -120,7 +120,4 @@ while True:
                            player_max_health=game_state.player_stats.max_health,
                            player_mana=game_state.player_stats.mana,
                            player_max_mana=game_state.player_stats.max_mana,
-                           potion_slots=game_state.player_stats.potion_slots,
-                           heal_ability_mana_cost=game_state.player_ability_stats.heal_ability_mana_cost,
-                           attack_ability_mana_cost=game_state.player_ability_stats.attack_ability_mana_cost,
-                           aoe_attack_ability_mana_cost=game_state.player_ability_stats.aoe_attack_ability_mana_cost)
+                           potion_slots=game_state.player_stats.potion_slots)

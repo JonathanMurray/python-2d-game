@@ -31,3 +31,10 @@ class AbilityType(Enum):
     HEAL = 1
     ATTACK = 2
     AOE_ATTACK = 3
+
+
+ability_mana_costs = {
+    AbilityType.HEAL: 10,
+    AbilityType.ATTACK: 5,
+    AbilityType.AOE_ATTACK: 7
+}

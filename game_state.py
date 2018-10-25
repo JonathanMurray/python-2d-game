@@ -122,20 +122,8 @@ class PlayerStats:
             return False
 
 
-class PlayerAbilityStats:
-    def __init__(self, heal_ability_mana_cost, heal_ability_amount, attack_ability_mana_cost, attack_projectile_size,
-                 attack_projectile_color, attack_projectile_speed, aoe_attack_ability_mana_cost):
-        self.heal_ability_mana_cost = heal_ability_mana_cost
-        self.heal_ability_amount = heal_ability_amount
-        self.attack_ability_mana_cost = attack_ability_mana_cost
-        self.attack_projectile_size = attack_projectile_size
-        self.attack_projectile_color = attack_projectile_color
-        self.attack_projectile_speed = attack_projectile_speed
-        self.aoe_attack_ability_mana_cost = aoe_attack_ability_mana_cost
-
-
 class GameState:
-    def __init__(self, player_entity, potions, enemies, camera_size, game_world_size, player_ability_stats):
+    def __init__(self, player_entity, potions, enemies, camera_size, game_world_size):
         self.camera_size = camera_size
         self.camera_world_area = WorldArea((0, 0), self.camera_size)
         self.player_entity = player_entity
@@ -144,7 +132,6 @@ class GameState:
         self.enemies = enemies
         self.player_stats = PlayerStats(3, 20, 50, 100, 0.03)
         self.game_world_size = game_world_size
-        self.player_ability_stats = player_ability_stats
         self.entire_world_area = WorldArea((0, 0), self.game_world_size)
 
     # entities_to_remove aren't necessarily of the class WorldEntity
@@ -152,53 +139,6 @@ class GameState:
         self.projectile_entities = [p for p in self.projectile_entities if p not in entities_to_remove]
         self.potions = [p for p in self.potions if p not in entities_to_remove]
         self.enemies = [e for e in self.enemies if e not in entities_to_remove]
-
-    def try_use_ability(self, ability_type):
-        if ability_type == AbilityType.ATTACK:
-            self._try_use_attack_ability()
-        elif ability_type == AbilityType.HEAL:
-            self._try_use_heal_ability()
-        elif ability_type == AbilityType.AOE_ATTACK:
-            self._try_use_aoe_attack_ability()
-        else:
-            raise Exception("Unhandled ability type: " + str(ability_type))
-
-    def _try_use_heal_ability(self):
-        if self.player_stats.mana >= self.player_ability_stats.heal_ability_mana_cost:
-            self.player_stats.lose_mana(self.player_ability_stats.heal_ability_mana_cost)
-            self.player_stats.gain_health(self.player_ability_stats.heal_ability_amount)
-
-    def _try_use_attack_ability(self):
-        if self.player_stats.mana >= self.player_ability_stats.attack_ability_mana_cost:
-            self.player_stats.lose_mana(self.player_ability_stats.attack_ability_mana_cost)
-            proj_pos = (self.player_entity.get_center_x() - self.player_ability_stats.attack_projectile_size[0] / 2,
-                        self.player_entity.get_center_y() - self.player_ability_stats.attack_projectile_size[1] / 2)
-            entity = WorldEntity(proj_pos, self.player_ability_stats.attack_projectile_size,
-                                 self.player_ability_stats.attack_projectile_color, self.player_entity.direction,
-                                 self.player_ability_stats.attack_projectile_speed,
-                                 self.player_ability_stats.attack_projectile_speed)
-            self.projectile_entities.append(Projectile(entity, 0, 3000))
-
-    def _try_use_aoe_attack_ability(self):
-        if self.player_stats.mana >= self.player_ability_stats.aoe_attack_ability_mana_cost:
-            self.player_stats.lose_mana(self.player_ability_stats.aoe_attack_ability_mana_cost)
-            direction = self.player_entity.direction
-            x = self.player_entity.get_center_x()
-            y = self.player_entity.get_center_y()
-            box_w = 130
-            distance = 150
-            if direction == Direction.RIGHT:
-                aoe_pos = (x + distance - box_w / 2, y - box_w / 2)
-            elif direction == Direction.DOWN:
-                aoe_pos = (x - box_w / 2, y + distance - box_w / 2)
-            elif direction == Direction.LEFT:
-                aoe_pos = (x - distance - box_w / 2, y - box_w / 2)
-            elif direction == Direction.UP:
-                aoe_pos = (x - box_w / 2, y - distance - box_w / 2)
-            projectile_speed = 3
-            entity = WorldEntity(aoe_pos, (box_w, box_w), (200, 0, 100),
-                                 self.player_entity.direction, projectile_speed, projectile_speed)
-            self.projectile_entities.append(Projectile(entity, 250, 650))
 
     def get_all_entities(self):
         return [self.player_entity] + [p.world_entity for p in self.projectile_entities] + \

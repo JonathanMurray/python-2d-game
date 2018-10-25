@@ -1,6 +1,6 @@
 import pygame
 
-from common import PotionType
+from common import *
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -72,8 +72,7 @@ class View:
         pygame.draw.rect(self.screen, color, rect)
 
     def render_everything(self, all_entities, camera_world_area, player_entity, enemies, player_health,
-                          player_max_health, player_mana, player_max_mana, potion_slots, heal_ability_mana_cost,
-                          attack_ability_mana_cost, aoe_attack_ability_mana_cost):
+                          player_max_health, player_mana, player_max_mana, potion_slots):
         self.screen.fill(COLOR_BACKGROUND)
         for entity in all_entities:
             self._render_entity(entity, camera_world_area)
@@ -105,9 +104,9 @@ class View:
         self._render_ui_potion(340, 39, 27, 27, 4, potion_type=potion_slots[4])
         self._render_ui_potion(370, 39, 27, 27, 5, potion_type=potion_slots[5])
 
-        ui_text = "Abilities: Q(" + str(attack_ability_mana_cost) + ") " + \
-                  "W(" + str(heal_ability_mana_cost) + ") " + \
-                  "E(" + str(aoe_attack_ability_mana_cost) + ")"
+        ui_text = "Abilities: Q(" + str(ability_mana_costs[AbilityType.ATTACK]) + ") " + \
+                  "W(" + str(ability_mana_costs[AbilityType.HEAL]) + ") " + \
+                  "E(" + str(ability_mana_costs[AbilityType.AOE_ATTACK]) + ")"
         self._render_ui_text(self.font_small, ui_text, 20, 75)
 
         self._render_rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)

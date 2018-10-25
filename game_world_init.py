@@ -1,7 +1,7 @@
-from game_state import WorldEntity, Enemy, PlayerAbilityStats, GameState, Potion
+from game_state import WorldEntity, Enemy, GameState, Potion
 from common import Direction, PotionType, EnemyBehavior
 
-COLOR_ATTACK_PROJECTILE = (200, 5, 200)
+
 POTION_ENTITY_SIZE = (30, 30)
 POTION_ENTITY_COLOR = (50, 200, 50)
 ENEMY_SIZE = (30, 30)
@@ -12,12 +12,6 @@ ENEMY_2_SPEED = 0.8
 PLAYER_ENTITY_SIZE = (50, 50)
 PLAYER_ENTITY_COLOR = (250, 250, 250)
 PLAYER_ENTITY_SPEED = 2
-ATTACK_PROJECTILE_SIZE = (25, 25)
-ATTACK_PROJECTILE_SPEED = 8
-HEAL_ABILITY_MANA_COST = 10
-HEAL_ABILITY_AMOUNT = 10
-ATTACK_ABILITY_MANA_COST = 5
-AOE_ATTACK_ABILITY_MANA_COST = 7
 
 
 def init_game_state_from_file(game_world_size, camera_size):
@@ -49,7 +43,4 @@ def init_game_state_from_file(game_world_size, camera_size):
                      EnemyBehavior.DUMB) for pos in dumb_enemy_positions] + \
               [Enemy(WorldEntity(pos, ENEMY_SIZE, ENEMY_2_COLOR, Direction.LEFT, ENEMY_2_SPEED, ENEMY_2_SPEED), 5, 5,
                      EnemyBehavior.SMART) for pos in smart_enemy_positions]
-    player_ability_stats = PlayerAbilityStats(HEAL_ABILITY_MANA_COST, HEAL_ABILITY_AMOUNT, ATTACK_ABILITY_MANA_COST,
-                                              ATTACK_PROJECTILE_SIZE, COLOR_ATTACK_PROJECTILE, ATTACK_PROJECTILE_SPEED,
-                                              AOE_ATTACK_ABILITY_MANA_COST)
-    return GameState(player_entity, potions, enemies, camera_size, game_world_size, player_ability_stats)
+    return GameState(player_entity, potions, enemies, camera_size, game_world_size)
