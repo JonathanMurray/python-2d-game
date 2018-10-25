@@ -60,6 +60,13 @@ class PlayerStats:
         self._mana_float = mana
         self.max_mana = max_mana
         self.mana_regen = mana_regen
+        self.health_potion_slots = {
+            1: True,
+            2: False,
+            3: True,
+            4: True,
+            5: True
+        }
 
     def gain_health(self, amount):
         self.health = min(self.health + amount, self.max_health)
@@ -74,6 +81,21 @@ class PlayerStats:
     def lose_mana(self, amount):
         self._mana_float -= amount
         self.mana = int(math.floor(self._mana_float))
+
+    def try_use_health_potion(self, number):
+        if self.health_potion_slots[number]:
+            self.health_potion_slots[number] = False
+            self.gain_health(10)
+
+    # Returns whether or not potion was picked up (not picked up if no space for it)
+    def try_pick_up_potion(self):
+        empty_slots = [slot for slot in self.health_potion_slots if not self.health_potion_slots[slot]]
+        if len(empty_slots) > 0:
+            slot = empty_slots[0]
+            self.health_potion_slots[slot] = True
+            return True
+        else:
+            return False
 
 
 class PlayerAbilityStats:
@@ -96,13 +118,6 @@ class GameState:
         self.potion_entities = potion_entities
         self.enemies = enemies
         self.player_stats = PlayerStats(3, 20, 50, 100, 0.03)
-        self.health_potion_slots = {
-            1: True,
-            2: False,
-            3: True,
-            4: True,
-            5: True
-        }
         self.game_world_size = game_world_size
         self.player_ability_stats = player_ability_stats
         self.entire_world_area = WorldArea((0, 0), self.game_world_size)
@@ -111,21 +126,6 @@ class GameState:
         self.projectile_entities = [p for p in self.projectile_entities if p not in entities_to_remove]
         self.potion_entities = [p for p in self.potion_entities if p not in entities_to_remove]
         self.enemies = [e for e in self.enemies if e not in entities_to_remove]
-
-    def try_use_health_potion(self, number):
-        if self.health_potion_slots[number]:
-            self.health_potion_slots[number] = False
-            self.player_stats.gain_health(10)
-
-    # Returns whether or not potion was picked up (not picked up if no space for it)
-    def try_pick_up_potion(self):
-        empty_slots = [slot for slot in self.health_potion_slots if not self.health_potion_slots[slot]]
-        if len(empty_slots) > 0:
-            slot = empty_slots[0]
-            self.health_potion_slots[slot] = True
-            return True
-        else:
-            return False
 
     def try_use_heal_ability(self):
         if self.player_stats.mana >= self.player_ability_stats.heal_ability_mana_cost:
