@@ -39,7 +39,7 @@ while True:
             game_state.try_use_heal_ability()
         elif isinstance(action, ActionTryUseAttackAbility):
             game_state.try_use_attack_ability()
-        elif isinstance(action, ActionTryUseHealthPotion):
+        elif isinstance(action, ActionTryUsePotion):
             game_state.player_stats.try_use_potion(action.slot_number)
         elif isinstance(action, ActionMoveInDirection):
             game_state.player_entity.set_moving_in_dir(action.direction)

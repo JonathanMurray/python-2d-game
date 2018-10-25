@@ -14,7 +14,7 @@ class ActionTryUseAttackAbility:
     pass
 
 
-class ActionTryUseHealthPotion:
+class ActionTryUsePotion:
     def __init__(self, slot_number):
         self.slot_number = slot_number
 
@@ -53,15 +53,15 @@ def get_user_actions():
             elif event.key == pygame.K_f:
                 actions.append(ActionTryUseAttackAbility())
             elif event.key == pygame.K_1:
-                actions.append(ActionTryUseHealthPotion(1))
+                actions.append(ActionTryUsePotion(1))
             elif event.key == pygame.K_2:
-                actions.append(ActionTryUseHealthPotion(2))
+                actions.append(ActionTryUsePotion(2))
             elif event.key == pygame.K_3:
-                actions.append(ActionTryUseHealthPotion(3))
+                actions.append(ActionTryUsePotion(3))
             elif event.key == pygame.K_4:
-                actions.append(ActionTryUseHealthPotion(4))
+                actions.append(ActionTryUsePotion(4))
             elif event.key == pygame.K_5:
-                actions.append(ActionTryUseHealthPotion(5))
+                actions.append(ActionTryUsePotion(5))
         if event.type == pygame.KEYUP:
             if event.key in PYGAME_MOVEMENT_KEYS:
                 movement_keys_down.remove(event.key)
