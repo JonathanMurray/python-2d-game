@@ -2,7 +2,7 @@
 
 #### Refactorings:
 * Move non-trivial logic from game_state. Prefer to have game-logic in main.py
-* 
+* Reduce the ugly coupling between abilities and view.py
 
 #### Features:
 * More types of potions (mana potion, different strength, etc)

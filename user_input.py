@@ -45,10 +45,10 @@ def get_user_actions():
                 if event.key in movement_keys_down:
                     movement_keys_down.remove(event.key)
                 movement_keys_down.append(event.key)
-            elif event.key == pygame.K_a:
-                actions.append(ActionTryUseAbility(AbilityType.HEAL))
-            elif event.key == pygame.K_f:
+            elif event.key == pygame.K_q:
                 actions.append(ActionTryUseAbility(AbilityType.ATTACK))
+            elif event.key == pygame.K_w:
+                actions.append(ActionTryUseAbility(AbilityType.HEAL))
             elif event.key == pygame.K_1:
                 actions.append(ActionTryUsePotion(1))
             elif event.key == pygame.K_2:

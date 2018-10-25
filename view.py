@@ -105,8 +105,8 @@ class View:
         self._render_ui_potion(340, 39, 27, 27, 4, potion_type=potion_slots[4])
         self._render_ui_potion(370, 39, 27, 27, 5, potion_type=potion_slots[5])
 
-        ui_text = "['A' to heal (" + str(heal_ability_mana_cost) + ")] " + \
-                  "['F' to attack (" + str(attack_ability_mana_cost) + ")]"
+        ui_text = "Abilities: Q(" + str(attack_ability_mana_cost) + ") " + \
+                  "W(" + str(heal_ability_mana_cost) + ")"
         self._render_ui_text(self.font_small, ui_text, 20, 75)
 
         self._render_rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
