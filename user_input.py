@@ -1,17 +1,14 @@
 import pygame
-from common import Direction
+from common import *
 
 
 class ActionExitGame:
     pass
 
 
-class ActionTryUseHealAbility:
-    pass
-
-
-class ActionTryUseAttackAbility:
-    pass
+class ActionTryUseAbility:
+    def __init__(self, ability_type):
+        self.ability_type = ability_type
 
 
 class ActionTryUsePotion:
@@ -49,9 +46,9 @@ def get_user_actions():
                     movement_keys_down.remove(event.key)
                 movement_keys_down.append(event.key)
             elif event.key == pygame.K_a:
-                actions.append(ActionTryUseHealAbility())
+                actions.append(ActionTryUseAbility(AbilityType.HEAL))
             elif event.key == pygame.K_f:
-                actions.append(ActionTryUseAttackAbility())
+                actions.append(ActionTryUseAbility(AbilityType.ATTACK))
             elif event.key == pygame.K_1:
                 actions.append(ActionTryUsePotion(1))
             elif event.key == pygame.K_2:

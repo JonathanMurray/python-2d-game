@@ -25,3 +25,8 @@ class PotionType(Enum):
 class EnemyBehavior(Enum):
     DUMB = 1
     SMART = 2
+
+
+class AbilityType(Enum):
+    HEAL = 1
+    ATTACK = 2

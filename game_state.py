@@ -1,5 +1,5 @@
 import math
-from common import Direction, boxes_intersect, PotionType
+from common import *
 
 
 class Potion:
@@ -137,12 +137,18 @@ class GameState:
         self.potions = [p for p in self.potions if p not in entities_to_remove]
         self.enemies = [e for e in self.enemies if e not in entities_to_remove]
 
-    def try_use_heal_ability(self):
+    def try_use_ability(self, ability_type):
+        if ability_type == AbilityType.ATTACK:
+            self._try_use_attack_ability()
+        elif ability_type == AbilityType.HEAL:
+            self._try_use_heal_ability()
+
+    def _try_use_heal_ability(self):
         if self.player_stats.mana >= self.player_ability_stats.heal_ability_mana_cost:
             self.player_stats.lose_mana(self.player_ability_stats.heal_ability_mana_cost)
             self.player_stats.gain_health(self.player_ability_stats.heal_ability_amount)
 
-    def try_use_attack_ability(self):
+    def _try_use_attack_ability(self):
         if self.player_stats.mana >= self.player_ability_stats.attack_ability_mana_cost:
             self.player_stats.lose_mana(self.player_ability_stats.attack_ability_mana_cost)
             proj_pos = (self.player_entity.get_center_x() - self.player_ability_stats.attack_projectile_size[0] / 2,

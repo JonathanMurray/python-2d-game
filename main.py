@@ -35,10 +35,8 @@ while True:
         if isinstance(action, ActionExitGame):
             pygame.quit()
             sys.exit()
-        elif isinstance(action, ActionTryUseHealAbility):
-            game_state.try_use_heal_ability()
-        elif isinstance(action, ActionTryUseAttackAbility):
-            game_state.try_use_attack_ability()
+        elif isinstance(action, ActionTryUseAbility):
+            game_state.try_use_ability(action.ability_type)
         elif isinstance(action, ActionTryUsePotion):
             game_state.player_stats.try_use_potion(action.slot_number)
         elif isinstance(action, ActionMoveInDirection):
