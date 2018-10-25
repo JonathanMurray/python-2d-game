@@ -185,8 +185,8 @@ class GameState:
             direction = self.player_entity.direction
             x = self.player_entity.get_center_x()
             y = self.player_entity.get_center_y()
-            box_w = 100
-            distance = 100
+            box_w = 130
+            distance = 150
             if direction == Direction.RIGHT:
                 aoe_pos = (x + distance - box_w / 2, y - box_w / 2)
             elif direction == Direction.DOWN:
@@ -196,9 +196,9 @@ class GameState:
             elif direction == Direction.UP:
                 aoe_pos = (x - box_w / 2, y - distance - box_w / 2)
             projectile_speed = 3
-            entity = WorldEntity(aoe_pos, (box_w, box_w), self.player_ability_stats.attack_projectile_color,
+            entity = WorldEntity(aoe_pos, (box_w, box_w), (200, 0, 100),
                                  self.player_entity.direction, projectile_speed, projectile_speed)
-            self.projectile_entities.append(Projectile(entity, 150, 350))
+            self.projectile_entities.append(Projectile(entity, 250, 650))
 
     def get_all_entities(self):
         return [self.player_entity] + [p.world_entity for p in self.projectile_entities] + \
