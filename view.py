@@ -29,6 +29,8 @@ class View:
         self.screen_size = screen_size
         self.font_large = pygame.font.SysFont('Arial', 30)
         self.font_small = pygame.font.Font(None, 25)
+        _image = pygame.image.load('sprite_link.png').convert_alpha()
+        self.player_sprite = pygame.transform.scale(_image, (50, 50))
 
     def _render_entity(self, entity, camera_world_area):
         rect = (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h)
@@ -37,6 +39,10 @@ class View:
     def _render_circle(self, entity, camera_world_area):
         rect = (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h)
         pygame.draw.ellipse(self.screen, COLOR_BLUE, rect)
+
+    def _render_sprite(self, sprite, entity, camera_world_area):
+        pos = (entity.x - camera_world_area.x, entity.y - camera_world_area.y)
+        self.screen.blit(sprite, pos)
 
     def _render_stat_bar(self, x, y, w, h, stat, max_stat, color):
         pygame.draw.rect(self.screen, COLOR_WHITE, (x - 2, y - 2, w + 3, h + 3), 2)
@@ -76,7 +82,7 @@ class View:
         self.screen.fill(COLOR_BACKGROUND)
         for entity in all_entities:
             self._render_entity(entity, camera_world_area)
-        self._render_circle(player_entity, camera_world_area)
+        self._render_sprite(self.player_sprite, player_entity, camera_world_area)
 
         for enemy in enemies:
             self._render_stat_bar_for_entity(enemy.world_entity, 5, enemy.health, enemy.max_health, COLOR_RED,
