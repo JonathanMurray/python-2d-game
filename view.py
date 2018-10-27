@@ -22,7 +22,7 @@ class ScreenArea:
 
 class View:
 
-    def __init__(self, screen, ui_screen_area, camera_size, screen_size):
+    def __init__(self, screen, ui_screen_area, camera_size, screen_size, player_sprite_size, enemy_sprite_size):
         self.screen = screen
         self.ui_screen_area = ui_screen_area
         self.camera_size = camera_size
@@ -30,11 +30,18 @@ class View:
         self.font_large = pygame.font.SysFont('Arial', 30)
         self.font_small = pygame.font.Font(None, 25)
         _image = pygame.image.load('sprite_link.png').convert_alpha()
-        self.player_sprite = pygame.transform.scale(_image, (50, 50))
+        self.player_sprite_image = pygame.transform.scale(_image, player_sprite_size)
+        _image = pygame.image.load('sprite_goomba.png').convert_alpha()
+        self.enemy_sprite_image = pygame.transform.scale(_image, enemy_sprite_size)
 
     def _render_entity(self, entity, camera_world_area):
         rect = (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h)
-        pygame.draw.rect(self.screen, entity.color, rect)
+        if entity.sprite is None:
+            pygame.draw.rect(self.screen, entity.color, rect)
+        elif entity.sprite == Sprite.PLAYER:
+            self._render_sprite(self.player_sprite_image, entity, camera_world_area)
+        elif entity.sprite == Sprite.ENEMY:
+            self._render_sprite(self.enemy_sprite_image, entity, camera_world_area)
 
     def _render_circle(self, entity, camera_world_area):
         rect = (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h)
@@ -82,7 +89,6 @@ class View:
         self.screen.fill(COLOR_BACKGROUND)
         for entity in all_entities:
             self._render_entity(entity, camera_world_area)
-        self._render_sprite(self.player_sprite, player_entity, camera_world_area)
 
         for enemy in enemies:
             self._render_stat_bar_for_entity(enemy.world_entity, 5, enemy.health, enemy.max_health, COLOR_RED,

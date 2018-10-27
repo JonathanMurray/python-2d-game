@@ -38,3 +38,8 @@ ability_mana_costs = {
     AbilityType.ATTACK: 5,
     AbilityType.AOE_ATTACK: 7
 }
+
+
+class Sprite(Enum):
+    PLAYER = 1
+    ENEMY = 2

@@ -1,20 +1,18 @@
 from game_state import WorldEntity, Enemy, GameState, Potion
-from common import Direction, PotionType, EnemyBehavior
+from common import *
 
 
 POTION_ENTITY_SIZE = (30, 30)
 POTION_ENTITY_COLOR = (50, 200, 50)
-ENEMY_SIZE = (30, 30)
 ENEMY_COLOR = (250, 0, 0)
 ENEMY_SPEED = 0.4
 ENEMY_2_COLOR = (200, 0, 0)
 ENEMY_2_SPEED = 0.8
-PLAYER_ENTITY_SIZE = (50, 50)
 PLAYER_ENTITY_COLOR = (250, 250, 250)
 PLAYER_ENTITY_SPEED = 2
 
 
-def init_game_state_from_file(game_world_size, camera_size):
+def init_game_state_from_file(game_world_size, camera_size, player_entity_size, enemy_entity_size):
     dumb_enemy_positions = []
     smart_enemy_positions = []
     potion_positions = []
@@ -35,12 +33,12 @@ def init_game_state_from_file(game_world_size, camera_size):
                     potion_positions.append(game_world_pos)
                 col_index += 1
             row_index += 1
-    player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, PLAYER_ENTITY_COLOR, Direction.RIGHT, 0,
+    player_entity = WorldEntity(player_pos, player_entity_size, PLAYER_ENTITY_COLOR, Sprite.PLAYER, Direction.RIGHT, 0,
                                 PLAYER_ENTITY_SPEED)
-    potions = [Potion(WorldEntity(pos, POTION_ENTITY_SIZE, POTION_ENTITY_COLOR), PotionType.HEALTH)
+    potions = [Potion(WorldEntity(pos, POTION_ENTITY_SIZE, POTION_ENTITY_COLOR, None), PotionType.HEALTH)
                for pos in potion_positions]
-    enemies = [Enemy(WorldEntity(pos, ENEMY_SIZE, ENEMY_COLOR, Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 2, 2,
+    enemies = [Enemy(WorldEntity(pos, enemy_entity_size, ENEMY_COLOR, Sprite.ENEMY, Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 2, 2,
                      EnemyBehavior.DUMB) for pos in dumb_enemy_positions] + \
-              [Enemy(WorldEntity(pos, ENEMY_SIZE, ENEMY_2_COLOR, Direction.LEFT, ENEMY_2_SPEED, ENEMY_2_SPEED), 5, 5,
+              [Enemy(WorldEntity(pos, enemy_entity_size, ENEMY_2_COLOR, None, Direction.LEFT, ENEMY_2_SPEED, ENEMY_2_SPEED), 5, 5,
                      EnemyBehavior.SMART) for pos in smart_enemy_positions]
     return GameState(player_entity, potions, enemies, camera_size, game_world_size)
