@@ -3,7 +3,7 @@
 import pygame
 import sys
 
-from abilities import try_use_ability, ATTACK_PROJECTILE_SIZE
+from abilities import try_use_ability, ATTACK_PROJECTILE_SIZE, AOE_PROJECTILE_SIZE
 from game_world_init import init_game_state_from_file
 from user_input import *
 from view import View, ScreenArea, SpriteInitializer
@@ -27,7 +27,8 @@ initializers_by_sprite = {
     Sprite.PLAYER: SpriteInitializer("resources/player.png", PLAYER_ENTITY_SIZE),
     Sprite.ENEMY: SpriteInitializer("resources/enemy.png", ENEMY_ENTITY_SIZE),
     Sprite.ENEMY_2: SpriteInitializer("resources/enemy2.png", ENEMY_2_ENTITY_SIZE),
-    Sprite.FIREBALL: SpriteInitializer("resources/fireball.png", ATTACK_PROJECTILE_SIZE)
+    Sprite.FIREBALL: SpriteInitializer("resources/fireball.png", ATTACK_PROJECTILE_SIZE),
+    Sprite.WHIRLWIND: SpriteInitializer("resources/whirlwind.png", AOE_PROJECTILE_SIZE)
 }
 view = View(screen, ui_screen_area, CAMERA_SIZE, SCREEN_SIZE, initializers_by_sprite)
 clock = pygame.time.Clock()

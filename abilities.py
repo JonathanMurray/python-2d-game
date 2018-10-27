@@ -1,6 +1,8 @@
 from common import *
 from game_state import WorldEntity, Projectile
 
+AOE_PROJECTILE_SIZE = (110, 110)
+
 COLOR_ATTACK_PROJECTILE = (200, 5, 200)
 ATTACK_PROJECTILE_SIZE = (25, 25)
 ATTACK_PROJECTILE_SPEED = 8
@@ -43,17 +45,16 @@ def _use_aoe_attack_ability(game_state):
     direction = game_state.player_entity.direction
     x = game_state.player_entity.get_center_x()
     y = game_state.player_entity.get_center_y()
-    box_w = 130
-    distance = 150
+    distance = 80
     if direction == Direction.RIGHT:
-        aoe_pos = (x + distance - box_w / 2, y - box_w / 2)
+        aoe_pos = (x + distance - AOE_PROJECTILE_SIZE[0] / 2, y - AOE_PROJECTILE_SIZE[1] / 2)
     elif direction == Direction.DOWN:
-        aoe_pos = (x - box_w / 2, y + distance - box_w / 2)
+        aoe_pos = (x - AOE_PROJECTILE_SIZE[0] / 2, y + distance - AOE_PROJECTILE_SIZE[1] / 2)
     elif direction == Direction.LEFT:
-        aoe_pos = (x - distance - box_w / 2, y - box_w / 2)
+        aoe_pos = (x - distance - AOE_PROJECTILE_SIZE[0] / 2, y - AOE_PROJECTILE_SIZE[1] / 2)
     elif direction == Direction.UP:
-        aoe_pos = (x - box_w / 2, y - distance - box_w / 2)
+        aoe_pos = (x - AOE_PROJECTILE_SIZE[0] / 2, y - distance - AOE_PROJECTILE_SIZE[1] / 2)
 
-    entity = WorldEntity(aoe_pos, (box_w, box_w), COLOR_AOE_PROJECTILE, None,
+    entity = WorldEntity(aoe_pos, AOE_PROJECTILE_SIZE, COLOR_AOE_PROJECTILE, Sprite.WHIRLWIND,
                          game_state.player_entity.direction, AOE_PROJECTILE_SPEED, AOE_PROJECTILE_SPEED)
-    game_state.projectile_entities.append(Projectile(entity, 250, 650))
+    game_state.projectile_entities.append(Projectile(entity, 250, 500))

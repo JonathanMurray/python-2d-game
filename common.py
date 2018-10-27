@@ -45,3 +45,4 @@ class Sprite(Enum):
     ENEMY = 2
     ENEMY_2 = 3
     FIREBALL = 4
+    WHIRLWIND = 5
