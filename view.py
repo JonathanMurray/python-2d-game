@@ -102,9 +102,27 @@ class View:
     def _render_rect_filled(self, color, rect):
         pygame.draw.rect(self.screen, color, rect)
 
+    def _draw_ground(self, camera_world_area):
+        line_color = (190, 190, 200)
+        grid_width = 25
+        # TODO num squares should depend on map size. Ideally this dumb looping logic should change.
+        num_squares = 200
+        for col in range(num_squares):
+            world_x = col * grid_width
+            screen_x = world_x - camera_world_area.x
+            if 0 < screen_x < self.screen_size[0]:
+                pygame.draw.line(self.screen, line_color, (screen_x, 0), (screen_x, self.screen_size[1]))
+        for row in range(num_squares):
+            world_y = row * grid_width
+            screen_y = world_y - camera_world_area.y
+            if 0 < screen_y < self.screen_size[1]:
+                pygame.draw.line(self.screen, line_color, (0, screen_y), (self.screen_size[0], screen_y))
+
     def render_everything(self, all_entities, camera_world_area, enemies, player_health,
                           player_max_health, player_mana, player_max_mana, potion_slots):
         self.screen.fill(COLOR_BACKGROUND)
+        self._draw_ground(camera_world_area)
+
         for entity in all_entities:
             self._render_entity(entity, camera_world_area)
 
