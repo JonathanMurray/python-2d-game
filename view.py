@@ -120,7 +120,7 @@ class View:
 
     def render_everything(self, all_entities, camera_world_area, enemies, player_health,
                           player_max_health, player_mana, player_max_mana, potion_slots, has_effect_healing_over_time,
-                          time_until_effect_expires):
+                          time_until_effect_expires, has_effect_poison, time_until_poison_expires):
         self.screen.fill(COLOR_BACKGROUND)
         self._draw_ground(camera_world_area)
 
@@ -158,11 +158,13 @@ class View:
                   "E(" + str(ability_mana_costs[AbilityType.AOE_ATTACK]) + ")"
         self._render_ui_text(self.font_small, ui_text, 20, 75)
 
+        effect_texts = []
         if has_effect_healing_over_time:
-            effects_text = "Healing over time (" + str(int(time_until_effect_expires/1000)) + ")"
-        else:
-            effects_text = ""
-        self._render_ui_text(self.font_small, effects_text, 450, 25)
+            effect_texts.append("Healing over time (" + str(int(time_until_effect_expires/1000)) + ")")
+        if has_effect_poison:
+            effect_texts.append("Poison (" + str(int(time_until_poison_expires/1000)) + ")")
+        for i, text in enumerate(effect_texts):
+            self._render_ui_text(self.font_small, text, 450, 25 + i * 35)
 
         self._render_rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
         pygame.display.update()

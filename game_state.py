@@ -92,6 +92,8 @@ class PlayerState:
         }
         self.has_effect_healing_over_time = False
         self.time_until_effect_expires = 0
+        self.has_effect_poison = False
+        self.time_until_poison_expires = 0
 
     def gain_health(self, amount):
         self.health = min(self.health + amount, self.max_health)

@@ -99,6 +99,8 @@ while True:
         if boxes_intersect(game_state.player_entity, enemy.world_entity):
             entities_to_remove.append(enemy)
             game_state.player_state.lose_health(2)
+            game_state.player_state.has_effect_poison = True
+            game_state.player_state.time_until_poison_expires = 2000
         for projectile in game_state.get_all_active_projectiles_that_intersect_with(enemy.world_entity):
             enemy.health -= 1
             if enemy.health <= 0:
@@ -116,6 +118,11 @@ while True:
         game_state.player_state.time_until_effect_expires -= time_passed
         if game_state.player_state.time_until_effect_expires <= 0:
             game_state.player_state.has_effect_healing_over_time = False
+    if game_state.player_state.has_effect_poison:
+        game_state.player_state.lose_health(1)
+        game_state.player_state.time_until_poison_expires -= time_passed
+        if game_state.player_state.time_until_poison_expires <= 0:
+            game_state.player_state.has_effect_poison = False
 
     # ------------------------------------
     #         UPDATE CAMERA POSITION
@@ -136,4 +143,6 @@ while True:
                            player_max_mana=game_state.player_state.max_mana,
                            potion_slots=game_state.player_state.potion_slots,
                            has_effect_healing_over_time=game_state.player_state.has_effect_healing_over_time,
-                           time_until_effect_expires=game_state.player_state.time_until_effect_expires)
+                           time_until_effect_expires=game_state.player_state.time_until_effect_expires,
+                           has_effect_poison=game_state.player_state.has_effect_poison,
+                           time_until_poison_expires=game_state.player_state.time_until_poison_expires)
