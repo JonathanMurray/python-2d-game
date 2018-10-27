@@ -18,20 +18,20 @@ def try_use_ability(game_state, ability_type):
     if game_state.player_state.mana >= mana_cost:
         game_state.player_state.lose_mana(mana_cost)
         if ability_type == AbilityType.ATTACK:
-            _use_attack_ability(game_state)
+            _apply_attack(game_state)
         elif ability_type == AbilityType.HEAL:
-            _use_heal_ability(game_state)
+            _apply_heal(game_state)
         elif ability_type == AbilityType.AOE_ATTACK:
-            _use_aoe_attack_ability(game_state)
+            _apply_aoe_attack(game_state)
         else:
             raise Exception("Unhandled ability type: " + str(ability_type))
 
 
-def _use_heal_ability(game_state):
+def _apply_heal(game_state):
     game_state.player_state.add_buff(BuffType.HEALING_OVER_TIME, 3500)
 
 
-def _use_attack_ability(game_state):
+def _apply_attack(game_state):
     proj_pos = (game_state.player_entity.get_center_x() - ATTACK_PROJECTILE_SIZE[0] / 2,
                 game_state.player_entity.get_center_y() - ATTACK_PROJECTILE_SIZE[1] / 2)
     entity = WorldEntity(proj_pos, ATTACK_PROJECTILE_SIZE,
@@ -40,7 +40,7 @@ def _use_attack_ability(game_state):
     game_state.projectile_entities.append(Projectile(entity, 0, 3000))
 
 
-def _use_aoe_attack_ability(game_state):
+def _apply_aoe_attack(game_state):
     direction = game_state.player_entity.direction
     x = game_state.player_entity.get_center_x()
     y = game_state.player_entity.get_center_y()
