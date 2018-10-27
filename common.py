@@ -43,3 +43,4 @@ ability_mana_costs = {
 class Sprite(Enum):
     PLAYER = 1
     ENEMY = 2
+    ENEMY_2 = 3

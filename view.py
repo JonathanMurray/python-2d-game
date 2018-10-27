@@ -20,28 +20,38 @@ class ScreenArea:
         return self.x, self.y, self.w, self.h
 
 
+class SpriteInitializer:
+    def __init__(self, image_file_path, scaling_size):
+        self.image_file_path = image_file_path
+        self.scaling_size = scaling_size
+
+
+def load_and_scale_sprite(sprite_initializer):
+    image = pygame.image.load(sprite_initializer.image_file_path).convert_alpha()
+    return pygame.transform.scale(image, sprite_initializer.scaling_size)
+
+
 class View:
 
-    def __init__(self, screen, ui_screen_area, camera_size, screen_size, player_sprite_size, enemy_sprite_size):
+    def __init__(self, screen, ui_screen_area, camera_size, screen_size, sprite_initializers_by_sprite):
         self.screen = screen
         self.ui_screen_area = ui_screen_area
         self.camera_size = camera_size
         self.screen_size = screen_size
         self.font_large = pygame.font.SysFont('Arial', 30)
         self.font_small = pygame.font.Font(None, 25)
-        _image = pygame.image.load('sprite_link.png').convert_alpha()
-        self.player_sprite_image = pygame.transform.scale(_image, player_sprite_size)
-        _image = pygame.image.load('sprite_goomba.png').convert_alpha()
-        self.enemy_sprite_image = pygame.transform.scale(_image, enemy_sprite_size)
+        self.images_by_sprite = {sprite: load_and_scale_sprite(sprite_initializers_by_sprite[sprite])
+                                 for sprite in sprite_initializers_by_sprite}
 
     def _render_entity(self, entity, camera_world_area):
         rect = (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h)
         if entity.sprite is None:
             pygame.draw.rect(self.screen, entity.color, rect)
-        elif entity.sprite == Sprite.PLAYER:
-            self._render_sprite(self.player_sprite_image, entity, camera_world_area)
-        elif entity.sprite == Sprite.ENEMY:
-            self._render_sprite(self.enemy_sprite_image, entity, camera_world_area)
+        elif entity.sprite in self.images_by_sprite:
+            image = self.images_by_sprite[entity.sprite]
+            self._render_sprite(image, entity, camera_world_area)
+        else:
+            raise Exception("Unhandled sprite: " + str(entity.sprite))
 
     def _render_circle(self, entity, camera_world_area):
         rect = (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h)

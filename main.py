@@ -6,7 +6,7 @@ import sys
 from abilities import try_use_ability
 from game_world_init import init_game_state_from_file
 from user_input import *
-from view import View, ScreenArea
+from view import View, ScreenArea, SpriteInitializer
 from enemy_behavior import run_ai_for_enemy_against_target
 
 GAME_WORLD_SIZE = (1000, 1000)
@@ -14,14 +14,21 @@ SCREEN_SIZE = (700, 600)
 CAMERA_SIZE = (700, 500)
 PLAYER_ENTITY_SIZE = (50, 50)
 ENEMY_ENTITY_SIZE = (30, 30)
+ENEMY_2_ENTITY_SIZE = (30, 30)
 
-game_state = init_game_state_from_file(GAME_WORLD_SIZE, CAMERA_SIZE, PLAYER_ENTITY_SIZE, ENEMY_ENTITY_SIZE)
+game_state = init_game_state_from_file(GAME_WORLD_SIZE, CAMERA_SIZE, PLAYER_ENTITY_SIZE, ENEMY_ENTITY_SIZE,
+                                       ENEMY_2_ENTITY_SIZE)
 pygame.init()
 pygame.font.init()
 
 screen = pygame.display.set_mode(SCREEN_SIZE)
 ui_screen_area = ScreenArea((0, CAMERA_SIZE[1]), (SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
-view = View(screen, ui_screen_area, CAMERA_SIZE, SCREEN_SIZE, PLAYER_ENTITY_SIZE, ENEMY_ENTITY_SIZE)
+initializers_by_sprite = {
+    Sprite.PLAYER: SpriteInitializer("sprite_link.png", PLAYER_ENTITY_SIZE),
+    Sprite.ENEMY: SpriteInitializer("sprite_goomba.png", ENEMY_ENTITY_SIZE),
+    Sprite.ENEMY_2: SpriteInitializer("sprite_enemy2.png", ENEMY_2_ENTITY_SIZE)
+}
+view = View(screen, ui_screen_area, CAMERA_SIZE, SCREEN_SIZE, initializers_by_sprite)
 clock = pygame.time.Clock()
 ticks_since_ai_ran = 0
 AI_RUN_INTERVAL = 750
