@@ -75,7 +75,7 @@ class Enemy:
         self.enemy_behavior = enemy_behavior
 
 
-class PlayerStats:
+class PlayerState:
     def __init__(self, health, max_health, mana, max_mana, mana_regen):
         self.health = health
         self.max_health = max_health
@@ -131,7 +131,7 @@ class GameState:
         self.projectile_entities = []
         self.potions = potions
         self.enemies = enemies
-        self.player_stats = PlayerStats(20, 20, 75, 100, 0.03)
+        self.player_state = PlayerState(20, 20, 75, 100, 0.03)
         self.game_world_size = game_world_size
         self.entire_world_area = WorldArea((0, 0), self.game_world_size)
 

@@ -48,7 +48,7 @@ while True:
         elif isinstance(action, ActionTryUseAbility):
             try_use_ability(game_state, action.ability_type)
         elif isinstance(action, ActionTryUsePotion):
-            game_state.player_stats.try_use_potion(action.slot_number)
+            game_state.player_state.try_use_potion(action.slot_number)
         elif isinstance(action, ActionMoveInDirection):
             game_state.player_entity.set_moving_in_dir(action.direction)
         elif isinstance(action, ActionStopMoving):
@@ -92,13 +92,13 @@ while True:
             entities_to_remove.append(projectile)
     for potion in game_state.potions:
         if boxes_intersect(game_state.player_entity, potion.world_entity):
-            did_pick_up = game_state.player_stats.try_pick_up_potion(potion.potion_type)
+            did_pick_up = game_state.player_state.try_pick_up_potion(potion.potion_type)
             if did_pick_up:
                 entities_to_remove.append(potion)
     for enemy in game_state.enemies:
         if boxes_intersect(game_state.player_entity, enemy.world_entity):
             entities_to_remove.append(enemy)
-            game_state.player_stats.lose_health(2)
+            game_state.player_state.lose_health(2)
         for projectile in game_state.get_all_active_projectiles_that_intersect_with(enemy.world_entity):
             enemy.health -= 1
             if enemy.health <= 0:
@@ -110,7 +110,7 @@ while True:
     #         REGEN MANA
     # ------------------------------------
 
-    game_state.player_stats.gain_mana(game_state.player_stats.mana_regen)
+    game_state.player_state.gain_mana(game_state.player_state.mana_regen)
 
     # ------------------------------------
     #         UPDATE CAMERA POSITION
@@ -125,8 +125,8 @@ while True:
     view.render_everything(all_entities=game_state.get_all_entities(),
                            camera_world_area=game_state.camera_world_area,
                            enemies=game_state.enemies,
-                           player_health=game_state.player_stats.health,
-                           player_max_health=game_state.player_stats.max_health,
-                           player_mana=game_state.player_stats.mana,
-                           player_max_mana=game_state.player_stats.max_mana,
-                           potion_slots=game_state.player_stats.potion_slots)
+                           player_health=game_state.player_state.health,
+                           player_max_health=game_state.player_state.max_health,
+                           player_mana=game_state.player_state.mana,
+                           player_max_mana=game_state.player_state.max_mana,
+                           potion_slots=game_state.player_state.potion_slots)

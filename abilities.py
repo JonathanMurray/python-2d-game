@@ -13,8 +13,8 @@ AOE_PROJECTILE_SPEED = 3
 
 def try_use_ability(game_state, ability_type):
     mana_cost = ability_mana_costs[ability_type]
-    if game_state.player_stats.mana >= mana_cost:
-        game_state.player_stats.lose_mana(mana_cost)
+    if game_state.player_state.mana >= mana_cost:
+        game_state.player_state.lose_mana(mana_cost)
         if ability_type == AbilityType.ATTACK:
             _use_attack_ability(game_state)
         elif ability_type == AbilityType.HEAL:
@@ -26,7 +26,7 @@ def try_use_ability(game_state, ability_type):
 
 
 def _use_heal_ability(game_state):
-    game_state.player_stats.gain_health(HEAL_ABILITY_AMOUNT)
+    game_state.player_state.gain_health(HEAL_ABILITY_AMOUNT)
 
 
 def _use_attack_ability(game_state):
