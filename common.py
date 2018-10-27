@@ -44,3 +44,4 @@ class Sprite(Enum):
     PLAYER = 1
     ENEMY = 2
     ENEMY_2 = 3
+    FIREBALL = 4

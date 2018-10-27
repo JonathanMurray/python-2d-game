@@ -33,7 +33,7 @@ def _use_attack_ability(game_state):
     proj_pos = (game_state.player_entity.get_center_x() - ATTACK_PROJECTILE_SIZE[0] / 2,
                 game_state.player_entity.get_center_y() - ATTACK_PROJECTILE_SIZE[1] / 2)
     entity = WorldEntity(proj_pos, ATTACK_PROJECTILE_SIZE,
-                         COLOR_ATTACK_PROJECTILE, None, game_state.player_entity.direction,
+                         COLOR_ATTACK_PROJECTILE, Sprite.FIREBALL, game_state.player_entity.direction,
                          ATTACK_PROJECTILE_SPEED, ATTACK_PROJECTILE_SPEED)
     game_state.projectile_entities.append(Projectile(entity, 0, 3000))
 
