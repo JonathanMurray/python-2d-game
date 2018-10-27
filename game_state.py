@@ -82,6 +82,18 @@ class Enemy:
         self.enemy_behavior = enemy_behavior
 
 
+class Buff:
+    def __init__(self, buff_type, time_until_expiration):
+        self.buff_type = buff_type
+        self.time_until_expiration = time_until_expiration
+
+
+class PlayerBuffsUpdate:
+    def __init__(self, active_buffs, buffs_that_ended):
+        self.active_buffs = active_buffs
+        self.buffs_that_ended = buffs_that_ended
+
+
 class PlayerState:
     def __init__(self, health, max_health, mana, max_mana, mana_regen):
         self.health = health
@@ -92,17 +104,12 @@ class PlayerState:
         self.mana_regen = mana_regen
         self.potion_slots = {
             1: PotionType.SPEED,
-            2: PotionType.SPEED,
-            3: PotionType.SPEED,
+            2: PotionType.MANA,
+            3: PotionType.HEALTH,
             4: PotionType.SPEED,
             5: PotionType.SPEED
         }
-        self.has_effect_healing_over_time = False
-        self.time_until_effect_expires = 0
-        self.has_effect_poison = False
-        self.time_until_poison_expires = 0
-        self.has_effect_speed = False
-        self.time_until_speed_expires = 0
+        self.buffs = []
 
     def gain_health(self, amount):
         self.health = min(self.health + amount, self.max_health)
@@ -132,6 +139,27 @@ class PlayerState:
             return True
         else:
             return False
+
+    def handle_buffs(self, time_passed):
+        copied_buffs_list = list(self.buffs)
+        buffs_that_ended = []
+        for buff in copied_buffs_list:
+            buff.time_until_expiration -= time_passed
+            if buff.time_until_expiration <= 0:
+                self.buffs.remove(buff)
+                buffs_that_ended.append(buff.buff_type)
+        return PlayerBuffsUpdate([e.buff_type for e in copied_buffs_list], buffs_that_ended)
+
+    # Returns True if buff was added
+    # Returns False if existing buff was renewed
+    def add_buff(self, buff_type, duration):
+        existing_buffs_with_this_type = [e for e in self.buffs if e.buff_type == buff_type]
+        if existing_buffs_with_this_type:
+            existing_buffs_with_this_type[0].time_until_expiration = duration
+            return False
+        else:
+            self.buffs.append(Buff(buff_type, duration))
+            return True
 
 
 class GameState:

@@ -28,8 +28,7 @@ def try_use_ability(game_state, ability_type):
 
 
 def _use_heal_ability(game_state):
-    game_state.player_state.has_effect_healing_over_time = True
-    game_state.player_state.time_until_effect_expires = 3500
+    game_state.player_state.add_buff(BuffType.HEALING_OVER_TIME, 3500)
 
 
 def _use_attack_ability(game_state):

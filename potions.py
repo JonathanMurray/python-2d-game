@@ -8,9 +8,9 @@ def apply_potion_effect(potion_type, game_state):
     elif potion_type == PotionType.MANA:
         player_state.gain_mana(25)
     elif potion_type == PotionType.SPEED:
-        if not player_state.has_effect_speed:
+        should_apply_start_effect = game_state.player_state.add_buff(BuffType.INCREASED_MOVE_SPEED, 3500)
+        # TODO move somewhere else
+        if should_apply_start_effect:
             game_state.player_entity.add_to_speed_multiplier(1)
-        player_state.has_effect_speed = True
-        player_state.time_until_speed_expires = 1500
     else:
         raise Exception("Unhandled potion: " + str(potion_type))

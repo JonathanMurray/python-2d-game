@@ -103,8 +103,7 @@ while True:
         if boxes_intersect(game_state.player_entity, enemy.world_entity):
             entities_to_remove.append(enemy)
             game_state.player_state.lose_health(2)
-            game_state.player_state.has_effect_poison = True
-            game_state.player_state.time_until_poison_expires = 2000
+            game_state.player_state.add_buff(BuffType.DAMAGE_OVER_TIME, 2000)
         for projectile in game_state.get_all_active_projectiles_that_intersect_with(enemy.world_entity):
             enemy.health -= 1
             if enemy.health <= 0:
@@ -113,26 +112,21 @@ while True:
     game_state.remove_entities(entities_to_remove)
 
     # ------------------------------------
-    #         REGEN MANA
+    #         PLAYER EFFECTS
     # ------------------------------------
 
     game_state.player_state.gain_mana(game_state.player_state.mana_regen)
-    # TODO Generalise handling of effects that can expire
-    if game_state.player_state.has_effect_healing_over_time:
-        game_state.player_state.gain_health(1)
-        game_state.player_state.time_until_effect_expires -= time_passed
-        if game_state.player_state.time_until_effect_expires <= 0:
-            game_state.player_state.has_effect_healing_over_time = False
-    if game_state.player_state.has_effect_poison:
-        game_state.player_state.lose_health(1)
-        game_state.player_state.time_until_poison_expires -= time_passed
-        if game_state.player_state.time_until_poison_expires <= 0:
-            game_state.player_state.has_effect_poison = False
-    if game_state.player_state.has_effect_speed:
-        game_state.player_state.time_until_speed_expires -= time_passed
-        if game_state.player_state.time_until_speed_expires <= 0:
-            game_state.player_state.has_effect_speed = False
-            game_state.player_entity.add_to_speed_multiplier(- 1)
+
+    buffs_update = game_state.player_state.handle_buffs(time_passed)
+    # TODO: Move this code somewhere
+    for buff_type in buffs_update.active_buffs:
+        if buff_type == BuffType.HEALING_OVER_TIME:
+            game_state.player_state.gain_health(1)
+        elif buff_type == BuffType.DAMAGE_OVER_TIME:
+            game_state.player_state.lose_health(1)
+    for buff_type in buffs_update.buffs_that_ended:
+        if buff_type == BuffType.INCREASED_MOVE_SPEED:
+            game_state.player_entity.add_to_speed_multiplier(-1);
 
     # ------------------------------------
     #         UPDATE CAMERA POSITION
@@ -152,9 +146,4 @@ while True:
                            player_mana=game_state.player_state.mana,
                            player_max_mana=game_state.player_state.max_mana,
                            potion_slots=game_state.player_state.potion_slots,
-                           has_effect_healing_over_time=game_state.player_state.has_effect_healing_over_time,
-                           time_until_effect_expires=game_state.player_state.time_until_effect_expires,
-                           has_effect_poison=game_state.player_state.has_effect_poison,
-                           time_until_poison_expires=game_state.player_state.time_until_poison_expires,
-                           has_effect_speed=game_state.player_state.has_effect_speed,
-                           time_until_speed_expires=game_state.player_state.time_until_speed_expires)
+                           buffs=game_state.player_state.buffs)

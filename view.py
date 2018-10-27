@@ -121,9 +121,7 @@ class View:
                 pygame.draw.line(self.screen, line_color, (0, screen_y), (self.screen_size[0], screen_y))
 
     def render_everything(self, all_entities, camera_world_area, enemies, player_health,
-                          player_max_health, player_mana, player_max_mana, potion_slots, has_effect_healing_over_time,
-                          time_until_effect_expires, has_effect_poison, time_until_poison_expires,
-                          has_effect_speed, time_until_speed_expires):
+                          player_max_health, player_mana, player_max_mana, potion_slots, buffs):
         self.screen.fill(COLOR_BACKGROUND)
         self._draw_ground(camera_world_area)
 
@@ -161,16 +159,19 @@ class View:
                   "E(" + str(ability_mana_costs[AbilityType.AOE_ATTACK]) + ")"
         self._render_ui_text(self.font_small, ui_text, 20, 75)
 
-        # TODO Generalise rendering of effects that can expire
         effect_texts = []
-        if has_effect_healing_over_time:
-            effect_texts.append("Healing over time (" + str(int(time_until_effect_expires/1000)) + ")")
-        if has_effect_poison:
-            effect_texts.append("Poison (" + str(int(time_until_poison_expires/1000)) + ")")
-        if has_effect_speed:
-            effect_texts.append("Speed (" + str(int(time_until_speed_expires/1000)) + ")")
+        for buff in buffs:
+            if buff.buff_type == BuffType.DAMAGE_OVER_TIME:
+                buff_name = "Poison"
+            elif buff.buff_type == BuffType.INCREASED_MOVE_SPEED:
+                buff_name = "Speed"
+            elif buff.buff_type == BuffType.HEALING_OVER_TIME:
+                buff_name = "Healing over time"
+            else:
+                raise Exception("Unhandled buff type: " + buff.buff_type)
+            effect_texts.append(buff_name + "(" + str(int(buff.time_until_expiration/1000)) + ")")
         for i, text in enumerate(effect_texts):
-            self._render_ui_text(self.font_small, text, 450, 25 + i * 35)
+            self._render_ui_text(self.font_small, text, 450, 15 + i * 25)
 
         self._render_rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
         pygame.display.update()

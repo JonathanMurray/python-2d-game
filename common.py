@@ -47,3 +47,9 @@ class Sprite(Enum):
     ENEMY_2 = 3
     FIREBALL = 4
     WHIRLWIND = 5
+
+
+class BuffType(Enum):
+    HEALING_OVER_TIME = 1
+    DAMAGE_OVER_TIME = 2
+    INCREASED_MOVE_SPEED = 3
