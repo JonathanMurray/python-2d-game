@@ -7,6 +7,7 @@ COLOR_BLACK = (0, 0, 0)
 COLOR_RED = (250, 0, 0)
 COLOR_BLUE = (0, 0, 250)
 COLOR_BACKGROUND = (200, 200, 200)
+UI_POTION_SIZE = (27, 27)
 
 
 class ScreenArea:
@@ -42,6 +43,10 @@ class View:
         self.font_small = pygame.font.Font(None, 25)
         self.images_by_sprite = {sprite: load_and_scale_sprite(sprite_initializers_by_sprite[sprite])
                                  for sprite in sprite_initializers_by_sprite}
+        # TODO: Handle potion sprites in a more dynamic way
+
+        self.health_potion_image = load_and_scale_sprite(SpriteInitializer("sprite_health.png", UI_POTION_SIZE))
+        self.mana_potion_image = load_and_scale_sprite(SpriteInitializer("sprite_mana.png", UI_POTION_SIZE))
 
     def _render_entity(self, entity, camera_world_area):
         rect = (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h)
@@ -49,17 +54,13 @@ class View:
             pygame.draw.rect(self.screen, entity.color, rect)
         elif entity.sprite in self.images_by_sprite:
             image = self.images_by_sprite[entity.sprite]
-            self._render_sprite(image, entity, camera_world_area)
+            self._render_entity_sprite(image, entity, camera_world_area)
         else:
             raise Exception("Unhandled sprite: " + str(entity.sprite))
 
-    def _render_circle(self, entity, camera_world_area):
-        rect = (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h)
-        pygame.draw.ellipse(self.screen, COLOR_BLUE, rect)
-
-    def _render_sprite(self, sprite, entity, camera_world_area):
+    def _render_entity_sprite(self, image, entity, camera_world_area):
         pos = (entity.x - camera_world_area.x, entity.y - camera_world_area.y)
-        self.screen.blit(sprite, pos)
+        self.screen.blit(image, pos)
 
     def _render_stat_bar(self, x, y, w, h, stat, max_stat, color):
         pygame.draw.rect(self.screen, COLOR_WHITE, (x - 2, y - 2, w + 3, h + 3), 2)
@@ -75,15 +76,20 @@ class View:
         y = self.ui_screen_area.y + y_in_ui
         self._render_stat_bar(x, y, w, h, stat, max_stat, color)
 
-    def _render_ui_potion(self, x_in_ui, y_in_ui, w, h, potion_number, potion_type):
+    def _render_ui_potion(self, x_in_ui, y_in_ui, size, potion_number, potion_type):
+        w = size[0]
+        h = size[1]
         x = self.ui_screen_area.x + x_in_ui
         y = self.ui_screen_area.y + y_in_ui
         pygame.draw.rect(self.screen, (100, 100, 100), (x, y, w, h), 3)
         if potion_type == PotionType.HEALTH:
             pygame.draw.rect(self.screen, (250, 50, 50), (x, y, w, h))
-        if potion_type == PotionType.MANA:
+            self.screen.blit(self.health_potion_image, (x, y))
+        elif potion_type == PotionType.MANA:
             pygame.draw.rect(self.screen, (50, 50, 250), (x, y, w, h))
-        self.screen.blit(self.font_large.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + 5))
+            self.screen.blit(self.mana_potion_image, (x, y))
+        else:
+            self.screen.blit(self.font_small.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + 5))
 
     def _render_ui_text(self, font, text, x, y):
         self.screen.blit(font.render(text, False, COLOR_WHITE), (self.ui_screen_area.x + x, self.ui_screen_area.y + y))
@@ -120,11 +126,11 @@ class View:
         self._render_ui_text(self.font_large, mana_text, 150, 43)
 
         self._render_ui_text(self.font_large, "Potions", 250, 10)
-        self._render_ui_potion(250, 39, 27, 27, 1, potion_type=potion_slots[1])
-        self._render_ui_potion(280, 39, 27, 27, 2, potion_type=potion_slots[2])
-        self._render_ui_potion(310, 39, 27, 27, 3, potion_type=potion_slots[3])
-        self._render_ui_potion(340, 39, 27, 27, 4, potion_type=potion_slots[4])
-        self._render_ui_potion(370, 39, 27, 27, 5, potion_type=potion_slots[5])
+        self._render_ui_potion(250, 39, UI_POTION_SIZE, 1, potion_type=potion_slots[1])
+        self._render_ui_potion(280, 39, UI_POTION_SIZE, 2, potion_type=potion_slots[2])
+        self._render_ui_potion(310, 39, UI_POTION_SIZE, 3, potion_type=potion_slots[3])
+        self._render_ui_potion(340, 39, UI_POTION_SIZE, 4, potion_type=potion_slots[4])
+        self._render_ui_potion(370, 39, UI_POTION_SIZE, 5, potion_type=potion_slots[5])
 
         ui_text = "Abilities: Q(" + str(ability_mana_costs[AbilityType.ATTACK]) + ") " + \
                   "W(" + str(ability_mana_costs[AbilityType.HEAL]) + ") " + \
