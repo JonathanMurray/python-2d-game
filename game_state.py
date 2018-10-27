@@ -86,10 +86,12 @@ class Buff:
     def __init__(self, buff_type, time_until_expiration):
         self.buff_type = buff_type
         self.time_until_expiration = time_until_expiration
+        self.has_applied_start_effect = False
 
 
 class PlayerBuffsUpdate:
-    def __init__(self, active_buffs, buffs_that_ended):
+    def __init__(self, buffs_that_started, active_buffs, buffs_that_ended):
+        self.buffs_that_started = buffs_that_started
         self.active_buffs = active_buffs
         self.buffs_that_ended = buffs_that_ended
 
@@ -142,24 +144,24 @@ class PlayerState:
 
     def handle_buffs(self, time_passed):
         copied_buffs_list = list(self.buffs)
+        buffs_that_started = []
         buffs_that_ended = []
         for buff in copied_buffs_list:
             buff.time_until_expiration -= time_passed
-            if buff.time_until_expiration <= 0:
+            if not buff.has_applied_start_effect:
+                buffs_that_started.append(buff.buff_type)
+                buff.has_applied_start_effect = True
+            elif buff.time_until_expiration <= 0:
                 self.buffs.remove(buff)
                 buffs_that_ended.append(buff.buff_type)
-        return PlayerBuffsUpdate([e.buff_type for e in copied_buffs_list], buffs_that_ended)
+        return PlayerBuffsUpdate(buffs_that_started, [e.buff_type for e in copied_buffs_list], buffs_that_ended)
 
-    # Returns buff_type if buff was added
-    # Returns None if existing buff was renewed
     def add_buff(self, buff_type, duration):
         existing_buffs_with_this_type = [e for e in self.buffs if e.buff_type == buff_type]
         if existing_buffs_with_this_type:
             existing_buffs_with_this_type[0].time_until_expiration = duration
-            return buff_type
         else:
             self.buffs.append(Buff(buff_type, duration))
-            return None
 
 
 class GameState:

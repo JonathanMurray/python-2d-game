@@ -53,9 +53,7 @@ while True:
         elif isinstance(action, ActionTryUsePotion):
             used_potion_type = game_state.player_state.try_use_potion(action.slot_number)
             if used_potion_type:
-                started_buff_type = apply_potion_effect(used_potion_type, game_state)
-                if started_buff_type:
-                    apply_buff_start_effect(started_buff_type, game_state)
+                apply_potion_effect(used_potion_type, game_state)
         elif isinstance(action, ActionMoveInDirection):
             game_state.player_entity.set_moving_in_dir(action.direction)
         elif isinstance(action, ActionStopMoving):
@@ -121,6 +119,8 @@ while True:
     game_state.player_state.gain_mana(game_state.player_state.mana_regen)
 
     buffs_update = game_state.player_state.handle_buffs(time_passed)
+    for buff_type in buffs_update.buffs_that_started:
+        apply_buff_start_effect(buff_type, game_state)
     for buff_type in buffs_update.active_buffs:
         apply_buff_middle_effect(buff_type, game_state)
     for buff_type in buffs_update.buffs_that_ended:
