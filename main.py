@@ -9,6 +9,7 @@ from user_input import *
 from view import View, ScreenArea, SpriteInitializer
 from enemy_behavior import run_ai_for_enemy_against_target
 from potions import apply_potion_effect
+from buffs import apply_buff_start_effect, apply_buff_middle_effect, apply_buff_end_effect
 
 GAME_WORLD_SIZE = (1000, 1000)
 SCREEN_SIZE = (700, 600)
@@ -50,9 +51,11 @@ while True:
         elif isinstance(action, ActionTryUseAbility):
             try_use_ability(game_state, action.ability_type)
         elif isinstance(action, ActionTryUsePotion):
-            potion_type = game_state.player_state.try_use_potion(action.slot_number)
-            if potion_type:
-                apply_potion_effect(potion_type, game_state)
+            used_potion_type = game_state.player_state.try_use_potion(action.slot_number)
+            if used_potion_type:
+                started_buff_type = apply_potion_effect(used_potion_type, game_state)
+                if started_buff_type:
+                    apply_buff_start_effect(started_buff_type, game_state)
         elif isinstance(action, ActionMoveInDirection):
             game_state.player_entity.set_moving_in_dir(action.direction)
         elif isinstance(action, ActionStopMoving):
@@ -118,15 +121,10 @@ while True:
     game_state.player_state.gain_mana(game_state.player_state.mana_regen)
 
     buffs_update = game_state.player_state.handle_buffs(time_passed)
-    # TODO: Move this code somewhere
     for buff_type in buffs_update.active_buffs:
-        if buff_type == BuffType.HEALING_OVER_TIME:
-            game_state.player_state.gain_health(1)
-        elif buff_type == BuffType.DAMAGE_OVER_TIME:
-            game_state.player_state.lose_health(1)
+        apply_buff_middle_effect(buff_type, game_state)
     for buff_type in buffs_update.buffs_that_ended:
-        if buff_type == BuffType.INCREASED_MOVE_SPEED:
-            game_state.player_entity.add_to_speed_multiplier(-1);
+        apply_buff_end_effect(buff_type, game_state)
 
     # ------------------------------------
     #         UPDATE CAMERA POSITION

@@ -150,16 +150,16 @@ class PlayerState:
                 buffs_that_ended.append(buff.buff_type)
         return PlayerBuffsUpdate([e.buff_type for e in copied_buffs_list], buffs_that_ended)
 
-    # Returns True if buff was added
-    # Returns False if existing buff was renewed
+    # Returns buff_type if buff was added
+    # Returns None if existing buff was renewed
     def add_buff(self, buff_type, duration):
         existing_buffs_with_this_type = [e for e in self.buffs if e.buff_type == buff_type]
         if existing_buffs_with_this_type:
             existing_buffs_with_this_type[0].time_until_expiration = duration
-            return False
+            return buff_type
         else:
             self.buffs.append(Buff(buff_type, duration))
-            return True
+            return None
 
 
 class GameState:
