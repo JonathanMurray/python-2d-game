@@ -8,7 +8,7 @@ ENEMY_SPEED = 0.4
 ENEMY_2_COLOR = (200, 0, 0)
 ENEMY_2_SPEED = 0.8
 PLAYER_ENTITY_COLOR = (250, 250, 250)
-PLAYER_ENTITY_SPEED = 2
+PLAYER_ENTITY_SPEED = 2.7
 
 
 def init_game_state_from_file(game_world_size, camera_size, player_entity_size, enemy_entity_size, enemy_2_entity_size):
@@ -39,5 +39,5 @@ def init_game_state_from_file(game_world_size, camera_size, player_entity_size, 
     enemies = [Enemy(WorldEntity(pos, enemy_entity_size, ENEMY_COLOR, Sprite.ENEMY, Direction.LEFT, ENEMY_SPEED,
                                  ENEMY_SPEED), 2, 2, EnemyBehavior.DUMB) for pos in dumb_enemy_positions] + \
               [Enemy(WorldEntity(pos, enemy_2_entity_size, ENEMY_2_COLOR, Sprite.ENEMY_2, Direction.LEFT, ENEMY_2_SPEED,
-                                 ENEMY_2_SPEED), 5, 5, EnemyBehavior.SMART) for pos in smart_enemy_positions]
+                                 ENEMY_2_SPEED), 3, 3, EnemyBehavior.SMART) for pos in smart_enemy_positions]
     return GameState(player_entity, potions, enemies, camera_size, game_world_size)

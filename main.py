@@ -12,7 +12,7 @@ from enemy_behavior import run_ai_for_enemy_against_target
 GAME_WORLD_SIZE = (1000, 1000)
 SCREEN_SIZE = (700, 600)
 CAMERA_SIZE = (700, 500)
-PLAYER_ENTITY_SIZE = (50, 50)
+PLAYER_ENTITY_SIZE = (60, 60)
 ENEMY_ENTITY_SIZE = (30, 30)
 ENEMY_2_ENTITY_SIZE = (60, 60)
 
@@ -123,7 +123,6 @@ while True:
 
     view.render_everything(all_entities=game_state.get_all_entities(),
                            camera_world_area=game_state.camera_world_area,
-                           player_entity=game_state.player_entity,
                            enemies=game_state.enemies,
                            player_health=game_state.player_stats.health,
                            player_max_health=game_state.player_stats.max_health,

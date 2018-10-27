@@ -94,7 +94,7 @@ class View:
     def _render_rect_filled(self, color, rect):
         pygame.draw.rect(self.screen, color, rect)
 
-    def render_everything(self, all_entities, camera_world_area, player_entity, enemies, player_health,
+    def render_everything(self, all_entities, camera_world_area, enemies, player_health,
                           player_max_health, player_mana, player_max_mana, potion_slots):
         self.screen.fill(COLOR_BACKGROUND)
         for entity in all_entities:

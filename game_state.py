@@ -131,7 +131,7 @@ class GameState:
         self.projectile_entities = []
         self.potions = potions
         self.enemies = enemies
-        self.player_stats = PlayerStats(3, 20, 50, 100, 0.03)
+        self.player_stats = PlayerStats(20, 20, 75, 100, 0.03)
         self.game_world_size = game_world_size
         self.entire_world_area = WorldArea((0, 0), self.game_world_size)
 

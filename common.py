@@ -35,8 +35,8 @@ class AbilityType(Enum):
 
 ability_mana_costs = {
     AbilityType.HEAL: 10,
-    AbilityType.ATTACK: 5,
-    AbilityType.AOE_ATTACK: 7
+    AbilityType.ATTACK: 3,
+    AbilityType.AOE_ATTACK: 5
 }
 
 
