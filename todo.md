@@ -9,8 +9,6 @@
 * Prevent using potion when at full stats
 
 #### Features:
-* More types of potions (mana potion, different strength, etc)
-* More abilities (tmp movement speed, tmp health regen buff, AoE attack, etc)
 * A message log
     * can show a message when an action fails (failed to use potion, can't 
     heal because already full health, etc)
