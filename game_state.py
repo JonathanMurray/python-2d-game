@@ -110,11 +110,9 @@ class PlayerState:
         self.mana = int(math.floor(self._mana_float))
 
     def try_use_potion(self, number):
-        if self.potion_slots[number] == PotionType.HEALTH:
-            self.gain_health(100)
-        elif self.potion_slots[number] == PotionType.MANA:
-            self.gain_mana(25)
+        potion_type = self.potion_slots[number]
         self.potion_slots[number] = None
+        return potion_type
 
     # Returns whether or not potion was picked up (not picked up if no space for it)
     def try_pick_up_potion(self, potion_type):

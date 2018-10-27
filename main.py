@@ -8,6 +8,7 @@ from game_world_init import init_game_state_from_file
 from user_input import *
 from view import View, ScreenArea, SpriteInitializer
 from enemy_behavior import run_ai_for_enemy_against_target
+from potions import apply_potion_effect
 
 GAME_WORLD_SIZE = (1000, 1000)
 SCREEN_SIZE = (700, 600)
@@ -49,7 +50,9 @@ while True:
         elif isinstance(action, ActionTryUseAbility):
             try_use_ability(game_state, action.ability_type)
         elif isinstance(action, ActionTryUsePotion):
-            game_state.player_state.try_use_potion(action.slot_number)
+            potion_type = game_state.player_state.try_use_potion(action.slot_number)
+            if potion_type:
+                apply_potion_effect(potion_type, game_state.player_state)
         elif isinstance(action, ActionMoveInDirection):
             game_state.player_entity.set_moving_in_dir(action.direction)
         elif isinstance(action, ActionStopMoving):
