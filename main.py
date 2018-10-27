@@ -52,7 +52,7 @@ while True:
         elif isinstance(action, ActionTryUsePotion):
             potion_type = game_state.player_state.try_use_potion(action.slot_number)
             if potion_type:
-                apply_potion_effect(potion_type, game_state.player_state)
+                apply_potion_effect(potion_type, game_state)
         elif isinstance(action, ActionMoveInDirection):
             game_state.player_entity.set_moving_in_dir(action.direction)
         elif isinstance(action, ActionStopMoving):
@@ -117,6 +117,7 @@ while True:
     # ------------------------------------
 
     game_state.player_state.gain_mana(game_state.player_state.mana_regen)
+    # TODO Generalise handling of effects that can expire
     if game_state.player_state.has_effect_healing_over_time:
         game_state.player_state.gain_health(1)
         game_state.player_state.time_until_effect_expires -= time_passed
@@ -127,6 +128,11 @@ while True:
         game_state.player_state.time_until_poison_expires -= time_passed
         if game_state.player_state.time_until_poison_expires <= 0:
             game_state.player_state.has_effect_poison = False
+    if game_state.player_state.has_effect_speed:
+        game_state.player_state.time_until_speed_expires -= time_passed
+        if game_state.player_state.time_until_speed_expires <= 0:
+            game_state.player_state.has_effect_speed = False
+            game_state.player_entity.add_to_speed_multiplier(- 1)
 
     # ------------------------------------
     #         UPDATE CAMERA POSITION
@@ -149,4 +155,6 @@ while True:
                            has_effect_healing_over_time=game_state.player_state.has_effect_healing_over_time,
                            time_until_effect_expires=game_state.player_state.time_until_effect_expires,
                            has_effect_poison=game_state.player_state.has_effect_poison,
-                           time_until_poison_expires=game_state.player_state.time_until_poison_expires)
+                           time_until_poison_expires=game_state.player_state.time_until_poison_expires,
+                           has_effect_speed=game_state.player_state.has_effect_speed,
+                           time_until_speed_expires=game_state.player_state.time_until_speed_expires)

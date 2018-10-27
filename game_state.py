@@ -27,10 +27,11 @@ class WorldEntity:
         self.direction = direction
         self.speed = speed
         self.max_speed = max_speed
+        self.speed_multiplier = 1
 
     def set_moving_in_dir(self, direction):
         self.direction = direction
-        self.speed = self.max_speed
+        self.speed = self.speed_multiplier * self.max_speed
 
     def set_not_moving(self):
         self.speed = 0
@@ -50,6 +51,12 @@ class WorldEntity:
 
     def get_center_y(self):
         return self.y + self.h / 2
+
+    def add_to_speed_multiplier(self, amount):
+        self.speed_multiplier += amount
+        effective_max_speed = self.speed_multiplier * self.max_speed
+        if self.speed > effective_max_speed:
+            self.speed = effective_max_speed
 
 
 class Projectile:
@@ -84,16 +91,18 @@ class PlayerState:
         self.max_mana = max_mana
         self.mana_regen = mana_regen
         self.potion_slots = {
-            1: PotionType.HEALTH,
-            2: None,
-            3: PotionType.HEALTH,
-            4: PotionType.MANA,
-            5: PotionType.MANA
+            1: PotionType.SPEED,
+            2: PotionType.SPEED,
+            3: PotionType.SPEED,
+            4: PotionType.SPEED,
+            5: PotionType.SPEED
         }
         self.has_effect_healing_over_time = False
         self.time_until_effect_expires = 0
         self.has_effect_poison = False
         self.time_until_poison_expires = 0
+        self.has_effect_speed = False
+        self.time_until_speed_expires = 0
 
     def gain_health(self, amount):
         self.health = min(self.health + amount, self.max_health)

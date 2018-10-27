@@ -49,6 +49,8 @@ class View:
             SpriteInitializer("resources/ui_health_potion.png", UI_POTION_SIZE))
         self.mana_potion_image = load_and_scale_sprite(
             SpriteInitializer("resources/ui_mana_potion.png", UI_POTION_SIZE))
+        self.speed_potion_image = load_and_scale_sprite(
+            SpriteInitializer("resources/white_potion.gif", UI_POTION_SIZE))
 
     def _render_entity(self, entity, camera_world_area):
         rect = (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h)
@@ -85,11 +87,11 @@ class View:
         y = self.ui_screen_area.y + y_in_ui
         pygame.draw.rect(self.screen, (100, 100, 100), (x, y, w, h), 3)
         if potion_type == PotionType.HEALTH:
-            pygame.draw.rect(self.screen, (250, 50, 50), (x, y, w, h))
             self.screen.blit(self.health_potion_image, (x, y))
         elif potion_type == PotionType.MANA:
-            pygame.draw.rect(self.screen, (50, 50, 250), (x, y, w, h))
             self.screen.blit(self.mana_potion_image, (x, y))
+        elif potion_type == PotionType.SPEED:
+            self.screen.blit(self.speed_potion_image, (x, y))
         else:
             self.screen.blit(self.font_small.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + 5))
 
@@ -120,7 +122,8 @@ class View:
 
     def render_everything(self, all_entities, camera_world_area, enemies, player_health,
                           player_max_health, player_mana, player_max_mana, potion_slots, has_effect_healing_over_time,
-                          time_until_effect_expires, has_effect_poison, time_until_poison_expires):
+                          time_until_effect_expires, has_effect_poison, time_until_poison_expires,
+                          has_effect_speed, time_until_speed_expires):
         self.screen.fill(COLOR_BACKGROUND)
         self._draw_ground(camera_world_area)
 
@@ -158,11 +161,14 @@ class View:
                   "E(" + str(ability_mana_costs[AbilityType.AOE_ATTACK]) + ")"
         self._render_ui_text(self.font_small, ui_text, 20, 75)
 
+        # TODO Generalise rendering of effects that can expire
         effect_texts = []
         if has_effect_healing_over_time:
             effect_texts.append("Healing over time (" + str(int(time_until_effect_expires/1000)) + ")")
         if has_effect_poison:
             effect_texts.append("Poison (" + str(int(time_until_poison_expires/1000)) + ")")
+        if has_effect_speed:
+            effect_texts.append("Speed (" + str(int(time_until_speed_expires/1000)) + ")")
         for i, text in enumerate(effect_texts):
             self._render_ui_text(self.font_small, text, 450, 25 + i * 35)
 
