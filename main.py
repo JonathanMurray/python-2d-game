@@ -9,7 +9,7 @@ from user_input import *
 from view import View, ScreenArea, SpriteInitializer
 from enemy_behavior import run_ai_for_enemy_against_target
 from potions import apply_potion_effect
-from buffs import apply_buff_start_effect, apply_buff_middle_effect, apply_buff_end_effect
+from buffs import buffs
 
 GAME_WORLD_SIZE = (1000, 1000)
 SCREEN_SIZE = (700, 600)
@@ -120,11 +120,11 @@ while True:
 
     buffs_update = game_state.player_state.handle_buffs(time_passed)
     for buff_type in buffs_update.buffs_that_started:
-        apply_buff_start_effect(buff_type, game_state)
+        buffs[buff_type].apply_start_effect(game_state)
     for buff_type in buffs_update.active_buffs:
-        apply_buff_middle_effect(buff_type, game_state)
+        buffs[buff_type].apply_middle_effect(game_state)
     for buff_type in buffs_update.buffs_that_ended:
-        apply_buff_end_effect(buff_type, game_state)
+        buffs[buff_type].apply_end_effect(game_state)
 
     # ------------------------------------
     #         UPDATE CAMERA POSITION

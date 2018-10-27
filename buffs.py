@@ -1,18 +1,37 @@
 from common import *
 
 
-def apply_buff_start_effect(buff_type, game_state):
-    if buff_type == BuffType.INCREASED_MOVE_SPEED:
-        game_state.player_entity.add_to_speed_multiplier(1)
+class AbstractBuff:
+    def apply_start_effect(self, game_state):
+        pass
+
+    def apply_middle_effect(self, game_state):
+        pass
+
+    def apply_end_effect(self, game_state):
+        pass
 
 
-def apply_buff_middle_effect(buff_type, game_state):
-    if buff_type == BuffType.HEALING_OVER_TIME:
+class HealingOverTime(AbstractBuff):
+    def apply_middle_effect(self, game_state):
         game_state.player_state.gain_health(1)
-    elif buff_type == BuffType.DAMAGE_OVER_TIME:
+
+
+class DamageOverTime(AbstractBuff):
+    def apply_middle_effect(self, game_state):
         game_state.player_state.lose_health(1)
 
 
-def apply_buff_end_effect(buff_type, game_state):
-    if buff_type == BuffType.INCREASED_MOVE_SPEED:
+class IncreasedMoveSpeed(AbstractBuff):
+    def apply_start_effect(self, game_state):
+        game_state.player_entity.add_to_speed_multiplier(1)
+
+    def apply_end_effect(self, game_state):
         game_state.player_entity.add_to_speed_multiplier(-1)
+
+
+buffs = {
+    BuffType.HEALING_OVER_TIME: HealingOverTime(),
+    BuffType.DAMAGE_OVER_TIME: DamageOverTime(),
+    BuffType.INCREASED_MOVE_SPEED: IncreasedMoveSpeed()
+}
