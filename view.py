@@ -8,6 +8,7 @@ COLOR_RED = (250, 0, 0)
 COLOR_BLUE = (0, 0, 250)
 COLOR_BACKGROUND = (200, 200, 200)
 UI_POTION_SIZE = (27, 27)
+UI_ABILITY_SIZE = (27, 27)
 
 
 class ScreenArea:
@@ -41,16 +42,23 @@ class View:
         self.screen_size = screen_size
         self.font_large = pygame.font.SysFont('Arial', 30)
         self.font_small = pygame.font.Font(None, 25)
+        self.font_tiny = pygame.font.Font(None, 19)
         self.images_by_sprite = {sprite: load_and_scale_sprite(sprite_initializers_by_sprite[sprite])
                                  for sprite in sprite_initializers_by_sprite}
-        # TODO: Handle potion sprites in a more dynamic way
 
+        # TODO: Handle icon sprites in a more dynamic way
         self.health_potion_image = load_and_scale_sprite(
             SpriteInitializer("resources/ui_health_potion.png", UI_POTION_SIZE))
         self.mana_potion_image = load_and_scale_sprite(
             SpriteInitializer("resources/ui_mana_potion.png", UI_POTION_SIZE))
         self.speed_potion_image = load_and_scale_sprite(
             SpriteInitializer("resources/white_potion.gif", UI_POTION_SIZE))
+        self.attack_ability_image = load_and_scale_sprite(
+            SpriteInitializer("resources/fireball.png", UI_ABILITY_SIZE))
+        self.heal_ability_image = load_and_scale_sprite(
+            SpriteInitializer("resources/heal_ability.png", UI_ABILITY_SIZE))
+        self.aoe_ability_image = load_and_scale_sprite(
+            SpriteInitializer("resources/whirlwind.png", UI_ABILITY_SIZE))
 
     def _render_entity(self, entity, camera_world_area):
         rect = (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h)
@@ -85,15 +93,30 @@ class View:
         h = size[1]
         x = self.ui_screen_area.x + x_in_ui
         y = self.ui_screen_area.y + y_in_ui
-        pygame.draw.rect(self.screen, (100, 100, 100), (x, y, w, h), 3)
         if potion_type == PotionType.HEALTH:
             self.screen.blit(self.health_potion_image, (x, y))
         elif potion_type == PotionType.MANA:
             self.screen.blit(self.mana_potion_image, (x, y))
         elif potion_type == PotionType.SPEED:
             self.screen.blit(self.speed_potion_image, (x, y))
-        else:
-            self.screen.blit(self.font_small.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + 5))
+        pygame.draw.rect(self.screen, (100, 100, 100), (x, y, w, h), 3)
+        self.screen.blit(self.font_tiny.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + h + 4))
+
+    def _render_ui_ability(self, x_in_ui, y_in_ui, size, key, ability_type):
+        w = size[0]
+        h = size[1]
+        x = self.ui_screen_area.x + x_in_ui
+        y = self.ui_screen_area.y + y_in_ui
+        mana_cost = ability_mana_costs[ability_type]
+        if ability_type == AbilityType.ATTACK:
+            self.screen.blit(self.attack_ability_image, (x, y))
+        elif ability_type == AbilityType.HEAL:
+            self.screen.blit(self.heal_ability_image, (x, y))
+        elif ability_type == AbilityType.AOE_ATTACK:
+            self.screen.blit(self.aoe_ability_image, (x, y))
+        pygame.draw.rect(self.screen, (100, 100, 100), (x, y, w, h), 3)
+        self.screen.blit(self.font_tiny.render(key, False, COLOR_WHITE), (x + 8, y + h + 4))
+        self.screen.blit(self.font_tiny.render("" + str(mana_cost) + "", False, COLOR_WHITE), (x + 8, y + h + 19))
 
     def _render_ui_text(self, font, text, x, y):
         self.screen.blit(font.render(text, False, COLOR_WHITE), (self.ui_screen_area.x + x, self.ui_screen_area.y + y))
@@ -136,28 +159,32 @@ class View:
         self._render_rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
                                                self.screen_size[1] - self.camera_size[1]))
 
-        self._render_ui_text(self.font_large, "Health", 10, 10)
-        self._render_stat_bar_in_ui(10, 40, 100, 25, player_health, player_max_health,
+        y_1 = 8
+        y_2 = 34
+
+        self._render_ui_text(self.font_large, "Health", 10, y_1)
+        self._render_stat_bar_in_ui(10, y_2 + 1, 100, 25, player_health, player_max_health,
                                     COLOR_RED)
         health_text = str(player_health) + "/" + str(player_max_health)
-        self._render_ui_text(self.font_large, health_text, 30, 43)
+        self._render_ui_text(self.font_large, health_text, 30, y_2 + 4)
 
-        self._render_ui_text(self.font_large, "Mana", 130, 10)
-        self._render_stat_bar_in_ui(130, 40, 100, 25, player_mana, player_max_mana, COLOR_BLUE)
+        self._render_ui_text(self.font_large, "Mana", 130, y_1)
+        self._render_stat_bar_in_ui(130, y_2 + 1, 100, 25, player_mana, player_max_mana, COLOR_BLUE)
         mana_text = str(player_mana) + "/" + str(player_max_mana)
-        self._render_ui_text(self.font_large, mana_text, 150, 43)
+        self._render_ui_text(self.font_large, mana_text, 150, y_2 + 4)
 
-        self._render_ui_text(self.font_large, "Potions", 250, 10)
-        self._render_ui_potion(250, 39, UI_POTION_SIZE, 1, potion_type=potion_slots[1])
-        self._render_ui_potion(280, 39, UI_POTION_SIZE, 2, potion_type=potion_slots[2])
-        self._render_ui_potion(310, 39, UI_POTION_SIZE, 3, potion_type=potion_slots[3])
-        self._render_ui_potion(340, 39, UI_POTION_SIZE, 4, potion_type=potion_slots[4])
-        self._render_ui_potion(370, 39, UI_POTION_SIZE, 5, potion_type=potion_slots[5])
+        self._render_ui_text(self.font_large, "Potions", 250, y_1)
+        self._render_ui_potion(250, y_2, UI_POTION_SIZE, 1, potion_type=potion_slots[1])
+        self._render_ui_potion(280, y_2, UI_POTION_SIZE, 2, potion_type=potion_slots[2])
+        self._render_ui_potion(310, y_2, UI_POTION_SIZE, 3, potion_type=potion_slots[3])
+        self._render_ui_potion(340, y_2, UI_POTION_SIZE, 4, potion_type=potion_slots[4])
+        self._render_ui_potion(370, y_2, UI_POTION_SIZE, 5, potion_type=potion_slots[5])
 
-        ui_text = "Abilities: Q(" + str(ability_mana_costs[AbilityType.ATTACK]) + ") " + \
-                  "W(" + str(ability_mana_costs[AbilityType.HEAL]) + ") " + \
-                  "E(" + str(ability_mana_costs[AbilityType.AOE_ATTACK]) + ")"
-        self._render_ui_text(self.font_small, ui_text, 20, 75)
+        self._render_ui_text(self.font_large, "Abilities", 420, y_1)
+
+        self._render_ui_ability(420, y_2, UI_ABILITY_SIZE, "Q", AbilityType.ATTACK)
+        self._render_ui_ability(450, y_2, UI_ABILITY_SIZE, "W", AbilityType.HEAL)
+        self._render_ui_ability(480, y_2, UI_ABILITY_SIZE, "E", AbilityType.AOE_ATTACK)
 
         effect_texts = []
         for buff in buffs:
@@ -166,12 +193,12 @@ class View:
             elif buff.buff_type == BuffType.INCREASED_MOVE_SPEED:
                 buff_name = "Speed"
             elif buff.buff_type == BuffType.HEALING_OVER_TIME:
-                buff_name = "Healing over time"
+                buff_name = "Healing"
             else:
                 raise Exception("Unhandled buff type: " + buff.buff_type)
             effect_texts.append(buff_name + "(" + str(int(buff.time_until_expiration/1000)) + ")")
         for i, text in enumerate(effect_texts):
-            self._render_ui_text(self.font_small, text, 450, 15 + i * 25)
+            self._render_ui_text(self.font_small, text, 550, 15 + i * 25)
 
         self._render_rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
         pygame.display.update()
