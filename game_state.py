@@ -148,9 +148,9 @@ class GameState:
                [p.world_entity for p in self.potions] + [e.world_entity for e in self.enemies]
 
     def center_camera_on_player(self):
-        self.camera_world_area.x = min(max(self.player_entity.x - self.camera_size[0] / 2, 0),
+        self.camera_world_area.x = min(max(self.player_entity.get_center_x() - self.camera_size[0] / 2, 0),
                                        self.game_world_size[0] - self.camera_size[0])
-        self.camera_world_area.y = min(max(self.player_entity.y - self.camera_size[1] / 2, 0),
+        self.camera_world_area.y = min(max(self.player_entity.get_center_y() - self.camera_size[1] / 2, 0),
                                        self.game_world_size[1] - self.camera_size[1])
 
     def get_all_active_projectiles_that_intersect_with(self, entity):
