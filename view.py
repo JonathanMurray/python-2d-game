@@ -119,7 +119,8 @@ class View:
                 pygame.draw.line(self.screen, line_color, (0, screen_y), (self.screen_size[0], screen_y))
 
     def render_everything(self, all_entities, camera_world_area, enemies, player_health,
-                          player_max_health, player_mana, player_max_mana, potion_slots):
+                          player_max_health, player_mana, player_max_mana, potion_slots, has_effect_healing_over_time,
+                          time_until_effect_expires):
         self.screen.fill(COLOR_BACKGROUND)
         self._draw_ground(camera_world_area)
 
@@ -156,6 +157,12 @@ class View:
                   "W(" + str(ability_mana_costs[AbilityType.HEAL]) + ") " + \
                   "E(" + str(ability_mana_costs[AbilityType.AOE_ATTACK]) + ")"
         self._render_ui_text(self.font_small, ui_text, 20, 75)
+
+        if has_effect_healing_over_time:
+            effects_text = "Healing over time (" + str(int(time_until_effect_expires/1000)) + ")"
+        else:
+            effects_text = ""
+        self._render_ui_text(self.font_small, effects_text, 450, 25)
 
         self._render_rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
         pygame.display.update()

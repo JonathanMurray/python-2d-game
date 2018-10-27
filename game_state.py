@@ -90,6 +90,8 @@ class PlayerState:
             4: PotionType.MANA,
             5: PotionType.MANA
         }
+        self.has_effect_healing_over_time = False
+        self.time_until_effect_expires = 0
 
     def gain_health(self, amount):
         self.health = min(self.health + amount, self.max_health)
@@ -107,7 +109,7 @@ class PlayerState:
 
     def try_use_potion(self, number):
         if self.potion_slots[number] == PotionType.HEALTH:
-            self.gain_health(10)
+            self.gain_health(100)
         elif self.potion_slots[number] == PotionType.MANA:
             self.gain_mana(25)
         self.potion_slots[number] = None
@@ -131,7 +133,7 @@ class GameState:
         self.projectile_entities = []
         self.potions = potions
         self.enemies = enemies
-        self.player_state = PlayerState(20, 20, 75, 100, 0.03)
+        self.player_state = PlayerState(1, 500, 75, 100, 0.03)
         self.game_world_size = game_world_size
         self.entire_world_area = WorldArea((0, 0), self.game_world_size)
 

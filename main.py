@@ -111,6 +111,11 @@ while True:
     # ------------------------------------
 
     game_state.player_state.gain_mana(game_state.player_state.mana_regen)
+    if game_state.player_state.has_effect_healing_over_time:
+        game_state.player_state.gain_health(1)
+        game_state.player_state.time_until_effect_expires -= time_passed
+        if game_state.player_state.time_until_effect_expires <= 0:
+            game_state.player_state.has_effect_healing_over_time = False
 
     # ------------------------------------
     #         UPDATE CAMERA POSITION
@@ -129,4 +134,6 @@ while True:
                            player_max_health=game_state.player_state.max_health,
                            player_mana=game_state.player_state.mana,
                            player_max_mana=game_state.player_state.max_mana,
-                           potion_slots=game_state.player_state.potion_slots)
+                           potion_slots=game_state.player_state.potion_slots,
+                           has_effect_healing_over_time=game_state.player_state.has_effect_healing_over_time,
+                           time_until_effect_expires=game_state.player_state.time_until_effect_expires)
