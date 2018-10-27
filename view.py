@@ -45,8 +45,10 @@ class View:
                                  for sprite in sprite_initializers_by_sprite}
         # TODO: Handle potion sprites in a more dynamic way
 
-        self.health_potion_image = load_and_scale_sprite(SpriteInitializer("sprite_health.png", UI_POTION_SIZE))
-        self.mana_potion_image = load_and_scale_sprite(SpriteInitializer("sprite_mana.png", UI_POTION_SIZE))
+        self.health_potion_image = load_and_scale_sprite(
+            SpriteInitializer("resources/ui_health_potion.png", UI_POTION_SIZE))
+        self.mana_potion_image = load_and_scale_sprite(
+            SpriteInitializer("resources/ui_mana_potion.png", UI_POTION_SIZE))
 
     def _render_entity(self, entity, camera_world_area):
         rect = (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h)

@@ -16,7 +16,7 @@ def init_game_state_from_file(game_world_size, camera_size, player_entity_size, 
     smart_enemy_positions = []
     potion_positions = []
     player_pos = (0, 0)
-    with open("map.txt") as map_file:
+    with open("resources/map.txt") as map_file:
         row_index = 0
         for line in map_file:
             col_index = 0

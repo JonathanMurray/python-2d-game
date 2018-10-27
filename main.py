@@ -24,10 +24,10 @@ pygame.font.init()
 screen = pygame.display.set_mode(SCREEN_SIZE)
 ui_screen_area = ScreenArea((0, CAMERA_SIZE[1]), (SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
 initializers_by_sprite = {
-    Sprite.PLAYER: SpriteInitializer("sprite_link.png", PLAYER_ENTITY_SIZE),
-    Sprite.ENEMY: SpriteInitializer("sprite_goomba.png", ENEMY_ENTITY_SIZE),
-    Sprite.ENEMY_2: SpriteInitializer("sprite_enemy2.png", ENEMY_2_ENTITY_SIZE),
-    Sprite.FIREBALL: SpriteInitializer("fireball.png", ATTACK_PROJECTILE_SIZE)
+    Sprite.PLAYER: SpriteInitializer("resources/player.png", PLAYER_ENTITY_SIZE),
+    Sprite.ENEMY: SpriteInitializer("resources/enemy.png", ENEMY_ENTITY_SIZE),
+    Sprite.ENEMY_2: SpriteInitializer("resources/enemy2.png", ENEMY_2_ENTITY_SIZE),
+    Sprite.FIREBALL: SpriteInitializer("resources/fireball.png", ATTACK_PROJECTILE_SIZE)
 }
 view = View(screen, ui_screen_area, CAMERA_SIZE, SCREEN_SIZE, initializers_by_sprite)
 clock = pygame.time.Clock()
