@@ -4,6 +4,10 @@
 * Move non-trivial logic from game_state. Prefer to have game-logic in main.py
 * Reduce the ugly coupling between abilities and view.py
 
+#### Game engine:
+* Cooldown for using abilities
+* Prevent using potion when at full stats
+
 #### Features:
 * More types of potions (mana potion, different strength, etc)
 * More abilities (tmp movement speed, tmp health regen buff, AoE attack, etc)
