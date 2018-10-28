@@ -1,4 +1,5 @@
 import random
+
 from common import Direction, EnemyBehavior
 
 

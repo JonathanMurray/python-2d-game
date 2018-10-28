@@ -219,7 +219,7 @@ class View:
                 buff_name = "Healing"
             else:
                 raise Exception("Unhandled buff type: " + buff.buff_type)
-            buff_texts.append(buff_name + "(" + str(int(buff.time_until_expiration/1000)) + ")")
+            buff_texts.append(buff_name + "(" + str(int(buff.time_until_expiration / 1000)) + ")")
         for i, text in enumerate(buff_texts):
             self._render_ui_text(self.font_small, text, 550, 15 + i * 25)
 

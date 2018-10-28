@@ -1,5 +1,5 @@
-from game_state import WorldEntity, Enemy, GameState, Potion
 from common import *
+from game_state import WorldEntity, Enemy, GameState, Potion
 
 POTION_ENTITY_SIZE = (30, 30)
 POTION_ENTITY_COLOR = (50, 200, 50)

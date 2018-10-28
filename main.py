@@ -4,12 +4,12 @@ import pygame
 import sys
 
 from abilities import try_use_ability, ATTACK_PROJECTILE_SIZE, AOE_PROJECTILE_SIZE
+from buffs import buffs
+from enemy_behavior import run_ai_for_enemy_against_target
 from game_world_init import init_game_state_from_file
+from potions import apply_potion_effect
 from user_input import *
 from view import View, ScreenArea, SpriteInitializer
-from enemy_behavior import run_ai_for_enemy_against_target
-from potions import apply_potion_effect
-from buffs import buffs
 
 GAME_WORLD_SIZE = (1000, 1000)
 SCREEN_SIZE = (700, 600)
