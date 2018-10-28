@@ -45,8 +45,8 @@ class AbilityData:
 
 
 ABILITIES = {
-    AbilityType.ATTACK: AbilityData(UiIconSprite.ATTACK_ABILITY, 10),
-    AbilityType.HEAL: AbilityData(UiIconSprite.HEAL_ABILITY, 3),
+    AbilityType.ATTACK: AbilityData(UiIconSprite.ATTACK_ABILITY, 3),
+    AbilityType.HEAL: AbilityData(UiIconSprite.HEAL_ABILITY, 10),
     AbilityType.AOE_ATTACK: AbilityData(UiIconSprite.AOE_ABILITY, 5)
 }
 
