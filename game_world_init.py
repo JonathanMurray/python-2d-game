@@ -45,7 +45,7 @@ def init_game_state_from_file(game_world_size, camera_size):
         1: PotionType.SPEED,
         2: PotionType.MANA,
         3: PotionType.HEALTH,
-        4: PotionType.SPEED,
-        5: PotionType.SPEED
+        4: PotionType.INVISIBILITY,
+        5: PotionType.INVISIBILITY
     }
     return GameState(player_entity, potions, enemies, camera_size, game_world_size, player_potion_slots)

@@ -28,6 +28,7 @@ UI_ICON_SPRITE_PATHS = {
     UiIconSprite.HEALTH_POTION: "resources/ui_health_potion.png",
     UiIconSprite.MANA_POTION: "resources/ui_mana_potion.png",
     UiIconSprite.SPEED_POTION: "resources/white_potion.gif",
+    UiIconSprite.INVISIBILITY_POTION: "resources/invis_potion.png",
     UiIconSprite.ATTACK_ABILITY: "resources/fireball.png",
     UiIconSprite.HEAL_ABILITY: "resources/heal_ability.png",
     UiIconSprite.AOE_ABILITY: "resources/whirlwind.png"
@@ -36,7 +37,8 @@ UI_ICON_SPRITE_PATHS = {
 POTION_ICON_SPRITES = {
     PotionType.HEALTH: UiIconSprite.HEALTH_POTION,
     PotionType.MANA: UiIconSprite.MANA_POTION,
-    PotionType.SPEED: UiIconSprite.SPEED_POTION
+    PotionType.SPEED: UiIconSprite.SPEED_POTION,
+    PotionType.INVISIBILITY: UiIconSprite.INVISIBILITY_POTION
 }
 
 
@@ -57,5 +59,6 @@ ABILITIES = {
 BUFF_TEXTS = {
     BuffType.DAMAGE_OVER_TIME: "Poison",
     BuffType.INCREASED_MOVE_SPEED: "Speed",
-    BuffType.HEALING_OVER_TIME: "Healing"
+    BuffType.HEALING_OVER_TIME: "Healing",
+    BuffType.INVISIBILITY: "Invisibility"
 }

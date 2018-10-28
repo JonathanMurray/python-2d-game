@@ -1,3 +1,4 @@
+import random
 from enum import Enum
 
 
@@ -17,10 +18,15 @@ def boxes_intersect(r1, r2):
            and _ranges_overlap(r1.y, r1.y + r1.h, r2.y, r2.y + r2.h)
 
 
+def random_direction():
+    return random.choice([Direction.LEFT, Direction.RIGHT, Direction.UP, Direction.DOWN])
+
+
 class PotionType(Enum):
     HEALTH = 1
     MANA = 2
     SPEED = 3
+    INVISIBILITY = 4
 
 
 class EnemyBehavior(Enum):
@@ -49,9 +55,11 @@ class UiIconSprite(Enum):
     ATTACK_ABILITY = 4
     HEAL_ABILITY = 5
     AOE_ABILITY = 6
+    INVISIBILITY_POTION = 7
 
 
 class BuffType(Enum):
     HEALING_OVER_TIME = 1
     DAMAGE_OVER_TIME = 2
     INCREASED_MOVE_SPEED = 3
+    INVISIBILITY = 4

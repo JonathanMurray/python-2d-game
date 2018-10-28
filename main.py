@@ -70,7 +70,10 @@ while True:
     if ticks_since_ai_ran > AI_RUN_INTERVAL:
         ticks_since_ai_ran = 0
         for e in game_state.enemies:
-            direction = run_ai_for_enemy_against_target(e.world_entity, game_state.player_entity, e.enemy_behavior)
+            if game_state.player_state.is_invisible:
+                direction = random_direction()
+            else:
+                direction = run_ai_for_enemy_against_target(e.world_entity, game_state.player_entity, e.enemy_behavior)
             e.world_entity.set_moving_in_dir(direction)
 
     ticks_since_minimap_updated += time_passed

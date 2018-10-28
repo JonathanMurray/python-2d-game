@@ -107,6 +107,7 @@ class PlayerState:
         self.mana_regen = mana_regen
         self.potion_slots = potion_slots
         self.active_buffs = []
+        self.is_invisible = False
 
     def gain_health(self, amount):
         self.health = min(self.health + amount, self.max_health)
