@@ -153,4 +153,5 @@ while True:
                            potion_slots=game_state.player_state.potion_slots,
                            buffs=game_state.player_state.buffs,
                            fps_string=fps_string,
-                           player_minimap_relative_position=player_minimap_relative_position)
+                           player_minimap_relative_position=player_minimap_relative_position,
+                           abilities=[AbilityType.ATTACK, AbilityType.HEAL, AbilityType.AOE_ATTACK])

@@ -1,3 +1,5 @@
+import pygame
+
 from common import *
 
 PLAYER_ENTITY_SIZE = (60, 60)
@@ -39,14 +41,15 @@ POTION_ICON_SPRITES = {
 
 
 class AbilityData:
-    def __init__(self, icon_sprite, mana_cost):
+    def __init__(self, icon_sprite, mana_cost, key_string, pygame_key):
         self.icon_sprite = icon_sprite
         self.mana_cost = mana_cost
+        self.key_string = key_string
+        self.pygame_key = pygame_key
 
 
 ABILITIES = {
-    AbilityType.ATTACK: AbilityData(UiIconSprite.ATTACK_ABILITY, 3),
-    AbilityType.HEAL: AbilityData(UiIconSprite.HEAL_ABILITY, 10),
-    AbilityType.AOE_ATTACK: AbilityData(UiIconSprite.AOE_ABILITY, 5)
+    AbilityType.ATTACK: AbilityData(UiIconSprite.ATTACK_ABILITY, 3, "Q", pygame.K_q),
+    AbilityType.HEAL: AbilityData(UiIconSprite.HEAL_ABILITY, 10, "W", pygame.K_w),
+    AbilityType.AOE_ATTACK: AbilityData(UiIconSprite.AOE_ABILITY, 5, "E", pygame.K_e)
 }
-

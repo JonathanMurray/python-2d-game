@@ -84,16 +84,17 @@ class View:
         pygame.draw.rect(self.screen, COLOR_WHITE, (x, y, w, h), 2)
         self.screen.blit(self.font_tiny.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + h + 4))
 
-    def _render_ui_ability(self, x_in_ui, y_in_ui, size, key, ability_type):
+    def _render_ui_ability(self, x_in_ui, y_in_ui, size, ability_type):
         w = size[0]
         h = size[1]
         x = self.ui_screen_area.x + x_in_ui
         y = self.ui_screen_area.y + y_in_ui
-        mana_cost = ABILITIES[ability_type].mana_cost
-        icon_sprite = ABILITIES[ability_type].icon_sprite
+        ability = ABILITIES[ability_type]
+        mana_cost = ability.mana_cost
+        icon_sprite = ability.icon_sprite
         self.screen.blit(self.images_by_ui_sprite[icon_sprite], (x, y))
         pygame.draw.rect(self.screen, COLOR_WHITE, (x, y, w, h), 2)
-        self.screen.blit(self.font_tiny.render(key, False, COLOR_WHITE), (x + 8, y + h + 4))
+        self.screen.blit(self.font_tiny.render(ability.key_string, False, COLOR_WHITE), (x + 8, y + h + 4))
         self.screen.blit(self.font_tiny.render("" + str(mana_cost) + "", False, COLOR_WHITE), (x + 8, y + h + 19))
 
     def _render_ui_text(self, font, text, x, y):
@@ -136,7 +137,8 @@ class View:
         self._render_rect_filled((0, 200, 0), (dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
     def render_everything(self, all_entities, camera_world_area, enemies, player_health, player_max_health, player_mana,
-                          player_max_mana, potion_slots, buffs, fps_string, player_minimap_relative_position):
+                          player_max_mana, potion_slots, buffs, fps_string, player_minimap_relative_position,
+                          abilities):
 
         self.screen.fill(COLOR_BACKGROUND)
         self._draw_ground(camera_world_area)
@@ -178,12 +180,10 @@ class View:
         self._render_ui_potion(x_1 + 120, y_2, UI_POTION_SIZE, 5, potion_type=potion_slots[5])
 
         self._render_ui_text(self.font_large, "SPELLS", x_1, y_3)
-        self._render_ui_ability(x_1, y_4, UI_ABILITY_SIZE, "Q", AbilityType.ATTACK)
-        self._render_ui_ability(x_1 + 30, y_4, UI_ABILITY_SIZE, "W", AbilityType.HEAL)
-        self._render_ui_ability(x_1 + 60, y_4, UI_ABILITY_SIZE, "E", AbilityType.AOE_ATTACK)
+        for i, ability_type in enumerate(abilities):
+            self._render_ui_ability(x_1 + i * 30, y_4, UI_ABILITY_SIZE, ability_type)
 
         x_2 = 370
-
         self._render_ui_text(self.font_large, "MAP", x_2, y_1)
         self._render_minimap((x_2, y_2), (120, 120), player_minimap_relative_position)
 

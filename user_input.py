@@ -1,6 +1,7 @@
 import pygame
 
 from common import *
+from game_data import ABILITIES
 
 
 class ActionExitGame:
@@ -46,12 +47,6 @@ def get_user_actions():
                 if event.key in movement_keys_down:
                     movement_keys_down.remove(event.key)
                 movement_keys_down.append(event.key)
-            elif event.key == pygame.K_q:
-                actions.append(ActionTryUseAbility(AbilityType.ATTACK))
-            elif event.key == pygame.K_w:
-                actions.append(ActionTryUseAbility(AbilityType.HEAL))
-            elif event.key == pygame.K_e:
-                actions.append(ActionTryUseAbility(AbilityType.AOE_ATTACK))
             elif event.key == pygame.K_1:
                 actions.append(ActionTryUsePotion(1))
             elif event.key == pygame.K_2:
@@ -62,6 +57,11 @@ def get_user_actions():
                 actions.append(ActionTryUsePotion(4))
             elif event.key == pygame.K_5:
                 actions.append(ActionTryUsePotion(5))
+            else:
+                for ability_type in ABILITIES:
+                    if event.key == ABILITIES[ability_type].pygame_key:
+                        actions.append(ActionTryUseAbility(ability_type))
+
         if event.type == pygame.KEYUP:
             if event.key in PYGAME_MOVEMENT_KEYS:
                 movement_keys_down.remove(event.key)
