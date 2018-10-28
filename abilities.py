@@ -32,9 +32,9 @@ def _apply_heal(game_state):
 
 
 def _apply_attack(game_state):
-    proj_pos = (game_state.player_entity.get_center_x() - ATTACK_PROJECTILE_SIZE[0] / 2,
-                game_state.player_entity.get_center_y() - ATTACK_PROJECTILE_SIZE[1] / 2)
-    entity = WorldEntity(proj_pos, ATTACK_PROJECTILE_SIZE,
+    projectile_pos = (game_state.player_entity.get_center_x() - ATTACK_PROJECTILE_SIZE[0] / 2,
+                      game_state.player_entity.get_center_y() - ATTACK_PROJECTILE_SIZE[1] / 2)
+    entity = WorldEntity(projectile_pos, ATTACK_PROJECTILE_SIZE,
                          COLOR_ATTACK_PROJECTILE, Sprite.FIREBALL, game_state.player_entity.direction,
                          ATTACK_PROJECTILE_SPEED, ATTACK_PROJECTILE_SPEED)
     game_state.projectile_entities.append(Projectile(entity, 0, 3000))
@@ -53,6 +53,8 @@ def _apply_aoe_attack(game_state):
         aoe_pos = (x - distance - AOE_PROJECTILE_SIZE[0] / 2, y - AOE_PROJECTILE_SIZE[1] / 2)
     elif direction == Direction.UP:
         aoe_pos = (x - AOE_PROJECTILE_SIZE[0] / 2, y - distance - AOE_PROJECTILE_SIZE[1] / 2)
+    else:
+        raise Exception("Unhandled direction: " + str(direction))
 
     entity = WorldEntity(aoe_pos, AOE_PROJECTILE_SIZE, COLOR_AOE_PROJECTILE, Sprite.WHIRLWIND,
                          game_state.player_entity.direction, AOE_PROJECTILE_SPEED, AOE_PROJECTILE_SPEED)
