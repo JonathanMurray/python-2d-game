@@ -5,7 +5,6 @@
 * Reduce the ugly coupling between abilities and view.py
 
 #### Game engine:
-* Cooldown for using abilities
 * Prevent using potion when at full stats
 
 #### Features:

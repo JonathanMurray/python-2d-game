@@ -30,6 +30,8 @@ ticks_since_minimap_updated = MINIMAP_UPDATE_INTERVAL
 player_minimap_relative_position = (0, 0)
 recent_frame_durations = []
 fps_string = "N/A"
+ABILITY_COOLDOWN = 200
+ticks_since_ability_used = ABILITY_COOLDOWN
 
 while True:
 
@@ -43,7 +45,9 @@ while True:
             pygame.quit()
             sys.exit()
         elif isinstance(action, ActionTryUseAbility):
-            try_use_ability(game_state, action.ability_type)
+            if ticks_since_ability_used > ABILITY_COOLDOWN:
+                try_use_ability(game_state, action.ability_type)
+                ticks_since_ability_used = 0
         elif isinstance(action, ActionTryUsePotion):
             used_potion_type = game_state.player_state.try_use_potion(action.slot_number)
             if used_potion_type:
@@ -81,6 +85,8 @@ while True:
         ticks_since_minimap_updated = 0
         player_minimap_relative_position = (game_state.player_entity.get_center_x() / game_state.game_world_size[0],
                                             game_state.player_entity.get_center_y() / game_state.game_world_size[1])
+
+    ticks_since_ability_used += time_passed
 
     # ------------------------------------
     #         UPDATE MOVING ENTITIES
