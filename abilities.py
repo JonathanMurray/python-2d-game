@@ -1,5 +1,5 @@
 from common import *
-from game_data import ATTACK_PROJECTILE_SIZE, AOE_PROJECTILE_SIZE
+from game_data import ATTACK_PROJECTILE_SIZE, AOE_PROJECTILE_SIZE, ability_mana_costs
 from game_state import WorldEntity, Projectile
 
 ATTACK_PROJECTILE_SPEED = 8

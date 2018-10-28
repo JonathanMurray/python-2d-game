@@ -1,7 +1,8 @@
 import pygame
 
 from common import *
-from game_data import entity_sprite_initializers, ui_icon_sprites, SpriteInitializer, potion_icons, ability_icons
+from game_data import entity_sprite_initializers, ui_icon_sprites, SpriteInitializer, potion_icons, ability_icons, \
+    ability_mana_costs
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)

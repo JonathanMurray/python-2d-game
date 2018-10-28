@@ -34,13 +34,6 @@ class AbilityType(Enum):
     AOE_ATTACK = 3
 
 
-ability_mana_costs = {
-    AbilityType.HEAL: 10,
-    AbilityType.ATTACK: 3,
-    AbilityType.AOE_ATTACK: 5
-}
-
-
 class Sprite(Enum):
     PLAYER = 1
     ENEMY = 2

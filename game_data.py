@@ -42,3 +42,9 @@ ability_icons = {
     AbilityType.HEAL: UiIconSprite.HEAL_ABILITY,
     AbilityType.AOE_ATTACK: UiIconSprite.AOE_ABILITY
 }
+
+ability_mana_costs = {
+    AbilityType.HEAL: 10,
+    AbilityType.ATTACK: 3,
+    AbilityType.AOE_ATTACK: 5
+}
