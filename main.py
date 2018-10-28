@@ -36,6 +36,8 @@ view = View(screen, ui_screen_area, CAMERA_SIZE, SCREEN_SIZE, initializers_by_sp
 clock = pygame.time.Clock()
 ticks_since_ai_ran = 0
 AI_RUN_INTERVAL = 750
+recent_frame_durations = []
+fps_string = "N/A"
 
 while True:
 
@@ -65,6 +67,13 @@ while True:
 
     clock.tick()
     time_passed = clock.get_time()
+
+    recent_frame_durations.append(time_passed)
+    num_frames_to_sample_for_fps = 30
+    if len(recent_frame_durations) == num_frames_to_sample_for_fps:
+        fps_string = str(int(1000 * num_frames_to_sample_for_fps / sum(recent_frame_durations)))
+        recent_frame_durations = []
+
     ticks_since_ai_ran += time_passed
     if ticks_since_ai_ran > AI_RUN_INTERVAL:
         ticks_since_ai_ran = 0
@@ -144,4 +153,5 @@ while True:
                            player_mana=game_state.player_state.mana,
                            player_max_mana=game_state.player_state.max_mana,
                            potion_slots=game_state.player_state.potion_slots,
-                           buffs=game_state.player_state.buffs)
+                           buffs=game_state.player_state.buffs,
+                           fps_string=fps_string)

@@ -119,7 +119,11 @@ class View:
         self.screen.blit(self.font_tiny.render("" + str(mana_cost) + "", False, COLOR_WHITE), (x + 8, y + h + 19))
 
     def _render_ui_text(self, font, text, x, y):
-        self.screen.blit(font.render(text, False, COLOR_WHITE), (self.ui_screen_area.x + x, self.ui_screen_area.y + y))
+        screen_pos = (self.ui_screen_area.x + x, self.ui_screen_area.y + y)
+        self._render_text(font, text, screen_pos)
+
+    def _render_text(self, font, text, screen_pos):
+        self.screen.blit(font.render(text, False, COLOR_WHITE), screen_pos)
 
     def _render_rect(self, color, rect, width):
         pygame.draw.rect(self.screen, color, rect, width)
@@ -144,7 +148,7 @@ class View:
                 pygame.draw.line(self.screen, line_color, (0, screen_y), (self.screen_size[0], screen_y))
 
     def render_everything(self, all_entities, camera_world_area, enemies, player_health,
-                          player_max_health, player_mana, player_max_mana, potion_slots, buffs):
+                          player_max_health, player_mana, player_max_mana, potion_slots, buffs, fps_string):
         self.screen.fill(COLOR_BACKGROUND)
         self._draw_ground(camera_world_area)
 
@@ -201,4 +205,7 @@ class View:
             self._render_ui_text(self.font_small, text, 550, 15 + i * 25)
 
         self._render_rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
+
+        self._render_text(self.font_small, fps_string + " FPS", (10, 10))
+
         pygame.display.update()
