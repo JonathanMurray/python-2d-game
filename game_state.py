@@ -98,20 +98,14 @@ class PlayerBuffsUpdate:
 
 
 class PlayerState:
-    def __init__(self, health, max_health, mana, max_mana, mana_regen):
+    def __init__(self, health, max_health, mana, max_mana, mana_regen, potion_slots):
         self.health = health
         self.max_health = max_health
         self.mana = mana
         self._mana_float = mana
         self.max_mana = max_mana
         self.mana_regen = mana_regen
-        self.potion_slots = {
-            1: PotionType.SPEED,
-            2: PotionType.MANA,
-            3: PotionType.HEALTH,
-            4: PotionType.SPEED,
-            5: PotionType.SPEED
-        }
+        self.potion_slots = potion_slots
         self.buffs = []
 
     def gain_health(self, amount):
@@ -166,14 +160,14 @@ class PlayerState:
 
 
 class GameState:
-    def __init__(self, player_entity, potions, enemies, camera_size, game_world_size):
+    def __init__(self, player_entity, potions, enemies, camera_size, game_world_size, player_potions_slots):
         self.camera_size = camera_size
         self.camera_world_area = WorldArea((0, 0), self.camera_size)
         self.player_entity = player_entity
         self.projectile_entities = []
         self.potions = potions
         self.enemies = enemies
-        self.player_state = PlayerState(1, 500, 75, 100, 0.03)
+        self.player_state = PlayerState(1, 500, 75, 100, 0.03, player_potions_slots)
         self.game_world_size = game_world_size
         self.entire_world_area = WorldArea((0, 0), self.game_world_size)
 

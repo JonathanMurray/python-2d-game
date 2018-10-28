@@ -41,4 +41,11 @@ def init_game_state_from_file(game_world_size, camera_size):
                                  ENEMY_SPEED), 2, 2, EnemyBehavior.DUMB) for pos in dumb_enemy_positions] + \
               [Enemy(WorldEntity(pos, ENEMY_2_ENTITY_SIZE, ENEMY_2_COLOR, Sprite.ENEMY_2, Direction.LEFT, ENEMY_2_SPEED,
                                  ENEMY_2_SPEED), 3, 3, EnemyBehavior.SMART) for pos in smart_enemy_positions]
-    return GameState(player_entity, potions, enemies, camera_size, game_world_size)
+    player_potion_slots = {
+        1: PotionType.SPEED,
+        2: PotionType.MANA,
+        3: PotionType.HEALTH,
+        4: PotionType.SPEED,
+        5: PotionType.SPEED
+    }
+    return GameState(player_entity, potions, enemies, camera_size, game_world_size, player_potion_slots)
