@@ -36,6 +36,9 @@ view = View(screen, ui_screen_area, CAMERA_SIZE, SCREEN_SIZE, initializers_by_sp
 clock = pygame.time.Clock()
 ticks_since_ai_ran = 0
 AI_RUN_INTERVAL = 750
+MINIMAP_UPDATE_INTERVAL = 1000
+ticks_since_minimap_updated = MINIMAP_UPDATE_INTERVAL
+player_minimap_relative_position = (0, 0)
 recent_frame_durations = []
 fps_string = "N/A"
 
@@ -62,7 +65,7 @@ while True:
             game_state.player_entity.set_not_moving()
 
     # ------------------------------------
-    #         RUN ENEMY AI
+    #         RUN THINGS BASED ON CLOCK
     # ------------------------------------
 
     clock.tick()
@@ -80,6 +83,12 @@ while True:
         for e in game_state.enemies:
             direction = run_ai_for_enemy_against_target(e.world_entity, game_state.player_entity, e.enemy_behavior)
             e.world_entity.set_moving_in_dir(direction)
+
+    ticks_since_minimap_updated += time_passed
+    if ticks_since_minimap_updated > MINIMAP_UPDATE_INTERVAL:
+        ticks_since_minimap_updated = 0
+        player_minimap_relative_position = (game_state.player_entity.get_center_x() / game_state.game_world_size[0],
+                                            game_state.player_entity.get_center_y() / game_state.game_world_size[1])
 
     # ------------------------------------
     #         UPDATE MOVING ENTITIES
@@ -154,4 +163,5 @@ while True:
                            player_max_mana=game_state.player_state.max_mana,
                            potion_slots=game_state.player_state.potion_slots,
                            buffs=game_state.player_state.buffs,
-                           fps_string=fps_string)
+                           fps_string=fps_string,
+                           player_minimap_relative_position=player_minimap_relative_position)

@@ -147,8 +147,19 @@ class View:
             if 0 < screen_y < self.screen_size[1]:
                 pygame.draw.line(self.screen, line_color, (0, screen_y), (self.screen_size[0], screen_y))
 
-    def render_everything(self, all_entities, camera_world_area, enemies, player_health,
-                          player_max_health, player_mana, player_max_mana, potion_slots, buffs, fps_string):
+    def _render_minimap(self, position_in_ui, size, player_relative_position):
+        rect_in_screen = (self.ui_screen_area.x + position_in_ui[0], self.ui_screen_area.y + position_in_ui[1],
+                          size[0], size[1])
+        self._render_rect_filled((100, 100, 100), rect_in_screen)
+        self._render_rect(COLOR_WHITE, rect_in_screen, 1)
+        dot_x = rect_in_screen[0] + player_relative_position[0] * size[0]
+        dot_y = rect_in_screen[1] + player_relative_position[1] * size[1]
+        dot_w = 4
+        self._render_rect_filled((0, 200, 0), (dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
+
+    def render_everything(self, all_entities, camera_world_area, enemies, player_health, player_max_health, player_mana,
+                          player_max_mana, potion_slots, buffs, fps_string, player_minimap_relative_position):
+
         self.screen.fill(COLOR_BACKGROUND)
         self._draw_ground(camera_world_area)
 
@@ -192,6 +203,11 @@ class View:
         self._render_ui_ability(x_1, y_4, UI_ABILITY_SIZE, "Q", AbilityType.ATTACK)
         self._render_ui_ability(x_1 + 30, y_4, UI_ABILITY_SIZE, "W", AbilityType.HEAL)
         self._render_ui_ability(x_1 + 60, y_4, UI_ABILITY_SIZE, "E", AbilityType.AOE_ATTACK)
+
+        x_2 = 370
+
+        self._render_ui_text(self.font_large, "MAP", x_2, y_1)
+        self._render_minimap((x_2, y_2), (120, 120), player_minimap_relative_position)
 
         buff_texts = []
         for buff in buffs:
