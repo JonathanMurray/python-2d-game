@@ -37,14 +37,16 @@ POTION_ICON_SPRITES = {
     PotionType.SPEED: UiIconSprite.SPEED_POTION
 }
 
-ABILITY_ICON_SPRITES = {
-    AbilityType.ATTACK: UiIconSprite.ATTACK_ABILITY,
-    AbilityType.HEAL: UiIconSprite.HEAL_ABILITY,
-    AbilityType.AOE_ATTACK: UiIconSprite.AOE_ABILITY
+
+class AbilityData:
+    def __init__(self, icon_sprite, mana_cost):
+        self.icon_sprite = icon_sprite
+        self.mana_cost = mana_cost
+
+
+ABILITIES = {
+    AbilityType.ATTACK: AbilityData(UiIconSprite.ATTACK_ABILITY, 10),
+    AbilityType.HEAL: AbilityData(UiIconSprite.HEAL_ABILITY, 3),
+    AbilityType.AOE_ATTACK: AbilityData(UiIconSprite.AOE_ABILITY, 5)
 }
 
-ABILITY_MANA_COSTS = {
-    AbilityType.HEAL: 10,
-    AbilityType.ATTACK: 3,
-    AbilityType.AOE_ATTACK: 5
-}

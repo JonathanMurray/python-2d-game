@@ -2,7 +2,7 @@ import pygame
 
 from common import *
 from game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, POTION_ICON_SPRITES, \
-    ABILITY_ICON_SPRITES, ABILITY_MANA_COSTS
+    ABILITIES
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -89,8 +89,8 @@ class View:
         h = size[1]
         x = self.ui_screen_area.x + x_in_ui
         y = self.ui_screen_area.y + y_in_ui
-        mana_cost = ABILITY_MANA_COSTS[ability_type]
-        icon_sprite = ABILITY_ICON_SPRITES[ability_type]
+        mana_cost = ABILITIES[ability_type].mana_cost
+        icon_sprite = ABILITIES[ability_type].icon_sprite
         self.screen.blit(self.images_by_ui_sprite[icon_sprite], (x, y))
         pygame.draw.rect(self.screen, COLOR_WHITE, (x, y, w, h), 2)
         self.screen.blit(self.font_tiny.render(key, False, COLOR_WHITE), (x + 8, y + h + 4))

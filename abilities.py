@@ -1,5 +1,5 @@
 from common import *
-from game_data import ATTACK_PROJECTILE_SIZE, AOE_PROJECTILE_SIZE, ABILITY_MANA_COSTS
+from game_data import ATTACK_PROJECTILE_SIZE, AOE_PROJECTILE_SIZE, ABILITIES
 from game_state import WorldEntity, Projectile
 
 ATTACK_PROJECTILE_SPEED = 8
@@ -8,7 +8,7 @@ AOE_PROJECTILE_SPEED = 3
 
 
 def try_use_ability(game_state, ability_type):
-    mana_cost = ABILITY_MANA_COSTS[ability_type]
+    mana_cost = ABILITIES[ability_type].mana_cost
     if game_state.player_state.mana >= mana_cost:
         game_state.player_state.lose_mana(mana_cost)
         if ability_type == AbilityType.ATTACK:
