@@ -54,6 +54,10 @@ class View:
         else:
             raise Exception("Unhandled sprite: " + str(entity.sprite))
 
+    def _render_entity_rect(self, entity, color, camera_world_area):
+        rect = (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h)
+        pygame.draw.rect(self.screen, color, rect, 1)
+
     def _render_entity_sprite(self, image, entity, camera_world_area):
         pos = (entity.x - camera_world_area.x, entity.y - camera_world_area.y)
         self.screen.blit(image, pos)
@@ -135,15 +139,21 @@ class View:
         dot_w = 4
         self._render_rect_filled((0, 200, 0), (dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
-    def render_everything(self, all_entities, camera_world_area, enemies, player_health, player_max_health, player_mana,
-                          player_max_mana, potion_slots, player_active_buffs, fps_string,
-                          player_minimap_relative_position, abilities):
+    def render_everything(self, all_entities, player_entity, is_player_invisible, camera_world_area, enemies,
+                          player_health, player_max_health, player_mana, player_max_mana, potion_slots,
+                          player_active_buffs, fps_string, player_minimap_relative_position, abilities):
 
         self.screen.fill(COLOR_BACKGROUND)
         self._draw_ground(camera_world_area)
 
         for entity in all_entities:
-            self._render_entity(entity, camera_world_area)
+            if entity != player_entity:
+                self._render_entity(entity, camera_world_area)
+
+        if is_player_invisible:
+            self._render_entity_rect(player_entity, (200, 100, 250), camera_world_area)
+        else:
+            self._render_entity(player_entity, camera_world_area)
 
         for enemy in enemies:
             self._render_stat_bar_for_entity(enemy.world_entity, 5, enemy.health, enemy.max_health, COLOR_RED,

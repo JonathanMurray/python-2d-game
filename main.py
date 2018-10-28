@@ -147,6 +147,8 @@ while True:
     # ------------------------------------
 
     view.render_everything(all_entities=game_state.get_all_entities(),
+                           player_entity=game_state.player_entity,
+                           is_player_invisible=game_state.player_state.is_invisible,
                            camera_world_area=game_state.camera_world_area,
                            enemies=game_state.enemies,
                            player_health=game_state.player_state.health,
