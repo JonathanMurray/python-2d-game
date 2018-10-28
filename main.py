@@ -3,36 +3,25 @@
 import pygame
 import sys
 
-from abilities import try_use_ability, ATTACK_PROJECTILE_SIZE, AOE_PROJECTILE_SIZE
+from abilities import try_use_ability
 from buffs import buffs
 from enemy_behavior import run_ai_for_enemy_against_target
 from game_world_init import init_game_state_from_file
 from potions import apply_potion_effect
 from user_input import *
-from view import View, ScreenArea, SpriteInitializer
+from view import View, ScreenArea
 
 GAME_WORLD_SIZE = (1000, 1000)
 SCREEN_SIZE = (700, 600)
 CAMERA_SIZE = (700, 400)
-PLAYER_ENTITY_SIZE = (60, 60)
-ENEMY_ENTITY_SIZE = (30, 30)
-ENEMY_2_ENTITY_SIZE = (60, 60)
 
-game_state = init_game_state_from_file(GAME_WORLD_SIZE, CAMERA_SIZE, PLAYER_ENTITY_SIZE, ENEMY_ENTITY_SIZE,
-                                       ENEMY_2_ENTITY_SIZE)
+game_state = init_game_state_from_file(GAME_WORLD_SIZE, CAMERA_SIZE)
 pygame.init()
 pygame.font.init()
 
 screen = pygame.display.set_mode(SCREEN_SIZE)
 ui_screen_area = ScreenArea((0, CAMERA_SIZE[1]), (SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
-initializers_by_sprite = {
-    Sprite.PLAYER: SpriteInitializer("resources/player.png", PLAYER_ENTITY_SIZE),
-    Sprite.ENEMY: SpriteInitializer("resources/enemy.png", ENEMY_ENTITY_SIZE),
-    Sprite.ENEMY_2: SpriteInitializer("resources/enemy2.png", ENEMY_2_ENTITY_SIZE),
-    Sprite.FIREBALL: SpriteInitializer("resources/fireball.png", ATTACK_PROJECTILE_SIZE),
-    Sprite.WHIRLWIND: SpriteInitializer("resources/whirlwind.png", AOE_PROJECTILE_SIZE)
-}
-view = View(screen, ui_screen_area, CAMERA_SIZE, SCREEN_SIZE, initializers_by_sprite)
+view = View(screen, ui_screen_area, CAMERA_SIZE, SCREEN_SIZE)
 clock = pygame.time.Clock()
 ticks_since_ai_ran = 0
 AI_RUN_INTERVAL = 750

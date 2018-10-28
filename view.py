@@ -1,6 +1,7 @@
 import pygame
 
 from common import *
+from game_data import entity_sprite_initializers, ui_icon_sprites, SpriteInitializer, potion_icons, ability_icons
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -22,12 +23,6 @@ class ScreenArea:
         return self.x, self.y, self.w, self.h
 
 
-class SpriteInitializer:
-    def __init__(self, image_file_path, scaling_size):
-        self.image_file_path = image_file_path
-        self.scaling_size = scaling_size
-
-
 def load_and_scale_sprite(sprite_initializer):
     image = pygame.image.load(sprite_initializer.image_file_path).convert_alpha()
     return pygame.transform.scale(image, sprite_initializer.scaling_size)
@@ -35,7 +30,7 @@ def load_and_scale_sprite(sprite_initializer):
 
 class View:
 
-    def __init__(self, screen, ui_screen_area, camera_size, screen_size, sprite_initializers_by_sprite):
+    def __init__(self, screen, ui_screen_area, camera_size, screen_size):
         self.screen = screen
         self.ui_screen_area = ui_screen_area
         self.camera_size = camera_size
@@ -43,22 +38,11 @@ class View:
         self.font_large = pygame.font.SysFont('Arial', 22)
         self.font_small = pygame.font.Font(None, 25)
         self.font_tiny = pygame.font.Font(None, 19)
-        self.images_by_sprite = {sprite: load_and_scale_sprite(sprite_initializers_by_sprite[sprite])
-                                 for sprite in sprite_initializers_by_sprite}
-
-        # TODO: Handle icon sprites in a more dynamic way
-        self.health_potion_image = load_and_scale_sprite(
-            SpriteInitializer("resources/ui_health_potion.png", UI_POTION_SIZE))
-        self.mana_potion_image = load_and_scale_sprite(
-            SpriteInitializer("resources/ui_mana_potion.png", UI_POTION_SIZE))
-        self.speed_potion_image = load_and_scale_sprite(
-            SpriteInitializer("resources/white_potion.gif", UI_POTION_SIZE))
-        self.attack_ability_image = load_and_scale_sprite(
-            SpriteInitializer("resources/fireball.png", UI_ABILITY_SIZE))
-        self.heal_ability_image = load_and_scale_sprite(
-            SpriteInitializer("resources/heal_ability.png", UI_ABILITY_SIZE))
-        self.aoe_ability_image = load_and_scale_sprite(
-            SpriteInitializer("resources/whirlwind.png", UI_ABILITY_SIZE))
+        self.images_by_sprite = {sprite: load_and_scale_sprite(entity_sprite_initializers[sprite])
+                                 for sprite in entity_sprite_initializers}
+        self.images_by_ui_sprite = {sprite: load_and_scale_sprite(
+            SpriteInitializer(ui_icon_sprites[sprite], UI_POTION_SIZE))
+            for sprite in ui_icon_sprites}
 
     def _render_entity(self, entity, camera_world_area):
         rect = (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h)
@@ -93,12 +77,9 @@ class View:
         h = size[1]
         x = self.ui_screen_area.x + x_in_ui
         y = self.ui_screen_area.y + y_in_ui
-        if potion_type == PotionType.HEALTH:
-            self.screen.blit(self.health_potion_image, (x, y))
-        elif potion_type == PotionType.MANA:
-            self.screen.blit(self.mana_potion_image, (x, y))
-        elif potion_type == PotionType.SPEED:
-            self.screen.blit(self.speed_potion_image, (x, y))
+        if potion_type:
+            icon_sprite = potion_icons[potion_type]
+            self.screen.blit(self.images_by_ui_sprite[icon_sprite], (x, y))
         pygame.draw.rect(self.screen, COLOR_WHITE, (x, y, w, h), 2)
         self.screen.blit(self.font_tiny.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + h + 4))
 
@@ -108,12 +89,8 @@ class View:
         x = self.ui_screen_area.x + x_in_ui
         y = self.ui_screen_area.y + y_in_ui
         mana_cost = ability_mana_costs[ability_type]
-        if ability_type == AbilityType.ATTACK:
-            self.screen.blit(self.attack_ability_image, (x, y))
-        elif ability_type == AbilityType.HEAL:
-            self.screen.blit(self.heal_ability_image, (x, y))
-        elif ability_type == AbilityType.AOE_ATTACK:
-            self.screen.blit(self.aoe_ability_image, (x, y))
+        icon_sprite = ability_icons[ability_type]
+        self.screen.blit(self.images_by_ui_sprite[icon_sprite], (x, y))
         pygame.draw.rect(self.screen, COLOR_WHITE, (x, y, w, h), 2)
         self.screen.blit(self.font_tiny.render(key, False, COLOR_WHITE), (x + 8, y + h + 4))
         self.screen.blit(self.font_tiny.render("" + str(mana_cost) + "", False, COLOR_WHITE), (x + 8, y + h + 19))

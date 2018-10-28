@@ -1,15 +1,9 @@
 from common import *
+from game_data import ATTACK_PROJECTILE_SIZE, AOE_PROJECTILE_SIZE
 from game_state import WorldEntity, Projectile
 
-AOE_PROJECTILE_SIZE = (110, 110)
-
-COLOR_ATTACK_PROJECTILE = (200, 5, 200)
-ATTACK_PROJECTILE_SIZE = (25, 25)
 ATTACK_PROJECTILE_SPEED = 8
-
 HEAL_ABILITY_AMOUNT = 10
-
-COLOR_AOE_PROJECTILE = (200, 0, 100)
 AOE_PROJECTILE_SPEED = 3
 
 
@@ -35,7 +29,7 @@ def _apply_attack(game_state):
     projectile_pos = (game_state.player_entity.get_center_x() - ATTACK_PROJECTILE_SIZE[0] / 2,
                       game_state.player_entity.get_center_y() - ATTACK_PROJECTILE_SIZE[1] / 2)
     entity = WorldEntity(projectile_pos, ATTACK_PROJECTILE_SIZE,
-                         COLOR_ATTACK_PROJECTILE, Sprite.FIREBALL, game_state.player_entity.direction,
+                         (0, 0, 0), Sprite.FIREBALL, game_state.player_entity.direction,
                          ATTACK_PROJECTILE_SPEED, ATTACK_PROJECTILE_SPEED)
     game_state.projectile_entities.append(Projectile(entity, 0, 3000))
 
@@ -56,6 +50,6 @@ def _apply_aoe_attack(game_state):
     else:
         raise Exception("Unhandled direction: " + str(direction))
 
-    entity = WorldEntity(aoe_pos, AOE_PROJECTILE_SIZE, COLOR_AOE_PROJECTILE, Sprite.WHIRLWIND,
+    entity = WorldEntity(aoe_pos, AOE_PROJECTILE_SIZE, (0, 0, 0), Sprite.WHIRLWIND,
                          game_state.player_entity.direction, AOE_PROJECTILE_SPEED, AOE_PROJECTILE_SPEED)
     game_state.projectile_entities.append(Projectile(entity, 250, 500))

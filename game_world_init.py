@@ -1,4 +1,5 @@
 from common import *
+from game_data import PLAYER_ENTITY_SIZE, ENEMY_ENTITY_SIZE, ENEMY_2_ENTITY_SIZE
 from game_state import WorldEntity, Enemy, GameState, Potion
 
 POTION_ENTITY_SIZE = (30, 30)
@@ -11,7 +12,7 @@ PLAYER_ENTITY_COLOR = (250, 250, 250)
 PLAYER_ENTITY_SPEED = 2.7
 
 
-def init_game_state_from_file(game_world_size, camera_size, player_entity_size, enemy_entity_size, enemy_2_entity_size):
+def init_game_state_from_file(game_world_size, camera_size):
     dumb_enemy_positions = []
     smart_enemy_positions = []
     potion_positions = []
@@ -32,12 +33,12 @@ def init_game_state_from_file(game_world_size, camera_size, player_entity_size, 
                     potion_positions.append(game_world_pos)
                 col_index += 1
             row_index += 1
-    player_entity = WorldEntity(player_pos, player_entity_size, PLAYER_ENTITY_COLOR, Sprite.PLAYER, Direction.RIGHT, 0,
+    player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, PLAYER_ENTITY_COLOR, Sprite.PLAYER, Direction.RIGHT, 0,
                                 PLAYER_ENTITY_SPEED)
     potions = [Potion(WorldEntity(pos, POTION_ENTITY_SIZE, POTION_ENTITY_COLOR, None), PotionType.HEALTH)
                for pos in potion_positions]
-    enemies = [Enemy(WorldEntity(pos, enemy_entity_size, ENEMY_COLOR, Sprite.ENEMY, Direction.LEFT, ENEMY_SPEED,
+    enemies = [Enemy(WorldEntity(pos, ENEMY_ENTITY_SIZE, ENEMY_COLOR, Sprite.ENEMY, Direction.LEFT, ENEMY_SPEED,
                                  ENEMY_SPEED), 2, 2, EnemyBehavior.DUMB) for pos in dumb_enemy_positions] + \
-              [Enemy(WorldEntity(pos, enemy_2_entity_size, ENEMY_2_COLOR, Sprite.ENEMY_2, Direction.LEFT, ENEMY_2_SPEED,
+              [Enemy(WorldEntity(pos, ENEMY_2_ENTITY_SIZE, ENEMY_2_COLOR, Sprite.ENEMY_2, Direction.LEFT, ENEMY_2_SPEED,
                                  ENEMY_2_SPEED), 3, 3, EnemyBehavior.SMART) for pos in smart_enemy_positions]
     return GameState(player_entity, potions, enemies, camera_size, game_world_size)

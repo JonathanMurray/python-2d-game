@@ -49,6 +49,15 @@ class Sprite(Enum):
     WHIRLWIND = 5
 
 
+class UiIconSprite(Enum):
+    HEALTH_POTION = 1
+    MANA_POTION = 2
+    SPEED_POTION = 3
+    ATTACK_ABILITY = 4
+    HEAL_ABILITY = 5
+    AOE_ABILITY = 6
+
+
 class BuffType(Enum):
     HEALING_OVER_TIME = 1
     DAMAGE_OVER_TIME = 2
