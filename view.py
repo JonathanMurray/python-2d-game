@@ -8,6 +8,7 @@ COLOR_BLACK = (0, 0, 0)
 COLOR_RED = (250, 0, 0)
 COLOR_BLUE = (0, 0, 250)
 COLOR_BACKGROUND = (200, 200, 200)
+COLOR_HIGHLIGHTED_ICON = (150, 150, 250)
 UI_POTION_SIZE = (27, 27)
 UI_ABILITY_SIZE = (27, 27)
 
@@ -75,7 +76,7 @@ class View:
         y = self.ui_screen_area.y + y_in_ui
         self._render_stat_bar(x, y, w, h, stat, max_stat, color)
 
-    def _render_ui_potion(self, x_in_ui, y_in_ui, size, potion_number, potion_type):
+    def _render_ui_potion(self, x_in_ui, y_in_ui, size, potion_number, potion_type, highlighted_potion_action):
         w = size[0]
         h = size[1]
         x = self.ui_screen_area.x + x_in_ui
@@ -84,9 +85,11 @@ class View:
             icon_sprite = POTION_ICON_SPRITES[potion_type]
             self.screen.blit(self.images_by_ui_sprite[icon_sprite], (x, y))
         pygame.draw.rect(self.screen, COLOR_WHITE, (x, y, w, h), 2)
+        if highlighted_potion_action == potion_number:
+            pygame.draw.rect(self.screen, COLOR_HIGHLIGHTED_ICON, (x, y, w, h), 3)
         self.screen.blit(self.font_tiny.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + h + 4))
 
-    def _render_ui_ability(self, x_in_ui, y_in_ui, size, ability_type):
+    def _render_ui_ability(self, x_in_ui, y_in_ui, size, ability_type, highlighted_ability_action):
         w = size[0]
         h = size[1]
         x = self.ui_screen_area.x + x_in_ui
@@ -96,6 +99,8 @@ class View:
         icon_sprite = ability.icon_sprite
         self.screen.blit(self.images_by_ui_sprite[icon_sprite], (x, y))
         pygame.draw.rect(self.screen, COLOR_WHITE, (x, y, w, h), 2)
+        if highlighted_ability_action == ability_type:
+            pygame.draw.rect(self.screen, COLOR_HIGHLIGHTED_ICON, (x, y, w, h), 3)
         self.screen.blit(self.font_tiny.render(ability.key_string, False, COLOR_WHITE), (x + 8, y + h + 4))
         self.screen.blit(self.font_tiny.render("" + str(mana_cost) + "", False, COLOR_WHITE), (x + 8, y + h + 19))
 
@@ -140,7 +145,8 @@ class View:
 
     def render_everything(self, all_entities, player_entity, is_player_invisible, camera_world_area, enemies,
                           player_health, player_max_health, player_mana, player_max_mana, potion_slots,
-                          player_active_buffs, fps_string, player_minimap_relative_position, abilities, message):
+                          player_active_buffs, fps_string, player_minimap_relative_position, abilities, message,
+                          highlighted_potion_action, highlighted_ability_action):
 
         self.screen.fill(COLOR_BACKGROUND)
         self._draw_ground(camera_world_area)
@@ -181,15 +187,15 @@ class View:
 
         x_1 = 170
         self._render_ui_text(self.font_large, "POTIONS", x_1, y_1)
-        self._render_ui_potion(x_1, y_2, UI_POTION_SIZE, 1, potion_type=potion_slots[1])
-        self._render_ui_potion(x_1 + 30, y_2, UI_POTION_SIZE, 2, potion_type=potion_slots[2])
-        self._render_ui_potion(x_1 + 60, y_2, UI_POTION_SIZE, 3, potion_type=potion_slots[3])
-        self._render_ui_potion(x_1 + 90, y_2, UI_POTION_SIZE, 4, potion_type=potion_slots[4])
-        self._render_ui_potion(x_1 + 120, y_2, UI_POTION_SIZE, 5, potion_type=potion_slots[5])
+        self._render_ui_potion(x_1, y_2, UI_POTION_SIZE, 1, potion_slots[1], highlighted_potion_action)
+        self._render_ui_potion(x_1 + 30, y_2, UI_POTION_SIZE, 2, potion_slots[2], highlighted_potion_action)
+        self._render_ui_potion(x_1 + 60, y_2, UI_POTION_SIZE, 3, potion_slots[3], highlighted_potion_action)
+        self._render_ui_potion(x_1 + 90, y_2, UI_POTION_SIZE, 4, potion_slots[4], highlighted_potion_action)
+        self._render_ui_potion(x_1 + 120, y_2, UI_POTION_SIZE, 5, potion_slots[5], highlighted_potion_action)
 
         self._render_ui_text(self.font_large, "SPELLS", x_1, y_3)
         for i, ability_type in enumerate(abilities):
-            self._render_ui_ability(x_1 + i * 30, y_4, UI_ABILITY_SIZE, ability_type)
+            self._render_ui_ability(x_1 + i * 30, y_4, UI_ABILITY_SIZE, ability_type, highlighted_ability_action)
 
         x_2 = 370
         self._render_ui_text(self.font_large, "MAP", x_2, y_1)

@@ -25,6 +25,8 @@ view = View(screen, ui_screen_area, CAMERA_SIZE, SCREEN_SIZE)
 clock = pygame.time.Clock()
 ticks_since_ai_ran = 0
 AI_RUN_INTERVAL = 750
+
+# TODO Move view-centered state to view.py
 MINIMAP_UPDATE_INTERVAL = 1000
 ticks_since_minimap_updated = MINIMAP_UPDATE_INTERVAL
 player_minimap_relative_position = (0, 0)
@@ -35,6 +37,12 @@ ticks_since_ability_used = ABILITY_COOLDOWN
 MESSAGE_DURATION = 2500
 ticks_since_message_updated = 0
 message = ""
+HIGHLIGHT_POTION_ACTION_DURATION = 120
+highlighted_potion_action = None
+ticks_since_last_potion_action = 0
+HIGHLIGHT_ABILITY_ACTION_DURATION = 120
+highlighted_ability_action = None
+ticks_since_last_ability_action = 0
 
 
 def _set_message(_message):
@@ -55,12 +63,16 @@ while True:
             pygame.quit()
             sys.exit()
         elif isinstance(action, ActionTryUseAbility):
+            highlighted_ability_action = action.ability_type
+            ticks_since_last_ability_action = 0
             if ticks_since_ability_used > ABILITY_COOLDOWN:
                 had_enough_mana = try_use_ability(game_state, action.ability_type)
                 ticks_since_ability_used = 0
                 if not had_enough_mana:
                     _set_message("Not enough mana!")
         elif isinstance(action, ActionTryUsePotion):
+            highlighted_potion_action = action.slot_number
+            ticks_since_last_potion_action = 0
             used_potion_type = game_state.player_state.try_use_potion(action.slot_number)
             if used_potion_type:
                 apply_potion_effect(used_potion_type, game_state)
@@ -105,6 +117,14 @@ while True:
     ticks_since_message_updated += time_passed
     if ticks_since_message_updated > MESSAGE_DURATION:
         message = ""
+
+    ticks_since_last_potion_action += time_passed
+    if ticks_since_last_potion_action > HIGHLIGHT_POTION_ACTION_DURATION:
+        highlighted_potion_action = None
+
+    ticks_since_last_ability_action += time_passed
+    if ticks_since_last_ability_action > HIGHLIGHT_ABILITY_ACTION_DURATION:
+        highlighted_ability_action = None
 
     # ------------------------------------
     #         UPDATE MOVING ENTITIES
@@ -184,4 +204,6 @@ while True:
                            fps_string=fps_string,
                            player_minimap_relative_position=player_minimap_relative_position,
                            abilities=[AbilityType.ATTACK, AbilityType.HEAL, AbilityType.AOE_ATTACK],
-                           message=message)
+                           message=message,
+                           highlighted_potion_action=highlighted_potion_action,
+                           highlighted_ability_action=highlighted_ability_action)
