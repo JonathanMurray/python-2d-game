@@ -1,4 +1,5 @@
 import pygame
+from enum import Enum
 
 from common import *
 
@@ -14,6 +15,24 @@ class SpriteInitializer:
     def __init__(self, image_file_path, scaling_size):
         self.image_file_path = image_file_path
         self.scaling_size = scaling_size
+
+
+class UiIconSprite(Enum):
+    HEALTH_POTION = 1
+    MANA_POTION = 2
+    SPEED_POTION = 3
+    ATTACK_ABILITY = 4
+    HEAL_ABILITY = 5
+    AOE_ABILITY = 6
+    INVISIBILITY_POTION = 7
+
+
+class AbilityData:
+    def __init__(self, icon_sprite, mana_cost, key_string, pygame_key):
+        self.icon_sprite = icon_sprite
+        self.mana_cost = mana_cost
+        self.key_string = key_string
+        self.pygame_key = pygame_key
 
 
 ENTITY_SPRITE_INITIALIZERS = {
@@ -40,15 +59,6 @@ POTION_ICON_SPRITES = {
     PotionType.SPEED: UiIconSprite.SPEED_POTION,
     PotionType.INVISIBILITY: UiIconSprite.INVISIBILITY_POTION
 }
-
-
-class AbilityData:
-    def __init__(self, icon_sprite, mana_cost, key_string, pygame_key):
-        self.icon_sprite = icon_sprite
-        self.mana_cost = mana_cost
-        self.key_string = key_string
-        self.pygame_key = pygame_key
-
 
 ABILITIES = {
     AbilityType.ATTACK: AbilityData(UiIconSprite.ATTACK_ABILITY, 3, "Q", pygame.K_q),
