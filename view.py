@@ -45,9 +45,8 @@ class View:
             for sprite in UI_ICON_SPRITE_PATHS}
 
     def _render_entity(self, entity, camera_world_area):
-        rect = (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h)
         if entity.sprite is None:
-            pygame.draw.rect(self.screen, entity.color, rect)
+            raise Exception("Entity has no sprite: " + str(entity))
         elif entity.sprite in self.images_by_sprite:
             image = self.images_by_sprite[entity.sprite]
             self._render_entity_sprite(image, entity, camera_world_area)

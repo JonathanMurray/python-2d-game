@@ -18,12 +18,11 @@ class WorldArea:
 
 
 class WorldEntity:
-    def __init__(self, pos, size, color, sprite, direction=Direction.LEFT, speed=0, max_speed=0):
+    def __init__(self, pos, size, sprite, direction=Direction.LEFT, speed=0, max_speed=0):
         self.x = pos[0]
         self.y = pos[1]
         self.w = size[0]
         self.h = size[1]
-        self.color = color
         self.sprite = sprite
         self.direction = direction
         self.speed = speed
