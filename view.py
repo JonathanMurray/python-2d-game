@@ -140,7 +140,7 @@ class View:
 
     def render_everything(self, all_entities, player_entity, is_player_invisible, camera_world_area, enemies,
                           player_health, player_max_health, player_mana, player_max_mana, potion_slots,
-                          player_active_buffs, fps_string, player_minimap_relative_position, abilities):
+                          player_active_buffs, fps_string, player_minimap_relative_position, abilities, message):
 
         self.screen.fill(COLOR_BACKGROUND)
         self._draw_ground(camera_world_area)
@@ -205,5 +205,7 @@ class View:
         self._render_rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
 
         self._render_text(self.font_small, fps_string + " FPS", (10, 10))
+
+        self._render_text(self.font_small, message, (self.ui_screen_area.w / 2 - 80, self.ui_screen_area.y - 30))
 
         pygame.display.update()

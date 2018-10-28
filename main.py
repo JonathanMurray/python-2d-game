@@ -32,6 +32,16 @@ recent_frame_durations = []
 fps_string = "N/A"
 ABILITY_COOLDOWN = 200
 ticks_since_ability_used = ABILITY_COOLDOWN
+MESSAGE_DURATION = 2500
+ticks_since_message_updated = 0
+message = ""
+
+
+def _set_message(_message):
+    global message, ticks_since_message_updated
+    message = _message
+    ticks_since_message_updated = 0
+
 
 while True:
 
@@ -46,12 +56,16 @@ while True:
             sys.exit()
         elif isinstance(action, ActionTryUseAbility):
             if ticks_since_ability_used > ABILITY_COOLDOWN:
-                try_use_ability(game_state, action.ability_type)
+                had_enough_mana = try_use_ability(game_state, action.ability_type)
                 ticks_since_ability_used = 0
+                if not had_enough_mana:
+                    _set_message("Not enough mana!")
         elif isinstance(action, ActionTryUsePotion):
             used_potion_type = game_state.player_state.try_use_potion(action.slot_number)
             if used_potion_type:
                 apply_potion_effect(used_potion_type, game_state)
+            else:
+                _set_message("No potion to use!")
         elif isinstance(action, ActionMoveInDirection):
             game_state.player_entity.set_moving_in_dir(action.direction)
         elif isinstance(action, ActionStopMoving):
@@ -87,6 +101,10 @@ while True:
                                             game_state.player_entity.get_center_y() / game_state.game_world_size[1])
 
     ticks_since_ability_used += time_passed
+
+    ticks_since_message_updated += time_passed
+    if ticks_since_message_updated > MESSAGE_DURATION:
+        message = ""
 
     # ------------------------------------
     #         UPDATE MOVING ENTITIES
@@ -165,4 +183,5 @@ while True:
                            player_active_buffs=game_state.player_state.active_buffs,
                            fps_string=fps_string,
                            player_minimap_relative_position=player_minimap_relative_position,
-                           abilities=[AbilityType.ATTACK, AbilityType.HEAL, AbilityType.AOE_ATTACK])
+                           abilities=[AbilityType.ATTACK, AbilityType.HEAL, AbilityType.AOE_ATTACK],
+                           message=message)

@@ -7,6 +7,7 @@ HEAL_ABILITY_AMOUNT = 10
 AOE_PROJECTILE_SPEED = 3
 
 
+# Returns whether or not player had enough mana
 def try_use_ability(game_state, ability_type):
     mana_cost = ABILITIES[ability_type].mana_cost
     if game_state.player_state.mana >= mana_cost:
@@ -19,6 +20,8 @@ def try_use_ability(game_state, ability_type):
             _apply_aoe_attack(game_state)
         else:
             raise Exception("Unhandled ability type: " + str(ability_type))
+        return True
+    return False
 
 
 def _apply_heal(game_state):
