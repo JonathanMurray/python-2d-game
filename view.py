@@ -40,7 +40,7 @@ class View:
         self.ui_screen_area = ui_screen_area
         self.camera_size = camera_size
         self.screen_size = screen_size
-        self.font_large = pygame.font.SysFont('Arial', 30)
+        self.font_large = pygame.font.SysFont('Arial', 22)
         self.font_small = pygame.font.Font(None, 25)
         self.font_tiny = pygame.font.Font(None, 19)
         self.images_by_sprite = {sprite: load_and_scale_sprite(sprite_initializers_by_sprite[sprite])
@@ -99,7 +99,7 @@ class View:
             self.screen.blit(self.mana_potion_image, (x, y))
         elif potion_type == PotionType.SPEED:
             self.screen.blit(self.speed_potion_image, (x, y))
-        pygame.draw.rect(self.screen, (100, 100, 100), (x, y, w, h), 3)
+        pygame.draw.rect(self.screen, COLOR_WHITE, (x, y, w, h), 2)
         self.screen.blit(self.font_tiny.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + h + 4))
 
     def _render_ui_ability(self, x_in_ui, y_in_ui, size, key, ability_type):
@@ -114,7 +114,7 @@ class View:
             self.screen.blit(self.heal_ability_image, (x, y))
         elif ability_type == AbilityType.AOE_ATTACK:
             self.screen.blit(self.aoe_ability_image, (x, y))
-        pygame.draw.rect(self.screen, (100, 100, 100), (x, y, w, h), 3)
+        pygame.draw.rect(self.screen, COLOR_WHITE, (x, y, w, h), 2)
         self.screen.blit(self.font_tiny.render(key, False, COLOR_WHITE), (x + 8, y + h + 4))
         self.screen.blit(self.font_tiny.render("" + str(mana_cost) + "", False, COLOR_WHITE), (x + 8, y + h + 19))
 
@@ -163,32 +163,35 @@ class View:
         self._render_rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
                                                self.screen_size[1] - self.camera_size[1]))
 
-        y_1 = 8
-        y_2 = 34
+        y_1 = 17
+        y_2 = 40
+        y_3 = 107
+        y_4 = 130
 
-        self._render_ui_text(self.font_large, "Health", 10, y_1)
-        self._render_stat_bar_in_ui(10, y_2 + 1, 100, 25, player_health, player_max_health,
+        x_0 = 20
+        self._render_ui_text(self.font_large, "HEALTH", x_0, y_1)
+        self._render_stat_bar_in_ui(x_0, y_2 + 2, 100, 25, player_health, player_max_health,
                                     COLOR_RED)
         health_text = str(player_health) + "/" + str(player_max_health)
-        self._render_ui_text(self.font_large, health_text, 30, y_2 + 4)
+        self._render_ui_text(self.font_large, health_text, x_0 + 20, y_2 + 8)
 
-        self._render_ui_text(self.font_large, "Mana", 130, y_1)
-        self._render_stat_bar_in_ui(130, y_2 + 1, 100, 25, player_mana, player_max_mana, COLOR_BLUE)
+        self._render_ui_text(self.font_large, "MANA", x_0, y_3)
+        self._render_stat_bar_in_ui(x_0, y_4 + 2, 100, 25, player_mana, player_max_mana, COLOR_BLUE)
         mana_text = str(player_mana) + "/" + str(player_max_mana)
-        self._render_ui_text(self.font_large, mana_text, 150, y_2 + 4)
+        self._render_ui_text(self.font_large, mana_text, x_0 + 20, y_4 + 8)
 
-        self._render_ui_text(self.font_large, "Potions", 250, y_1)
-        self._render_ui_potion(250, y_2, UI_POTION_SIZE, 1, potion_type=potion_slots[1])
-        self._render_ui_potion(280, y_2, UI_POTION_SIZE, 2, potion_type=potion_slots[2])
-        self._render_ui_potion(310, y_2, UI_POTION_SIZE, 3, potion_type=potion_slots[3])
-        self._render_ui_potion(340, y_2, UI_POTION_SIZE, 4, potion_type=potion_slots[4])
-        self._render_ui_potion(370, y_2, UI_POTION_SIZE, 5, potion_type=potion_slots[5])
+        x_1 = 170
+        self._render_ui_text(self.font_large, "POTIONS", x_1, y_1)
+        self._render_ui_potion(x_1, y_2, UI_POTION_SIZE, 1, potion_type=potion_slots[1])
+        self._render_ui_potion(x_1 + 30, y_2, UI_POTION_SIZE, 2, potion_type=potion_slots[2])
+        self._render_ui_potion(x_1 + 60, y_2, UI_POTION_SIZE, 3, potion_type=potion_slots[3])
+        self._render_ui_potion(x_1 + 90, y_2, UI_POTION_SIZE, 4, potion_type=potion_slots[4])
+        self._render_ui_potion(x_1 + 120, y_2, UI_POTION_SIZE, 5, potion_type=potion_slots[5])
 
-        self._render_ui_text(self.font_large, "Abilities", 420, y_1)
-
-        self._render_ui_ability(420, y_2, UI_ABILITY_SIZE, "Q", AbilityType.ATTACK)
-        self._render_ui_ability(450, y_2, UI_ABILITY_SIZE, "W", AbilityType.HEAL)
-        self._render_ui_ability(480, y_2, UI_ABILITY_SIZE, "E", AbilityType.AOE_ATTACK)
+        self._render_ui_text(self.font_large, "SPELLS", x_1, y_3)
+        self._render_ui_ability(x_1, y_4, UI_ABILITY_SIZE, "Q", AbilityType.ATTACK)
+        self._render_ui_ability(x_1 + 30, y_4, UI_ABILITY_SIZE, "W", AbilityType.HEAL)
+        self._render_ui_ability(x_1 + 60, y_4, UI_ABILITY_SIZE, "E", AbilityType.AOE_ATTACK)
 
         effect_texts = []
         for buff in buffs:
