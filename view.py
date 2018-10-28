@@ -193,7 +193,7 @@ class View:
         self._render_ui_ability(x_1 + 30, y_4, UI_ABILITY_SIZE, "W", AbilityType.HEAL)
         self._render_ui_ability(x_1 + 60, y_4, UI_ABILITY_SIZE, "E", AbilityType.AOE_ATTACK)
 
-        effect_texts = []
+        buff_texts = []
         for buff in buffs:
             if buff.buff_type == BuffType.DAMAGE_OVER_TIME:
                 buff_name = "Poison"
@@ -203,8 +203,8 @@ class View:
                 buff_name = "Healing"
             else:
                 raise Exception("Unhandled buff type: " + buff.buff_type)
-            effect_texts.append(buff_name + "(" + str(int(buff.time_until_expiration/1000)) + ")")
-        for i, text in enumerate(effect_texts):
+            buff_texts.append(buff_name + "(" + str(int(buff.time_until_expiration/1000)) + ")")
+        for i, text in enumerate(buff_texts):
             self._render_ui_text(self.font_small, text, 550, 15 + i * 25)
 
         self._render_rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
