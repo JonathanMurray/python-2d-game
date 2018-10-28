@@ -1,8 +1,8 @@
 import pygame
 
 from common import *
-from game_data import entity_sprite_initializers, ui_icon_sprites, SpriteInitializer, potion_icons, ability_icons, \
-    ability_mana_costs
+from game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, POTION_ICON_SPRITES, \
+    ABILITY_ICON_SPRITES, ABILITY_MANA_COSTS
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -39,11 +39,11 @@ class View:
         self.font_large = pygame.font.SysFont('Arial', 22)
         self.font_small = pygame.font.Font(None, 25)
         self.font_tiny = pygame.font.Font(None, 19)
-        self.images_by_sprite = {sprite: load_and_scale_sprite(entity_sprite_initializers[sprite])
-                                 for sprite in entity_sprite_initializers}
+        self.images_by_sprite = {sprite: load_and_scale_sprite(ENTITY_SPRITE_INITIALIZERS[sprite])
+                                 for sprite in ENTITY_SPRITE_INITIALIZERS}
         self.images_by_ui_sprite = {sprite: load_and_scale_sprite(
-            SpriteInitializer(ui_icon_sprites[sprite], UI_POTION_SIZE))
-            for sprite in ui_icon_sprites}
+            SpriteInitializer(UI_ICON_SPRITE_PATHS[sprite], UI_POTION_SIZE))
+            for sprite in UI_ICON_SPRITE_PATHS}
 
     def _render_entity(self, entity, camera_world_area):
         rect = (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h)
@@ -79,7 +79,7 @@ class View:
         x = self.ui_screen_area.x + x_in_ui
         y = self.ui_screen_area.y + y_in_ui
         if potion_type:
-            icon_sprite = potion_icons[potion_type]
+            icon_sprite = POTION_ICON_SPRITES[potion_type]
             self.screen.blit(self.images_by_ui_sprite[icon_sprite], (x, y))
         pygame.draw.rect(self.screen, COLOR_WHITE, (x, y, w, h), 2)
         self.screen.blit(self.font_tiny.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + h + 4))
@@ -89,8 +89,8 @@ class View:
         h = size[1]
         x = self.ui_screen_area.x + x_in_ui
         y = self.ui_screen_area.y + y_in_ui
-        mana_cost = ability_mana_costs[ability_type]
-        icon_sprite = ability_icons[ability_type]
+        mana_cost = ABILITY_MANA_COSTS[ability_type]
+        icon_sprite = ABILITY_ICON_SPRITES[ability_type]
         self.screen.blit(self.images_by_ui_sprite[icon_sprite], (x, y))
         pygame.draw.rect(self.screen, COLOR_WHITE, (x, y, w, h), 2)
         self.screen.blit(self.font_tiny.render(key, False, COLOR_WHITE), (x + 8, y + h + 4))

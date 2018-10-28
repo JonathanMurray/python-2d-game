@@ -14,7 +14,7 @@ class SpriteInitializer:
         self.scaling_size = scaling_size
 
 
-entity_sprite_initializers = {
+ENTITY_SPRITE_INITIALIZERS = {
     Sprite.PLAYER: SpriteInitializer("resources/player.png", PLAYER_ENTITY_SIZE),
     Sprite.ENEMY: SpriteInitializer("resources/enemy.png", ENEMY_ENTITY_SIZE),
     Sprite.ENEMY_2: SpriteInitializer("resources/enemy2.png", ENEMY_2_ENTITY_SIZE),
@@ -22,7 +22,7 @@ entity_sprite_initializers = {
     Sprite.WHIRLWIND: SpriteInitializer("resources/whirlwind.png", AOE_PROJECTILE_SIZE)
 }
 
-ui_icon_sprites = {
+UI_ICON_SPRITE_PATHS = {
     UiIconSprite.HEALTH_POTION: "resources/ui_health_potion.png",
     UiIconSprite.MANA_POTION: "resources/ui_mana_potion.png",
     UiIconSprite.SPEED_POTION: "resources/white_potion.gif",
@@ -31,19 +31,19 @@ ui_icon_sprites = {
     UiIconSprite.AOE_ABILITY: "resources/whirlwind.png"
 }
 
-potion_icons = {
+POTION_ICON_SPRITES = {
     PotionType.HEALTH: UiIconSprite.HEALTH_POTION,
     PotionType.MANA: UiIconSprite.MANA_POTION,
     PotionType.SPEED: UiIconSprite.SPEED_POTION
 }
 
-ability_icons = {
+ABILITY_ICON_SPRITES = {
     AbilityType.ATTACK: UiIconSprite.ATTACK_ABILITY,
     AbilityType.HEAL: UiIconSprite.HEAL_ABILITY,
     AbilityType.AOE_ATTACK: UiIconSprite.AOE_ABILITY
 }
 
-ability_mana_costs = {
+ABILITY_MANA_COSTS = {
     AbilityType.HEAL: 10,
     AbilityType.ATTACK: 3,
     AbilityType.AOE_ATTACK: 5
