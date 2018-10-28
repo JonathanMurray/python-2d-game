@@ -4,7 +4,7 @@ import pygame
 import sys
 
 from abilities import try_use_ability
-from buffs import buffs
+from buffs import BUFF_EFFECTS
 from enemy_behavior import run_ai_for_enemy_against_target
 from game_world_init import init_game_state_from_file
 from potions import apply_potion_effect
@@ -127,11 +127,11 @@ while True:
 
     buffs_update = game_state.player_state.handle_buffs(time_passed)
     for buff_type in buffs_update.buffs_that_started:
-        buffs[buff_type].apply_start_effect(game_state)
+        BUFF_EFFECTS[buff_type].apply_start_effect(game_state)
     for buff_type in buffs_update.active_buffs:
-        buffs[buff_type].apply_middle_effect(game_state)
+        BUFF_EFFECTS[buff_type].apply_middle_effect(game_state)
     for buff_type in buffs_update.buffs_that_ended:
-        buffs[buff_type].apply_end_effect(game_state)
+        BUFF_EFFECTS[buff_type].apply_end_effect(game_state)
 
     # ------------------------------------
     #         UPDATE CAMERA POSITION
@@ -151,7 +151,7 @@ while True:
                            player_mana=game_state.player_state.mana,
                            player_max_mana=game_state.player_state.max_mana,
                            potion_slots=game_state.player_state.potion_slots,
-                           buffs=game_state.player_state.buffs,
+                           player_active_buffs=game_state.player_state.active_buffs,
                            fps_string=fps_string,
                            player_minimap_relative_position=player_minimap_relative_position,
                            abilities=[AbilityType.ATTACK, AbilityType.HEAL, AbilityType.AOE_ATTACK])

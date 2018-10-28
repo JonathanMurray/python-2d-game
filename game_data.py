@@ -53,3 +53,9 @@ ABILITIES = {
     AbilityType.HEAL: AbilityData(UiIconSprite.HEAL_ABILITY, 10, "W", pygame.K_w),
     AbilityType.AOE_ATTACK: AbilityData(UiIconSprite.AOE_ABILITY, 5, "E", pygame.K_e)
 }
+
+BUFF_TEXTS = {
+    BuffType.DAMAGE_OVER_TIME: "Poison",
+    BuffType.INCREASED_MOVE_SPEED: "Speed",
+    BuffType.HEALING_OVER_TIME: "Healing"
+}

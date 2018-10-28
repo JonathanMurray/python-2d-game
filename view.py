@@ -1,8 +1,7 @@
 import pygame
 
-from common import *
 from game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, POTION_ICON_SPRITES, \
-    ABILITIES
+    ABILITIES, BUFF_TEXTS
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -137,8 +136,8 @@ class View:
         self._render_rect_filled((0, 200, 0), (dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
     def render_everything(self, all_entities, camera_world_area, enemies, player_health, player_max_health, player_mana,
-                          player_max_mana, potion_slots, buffs, fps_string, player_minimap_relative_position,
-                          abilities):
+                          player_max_mana, potion_slots, player_active_buffs, fps_string,
+                          player_minimap_relative_position, abilities):
 
         self.screen.fill(COLOR_BACKGROUND)
         self._draw_ground(camera_world_area)
@@ -188,16 +187,9 @@ class View:
         self._render_minimap((x_2, y_2), (120, 120), player_minimap_relative_position)
 
         buff_texts = []
-        for buff in buffs:
-            if buff.buff_type == BuffType.DAMAGE_OVER_TIME:
-                buff_name = "Poison"
-            elif buff.buff_type == BuffType.INCREASED_MOVE_SPEED:
-                buff_name = "Speed"
-            elif buff.buff_type == BuffType.HEALING_OVER_TIME:
-                buff_name = "Healing"
-            else:
-                raise Exception("Unhandled buff type: " + buff.buff_type)
-            buff_texts.append(buff_name + "(" + str(int(buff.time_until_expiration / 1000)) + ")")
+        for active_buff in player_active_buffs:
+            buff_name = BUFF_TEXTS[active_buff.buff_type]
+            buff_texts.append(buff_name + "(" + str(int(active_buff.time_until_expiration / 1000)) + ")")
         for i, text in enumerate(buff_texts):
             self._render_ui_text(self.font_small, text, 550, 15 + i * 25)
 

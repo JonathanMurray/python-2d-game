@@ -30,7 +30,7 @@ class IncreasedMoveSpeed(AbstractBuff):
         game_state.player_entity.add_to_speed_multiplier(-1)
 
 
-buffs = {
+BUFF_EFFECTS = {
     BuffType.HEALING_OVER_TIME: HealingOverTime(),
     BuffType.DAMAGE_OVER_TIME: DamageOverTime(),
     BuffType.INCREASED_MOVE_SPEED: IncreasedMoveSpeed()
