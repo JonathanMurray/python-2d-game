@@ -102,7 +102,7 @@ while True:
             entities_to_remove.append(projectile)
         if not game_state.is_within_game_world(projectile.world_entity):
             entities_to_remove.append(projectile)
-    for potion in game_state.potions:
+    for potion in game_state.potions_on_ground:
         if boxes_intersect(game_state.player_entity, potion.world_entity):
             did_pick_up = game_state.player_state.try_pick_up_potion(potion.potion_type)
             if did_pick_up:

@@ -3,7 +3,7 @@ import math
 from common import *
 
 
-class Potion:
+class PotionOnGround:
     def __init__(self, world_entity, potion_type):
         self.world_entity = world_entity
         self.potion_type = potion_type
@@ -160,12 +160,12 @@ class PlayerState:
 
 
 class GameState:
-    def __init__(self, player_entity, potions, enemies, camera_size, game_world_size, player_potions_slots):
+    def __init__(self, player_entity, potions_on_ground, enemies, camera_size, game_world_size, player_potions_slots):
         self.camera_size = camera_size
         self.camera_world_area = WorldArea((0, 0), self.camera_size)
         self.player_entity = player_entity
         self.projectile_entities = []
-        self.potions = potions
+        self.potions_on_ground = potions_on_ground
         self.enemies = enemies
         self.player_state = PlayerState(1, 500, 75, 100, 0.03, player_potions_slots)
         self.game_world_size = game_world_size
@@ -174,12 +174,12 @@ class GameState:
     # entities_to_remove aren't necessarily of the class WorldEntity
     def remove_entities(self, entities_to_remove):
         self.projectile_entities = [p for p in self.projectile_entities if p not in entities_to_remove]
-        self.potions = [p for p in self.potions if p not in entities_to_remove]
+        self.potions_on_ground = [p for p in self.potions_on_ground if p not in entities_to_remove]
         self.enemies = [e for e in self.enemies if e not in entities_to_remove]
 
     def get_all_entities(self):
         return [self.player_entity] + [p.world_entity for p in self.projectile_entities] + \
-               [p.world_entity for p in self.potions] + [e.world_entity for e in self.enemies]
+               [p.world_entity for p in self.potions_on_ground] + [e.world_entity for e in self.enemies]
 
     def center_camera_on_player(self):
         self.camera_world_area.x = min(max(self.player_entity.get_center_x() - self.camera_size[0] / 2, 0),
