@@ -1,4 +1,5 @@
 from common import *
+from enemy_behavior import create_enemy_mind
 from game_data import PLAYER_ENTITY_SIZE, ENEMY_ENTITY_SIZE, ENEMY_2_ENTITY_SIZE, POTION_ENTITY_SIZE
 from game_state import WorldEntity, Enemy, GameState, PotionOnGround
 
@@ -32,9 +33,9 @@ def init_game_state_from_file(game_world_size, camera_size):
     potions = [PotionOnGround(WorldEntity(pos, POTION_ENTITY_SIZE, Sprite.HEALTH_POTION), PotionType.HEALTH)
                for pos in potion_positions]
     enemies = [Enemy(WorldEntity(pos, ENEMY_ENTITY_SIZE, Sprite.ENEMY, Direction.LEFT, ENEMY_SPEED), 2, 2,
-                     EnemyBehavior.DUMB) for pos in dumb_enemy_positions] + \
+                     create_enemy_mind(EnemyBehavior.DUMB)) for pos in dumb_enemy_positions] + \
               [Enemy(WorldEntity(pos, ENEMY_2_ENTITY_SIZE, Sprite.ENEMY_2, Direction.LEFT, ENEMY_2_SPEED),
-                     3, 3, EnemyBehavior.SMART) for pos in smart_enemy_positions]
+                     3, 3, create_enemy_mind(EnemyBehavior.SMART)) for pos in smart_enemy_positions]
     player_potion_slots = {
         1: PotionType.SPEED,
         2: PotionType.MANA,

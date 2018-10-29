@@ -72,11 +72,11 @@ class Projectile:
 
 
 class Enemy:
-    def __init__(self, world_entity, health, max_health, enemy_behavior):
+    def __init__(self, world_entity, health, max_health, enemy_mind):
         self.world_entity = world_entity
         self.health = health
         self.max_health = max_health
-        self.enemy_behavior = enemy_behavior
+        self.enemy_mind = enemy_mind
 
 
 class Buff:

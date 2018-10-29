@@ -5,7 +5,6 @@ import sys
 
 from abilities import try_use_ability
 from buffs import BUFF_EFFECTS
-from enemy_behavior import run_ai_for_enemy_against_target
 from game_world_init import init_game_state_from_file
 from potions import apply_potion_effect
 from user_input import *
@@ -72,11 +71,7 @@ while True:
     if ticks_since_ai_ran > AI_RUN_INTERVAL:
         ticks_since_ai_ran = 0
         for e in game_state.enemies:
-            if game_state.player_state.is_invisible:
-                direction = random_direction()
-            else:
-                direction = run_ai_for_enemy_against_target(e.world_entity, game_state.player_entity, e.enemy_behavior)
-            e.world_entity.set_moving_in_dir(direction)
+            e.enemy_mind.control_enemy(e.world_entity, game_state.player_entity, game_state.player_state.is_invisible)
 
     view_state.notify_player_entity_center_position(game_state.player_entity.get_center_position())
 
