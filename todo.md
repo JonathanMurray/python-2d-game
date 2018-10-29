@@ -8,10 +8,7 @@
 * Prevent using potion when at full stats
 
 #### Features:
-* A message log
-    * can show a message when an action fails (failed to use potion, can't 
-    heal because already full health, etc)
-* More enemies with different types of AI
+* Enemy AI and enemy interactions that make a bit more sense
 * Save functionality
     * save the current game_state into a JSON file and load it on startup
 * Introduce "items" (wearables that give you some buff)
