@@ -8,6 +8,9 @@
 * Prevent using potion when at full stats
 
 #### Features:
+* Introduce more varied functionality for different projectiles
+    * arrow that explodes on impact?
+    * cloud that deals damage continuously?
 * Enemy AI and enemy interactions that make a bit more sense
 * Save functionality
     * save the current game_state into a JSON file and load it on startup

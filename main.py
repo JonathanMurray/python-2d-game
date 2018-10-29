@@ -109,15 +109,19 @@ while True:
     for enemy in game_state.enemies:
         if boxes_intersect(game_state.player_entity, enemy.world_entity):
             entities_to_remove.append(enemy)
+            # TODO This is weird enemy interaction. Perhaps some enemies should die when touching player, but not all!
             game_state.player_state.lose_health(2)
             game_state.player_state.add_buff(BuffType.DAMAGE_OVER_TIME, 2000)
         for projectile in game_state.get_active_player_projectiles_intersecting_with(enemy.world_entity):
+            # TODO Make this more dynamic. All projectiles shouldn't behave the same. Move into projectiles.py
             enemy.health -= 1
+            # TODO This feels like something that should move into game_state.py (similar to projectiles' active and has_expired)
             if enemy.health <= 0:
                 entities_to_remove.append(enemy)
             entities_to_remove.append(projectile)
 
     for projectile in game_state.get_active_enemy_projectiles_intersecting_with_player():
+        # TODO Make this more dynamic. All projectiles shouldn't behave the same.
         game_state.player_state.lose_health(10)
         entities_to_remove.append(projectile)
 
