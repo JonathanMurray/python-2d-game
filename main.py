@@ -30,7 +30,7 @@ clock = pygame.time.Clock()
 while True:
 
     # ------------------------------------
-    #         HANDLE EVENTS
+    #         HANDLE USER INPUT
     # ------------------------------------
 
     user_actions = get_user_actions()
@@ -58,7 +58,7 @@ while True:
             game_state.player_entity.set_not_moving()
 
     # ------------------------------------
-    #  UPDATE STATE BASED ON CLOCK
+    #     UPDATE STATE BASED ON CLOCK
     # ------------------------------------
 
     clock.tick()
@@ -98,7 +98,7 @@ while True:
         projectile.world_entity.update_position_according_to_dir_and_speed(time_passed)
 
     # ------------------------------------
-    #         HANDLE COLLISIONS
+    #          HANDLE COLLISIONS
     # ------------------------------------
 
     entities_to_remove = []
@@ -125,13 +125,13 @@ while True:
     game_state.remove_entities(entities_to_remove)
 
     # ------------------------------------
-    #         UPDATE CAMERA POSITION
+    #       UPDATE CAMERA POSITION
     # ------------------------------------
 
     game_state.center_camera_on_player()
 
     # ------------------------------------
-    #         RENDER EVERYTHING
+    #          RENDER EVERYTHING
     # ------------------------------------
 
     view.render_everything(all_entities=game_state.get_all_entities(),
