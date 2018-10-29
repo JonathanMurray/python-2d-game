@@ -135,7 +135,7 @@ class PlayerState:
         else:
             return False
 
-    def handle_buffs(self, time_passed):
+    def update_and_expire_buffs(self, time_passed):
         copied_buffs_list = list(self.active_buffs)
         buffs_that_started = []
         buffs_that_ended = []
@@ -201,3 +201,13 @@ class GameState:
 
     def is_within_game_world(self, box):
         return boxes_intersect(box, self.entire_world_area)
+
+    def update_and_expire_projectiles(self, time_passed):
+        entities_to_remove = []
+        for projectile in self.projectile_entities:
+            projectile.notify_time_passed(time_passed)
+            if projectile.has_expired:
+                entities_to_remove.append(projectile)
+            if not self.is_within_game_world(projectile.world_entity):
+                entities_to_remove.append(projectile)
+        self.remove_entities(entities_to_remove)

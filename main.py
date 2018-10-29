@@ -77,6 +77,16 @@ while True:
 
     view_state.notify_time_passed(time_passed)
 
+    game_state.update_and_expire_projectiles(time_passed)
+
+    buffs_update = game_state.player_state.update_and_expire_buffs(time_passed)
+    for buff_type in buffs_update.buffs_that_started:
+        BUFF_EFFECTS[buff_type].apply_start_effect(game_state)
+    for buff_type in buffs_update.active_buffs:
+        BUFF_EFFECTS[buff_type].apply_middle_effect(game_state)
+    for buff_type in buffs_update.buffs_that_ended:
+        BUFF_EFFECTS[buff_type].apply_end_effect(game_state)
+
     # ------------------------------------
     #         UPDATE MOVING ENTITIES
     # ------------------------------------
@@ -94,12 +104,6 @@ while True:
     # ------------------------------------
 
     entities_to_remove = []
-    for projectile in game_state.projectile_entities:
-        projectile.notify_time_passed(time_passed)
-        if projectile.has_expired:
-            entities_to_remove.append(projectile)
-        if not game_state.is_within_game_world(projectile.world_entity):
-            entities_to_remove.append(projectile)
     for potion in game_state.potions_on_ground:
         if boxes_intersect(game_state.player_entity, potion.world_entity):
             did_pick_up = game_state.player_state.try_pick_up_potion(potion.potion_type)
@@ -127,14 +131,6 @@ while True:
     # ------------------------------------
 
     game_state.player_state.gain_mana(game_state.player_state.mana_regen)
-
-    buffs_update = game_state.player_state.handle_buffs(time_passed)
-    for buff_type in buffs_update.buffs_that_started:
-        BUFF_EFFECTS[buff_type].apply_start_effect(game_state)
-    for buff_type in buffs_update.active_buffs:
-        BUFF_EFFECTS[buff_type].apply_middle_effect(game_state)
-    for buff_type in buffs_update.buffs_that_ended:
-        BUFF_EFFECTS[buff_type].apply_end_effect(game_state)
 
     # ------------------------------------
     #         UPDATE CAMERA POSITION
