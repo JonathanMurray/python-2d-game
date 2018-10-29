@@ -6,7 +6,7 @@ import sys
 from abilities import apply_ability_effect
 from buffs import BUFF_EFFECTS
 from game_world_init import init_game_state_from_file
-from player_controls import try_use_ability
+from player_controls import PlayerControls, TryUseAbilityResult
 from potions import apply_potion_effect
 from user_input import *
 from view import View, ScreenArea
@@ -24,10 +24,8 @@ screen = pygame.display.set_mode(SCREEN_SIZE)
 ui_screen_area = ScreenArea((0, CAMERA_SIZE[1]), (SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
 view = View(screen, ui_screen_area, CAMERA_SIZE, SCREEN_SIZE)
 view_state = ViewState(GAME_WORLD_SIZE)
+player_controls = PlayerControls()
 clock = pygame.time.Clock()
-
-ABILITY_COOLDOWN = 200
-ticks_since_ability_used = ABILITY_COOLDOWN
 
 while True:
 
@@ -42,13 +40,11 @@ while True:
             sys.exit()
         elif isinstance(action, ActionTryUseAbility):
             view_state.notify_ability_was_clicked(action.ability_type)
-            if ticks_since_ability_used > ABILITY_COOLDOWN:
-                had_enough_mana = try_use_ability(game_state.player_state, action.ability_type)
-                ticks_since_ability_used = 0
-                if had_enough_mana:
-                    apply_ability_effect(game_state, action.ability_type)
-                else:
-                    view_state.set_message("Not enough mana!")
+            result = player_controls.try_use_ability(game_state.player_state, action.ability_type)
+            if result == TryUseAbilityResult.SUCCESS:
+                apply_ability_effect(game_state, action.ability_type)
+            elif result == TryUseAbilityResult.NOT_ENOUGH_MANA:
+                view_state.set_message("Not enough mana!")
         elif isinstance(action, ActionTryUsePotion):
             view_state.notify_potion_was_clicked(action.slot_number)
             used_potion_type = game_state.player_state.try_use_potion(action.slot_number)
@@ -77,9 +73,10 @@ while True:
 
     view_state.notify_player_entity_center_position(game_state.player_entity.get_center_position())
 
-    ticks_since_ability_used += time_passed
+    player_controls.notify_time_passed(time_passed)
 
     view_state.notify_time_passed(time_passed)
+
     # ------------------------------------
     #         UPDATE MOVING ENTITIES
     # ------------------------------------
