@@ -69,7 +69,6 @@ while True:
         if boxes_intersect(e.world_entity, game_state.camera_world_area):
             e.enemy_mind.control_enemy(game_state, e.world_entity, game_state.player_entity,
                                        game_state.player_state.is_invisible, time_passed)
-        ticks_since_ai_ran = 0
 
     view_state.notify_player_entity_center_position(game_state.player_entity.get_center_position())
 
