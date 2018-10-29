@@ -67,11 +67,15 @@ while True:
     clock.tick()
     time_passed = clock.get_time()
 
+    # TODO Move this time-keeping into EnemyMind
     ticks_since_ai_ran += time_passed
     if ticks_since_ai_ran > AI_RUN_INTERVAL:
-        ticks_since_ai_ran = 0
         for e in game_state.enemies:
-            e.enemy_mind.control_enemy(e.world_entity, game_state.player_entity, game_state.player_state.is_invisible)
+            # Enemy AI shouldn't run if enemy is out of sight
+            if boxes_intersect(e.world_entity, game_state.camera_world_area):
+                e.enemy_mind.control_enemy(game_state, e.world_entity, game_state.player_entity,
+                                           game_state.player_state.is_invisible, ticks_since_ai_ran)
+        ticks_since_ai_ran = 0
 
     view_state.notify_player_entity_center_position(game_state.player_entity.get_center_position())
 
@@ -111,11 +115,16 @@ while True:
             entities_to_remove.append(enemy)
             game_state.player_state.lose_health(2)
             game_state.player_state.add_buff(BuffType.DAMAGE_OVER_TIME, 2000)
-        for projectile in game_state.get_all_active_projectiles_that_intersect_with(enemy.world_entity):
+        for projectile in game_state.get_active_player_projectiles_intersecting_with(enemy.world_entity):
             enemy.health -= 1
             if enemy.health <= 0:
                 entities_to_remove.append(enemy)
             entities_to_remove.append(projectile)
+
+    for projectile in game_state.get_active_enemy_projectiles_intersecting_with_player():
+        game_state.player_state.lose_health(10)
+        entities_to_remove.append(projectile)
+
     game_state.remove_entities(entities_to_remove)
 
     # ------------------------------------
