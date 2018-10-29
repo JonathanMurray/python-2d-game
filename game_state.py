@@ -46,11 +46,8 @@ class WorldEntity:
         elif self.direction == Direction.DOWN:
             self.y += self.speed
 
-    def get_center_x(self):
-        return self.x + self.w / 2
-
-    def get_center_y(self):
-        return self.y + self.h / 2
+    def get_center_position(self):
+        return self.x + self.w / 2, self.y + self.h / 2
 
     def add_to_speed_multiplier(self, amount):
         self.speed_multiplier += amount
@@ -182,9 +179,10 @@ class GameState:
                [p.world_entity for p in self.potions_on_ground] + [e.world_entity for e in self.enemies]
 
     def center_camera_on_player(self):
-        self.camera_world_area.x = min(max(self.player_entity.get_center_x() - self.camera_size[0] / 2, 0),
+        player_center_position = self.player_entity.get_center_position()
+        self.camera_world_area.x = min(max(player_center_position[0] - self.camera_size[0] / 2, 0),
                                        self.game_world_size[0] - self.camera_size[0])
-        self.camera_world_area.y = min(max(self.player_entity.get_center_y() - self.camera_size[1] / 2, 0),
+        self.camera_world_area.y = min(max(player_center_position[1] - self.camera_size[1] / 2, 0),
                                        self.game_world_size[1] - self.camera_size[1])
 
     def get_all_active_projectiles_that_intersect_with(self, entity):

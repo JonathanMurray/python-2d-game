@@ -29,17 +29,17 @@ def _apply_heal(game_state):
 
 
 def _apply_attack(game_state):
-    projectile_pos = (game_state.player_entity.get_center_x() - ATTACK_PROJECTILE_SIZE[0] / 2,
-                      game_state.player_entity.get_center_y() - ATTACK_PROJECTILE_SIZE[1] / 2)
+    player_center_position = game_state.player_entity.get_center_position()
+    projectile_pos = (player_center_position[0] - ATTACK_PROJECTILE_SIZE[0] / 2,
+                      player_center_position[1] - ATTACK_PROJECTILE_SIZE[1] / 2)
     entity = WorldEntity(projectile_pos, ATTACK_PROJECTILE_SIZE, Sprite.FIREBALL, game_state.player_entity.direction,
                          ATTACK_PROJECTILE_SPEED, ATTACK_PROJECTILE_SPEED)
     game_state.projectile_entities.append(Projectile(entity, 0, 3000))
 
 
 def _apply_aoe_attack(game_state):
+    x, y = game_state.player_entity.get_center_position()
     direction = game_state.player_entity.direction
-    x = game_state.player_entity.get_center_x()
-    y = game_state.player_entity.get_center_y()
     distance = 80
     if direction == Direction.RIGHT:
         aoe_pos = (x + distance - AOE_PROJECTILE_SIZE[0] / 2, y - AOE_PROJECTILE_SIZE[1] / 2)

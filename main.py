@@ -109,8 +109,9 @@ while True:
     ticks_since_minimap_updated += time_passed
     if ticks_since_minimap_updated > MINIMAP_UPDATE_INTERVAL:
         ticks_since_minimap_updated = 0
-        player_minimap_relative_position = (game_state.player_entity.get_center_x() / game_state.game_world_size[0],
-                                            game_state.player_entity.get_center_y() / game_state.game_world_size[1])
+        player_center_position = game_state.player_entity.get_center_position()
+        player_minimap_relative_position = (player_center_position[0] / game_state.game_world_size[0],
+                                            player_center_position[1] / game_state.game_world_size[1])
 
     ticks_since_ability_used += time_passed
 
