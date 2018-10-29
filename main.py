@@ -58,7 +58,7 @@ while True:
             game_state.player_entity.set_not_moving()
 
     # ------------------------------------
-    #         RUN THINGS BASED ON CLOCK
+    #  UPDATE STATE BASED ON CLOCK
     # ------------------------------------
 
     clock.tick()
@@ -87,9 +87,7 @@ while True:
     for buff_type in buffs_update.buffs_that_ended:
         BUFF_EFFECTS[buff_type].apply_end_effect(game_state)
 
-    # ------------------------------------
-    #         UPDATE MOVING ENTITIES
-    # ------------------------------------
+    game_state.player_state.regenerate_mana(time_passed)
 
     for e in game_state.enemies:
         # Enemies shouldn't move towards player when they are out of sight
@@ -125,12 +123,6 @@ while True:
         entities_to_remove.append(projectile)
 
     game_state.remove_entities(entities_to_remove)
-
-    # ------------------------------------
-    #         PLAYER EFFECTS
-    # ------------------------------------
-
-    game_state.player_state.regenerate_mana(time_passed)
 
     # ------------------------------------
     #         UPDATE CAMERA POSITION
