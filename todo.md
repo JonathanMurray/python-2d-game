@@ -2,7 +2,6 @@
 
 #### Refactorings:
 * Move non-trivial logic from game_state. Prefer to have game-logic in main.py
-* Reduce the ugly coupling between abilities and view.py
 
 #### Game engine:
 * Prevent using potion when at full stats
@@ -11,6 +10,10 @@
 * Introduce more varied functionality for different projectiles
     * arrow that explodes on impact?
     * cloud that deals damage continuously?
+* New advanced enemy behaviors
+    * healing other enemies?
+    * summoning new enemies?
+    * backing off when at low health?
 * Enemy AI and enemy interactions that make a bit more sense
 * Save functionality
     * save the current game_state into a JSON file and load it on startup
