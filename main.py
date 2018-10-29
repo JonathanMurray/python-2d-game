@@ -10,6 +10,7 @@ from game_world_init import init_game_state_from_file
 from potions import apply_potion_effect
 from user_input import *
 from view import View, ScreenArea
+from view_state import ViewState
 
 GAME_WORLD_SIZE = (1000, 1000)
 SCREEN_SIZE = (700, 600)
@@ -22,34 +23,13 @@ pygame.font.init()
 screen = pygame.display.set_mode(SCREEN_SIZE)
 ui_screen_area = ScreenArea((0, CAMERA_SIZE[1]), (SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
 view = View(screen, ui_screen_area, CAMERA_SIZE, SCREEN_SIZE)
+view_state = ViewState(GAME_WORLD_SIZE)
 clock = pygame.time.Clock()
 ticks_since_ai_ran = 0
 AI_RUN_INTERVAL = 750
 
-# TODO Move view-centered state to view.py
-MINIMAP_UPDATE_INTERVAL = 1000
-ticks_since_minimap_updated = MINIMAP_UPDATE_INTERVAL
-player_minimap_relative_position = (0, 0)
-recent_frame_durations = []
-fps_string = "N/A"
 ABILITY_COOLDOWN = 200
 ticks_since_ability_used = ABILITY_COOLDOWN
-MESSAGE_DURATION = 2500
-ticks_since_message_updated = 0
-message = ""
-HIGHLIGHT_POTION_ACTION_DURATION = 120
-highlighted_potion_action = None
-ticks_since_last_potion_action = 0
-HIGHLIGHT_ABILITY_ACTION_DURATION = 120
-highlighted_ability_action = None
-ticks_since_last_ability_action = 0
-
-
-def _set_message(_message):
-    global message, ticks_since_message_updated
-    message = _message
-    ticks_since_message_updated = 0
-
 
 while True:
 
@@ -63,21 +43,19 @@ while True:
             pygame.quit()
             sys.exit()
         elif isinstance(action, ActionTryUseAbility):
-            highlighted_ability_action = action.ability_type
-            ticks_since_last_ability_action = 0
+            view_state.notify_ability_was_clicked(action.ability_type)
             if ticks_since_ability_used > ABILITY_COOLDOWN:
                 had_enough_mana = try_use_ability(game_state, action.ability_type)
                 ticks_since_ability_used = 0
                 if not had_enough_mana:
-                    _set_message("Not enough mana!")
+                    view_state.set_message("Not enough mana!")
         elif isinstance(action, ActionTryUsePotion):
-            highlighted_potion_action = action.slot_number
-            ticks_since_last_potion_action = 0
+            view_state.notify_potion_was_clicked(action.slot_number)
             used_potion_type = game_state.player_state.try_use_potion(action.slot_number)
             if used_potion_type:
                 apply_potion_effect(used_potion_type, game_state)
             else:
-                _set_message("No potion to use!")
+                view_state.set_message("No potion to use!")
         elif isinstance(action, ActionMoveInDirection):
             game_state.player_entity.set_moving_in_dir(action.direction)
         elif isinstance(action, ActionStopMoving):
@@ -90,12 +68,6 @@ while True:
     clock.tick()
     time_passed = clock.get_time()
 
-    recent_frame_durations.append(time_passed)
-    num_frames_to_sample_for_fps = 30
-    if len(recent_frame_durations) == num_frames_to_sample_for_fps:
-        fps_string = str(int(1000 * num_frames_to_sample_for_fps / sum(recent_frame_durations)))
-        recent_frame_durations = []
-
     ticks_since_ai_ran += time_passed
     if ticks_since_ai_ran > AI_RUN_INTERVAL:
         ticks_since_ai_ran = 0
@@ -106,27 +78,11 @@ while True:
                 direction = run_ai_for_enemy_against_target(e.world_entity, game_state.player_entity, e.enemy_behavior)
             e.world_entity.set_moving_in_dir(direction)
 
-    ticks_since_minimap_updated += time_passed
-    if ticks_since_minimap_updated > MINIMAP_UPDATE_INTERVAL:
-        ticks_since_minimap_updated = 0
-        player_center_position = game_state.player_entity.get_center_position()
-        player_minimap_relative_position = (player_center_position[0] / game_state.game_world_size[0],
-                                            player_center_position[1] / game_state.game_world_size[1])
+    view_state.notify_player_entity_center_position(game_state.player_entity.get_center_position())
 
     ticks_since_ability_used += time_passed
 
-    ticks_since_message_updated += time_passed
-    if ticks_since_message_updated > MESSAGE_DURATION:
-        message = ""
-
-    ticks_since_last_potion_action += time_passed
-    if ticks_since_last_potion_action > HIGHLIGHT_POTION_ACTION_DURATION:
-        highlighted_potion_action = None
-
-    ticks_since_last_ability_action += time_passed
-    if ticks_since_last_ability_action > HIGHLIGHT_ABILITY_ACTION_DURATION:
-        highlighted_ability_action = None
-
+    view_state.notify_time_passed(time_passed)
     # ------------------------------------
     #         UPDATE MOVING ENTITIES
     # ------------------------------------
@@ -202,9 +158,9 @@ while True:
                            player_max_mana=game_state.player_state.max_mana,
                            potion_slots=game_state.player_state.potion_slots,
                            player_active_buffs=game_state.player_state.active_buffs,
-                           fps_string=fps_string,
-                           player_minimap_relative_position=player_minimap_relative_position,
+                           fps_string=view_state.fps_string,
+                           player_minimap_relative_position=view_state.player_minimap_relative_position,
                            abilities=[AbilityType.ATTACK, AbilityType.HEAL, AbilityType.AOE_ATTACK],
-                           message=message,
-                           highlighted_potion_action=highlighted_potion_action,
-                           highlighted_ability_action=highlighted_ability_action)
+                           message=view_state.message,
+                           highlighted_potion_action=view_state.highlighted_potion_action,
+                           highlighted_ability_action=view_state.highlighted_ability_action)
