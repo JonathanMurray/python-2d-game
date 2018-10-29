@@ -25,49 +25,50 @@ class WorldEntity:
         self.h = size[1]
         self.sprite = sprite
         self.direction = direction
-        self.speed = speed
-        self.is_moving = True
-        self.speed_multiplier = 1
+        self._speed = speed
+        self._speed_multiplier = 1
+        self._effective_speed = speed
+        self._is_moving = True
 
     def set_moving_in_dir(self, direction):
         self.direction = direction
-        self.is_moving = True
+        self._is_moving = True
 
     def set_not_moving(self):
-        self.is_moving = False
+        self._is_moving = False
 
     def update_position_according_to_dir_and_speed(self):
-        if self.is_moving:
-            effective_speed = self.speed_multiplier * self.speed
+        if self._is_moving:
             if self.direction == Direction.LEFT:
-                self.x -= effective_speed
+                self.x -= self._effective_speed
             elif self.direction == Direction.RIGHT:
-                self.x += effective_speed
+                self.x += self._effective_speed
             elif self.direction == Direction.UP:
-                self.y -= effective_speed
+                self.y -= self._effective_speed
             elif self.direction == Direction.DOWN:
-                self.y += effective_speed
+                self.y += self._effective_speed
 
     def get_center_position(self):
         return self.x + self.w / 2, self.y + self.h / 2
 
     def add_to_speed_multiplier(self, amount):
-        self.speed_multiplier += amount
+        self._speed_multiplier += amount
+        self._effective_speed = self._speed_multiplier * self._speed
 
 
 class Projectile:
     def __init__(self, world_entity, time_until_active, time_until_expiration):
         self.world_entity = world_entity
-        self.time_until_active = time_until_active
-        self.time_until_expiration = time_until_expiration
-        self.active = self.time_until_active <= 0
-        self.has_expired = self.time_until_expiration <= 0
+        self._time_until_active = time_until_active
+        self._time_until_expiration = time_until_expiration
+        self.active = self._time_until_active <= 0
+        self.has_expired = self._time_until_expiration <= 0
 
     def notify_time_passed(self, time_passed):
-        self.time_until_active -= time_passed
-        self.active = self.time_until_active <= 0
-        self.time_until_expiration -= time_passed
-        self.has_expired = self.time_until_expiration <= 0
+        self._time_until_active -= time_passed
+        self.active = self._time_until_active <= 0
+        self._time_until_expiration -= time_passed
+        self.has_expired = self._time_until_expiration <= 0
 
 
 class Enemy:
