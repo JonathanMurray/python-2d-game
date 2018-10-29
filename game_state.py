@@ -37,16 +37,17 @@ class WorldEntity:
     def set_not_moving(self):
         self._is_moving = False
 
-    def update_position_according_to_dir_and_speed(self):
+    def update_position_according_to_dir_and_speed(self, time_passed):
+        distance = self._effective_speed * time_passed / 25  # 25 because this was the avg. frame duration before this change
         if self._is_moving:
             if self.direction == Direction.LEFT:
-                self.x -= self._effective_speed
+                self.x -= distance
             elif self.direction == Direction.RIGHT:
-                self.x += self._effective_speed
+                self.x += distance
             elif self.direction == Direction.UP:
-                self.y -= self._effective_speed
+                self.y -= distance
             elif self.direction == Direction.DOWN:
-                self.y += self._effective_speed
+                self.y += distance
 
     def get_center_position(self):
         return self.x + self.w / 2, self.y + self.h / 2
@@ -156,6 +157,10 @@ class PlayerState:
         else:
             self.active_buffs.append(Buff(buff_type, duration))
 
+    def regenerate_mana(self, time_passed):
+        self.gain_mana(
+            self.mana_regen * time_passed / 25)  # 25 because this was the avg. frame duration before this change
+
 
 class GameState:
     def __init__(self, player_entity, potions_on_ground, enemies, camera_size, game_world_size, player_potions_slots):
@@ -194,8 +199,8 @@ class GameState:
         return [p for p in self.projectile_entities if boxes_intersect(self.player_entity, p.world_entity) and p.active
                 and not p.controlled_by_player]
 
-    def update_world_entity_position_within_game_world(self, world_entity):
-        world_entity.update_position_according_to_dir_and_speed()
+    def update_world_entity_position_within_game_world(self, world_entity, time_passed):
+        world_entity.update_position_according_to_dir_and_speed(time_passed)
         world_entity.x = min(max(world_entity.x, 0), self.game_world_size[0] - world_entity.w)
         world_entity.y = min(max(world_entity.y, 0), self.game_world_size[1] - world_entity.h)
 

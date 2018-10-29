@@ -94,10 +94,10 @@ while True:
     for e in game_state.enemies:
         # Enemies shouldn't move towards player when they are out of sight
         if boxes_intersect(e.world_entity, game_state.camera_world_area):
-            game_state.update_world_entity_position_within_game_world(e.world_entity)
-    game_state.update_world_entity_position_within_game_world(game_state.player_entity)
+            game_state.update_world_entity_position_within_game_world(e.world_entity, time_passed)
+    game_state.update_world_entity_position_within_game_world(game_state.player_entity, time_passed)
     for projectile in game_state.projectile_entities:
-        projectile.world_entity.update_position_according_to_dir_and_speed()
+        projectile.world_entity.update_position_according_to_dir_and_speed(time_passed)
 
     # ------------------------------------
     #         HANDLE COLLISIONS
@@ -130,7 +130,7 @@ while True:
     #         PLAYER EFFECTS
     # ------------------------------------
 
-    game_state.player_state.gain_mana(game_state.player_state.mana_regen)
+    game_state.player_state.regenerate_mana(time_passed)
 
     # ------------------------------------
     #         UPDATE CAMERA POSITION
