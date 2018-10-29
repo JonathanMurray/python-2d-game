@@ -28,13 +28,13 @@ def init_game_state_from_file(game_world_size, camera_size):
                     potion_positions.append(game_world_pos)
                 col_index += 1
             row_index += 1
-    player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, 0, PLAYER_ENTITY_SPEED)
+    player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
     potions = [PotionOnGround(WorldEntity(pos, POTION_ENTITY_SIZE, Sprite.HEALTH_POTION), PotionType.HEALTH)
                for pos in potion_positions]
-    enemies = [Enemy(WorldEntity(pos, ENEMY_ENTITY_SIZE, Sprite.ENEMY, Direction.LEFT, ENEMY_SPEED, ENEMY_SPEED), 2, 2,
+    enemies = [Enemy(WorldEntity(pos, ENEMY_ENTITY_SIZE, Sprite.ENEMY, Direction.LEFT, ENEMY_SPEED), 2, 2,
                      EnemyBehavior.DUMB) for pos in dumb_enemy_positions] + \
-              [Enemy(WorldEntity(pos, ENEMY_2_ENTITY_SIZE, Sprite.ENEMY_2, Direction.LEFT, ENEMY_2_SPEED,
-                                 ENEMY_2_SPEED), 3, 3, EnemyBehavior.SMART) for pos in smart_enemy_positions]
+              [Enemy(WorldEntity(pos, ENEMY_2_ENTITY_SIZE, Sprite.ENEMY_2, Direction.LEFT, ENEMY_2_SPEED),
+                     3, 3, EnemyBehavior.SMART) for pos in smart_enemy_positions]
     player_potion_slots = {
         1: PotionType.SPEED,
         2: PotionType.MANA,

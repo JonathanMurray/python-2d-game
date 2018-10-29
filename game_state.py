@@ -18,7 +18,7 @@ class WorldArea:
 
 
 class WorldEntity:
-    def __init__(self, pos, size, sprite, direction=Direction.LEFT, speed=0, max_speed=0):
+    def __init__(self, pos, size, sprite, direction=Direction.LEFT, speed=0):
         self.x = pos[0]
         self.y = pos[1]
         self.w = size[0]
@@ -26,34 +26,33 @@ class WorldEntity:
         self.sprite = sprite
         self.direction = direction
         self.speed = speed
-        self.max_speed = max_speed
+        self.is_moving = True
         self.speed_multiplier = 1
 
     def set_moving_in_dir(self, direction):
         self.direction = direction
-        self.speed = self.speed_multiplier * self.max_speed
+        self.is_moving = True
 
     def set_not_moving(self):
-        self.speed = 0
+        self.is_moving = False
 
     def update_position_according_to_dir_and_speed(self):
-        if self.direction == Direction.LEFT:
-            self.x -= self.speed
-        elif self.direction == Direction.RIGHT:
-            self.x += self.speed
-        elif self.direction == Direction.UP:
-            self.y -= self.speed
-        elif self.direction == Direction.DOWN:
-            self.y += self.speed
+        if self.is_moving:
+            effective_speed = self.speed_multiplier * self.speed
+            if self.direction == Direction.LEFT:
+                self.x -= effective_speed
+            elif self.direction == Direction.RIGHT:
+                self.x += effective_speed
+            elif self.direction == Direction.UP:
+                self.y -= effective_speed
+            elif self.direction == Direction.DOWN:
+                self.y += effective_speed
 
     def get_center_position(self):
         return self.x + self.w / 2, self.y + self.h / 2
 
     def add_to_speed_multiplier(self, amount):
         self.speed_multiplier += amount
-        effective_max_speed = self.speed_multiplier * self.max_speed
-        if self.speed > effective_max_speed:
-            self.speed = effective_max_speed
 
 
 class Projectile:
