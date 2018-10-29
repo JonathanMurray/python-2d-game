@@ -3,9 +3,10 @@
 import pygame
 import sys
 
-from abilities import try_use_ability
+from abilities import apply_ability_effect
 from buffs import BUFF_EFFECTS
 from game_world_init import init_game_state_from_file
+from player_controls import try_use_ability
 from potions import apply_potion_effect
 from user_input import *
 from view import View, ScreenArea
@@ -42,9 +43,11 @@ while True:
         elif isinstance(action, ActionTryUseAbility):
             view_state.notify_ability_was_clicked(action.ability_type)
             if ticks_since_ability_used > ABILITY_COOLDOWN:
-                had_enough_mana = try_use_ability(game_state, action.ability_type)
+                had_enough_mana = try_use_ability(game_state.player_state, action.ability_type)
                 ticks_since_ability_used = 0
-                if not had_enough_mana:
+                if had_enough_mana:
+                    apply_ability_effect(game_state, action.ability_type)
+                else:
                     view_state.set_message("Not enough mana!")
         elif isinstance(action, ActionTryUsePotion):
             view_state.notify_potion_was_clicked(action.slot_number)

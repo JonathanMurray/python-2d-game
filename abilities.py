@@ -1,5 +1,5 @@
 from common import *
-from game_data import ATTACK_PROJECTILE_SIZE, AOE_PROJECTILE_SIZE, ABILITIES
+from game_data import ATTACK_PROJECTILE_SIZE, AOE_PROJECTILE_SIZE
 from game_state import WorldEntity, Projectile
 
 ATTACK_PROJECTILE_SPEED = 8
@@ -7,21 +7,15 @@ HEAL_ABILITY_AMOUNT = 10
 AOE_PROJECTILE_SPEED = 3
 
 
-# Returns whether or not player had enough mana
-def try_use_ability(game_state, ability_type):
-    mana_cost = ABILITIES[ability_type].mana_cost
-    if game_state.player_state.mana >= mana_cost:
-        game_state.player_state.lose_mana(mana_cost)
-        if ability_type == AbilityType.ATTACK:
-            _apply_attack(game_state)
-        elif ability_type == AbilityType.HEAL:
-            _apply_heal(game_state)
-        elif ability_type == AbilityType.AOE_ATTACK:
-            _apply_aoe_attack(game_state)
-        else:
-            raise Exception("Unhandled ability type: " + str(ability_type))
-        return True
-    return False
+def apply_ability_effect(game_state, ability_type):
+    if ability_type == AbilityType.ATTACK:
+        _apply_attack(game_state)
+    elif ability_type == AbilityType.HEAL:
+        _apply_heal(game_state)
+    elif ability_type == AbilityType.AOE_ATTACK:
+        _apply_aoe_attack(game_state)
+    else:
+        raise Exception("Unhandled ability type: " + str(ability_type))
 
 
 def _apply_heal(game_state):
