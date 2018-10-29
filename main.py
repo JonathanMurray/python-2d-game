@@ -24,8 +24,6 @@ ui_screen_area = ScreenArea((0, CAMERA_SIZE[1]), (SCREEN_SIZE[0], SCREEN_SIZE[1]
 view = View(screen, ui_screen_area, CAMERA_SIZE, SCREEN_SIZE)
 view_state = ViewState(GAME_WORLD_SIZE)
 clock = pygame.time.Clock()
-ticks_since_ai_ran = 0
-AI_RUN_INTERVAL = 750
 
 ABILITY_COOLDOWN = 200
 ticks_since_ability_used = ABILITY_COOLDOWN
@@ -67,14 +65,11 @@ while True:
     clock.tick()
     time_passed = clock.get_time()
 
-    # TODO Move this time-keeping into EnemyMind
-    ticks_since_ai_ran += time_passed
-    if ticks_since_ai_ran > AI_RUN_INTERVAL:
-        for e in game_state.enemies:
-            # Enemy AI shouldn't run if enemy is out of sight
-            if boxes_intersect(e.world_entity, game_state.camera_world_area):
-                e.enemy_mind.control_enemy(game_state, e.world_entity, game_state.player_entity,
-                                           game_state.player_state.is_invisible, ticks_since_ai_ran)
+    for e in game_state.enemies:
+        # Enemy AI shouldn't run if enemy is out of sight
+        if boxes_intersect(e.world_entity, game_state.camera_world_area):
+            e.enemy_mind.control_enemy(game_state, e.world_entity, game_state.player_entity,
+                                       game_state.player_state.is_invisible, time_passed)
         ticks_since_ai_ran = 0
 
     view_state.notify_player_entity_center_position(game_state.player_entity.get_center_position())
