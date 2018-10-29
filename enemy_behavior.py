@@ -1,7 +1,7 @@
 import random
 
 from common import *
-from game_data import ATTACK_PROJECTILE_SIZE
+from game_data import ENEMY_PROJECTILE_SIZE
 from game_state import WorldEntity, Projectile
 
 
@@ -31,21 +31,22 @@ class SmartEnemyMind:
 
     def control_enemy(self, game_state, enemy_world_entity, player_entity, is_player_invisible, time_passed):
         self._time_since_action += time_passed
-        if self._time_since_action > 3000:
-            enemy_world_entity.set_not_moving()
-            center_position = enemy_world_entity.get_center_position()
-            projectile_pos = (center_position[0] - ATTACK_PROJECTILE_SIZE[0] / 2,
-                              center_position[1] - ATTACK_PROJECTILE_SIZE[1] / 2)
-            entity = WorldEntity(projectile_pos, ATTACK_PROJECTILE_SIZE, Sprite.FIREBALL,
-                                 enemy_world_entity.direction, 2.5)
-            game_state.projectile_entities.append(Projectile(entity, 0, 3000, False))
-            self._time_since_action = 0
+        if is_player_invisible:
+            direction = random_direction()
+            enemy_world_entity.set_moving_in_dir(direction)
         else:
-            if is_player_invisible:
-                direction = random_direction()
+            if self._time_since_action > 3000:
+                enemy_world_entity.set_not_moving()
+                center_position = enemy_world_entity.get_center_position()
+                projectile_pos = (center_position[0] - ENEMY_PROJECTILE_SIZE[0] / 2,
+                                  center_position[1] - ENEMY_PROJECTILE_SIZE[1] / 2)
+                entity = WorldEntity(projectile_pos, ENEMY_PROJECTILE_SIZE, Sprite.POISONBALL,
+                                     enemy_world_entity.direction, 2)
+                game_state.projectile_entities.append(Projectile(entity, 0, 2000, False))
+                self._time_since_action = 0
             else:
                 direction = _get_direction_between(enemy_world_entity, player_entity)
-            enemy_world_entity.set_moving_in_dir(direction)
+                enemy_world_entity.set_moving_in_dir(direction)
 
 
 def _get_direction_between(from_entity, to_entity):

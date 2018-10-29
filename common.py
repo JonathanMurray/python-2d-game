@@ -47,6 +47,7 @@ class Sprite(Enum):
     FIREBALL = 4
     WHIRLWIND = 5
     HEALTH_POTION = 6
+    POISONBALL = 7
 
 
 class BuffType(Enum):

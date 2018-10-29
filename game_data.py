@@ -8,6 +8,7 @@ ENEMY_ENTITY_SIZE = (30, 30)
 ENEMY_2_ENTITY_SIZE = (60, 60)
 
 ATTACK_PROJECTILE_SIZE = (25, 25)
+ENEMY_PROJECTILE_SIZE = (35, 35)
 AOE_PROJECTILE_SIZE = (110, 110)
 POTION_ENTITY_SIZE = (30, 30)
 
@@ -42,7 +43,8 @@ ENTITY_SPRITE_INITIALIZERS = {
     Sprite.ENEMY_2: SpriteInitializer("resources/enemy2.png", ENEMY_2_ENTITY_SIZE),
     Sprite.FIREBALL: SpriteInitializer("resources/fireball.png", ATTACK_PROJECTILE_SIZE),
     Sprite.WHIRLWIND: SpriteInitializer("resources/whirlwind.png", AOE_PROJECTILE_SIZE),
-    Sprite.HEALTH_POTION: SpriteInitializer("resources/ui_health_potion.png", POTION_ENTITY_SIZE)
+    Sprite.HEALTH_POTION: SpriteInitializer("resources/ui_health_potion.png", POTION_ENTITY_SIZE),
+    Sprite.POISONBALL: SpriteInitializer("resources/poisonball.png", ENEMY_PROJECTILE_SIZE),
 }
 
 UI_ICON_SPRITE_PATHS = {
