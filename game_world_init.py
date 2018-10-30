@@ -1,16 +1,19 @@
 from common import *
 from enemy_behavior import create_enemy_mind
-from game_data import PLAYER_ENTITY_SIZE, ENEMY_ENTITY_SIZE, ENEMY_2_ENTITY_SIZE, POTION_ENTITY_SIZE
+from game_data import PLAYER_ENTITY_SIZE, ENEMY_ENTITY_SIZE, ENEMY_2_ENTITY_SIZE, POTION_ENTITY_SIZE, \
+    ENEMY_MAGE_ENTITY_SIZE
 from game_state import WorldEntity, Enemy, GameState, PotionOnGround
 
 ENEMY_SPEED = 0.4
 ENEMY_2_SPEED = 0.8
+ENEMY_MAGE_SPEED = 0.5
 PLAYER_ENTITY_SPEED = 2.7
 
 
 def init_game_state_from_file(game_world_size, camera_size):
     dumb_enemy_positions = []
     smart_enemy_positions = []
+    mage_enemy_positions = []
     potion_positions = []
     player_pos = (0, 0)
     with open("resources/map.txt") as map_file:
@@ -25,6 +28,8 @@ def init_game_state_from_file(game_world_size, camera_size):
                     dumb_enemy_positions.append(game_world_pos)
                 if char == 'S':
                     smart_enemy_positions.append(game_world_pos)
+                if char == 'M':
+                    mage_enemy_positions.append(game_world_pos)
                 if char == 'H':
                     potion_positions.append(game_world_pos)
                 col_index += 1
@@ -32,10 +37,13 @@ def init_game_state_from_file(game_world_size, camera_size):
     player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
     potions = [PotionOnGround(WorldEntity(pos, POTION_ENTITY_SIZE, Sprite.HEALTH_POTION), PotionType.HEALTH)
                for pos in potion_positions]
-    enemies = [Enemy(WorldEntity(pos, ENEMY_ENTITY_SIZE, Sprite.ENEMY, Direction.LEFT, ENEMY_SPEED), 5, 5,
-                     create_enemy_mind(EnemyBehavior.DUMB)) for pos in dumb_enemy_positions] + \
-              [Enemy(WorldEntity(pos, ENEMY_2_ENTITY_SIZE, Sprite.ENEMY_2, Direction.LEFT, ENEMY_2_SPEED),
-                     9, 9, create_enemy_mind(EnemyBehavior.SMART)) for pos in smart_enemy_positions]
+    dumb_enemies = [Enemy(WorldEntity(pos, ENEMY_ENTITY_SIZE, Sprite.ENEMY, Direction.LEFT, ENEMY_SPEED), 5, 5,
+                          create_enemy_mind(EnemyBehavior.DUMB)) for pos in dumb_enemy_positions]
+    smart_enemies = [Enemy(WorldEntity(pos, ENEMY_2_ENTITY_SIZE, Sprite.ENEMY_2, Direction.LEFT, ENEMY_2_SPEED), 9, 9,
+                           create_enemy_mind(EnemyBehavior.SMART)) for pos in smart_enemy_positions]
+    mage_enemies = [Enemy(WorldEntity(pos, ENEMY_MAGE_ENTITY_SIZE, Sprite.ENEMY_MAGE, Direction.LEFT, ENEMY_MAGE_SPEED),
+                          25, 25, create_enemy_mind(EnemyBehavior.MAGE)) for pos in mage_enemy_positions]
+    enemies = dumb_enemies + smart_enemies + mage_enemies
     player_potion_slots = {
         1: PotionType.SPEED,
         2: PotionType.MANA,

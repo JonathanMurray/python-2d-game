@@ -32,6 +32,7 @@ class PotionType(Enum):
 class EnemyBehavior(Enum):
     DUMB = 1
     SMART = 2
+    MAGE = 3
 
 
 class AbilityType(Enum):
@@ -48,6 +49,7 @@ class Sprite(Enum):
     WHIRLWIND = 5
     HEALTH_POTION = 6
     POISONBALL = 7
+    ENEMY_MAGE = 8
 
 
 class BuffType(Enum):

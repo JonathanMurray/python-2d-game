@@ -10,6 +10,8 @@ def create_enemy_mind(enemy_behavior):
         return DumbEnemyMind()
     elif enemy_behavior == EnemyBehavior.SMART:
         return SmartEnemyMind()
+    elif enemy_behavior == EnemyBehavior.MAGE:
+        return MageEnemyMind()
     else:
         raise Exception("Unhandled behavior: " + str(enemy_behavior))
 
@@ -82,6 +84,35 @@ class SmartEnemyMind:
         self._firing_cooldown = 1500 + random.random() * 5000
 
 
+class MageEnemyMind:
+    def __init__(self):
+        self._time_since_decision = 0
+        self._decision_interval = 750
+        self._time_since_firing = 0
+        self._firing_cooldown = 3000
+
+    def control_enemy(self, game_state, enemy, player_entity, is_player_invisible, time_passed):
+        self._time_since_decision += time_passed
+        self._time_since_firing += time_passed
+        if self._time_since_firing > self._firing_cooldown:
+            self._time_since_firing = 0
+            center_position = enemy.world_entity.get_center_position()
+            projectile_pos = (center_position[0] - ENEMY_PROJECTILE_SIZE[0] / 2,
+                              center_position[1] - ENEMY_PROJECTILE_SIZE[1] / 2)
+            entities = [WorldEntity(projectile_pos, ENEMY_PROJECTILE_SIZE, Sprite.POISONBALL, direction, 2)
+                        for direction in _get_all_directions()]
+            projectiles = [Projectile(entity, 0, 2000, False, ProjectileType.ENEMY_POISON) for entity in entities]
+            game_state.projectile_entities += projectiles
+
+        if self._time_since_decision > self._decision_interval:
+            self._time_since_decision = 0
+            if random.random() < 0.2:
+                direction = random_direction()
+                enemy.world_entity.set_moving_in_dir(direction)
+            else:
+                enemy.world_entity.set_not_moving()
+
+
 def _get_direction_between(from_entity, to_entity):
     dx = to_entity.x - from_entity.x
     dy = to_entity.y - from_entity.y
@@ -114,3 +145,7 @@ def _get_opposite_direction(direction):
         return direction.DOWN
     if direction == direction.DOWN:
         return direction.UP
+
+
+def _get_all_directions():
+    return [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT]
