@@ -101,6 +101,7 @@ class PlayerBuffsUpdate:
 class PlayerState:
     def __init__(self, health, max_health, mana, max_mana, mana_regen, potion_slots):
         self.health = health
+        self._health_float = health
         self.max_health = max_health
         self.mana = mana
         self._mana_float = mana
@@ -111,10 +112,12 @@ class PlayerState:
         self.is_invisible = False
 
     def gain_health(self, amount):
-        self.health = min(self.health + amount, self.max_health)
+        self._health_float = min(self._health_float + amount, self.max_health)
+        self.health = int(math.floor(self._health_float))
 
     def lose_health(self, amount):
-        self.health -= amount
+        self._health_float = min(self._health_float - amount, self.max_health)
+        self.health = int(math.floor(self._health_float))
 
     def gain_mana(self, amount):
         self._mana_float = min(self._mana_float + amount, self.max_mana)

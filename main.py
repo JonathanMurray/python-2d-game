@@ -85,7 +85,7 @@ while True:
     for buff_type in buffs_update.buffs_that_started:
         BUFF_EFFECTS[buff_type].apply_start_effect(game_state)
     for buff_type in buffs_update.active_buffs:
-        BUFF_EFFECTS[buff_type].apply_middle_effect(game_state)
+        BUFF_EFFECTS[buff_type].apply_middle_effect(game_state, time_passed)
     for buff_type in buffs_update.buffs_that_ended:
         BUFF_EFFECTS[buff_type].apply_end_effect(game_state)
 
