@@ -57,6 +57,8 @@ def get_user_actions():
                 actions.append(ActionTryUsePotion(4))
             elif event.key == pygame.K_5:
                 actions.append(ActionTryUsePotion(5))
+            elif event.key == pygame.K_ESCAPE:
+                actions.append(ActionExitGame())
             else:
                 for ability_type in ABILITIES:
                     if event.key == ABILITIES[ability_type].pygame_key:
