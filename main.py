@@ -114,13 +114,12 @@ while True:
             entities_to_remove.append(enemy)
             # TODO This is weird enemy interaction. Perhaps some enemies should die when touching player, but not all!
             game_state.player_state.lose_health(2)
-            game_state.player_state.add_buff(BuffType.DAMAGE_OVER_TIME, 2000)
         for projectile in game_state.get_active_player_projectiles_intersecting_with(enemy.world_entity):
             apply_projectile_enemy_collision_effect(enemy)
             entities_to_remove.append(projectile)
 
     for projectile in game_state.get_active_enemy_projectiles_intersecting_with_player():
-        apply_projectile_player_collision_effect(game_state.player_state)
+        apply_projectile_player_collision_effect(game_state)
         entities_to_remove.append(projectile)
 
     game_state.remove_entities(entities_to_remove)
