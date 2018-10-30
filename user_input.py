@@ -64,7 +64,8 @@ def get_user_actions():
 
         if event.type == pygame.KEYUP:
             if event.key in PYGAME_MOVEMENT_KEYS:
-                movement_keys_down.remove(event.key)
+                if event.key in movement_keys_down:
+                    movement_keys_down.remove(event.key)
 
         if movement_keys_down:
             last_pressed_movement_key = movement_keys_down[-1]
