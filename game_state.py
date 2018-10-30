@@ -84,6 +84,9 @@ class Enemy:
     def lose_health(self, amount):
         self.health = max(self.health - amount, 0)
 
+    def gain_health(self, amount):
+        self.health = min(self.health + amount, self.max_health)
+
 
 class Buff:
     def __init__(self, buff_type, time_until_expiration):

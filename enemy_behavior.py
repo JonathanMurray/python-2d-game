@@ -90,10 +90,13 @@ class MageEnemyMind:
         self._decision_interval = 750
         self._time_since_firing = 0
         self._firing_cooldown = 3000
+        self._time_since_healing = 0
+        self._healing_cooldown = 5000
 
     def control_enemy(self, game_state, enemy, player_entity, is_player_invisible, time_passed):
         self._time_since_decision += time_passed
         self._time_since_firing += time_passed
+        self._time_since_healing += time_passed
         if self._time_since_firing > self._firing_cooldown:
             self._time_since_firing = 0
             center_position = enemy.world_entity.get_center_position()
@@ -103,6 +106,16 @@ class MageEnemyMind:
                         for direction in _get_all_directions()]
             projectiles = [Projectile(entity, 0, 2000, False, ProjectileType.ENEMY_POISON) for entity in entities]
             game_state.projectile_entities += projectiles
+
+        if self._time_since_healing > self._healing_cooldown:
+            self._time_since_healing = 0
+            enemy_pos = enemy.world_entity.get_center_position()
+            healing_range = 200
+            nearby_hurt_enemies = [e for e in game_state.enemies if abs(e.world_entity.x - enemy_pos[0]) < healing_range
+                                   and abs(e.world_entity.y - enemy_pos[1]) < healing_range and e != enemy
+                                   and e.health < e.max_health]
+            if nearby_hurt_enemies:
+                nearby_hurt_enemies[0].gain_health(5)
 
         if self._time_since_decision > self._decision_interval:
             self._time_since_decision = 0
