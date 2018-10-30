@@ -78,6 +78,8 @@ while True:
 
     game_state.update_and_expire_projectiles(time_passed)
 
+    game_state.remove_dead_enemies()
+
     buffs_update = game_state.player_state.update_and_expire_buffs(time_passed)
     for buff_type in buffs_update.buffs_that_started:
         BUFF_EFFECTS[buff_type].apply_start_effect(game_state)
@@ -114,10 +116,7 @@ while True:
             game_state.player_state.add_buff(BuffType.DAMAGE_OVER_TIME, 2000)
         for projectile in game_state.get_active_player_projectiles_intersecting_with(enemy.world_entity):
             # TODO Make this more dynamic. All projectiles shouldn't behave the same. Move into projectiles.py
-            enemy.health -= 1
-            # TODO This feels like something that should move into game_state.py (similar to projectiles' active and has_expired)
-            if enemy.health <= 0:
-                entities_to_remove.append(enemy)
+            enemy.lose_health(1)
             entities_to_remove.append(projectile)
 
     for projectile in game_state.get_active_enemy_projectiles_intersecting_with_player():

@@ -80,6 +80,9 @@ class Enemy:
         self.max_health = max_health
         self.enemy_mind = enemy_mind
 
+    def lose_health(self, amount):
+        self.health = max(self.health - amount, 0)
+
 
 class Buff:
     def __init__(self, buff_type, time_until_expiration):
@@ -216,3 +219,6 @@ class GameState:
             if not self.is_within_game_world(projectile.world_entity):
                 entities_to_remove.append(projectile)
         self.remove_entities(entities_to_remove)
+
+    def remove_dead_enemies(self):
+        self.enemies = [e for e in self.enemies if e.health > 0]
