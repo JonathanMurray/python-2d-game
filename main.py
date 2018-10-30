@@ -8,6 +8,7 @@ from buffs import BUFF_EFFECTS
 from game_world_init import init_game_state_from_file
 from player_controls import PlayerControls, TryUseAbilityResult
 from potions import apply_potion_effect
+from projectiles import apply_projectile_enemy_collision_effect, apply_projectile_player_collision_effect
 from user_input import *
 from view import View, ScreenArea
 from view_state import ViewState
@@ -115,13 +116,11 @@ while True:
             game_state.player_state.lose_health(2)
             game_state.player_state.add_buff(BuffType.DAMAGE_OVER_TIME, 2000)
         for projectile in game_state.get_active_player_projectiles_intersecting_with(enemy.world_entity):
-            # TODO Make this more dynamic. All projectiles shouldn't behave the same. Move into projectiles.py
-            enemy.lose_health(1)
+            apply_projectile_enemy_collision_effect(enemy)
             entities_to_remove.append(projectile)
 
     for projectile in game_state.get_active_enemy_projectiles_intersecting_with_player():
-        # TODO Make this more dynamic. All projectiles shouldn't behave the same.
-        game_state.player_state.lose_health(10)
+        apply_projectile_player_collision_effect(game_state.player_state)
         entities_to_remove.append(projectile)
 
     game_state.remove_entities(entities_to_remove)
