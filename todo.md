@@ -11,9 +11,7 @@
     * arrow that explodes on impact?
     * cloud that deals damage continuously?
 * New advanced enemy behaviors
-    * healing other enemies?
     * summoning new enemies?
-    * backing off when at low health?
 * Enemy AI and enemy interactions that make a bit more sense
 * Save functionality
     * save the current game_state into a JSON file and load it on startup
