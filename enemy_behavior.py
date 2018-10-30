@@ -16,53 +16,66 @@ def create_enemy_mind(enemy_behavior):
 
 class DumbEnemyMind:
     def __init__(self):
-        self._time_since_run = 0
-        self._run_interval = 750
+        self._time_since_decision = 0
+        self._decision_interval = 750
+        self._flight_duration = 3000
+        self._state = "INIT"
+        self._time_since_started_fleeing = 0
 
-    def control_enemy(self, game_state, enemy_world_entity, player_entity, is_player_invisible, time_passed):
-        self._time_since_run += time_passed
-        if self._time_since_run > self._run_interval:
-            self._time_since_run = 0
+    def control_enemy(self, game_state, enemy, player_entity, is_player_invisible, time_passed):
+        self._time_since_decision += time_passed
+        if self._state == "FLEEING":
+            self._time_since_started_fleeing += time_passed
+        if self._time_since_decision > self._decision_interval:
+            is_low_health = enemy.health <= enemy.max_health / 2
+            if self._state == "INIT" and is_low_health:
+                self._state = "FLEEING"
+            if self._state == "FLEEING" and self._time_since_started_fleeing > self._flight_duration:
+                self._state = "STOPPED_FLEEING"
+
+            self._time_since_decision = 0
             if is_player_invisible:
                 direction = random_direction()
             else:
-                direction = _get_direction_between(enemy_world_entity, player_entity)
+                direction = _get_direction_between(enemy.world_entity, player_entity)
+                if self._state == "FLEEING":
+                    direction = _get_opposite_direction(direction)
                 if random.random() < 0.2:
                     direction = random.choice(_get_perpendicular_directions(direction))
-            enemy_world_entity.set_moving_in_dir(direction)
+            enemy.world_entity.set_moving_in_dir(direction)
 
 
 class SmartEnemyMind:
     def __init__(self):
-        self._time_since_run = 0
-        self._run_interval = 350
+        self._time_since_decision = 0
+        self._decision_interval = 350
         self._time_since_firing = 0
         self._update_firing_cooldown()
         self._pause_after_fire_duration = 700
 
-    def control_enemy(self, game_state, enemy_world_entity, player_entity, is_player_invisible, time_passed):
+    def control_enemy(self, game_state, enemy, player_entity, is_player_invisible, time_passed):
         self._time_since_firing += time_passed
-        self._time_since_run += time_passed
-        if self._time_since_run > self._run_interval \
+        self._time_since_decision += time_passed
+        if self._time_since_decision > self._decision_interval \
                 and self._time_since_firing > self._pause_after_fire_duration:
-            self._time_since_run = 0
+            self._time_since_decision = 0
             if is_player_invisible:
                 direction = random_direction()
-                enemy_world_entity.set_moving_in_dir(direction)
+                enemy.world_entity.set_moving_in_dir(direction)
             else:
                 if self._time_since_firing > self._firing_cooldown:
                     self._time_since_firing = 0
                     self._update_firing_cooldown()
-                    enemy_world_entity.set_not_moving()
-                    center_position = enemy_world_entity.get_center_position()
+                    enemy.world_entity.set_not_moving()
+                    center_position = enemy.world_entity.get_center_position()
                     projectile_pos = (center_position[0] - ENEMY_PROJECTILE_SIZE[0] / 2,
                                       center_position[1] - ENEMY_PROJECTILE_SIZE[1] / 2)
                     entity = WorldEntity(projectile_pos, ENEMY_PROJECTILE_SIZE, Sprite.POISONBALL,
-                                         enemy_world_entity.direction, 2)
+                                         enemy.world_entity.direction, 2)
                     game_state.projectile_entities.append(Projectile(entity, 0, 2000, False))
                 else:
-                    direction = _get_direction_between(enemy_world_entity, player_entity)
-                    enemy_world_entity.set_moving_in_dir(direction)
+                    direction = _get_direction_between(enemy.world_entity, player_entity)
+                    enemy.world_entity.set_moving_in_dir(direction)
 
     def _update_firing_cooldown(self):
         self._firing_cooldown = 1500 + random.random() * 5000
@@ -89,3 +102,14 @@ def _get_perpendicular_directions(direction):
         return [Direction.UP, Direction.DOWN]
     else:
         return [Direction.LEFT, Direction.RIGHT]
+
+
+def _get_opposite_direction(direction):
+    if direction == direction.LEFT:
+        return direction.RIGHT
+    if direction == direction.RIGHT:
+        return direction.LEFT
+    if direction == direction.UP:
+        return direction.DOWN
+    if direction == direction.DOWN:
+        return direction.UP

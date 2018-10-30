@@ -68,7 +68,7 @@ while True:
     for e in game_state.enemies:
         # Enemy AI shouldn't run if enemy is out of sight
         if boxes_intersect(e.world_entity, game_state.camera_world_area):
-            e.enemy_mind.control_enemy(game_state, e.world_entity, game_state.player_entity,
+            e.enemy_mind.control_enemy(game_state, e, game_state.player_entity,
                                        game_state.player_state.is_invisible, time_passed)
 
     view_state.notify_player_entity_center_position(game_state.player_entity.get_center_position())
@@ -110,10 +110,6 @@ while True:
             if did_pick_up:
                 entities_to_remove.append(potion)
     for enemy in game_state.enemies:
-        if boxes_intersect(game_state.player_entity, enemy.world_entity):
-            entities_to_remove.append(enemy)
-            # TODO This is weird enemy interaction. Perhaps some enemies should die when touching player, but not all!
-            game_state.player_state.lose_health(2)
         for projectile in game_state.get_active_player_projectiles_intersecting_with(enemy.world_entity):
             apply_projectile_enemy_collision_effect(enemy)
             entities_to_remove.append(projectile)
