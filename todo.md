@@ -5,8 +5,13 @@
 
 #### Game engine:
 * Prevent using potion when at full stats
+* Use 8 directions instead of 4?
+* Introduce obstacles that block enemies
+* Prevent enemies from walking through each other
 
 #### Features:
+* Introduce visual effects
+    * draw a colored line between mage and whoever it's healing?
 * Introduce more varied functionality for different projectiles
     * arrow that explodes on impact?
     * cloud that deals damage continuously?
