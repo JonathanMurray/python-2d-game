@@ -55,3 +55,9 @@ class BuffType(Enum):
     DAMAGE_OVER_TIME = 2
     INCREASED_MOVE_SPEED = 3
     INVISIBILITY = 4
+
+
+class ProjectileType(Enum):
+    PLAYER = 1
+    PLAYER_AOE = 2
+    ENEMY_POISON = 3

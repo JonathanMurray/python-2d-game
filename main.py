@@ -111,7 +111,7 @@ while True:
                 entities_to_remove.append(potion)
     for enemy in game_state.enemies:
         for projectile in game_state.get_active_player_projectiles_intersecting_with(enemy.world_entity):
-            apply_projectile_enemy_collision_effect(enemy)
+            apply_projectile_enemy_collision_effect(projectile.projectile_type, enemy)
             entities_to_remove.append(projectile)
 
     for projectile in game_state.get_active_enemy_projectiles_intersecting_with_player():

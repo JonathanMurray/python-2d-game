@@ -28,7 +28,7 @@ def _apply_attack(game_state):
                       player_center_position[1] - ATTACK_PROJECTILE_SIZE[1] / 2)
     entity = WorldEntity(projectile_pos, ATTACK_PROJECTILE_SIZE, Sprite.FIREBALL, game_state.player_entity.direction,
                          ATTACK_PROJECTILE_SPEED)
-    game_state.projectile_entities.append(Projectile(entity, 0, 3000, True))
+    game_state.projectile_entities.append(Projectile(entity, 0, 3000, True, ProjectileType.PLAYER))
 
 
 def _apply_aoe_attack(game_state):
@@ -48,4 +48,4 @@ def _apply_aoe_attack(game_state):
 
     entity = WorldEntity(aoe_pos, AOE_PROJECTILE_SIZE, Sprite.WHIRLWIND, game_state.player_entity.direction,
                          AOE_PROJECTILE_SPEED)
-    game_state.projectile_entities.append(Projectile(entity, 250, 500, True))
+    game_state.projectile_entities.append(Projectile(entity, 250, 500, True, ProjectileType.PLAYER_AOE))

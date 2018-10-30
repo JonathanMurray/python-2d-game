@@ -72,7 +72,8 @@ class SmartEnemyMind:
                                       center_position[1] - ENEMY_PROJECTILE_SIZE[1] / 2)
                     entity = WorldEntity(projectile_pos, ENEMY_PROJECTILE_SIZE, Sprite.POISONBALL,
                                          enemy.world_entity.direction, 2)
-                    game_state.projectile_entities.append(Projectile(entity, 0, 2000, False))
+                    game_state.projectile_entities.append(
+                        Projectile(entity, 0, 2000, False, ProjectileType.ENEMY_POISON))
                 else:
                     direction = _get_direction_between(enemy.world_entity, player_entity)
                     enemy.world_entity.set_moving_in_dir(direction)

@@ -58,13 +58,14 @@ class WorldEntity:
 
 
 class Projectile:
-    def __init__(self, world_entity, time_until_active, time_until_expiration, controlled_by_player):
+    def __init__(self, world_entity, time_until_active, time_until_expiration, controlled_by_player, projectile_type):
         self.world_entity = world_entity
         self._time_until_active = time_until_active
         self._time_until_expiration = time_until_expiration
         self.active = self._time_until_active <= 0
         self.has_expired = self._time_until_expiration <= 0
         self.controlled_by_player = controlled_by_player
+        self.projectile_type = projectile_type
 
     def notify_time_passed(self, time_passed):
         self._time_until_active -= time_passed
