@@ -31,9 +31,9 @@ def load_and_scale_sprite(sprite_initializer):
 
 class View:
 
-    def __init__(self, screen, ui_screen_area, camera_size, screen_size):
+    def __init__(self, screen, camera_size, screen_size):
         self.screen = screen
-        self.ui_screen_area = ui_screen_area
+        self.ui_screen_area = ScreenArea((0, camera_size[1]), (screen_size[0], screen_size[1] - camera_size[1]))
         self.camera_size = camera_size
         self.screen_size = screen_size
         self.font_huge = pygame.font.SysFont('Arial', 64)

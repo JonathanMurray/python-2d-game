@@ -8,7 +8,7 @@ from game_engine import GameEngine
 from game_world_init import init_game_state_from_file
 from user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame
-from view import View, ScreenArea
+from view import View
 from view_state import ViewState
 
 GAME_WORLD_SIZE = (1000, 1000)
@@ -20,8 +20,7 @@ pygame.init()
 pygame.font.init()
 
 screen = pygame.display.set_mode(SCREEN_SIZE)
-ui_screen_area = ScreenArea((0, CAMERA_SIZE[1]), (SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
-view = View(screen, ui_screen_area, CAMERA_SIZE, SCREEN_SIZE)
+view = View(screen, CAMERA_SIZE, SCREEN_SIZE)
 view_state = ViewState(GAME_WORLD_SIZE)
 clock = pygame.time.Clock()
 
