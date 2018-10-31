@@ -58,10 +58,9 @@ class WorldEntity:
 
 
 class Projectile:
-    def __init__(self, world_entity, controlled_by_player, projectile_controller):
+    def __init__(self, world_entity, projectile_controller):
         self.world_entity = world_entity
         self.has_expired = False
-        self.controlled_by_player = controlled_by_player
         self.projectile_controller = projectile_controller
 
 
@@ -192,13 +191,8 @@ class GameState:
         self.camera_world_area.y = min(max(player_center_position[1] - self.camera_size[1] / 2, 0),
                                        self.game_world_size[1] - self.camera_size[1])
 
-    def get_player_projectiles_intersecting_with(self, entity):
-        return [p for p in self.projectile_entities if boxes_intersect(entity, p.world_entity)
-                and p.controlled_by_player]
-
-    def get_enemy_projectiles_intersecting_with_player(self):
-        return [p for p in self.projectile_entities if boxes_intersect(self.player_entity, p.world_entity)
-                and not p.controlled_by_player]
+    def get_projectiles_intersecting_with(self, entity):
+        return [p for p in self.projectile_entities if boxes_intersect(entity, p.world_entity)]
 
     def update_world_entity_position_within_game_world(self, world_entity, time_passed):
         world_entity.update_position_according_to_dir_and_speed(time_passed)

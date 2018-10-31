@@ -20,6 +20,12 @@ class AbstractProjectileController:
         if self._age > self._max_age:
             projectile.has_expired = True
 
+    def apply_enemy_collision(self, _):
+        return False
+
+    def apply_player_collision(self, _):
+        return False
+
 
 class PlayerProjectileController(AbstractProjectileController):
     def __init__(self):
@@ -54,3 +60,4 @@ class EnemyPoisonProjectileController(AbstractProjectileController):
     def apply_player_collision(self, game_state):
         game_state.player_state.lose_health(1)
         game_state.player_state.add_buff(BuffType.DAMAGE_OVER_TIME, 2000)
+        return True
