@@ -10,46 +10,46 @@ def create_projectile_controller(projectile_behavior):
         return EnemyPoisonProjectileController()
 
 
-class PlayerProjectileController:
-    def __init__(self):
-        self.age = 0
+class AbstractProjectileController:
+    def __init__(self, max_age):
+        self._age = 0
+        self._max_age = max_age
 
     def notify_time_passed(self, projectile, time_passed):
-        self.age += time_passed
-        if self.age > 3000:
+        self._age += time_passed
+        if self._age > self._max_age:
             projectile.has_expired = True
+
+
+class PlayerProjectileController(AbstractProjectileController):
+    def __init__(self):
+        super().__init__(3000)
 
     def apply_enemy_collision(self, enemy):
         enemy.lose_health(3)
         return True
 
 
-class PlayerAoeProjectileController:
+class PlayerAoeProjectileController(AbstractProjectileController):
     def __init__(self):
-        self.has_activated = False
-        self.age = 0
+        super().__init__(500)
+        self._has_activated = False
 
     def notify_time_passed(self, projectile, time_passed):
-        self.age += time_passed
-        if self.age > 250:
-            self.has_activated = True
-        if self.age > 500:
-            projectile.has_expired = True
+        super().notify_time_passed(projectile, time_passed)
+        if self._age > 250:
+            self._has_activated = True
 
     def apply_enemy_collision(self, enemy):
-        if self.has_activated:
+        if self._has_activated:
             enemy.lose_health(2)
-        return self.has_activated
+            return True
+        return False
 
 
-class EnemyPoisonProjectileController:
+class EnemyPoisonProjectileController(AbstractProjectileController):
     def __init__(self):
-        self.age = 0
-
-    def notify_time_passed(self, projectile, time_passed):
-        self.age += time_passed
-        if self.age > 2000:
-            projectile.has_expired = True
+        super().__init__(2000)
 
     def apply_player_collision(self, game_state):
         game_state.player_state.lose_health(1)
