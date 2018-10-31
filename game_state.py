@@ -136,11 +136,6 @@ class PlayerState:
         self._mana_float -= amount
         self.mana = int(math.floor(self._mana_float))
 
-    def try_use_potion(self, number):
-        potion_type = self.potion_slots[number]
-        self.potion_slots[number] = None
-        return potion_type
-
     # Returns whether or not potion was picked up (not picked up if no space for it)
     def try_pick_up_potion(self, potion_type):
         empty_slots = [slot for slot in self.potion_slots if not self.potion_slots[slot]]

@@ -7,7 +7,7 @@ from abilities import apply_ability_effect
 from buffs import BUFF_EFFECTS
 from game_world_init import init_game_state_from_file
 from player_controls import PlayerControls, TryUseAbilityResult
-from potions import apply_potion_effect
+from potions import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
 from user_input import *
 from view import View, ScreenArea
 from view_state import ViewState
@@ -47,9 +47,13 @@ while True:
                 view_state.set_message("Not enough mana!")
         elif isinstance(action, ActionTryUsePotion):
             view_state.notify_potion_was_clicked(action.slot_number)
-            used_potion_type = game_state.player_state.try_use_potion(action.slot_number)
-            if used_potion_type:
-                apply_potion_effect(used_potion_type, game_state)
+            potion_type_in_this_slot = game_state.player_state.potion_slots[action.slot_number]
+            if potion_type_in_this_slot:
+                result = try_consume_potion(potion_type_in_this_slot, game_state)
+                if isinstance(result, PotionWasConsumed):
+                    game_state.player_state.potion_slots[action.slot_number] = None
+                elif isinstance(result, PotionFailedToBeConsumed):
+                    view_state.set_message(result.reason)
             else:
                 view_state.set_message("No potion to use!")
         elif isinstance(action, ActionMoveInDirection):

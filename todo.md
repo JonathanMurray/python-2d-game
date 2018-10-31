@@ -4,7 +4,6 @@
 * Move non-trivial logic from game_state. Prefer to have game-logic in main.py
 
 #### Game engine:
-* Prevent using potion when at full stats
 * Use 8 directions instead of 4?
 * Introduce obstacles that block enemies
 * Prevent enemies from walking through each other
