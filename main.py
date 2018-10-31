@@ -3,12 +3,11 @@
 import pygame
 import sys
 
-from abilities import apply_ability_effect
-from buffs import BUFF_EFFECTS
+from common import AbilityType
+from game_engine import GameEngine
 from game_world_init import init_game_state_from_file
-from player_controls import PlayerControls, TryUseAbilityResult
-from potions import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
-from user_input import *
+from player_controls import PlayerControls
+from user_input import get_user_actions, ActionExitGame
 from view import View, ScreenArea
 from view_state import ViewState
 
@@ -27,6 +26,8 @@ view_state = ViewState(GAME_WORLD_SIZE)
 player_controls = PlayerControls()
 clock = pygame.time.Clock()
 
+game_engine = GameEngine(game_state, player_controls, view_state)
+
 while True:
 
     # ------------------------------------
@@ -38,28 +39,8 @@ while True:
         if isinstance(action, ActionExitGame):
             pygame.quit()
             sys.exit()
-        elif isinstance(action, ActionTryUseAbility):
-            view_state.notify_ability_was_clicked(action.ability_type)
-            result = player_controls.try_use_ability(game_state.player_state, action.ability_type)
-            if result == TryUseAbilityResult.SUCCESS:
-                apply_ability_effect(game_state, action.ability_type)
-            elif result == TryUseAbilityResult.NOT_ENOUGH_MANA:
-                view_state.set_message("Not enough mana!")
-        elif isinstance(action, ActionTryUsePotion):
-            view_state.notify_potion_was_clicked(action.slot_number)
-            potion_type_in_this_slot = game_state.player_state.potion_slots[action.slot_number]
-            if potion_type_in_this_slot:
-                result = try_consume_potion(potion_type_in_this_slot, game_state)
-                if isinstance(result, PotionWasConsumed):
-                    game_state.player_state.potion_slots[action.slot_number] = None
-                elif isinstance(result, PotionFailedToBeConsumed):
-                    view_state.set_message(result.reason)
-            else:
-                view_state.set_message("No potion to use!")
-        elif isinstance(action, ActionMoveInDirection):
-            game_state.player_entity.set_moving_in_dir(action.direction)
-        elif isinstance(action, ActionStopMoving):
-            game_state.player_entity.set_not_moving()
+        else:
+            game_engine.apply_user_action(action)
 
     # ------------------------------------
     #     UPDATE STATE BASED ON CLOCK
@@ -68,74 +49,7 @@ while True:
     clock.tick()
     time_passed = clock.get_time()
 
-    for e in game_state.enemies:
-        # Enemy AI shouldn't run if enemy is out of sight
-        if boxes_intersect(e.world_entity, game_state.camera_world_area):
-            e.enemy_mind.control_enemy(game_state, e, game_state.player_entity,
-                                       game_state.player_state.is_invisible, time_passed)
-
-    view_state.notify_player_entity_center_position(game_state.player_entity.get_center_position())
-
-    player_controls.notify_time_passed(time_passed)
-
-    view_state.notify_time_passed(time_passed)
-
-    for projectile in game_state.projectile_entities:
-        projectile.projectile_controller.notify_time_passed(projectile, time_passed)
-
-    for visual_line in game_state.visual_lines:
-        visual_line.notify_time_passed(time_passed)
-
-    game_state.remove_dead_enemies()
-    game_state.remove_expired_projectiles()
-    game_state.remove_expired_visual_lines()
-
-    buffs_update = game_state.player_state.update_and_expire_buffs(time_passed)
-    for buff_type in buffs_update.buffs_that_started:
-        BUFF_EFFECTS[buff_type].apply_start_effect(game_state)
-    for buff_type in buffs_update.active_buffs:
-        BUFF_EFFECTS[buff_type].apply_middle_effect(game_state, time_passed)
-    for buff_type in buffs_update.buffs_that_ended:
-        BUFF_EFFECTS[buff_type].apply_end_effect(game_state)
-
-    game_state.player_state.regenerate_mana(time_passed)
-
-    for e in game_state.enemies:
-        # Enemies shouldn't move towards player when they are out of sight
-        if boxes_intersect(e.world_entity, game_state.camera_world_area):
-            game_state.update_world_entity_position_within_game_world(e.world_entity, time_passed)
-    game_state.update_world_entity_position_within_game_world(game_state.player_entity, time_passed)
-    for projectile in game_state.projectile_entities:
-        projectile.world_entity.update_position_according_to_dir_and_speed(time_passed)
-
-    # ------------------------------------
-    #          HANDLE COLLISIONS
-    # ------------------------------------
-
-    entities_to_remove = []
-    for potion in game_state.potions_on_ground:
-        if boxes_intersect(game_state.player_entity, potion.world_entity):
-            did_pick_up = game_state.player_state.try_pick_up_potion(potion.potion_type)
-            if did_pick_up:
-                entities_to_remove.append(potion)
-    for enemy in game_state.enemies:
-        for projectile in game_state.get_projectiles_intersecting_with(enemy.world_entity):
-            should_remove_projectile = projectile.projectile_controller.apply_enemy_collision(enemy)
-            if should_remove_projectile:
-                entities_to_remove.append(projectile)
-
-    for projectile in game_state.get_projectiles_intersecting_with(game_state.player_entity):
-        should_remove_projectile = projectile.projectile_controller.apply_player_collision(game_state)
-        if should_remove_projectile:
-            entities_to_remove.append(projectile)
-
-    game_state.remove_entities(entities_to_remove)
-
-    # ------------------------------------
-    #       UPDATE CAMERA POSITION
-    # ------------------------------------
-
-    game_state.center_camera_on_player()
+    game_engine.run_one_frame(time_passed)
 
     # ------------------------------------
     #          RENDER EVERYTHING
