@@ -178,7 +178,7 @@ class PlayerState:
 
 
 class GameState:
-    def __init__(self, player_entity, potions_on_ground, enemies, camera_size, game_world_size, player_potions_slots):
+    def __init__(self, player_entity, potions_on_ground, enemies, camera_size, game_world_size, player_state):
         self.camera_size = camera_size
         self.camera_world_area = WorldArea((0, 0), self.camera_size)
         self.player_entity = player_entity
@@ -186,7 +186,7 @@ class GameState:
         self.potions_on_ground = potions_on_ground
         self.enemies = enemies
         self.visual_lines = []
-        self.player_state = PlayerState(1, 500, 75, 100, 0.03, player_potions_slots)
+        self.player_state = player_state
         self.game_world_size = game_world_size
         self.entire_world_area = WorldArea((0, 0), self.game_world_size)
 

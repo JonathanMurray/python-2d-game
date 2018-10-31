@@ -2,7 +2,7 @@ from common import *
 from enemy_behavior import create_enemy_mind
 from game_data import PLAYER_ENTITY_SIZE, ENEMY_ENTITY_SIZE, ENEMY_2_ENTITY_SIZE, POTION_ENTITY_SIZE, \
     ENEMY_MAGE_ENTITY_SIZE
-from game_state import WorldEntity, Enemy, GameState, PotionOnGround
+from game_state import WorldEntity, Enemy, GameState, PotionOnGround, PlayerState
 
 ENEMY_SPEED = 0.4
 ENEMY_2_SPEED = 0.8
@@ -51,4 +51,5 @@ def init_game_state_from_file(game_world_size, camera_size):
         4: PotionType.INVISIBILITY,
         5: PotionType.INVISIBILITY
     }
-    return GameState(player_entity, potions, enemies, camera_size, game_world_size, player_potion_slots)
+    player_state = PlayerState(500, 500, 75, 100, 0.03, player_potion_slots)
+    return GameState(player_entity, potions, enemies, camera_size, game_world_size, player_state)
