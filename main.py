@@ -6,7 +6,8 @@ import sys
 from common import AbilityType
 from game_engine import GameEngine
 from game_world_init import init_game_state_from_file
-from user_input import get_user_actions, ActionExitGame
+from user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
+    ActionMoveInDirection, ActionStopMoving
 from view import View, ScreenArea
 from view_state import ViewState
 
@@ -38,7 +39,14 @@ while True:
             pygame.quit()
             sys.exit()
         else:
-            game_engine.apply_user_action(action)
+            if isinstance(action, ActionTryUseAbility):
+                game_engine.try_use_ability(action)
+            elif isinstance(action, ActionTryUsePotion):
+                game_engine.try_use_potion(action)
+            elif isinstance(action, ActionMoveInDirection):
+                game_engine.move_in_direction(action)
+            elif isinstance(action, ActionStopMoving):
+                game_engine.stop_moving()
 
     # ------------------------------------
     #     UPDATE STATE BASED ON CLOCK
