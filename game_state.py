@@ -202,15 +202,8 @@ class GameState:
     def is_within_game_world(self, box):
         return boxes_intersect(box, self.entire_world_area)
 
-    def update_and_expire_projectiles(self, time_passed):
-        entities_to_remove = []
-        for projectile in self.projectile_entities:
-            projectile.projectile_controller.notify_time_passed(projectile, time_passed)
-            if projectile.has_expired:
-                entities_to_remove.append(projectile)
-            if not self.is_within_game_world(projectile.world_entity):
-                entities_to_remove.append(projectile)
-        self.remove_entities(entities_to_remove)
+    def remove_expired_projectiles(self):
+        self.projectile_entities = [p for p in self.projectile_entities if not p.has_expired]
 
     def remove_dead_enemies(self):
         self.enemies = [e for e in self.enemies if e.health > 0]

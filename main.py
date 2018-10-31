@@ -76,9 +76,11 @@ while True:
 
     view_state.notify_time_passed(time_passed)
 
-    game_state.update_and_expire_projectiles(time_passed)
+    for projectile in game_state.projectile_entities:
+        projectile.projectile_controller.notify_time_passed(projectile, time_passed)
 
     game_state.remove_dead_enemies()
+    game_state.remove_expired_projectiles()
 
     buffs_update = game_state.player_state.update_and_expire_buffs(time_passed)
     for buff_type in buffs_update.buffs_that_started:
