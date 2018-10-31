@@ -1,4 +1,3 @@
-NUM_FRAMES_TO_SAMPLE_FOR_FPS = 30
 MINIMAP_UPDATE_INTERVAL = 1000
 MESSAGE_DURATION = 2500
 HIGHLIGHT_POTION_ACTION_DURATION = 120
@@ -10,7 +9,6 @@ HIGHLIGHT_ABILITY_ACTION_DURATION = 120
 # and it lets view.py be stateless.
 class ViewState:
     def __init__(self, game_world_size):
-        self._recent_frame_durations = []
         self._game_world_size = game_world_size
         self._player_entity_center_position = (0, 0)
         self._ticks_since_minimap_updated = MINIMAP_UPDATE_INTERVAL
@@ -19,7 +17,6 @@ class ViewState:
         self._ticks_since_last_ability_action = 0
 
         self.player_minimap_relative_position = (0, 0)
-        self.fps_string = "N/A"
         self.message = ""
         self.highlighted_potion_action = None
         self.highlighted_ability_action = None
@@ -40,12 +37,6 @@ class ViewState:
         self._ticks_since_message_updated = 0
 
     def notify_time_passed(self, time_passed):
-        self._recent_frame_durations.append(time_passed)
-
-        if len(self._recent_frame_durations) == NUM_FRAMES_TO_SAMPLE_FOR_FPS:
-            self.fps_string = str(int(1000 * NUM_FRAMES_TO_SAMPLE_FOR_FPS / sum(self._recent_frame_durations)))
-            self._recent_frame_durations = []
-
         self._ticks_since_minimap_updated += time_passed
         if self._ticks_since_minimap_updated > MINIMAP_UPDATE_INTERVAL:
             self._ticks_since_minimap_updated = 0

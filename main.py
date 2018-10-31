@@ -153,7 +153,7 @@ while True:
                            potion_slots=game_state.player_state.potion_slots,
                            player_active_buffs=game_state.player_state.active_buffs,
                            visual_lines=game_state.visual_lines,
-                           fps_string=view_state.fps_string,
+                           fps_string=str(int(clock.get_fps())),
                            player_minimap_relative_position=view_state.player_minimap_relative_position,
                            abilities=[AbilityType.ATTACK, AbilityType.HEAL, AbilityType.AOE_ATTACK],
                            message=view_state.message,
