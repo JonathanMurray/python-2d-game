@@ -109,11 +109,12 @@ while True:
             if did_pick_up:
                 entities_to_remove.append(potion)
     for enemy in game_state.enemies:
-        for projectile in game_state.get_active_player_projectiles_intersecting_with(enemy.world_entity):
-            projectile.projectile_controller.apply_enemy_collision(enemy)
-            entities_to_remove.append(projectile)
+        for projectile in game_state.get_player_projectiles_intersecting_with(enemy.world_entity):
+            should_remove_projectile = projectile.projectile_controller.apply_enemy_collision(enemy)
+            if should_remove_projectile:
+                entities_to_remove.append(projectile)
 
-    for projectile in game_state.get_active_enemy_projectiles_intersecting_with_player():
+    for projectile in game_state.get_enemy_projectiles_intersecting_with_player():
         projectile.projectile_controller.apply_player_collision(game_state)
         entities_to_remove.append(projectile)
 

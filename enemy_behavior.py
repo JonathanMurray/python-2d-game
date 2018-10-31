@@ -75,8 +75,8 @@ class SmartEnemyMind:
                                       center_position[1] - ENEMY_PROJECTILE_SIZE[1] / 2)
                     entity = WorldEntity(projectile_pos, ENEMY_PROJECTILE_SIZE, Sprite.POISONBALL,
                                          enemy.world_entity.direction, 2)
-                    game_state.projectile_entities.append(
-                        Projectile(entity, 0, 2000, False, create_projectile_controller(ProjectileType.ENEMY_POISON)))
+                    projectile = Projectile(entity, False, create_projectile_controller(ProjectileType.ENEMY_POISON))
+                    game_state.projectile_entities.append(projectile)
                 else:
                     direction = _get_direction_between(enemy.world_entity, player_entity)
                     enemy.world_entity.set_moving_in_dir(direction)
@@ -105,8 +105,8 @@ class MageEnemyMind:
                               center_position[1] - ENEMY_PROJECTILE_SIZE[1] / 2)
             entities = [WorldEntity(projectile_pos, ENEMY_PROJECTILE_SIZE, Sprite.POISONBALL, direction, 2)
                         for direction in _get_all_directions()]
-            projectiles = [Projectile(entity, 0, 2000, False,
-                                      create_projectile_controller(ProjectileType.ENEMY_POISON)) for entity in entities]
+            projectiles = [Projectile(entity, False, create_projectile_controller(ProjectileType.ENEMY_POISON))
+                           for entity in entities]
             game_state.projectile_entities += projectiles
 
         if self._time_since_healing > self._healing_cooldown:
