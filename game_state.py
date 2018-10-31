@@ -108,7 +108,7 @@ class PlayerBuffsUpdate:
 
 
 class PlayerState:
-    def __init__(self, health, max_health, mana, max_mana, mana_regen, potion_slots):
+    def __init__(self, health, max_health, mana, max_mana, mana_regen, potion_slots, abilities):
         self.health = health
         self._health_float = health
         self.max_health = max_health
@@ -117,6 +117,7 @@ class PlayerState:
         self.max_mana = max_mana
         self.mana_regen = mana_regen
         self.potion_slots = potion_slots
+        self.abilities = abilities
         self.active_buffs = []
         self.is_invisible = False
 

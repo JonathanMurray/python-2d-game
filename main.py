@@ -3,7 +3,6 @@
 import pygame
 import sys
 
-from common import AbilityType
 from game_engine import GameEngine
 from game_world_init import init_game_state_from_file
 from user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
@@ -79,7 +78,7 @@ while True:
                            visual_lines=game_state.visual_lines,
                            fps_string=str(int(clock.get_fps())),
                            player_minimap_relative_position=view_state.player_minimap_relative_position,
-                           abilities=[AbilityType.ATTACK, AbilityType.HEAL, AbilityType.AOE_ATTACK],
+                           abilities=game_state.player_state.abilities,
                            message=view_state.message,
                            highlighted_potion_action=view_state.highlighted_potion_action,
                            highlighted_ability_action=view_state.highlighted_ability_action,
