@@ -3,6 +3,7 @@ import random
 from common import *
 from game_data import ENEMY_PROJECTILE_SIZE
 from game_state import WorldEntity, Projectile
+from projectiles import create_projectile_controller
 
 
 def create_enemy_mind(enemy_behavior):
@@ -75,7 +76,7 @@ class SmartEnemyMind:
                     entity = WorldEntity(projectile_pos, ENEMY_PROJECTILE_SIZE, Sprite.POISONBALL,
                                          enemy.world_entity.direction, 2)
                     game_state.projectile_entities.append(
-                        Projectile(entity, 0, 2000, False, ProjectileType.ENEMY_POISON))
+                        Projectile(entity, 0, 2000, False, create_projectile_controller(ProjectileType.ENEMY_POISON)))
                 else:
                     direction = _get_direction_between(enemy.world_entity, player_entity)
                     enemy.world_entity.set_moving_in_dir(direction)
@@ -104,7 +105,8 @@ class MageEnemyMind:
                               center_position[1] - ENEMY_PROJECTILE_SIZE[1] / 2)
             entities = [WorldEntity(projectile_pos, ENEMY_PROJECTILE_SIZE, Sprite.POISONBALL, direction, 2)
                         for direction in _get_all_directions()]
-            projectiles = [Projectile(entity, 0, 2000, False, ProjectileType.ENEMY_POISON) for entity in entities]
+            projectiles = [Projectile(entity, 0, 2000, False,
+                                      create_projectile_controller(ProjectileType.ENEMY_POISON)) for entity in entities]
             game_state.projectile_entities += projectiles
 
         if self._time_since_healing > self._healing_cooldown:

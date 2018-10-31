@@ -8,7 +8,6 @@ from buffs import BUFF_EFFECTS
 from game_world_init import init_game_state_from_file
 from player_controls import PlayerControls, TryUseAbilityResult
 from potions import apply_potion_effect
-from projectiles import apply_projectile_enemy_collision_effect, apply_projectile_player_collision_effect
 from user_input import *
 from view import View, ScreenArea
 from view_state import ViewState
@@ -111,11 +110,11 @@ while True:
                 entities_to_remove.append(potion)
     for enemy in game_state.enemies:
         for projectile in game_state.get_active_player_projectiles_intersecting_with(enemy.world_entity):
-            apply_projectile_enemy_collision_effect(projectile.projectile_type, enemy)
+            projectile.projectile_controller.apply_enemy_collision(enemy)
             entities_to_remove.append(projectile)
 
     for projectile in game_state.get_active_enemy_projectiles_intersecting_with_player():
-        apply_projectile_player_collision_effect(game_state)
+        projectile.projectile_controller.apply_player_collision(game_state)
         entities_to_remove.append(projectile)
 
     game_state.remove_entities(entities_to_remove)
