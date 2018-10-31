@@ -40,11 +40,11 @@ class DumbEnemyMind:
             if is_player_invisible:
                 direction = random_direction()
             else:
-                direction = _get_direction_between(enemy.world_entity, player_entity)
+                direction = get_direction_between(enemy.world_entity, player_entity)
                 if self._state == "FLEEING":
-                    direction = _get_opposite_direction(direction)
+                    direction = get_opposite_direction(direction)
                 if random.random() < 0.2:
-                    direction = random.choice(_get_perpendicular_directions(direction))
+                    direction = random.choice(get_perpendicular_directions(direction))
             enemy.world_entity.set_moving_in_dir(direction)
 
 
@@ -78,7 +78,7 @@ class SmartEnemyMind:
                     projectile = Projectile(entity, create_projectile_controller(ProjectileType.ENEMY_POISON))
                     game_state.projectile_entities.append(projectile)
                 else:
-                    direction = _get_direction_between(enemy.world_entity, player_entity)
+                    direction = get_direction_between(enemy.world_entity, player_entity)
                     enemy.world_entity.set_moving_in_dir(direction)
 
     def _update_firing_cooldown(self):
@@ -104,7 +104,7 @@ class MageEnemyMind:
             projectile_pos = (center_position[0] - ENEMY_PROJECTILE_SIZE[0] / 2,
                               center_position[1] - ENEMY_PROJECTILE_SIZE[1] / 2)
             entities = [WorldEntity(projectile_pos, ENEMY_PROJECTILE_SIZE, Sprite.POISONBALL, direction, 2)
-                        for direction in _get_all_directions()]
+                        for direction in get_all_directions()]
             projectiles = [Projectile(entity, create_projectile_controller(ProjectileType.ENEMY_POISON))
                            for entity in entities]
             game_state.projectile_entities += projectiles
@@ -131,40 +131,3 @@ class MageEnemyMind:
             else:
                 enemy.world_entity.set_not_moving()
 
-
-def _get_direction_between(from_entity, to_entity):
-    dx = to_entity.x - from_entity.x
-    dy = to_entity.y - from_entity.y
-    if abs(dx) > abs(dy):
-        if dx > 0:
-            direction = Direction.RIGHT
-        else:
-            direction = Direction.LEFT
-    else:
-        if dy < 0:
-            direction = Direction.UP
-        else:
-            direction = Direction.DOWN
-    return direction
-
-
-def _get_perpendicular_directions(direction):
-    if direction == direction.LEFT or direction == direction.RIGHT:
-        return [Direction.UP, Direction.DOWN]
-    else:
-        return [Direction.LEFT, Direction.RIGHT]
-
-
-def _get_opposite_direction(direction):
-    if direction == direction.LEFT:
-        return direction.RIGHT
-    if direction == direction.RIGHT:
-        return direction.LEFT
-    if direction == direction.UP:
-        return direction.DOWN
-    if direction == direction.DOWN:
-        return direction.UP
-
-
-def _get_all_directions():
-    return [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT]

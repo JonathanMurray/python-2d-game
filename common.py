@@ -22,6 +22,44 @@ def random_direction():
     return random.choice([Direction.LEFT, Direction.RIGHT, Direction.UP, Direction.DOWN])
 
 
+def get_direction_between(from_entity, to_entity):
+    dx = to_entity.x - from_entity.x
+    dy = to_entity.y - from_entity.y
+    if abs(dx) > abs(dy):
+        if dx > 0:
+            direction = Direction.RIGHT
+        else:
+            direction = Direction.LEFT
+    else:
+        if dy < 0:
+            direction = Direction.UP
+        else:
+            direction = Direction.DOWN
+    return direction
+
+
+def get_perpendicular_directions(direction):
+    if direction == direction.LEFT or direction == direction.RIGHT:
+        return [Direction.UP, Direction.DOWN]
+    else:
+        return [Direction.LEFT, Direction.RIGHT]
+
+
+def get_opposite_direction(direction):
+    if direction == direction.LEFT:
+        return direction.RIGHT
+    if direction == direction.RIGHT:
+        return direction.LEFT
+    if direction == direction.UP:
+        return direction.DOWN
+    if direction == direction.DOWN:
+        return direction.UP
+
+
+def get_all_directions():
+    return [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT]
+
+
 class PotionType(Enum):
     HEALTH = 1
     MANA = 2

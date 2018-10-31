@@ -3,10 +3,6 @@ from game_data import ATTACK_PROJECTILE_SIZE, AOE_PROJECTILE_SIZE
 from game_state import WorldEntity, Projectile
 from projectiles import create_projectile_controller
 
-ATTACK_PROJECTILE_SPEED = 8
-HEAL_ABILITY_AMOUNT = 10
-AOE_PROJECTILE_SPEED = 3
-
 
 def apply_ability_effect(game_state, ability_type):
     if ability_type == AbilityType.ATTACK:
@@ -27,8 +23,7 @@ def _apply_attack(game_state):
     player_center_position = game_state.player_entity.get_center_position()
     projectile_pos = (player_center_position[0] - ATTACK_PROJECTILE_SIZE[0] / 2,
                       player_center_position[1] - ATTACK_PROJECTILE_SIZE[1] / 2)
-    entity = WorldEntity(projectile_pos, ATTACK_PROJECTILE_SIZE, Sprite.FIREBALL, game_state.player_entity.direction,
-                         ATTACK_PROJECTILE_SPEED)
+    entity = WorldEntity(projectile_pos, ATTACK_PROJECTILE_SIZE, Sprite.FIREBALL, game_state.player_entity.direction, 8)
     projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER))
     game_state.projectile_entities.append(projectile)
 
@@ -48,7 +43,6 @@ def _apply_aoe_attack(game_state):
     else:
         raise Exception("Unhandled direction: " + str(direction))
 
-    entity = WorldEntity(aoe_pos, AOE_PROJECTILE_SIZE, Sprite.WHIRLWIND, game_state.player_entity.direction,
-                         AOE_PROJECTILE_SPEED)
+    entity = WorldEntity(aoe_pos, AOE_PROJECTILE_SIZE, Sprite.WHIRLWIND, game_state.player_entity.direction, 3)
     projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER_AOE))
     game_state.projectile_entities.append(projectile)
