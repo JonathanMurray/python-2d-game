@@ -27,6 +27,10 @@ class ActionStopMoving:
     pass
 
 
+class ActionPauseGame:
+    pass
+
+
 PYGAME_MOVEMENT_KEYS = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
 DIRECTION_BY_PYGAME_MOVEMENT_KEY = {
     pygame.K_LEFT: Direction.LEFT,
@@ -59,6 +63,8 @@ def get_user_actions():
                 actions.append(ActionTryUsePotion(5))
             elif event.key == pygame.K_ESCAPE:
                 actions.append(ActionExitGame())
+            elif event.key == pygame.K_RETURN:
+                actions.append(ActionPauseGame())
             else:
                 for ability_type in ABILITIES:
                     if event.key == ABILITIES[ability_type].pygame_key:

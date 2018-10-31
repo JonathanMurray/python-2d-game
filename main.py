@@ -7,7 +7,7 @@ from common import AbilityType
 from game_engine import GameEngine
 from game_world_init import init_game_state_from_file
 from user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
-    ActionMoveInDirection, ActionStopMoving
+    ActionMoveInDirection, ActionStopMoving, ActionPauseGame
 from view import View, ScreenArea
 from view_state import ViewState
 
@@ -27,6 +27,8 @@ clock = pygame.time.Clock()
 
 game_engine = GameEngine(game_state, view_state)
 
+is_paused = False
+
 while True:
 
     # ------------------------------------
@@ -38,7 +40,7 @@ while True:
         if isinstance(action, ActionExitGame):
             pygame.quit()
             sys.exit()
-        else:
+        if not is_paused:
             if isinstance(action, ActionTryUseAbility):
                 game_engine.try_use_ability(action)
             elif isinstance(action, ActionTryUsePotion):
@@ -47,6 +49,8 @@ while True:
                 game_engine.move_in_direction(action)
             elif isinstance(action, ActionStopMoving):
                 game_engine.stop_moving()
+        if isinstance(action, ActionPauseGame):
+            is_paused = not is_paused
 
     # ------------------------------------
     #     UPDATE STATE BASED ON CLOCK
@@ -55,7 +59,8 @@ while True:
     clock.tick()
     time_passed = clock.get_time()
 
-    game_engine.run_one_frame(time_passed)
+    if not is_paused:
+        game_engine.run_one_frame(time_passed)
 
     # ------------------------------------
     #          RENDER EVERYTHING
@@ -78,4 +83,5 @@ while True:
                            abilities=[AbilityType.ATTACK, AbilityType.HEAL, AbilityType.AOE_ATTACK],
                            message=view_state.message,
                            highlighted_potion_action=view_state.highlighted_potion_action,
-                           highlighted_ability_action=view_state.highlighted_ability_action)
+                           highlighted_ability_action=view_state.highlighted_ability_action,
+                           is_paused=is_paused)

@@ -36,6 +36,7 @@ class View:
         self.ui_screen_area = ui_screen_area
         self.camera_size = camera_size
         self.screen_size = screen_size
+        self.font_huge = pygame.font.SysFont('Arial', 64)
         self.font_large = pygame.font.SysFont('Arial', 22)
         self.font_small = pygame.font.Font(None, 25)
         self.font_tiny = pygame.font.Font(None, 19)
@@ -153,7 +154,7 @@ class View:
     def render_everything(self, all_entities, player_entity, is_player_invisible, camera_world_area, enemies,
                           player_health, player_max_health, player_mana, player_max_mana, potion_slots,
                           player_active_buffs, visual_lines, fps_string, player_minimap_relative_position, abilities,
-                          message, highlighted_potion_action, highlighted_ability_action):
+                          message, highlighted_potion_action, highlighted_ability_action, is_paused):
 
         self.screen.fill(COLOR_BACKGROUND)
         self._draw_ground(camera_world_area)
@@ -223,5 +224,7 @@ class View:
         self._render_text(self.font_small, fps_string + " FPS", (10, 10))
 
         self._render_text(self.font_small, message, (self.ui_screen_area.w / 2 - 80, self.ui_screen_area.y - 30))
+        if is_paused:
+            self._render_text(self.font_huge, "PAUSED", (self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50))
 
         pygame.display.update()
