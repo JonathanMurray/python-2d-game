@@ -6,7 +6,6 @@ import sys
 from common import AbilityType
 from game_engine import GameEngine
 from game_world_init import init_game_state_from_file
-from player_controls import PlayerControls
 from user_input import get_user_actions, ActionExitGame
 from view import View, ScreenArea
 from view_state import ViewState
@@ -23,10 +22,9 @@ screen = pygame.display.set_mode(SCREEN_SIZE)
 ui_screen_area = ScreenArea((0, CAMERA_SIZE[1]), (SCREEN_SIZE[0], SCREEN_SIZE[1] - CAMERA_SIZE[1]))
 view = View(screen, ui_screen_area, CAMERA_SIZE, SCREEN_SIZE)
 view_state = ViewState(GAME_WORLD_SIZE)
-player_controls = PlayerControls()
 clock = pygame.time.Clock()
 
-game_engine = GameEngine(game_state, player_controls, view_state)
+game_engine = GameEngine(game_state, view_state)
 
 while True:
 

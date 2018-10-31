@@ -1,16 +1,16 @@
 from abilities import apply_ability_effect
 from buffs import BUFF_EFFECTS
 from common import boxes_intersect
-from player_controls import TryUseAbilityResult
+from player_controls import TryUseAbilityResult, PlayerControls
 from potions import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
 from user_input import ActionTryUseAbility, ActionTryUsePotion, ActionMoveInDirection, ActionStopMoving
 
 
 class GameEngine:
 
-    def __init__(self, game_state, player_controls, view_state):
+    def __init__(self, game_state, view_state):
         self.game_state = game_state
-        self.player_controls = player_controls
+        self.player_controls = PlayerControls()
         self.view_state = view_state
 
     def apply_user_action(self, action):
