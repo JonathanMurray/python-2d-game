@@ -62,6 +62,13 @@ class View:
         pos = (entity.x - camera_world_area.x, entity.y - camera_world_area.y)
         self.screen.blit(image, pos)
 
+    def _draw_visual_line(self, line, camera_world_area):
+        camera_x = camera_world_area.x
+        camera_y = camera_world_area.y
+        start_position = line.start_position[0] - camera_x, line.start_position[1] - camera_y
+        end_position = line.end_position[0] - camera_x, line.end_position[1] - camera_y
+        pygame.draw.line(self.screen, line.color, start_position, end_position, 3)
+
     def _render_stat_bar(self, x, y, w, h, stat, max_stat, color):
         pygame.draw.rect(self.screen, COLOR_WHITE, (x - 2, y - 2, w + 3, h + 3), 2)
         pygame.draw.rect(self.screen, color, (x, y, w * stat / max_stat, h))
@@ -145,8 +152,8 @@ class View:
 
     def render_everything(self, all_entities, player_entity, is_player_invisible, camera_world_area, enemies,
                           player_health, player_max_health, player_mana, player_max_mana, potion_slots,
-                          player_active_buffs, fps_string, player_minimap_relative_position, abilities, message,
-                          highlighted_potion_action, highlighted_ability_action):
+                          player_active_buffs, visual_lines, fps_string, player_minimap_relative_position, abilities,
+                          message, highlighted_potion_action, highlighted_ability_action):
 
         self.screen.fill(COLOR_BACKGROUND)
         self._draw_ground(camera_world_area)
@@ -163,6 +170,9 @@ class View:
         for enemy in enemies:
             self._render_stat_bar_for_entity(enemy.world_entity, 5, enemy.health, enemy.max_health, COLOR_RED,
                                              camera_world_area)
+
+        for line in visual_lines:
+            self._draw_visual_line(line, camera_world_area)
 
         self._render_rect(COLOR_BLACK, (0, 0, self.camera_size[0], self.camera_size[1]), 3)
         self._render_rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],

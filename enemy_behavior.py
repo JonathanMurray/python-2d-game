@@ -2,7 +2,7 @@ import random
 
 from common import *
 from game_data import ENEMY_PROJECTILE_SIZE
-from game_state import WorldEntity, Projectile
+from game_state import WorldEntity, Projectile, VisualLine
 from projectiles import create_projectile_controller
 
 
@@ -111,13 +111,17 @@ class MageEnemyMind:
 
         if self._time_since_healing > self._healing_cooldown:
             self._time_since_healing = 0
-            enemy_pos = enemy.world_entity.get_center_position()
+            mage_pos = enemy.world_entity.get_center_position()
             healing_range = 200
-            nearby_hurt_enemies = [e for e in game_state.enemies if abs(e.world_entity.x - enemy_pos[0]) < healing_range
-                                   and abs(e.world_entity.y - enemy_pos[1]) < healing_range and e != enemy
+            nearby_hurt_enemies = [e for e in game_state.enemies if abs(e.world_entity.x - mage_pos[0]) < healing_range
+                                   and abs(e.world_entity.y - mage_pos[1]) < healing_range and e != enemy
                                    and e.health < e.max_health]
             if nearby_hurt_enemies:
-                nearby_hurt_enemies[0].gain_health(5)
+                healing_target = nearby_hurt_enemies[0]
+                healing_target.gain_health(5)
+                healing_target_pos = healing_target.world_entity.get_center_position()
+                visual_line = VisualLine((80, 80, 250), mage_pos, healing_target_pos, 350)
+                game_state.visual_lines.append(visual_line)
 
         if self._time_since_decision > self._decision_interval:
             self._time_since_decision = 0

@@ -79,8 +79,12 @@ while True:
     for projectile in game_state.projectile_entities:
         projectile.projectile_controller.notify_time_passed(projectile, time_passed)
 
+    for visual_line in game_state.visual_lines:
+        visual_line.notify_time_passed(time_passed)
+
     game_state.remove_dead_enemies()
     game_state.remove_expired_projectiles()
+    game_state.remove_expired_visual_lines()
 
     buffs_update = game_state.player_state.update_and_expire_buffs(time_passed)
     for buff_type in buffs_update.buffs_that_started:
@@ -144,6 +148,7 @@ while True:
                            player_max_mana=game_state.player_state.max_mana,
                            potion_slots=game_state.player_state.potion_slots,
                            player_active_buffs=game_state.player_state.active_buffs,
+                           visual_lines=game_state.visual_lines,
                            fps_string=view_state.fps_string,
                            player_minimap_relative_position=view_state.player_minimap_relative_position,
                            abilities=[AbilityType.ATTACK, AbilityType.HEAL, AbilityType.AOE_ATTACK],

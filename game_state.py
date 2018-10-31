@@ -78,6 +78,21 @@ class Enemy:
         self.health = min(self.health + amount, self.max_health)
 
 
+class VisualLine:
+    def __init__(self, color, start_position, end_position, max_age):
+        self._age = 0
+        self._max_age = max_age
+        self.color = color
+        self.start_position = start_position
+        self.end_position = end_position
+        self.has_expired = False
+
+    def notify_time_passed(self, time_passed):
+        self._age += time_passed
+        if self._age > self._max_age:
+            self.has_expired = True
+
+
 class Buff:
     def __init__(self, buff_type, time_until_expiration):
         self.buff_type = buff_type
@@ -170,6 +185,7 @@ class GameState:
         self.projectile_entities = []
         self.potions_on_ground = potions_on_ground
         self.enemies = enemies
+        self.visual_lines = []
         self.player_state = PlayerState(1, 500, 75, 100, 0.03, player_potions_slots)
         self.game_world_size = game_world_size
         self.entire_world_area = WorldArea((0, 0), self.game_world_size)
@@ -207,3 +223,6 @@ class GameState:
 
     def remove_dead_enemies(self):
         self.enemies = [e for e in self.enemies if e.health > 0]
+
+    def remove_expired_visual_lines(self):
+        self.visual_lines = [v for v in self.visual_lines if not v.has_expired]
