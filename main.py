@@ -16,10 +16,8 @@ CAMERA_SIZE = (700, 400)
 
 game_state = init_game_state_from_file(GAME_WORLD_SIZE, CAMERA_SIZE)
 pygame.init()
-pygame.font.init()
 
-screen = pygame.display.set_mode(SCREEN_SIZE)
-view = View(screen, CAMERA_SIZE, SCREEN_SIZE)
+view = View(CAMERA_SIZE, SCREEN_SIZE)
 view_state = ViewState(GAME_WORLD_SIZE)
 clock = pygame.time.Clock()
 
