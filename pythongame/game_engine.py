@@ -1,44 +1,46 @@
 from pythongame.abilities import apply_ability_effect
 from pythongame.buffs import BUFF_EFFECTS
-from pythongame.common import boxes_intersect
+from pythongame.common import boxes_intersect, AbilityType, Direction
+from pythongame.game_state import GameState
 from pythongame.player_controls import TryUseAbilityResult, PlayerControls
 from pythongame.potions import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
+from pythongame.view_state import ViewState
 
 
 class GameEngine:
 
-    def __init__(self, game_state, view_state):
+    def __init__(self, game_state: GameState, view_state: ViewState):
         self.game_state = game_state
         self.player_controls = PlayerControls()
         self.view_state = view_state
 
-    def try_use_ability(self, action):
-        self.view_state.notify_ability_was_clicked(action.ability_type)
-        result = self.player_controls.try_use_ability(self.game_state.player_state, action.ability_type)
+    def try_use_ability(self, ability_type: AbilityType):
+        self.view_state.notify_ability_was_clicked(ability_type)
+        result = self.player_controls.try_use_ability(self.game_state.player_state, ability_type)
         if result == TryUseAbilityResult.SUCCESS:
-            apply_ability_effect(self.game_state, action.ability_type)
+            apply_ability_effect(self.game_state, ability_type)
         elif result == TryUseAbilityResult.NOT_ENOUGH_MANA:
             self.view_state.set_message("Not enough mana!")
 
-    def try_use_potion(self, action):
-        self.view_state.notify_potion_was_clicked(action.slot_number)
-        potion_type_in_this_slot = self.game_state.player_state.potion_slots[action.slot_number]
+    def try_use_potion(self, slot_number: int):
+        self.view_state.notify_potion_was_clicked(slot_number)
+        potion_type_in_this_slot = self.game_state.player_state.potion_slots[slot_number]
         if potion_type_in_this_slot:
             result = try_consume_potion(potion_type_in_this_slot, self.game_state)
             if isinstance(result, PotionWasConsumed):
-                self.game_state.player_state.potion_slots[action.slot_number] = None
+                self.game_state.player_state.potion_slots[slot_number] = None
             elif isinstance(result, PotionFailedToBeConsumed):
                 self.view_state.set_message(result.reason)
         else:
             self.view_state.set_message("No potion to use!")
 
-    def move_in_direction(self, action):
-        self.game_state.player_entity.set_moving_in_dir(action.direction)
+    def move_in_direction(self, direction: Direction):
+        self.game_state.player_entity.set_moving_in_dir(direction)
 
     def stop_moving(self):
         self.game_state.player_entity.set_not_moving()
 
-    def run_one_frame(self, time_passed):
+    def run_one_frame(self, time_passed: int):
         for e in self.game_state.enemies:
             # Enemy AI shouldn't run if enemy is out of sight
             if boxes_intersect(e.world_entity, self.game_state.camera_world_area):

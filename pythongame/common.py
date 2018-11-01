@@ -9,7 +9,7 @@ class Direction(Enum):
     DOWN = 4
 
 
-def _ranges_overlap(a_min, a_max, b_min, b_max):
+def _ranges_overlap(a_min: int, a_max: int, b_min: int, b_max: int):
     return (a_min <= b_max) and (b_min <= a_max)
 
 
@@ -38,14 +38,14 @@ def get_direction_between(from_entity, to_entity):
     return direction
 
 
-def get_perpendicular_directions(direction):
+def get_perpendicular_directions(direction: Direction):
     if direction == direction.LEFT or direction == direction.RIGHT:
         return [Direction.UP, Direction.DOWN]
     else:
         return [Direction.LEFT, Direction.RIGHT]
 
 
-def get_opposite_direction(direction):
+def get_opposite_direction(direction: Direction):
     if direction == direction.LEFT:
         return direction.RIGHT
     if direction == direction.RIGHT:

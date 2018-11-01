@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import pygame
 
 from pythongame.common import *
@@ -13,7 +15,7 @@ POTION_ENTITY_SIZE = (30, 30)
 
 
 class SpriteInitializer:
-    def __init__(self, image_file_path, scaling_size):
+    def __init__(self, image_file_path: str, scaling_size: Tuple[int, int]):
         self.image_file_path = image_file_path
         self.scaling_size = scaling_size
 
@@ -29,7 +31,7 @@ class UiIconSprite(Enum):
 
 
 class AbilityData:
-    def __init__(self, icon_sprite, mana_cost, key_string, pygame_key):
+    def __init__(self, icon_sprite: UiIconSprite, mana_cost: int, key_string: str, pygame_key):
         self.icon_sprite = icon_sprite
         self.mana_cost = mana_cost
         self.key_string = key_string

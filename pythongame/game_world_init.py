@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from pythongame.common import *
 from pythongame.enemy_behavior import create_enemy_mind
 from pythongame.game_data import PLAYER_ENTITY_SIZE, ENEMY_ENTITY_SIZE, ENEMY_2_ENTITY_SIZE, POTION_ENTITY_SIZE, \
@@ -10,7 +12,7 @@ ENEMY_MAGE_SPEED = 0.5
 PLAYER_ENTITY_SPEED = 2.7
 
 
-def init_game_state_from_file(game_world_size, camera_size):
+def init_game_state_from_file(game_world_size: Tuple[int, int], camera_size: Tuple[int, int]):
     dumb_enemy_positions = []
     smart_enemy_positions = []
     mage_enemy_positions = []

@@ -1,6 +1,8 @@
 from enum import Enum
 
+from pythongame.common import AbilityType
 from pythongame.game_data import ABILITIES
+from pythongame.game_state import PlayerState
 
 ABILITY_COOLDOWN = 200
 
@@ -15,7 +17,7 @@ class PlayerControls:
     def __init__(self):
         self.ticks_since_ability_used = ABILITY_COOLDOWN
 
-    def try_use_ability(self, player_state, ability_type):
+    def try_use_ability(self, player_state: PlayerState, ability_type: AbilityType):
         if self.ticks_since_ability_used < ABILITY_COOLDOWN:
             return TryUseAbilityResult.COOLDOWN_NOT_READY
 
@@ -28,5 +30,5 @@ class PlayerControls:
         player_state.lose_mana(mana_cost)
         return TryUseAbilityResult.SUCCESS
 
-    def notify_time_passed(self, time_passed):
+    def notify_time_passed(self, time_passed: int):
         self.ticks_since_ability_used += time_passed

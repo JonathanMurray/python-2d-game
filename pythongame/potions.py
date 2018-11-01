@@ -1,4 +1,5 @@
 from pythongame.common import *
+from pythongame.game_state import GameState
 
 
 class PotionWasConsumed:
@@ -10,7 +11,7 @@ class PotionFailedToBeConsumed:
         self.reason = reason
 
 
-def try_consume_potion(potion_type, game_state):
+def try_consume_potion(potion_type: PotionType, game_state: GameState):
     player_state = game_state.player_state
     if potion_type == PotionType.HEALTH:
         if game_state.player_state.health < game_state.player_state.max_health:

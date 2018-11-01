@@ -39,11 +39,11 @@ def main():
                 sys.exit()
             if not is_paused:
                 if isinstance(action, ActionTryUseAbility):
-                    game_engine.try_use_ability(action)
+                    game_engine.try_use_ability(action.ability_type)
                 elif isinstance(action, ActionTryUsePotion):
-                    game_engine.try_use_potion(action)
+                    game_engine.try_use_potion(action.slot_number)
                 elif isinstance(action, ActionMoveInDirection):
-                    game_engine.move_in_direction(action)
+                    game_engine.move_in_direction(action.direction)
                 elif isinstance(action, ActionStopMoving):
                     game_engine.stop_moving()
             if isinstance(action, ActionPauseGame):

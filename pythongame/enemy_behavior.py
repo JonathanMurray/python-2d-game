@@ -1,10 +1,10 @@
 from pythongame.common import *
 from pythongame.game_data import ENEMY_PROJECTILE_SIZE
-from pythongame.game_state import WorldEntity, Projectile, VisualLine
+from pythongame.game_state import WorldEntity, Projectile, VisualLine, Enemy, GameState
 from pythongame.projectiles import create_projectile_controller
 
 
-def create_enemy_mind(enemy_behavior):
+def create_enemy_mind(enemy_behavior: EnemyBehavior):
     if enemy_behavior == EnemyBehavior.DUMB:
         return DumbEnemyMind()
     elif enemy_behavior == EnemyBehavior.SMART:
@@ -23,7 +23,8 @@ class DumbEnemyMind:
         self._state = "INIT"
         self._time_since_started_fleeing = 0
 
-    def control_enemy(self, game_state, enemy, player_entity, is_player_invisible, time_passed):
+    def control_enemy(self, _game_state: GameState, enemy: Enemy, player_entity: WorldEntity, is_player_invisible: bool,
+                      time_passed: int):
         self._time_since_decision += time_passed
         if self._state == "FLEEING":
             self._time_since_started_fleeing += time_passed
@@ -54,7 +55,8 @@ class SmartEnemyMind:
         self._update_firing_cooldown()
         self._pause_after_fire_duration = 700
 
-    def control_enemy(self, game_state, enemy, player_entity, is_player_invisible, time_passed):
+    def control_enemy(self, game_state: GameState, enemy: Enemy, player_entity: WorldEntity, is_player_invisible: bool,
+                      time_passed: int):
         self._time_since_firing += time_passed
         self._time_since_decision += time_passed
         if self._time_since_decision > self._decision_interval \
@@ -92,7 +94,8 @@ class MageEnemyMind:
         self._time_since_healing = 0
         self._healing_cooldown = 5000
 
-    def control_enemy(self, game_state, enemy, player_entity, is_player_invisible, time_passed):
+    def control_enemy(self, game_state: GameState, enemy: Enemy, _player_entity: WorldEntity,
+                      _is_player_invisible: bool, time_passed: int):
         self._time_since_decision += time_passed
         self._time_since_firing += time_passed
         self._time_since_healing += time_passed
@@ -128,4 +131,3 @@ class MageEnemyMind:
                 enemy.world_entity.set_moving_in_dir(direction)
             else:
                 enemy.world_entity.set_not_moving()
-
