@@ -1,6 +1,10 @@
 import random
 from enum import Enum
 
+from typing import NewType
+
+Millis = NewType('Millis', int)
+
 
 class Direction(Enum):
     LEFT = 1

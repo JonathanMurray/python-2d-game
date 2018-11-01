@@ -6,7 +6,7 @@ class AbstractBuff:
     def apply_start_effect(self, game_state: GameState):
         pass
 
-    def apply_middle_effect(self, game_state: GameState, time_passed: int):
+    def apply_middle_effect(self, game_state: GameState, time_passed: Millis):
         pass
 
     def apply_end_effect(self, game_state: GameState):
@@ -14,12 +14,12 @@ class AbstractBuff:
 
 
 class HealingOverTime(AbstractBuff):
-    def apply_middle_effect(self, game_state: GameState, time_passed: int):
+    def apply_middle_effect(self, game_state: GameState, time_passed: Millis):
         game_state.player_state.gain_health(0.04 * time_passed)
 
 
 class DamageOverTime(AbstractBuff):
-    def apply_middle_effect(self, game_state: GameState, time_passed: int):
+    def apply_middle_effect(self, game_state: GameState, time_passed: Millis):
         game_state.player_state.lose_health(0.02 * time_passed)
 
 

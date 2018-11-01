@@ -24,7 +24,7 @@ class DumbEnemyMind:
         self._time_since_started_fleeing = 0
 
     def control_enemy(self, _game_state: GameState, enemy: Enemy, player_entity: WorldEntity, is_player_invisible: bool,
-                      time_passed: int):
+                      time_passed: Millis):
         self._time_since_decision += time_passed
         if self._state == "FLEEING":
             self._time_since_started_fleeing += time_passed
@@ -56,7 +56,7 @@ class SmartEnemyMind:
         self._pause_after_fire_duration = 700
 
     def control_enemy(self, game_state: GameState, enemy: Enemy, player_entity: WorldEntity, is_player_invisible: bool,
-                      time_passed: int):
+                      time_passed: Millis):
         self._time_since_firing += time_passed
         self._time_since_decision += time_passed
         if self._time_since_decision > self._decision_interval \
@@ -95,7 +95,7 @@ class MageEnemyMind:
         self._healing_cooldown = 5000
 
     def control_enemy(self, game_state: GameState, enemy: Enemy, _player_entity: WorldEntity,
-                      _is_player_invisible: bool, time_passed: int):
+                      _is_player_invisible: bool, time_passed: Millis):
         self._time_since_decision += time_passed
         self._time_since_firing += time_passed
         self._time_since_healing += time_passed

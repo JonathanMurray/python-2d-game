@@ -32,7 +32,7 @@ class WorldEntity:
     def set_not_moving(self):
         self._is_moving = False
 
-    def update_position_according_to_dir_and_speed(self, time_passed):
+    def update_position_according_to_dir_and_speed(self, time_passed: Millis):
         distance = self._effective_speed * time_passed / 25  # 25 because this was the avg. frame duration before this change
         if self._is_moving:
             if self.direction == Direction.LEFT:
@@ -89,7 +89,7 @@ class VisualLine:
         self.end_position = end_position
         self.has_expired = False
 
-    def notify_time_passed(self, time_passed: int):
+    def notify_time_passed(self, time_passed: Millis):
         self._age += time_passed
         if self._age > self._max_age:
             self.has_expired = True
@@ -151,7 +151,7 @@ class PlayerState:
         else:
             return False
 
-    def update_and_expire_buffs(self, time_passed: int):
+    def update_and_expire_buffs(self, time_passed: Millis):
         copied_buffs_list = list(self.active_buffs)
         buffs_that_started = []
         buffs_that_ended = []
@@ -165,14 +165,14 @@ class PlayerState:
                 buffs_that_ended.append(buff.buff_type)
         return PlayerBuffsUpdate(buffs_that_started, [e.buff_type for e in copied_buffs_list], buffs_that_ended)
 
-    def add_buff(self, buff_type: BuffType, duration: int):
+    def add_buff(self, buff_type: BuffType, duration: Millis):
         existing_buffs_with_this_type = [e for e in self.active_buffs if e.buff_type == buff_type]
         if existing_buffs_with_this_type:
             existing_buffs_with_this_type[0].time_until_expiration = duration
         else:
             self.active_buffs.append(Buff(buff_type, duration))
 
-    def regenerate_mana(self, time_passed: int):
+    def regenerate_mana(self, time_passed: Millis):
         self.gain_mana(
             self.mana_regen * time_passed / 25)  # 25 because this was the avg. frame duration before this change
 
@@ -211,7 +211,7 @@ class GameState:
     def get_projectiles_intersecting_with(self, entity):
         return [p for p in self.projectile_entities if boxes_intersect(entity, p.world_entity)]
 
-    def update_world_entity_position_within_game_world(self, world_entity: WorldEntity, time_passed: int):
+    def update_world_entity_position_within_game_world(self, world_entity: WorldEntity, time_passed: Millis):
         world_entity.update_position_according_to_dir_and_speed(time_passed)
         world_entity.x = min(max(world_entity.x, 0), self.game_world_size[0] - world_entity.w)
         world_entity.y = min(max(world_entity.y, 0), self.game_world_size[1] - world_entity.h)

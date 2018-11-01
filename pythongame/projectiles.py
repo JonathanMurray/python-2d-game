@@ -16,7 +16,7 @@ class AbstractProjectileController:
         self._age = 0
         self._max_age = max_age
 
-    def notify_time_passed(self, projectile: Projectile, time_passed: int):
+    def notify_time_passed(self, projectile: Projectile, time_passed: Millis):
         self._age += time_passed
         if self._age > self._max_age:
             projectile.has_expired = True
@@ -42,7 +42,7 @@ class PlayerAoeProjectileController(AbstractProjectileController):
         super().__init__(500)
         self._has_activated = False
 
-    def notify_time_passed(self, projectile: Projectile, time_passed: int):
+    def notify_time_passed(self, projectile: Projectile, time_passed: Millis):
         super().notify_time_passed(projectile, time_passed)
         if self._age > 250:
             self._has_activated = True

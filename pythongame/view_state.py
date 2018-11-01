@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from pythongame.common import AbilityType
+from pythongame.common import AbilityType, Millis
 
 MINIMAP_UPDATE_INTERVAL = 1000
 MESSAGE_DURATION = 2500
@@ -40,7 +40,7 @@ class ViewState:
         self.message = message
         self._ticks_since_message_updated = 0
 
-    def notify_time_passed(self, time_passed: int):
+    def notify_time_passed(self, time_passed: Millis):
         self._ticks_since_minimap_updated += time_passed
         if self._ticks_since_minimap_updated > MINIMAP_UPDATE_INTERVAL:
             self._ticks_since_minimap_updated = 0

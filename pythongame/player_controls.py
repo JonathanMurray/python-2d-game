@@ -1,6 +1,6 @@
 from enum import Enum
 
-from pythongame.common import AbilityType
+from pythongame.common import AbilityType, Millis
 from pythongame.game_data import ABILITIES
 from pythongame.game_state import PlayerState
 
@@ -30,5 +30,5 @@ class PlayerControls:
         player_state.lose_mana(mana_cost)
         return TryUseAbilityResult.SUCCESS
 
-    def notify_time_passed(self, time_passed: int):
+    def notify_time_passed(self, time_passed: Millis):
         self.ticks_since_ability_used += time_passed

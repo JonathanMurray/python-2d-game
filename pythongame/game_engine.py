@@ -1,6 +1,6 @@
 from pythongame.abilities import apply_ability_effect
 from pythongame.buffs import BUFF_EFFECTS
-from pythongame.common import boxes_intersect, AbilityType, Direction
+from pythongame.common import boxes_intersect, AbilityType, Direction, Millis
 from pythongame.game_state import GameState
 from pythongame.player_controls import TryUseAbilityResult, PlayerControls
 from pythongame.potions import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
@@ -40,7 +40,7 @@ class GameEngine:
     def stop_moving(self):
         self.game_state.player_entity.set_not_moving()
 
-    def run_one_frame(self, time_passed: int):
+    def run_one_frame(self, time_passed: Millis):
         for e in self.game_state.enemies:
             # Enemy AI shouldn't run if enemy is out of sight
             if boxes_intersect(e.world_entity, self.game_state.camera_world_area):

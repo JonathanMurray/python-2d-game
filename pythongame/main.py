@@ -2,6 +2,7 @@ import sys
 
 import pygame
 
+from pythongame.common import Millis
 from pythongame.game_engine import GameEngine
 from pythongame.game_world_init import init_game_state_from_file
 from pythongame.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
@@ -54,7 +55,7 @@ def main():
         # ------------------------------------
 
         clock.tick()
-        time_passed = clock.get_time()
+        time_passed = Millis(clock.get_time())
 
         if not is_paused:
             game_engine.run_one_frame(time_passed)
