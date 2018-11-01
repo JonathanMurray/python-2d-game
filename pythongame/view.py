@@ -1,6 +1,6 @@
 import pygame
 
-from game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, POTION_ICON_SPRITES, \
+from pythongame.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, POTION_ICON_SPRITES, \
     ABILITIES, BUFF_TEXTS
 
 COLOR_WHITE = (250, 250, 250)

@@ -1,4 +1,4 @@
-from common import *
+from pythongame.common import *
 
 
 class AbstractBuff:

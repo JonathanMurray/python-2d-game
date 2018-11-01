@@ -1,7 +1,6 @@
 import pygame
-from enum import Enum
 
-from common import *
+from pythongame.common import *
 
 PLAYER_ENTITY_SIZE = (60, 60)
 ENEMY_ENTITY_SIZE = (30, 30)

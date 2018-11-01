@@ -1,9 +1,7 @@
-import random
-
-from common import *
-from game_data import ENEMY_PROJECTILE_SIZE
-from game_state import WorldEntity, Projectile, VisualLine
-from projectiles import create_projectile_controller
+from pythongame.common import *
+from pythongame.game_data import ENEMY_PROJECTILE_SIZE
+from pythongame.game_state import WorldEntity, Projectile, VisualLine
+from pythongame.projectiles import create_projectile_controller
 
 
 def create_enemy_mind(enemy_behavior):

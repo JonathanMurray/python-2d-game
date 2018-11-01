@@ -1,7 +1,7 @@
 import pygame
 
-from common import *
-from game_data import ABILITIES
+from pythongame.common import *
+from pythongame.game_data import ABILITIES
 
 
 class ActionExitGame:

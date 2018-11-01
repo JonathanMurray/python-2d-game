@@ -1,6 +1,6 @@
 from enum import Enum
 
-from game_data import ABILITIES
+from pythongame.game_data import ABILITIES
 
 ABILITY_COOLDOWN = 200
 

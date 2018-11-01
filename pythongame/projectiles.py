@@ -1,4 +1,4 @@
-from common import *
+from pythongame.common import *
 
 
 def create_projectile_controller(projectile_behavior):

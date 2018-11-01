@@ -1,8 +1,8 @@
-from abilities import apply_ability_effect
-from buffs import BUFF_EFFECTS
-from common import boxes_intersect
-from player_controls import TryUseAbilityResult, PlayerControls
-from potions import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
+from pythongame.abilities import apply_ability_effect
+from pythongame.buffs import BUFF_EFFECTS
+from pythongame.common import boxes_intersect
+from pythongame.player_controls import TryUseAbilityResult, PlayerControls
+from pythongame.potions import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
 
 
 class GameEngine:

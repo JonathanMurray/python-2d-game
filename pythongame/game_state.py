@@ -1,6 +1,6 @@
 import math
 
-from common import *
+from pythongame.common import *
 
 
 class PotionOnGround:
