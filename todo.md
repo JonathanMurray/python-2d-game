@@ -1,7 +1,8 @@
 ## TODO
 
 #### Refactorings:
-* Move non-trivial logic from game_state. Prefer to have game-logic in main.py
+* Move non-trivial logic from game_state. Prefer to have game-logic elsewhere.
+* Avoid storing EnemyMind and ProjectileController in game_state. That module should only depend on common
 
 #### Game engine:
 * Use 8 directions instead of 4?
