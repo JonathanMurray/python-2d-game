@@ -7,9 +7,10 @@
 #### Game engine:
 * Use 8 directions instead of 4?
 * Introduce obstacles that block enemies
-* Prevent enemies from walking through each other
 
 #### Features:
+* Introduce more advanced attack spells
+    * instead of shooting a projectile, channel a beam that continuously damages enemies hit by it
 * Introduce more varied functionality for different projectiles
     * arrow that explodes on impact?
     * cloud that deals damage continuously?
