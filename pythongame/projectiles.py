@@ -60,5 +60,5 @@ class EnemyPoisonProjectileController(AbstractProjectileController):
 
     def apply_player_collision(self, game_state: GameState):
         game_state.player_state.lose_health(1)
-        game_state.player_state.add_buff(BuffType.DAMAGE_OVER_TIME, Millis(2000))
+        game_state.player_state.gain_buff(BuffType.DAMAGE_OVER_TIME, Millis(2000))
         return True

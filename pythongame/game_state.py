@@ -1,5 +1,5 @@
 import math
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 
 from pythongame.common import *
 
@@ -122,7 +122,7 @@ class PlayerState:
         self.mana_regen = mana_regen
         self.potion_slots = potion_slots
         self.abilities = abilities
-        self.active_buffs = []
+        self.active_buffs: List[Buff] = []
         self.is_invisible = False
 
     def gain_health(self, amount: float):
@@ -141,31 +141,13 @@ class PlayerState:
         self._mana_float -= amount
         self.mana = int(math.floor(self._mana_float))
 
-    # Returns whether or not potion was picked up (not picked up if no space for it)
-    def try_pick_up_potion(self, potion_type: PotionType):
+    def find_first_empty_potion_slot(self) -> Optional[int]:
         empty_slots = [slot for slot in self.potion_slots if not self.potion_slots[slot]]
-        if len(empty_slots) > 0:
-            slot = empty_slots[0]
-            self.potion_slots[slot] = potion_type
-            return True
-        else:
-            return False
+        if empty_slots:
+            return empty_slots[0]
+        return None
 
-    def update_and_expire_buffs(self, time_passed: Millis):
-        copied_buffs_list = list(self.active_buffs)
-        buffs_that_started = []
-        buffs_that_ended = []
-        for buff in copied_buffs_list:
-            buff.time_until_expiration -= time_passed
-            if not buff.has_applied_start_effect:
-                buffs_that_started.append(buff.buff_type)
-                buff.has_applied_start_effect = True
-            elif buff.time_until_expiration <= 0:
-                self.active_buffs.remove(buff)
-                buffs_that_ended.append(buff.buff_type)
-        return PlayerBuffsUpdate(buffs_that_started, [e.buff_type for e in copied_buffs_list], buffs_that_ended)
-
-    def add_buff(self, buff_type: BuffType, duration: Millis):
+    def gain_buff(self, buff_type: BuffType, duration: Millis):
         existing_buffs_with_this_type = [e for e in self.active_buffs if e.buff_type == buff_type]
         if existing_buffs_with_this_type:
             existing_buffs_with_this_type[0].time_until_expiration = duration
@@ -197,7 +179,7 @@ class GameState:
         self.potions_on_ground = [p for p in self.potions_on_ground if p not in entities_to_remove]
         self.enemies = [e for e in self.enemies if e not in entities_to_remove]
 
-    def get_all_entities(self):
+    def get_all_entities(self) -> List[WorldEntity]:
         return [self.player_entity] + [p.world_entity for p in self.projectile_entities] + \
                [p.world_entity for p in self.potions_on_ground] + [e.world_entity for e in self.enemies]
 
@@ -208,7 +190,7 @@ class GameState:
         self.camera_world_area.y = min(max(player_center_position[1] - self.camera_size[1] / 2, 0),
                                        self.game_world_size[1] - self.camera_size[1])
 
-    def get_projectiles_intersecting_with(self, entity):
+    def get_projectiles_intersecting_with(self, entity) -> List[Projectile]:
         return [p for p in self.projectile_entities if boxes_intersect(entity, p.world_entity)]
 
     def update_world_entity_position_within_game_world(self, world_entity: WorldEntity, time_passed: Millis):
@@ -216,7 +198,7 @@ class GameState:
         world_entity.x = min(max(world_entity.x, 0), self.game_world_size[0] - world_entity.w)
         world_entity.y = min(max(world_entity.y, 0), self.game_world_size[1] - world_entity.h)
 
-    def is_within_game_world(self, box):
+    def is_within_game_world(self, box) -> bool:
         return boxes_intersect(box, self.entire_world_area)
 
     def remove_expired_projectiles(self):

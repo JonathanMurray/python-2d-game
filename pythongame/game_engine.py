@@ -63,12 +63,24 @@ class GameEngine:
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_lines()
 
-        buffs_update = self.game_state.player_state.update_and_expire_buffs(time_passed)
-        for buff_type in buffs_update.buffs_that_started:
+        copied_buffs_list = list(self.game_state.player_state.active_buffs)
+        buffs_that_started = []
+        buffs_that_were_active = [b.buff_type for b in copied_buffs_list]
+        buffs_that_ended = []
+        for buff in copied_buffs_list:
+            buff.time_until_expiration -= time_passed
+            if not buff.has_applied_start_effect:
+                buffs_that_started.append(buff.buff_type)
+                buff.has_applied_start_effect = True
+            elif buff.time_until_expiration <= 0:
+                self.game_state.player_state.active_buffs.remove(buff)
+                buffs_that_ended.append(buff.buff_type)
+
+        for buff_type in buffs_that_started:
             BUFF_EFFECTS[buff_type].apply_start_effect(self.game_state)
-        for buff_type in buffs_update.active_buffs:
+        for buff_type in buffs_that_were_active:
             BUFF_EFFECTS[buff_type].apply_middle_effect(self.game_state, time_passed)
-        for buff_type in buffs_update.buffs_that_ended:
+        for buff_type in buffs_that_ended:
             BUFF_EFFECTS[buff_type].apply_end_effect(self.game_state)
 
         self.game_state.player_state.regenerate_mana(time_passed)
@@ -88,8 +100,9 @@ class GameEngine:
         entities_to_remove = []
         for potion in self.game_state.potions_on_ground:
             if boxes_intersect(self.game_state.player_entity, potion.world_entity):
-                did_pick_up = self.game_state.player_state.try_pick_up_potion(potion.potion_type)
-                if did_pick_up:
+                empty_potion_slot = self.game_state.player_state.find_first_empty_potion_slot()
+                if empty_potion_slot:
+                    self.game_state.player_state.potion_slots[empty_potion_slot] = potion.potion_type
                     entities_to_remove.append(potion)
         for enemy in self.game_state.enemies:
             for projectile in self.game_state.get_projectiles_intersecting_with(enemy.world_entity):
