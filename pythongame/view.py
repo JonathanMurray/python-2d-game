@@ -58,8 +58,12 @@ class View:
             raise Exception("Unhandled sprite: " + str(entity.sprite))
 
     def _render_entity_rect(self, entity, color, camera_world_area):
-        rect = (entity.x - camera_world_area.x, entity.y - camera_world_area.y, entity.w, entity.h)
-        pygame.draw.rect(self.screen, color, rect, 1)
+        self._render_rect_in_world(camera_world_area, color, entity.rect())
+
+    # TODO: Flesh this out more. Reduce boiler-plate of translating coordinates with the camera
+    def _render_rect_in_world(self, camera_world_area, color, rect):
+        translated_rect = (rect[0] - camera_world_area.x, rect[1] - camera_world_area.y, rect[2], rect[3])
+        pygame.draw.rect(self.screen, color, translated_rect, 1)
 
     def _render_entity_sprite(self, image, entity, camera_world_area):
         pos = (entity.x - camera_world_area.x, entity.y - camera_world_area.y)
@@ -75,8 +79,6 @@ class View:
         else:
             raise Exception("Unhandled visual effect: " + visual_effect)
 
-    # TODO: Generalise the rendering of these effects. This module shouldn't need to care about age, max_age, etc
-
     def _draw_visual_line(self, line, camera_world_area):
         camera_x = camera_world_area.x
         camera_y = camera_world_area.y
@@ -84,19 +86,14 @@ class View:
         end_position = line.end_position[0] - camera_x, line.end_position[1] - camera_y
         pygame.draw.line(self.screen, line.color, start_position, end_position, 3)
 
-    def _draw_visual_circle(self, circle, camera_world_area):
-        position = circle.center_position[0] - camera_world_area.x, circle.center_position[1] - camera_world_area.y
-        radius = circle.start_radius + int(circle.age / circle.max_age * (circle.end_radius - circle.start_radius))
-        pygame.draw.circle(self.screen, circle.color, position, radius)
+    def _draw_visual_circle(self, visual_circle, camera_world_area):
+        position = visual_circle.circle()[0]
+        radius = visual_circle.circle()[1]
+        translated_position = position[0] - camera_world_area.x, position[1] - camera_world_area.y
+        pygame.draw.circle(self.screen, visual_circle.color, translated_position, radius)
 
     def _draw_visual_rect(self, visual_rect, camera_world_area):
-        center_x = visual_rect.center_position[0] - camera_world_area.x
-        center_y = visual_rect.center_position[1] - camera_world_area.y
-        width = visual_rect.start_width + int(visual_rect.age / visual_rect.max_age
-                                              * (visual_rect.end_width - visual_rect.start_width))
-        rect = (center_x - width / 2, center_y - width / 2, width, width)
-        line_width = 1
-        pygame.draw.rect(self.screen, visual_rect.color, rect, line_width)
+        self._render_rect_in_world(camera_world_area, visual_rect.color, visual_rect.rect())
 
     def _render_stat_bar(self, x, y, w, h, stat, max_stat, color):
         pygame.draw.rect(self.screen, COLOR_WHITE, (x - 2, y - 2, w + 3, h + 3), 2)

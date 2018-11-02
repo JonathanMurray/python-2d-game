@@ -52,6 +52,10 @@ class WorldEntity:
         self._speed_multiplier += amount
         self._effective_speed = self._speed_multiplier * self._speed
 
+    # TODO use more
+    def rect(self):
+        return self.x, self.y, self.w, self.h
+
 
 class PotionOnGround:
     def __init__(self, world_entity: WorldEntity, potion_type: PotionType):
