@@ -94,19 +94,22 @@ class View:
     def _draw_visual_rect(self, visual_rect, camera_world_area):
         self._render_rect_in_world(camera_world_area, visual_rect.color, visual_rect.rect(), 1)
 
-    def _render_stat_bar(self, x, y, w, h, stat, max_stat, color):
-        pygame.draw.rect(self.screen, COLOR_WHITE, (x - 2, y - 2, w + 3, h + 3), 2)
+    def _render_stat_bar(self, x, y, w, h, stat, max_stat, color, border):
+
+        pygame.draw.rect(self.screen, (0, 0, 0), (x - 1, y - 1, w + 2, h + 2))
+        if border:
+            pygame.draw.rect(self.screen, (250, 250, 250), (x - 1, y - 1, w + 2, h + 2), 1)
         pygame.draw.rect(self.screen, color, (x, y, w * stat / max_stat, h))
 
     def _render_stat_bar_for_entity(self, world_entity, h, stat, max_stat, color, camera_world_area):
         self._render_stat_bar(world_entity.x - camera_world_area.x + 1,
                               world_entity.y - camera_world_area.y - 10,
-                              world_entity.w - 2, h, stat, max_stat, color)
+                              world_entity.w - 2, h, stat, max_stat, color, False)
 
     def _render_stat_bar_in_ui(self, x_in_ui, y_in_ui, w, h, stat, max_stat, color):
         x = self.ui_screen_area.x + x_in_ui
         y = self.ui_screen_area.y + y_in_ui
-        self._render_stat_bar(x, y, w, h, stat, max_stat, color)
+        self._render_stat_bar(x, y, w, h, stat, max_stat, color, True)
 
     def _render_ui_potion(self, x_in_ui, y_in_ui, size, potion_number, potion_type, highlighted_potion_action):
         w = size[0]
