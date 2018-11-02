@@ -97,7 +97,7 @@ class View:
 
         pygame.draw.rect(self.screen, (0, 0, 0), (x - 1, y - 1, w + 2, h + 2))
         if border:
-            pygame.draw.rect(self.screen, (250, 250, 250), (x - 1, y - 1, w + 2, h + 2), 1)
+            pygame.draw.rect(self.screen, (250, 250, 250), (x - 2, y - 2, w + 4, h + 4), 2)
         pygame.draw.rect(self.screen, color, (x, y, w * stat / max_stat, h))
 
     def _render_stat_bar_for_entity(self, world_entity, h, stat, max_stat, color, camera_world_area):
@@ -115,6 +115,7 @@ class View:
         h = size[1]
         x = self.ui_screen_area.x + x_in_ui
         y = self.ui_screen_area.y + y_in_ui
+        pygame.draw.rect(self.screen, (40, 40, 40), (x, y, w, h))
         if potion_type:
             icon_sprite = POTION_ICON_SPRITES[potion_type]
             self.screen.blit(self.images_by_ui_sprite[icon_sprite], (x, y))
@@ -131,6 +132,7 @@ class View:
         ability = ABILITIES[ability_type]
         mana_cost = ability.mana_cost
         icon_sprite = ability.icon_sprite
+        pygame.draw.rect(self.screen, (40, 40, 40), (x, y, w, h))
         self.screen.blit(self.images_by_ui_sprite[icon_sprite], (x, y))
         pygame.draw.rect(self.screen, COLOR_WHITE, (x, y, w, h), 2)
         if highlighted_ability_action == ability_type:
@@ -171,7 +173,7 @@ class View:
         rect_in_screen = (self.ui_screen_area.x + position_in_ui[0], self.ui_screen_area.y + position_in_ui[1],
                           size[0], size[1])
         self._render_rect_filled((100, 100, 100), rect_in_screen)
-        self._render_rect(COLOR_WHITE, rect_in_screen, 1)
+        self._render_rect(COLOR_WHITE, rect_in_screen, 2)
         dot_x = rect_in_screen[0] + player_relative_position[0] * size[0]
         dot_y = rect_in_screen[1] + player_relative_position[1] * size[1]
         dot_w = 4
@@ -220,15 +222,15 @@ class View:
 
         x_0 = 20
         self._render_ui_text(self.font_large, "HEALTH", x_0, y_1)
-        self._render_stat_bar_in_ui(x_0, y_2 + 2, 100, 25, player_health, player_max_health,
+        self._render_stat_bar_in_ui(x_0, y_2, 100, 36, player_health, player_max_health,
                                     COLOR_RED)
         health_text = str(player_health) + "/" + str(player_max_health)
-        self._render_ui_text(self.font_large, health_text, x_0 + 20, y_2 + 8)
+        self._render_ui_text(self.font_large, health_text, x_0 + 20, y_2 + 12)
 
         self._render_ui_text(self.font_large, "MANA", x_0, y_3)
-        self._render_stat_bar_in_ui(x_0, y_4 + 2, 100, 25, player_mana, player_max_mana, COLOR_BLUE)
+        self._render_stat_bar_in_ui(x_0, y_4, 100, 36, player_mana, player_max_mana, COLOR_BLUE)
         mana_text = str(player_mana) + "/" + str(player_max_mana)
-        self._render_ui_text(self.font_large, mana_text, x_0 + 20, y_4 + 8)
+        self._render_ui_text(self.font_large, mana_text, x_0 + 20, y_4 + 12)
 
         x_1 = 155
         icon_space = 5
@@ -250,7 +252,7 @@ class View:
 
         x_2 = 390
         self._render_ui_text(self.font_large, "MAP", x_2, y_1)
-        self._render_minimap((x_2, y_2), (120, 120), player_minimap_relative_position)
+        self._render_minimap((x_2, y_2), (125, 125), player_minimap_relative_position)
 
         buff_texts = []
         for active_buff in player_active_buffs:
