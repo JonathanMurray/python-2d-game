@@ -10,7 +10,7 @@ ENEMY_SPEED = 0.02
 ENEMY_2_SPEED = 0.032
 ENEMY_MAGE_SPEED = 0.02
 PLAYER_ENTITY_SPEED = 0.1
-ENEMY_BERSERKER_SPEED = 0.08
+ENEMY_BERSERKER_SPEED = 0.1
 
 
 def init_game_state_from_file(camera_size: Tuple[int, int]):

@@ -164,5 +164,5 @@ class BerserkerEnemyMind:
                 attack_range = 80
                 if abs(enemy_position[0] - player_position[0]) < attack_range \
                         and abs(enemy_position[1] - player_position[1]) < attack_range:
-                    game_state.player_state.lose_health(15)
+                    game_state.player_state.lose_health(12)
                     game_state.visual_effects.append(VisualLine((220, 0, 0), enemy_position, player_position, 100, 3))
