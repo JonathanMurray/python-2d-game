@@ -63,4 +63,6 @@ class EnemyPoisonProjectileController(AbstractProjectileController):
     def apply_player_collision(self, game_state: GameState):
         game_state.player_state.lose_health(1)
         game_state.player_state.gain_buff(BuffType.DAMAGE_OVER_TIME, Millis(2000))
+        game_state.visual_circles.append(VisualCircle((50, 180, 50), game_state.player_entity.get_center_position(),
+                                                      50, Millis(100)))
         return True
