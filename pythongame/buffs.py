@@ -14,8 +14,16 @@ class AbstractBuff:
 
 
 class HealingOverTime(AbstractBuff):
+    def __init__(self):
+        self._time_since_graphics = 0
+
     def apply_middle_effect(self, game_state: GameState, time_passed: Millis):
+        self._time_since_graphics += time_passed
         game_state.player_state.gain_health(0.04 * time_passed)
+        if self._time_since_graphics > 500:
+            game_state.visual_circles.append(VisualCircle((200, 200, 50), game_state.player_entity.get_center_position(),
+                                                          10, Millis(100)))
+            self._time_since_graphics = 0
 
 
 class DamageOverTime(AbstractBuff):
@@ -32,8 +40,18 @@ class DamageOverTime(AbstractBuff):
 
 
 class IncreasedMoveSpeed(AbstractBuff):
+    def __init__(self):
+        self._time_since_graphics = 0
+
     def apply_start_effect(self, game_state: GameState):
         game_state.player_entity.add_to_speed_multiplier(1)
+
+    def apply_middle_effect(self, game_state: GameState, time_passed: Millis):
+        self._time_since_graphics += time_passed
+        if self._time_since_graphics > 100:
+            game_state.visual_circles.append(
+                VisualCircle((150, 200, 250), game_state.player_entity.get_center_position(), 10, Millis(200)))
+            self._time_since_graphics = 0
 
     def apply_end_effect(self, game_state: GameState):
         game_state.player_entity.add_to_speed_multiplier(-1)
