@@ -12,12 +12,8 @@
 * Add path-finding for enemies
 
 #### Features:
-* Introduce more varied functionality for different projectiles
-    * arrow that explodes on impact?
-    * cloud that deals damage continuously?
 * New advanced enemy behaviors
     * summoning new enemies?
-* Enemy AI and enemy interactions that make a bit more sense
 * Save functionality
     * save the current game_state into a JSON file and load it on startup
 * Introduce "items" (wearables that give you some buff)
