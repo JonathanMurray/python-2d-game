@@ -10,8 +10,7 @@ COLOR_RED = (250, 0, 0)
 COLOR_BLUE = (0, 0, 250)
 COLOR_BACKGROUND = (200, 200, 200)
 COLOR_HIGHLIGHTED_ICON = (150, 150, 250)
-UI_POTION_SIZE = (27, 27)
-UI_ABILITY_SIZE = (27, 27)
+UI_ICON_SIZE = (36, 36)
 
 RENDER_HIT_AND_COLLISION_BOXES = False
 
@@ -47,7 +46,7 @@ class View:
         self.images_by_sprite = {sprite: load_and_scale_sprite(ENTITY_SPRITE_INITIALIZERS[sprite])
                                  for sprite in ENTITY_SPRITE_INITIALIZERS}
         self.images_by_ui_sprite = {sprite: load_and_scale_sprite(
-            SpriteInitializer(UI_ICON_SPRITE_PATHS[sprite], UI_POTION_SIZE))
+            SpriteInitializer(UI_ICON_SPRITE_PATHS[sprite], UI_ICON_SIZE))
             for sprite in UI_ICON_SPRITE_PATHS}
 
     def _render_entity(self, entity, camera_world_area):
@@ -215,9 +214,9 @@ class View:
                                                self.screen_size[1] - self.camera_size[1]))
 
         y_1 = 17
-        y_2 = 40
-        y_3 = 107
-        y_4 = 130
+        y_2 = y_1 + 20
+        y_3 = 105
+        y_4 = y_3 + 20
 
         x_0 = 20
         self._render_ui_text(self.font_large, "HEALTH", x_0, y_1)
@@ -231,19 +230,25 @@ class View:
         mana_text = str(player_mana) + "/" + str(player_max_mana)
         self._render_ui_text(self.font_large, mana_text, x_0 + 20, y_4 + 8)
 
-        x_1 = 170
+        x_1 = 155
+        icon_space = 5
         self._render_ui_text(self.font_large, "POTIONS", x_1, y_1)
-        self._render_ui_potion(x_1, y_2, UI_POTION_SIZE, 1, potion_slots[1], highlighted_potion_action)
-        self._render_ui_potion(x_1 + 30, y_2, UI_POTION_SIZE, 2, potion_slots[2], highlighted_potion_action)
-        self._render_ui_potion(x_1 + 60, y_2, UI_POTION_SIZE, 3, potion_slots[3], highlighted_potion_action)
-        self._render_ui_potion(x_1 + 90, y_2, UI_POTION_SIZE, 4, potion_slots[4], highlighted_potion_action)
-        self._render_ui_potion(x_1 + 120, y_2, UI_POTION_SIZE, 5, potion_slots[5], highlighted_potion_action)
+        self._render_ui_potion(x_1, y_2, UI_ICON_SIZE, 1, potion_slots[1], highlighted_potion_action)
+        self._render_ui_potion(x_1 + (UI_ICON_SIZE[0] + icon_space), y_2, UI_ICON_SIZE, 2, potion_slots[2],
+                               highlighted_potion_action)
+        self._render_ui_potion(x_1 + 2 * (UI_ICON_SIZE[0] + icon_space), y_2, UI_ICON_SIZE, 3, potion_slots[3],
+                               highlighted_potion_action)
+        self._render_ui_potion(x_1 + 3 * (UI_ICON_SIZE[0] + icon_space), y_2, UI_ICON_SIZE, 4, potion_slots[4],
+                               highlighted_potion_action)
+        self._render_ui_potion(x_1 + 4 * (UI_ICON_SIZE[0] + icon_space), y_2, UI_ICON_SIZE, 5, potion_slots[5],
+                               highlighted_potion_action)
 
         self._render_ui_text(self.font_large, "SPELLS", x_1, y_3)
         for i, ability_type in enumerate(abilities):
-            self._render_ui_ability(x_1 + i * 30, y_4, UI_ABILITY_SIZE, ability_type, highlighted_ability_action)
+            self._render_ui_ability(x_1 + i * (UI_ICON_SIZE[0] + icon_space), y_4, UI_ICON_SIZE, ability_type,
+                                    highlighted_ability_action)
 
-        x_2 = 370
+        x_2 = 390
         self._render_ui_text(self.font_large, "MAP", x_2, y_1)
         self._render_minimap((x_2, y_2), (120, 120), player_minimap_relative_position)
 
