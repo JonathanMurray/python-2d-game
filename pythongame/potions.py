@@ -26,10 +26,10 @@ def try_consume_potion(potion_type: PotionType, game_state: GameState):
         else:
             return PotionFailedToBeConsumed("Already at full mana!")
     elif potion_type == PotionType.SPEED:
-        game_state.player_state.add_buff(BuffType.INCREASED_MOVE_SPEED, 3500)
+        game_state.player_state.add_buff(BuffType.INCREASED_MOVE_SPEED, Millis(3500))
         return PotionWasConsumed()
     elif potion_type == PotionType.INVISIBILITY:
-        game_state.player_state.add_buff(BuffType.INVISIBILITY, 5000)
+        game_state.player_state.add_buff(BuffType.INVISIBILITY, Millis(5000))
         return PotionWasConsumed()
     else:
         raise Exception("Unhandled potion: " + str(potion_type))

@@ -16,7 +16,7 @@ def apply_ability_effect(game_state: GameState, ability_type: AbilityType):
 
 
 def _apply_heal(game_state: GameState):
-    game_state.player_state.add_buff(BuffType.HEALING_OVER_TIME, 3500)
+    game_state.player_state.add_buff(BuffType.HEALING_OVER_TIME, Millis(3500))
 
 
 def _apply_attack(game_state: GameState):

@@ -81,7 +81,7 @@ class Enemy:
 
 class VisualLine:
     def __init__(self, color: Tuple[int, int, int], start_position: Tuple[int, int], end_position: Tuple[int, int],
-                 max_age: int):
+                 max_age: Millis):
         self._age = 0
         self._max_age = max_age
         self.color = color
@@ -96,7 +96,7 @@ class VisualLine:
 
 
 class Buff:
-    def __init__(self, buff_type: BuffType, time_until_expiration: int):
+    def __init__(self, buff_type: BuffType, time_until_expiration: Millis):
         self.buff_type = buff_type
         self.time_until_expiration = time_until_expiration
         self.has_applied_start_effect = False
