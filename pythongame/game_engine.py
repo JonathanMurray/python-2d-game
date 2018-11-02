@@ -99,6 +99,9 @@ class GameEngine:
             projectile.world_entity.x = new_x
             projectile.world_entity.y = new_y
 
+        for visual_effect in self.game_state.visual_effects:
+            visual_effect.update_position_if_attached_to_entity()
+
         # ------------------------------------
         #          HANDLE COLLISIONS
         # ------------------------------------

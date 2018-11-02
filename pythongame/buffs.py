@@ -39,7 +39,7 @@ class DamageOverTime(AbstractBuff):
         game_state.player_state.lose_health(0.02 * time_passed)
         if self._time_since_graphics > 300:
             game_state.visual_effects.append(VisualCircle((50, 180, 50), game_state.player_entity.get_center_position(),
-                                                          20, Millis(50)))
+                                                          20, Millis(50), game_state.player_entity))
             self._time_since_graphics = 0
 
 
@@ -70,10 +70,11 @@ class Invisibility(AbstractBuff):
 
     def apply_middle_effect(self, game_state: GameState, time_passed: Millis):
         self._time_since_graphics += time_passed
-        if self._time_since_graphics > 80:
+        if self._time_since_graphics > 320:
             self._time_since_graphics = 0
             game_state.visual_effects.append(
-                VisualRect((0, 0, 250), game_state.player_entity.get_center_position(), 40, 80))
+                VisualRect((0, 0, 250), game_state.player_entity.get_center_position(), 60, 400,
+                           game_state.player_entity))
 
     def apply_end_effect(self, game_state: GameState):
         game_state.player_state.is_invisible = False
