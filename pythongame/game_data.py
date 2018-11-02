@@ -10,6 +10,7 @@ ENEMY_2_ENTITY_SIZE = (60, 60)
 ENEMY_MAGE_ENTITY_SIZE = (60, 60)
 ENEMY_BERSERKER_SIZE = (50, 50)
 ATTACK_PROJECTILE_SIZE = (25, 25)
+MAGIC_MISSILE_PROJECTILE_SIZE = (20, 20)
 ENEMY_PROJECTILE_SIZE = (35, 35)
 AOE_PROJECTILE_SIZE = (110, 110)
 POTION_ENTITY_SIZE = (30, 30)
@@ -29,6 +30,7 @@ class UiIconSprite(Enum):
     HEAL_ABILITY = 5
     AOE_ABILITY = 6
     INVISIBILITY_POTION = 7
+    MAGIC_MISSILE = 8
 
 
 class AbilityData:
@@ -46,6 +48,7 @@ ENTITY_SPRITE_INITIALIZERS = {
     Sprite.ENEMY_MAGE: SpriteInitializer("resources/enemy_mage.png", ENEMY_MAGE_ENTITY_SIZE),
     Sprite.ENEMY_BERSERKER: SpriteInitializer("resources/orc_berserker.png", ENEMY_BERSERKER_SIZE),
     Sprite.FIREBALL: SpriteInitializer("resources/fireball.png", ATTACK_PROJECTILE_SIZE),
+    Sprite.MAGIC_MISSILE: SpriteInitializer("resources/magic_missile.png", MAGIC_MISSILE_PROJECTILE_SIZE),
     Sprite.WHIRLWIND: SpriteInitializer("resources/whirlwind.png", AOE_PROJECTILE_SIZE),
     Sprite.HEALTH_POTION: SpriteInitializer("resources/ui_health_potion.png", POTION_ENTITY_SIZE),
     Sprite.POISONBALL: SpriteInitializer("resources/poisonball.png", ENEMY_PROJECTILE_SIZE),
@@ -58,7 +61,8 @@ UI_ICON_SPRITE_PATHS = {
     UiIconSprite.INVISIBILITY_POTION: "resources/invis_potion.png",
     UiIconSprite.ATTACK_ABILITY: "resources/fireball.png",
     UiIconSprite.HEAL_ABILITY: "resources/heal_ability.png",
-    UiIconSprite.AOE_ABILITY: "resources/whirlwind.png"
+    UiIconSprite.AOE_ABILITY: "resources/whirlwind.png",
+    UiIconSprite.MAGIC_MISSILE: "resources/magic_missile.png"
 }
 
 POTION_ICON_SPRITES = {
@@ -72,7 +76,7 @@ ABILITIES = {
     AbilityType.ATTACK: AbilityData(UiIconSprite.ATTACK_ABILITY, 3, "Q", pygame.K_q),
     AbilityType.HEAL: AbilityData(UiIconSprite.HEAL_ABILITY, 10, "W", pygame.K_w),
     AbilityType.AOE_ATTACK: AbilityData(UiIconSprite.AOE_ABILITY, 5, "E", pygame.K_e),
-    AbilityType.SELF_STUN: AbilityData(UiIconSprite.AOE_ABILITY, 5, "R", pygame.K_r),
+    AbilityType.CHANNEL_ATTACK: AbilityData(UiIconSprite.MAGIC_MISSILE, 12, "R", pygame.K_r),
 }
 
 BUFF_TEXTS = {
@@ -80,5 +84,5 @@ BUFF_TEXTS = {
     BuffType.INCREASED_MOVE_SPEED: "Speed",
     BuffType.HEALING_OVER_TIME: "Healing",
     BuffType.INVISIBILITY: "Invisibility",
-    BuffType.STUNNED: "Stunned"
+    BuffType.CHANNELING_MAGIC_MISSILES: "Channeling"
 }

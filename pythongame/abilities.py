@@ -11,8 +11,8 @@ def apply_ability_effect(game_state: GameState, ability_type: AbilityType):
         _apply_heal(game_state)
     elif ability_type == AbilityType.AOE_ATTACK:
         _apply_aoe_attack(game_state)
-    elif ability_type == AbilityType.SELF_STUN:
-        _apply_self_stun(game_state)
+    elif ability_type == AbilityType.CHANNEL_ATTACK:
+        _apply_channel_attack(game_state)
     else:
         raise Exception("Unhandled ability type: " + str(ability_type))
 
@@ -51,5 +51,5 @@ def _apply_aoe_attack(game_state: GameState):
     game_state.projectile_entities.append(projectile)
 
 
-def _apply_self_stun(game_state: GameState):
-    game_state.player_state.gain_buff(BuffType.STUNNED, Millis(2000))
+def _apply_channel_attack(game_state: GameState):
+    game_state.player_state.gain_buff(BuffType.CHANNELING_MAGIC_MISSILES, Millis(1000))

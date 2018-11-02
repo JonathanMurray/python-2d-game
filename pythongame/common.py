@@ -82,7 +82,7 @@ class AbilityType(Enum):
     HEAL = 1
     ATTACK = 2
     AOE_ATTACK = 3
-    SELF_STUN = 4
+    CHANNEL_ATTACK = 4
 
 
 class Sprite(Enum):
@@ -95,6 +95,7 @@ class Sprite(Enum):
     POISONBALL = 7
     ENEMY_MAGE = 8
     ENEMY_BERSERKER = 9
+    MAGIC_MISSILE = 10
 
 
 class BuffType(Enum):
@@ -102,10 +103,11 @@ class BuffType(Enum):
     DAMAGE_OVER_TIME = 2
     INCREASED_MOVE_SPEED = 3
     INVISIBILITY = 4
-    STUNNED = 5
+    CHANNELING_MAGIC_MISSILES = 5
 
 
 class ProjectileType(Enum):
     PLAYER = 1
     PLAYER_AOE = 2
     ENEMY_POISON = 3
+    PLAYER_MAGIC_MISSILE = 4

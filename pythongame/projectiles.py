@@ -9,6 +9,8 @@ def create_projectile_controller(projectile_type: ProjectileType):
         return PlayerAoeProjectileController()
     if projectile_type == ProjectileType.ENEMY_POISON:
         return EnemyPoisonProjectileController()
+    if projectile_type == ProjectileType.PLAYER_MAGIC_MISSILE:
+        return PlayerMagicMissileProjectileController()
 
 
 class AbstractProjectileController:
@@ -53,6 +55,20 @@ class PlayerAoeProjectileController(AbstractProjectileController):
         if self._has_activated:
             enemy.lose_health(2)
             return True
+        return False
+
+
+class PlayerMagicMissileProjectileController(AbstractProjectileController):
+    def __init__(self):
+        super().__init__(400)
+        self._enemies_hit = []
+
+    def apply_enemy_collision(self, enemy: Enemy, game_state: GameState):
+        if enemy not in self._enemies_hit:
+            enemy.lose_health(1)
+            game_state.visual_circles.append(VisualCircle((250, 100, 250), enemy.world_entity.get_center_position(), 25,
+                                                          Millis(100)))
+            self._enemies_hit.append(enemy)
         return False
 
 
