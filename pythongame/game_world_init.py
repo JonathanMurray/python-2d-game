@@ -67,6 +67,6 @@ def init_game_state_from_file(camera_size: Tuple[int, int]):
         5: PotionType.INVISIBILITY
     }
     abilities = [AbilityType.ATTACK, AbilityType.HEAL, AbilityType.AOE_ATTACK, AbilityType.CHANNEL_ATTACK]
-    player_state = PlayerState(500, 500, 90, 100, 0.002, player_potion_slots, abilities)
+    player_state = PlayerState(300, 300, 90, 100, 0.002, player_potion_slots, abilities)
     game_world_size = (max_col_index * col_width, max_row_index * row_height)
     return GameState(player_entity, potions, enemies, camera_size, game_world_size, player_state)

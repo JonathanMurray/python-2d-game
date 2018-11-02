@@ -1,3 +1,3 @@
-                    D      D
-               P  D   D    D  B M
-                       S     D S
+                    D      D            BBBBB
+               P  D   D    D  B M       BBBBB
+                       S     D S        BBBBB
