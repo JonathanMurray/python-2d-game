@@ -11,6 +11,8 @@ def apply_ability_effect(game_state: GameState, ability_type: AbilityType):
         _apply_heal(game_state)
     elif ability_type == AbilityType.AOE_ATTACK:
         _apply_aoe_attack(game_state)
+    elif ability_type == AbilityType.SELF_STUN:
+        _apply_self_stun(game_state)
     else:
         raise Exception("Unhandled ability type: " + str(ability_type))
 
@@ -47,3 +49,7 @@ def _apply_aoe_attack(game_state: GameState):
     entity = WorldEntity(aoe_pos, AOE_PROJECTILE_SIZE, Sprite.WHIRLWIND, game_state.player_entity.direction, 0.1)
     projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER_AOE))
     game_state.projectile_entities.append(projectile)
+
+
+def _apply_self_stun(game_state: GameState):
+    game_state.player_state.gain_buff(BuffType.STUNNED, Millis(2000))

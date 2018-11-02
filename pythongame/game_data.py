@@ -71,12 +71,14 @@ POTION_ICON_SPRITES = {
 ABILITIES = {
     AbilityType.ATTACK: AbilityData(UiIconSprite.ATTACK_ABILITY, 3, "Q", pygame.K_q),
     AbilityType.HEAL: AbilityData(UiIconSprite.HEAL_ABILITY, 10, "W", pygame.K_w),
-    AbilityType.AOE_ATTACK: AbilityData(UiIconSprite.AOE_ABILITY, 5, "E", pygame.K_e)
+    AbilityType.AOE_ATTACK: AbilityData(UiIconSprite.AOE_ABILITY, 5, "E", pygame.K_e),
+    AbilityType.SELF_STUN: AbilityData(UiIconSprite.AOE_ABILITY, 5, "R", pygame.K_r),
 }
 
 BUFF_TEXTS = {
     BuffType.DAMAGE_OVER_TIME: "Poison",
     BuffType.INCREASED_MOVE_SPEED: "Speed",
     BuffType.HEALING_OVER_TIME: "Healing",
-    BuffType.INVISIBILITY: "Invisibility"
+    BuffType.INVISIBILITY: "Invisibility",
+    BuffType.STUNNED: "Stunned"
 }

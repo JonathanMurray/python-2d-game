@@ -157,6 +157,7 @@ class PlayerState:
         self.abilities = abilities
         self.active_buffs: List[Buff] = []
         self.is_invisible = False
+        self.is_stunned = False
 
     def gain_health(self, amount: float):
         self._health_float = min(self._health_float + amount, self.max_health)

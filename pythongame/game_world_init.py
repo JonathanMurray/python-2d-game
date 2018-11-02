@@ -60,6 +60,6 @@ def init_game_state_from_file(game_world_size: Tuple[int, int], camera_size: Tup
         4: PotionType.INVISIBILITY,
         5: PotionType.INVISIBILITY
     }
-    abilities = [AbilityType.ATTACK, AbilityType.HEAL, AbilityType.AOE_ATTACK]
+    abilities = [AbilityType.ATTACK, AbilityType.HEAL, AbilityType.AOE_ATTACK, AbilityType.SELF_STUN]
     player_state = PlayerState(500, 500, 75, 100, 0.001, player_potion_slots, abilities)
     return GameState(player_entity, potions, enemies, camera_size, game_world_size, player_state)

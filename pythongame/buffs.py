@@ -76,9 +76,19 @@ class Invisibility(AbstractBuff):
         game_state.player_state.is_invisible = False
 
 
+class Stunned(AbstractBuff):
+    def apply_start_effect(self, game_state: GameState):
+        game_state.player_state.is_stunned = True
+        game_state.player_entity.set_not_moving()
+
+    def apply_end_effect(self, game_state: GameState):
+        game_state.player_state.is_stunned = False
+
+
 BUFF_EFFECTS = {
     BuffType.HEALING_OVER_TIME: HealingOverTime(),
     BuffType.DAMAGE_OVER_TIME: DamageOverTime(),
     BuffType.INCREASED_MOVE_SPEED: IncreasedMoveSpeed(),
-    BuffType.INVISIBILITY: Invisibility()
+    BuffType.INVISIBILITY: Invisibility(),
+    BuffType.STUNNED: Stunned()
 }

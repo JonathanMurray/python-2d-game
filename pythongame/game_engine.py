@@ -15,27 +15,30 @@ class GameEngine:
         self.view_state = view_state
 
     def try_use_ability(self, ability_type: AbilityType):
-        self.view_state.notify_ability_was_clicked(ability_type)
-        result = self.player_controls.try_use_ability(self.game_state.player_state, ability_type)
-        if result == TryUseAbilityResult.SUCCESS:
-            apply_ability_effect(self.game_state, ability_type)
-        elif result == TryUseAbilityResult.NOT_ENOUGH_MANA:
-            self.view_state.set_message("Not enough mana!")
+        if not self.game_state.player_state.is_stunned:
+            self.view_state.notify_ability_was_clicked(ability_type)
+            result = self.player_controls.try_use_ability(self.game_state.player_state, ability_type)
+            if result == TryUseAbilityResult.SUCCESS:
+                apply_ability_effect(self.game_state, ability_type)
+            elif result == TryUseAbilityResult.NOT_ENOUGH_MANA:
+                self.view_state.set_message("Not enough mana!")
 
     def try_use_potion(self, slot_number: int):
-        self.view_state.notify_potion_was_clicked(slot_number)
-        potion_type_in_this_slot = self.game_state.player_state.potion_slots[slot_number]
-        if potion_type_in_this_slot:
-            result = try_consume_potion(potion_type_in_this_slot, self.game_state)
-            if isinstance(result, PotionWasConsumed):
-                self.game_state.player_state.potion_slots[slot_number] = None
-            elif isinstance(result, PotionFailedToBeConsumed):
-                self.view_state.set_message(result.reason)
-        else:
-            self.view_state.set_message("No potion to use!")
+        if not self.game_state.player_state.is_stunned:
+            self.view_state.notify_potion_was_clicked(slot_number)
+            potion_type_in_this_slot = self.game_state.player_state.potion_slots[slot_number]
+            if potion_type_in_this_slot:
+                result = try_consume_potion(potion_type_in_this_slot, self.game_state)
+                if isinstance(result, PotionWasConsumed):
+                    self.game_state.player_state.potion_slots[slot_number] = None
+                elif isinstance(result, PotionFailedToBeConsumed):
+                    self.view_state.set_message(result.reason)
+            else:
+                self.view_state.set_message("No potion to use!")
 
     def move_in_direction(self, direction: Direction):
-        self.game_state.player_entity.set_moving_in_dir(direction)
+        if not self.game_state.player_state.is_stunned:
+            self.game_state.player_entity.set_moving_in_dir(direction)
 
     def stop_moving(self):
         self.game_state.player_entity.set_not_moving()

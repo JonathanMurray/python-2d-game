@@ -82,6 +82,7 @@ class AbilityType(Enum):
     HEAL = 1
     ATTACK = 2
     AOE_ATTACK = 3
+    SELF_STUN = 4
 
 
 class Sprite(Enum):
@@ -101,6 +102,7 @@ class BuffType(Enum):
     DAMAGE_OVER_TIME = 2
     INCREASED_MOVE_SPEED = 3
     INVISIBILITY = 4
+    STUNNED = 5
 
 
 class ProjectileType(Enum):
