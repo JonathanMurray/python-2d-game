@@ -12,6 +12,7 @@
 * Add path-finding for enemies
 
 #### Features:
+* Ability-specific cooldowns
 * New advanced enemy behaviors
     * summoning new enemies?
 * Save functionality
