@@ -5,7 +5,7 @@ import pygame
 from pythongame.common import *
 
 PLAYER_ENTITY_SIZE = (60, 60)
-ENEMY_ENTITY_SIZE = (30, 30)
+ENEMY_ENTITY_SIZE = (28, 28)
 ENEMY_2_ENTITY_SIZE = (60, 60)
 ENEMY_MAGE_ENTITY_SIZE = (60, 60)
 ATTACK_PROJECTILE_SIZE = (25, 25)

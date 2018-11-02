@@ -32,17 +32,18 @@ class WorldEntity:
     def set_not_moving(self):
         self._is_moving = False
 
-    def update_position_according_to_dir_and_speed(self, time_passed: Millis):
+    def get_new_position_according_to_dir_and_speed(self, time_passed: Millis) -> Optional:
         distance = self._effective_speed * time_passed
         if self._is_moving:
             if self.direction == Direction.LEFT:
-                self.x -= distance
+                return self.x - distance, self.y
             elif self.direction == Direction.RIGHT:
-                self.x += distance
+                return self.x + distance, self.y
             elif self.direction == Direction.UP:
-                self.y -= distance
+                return self.x, self.y - distance
             elif self.direction == Direction.DOWN:
-                self.y += distance
+                return self.x, self.y + distance
+        return None
 
     def get_center_position(self):
         return int(self.x + self.w / 2), int(self.y + self.h / 2)
@@ -210,10 +211,20 @@ class GameState:
     def get_projectiles_intersecting_with(self, entity) -> List[Projectile]:
         return [p for p in self.projectile_entities if boxes_intersect(entity, p.world_entity)]
 
-    def update_world_entity_position_within_game_world(self, world_entity: WorldEntity, time_passed: Millis):
-        world_entity.update_position_according_to_dir_and_speed(time_passed)
-        world_entity.x = min(max(world_entity.x, 0), self.game_world_size[0] - world_entity.w)
-        world_entity.y = min(max(world_entity.y, 0), self.game_world_size[1] - world_entity.h)
+    # NOTE: Very naive brute-force collision checking
+    def update_world_entity_position_within_game_world(self, entity: WorldEntity, time_passed: Millis):
+        new_position = entity.get_new_position_according_to_dir_and_speed(time_passed)
+        if new_position:
+            old_x = entity.x
+            old_y = entity.y
+            entity.x = min(max(new_position[0], 0), self.game_world_size[0] - entity.w)
+            entity.y = min(max(new_position[1], 0), self.game_world_size[1] - entity.h)
+            other_entities = [e.world_entity for e in self.enemies] + [self.player_entity]
+            collision = any([other for other in other_entities if boxes_intersect(entity, other)
+                             and entity is not other])
+            if collision:
+                entity.x = old_x
+                entity.y = old_y
 
     def is_within_game_world(self, box) -> bool:
         return boxes_intersect(box, self.entire_world_area)

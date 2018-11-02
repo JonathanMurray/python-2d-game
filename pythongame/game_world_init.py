@@ -6,7 +6,7 @@ from pythongame.game_data import PLAYER_ENTITY_SIZE, ENEMY_ENTITY_SIZE, ENEMY_2_
     ENEMY_MAGE_ENTITY_SIZE
 from pythongame.game_state import WorldEntity, Enemy, GameState, PotionOnGround, PlayerState
 
-ENEMY_SPEED = 0.016
+ENEMY_SPEED = 0.02
 ENEMY_2_SPEED = 0.032
 ENEMY_MAGE_SPEED = 0.02
 PLAYER_ENTITY_SPEED = 0.1
