@@ -9,7 +9,7 @@ COLOR_BLACK = (0, 0, 0)
 COLOR_RED = (250, 0, 0)
 COLOR_BLUE = (0, 0, 250)
 COLOR_BACKGROUND = (200, 200, 200)
-COLOR_HIGHLIGHTED_ICON = (150, 150, 250)
+COLOR_HIGHLIGHTED_ICON = (250, 250, 150)
 UI_ICON_SIZE = (36, 36)
 
 RENDER_HIT_AND_COLLISION_BOXES = False
@@ -120,7 +120,7 @@ class View:
             self.screen.blit(self.images_by_ui_sprite[icon_sprite], (x, y))
         pygame.draw.rect(self.screen, COLOR_WHITE, (x, y, w, h), 2)
         if highlighted_potion_action == potion_number:
-            pygame.draw.rect(self.screen, COLOR_HIGHLIGHTED_ICON, (x, y, w, h), 3)
+            pygame.draw.rect(self.screen, COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
         self.screen.blit(self.font_tiny.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + h + 4))
 
     def _render_ui_ability(self, x_in_ui, y_in_ui, size, ability_type, highlighted_ability_action):
@@ -134,7 +134,7 @@ class View:
         self.screen.blit(self.images_by_ui_sprite[icon_sprite], (x, y))
         pygame.draw.rect(self.screen, COLOR_WHITE, (x, y, w, h), 2)
         if highlighted_ability_action == ability_type:
-            pygame.draw.rect(self.screen, COLOR_HIGHLIGHTED_ICON, (x, y, w, h), 3)
+            pygame.draw.rect(self.screen, COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
         self.screen.blit(self.font_tiny.render(ability.key_string, False, COLOR_WHITE), (x + 8, y + h + 4))
         self.screen.blit(self.font_tiny.render("" + str(mana_cost) + "", False, COLOR_WHITE), (x + 8, y + h + 19))
 
