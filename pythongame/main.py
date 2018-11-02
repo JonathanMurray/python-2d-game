@@ -77,6 +77,7 @@ def main():
                                player_active_buffs=game_state.player_state.active_buffs,
                                visual_lines=game_state.visual_lines,
                                visual_circles=game_state.visual_circles,
+                               visual_rects=game_state.visual_rects,
                                fps_string=str(int(clock.get_fps())),
                                player_minimap_relative_position=view_state.player_minimap_relative_position,
                                abilities=game_state.player_state.abilities,

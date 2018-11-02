@@ -112,6 +112,22 @@ class VisualCircle:
             self.has_expired = True
 
 
+class VisualRect:
+    def __init__(self, color: Tuple[int, int, int], center_position: Tuple[int, int], width: int, max_age: Millis):
+        self.age = 0
+        self.max_age = max_age
+        self.color = color
+        self.center_position = center_position
+        self.start_width = int(width * 0.75)
+        self.end_width = width
+        self.has_expired = False
+
+    def notify_time_passed(self, time_passed: Millis):
+        self.age += time_passed
+        if self.age > self.max_age:
+            self.has_expired = True
+
+
 class Buff:
     def __init__(self, buff_type: BuffType, time_until_expiration: Millis):
         self.buff_type = buff_type
@@ -187,6 +203,7 @@ class GameState:
         self.enemies = enemies
         self.visual_lines = []
         self.visual_circles = []
+        self.visual_rects = []
         self.player_state = player_state
         self.game_world_size = game_world_size
         self.entire_world_area = WorldArea((0, 0), self.game_world_size)
@@ -235,8 +252,12 @@ class GameState:
     def remove_dead_enemies(self):
         self.enemies = [e for e in self.enemies if e.health > 0]
 
+    # TODO generalise handling of these visual effects
     def remove_expired_visual_lines(self):
         self.visual_lines = [v for v in self.visual_lines if not v.has_expired]
 
     def remove_expired_visual_circles(self):
         self.visual_circles = [v for v in self.visual_circles if not v.has_expired]
+
+    def remove_expired_visual_rects(self):
+        self.visual_rects = [v for v in self.visual_rects if not v.has_expired]
