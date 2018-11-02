@@ -11,6 +11,8 @@ def create_enemy_mind(enemy_behavior: EnemyBehavior):
         return SmartEnemyMind()
     elif enemy_behavior == EnemyBehavior.MAGE:
         return MageEnemyMind()
+    elif enemy_behavior == EnemyBehavior.BERSERKER:
+        return BerserkerEnemyMind()
     else:
         raise Exception("Unhandled behavior: " + str(enemy_behavior))
 
@@ -131,3 +133,22 @@ class MageEnemyMind:
                 enemy.world_entity.set_moving_in_dir(direction)
             else:
                 enemy.world_entity.set_not_moving()
+
+
+class BerserkerEnemyMind:
+    def __init__(self):
+        self._decision_interval = 750
+        self._time_since_decision = self._decision_interval
+
+    def control_enemy(self, _game_state: GameState, enemy: Enemy, player_entity: WorldEntity, is_player_invisible: bool,
+                      time_passed: Millis):
+        self._time_since_decision += time_passed
+        if self._time_since_decision > self._decision_interval:
+            self._time_since_decision = 0
+            if is_player_invisible:
+                direction = random_direction()
+            else:
+                direction = get_direction_between(enemy.world_entity, player_entity)
+                if random.random() < 0.2:
+                    direction = random.choice(get_perpendicular_directions(direction))
+            enemy.world_entity.set_moving_in_dir(direction)

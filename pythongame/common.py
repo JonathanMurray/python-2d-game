@@ -75,6 +75,7 @@ class EnemyBehavior(Enum):
     DUMB = 1
     SMART = 2
     MAGE = 3
+    BERSERKER = 4
 
 
 class AbilityType(Enum):
@@ -92,6 +93,7 @@ class Sprite(Enum):
     HEALTH_POTION = 6
     POISONBALL = 7
     ENEMY_MAGE = 8
+    ENEMY_BERSERKER = 9
 
 
 class BuffType(Enum):
