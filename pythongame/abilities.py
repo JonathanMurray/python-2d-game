@@ -23,7 +23,8 @@ def _apply_attack(game_state: GameState):
     player_center_position = game_state.player_entity.get_center_position()
     projectile_pos = (player_center_position[0] - ATTACK_PROJECTILE_SIZE[0] / 2,
                       player_center_position[1] - ATTACK_PROJECTILE_SIZE[1] / 2)
-    entity = WorldEntity(projectile_pos, ATTACK_PROJECTILE_SIZE, Sprite.FIREBALL, game_state.player_entity.direction, 8)
+    entity = WorldEntity(projectile_pos, ATTACK_PROJECTILE_SIZE, Sprite.FIREBALL, game_state.player_entity.direction,
+                         0.3)
     projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER))
     game_state.projectile_entities.append(projectile)
 
@@ -43,6 +44,6 @@ def _apply_aoe_attack(game_state: GameState):
     else:
         raise Exception("Unhandled direction: " + str(direction))
 
-    entity = WorldEntity(aoe_pos, AOE_PROJECTILE_SIZE, Sprite.WHIRLWIND, game_state.player_entity.direction, 3)
+    entity = WorldEntity(aoe_pos, AOE_PROJECTILE_SIZE, Sprite.WHIRLWIND, game_state.player_entity.direction, 0.1)
     projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER_AOE))
     game_state.projectile_entities.append(projectile)

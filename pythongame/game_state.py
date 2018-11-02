@@ -33,7 +33,7 @@ class WorldEntity:
         self._is_moving = False
 
     def update_position_according_to_dir_and_speed(self, time_passed: Millis):
-        distance = self._effective_speed * time_passed / 25  # 25 because this was the avg. frame duration before this change
+        distance = self._effective_speed * time_passed
         if self._is_moving:
             if self.direction == Direction.LEFT:
                 self.x -= distance

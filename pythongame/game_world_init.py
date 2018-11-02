@@ -6,10 +6,10 @@ from pythongame.game_data import PLAYER_ENTITY_SIZE, ENEMY_ENTITY_SIZE, ENEMY_2_
     ENEMY_MAGE_ENTITY_SIZE
 from pythongame.game_state import WorldEntity, Enemy, GameState, PotionOnGround, PlayerState
 
-ENEMY_SPEED = 0.4
-ENEMY_2_SPEED = 0.8
-ENEMY_MAGE_SPEED = 0.5
-PLAYER_ENTITY_SPEED = 2.7
+ENEMY_SPEED = 0.016
+ENEMY_2_SPEED = 0.032
+ENEMY_MAGE_SPEED = 0.02
+PLAYER_ENTITY_SPEED = 0.1
 
 
 def init_game_state_from_file(game_world_size: Tuple[int, int], camera_size: Tuple[int, int]):

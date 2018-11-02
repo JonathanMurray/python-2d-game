@@ -74,7 +74,7 @@ class SmartEnemyMind:
                     projectile_pos = (center_position[0] - ENEMY_PROJECTILE_SIZE[0] / 2,
                                       center_position[1] - ENEMY_PROJECTILE_SIZE[1] / 2)
                     entity = WorldEntity(projectile_pos, ENEMY_PROJECTILE_SIZE, Sprite.POISONBALL,
-                                         enemy.world_entity.direction, 2)
+                                         enemy.world_entity.direction, 0.1)
                     projectile = Projectile(entity, create_projectile_controller(ProjectileType.ENEMY_POISON))
                     game_state.projectile_entities.append(projectile)
                 else:
@@ -104,7 +104,7 @@ class MageEnemyMind:
             center_position = enemy.world_entity.get_center_position()
             projectile_pos = (center_position[0] - ENEMY_PROJECTILE_SIZE[0] / 2,
                               center_position[1] - ENEMY_PROJECTILE_SIZE[1] / 2)
-            entities = [WorldEntity(projectile_pos, ENEMY_PROJECTILE_SIZE, Sprite.POISONBALL, direction, 2)
+            entities = [WorldEntity(projectile_pos, ENEMY_PROJECTILE_SIZE, Sprite.POISONBALL, direction, 0.1)
                         for direction in get_all_directions()]
             projectiles = [Projectile(entity, create_projectile_controller(ProjectileType.ENEMY_POISON))
                            for entity in entities]
