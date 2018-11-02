@@ -2,6 +2,7 @@ import pygame
 
 from pythongame.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS
+from pythongame.visual_effects import VisualLine, VisualCircle, VisualRect
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -63,6 +64,18 @@ class View:
     def _render_entity_sprite(self, image, entity, camera_world_area):
         pos = (entity.x - camera_world_area.x, entity.y - camera_world_area.y)
         self.screen.blit(image, pos)
+
+    def _draw_visual_effect(self, visual_effect, camera_world_area):
+        if isinstance(visual_effect, VisualLine):
+            self._draw_visual_line(visual_effect, camera_world_area)
+        elif isinstance(visual_effect, VisualCircle):
+            self._draw_visual_circle(visual_effect, camera_world_area)
+        elif isinstance(visual_effect, VisualRect):
+            self._draw_visual_rect(visual_effect, camera_world_area)
+        else:
+            raise Exception("Unhandled visual effect: " + visual_effect)
+
+    # TODO: Generalise the rendering of these effects. This module shouldn't need to care about age, max_age, etc
 
     def _draw_visual_line(self, line, camera_world_area):
         camera_x = camera_world_area.x
@@ -168,7 +181,7 @@ class View:
 
     def render_everything(self, all_entities, player_entity, is_player_invisible, camera_world_area, enemies,
                           player_health, player_max_health, player_mana, player_max_mana, potion_slots,
-                          player_active_buffs, visual_lines, visual_circles, visual_rects, fps_string,
+                          player_active_buffs, visual_effects, fps_string,
                           player_minimap_relative_position, abilities, message, highlighted_potion_action,
                           highlighted_ability_action, is_paused):
 
@@ -188,16 +201,8 @@ class View:
             self._render_stat_bar_for_entity(enemy.world_entity, 5, enemy.health, enemy.max_health, COLOR_RED,
                                              camera_world_area)
 
-
-        # TODO generalise handling of these visual effects
-        for line in visual_lines:
-            self._draw_visual_line(line, camera_world_area)
-
-        for circle in visual_circles:
-            self._draw_visual_circle(circle, camera_world_area)
-
-        for rect in visual_rects:
-            self._draw_visual_rect(rect, camera_world_area)
+        for visual_effect in visual_effects:
+            self._draw_visual_effect(visual_effect, camera_world_area)
 
         self._render_rect(COLOR_BLACK, (0, 0, self.camera_size[0], self.camera_size[1]), 3)
         self._render_rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],

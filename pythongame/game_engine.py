@@ -59,23 +59,12 @@ class GameEngine:
         for projectile in self.game_state.projectile_entities:
             projectile.projectile_controller.notify_time_passed(self.game_state, projectile, time_passed)
 
-        # TODO generalise handling of these visual effects
-        for visual_line in self.game_state.visual_lines:
-            visual_line.notify_time_passed(time_passed)
-
-        for visual_circle in self.game_state.visual_circles:
-            visual_circle.notify_time_passed(time_passed)
-
-        for visual_rect in self.game_state.visual_rects:
-            visual_rect.notify_time_passed(time_passed)
+        for visual_effect in self.game_state.visual_effects:
+            visual_effect.notify_time_passed(time_passed)
 
         self.game_state.remove_dead_enemies()
         self.game_state.remove_expired_projectiles()
-
-        # TODO generalise handling of these visual effects
-        self.game_state.remove_expired_visual_lines()
-        self.game_state.remove_expired_visual_circles()
-        self.game_state.remove_expired_visual_rects()
+        self.game_state.remove_expired_visual_effects()
 
         copied_buffs_list = list(self.game_state.player_state.active_buffs)
         buffs_that_started = []

@@ -1,7 +1,8 @@
 from pythongame.common import *
 from pythongame.game_data import ENEMY_PROJECTILE_SIZE
-from pythongame.game_state import WorldEntity, Projectile, VisualLine, Enemy, GameState
+from pythongame.game_state import WorldEntity, Projectile, Enemy, GameState
 from pythongame.projectiles import create_projectile_controller
+from pythongame.visual_effects import VisualLine
 
 
 def create_enemy_mind(enemy_behavior: EnemyBehavior):
@@ -124,7 +125,7 @@ class MageEnemyMind:
                 healing_target.gain_health(5)
                 healing_target_pos = healing_target.world_entity.get_center_position()
                 visual_line = VisualLine((80, 80, 250), mage_pos, healing_target_pos, 350)
-                game_state.visual_lines.append(visual_line)
+                game_state.visual_effects.append(visual_line)
 
         if self._time_since_decision > self._decision_interval:
             self._time_since_decision = 0
@@ -164,4 +165,4 @@ class BerserkerEnemyMind:
                 if abs(enemy_position[0] - player_position[0]) < attack_range \
                         and abs(enemy_position[1] - player_position[1]) < attack_range:
                     game_state.player_state.lose_health(15)
-                    game_state.visual_lines.append(VisualLine((220, 0, 0), enemy_position, player_position, 100))
+                    game_state.visual_effects.append(VisualLine((220, 0, 0), enemy_position, player_position, 100))
