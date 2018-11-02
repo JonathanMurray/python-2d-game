@@ -1,7 +1,7 @@
 import pygame
 
-from pythongame.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, POTION_ICON_SPRITES, \
-    ABILITIES, BUFF_TEXTS
+from pythongame.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
+    POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -70,6 +70,10 @@ class View:
         start_position = line.start_position[0] - camera_x, line.start_position[1] - camera_y
         end_position = line.end_position[0] - camera_x, line.end_position[1] - camera_y
         pygame.draw.line(self.screen, line.color, start_position, end_position, 3)
+
+    def _draw_visual_circle(self, circle, camera_world_area):
+        position = circle.center_position[0] - camera_world_area.x, circle.center_position[1] - camera_world_area.y
+        pygame.draw.circle(self.screen, circle.color, position, circle.radius)
 
     def _render_stat_bar(self, x, y, w, h, stat, max_stat, color):
         pygame.draw.rect(self.screen, COLOR_WHITE, (x - 2, y - 2, w + 3, h + 3), 2)
@@ -154,8 +158,9 @@ class View:
 
     def render_everything(self, all_entities, player_entity, is_player_invisible, camera_world_area, enemies,
                           player_health, player_max_health, player_mana, player_max_mana, potion_slots,
-                          player_active_buffs, visual_lines, fps_string, player_minimap_relative_position, abilities,
-                          message, highlighted_potion_action, highlighted_ability_action, is_paused):
+                          player_active_buffs, visual_lines, visual_circles, fps_string,
+                          player_minimap_relative_position, abilities, message, highlighted_potion_action,
+                          highlighted_ability_action, is_paused):
 
         self.screen.fill(COLOR_BACKGROUND)
         self._draw_ground(camera_world_area)
@@ -175,6 +180,9 @@ class View:
 
         for line in visual_lines:
             self._draw_visual_line(line, camera_world_area)
+
+        for circle in visual_circles:
+            self._draw_visual_circle(circle, camera_world_area)
 
         self._render_rect(COLOR_BLACK, (0, 0, self.camera_size[0], self.camera_size[1]), 3)
         self._render_rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],

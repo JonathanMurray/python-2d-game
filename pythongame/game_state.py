@@ -45,7 +45,7 @@ class WorldEntity:
                 self.y += distance
 
     def get_center_position(self):
-        return self.x + self.w / 2, self.y + self.h / 2
+        return int(self.x + self.w / 2), int(self.y + self.h / 2)
 
     def add_to_speed_multiplier(self, amount):
         self._speed_multiplier += amount
@@ -87,6 +87,21 @@ class VisualLine:
         self.color = color
         self.start_position = start_position
         self.end_position = end_position
+        self.has_expired = False
+
+    def notify_time_passed(self, time_passed: Millis):
+        self._age += time_passed
+        if self._age > self._max_age:
+            self.has_expired = True
+
+
+class VisualCircle:
+    def __init__(self, color: Tuple[int, int, int], center_position: Tuple[int, int], radius: int, max_age: Millis):
+        self._age = 0
+        self._max_age = max_age
+        self.color = color
+        self.center_position = center_position
+        self.radius = radius
         self.has_expired = False
 
     def notify_time_passed(self, time_passed: Millis):
@@ -169,6 +184,7 @@ class GameState:
         self.potions_on_ground = potions_on_ground
         self.enemies = enemies
         self.visual_lines = []
+        self.visual_circles = []
         self.player_state = player_state
         self.game_world_size = game_world_size
         self.entire_world_area = WorldArea((0, 0), self.game_world_size)
@@ -185,10 +201,10 @@ class GameState:
 
     def center_camera_on_player(self):
         player_center_position = self.player_entity.get_center_position()
-        self.camera_world_area.x = min(max(player_center_position[0] - self.camera_size[0] / 2, 0),
-                                       self.game_world_size[0] - self.camera_size[0])
-        self.camera_world_area.y = min(max(player_center_position[1] - self.camera_size[1] / 2, 0),
-                                       self.game_world_size[1] - self.camera_size[1])
+        self.camera_world_area.x = int(min(max(player_center_position[0] - self.camera_size[0] / 2, 0),
+                                       self.game_world_size[0] - self.camera_size[0]))
+        self.camera_world_area.y = int(min(max(player_center_position[1] - self.camera_size[1] / 2, 0),
+                                       self.game_world_size[1] - self.camera_size[1]))
 
     def get_projectiles_intersecting_with(self, entity) -> List[Projectile]:
         return [p for p in self.projectile_entities if boxes_intersect(entity, p.world_entity)]
@@ -209,3 +225,6 @@ class GameState:
 
     def remove_expired_visual_lines(self):
         self.visual_lines = [v for v in self.visual_lines if not v.has_expired]
+
+    def remove_expired_visual_circles(self):
+        self.visual_circles = [v for v in self.visual_circles if not v.has_expired]

@@ -1,5 +1,5 @@
 from pythongame.common import *
-from pythongame.game_state import Projectile, Enemy, GameState
+from pythongame.game_state import Projectile, Enemy, GameState, VisualCircle
 
 
 def create_projectile_controller(projectile_type: ProjectileType):
@@ -21,10 +21,10 @@ class AbstractProjectileController:
         if self._age > self._max_age:
             projectile.has_expired = True
 
-    def apply_enemy_collision(self, _):
+    def apply_enemy_collision(self, _enemy: Enemy, _game_state: GameState):
         return False
 
-    def apply_player_collision(self, _):
+    def apply_player_collision(self, _game_state: GameState):
         return False
 
 
@@ -32,8 +32,10 @@ class PlayerProjectileController(AbstractProjectileController):
     def __init__(self):
         super().__init__(3000)
 
-    def apply_enemy_collision(self, enemy: Enemy):
+    def apply_enemy_collision(self, enemy: Enemy, game_state: GameState):
         enemy.lose_health(3)
+        game_state.visual_circles.append(VisualCircle((250, 100, 50), enemy.world_entity.get_center_position(), 45,
+                                                      Millis(100)))
         return True
 
 
@@ -47,7 +49,7 @@ class PlayerAoeProjectileController(AbstractProjectileController):
         if self._age > 250:
             self._has_activated = True
 
-    def apply_enemy_collision(self, enemy: Enemy):
+    def apply_enemy_collision(self, enemy: Enemy, game_state: GameState):
         if self._has_activated:
             enemy.lose_health(2)
             return True

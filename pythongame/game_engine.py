@@ -59,9 +59,13 @@ class GameEngine:
         for visual_line in self.game_state.visual_lines:
             visual_line.notify_time_passed(time_passed)
 
+        for visual_circle in self.game_state.visual_circles:
+            visual_circle.notify_time_passed(time_passed)
+
         self.game_state.remove_dead_enemies()
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_lines()
+        self.game_state.remove_expired_visual_circles()
 
         copied_buffs_list = list(self.game_state.player_state.active_buffs)
         buffs_that_started = []
@@ -106,7 +110,8 @@ class GameEngine:
                     entities_to_remove.append(potion)
         for enemy in self.game_state.enemies:
             for projectile in self.game_state.get_projectiles_intersecting_with(enemy.world_entity):
-                should_remove_projectile = projectile.projectile_controller.apply_enemy_collision(enemy)
+                should_remove_projectile = projectile.projectile_controller.apply_enemy_collision(
+                    enemy, self.game_state)
                 if should_remove_projectile:
                     entities_to_remove.append(projectile)
 

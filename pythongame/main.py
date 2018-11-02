@@ -76,6 +76,7 @@ def main():
                                potion_slots=game_state.player_state.potion_slots,
                                player_active_buffs=game_state.player_state.active_buffs,
                                visual_lines=game_state.visual_lines,
+                               visual_circles=game_state.visual_circles,
                                fps_string=str(int(clock.get_fps())),
                                player_minimap_relative_position=view_state.player_minimap_relative_position,
                                abilities=game_state.player_state.abilities,
