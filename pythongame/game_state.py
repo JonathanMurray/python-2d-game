@@ -229,6 +229,9 @@ class GameState:
     def get_projectiles_intersecting_with(self, entity) -> List[Projectile]:
         return [p for p in self.projectile_entities if boxes_intersect(entity, p.world_entity)]
 
+    def get_enemies_intersecting_with(self, entity) -> List[Enemy]:
+        return [e for e in self.enemies if boxes_intersect(e.world_entity, entity)]
+
     # NOTE: Very naive brute-force collision checking
     def update_world_entity_position_within_game_world(self, entity: WorldEntity, time_passed: Millis):
         new_position = entity.get_new_position_according_to_dir_and_speed(time_passed)

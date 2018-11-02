@@ -18,7 +18,7 @@ class AbstractProjectileController:
         self._age = 0
         self._max_age = max_age
 
-    def notify_time_passed(self, projectile: Projectile, time_passed: Millis):
+    def notify_time_passed(self, _game_state: GameState, projectile: Projectile, time_passed: Millis):
         self._age += time_passed
         if self._age > self._max_age:
             projectile.has_expired = True
@@ -43,19 +43,17 @@ class PlayerProjectileController(AbstractProjectileController):
 
 class PlayerAoeProjectileController(AbstractProjectileController):
     def __init__(self):
-        super().__init__(500)
-        self._has_activated = False
+        super().__init__(2000)
+        self._dmg_cooldown = 150
+        self._time_since_dmg = self._dmg_cooldown
 
-    def notify_time_passed(self, projectile: Projectile, time_passed: Millis):
-        super().notify_time_passed(projectile, time_passed)
-        if self._age > 250:
-            self._has_activated = True
-
-    def apply_enemy_collision(self, enemy: Enemy, game_state: GameState):
-        if self._has_activated:
-            enemy.lose_health(2)
-            return True
-        return False
+    def notify_time_passed(self, game_state: GameState, projectile: Projectile, time_passed: Millis):
+        super().notify_time_passed(game_state, projectile, time_passed)
+        self._time_since_dmg += time_passed
+        if self._time_since_dmg > self._dmg_cooldown:
+            self._time_since_dmg = False
+            for enemy in game_state.get_enemies_intersecting_with(projectile.world_entity):
+                enemy.lose_health(1)
 
 
 class PlayerMagicMissileProjectileController(AbstractProjectileController):

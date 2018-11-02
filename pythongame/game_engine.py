@@ -57,7 +57,7 @@ class GameEngine:
         self.view_state.notify_time_passed(time_passed)
 
         for projectile in self.game_state.projectile_entities:
-            projectile.projectile_controller.notify_time_passed(projectile, time_passed)
+            projectile.projectile_controller.notify_time_passed(self.game_state, projectile, time_passed)
 
         # TODO generalise handling of these visual effects
         for visual_line in self.game_state.visual_lines:
