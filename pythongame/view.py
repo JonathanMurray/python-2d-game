@@ -13,6 +13,8 @@ COLOR_HIGHLIGHTED_ICON = (150, 150, 250)
 UI_POTION_SIZE = (27, 27)
 UI_ABILITY_SIZE = (27, 27)
 
+RENDER_HIT_AND_COLLISION_BOXES = True
+
 
 class ScreenArea:
     def __init__(self, pos, size):
@@ -57,13 +59,10 @@ class View:
         else:
             raise Exception("Unhandled sprite: " + str(entity.sprite))
 
-    def _render_entity_rect(self, entity, color, camera_world_area):
-        self._render_rect_in_world(camera_world_area, color, entity.rect())
-
     # TODO: Flesh this out more. Reduce boiler-plate of translating coordinates with the camera
-    def _render_rect_in_world(self, camera_world_area, color, rect):
+    def _render_rect_in_world(self, camera_world_area, color, rect, line_width=0):
         translated_rect = (rect[0] - camera_world_area.x, rect[1] - camera_world_area.y, rect[2], rect[3])
-        pygame.draw.rect(self.screen, color, translated_rect, 1)
+        pygame.draw.rect(self.screen, color, translated_rect, line_width)
 
     def _render_entity_sprite(self, image, entity, camera_world_area):
         pos = (entity.x - camera_world_area.x, entity.y - camera_world_area.y)
@@ -93,7 +92,7 @@ class View:
         pygame.draw.circle(self.screen, visual_circle.color, translated_position, radius)
 
     def _draw_visual_rect(self, visual_rect, camera_world_area):
-        self._render_rect_in_world(camera_world_area, visual_rect.color, visual_rect.rect())
+        self._render_rect_in_world(camera_world_area, visual_rect.color, visual_rect.rect(), 1)
 
     def _render_stat_bar(self, x, y, w, h, stat, max_stat, color):
         pygame.draw.rect(self.screen, COLOR_WHITE, (x - 2, y - 2, w + 3, h + 3), 2)
@@ -190,9 +189,16 @@ class View:
                 self._render_entity(entity, camera_world_area)
 
         if is_player_invisible:
-            self._render_entity_rect(player_entity, (200, 100, 250), camera_world_area)
+            self._render_rect_in_world(camera_world_area, (200, 100, 250), player_entity.rect(), 1)
         else:
             self._render_entity(player_entity, camera_world_area)
+
+        if RENDER_HIT_AND_COLLISION_BOXES:
+            for entity in all_entities:
+                # hit box
+                self._render_rect_in_world(camera_world_area, (250, 250, 250), entity.rect(), 1)
+                # collision box
+                self._render_rect_in_world(camera_world_area, (50, 250, 0), entity.collision_rect(), 2)
 
         for enemy in enemies:
             self._render_stat_bar_for_entity(enemy.world_entity, 5, enemy.health, enemy.max_health, COLOR_RED,

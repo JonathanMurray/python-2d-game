@@ -18,6 +18,8 @@ class WorldEntity:
         self.y = pos[1]
         self.w = size[0]
         self.h = size[1]
+        self.collision_w = self.w * 0.7
+        self.collision_h = self.h * 0.7
         self.sprite = sprite
         self.direction = direction
         self._speed = speed
@@ -55,6 +57,11 @@ class WorldEntity:
     # TODO use more
     def rect(self):
         return self.x, self.y, self.w, self.h
+
+    def collision_rect(self):
+        collision_x = self.get_center_position()[0] - self.collision_w / 2
+        collision_y = self.get_center_position()[1] - self.collision_h / 2
+        return collision_x, collision_y, self.collision_w, self.collision_h
 
 
 class PotionOnGround:
@@ -195,7 +202,7 @@ class GameState:
             entity.x = min(max(new_position[0], 0), self.game_world_size[0] - entity.w)
             entity.y = min(max(new_position[1], 0), self.game_world_size[1] - entity.h)
             other_entities = [e.world_entity for e in self.enemies] + [self.player_entity]
-            collision = any([other for other in other_entities if boxes_intersect(entity, other)
+            collision = any([other for other in other_entities if self.entities_collide(entity, other)
                              and entity is not other])
             if collision:
                 entity.x = old_x
@@ -212,3 +219,9 @@ class GameState:
 
     def remove_expired_visual_effects(self):
         self.visual_effects = [v for v in self.visual_effects if not v.has_expired]
+
+    def entities_collide(self, r1, r2):
+        rect1 = r1.collision_rect()
+        rect2 = r2.collision_rect()
+        return ranges_overlap(rect1[0], rect1[0] + rect1[2], rect2[0], rect2[0] + rect2[2]) \
+               and ranges_overlap(rect1[1], rect1[1] + rect1[3], rect2[1], rect2[1] + rect2[3])
