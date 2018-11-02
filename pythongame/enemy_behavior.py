@@ -139,10 +139,13 @@ class BerserkerEnemyMind:
     def __init__(self):
         self._decision_interval = 750
         self._time_since_decision = self._decision_interval
+        self._attack_interval = 1500
+        self._time_since_attack = self._attack_interval
 
-    def control_enemy(self, _game_state: GameState, enemy: Enemy, player_entity: WorldEntity, is_player_invisible: bool,
+    def control_enemy(self, game_state: GameState, enemy: Enemy, player_entity: WorldEntity, is_player_invisible: bool,
                       time_passed: Millis):
         self._time_since_decision += time_passed
+        self._time_since_attack += time_passed
         if self._time_since_decision > self._decision_interval:
             self._time_since_decision = 0
             if is_player_invisible:
@@ -152,3 +155,12 @@ class BerserkerEnemyMind:
                 if random.random() < 0.2:
                     direction = random.choice(get_perpendicular_directions(direction))
             enemy.world_entity.set_moving_in_dir(direction)
+        if self._time_since_attack > self._attack_interval:
+            self._time_since_attack = 0
+            enemy_position = enemy.world_entity.get_center_position()
+            player_position = game_state.player_entity.get_center_position()
+            attack_range = 80
+            if abs(enemy_position[0] - player_position[0]) < attack_range \
+                    and abs(enemy_position[1] - player_position[1]) < attack_range:
+                game_state.player_state.lose_health(15)
+                game_state.visual_lines.append(VisualLine((220, 0, 0), enemy_position, player_position, 100))
