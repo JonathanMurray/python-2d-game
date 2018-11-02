@@ -97,16 +97,17 @@ class VisualLine:
 
 class VisualCircle:
     def __init__(self, color: Tuple[int, int, int], center_position: Tuple[int, int], radius: int, max_age: Millis):
-        self._age = 0
-        self._max_age = max_age
+        self.age = 0
+        self.max_age = max_age
         self.color = color
         self.center_position = center_position
-        self.radius = radius
+        self.start_radius = int(radius / 2)
+        self.end_radius = radius
         self.has_expired = False
 
     def notify_time_passed(self, time_passed: Millis):
-        self._age += time_passed
-        if self._age > self._max_age:
+        self.age += time_passed
+        if self.age > self.max_age:
             self.has_expired = True
 
 
@@ -202,9 +203,9 @@ class GameState:
     def center_camera_on_player(self):
         player_center_position = self.player_entity.get_center_position()
         self.camera_world_area.x = int(min(max(player_center_position[0] - self.camera_size[0] / 2, 0),
-                                       self.game_world_size[0] - self.camera_size[0]))
+                                           self.game_world_size[0] - self.camera_size[0]))
         self.camera_world_area.y = int(min(max(player_center_position[1] - self.camera_size[1] / 2, 0),
-                                       self.game_world_size[1] - self.camera_size[1]))
+                                           self.game_world_size[1] - self.camera_size[1]))
 
     def get_projectiles_intersecting_with(self, entity) -> List[Projectile]:
         return [p for p in self.projectile_entities if boxes_intersect(entity, p.world_entity)]

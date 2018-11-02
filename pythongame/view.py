@@ -73,7 +73,8 @@ class View:
 
     def _draw_visual_circle(self, circle, camera_world_area):
         position = circle.center_position[0] - camera_world_area.x, circle.center_position[1] - camera_world_area.y
-        pygame.draw.circle(self.screen, circle.color, position, circle.radius)
+        radius = circle.start_radius + int(circle.age / circle.max_age * (circle.end_radius - circle.start_radius))
+        pygame.draw.circle(self.screen, circle.color, position, radius)
 
     def _render_stat_bar(self, x, y, w, h, stat, max_stat, color):
         pygame.draw.rect(self.screen, COLOR_WHITE, (x - 2, y - 2, w + 3, h + 3), 2)
