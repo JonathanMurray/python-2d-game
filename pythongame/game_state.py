@@ -174,7 +174,7 @@ class PlayerState:
 
     def regenerate_mana(self, time_passed: Millis):
         self.gain_mana(
-            self.mana_regen * time_passed / 25)  # 25 because this was the avg. frame duration before this change
+            self.mana_regen * time_passed)
 
 
 class GameState:
