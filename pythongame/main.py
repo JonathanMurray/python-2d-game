@@ -10,17 +10,16 @@ from pythongame.user_input import get_user_actions, ActionExitGame, ActionTryUse
 from pythongame.view import View
 from pythongame.view_state import ViewState
 
-GAME_WORLD_SIZE = (1000, 1000)
 SCREEN_SIZE = (700, 600)
 CAMERA_SIZE = (700, 400)
 
 
 def main():
-    game_state = init_game_state_from_file(GAME_WORLD_SIZE, CAMERA_SIZE)
+    game_state = init_game_state_from_file(CAMERA_SIZE)
     pygame.init()
 
     view = View(CAMERA_SIZE, SCREEN_SIZE)
-    view_state = ViewState(GAME_WORLD_SIZE)
+    view_state = ViewState(game_state.game_world_size)
     clock = pygame.time.Clock()
 
     game_engine = GameEngine(game_state, view_state)

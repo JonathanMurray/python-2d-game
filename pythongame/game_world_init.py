@@ -13,19 +13,23 @@ PLAYER_ENTITY_SPEED = 0.1
 ENEMY_BERSERKER_SPEED = 0.08
 
 
-def init_game_state_from_file(game_world_size: Tuple[int, int], camera_size: Tuple[int, int]):
+def init_game_state_from_file(camera_size: Tuple[int, int]):
     dumb_enemy_positions = []
     smart_enemy_positions = []
     mage_enemy_positions = []
     potion_positions = []
     player_pos = (0, 0)
     berserker_positions = []
+    col_width = 75
+    row_height = 150
+    max_col_index = 0
+    max_row_index = 0
     with open("resources/map.txt") as map_file:
         row_index = 0
         for line in map_file:
             col_index = 0
             for char in line:
-                game_world_pos = (game_world_size[0] * col_index / 100, game_world_size[1] * row_index / 50)
+                game_world_pos = (col_index * col_width, row_index * row_height)
                 if char == 'P':
                     player_pos = game_world_pos
                 if char == 'D':
@@ -39,7 +43,9 @@ def init_game_state_from_file(game_world_size: Tuple[int, int], camera_size: Tup
                 if char == 'B':
                     berserker_positions.append(game_world_pos)
                 col_index += 1
+                max_col_index = max(col_index, max_col_index)
             row_index += 1
+            max_row_index = max(row_index, max_row_index)
     player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
     potions = [PotionOnGround(WorldEntity(pos, POTION_ENTITY_SIZE, Sprite.HEALTH_POTION), PotionType.HEALTH)
                for pos in potion_positions]
@@ -61,5 +67,6 @@ def init_game_state_from_file(game_world_size: Tuple[int, int], camera_size: Tup
         5: PotionType.INVISIBILITY
     }
     abilities = [AbilityType.ATTACK, AbilityType.HEAL, AbilityType.AOE_ATTACK, AbilityType.CHANNEL_ATTACK]
-    player_state = PlayerState(500, 500, 75, 100, 0.001, player_potion_slots, abilities)
+    player_state = PlayerState(500, 500, 90, 100, 0.002, player_potion_slots, abilities)
+    game_world_size = (max_col_index * col_width, max_row_index * row_height)
     return GameState(player_entity, potions, enemies, camera_size, game_world_size, player_state)
