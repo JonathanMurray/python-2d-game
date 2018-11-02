@@ -157,10 +157,11 @@ class BerserkerEnemyMind:
             enemy.world_entity.set_moving_in_dir(direction)
         if self._time_since_attack > self._attack_interval:
             self._time_since_attack = 0
-            enemy_position = enemy.world_entity.get_center_position()
-            player_position = game_state.player_entity.get_center_position()
-            attack_range = 80
-            if abs(enemy_position[0] - player_position[0]) < attack_range \
-                    and abs(enemy_position[1] - player_position[1]) < attack_range:
-                game_state.player_state.lose_health(15)
-                game_state.visual_lines.append(VisualLine((220, 0, 0), enemy_position, player_position, 100))
+            if not is_player_invisible:
+                enemy_position = enemy.world_entity.get_center_position()
+                player_position = game_state.player_entity.get_center_position()
+                attack_range = 80
+                if abs(enemy_position[0] - player_position[0]) < attack_range \
+                        and abs(enemy_position[1] - player_position[1]) < attack_range:
+                    game_state.player_state.lose_health(15)
+                    game_state.visual_lines.append(VisualLine((220, 0, 0), enemy_position, player_position, 100))
