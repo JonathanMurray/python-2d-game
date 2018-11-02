@@ -31,6 +31,7 @@ class UiIconSprite(Enum):
     AOE_ABILITY = 6
     INVISIBILITY_POTION = 7
     MAGIC_MISSILE = 8
+    TELEPORT = 9
 
 
 class AbilityData:
@@ -62,7 +63,8 @@ UI_ICON_SPRITE_PATHS = {
     UiIconSprite.ATTACK_ABILITY: "resources/fireball.png",
     UiIconSprite.HEAL_ABILITY: "resources/heal_ability.png",
     UiIconSprite.AOE_ABILITY: "resources/whirlwind.png",
-    UiIconSprite.MAGIC_MISSILE: "resources/magic_missile.png"
+    UiIconSprite.MAGIC_MISSILE: "resources/magic_missile.png",
+    UiIconSprite.TELEPORT: "resources/teleport_icon.png",
 }
 
 POTION_ICON_SPRITES = {
@@ -77,6 +79,7 @@ ABILITIES = {
     AbilityType.HEAL: AbilityData(UiIconSprite.HEAL_ABILITY, 10, "W", pygame.K_w),
     AbilityType.AOE_ATTACK: AbilityData(UiIconSprite.AOE_ABILITY, 5, "E", pygame.K_e),
     AbilityType.CHANNEL_ATTACK: AbilityData(UiIconSprite.MAGIC_MISSILE, 12, "R", pygame.K_r),
+    AbilityType.TELEPORT: AbilityData(UiIconSprite.TELEPORT, 2, "T", pygame.K_t),
 }
 
 BUFF_TEXTS = {

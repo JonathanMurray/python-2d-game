@@ -83,13 +83,13 @@ class View:
         camera_y = camera_world_area.y
         start_position = line.start_position[0] - camera_x, line.start_position[1] - camera_y
         end_position = line.end_position[0] - camera_x, line.end_position[1] - camera_y
-        pygame.draw.line(self.screen, line.color, start_position, end_position, 3)
+        pygame.draw.line(self.screen, line.color, start_position, end_position, line.line_width)
 
     def _draw_visual_circle(self, visual_circle, camera_world_area):
         position = visual_circle.circle()[0]
         radius = visual_circle.circle()[1]
         translated_position = position[0] - camera_world_area.x, position[1] - camera_world_area.y
-        pygame.draw.circle(self.screen, visual_circle.color, translated_position, radius)
+        pygame.draw.circle(self.screen, visual_circle.color, translated_position, radius, visual_circle.line_width)
 
     def _draw_visual_rect(self, visual_rect, camera_world_area):
         self._render_rect_in_world(camera_world_area, visual_rect.color, visual_rect.rect(), 1)

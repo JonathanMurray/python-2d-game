@@ -38,7 +38,7 @@ class PlayerProjectileController(AbstractProjectileController):
     def apply_enemy_collision(self, enemy: Enemy, game_state: GameState):
         enemy.lose_health(3)
         game_state.visual_effects.append(VisualCircle((250, 100, 50), enemy.world_entity.get_center_position(), 45,
-                                                      Millis(100)))
+                                                      Millis(100), 0))
         return True
 
 
@@ -66,7 +66,7 @@ class PlayerMagicMissileProjectileController(AbstractProjectileController):
         if enemy not in self._enemies_hit:
             enemy.lose_health(1)
             game_state.visual_effects.append(VisualCircle((250, 100, 250), enemy.world_entity.get_center_position(), 25,
-                                                          Millis(100)))
+                                                          Millis(100), 0))
             self._enemies_hit.append(enemy)
         return False
 
@@ -79,5 +79,5 @@ class EnemyPoisonProjectileController(AbstractProjectileController):
         game_state.player_state.lose_health(1)
         game_state.player_state.gain_buff(BuffType.DAMAGE_OVER_TIME, Millis(2000))
         game_state.visual_effects.append(VisualCircle((50, 180, 50), game_state.player_entity.get_center_position(),
-                                                      50, Millis(100)))
+                                                      50, Millis(100), 0))
         return True

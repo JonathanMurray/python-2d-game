@@ -2,6 +2,7 @@ from pythongame.common import *
 from pythongame.game_data import ATTACK_PROJECTILE_SIZE, AOE_PROJECTILE_SIZE
 from pythongame.game_state import WorldEntity, Projectile, GameState
 from pythongame.projectiles import create_projectile_controller
+from pythongame.visual_effects import VisualCircle, VisualLine, VisualRect
 
 
 def apply_ability_effect(game_state: GameState, ability_type: AbilityType):
@@ -13,6 +14,8 @@ def apply_ability_effect(game_state: GameState, ability_type: AbilityType):
         _apply_aoe_attack(game_state)
     elif ability_type == AbilityType.CHANNEL_ATTACK:
         _apply_channel_attack(game_state)
+    elif ability_type == AbilityType.TELEPORT:
+        _apply_teleport(game_state)
     else:
         raise Exception("Unhandled ability type: " + str(ability_type))
 
@@ -55,3 +58,28 @@ def _apply_aoe_attack(game_state: GameState):
 
 def _apply_channel_attack(game_state: GameState):
     game_state.player_state.gain_buff(BuffType.CHANNELING_MAGIC_MISSILES, Millis(1000))
+
+
+def _apply_teleport(game_state: GameState):
+    direction = game_state.player_entity.direction
+    previous_position = game_state.player_entity.get_center_position()
+
+    # TODO Extract this "move distance in given direction" and re-use
+    distance = 140
+    color = (140, 140, 230)
+    game_state.visual_effects.append(VisualCircle(color, previous_position, 35, Millis(150), 1))
+    game_state.visual_effects.append(VisualRect(color, previous_position, 50, Millis(150)))
+    if direction == Direction.RIGHT:
+        game_state.player_entity.x += distance
+    elif direction == Direction.DOWN:
+        game_state.player_entity.y += distance
+    elif direction == Direction.LEFT:
+        game_state.player_entity.x -= distance
+    elif direction == Direction.UP:
+        game_state.player_entity.y -= distance
+    else:
+        raise Exception("Unhandled direction: " + str(direction))
+    new_position = game_state.player_entity.get_center_position()
+    game_state.visual_effects.append(VisualLine(color, previous_position, new_position, Millis(200), 1))
+    game_state.visual_effects.append(VisualCircle(color, new_position,
+                                                  50, Millis(300), 2, game_state.player_entity))

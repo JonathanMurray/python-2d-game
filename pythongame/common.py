@@ -83,6 +83,7 @@ class AbilityType(Enum):
     ATTACK = 2
     AOE_ATTACK = 3
     CHANNEL_ATTACK = 4
+    TELEPORT = 5
 
 
 class Sprite(Enum):

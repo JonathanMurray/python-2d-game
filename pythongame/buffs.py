@@ -26,7 +26,7 @@ class HealingOverTime(AbstractBuff):
         if self._time_since_graphics > 500:
             game_state.visual_effects.append(
                 VisualCircle((200, 200, 50), game_state.player_entity.get_center_position(),
-                             10, Millis(100)))
+                             10, Millis(100), 0))
             self._time_since_graphics = 0
 
 
@@ -39,7 +39,7 @@ class DamageOverTime(AbstractBuff):
         game_state.player_state.lose_health(0.02 * time_passed)
         if self._time_since_graphics > 300:
             game_state.visual_effects.append(VisualCircle((50, 180, 50), game_state.player_entity.get_center_position(),
-                                                          20, Millis(50), game_state.player_entity))
+                                                          20, Millis(50), 0, game_state.player_entity))
             self._time_since_graphics = 0
 
 
@@ -54,7 +54,7 @@ class IncreasedMoveSpeed(AbstractBuff):
         self._time_since_graphics += time_passed
         if self._time_since_graphics > 100:
             game_state.visual_effects.append(
-                VisualCircle((150, 200, 250), game_state.player_entity.get_center_position(), 10, Millis(200)))
+                VisualCircle((150, 200, 250), game_state.player_entity.get_center_position(), 10, Millis(200), 0))
             self._time_since_graphics = 0
 
     def apply_end_effect(self, game_state: GameState):
