@@ -13,13 +13,18 @@ class Direction(Enum):
     DOWN = 4
 
 
-def ranges_overlap(a_min: int, a_max: int, b_min: int, b_max: int):
+def _ranges_overlap(a_min: int, a_max: int, b_min: int, b_max: int):
     return (a_min <= b_max) and (b_min <= a_max)
 
 
 def boxes_intersect(r1, r2):
-    return ranges_overlap(r1.x, r1.x + r1.w, r2.x, r2.x + r2.w) \
-           and ranges_overlap(r1.y, r1.y + r1.h, r2.y, r2.y + r2.h)
+    return _ranges_overlap(r1.x, r1.x + r1.w, r2.x, r2.x + r2.w) \
+           and _ranges_overlap(r1.y, r1.y + r1.h, r2.y, r2.y + r2.h)
+
+
+def rects_intersect(r1, r2):
+    return _ranges_overlap(r1[0], r1[0] + r1[2], r2[0], r2[0] + r2[2]) \
+           and _ranges_overlap(r1[1], r1[1] + r1[3], r2[1], r2[1] + r2[3])
 
 
 def random_direction():

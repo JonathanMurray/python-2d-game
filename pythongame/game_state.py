@@ -11,6 +11,9 @@ class WorldArea:
         self.w = size[0]
         self.h = size[1]
 
+    def rect(self):
+        return self.x, self.y, self.w, self.h
+
 
 class WorldEntity:
     def __init__(self, pos: Tuple[int, int], size: Tuple[int, int], sprite: Sprite, direction=Direction.LEFT, speed=0):
@@ -202,7 +205,7 @@ class GameState:
             entity.x = min(max(new_position[0], 0), self.game_world_size[0] - entity.w)
             entity.y = min(max(new_position[1], 0), self.game_world_size[1] - entity.h)
             other_entities = [e.world_entity for e in self.enemies] + [self.player_entity]
-            collision = any([other for other in other_entities if self.entities_collide(entity, other)
+            collision = any([other for other in other_entities if self._entities_collide(entity, other)
                              and entity is not other])
             if collision:
                 entity.x = old_x
@@ -220,8 +223,6 @@ class GameState:
     def remove_expired_visual_effects(self):
         self.visual_effects = [v for v in self.visual_effects if not v.has_expired]
 
-    def entities_collide(self, r1, r2):
-        rect1 = r1.collision_rect()
-        rect2 = r2.collision_rect()
-        return ranges_overlap(rect1[0], rect1[0] + rect1[2], rect2[0], rect2[0] + rect2[2]) \
-               and ranges_overlap(rect1[1], rect1[1] + rect1[3], rect2[1], rect2[1] + rect2[3])
+    def _entities_collide(self, r1, r2):
+        return rects_intersect(r1.collision_rect(), r2.collision_rect())
+

@@ -1,6 +1,6 @@
 from pythongame.abilities import apply_ability_effect
 from pythongame.buffs import BUFF_EFFECTS
-from pythongame.common import boxes_intersect, AbilityType, Direction, Millis
+from pythongame.common import boxes_intersect, AbilityType, Direction, Millis, rects_intersect
 from pythongame.game_state import GameState
 from pythongame.player_controls import TryUseAbilityResult, PlayerControls
 from pythongame.potions import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
@@ -43,10 +43,17 @@ class GameEngine:
     def stop_moving(self):
         self.game_state.player_entity.set_not_moving()
 
+    def _is_enemy_close_to_camera(self, enemy):
+        camera_rect = self.game_state.camera_world_area.rect()
+        margin = 250
+        camera_rect_with_margin = (camera_rect[0] - margin, camera_rect[1] - margin, camera_rect[2] + margin * 2,
+                                   camera_rect[3] + margin * 2)
+        return rects_intersect(enemy.world_entity.rect(), camera_rect_with_margin)
+
     def run_one_frame(self, time_passed: Millis):
         for e in self.game_state.enemies:
-            # Enemy AI shouldn't run if enemy is out of sight
-            if boxes_intersect(e.world_entity, self.game_state.camera_world_area):
+            # Enemy AI shouldn't run if enemy is too far out of sight
+            if self._is_enemy_close_to_camera(e):
                 e.enemy_mind.control_enemy(self.game_state, e, self.game_state.player_entity,
                                            self.game_state.player_state.is_invisible, time_passed)
 
@@ -90,7 +97,7 @@ class GameEngine:
 
         for e in self.game_state.enemies:
             # Enemies shouldn't move towards player when they are out of sight
-            if boxes_intersect(e.world_entity, self.game_state.camera_world_area):
+            if self._is_enemy_close_to_camera(e):
                 self.game_state.update_world_entity_position_within_game_world(e.world_entity, time_passed)
         if not self.game_state.player_state.is_stunned:
             self.game_state.update_world_entity_position_within_game_world(self.game_state.player_entity, time_passed)
