@@ -1,3 +1,9 @@
-                    D      D            BBBBB
-               P  D   D    D  B M       BBBBB
-                       S     D S        BBBBB
+            XXXXXXXXXXXXXXXXXXXXXXXXX                XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+            X                       XX               X                            X
+            X                        XXXXXXXXXXXXXXXXX             M       S      X
+            X        D      D            BBBBB       X                            X
+            X  P  D   D    D  B M        BBBBB                S       B   S    M  X
+            X           S     D S    X   BBBBB                                    X
+            X                      XXX               XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+            XXXXXXXXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXX
+

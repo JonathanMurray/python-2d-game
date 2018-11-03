@@ -102,6 +102,7 @@ class Sprite(Enum):
     ENEMY_MAGE = 8
     ENEMY_BERSERKER = 9
     MAGIC_MISSILE = 10
+    WALL = 11
 
 
 class BuffType(Enum):

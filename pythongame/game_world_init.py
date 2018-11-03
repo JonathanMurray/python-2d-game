@@ -3,7 +3,7 @@ from typing import Tuple
 from pythongame.common import *
 from pythongame.enemy_behavior import create_enemy_mind
 from pythongame.game_data import PLAYER_ENTITY_SIZE, ENEMY_ENTITY_SIZE, ENEMY_2_ENTITY_SIZE, POTION_ENTITY_SIZE, \
-    ENEMY_MAGE_ENTITY_SIZE, ENEMY_BERSERKER_SIZE
+    ENEMY_MAGE_ENTITY_SIZE, ENEMY_BERSERKER_SIZE, WALL_SIZE
 from pythongame.game_state import WorldEntity, Enemy, GameState, PotionOnGround, PlayerState
 
 ENEMY_SPEED = 0.02
@@ -20,8 +20,9 @@ def init_game_state_from_file(camera_size: Tuple[int, int]):
     potion_positions = []
     player_pos = (0, 0)
     berserker_positions = []
-    col_width = 75
-    row_height = 150
+    wall_positions = []
+    col_width = 50
+    row_height = 50
     max_col_index = 0
     max_row_index = 0
     with open("resources/map.txt") as map_file:
@@ -42,6 +43,8 @@ def init_game_state_from_file(camera_size: Tuple[int, int]):
                     potion_positions.append(game_world_pos)
                 if char == 'B':
                     berserker_positions.append(game_world_pos)
+                if char == 'X':
+                    wall_positions.append(game_world_pos)
                 col_index += 1
                 max_col_index = max(col_index, max_col_index)
             row_index += 1
@@ -58,6 +61,7 @@ def init_game_state_from_file(camera_size: Tuple[int, int]):
     berserker_enemies = [Enemy(WorldEntity(pos, ENEMY_BERSERKER_SIZE, Sprite.ENEMY_BERSERKER, Direction.LEFT,
                                            ENEMY_BERSERKER_SPEED),
                                25, 25, create_enemy_mind(EnemyBehavior.BERSERKER)) for pos in berserker_positions]
+    walls = [WorldEntity(pos, WALL_SIZE, Sprite.WALL) for pos in wall_positions]
     enemies = dumb_enemies + smart_enemies + mage_enemies + berserker_enemies
     player_potion_slots = {
         1: PotionType.SPEED,
@@ -70,4 +74,4 @@ def init_game_state_from_file(camera_size: Tuple[int, int]):
                  AbilityType.TELEPORT]
     player_state = PlayerState(300, 300, 90, 100, 0.002, player_potion_slots, abilities)
     game_world_size = (max_col_index * col_width, max_row_index * row_height)
-    return GameState(player_entity, potions, enemies, camera_size, game_world_size, player_state)
+    return GameState(player_entity, potions, enemies, walls, camera_size, game_world_size, player_state)

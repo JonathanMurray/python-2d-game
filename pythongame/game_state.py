@@ -161,13 +161,15 @@ class PlayerState:
 
 class GameState:
     def __init__(self, player_entity: WorldEntity, potions_on_ground: List[PotionOnGround], enemies: List[Enemy],
-                 camera_size: Tuple[int, int], game_world_size: Tuple[int, int], player_state: PlayerState):
+                 walls: List[WorldEntity], camera_size: Tuple[int, int], game_world_size: Tuple[int, int],
+                 player_state: PlayerState):
         self.camera_size = camera_size
         self.camera_world_area = WorldArea((0, 0), self.camera_size)
         self.player_entity = player_entity
         self.projectile_entities = []
         self.potions_on_ground = potions_on_ground
         self.enemies = enemies
+        self.walls = walls
         self.visual_effects = []
         self.player_state = player_state
         self.game_world_size = game_world_size
@@ -181,7 +183,7 @@ class GameState:
 
     def get_all_entities(self) -> List[WorldEntity]:
         return [self.player_entity] + [p.world_entity for p in self.projectile_entities] + \
-               [p.world_entity for p in self.potions_on_ground] + [e.world_entity for e in self.enemies]
+               [p.world_entity for p in self.potions_on_ground] + [e.world_entity for e in self.enemies] + self.walls
 
     def center_camera_on_player(self):
         player_center_position = self.player_entity.get_center_position()
@@ -204,7 +206,7 @@ class GameState:
             old_y = entity.y
             entity.x = min(max(new_position[0], 0), self.game_world_size[0] - entity.w)
             entity.y = min(max(new_position[1], 0), self.game_world_size[1] - entity.h)
-            other_entities = [e.world_entity for e in self.enemies] + [self.player_entity]
+            other_entities = [e.world_entity for e in self.enemies] + [self.player_entity] + self.walls
             collision = any([other for other in other_entities if self._entities_collide(entity, other)
                              and entity is not other])
             if collision:
@@ -225,4 +227,3 @@ class GameState:
 
     def _entities_collide(self, r1, r2):
         return rects_intersect(r1.collision_rect(), r2.collision_rect())
-
