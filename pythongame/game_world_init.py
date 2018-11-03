@@ -9,7 +9,7 @@ from pythongame.game_state import WorldEntity, Enemy, GameState, PotionOnGround,
 ENEMY_SPEED = 0.02
 ENEMY_2_SPEED = 0.032
 ENEMY_MAGE_SPEED = 0.02
-PLAYER_ENTITY_SPEED = 0.1
+PLAYER_ENTITY_SPEED = 0.13
 ENEMY_BERSERKER_SPEED = 0.1
 
 
