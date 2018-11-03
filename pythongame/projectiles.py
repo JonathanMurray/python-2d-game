@@ -44,8 +44,8 @@ class PlayerProjectileController(AbstractProjectileController):
 
 class PlayerAoeProjectileController(AbstractProjectileController):
     def __init__(self):
-        super().__init__(2000)
-        self._dmg_cooldown = 150
+        super().__init__(3000)
+        self._dmg_cooldown = 250
         self._time_since_dmg = self._dmg_cooldown
 
     def notify_time_passed(self, game_state: GameState, projectile: Projectile, time_passed: Millis):
@@ -53,8 +53,11 @@ class PlayerAoeProjectileController(AbstractProjectileController):
         self._time_since_dmg += time_passed
         if self._time_since_dmg > self._dmg_cooldown:
             self._time_since_dmg = False
-            for enemy in game_state.get_enemies_intersecting_with(projectile.world_entity):
+            projectile_entity = projectile.world_entity
+            for enemy in game_state.get_enemies_intersecting_with(projectile_entity):
                 enemy.lose_health(1)
+            if random.random() < 0.07:
+                projectile_entity.direction = random.choice(get_perpendicular_directions(projectile_entity.direction))
 
 
 class PlayerMagicMissileProjectileController(AbstractProjectileController):
