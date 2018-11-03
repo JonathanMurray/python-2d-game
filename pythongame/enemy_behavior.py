@@ -2,7 +2,7 @@ from pythongame.common import *
 from pythongame.game_data import ENEMY_PROJECTILE_SIZE
 from pythongame.game_state import WorldEntity, Projectile, Enemy, GameState
 from pythongame.projectiles import create_projectile_controller
-from pythongame.visual_effects import VisualLine
+from pythongame.visual_effects import VisualLine, create_visual_damage_text
 
 
 def create_enemy_mind(enemy_behavior: EnemyBehavior):
@@ -160,9 +160,11 @@ class BerserkerEnemyMind:
             self._time_since_attack = 0
             if not is_player_invisible:
                 enemy_position = enemy.world_entity.get_center_position()
-                player_position = game_state.player_entity.get_center_position()
+                player_center_pos = game_state.player_entity.get_center_position()
                 attack_range = 80
-                if abs(enemy_position[0] - player_position[0]) < attack_range \
-                        and abs(enemy_position[1] - player_position[1]) < attack_range:
-                    game_state.player_state.lose_health(12)
-                    game_state.visual_effects.append(VisualLine((220, 0, 0), enemy_position, player_position, 100, 3))
+                if abs(enemy_position[0] - player_center_pos[0]) < attack_range \
+                        and abs(enemy_position[1] - player_center_pos[1]) < attack_range:
+                    damage_amount = 12
+                    game_state.player_state.lose_health(damage_amount)
+                    game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, damage_amount))
+                    game_state.visual_effects.append(VisualLine((220, 0, 0), enemy_position, player_center_pos, 100, 3))

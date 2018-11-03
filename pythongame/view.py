@@ -2,7 +2,7 @@ import pygame
 
 from pythongame.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS
-from pythongame.visual_effects import VisualLine, VisualCircle, VisualRect
+from pythongame.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -74,6 +74,8 @@ class View:
             self._draw_visual_circle(visual_effect, camera_world_area)
         elif isinstance(visual_effect, VisualRect):
             self._draw_visual_rect(visual_effect, camera_world_area)
+        elif isinstance(visual_effect, VisualText):
+            self._draw_visual_text(visual_effect, camera_world_area)
         else:
             raise Exception("Unhandled visual effect: " + visual_effect)
 
@@ -92,6 +94,12 @@ class View:
 
     def _draw_visual_rect(self, visual_rect, camera_world_area):
         self._render_rect_in_world(camera_world_area, visual_rect.color, visual_rect.rect(), 1)
+
+    def _draw_visual_text(self, visual_effect, camera_world_area):
+        position = visual_effect.position
+        translated_position = position[0] - camera_world_area.x, position[1] - camera_world_area.y
+        self.screen.blit(self.font_tiny.render(str(visual_effect.text), False, visual_effect.color),
+                         translated_position)
 
     def _render_stat_bar(self, x, y, w, h, stat, max_stat, color, border):
 

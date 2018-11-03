@@ -1,6 +1,6 @@
 from pythongame.common import *
 from pythongame.game_state import Projectile, Enemy, GameState
-from pythongame.visual_effects import VisualCircle
+from pythongame.visual_effects import VisualCircle, create_visual_damage_text
 
 
 def create_projectile_controller(projectile_type: ProjectileType):
@@ -36,7 +36,9 @@ class PlayerProjectileController(AbstractProjectileController):
         super().__init__(3000)
 
     def apply_enemy_collision(self, enemy: Enemy, game_state: GameState):
-        enemy.lose_health(3)
+        damage_amount = 3
+        enemy.lose_health(damage_amount)
+        game_state.visual_effects.append(create_visual_damage_text(enemy.world_entity, damage_amount))
         game_state.visual_effects.append(VisualCircle((250, 100, 50), enemy.world_entity.get_center_position(), 45,
                                                       Millis(100), 0))
         return True
@@ -45,7 +47,7 @@ class PlayerProjectileController(AbstractProjectileController):
 class PlayerAoeProjectileController(AbstractProjectileController):
     def __init__(self):
         super().__init__(3000)
-        self._dmg_cooldown = 250
+        self._dmg_cooldown = 350
         self._time_since_dmg = self._dmg_cooldown
 
     def notify_time_passed(self, game_state: GameState, projectile: Projectile, time_passed: Millis):
@@ -55,7 +57,9 @@ class PlayerAoeProjectileController(AbstractProjectileController):
             self._time_since_dmg = False
             projectile_entity = projectile.world_entity
             for enemy in game_state.get_enemies_intersecting_with(projectile_entity):
-                enemy.lose_health(1)
+                damage_amount = 1
+                enemy.lose_health(damage_amount)
+                game_state.visual_effects.append(create_visual_damage_text(enemy.world_entity, damage_amount))
             if random.random() < 0.07:
                 projectile_entity.direction = random.choice(get_perpendicular_directions(projectile_entity.direction))
 
@@ -67,7 +71,9 @@ class PlayerMagicMissileProjectileController(AbstractProjectileController):
 
     def apply_enemy_collision(self, enemy: Enemy, game_state: GameState):
         if enemy not in self._enemies_hit:
-            enemy.lose_health(1)
+            damage_amount = 1
+            enemy.lose_health(damage_amount)
+            game_state.visual_effects.append(create_visual_damage_text(enemy.world_entity, damage_amount))
             game_state.visual_effects.append(VisualCircle((250, 100, 250), enemy.world_entity.get_center_position(), 25,
                                                           Millis(100), 0))
             self._enemies_hit.append(enemy)
@@ -79,7 +85,9 @@ class EnemyPoisonProjectileController(AbstractProjectileController):
         super().__init__(2000)
 
     def apply_player_collision(self, game_state: GameState):
-        game_state.player_state.lose_health(1)
+        damage_amount = 1
+        game_state.player_state.lose_health(damage_amount)
+        game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, damage_amount))
         game_state.player_state.gain_buff(BuffType.DAMAGE_OVER_TIME, Millis(2000))
         game_state.visual_effects.append(VisualCircle((50, 180, 50), game_state.player_entity.get_center_position(),
                                                       50, Millis(100), 0))

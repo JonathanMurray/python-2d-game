@@ -67,3 +67,16 @@ class VisualRect(VisualEffect):
     def update_position_if_attached_to_entity(self):
         if self._attached_to_entity:
             self.center_position = self._attached_to_entity.get_center_position()
+
+
+class VisualText(VisualEffect):
+    def __init__(self, text: str, color: Tuple[int, int, int], position: Tuple[int, int], max_age: Millis):
+        super().__init__(max_age)
+        self.text = text
+        self.color = color
+        self.position = position
+
+
+def create_visual_damage_text(entity, damage_amount):
+    visual_text_position = (entity.x + 15, entity.y - 10)
+    return VisualText(str(damage_amount), (220, 0, 0), visual_text_position, Millis(600))
