@@ -13,6 +13,7 @@
 
 #### Features:
 * Ability-specific cooldowns
+* Render damage/healing numbers in the game world
 * New advanced enemy behaviors
     * summoning new enemies?
 * Save functionality
