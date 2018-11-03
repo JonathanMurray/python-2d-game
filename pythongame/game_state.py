@@ -3,6 +3,9 @@ from typing import Tuple, List, Optional
 
 from pythongame.common import *
 
+WALL_BUCKET_WIDTH = 100
+WALL_BUCKET_HEIGHT = 100
+
 
 class WorldArea:
     def __init__(self, pos: Tuple[int, int], size: Tuple[int, int]):
@@ -170,6 +173,7 @@ class GameState:
         self.potions_on_ground = potions_on_ground
         self.enemies = enemies
         self.walls = walls
+        self._wall_buckets = self._put_walls_in_buckets(game_world_size, walls)
         self.visual_effects = []
         self.player_state = player_state
         self.game_world_size = game_world_size
@@ -206,7 +210,8 @@ class GameState:
             old_y = entity.y
             entity.x = min(max(new_position[0], 0), self.game_world_size[0] - entity.w)
             entity.y = min(max(new_position[1], 0), self.game_world_size[1] - entity.h)
-            other_entities = [e.world_entity for e in self.enemies] + [self.player_entity] + self.walls
+            walls = self._get_walls_from_buckets_adjacent_to_entity(entity)
+            other_entities = [e.world_entity for e in self.enemies] + [self.player_entity] + walls
             collision = any([other for other in other_entities if self._entities_collide(entity, other)
                              and entity is not other])
             if collision:
@@ -227,3 +232,27 @@ class GameState:
 
     def _entities_collide(self, r1, r2):
         return rects_intersect(r1.collision_rect(), r2.collision_rect())
+
+    # Wall buckets:
+    # Optimization for only checking collision with walls that are known beforehand (through use of buckets) to be
+    # somewhat close to the entity
+    def _put_walls_in_buckets(self, game_world_size: Tuple[int, int], walls: List[WorldEntity]):
+        wall_buckets = {}
+        for x_bucket in range(game_world_size[0] // WALL_BUCKET_WIDTH + 1):
+            wall_buckets[x_bucket] = {}
+            for y_bucket in range(game_world_size[1] // WALL_BUCKET_HEIGHT + 1):
+                wall_buckets[x_bucket][y_bucket] = []
+        for w in walls:
+            x_bucket = int(w.x) // WALL_BUCKET_WIDTH
+            y_bucket = int(w.y) // WALL_BUCKET_HEIGHT
+            wall_buckets[x_bucket][y_bucket].append(w)
+        return wall_buckets
+
+    def _get_walls_from_buckets_adjacent_to_entity(self, entity: WorldEntity):
+        entity_x_bucket = int(entity.x) // WALL_BUCKET_WIDTH
+        entity_y_bucket = int(entity.y) // WALL_BUCKET_HEIGHT
+        walls = []
+        for x_bucket in range(max(0, entity_x_bucket - 1), entity_x_bucket + 2):
+            for y_bucket in range(max(0, entity_y_bucket - 1), entity_y_bucket + 2):
+                walls += self._wall_buckets[x_bucket][y_bucket]
+        return walls
