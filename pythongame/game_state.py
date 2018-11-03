@@ -185,9 +185,10 @@ class GameState:
         self.potions_on_ground = [p for p in self.potions_on_ground if p not in entities_to_remove]
         self.enemies = [e for e in self.enemies if e not in entities_to_remove]
 
-    def get_all_entities(self) -> List[WorldEntity]:
+    def get_all_entities_to_render(self) -> List[WorldEntity]:
+        walls = self._get_walls_from_buckets_in_camera()
         return [self.player_entity] + [p.world_entity for p in self.projectile_entities] + \
-               [p.world_entity for p in self.potions_on_ground] + [e.world_entity for e in self.enemies] + self.walls
+               [p.world_entity for p in self.potions_on_ground] + [e.world_entity for e in self.enemies] + walls
 
     def center_camera_on_player(self):
         player_center_position = self.player_entity.get_center_position()
@@ -254,5 +255,16 @@ class GameState:
         walls = []
         for x_bucket in range(max(0, entity_x_bucket - 1), entity_x_bucket + 2):
             for y_bucket in range(max(0, entity_y_bucket - 1), entity_y_bucket + 2):
+                walls += self._wall_buckets[x_bucket][y_bucket]
+        return walls
+
+    def _get_walls_from_buckets_in_camera(self):
+        x0_bucket = int(self.camera_world_area.x) // WALL_BUCKET_WIDTH
+        y0_bucket = int(self.camera_world_area.y) // WALL_BUCKET_HEIGHT
+        x1_bucket = int(self.camera_world_area.x + self.camera_world_area.w) // WALL_BUCKET_WIDTH
+        y1_bucket = int(self.camera_world_area.y + self.camera_world_area.h) // WALL_BUCKET_HEIGHT
+        walls = []
+        for x_bucket in range(max(0, x0_bucket), x1_bucket + 1):
+            for y_bucket in range(max(0, y0_bucket - 1), y1_bucket + 1):
                 walls += self._wall_buckets[x_bucket][y_bucket]
         return walls

@@ -63,7 +63,7 @@ def main():
         #          RENDER EVERYTHING
         # ------------------------------------
 
-        view.render_everything(all_entities=game_state.get_all_entities(),
+        view.render_everything(all_entities=game_state.get_all_entities_to_render(),
                                player_entity=game_state.player_entity,
                                is_player_invisible=game_state.player_state.is_invisible,
                                camera_world_area=game_state.camera_world_area,
