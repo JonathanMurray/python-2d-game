@@ -124,7 +124,8 @@ class View:
             pygame.draw.rect(self.screen, COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
         self.screen.blit(self.font_tiny.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + h + 4))
 
-    def _render_ui_ability(self, x_in_ui, y_in_ui, size, ability_type, highlighted_ability_action):
+    def _render_ui_ability(self, x_in_ui, y_in_ui, size, ability_type, highlighted_ability_action,
+                           ability_cooldowns_remaining, max_ability_cooldowns):
         w = size[0]
         h = size[1]
         x = self.ui_screen_area.x + x_in_ui
@@ -139,6 +140,11 @@ class View:
             pygame.draw.rect(self.screen, COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
         self.screen.blit(self.font_tiny.render(ability.key_string, False, COLOR_WHITE), (x + 8, y + h + 4))
         self.screen.blit(self.font_tiny.render("" + str(mana_cost) + "", False, COLOR_WHITE), (x + 8, y + h + 19))
+
+        if ability_cooldowns_remaining[ability_type] > 0:
+            ratio_remaining = ability_cooldowns_remaining[ability_type] / max_ability_cooldowns[ability_type]
+            pygame.draw.rect(self.screen, (100, 30, 30),
+                             (x + 2, y + 2 + (h - 4) * (1 - ratio_remaining), w - 4, (h - 4) * ratio_remaining + 2))
 
     def _render_ui_text(self, font, text, x, y):
         screen_pos = (self.ui_screen_area.x + x, self.ui_screen_area.y + y)
@@ -183,7 +189,7 @@ class View:
                           player_health, player_max_health, player_mana, player_max_mana, potion_slots,
                           player_active_buffs, visual_effects, fps_string,
                           player_minimap_relative_position, abilities, message, highlighted_potion_action,
-                          highlighted_ability_action, is_paused):
+                          highlighted_ability_action, is_paused, ability_cooldowns_remaining, max_ability_cooldowns):
 
         self.screen.fill(COLOR_BACKGROUND)
         self._draw_ground(camera_world_area)
@@ -248,7 +254,7 @@ class View:
         self._render_ui_text(self.font_large, "SPELLS", x_1, y_3)
         for i, ability_type in enumerate(abilities):
             self._render_ui_ability(x_1 + i * (UI_ICON_SIZE[0] + icon_space), y_4, UI_ICON_SIZE, ability_type,
-                                    highlighted_ability_action)
+                                    highlighted_ability_action, ability_cooldowns_remaining, max_ability_cooldowns)
 
         x_2 = 390
         self._render_ui_text(self.font_large, "MAP", x_2, y_1)

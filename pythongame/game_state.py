@@ -1,5 +1,5 @@
 import math
-from typing import Tuple, List, Optional
+from typing import Tuple, List, Optional, Dict
 
 from pythongame.common import *
 
@@ -114,7 +114,8 @@ class PlayerBuffsUpdate:
 
 class PlayerState:
     def __init__(self, health: int, max_health: int, mana: int, max_mana: int, mana_regen: float,
-                 potion_slots: List[PotionType], abilities: List[AbilityType]):
+                 potion_slots: List[PotionType], abilities: List[AbilityType],
+                 max_ability_cooldowns: Dict[AbilityType, int]):
         self.health = health
         self._health_float = health
         self.max_health = max_health
@@ -124,6 +125,8 @@ class PlayerState:
         self.mana_regen = mana_regen
         self.potion_slots = potion_slots
         self.abilities = abilities
+        self.max_ability_cooldowns = max_ability_cooldowns
+        self.ability_cooldowns_remaining = {ability_type: 0 for ability_type in abilities}
         self.active_buffs: List[Buff] = []
         self.is_invisible = False
         self.is_stunned = False
@@ -160,6 +163,11 @@ class PlayerState:
     def regenerate_mana(self, time_passed: Millis):
         self.gain_mana(
             self.mana_regen * time_passed)
+
+    def recharge_ability_cooldowns(self, time_passed: Millis):
+        for ability_type in self.ability_cooldowns_remaining:
+            if self.ability_cooldowns_remaining[ability_type] > 0:
+                self.ability_cooldowns_remaining[ability_type] -= time_passed
 
 
 class GameState:

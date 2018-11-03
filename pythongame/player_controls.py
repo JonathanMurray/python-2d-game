@@ -27,7 +27,11 @@ class PlayerControls:
         if player_state.mana < mana_cost:
             return TryUseAbilityResult.NOT_ENOUGH_MANA
 
+        if player_state.ability_cooldowns_remaining[ability_type] > 0:
+            return TryUseAbilityResult.COOLDOWN_NOT_READY
+
         player_state.lose_mana(mana_cost)
+        player_state.ability_cooldowns_remaining[ability_type] = player_state.max_ability_cooldowns[ability_type]
         return TryUseAbilityResult.SUCCESS
 
     def notify_time_passed(self, time_passed: Millis):

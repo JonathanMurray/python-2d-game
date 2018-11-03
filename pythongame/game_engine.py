@@ -94,6 +94,7 @@ class GameEngine:
             BUFF_EFFECTS[buff_type].apply_end_effect(self.game_state)
 
         self.game_state.player_state.regenerate_mana(time_passed)
+        self.game_state.player_state.recharge_ability_cooldowns(time_passed)
 
         for e in self.game_state.enemies:
             # Enemies shouldn't move towards player when they are out of sight
