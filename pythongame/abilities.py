@@ -70,13 +70,13 @@ def _apply_teleport(game_state: GameState):
     game_state.visual_effects.append(VisualCircle(color, previous_position, 35, Millis(150), 1))
     game_state.visual_effects.append(VisualRect(color, previous_position, 50, Millis(150)))
     if direction == Direction.RIGHT:
-        game_state.player_entity.x += distance
+        game_state.player_entity.translate_x(distance)
     elif direction == Direction.DOWN:
-        game_state.player_entity.y += distance
+        game_state.player_entity.translate_y(distance)
     elif direction == Direction.LEFT:
-        game_state.player_entity.x -= distance
+        game_state.player_entity.translate_x(-distance)
     elif direction == Direction.UP:
-        game_state.player_entity.y -= distance
+        game_state.player_entity.translate_y(-distance)
     else:
         raise Exception("Unhandled direction: " + str(direction))
     new_position = game_state.player_entity.get_center_position()

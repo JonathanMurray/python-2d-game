@@ -1,6 +1,8 @@
 import math
 from typing import Tuple, List, Optional, Dict
 
+from pygame.rect import Rect
+
 from pythongame.common import *
 
 WALL_BUCKET_WIDTH = 100
@@ -32,6 +34,7 @@ class WorldEntity:
         self._speed_multiplier = 1
         self._effective_speed = speed
         self._is_moving = True
+        self.pygame_collision_rect = Rect(self.collision_rect())
 
     def set_moving_in_dir(self, direction):
         self.direction = direction
@@ -63,6 +66,17 @@ class WorldEntity:
     # TODO use more
     def rect(self):
         return self.x, self.y, self.w, self.h
+
+    def translate_x(self, amount):
+        self.set_position((self.x + amount, self.y))
+
+    def translate_y(self, amount):
+        self.set_position((self.x, self.y + amount))
+
+    def set_position(self, new_position):
+        self.x = new_position[0]
+        self.y = new_position[1]
+        self.pygame_collision_rect = Rect(self.collision_rect())
 
     def collision_rect(self):
         collision_x = self.get_center_position()[0] - self.collision_w / 2
@@ -215,17 +229,16 @@ class GameState:
     def update_world_entity_position_within_game_world(self, entity: WorldEntity, time_passed: Millis):
         new_position = entity.get_new_position_according_to_dir_and_speed(time_passed)
         if new_position:
-            old_x = entity.x
-            old_y = entity.y
-            entity.x = min(max(new_position[0], 0), self.game_world_size[0] - entity.w)
-            entity.y = min(max(new_position[1], 0), self.game_world_size[1] - entity.h)
+            old_pos = entity.x, entity.y
+            new_pos_within_world = (min(max(new_position[0], 0), self.game_world_size[0] - entity.w),
+                                    min(max(new_position[1], 0), self.game_world_size[1] - entity.h))
+            entity.set_position(new_pos_within_world)
             walls = self._get_walls_from_buckets_adjacent_to_entity(entity)
             other_entities = [e.world_entity for e in self.enemies] + [self.player_entity] + walls
             collision = any([other for other in other_entities if self._entities_collide(entity, other)
                              and entity is not other])
             if collision:
-                entity.x = old_x
-                entity.y = old_y
+                entity.set_position(old_pos)
 
     def is_within_game_world(self, box) -> bool:
         return boxes_intersect(box, self.entire_world_area)
@@ -240,7 +253,8 @@ class GameState:
         self.visual_effects = [v for v in self.visual_effects if not v.has_expired]
 
     def _entities_collide(self, r1, r2):
-        return rects_intersect(r1.collision_rect(), r2.collision_rect())
+        # Optimization: collision checking done with C-code from Pygame
+        return r1.pygame_collision_rect.colliderect(r2.pygame_collision_rect)
 
     # Wall buckets:
     # Optimization for only checking collision with walls that are known beforehand (through use of buckets) to be

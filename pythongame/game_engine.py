@@ -103,9 +103,8 @@ class GameEngine:
         if not self.game_state.player_state.is_stunned:
             self.game_state.update_world_entity_position_within_game_world(self.game_state.player_entity, time_passed)
         for projectile in self.game_state.projectile_entities:
-            new_x, new_y = projectile.world_entity.get_new_position_according_to_dir_and_speed(time_passed)
-            projectile.world_entity.x = new_x
-            projectile.world_entity.y = new_y
+            new_pos = projectile.world_entity.get_new_position_according_to_dir_and_speed(time_passed)
+            projectile.world_entity.set_position(new_pos)
 
         for visual_effect in self.game_state.visual_effects:
             visual_effect.update_position_if_attached_to_entity()
