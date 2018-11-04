@@ -277,7 +277,8 @@ class View:
 
         self._render_rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
 
-        self._render_text(self.font_small, fps_string + " FPS", (10, 10))
+        self._render_rect(COLOR_BLACK, (0, 0, 60, 24), 0)
+        self._render_text(self.font_small, fps_string + " fps", (5, 3))
 
         self._render_text(self.font_small, message, (self.ui_screen_area.w / 2 - 80, self.ui_screen_area.y - 30))
         if is_paused:
