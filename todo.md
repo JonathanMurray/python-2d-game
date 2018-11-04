@@ -1,6 +1,13 @@
 ## TODO
 
 #### Refactorings:
+* Organize code in a way so that the full description of an enemy / ability is not spread out between lots of files
+    * enemies
+    * abilities
+    * buffs
+    * projectiles
+    * potions
+    * sprites
 * Move non-trivial logic from game_state. Prefer to have game-logic elsewhere.
 * Avoid storing EnemyMind and ProjectileController in game_state. That module should only depend on common
 * Collect geometry and math in one place
@@ -12,8 +19,6 @@
 * Add path-finding for enemies
 
 #### Features:
-* Ability-specific cooldowns
-* Render damage/healing numbers in the game world
 * New advanced enemy behaviors
     * summoning new enemies?
 * Save functionality
