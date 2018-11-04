@@ -2,7 +2,7 @@ from pythongame.common import *
 from pythongame.game_data import MAGIC_MISSILE_PROJECTILE_SIZE
 from pythongame.game_state import GameState, WorldEntity, Projectile
 from pythongame.projectiles import create_projectile_controller
-from pythongame.visual_effects import VisualCircle, VisualRect, create_visual_damage_text
+from pythongame.visual_effects import VisualCircle, VisualRect, create_visual_damage_text, create_visual_healing_text
 
 
 class AbstractBuff:
@@ -22,8 +22,12 @@ class HealingOverTime(AbstractBuff):
 
     def apply_middle_effect(self, game_state: GameState, time_passed: Millis):
         self._time_since_graphics += time_passed
-        game_state.player_state.gain_health(0.04 * time_passed)
+        healing_amount = 0.04
+        game_state.player_state.gain_health(healing_amount * time_passed)
         if self._time_since_graphics > 500:
+            estimate_health_gained = int(self._time_since_graphics * healing_amount)
+            game_state.visual_effects.append(
+                create_visual_healing_text(game_state.player_entity, estimate_health_gained))
             game_state.visual_effects.append(
                 VisualCircle((200, 200, 50), game_state.player_entity.get_center_position(),
                              10, Millis(100), 0))

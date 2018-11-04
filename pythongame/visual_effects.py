@@ -80,3 +80,12 @@ class VisualText(VisualEffect):
 def create_visual_damage_text(entity, damage_amount):
     visual_text_position = (entity.x + 15, entity.y - 10)
     return VisualText(str(damage_amount), (220, 0, 0), visual_text_position, Millis(600))
+
+
+def create_visual_healing_text(entity, healing_amount):
+    visual_text_position = (entity.x + 15, entity.y - 10)
+    return VisualText(str(healing_amount), (0, 140, 0), visual_text_position, Millis(600))
+
+def create_visual_mana_text(entity, healing_amount):
+    visual_text_position = (entity.x + 15, entity.y - 10)
+    return VisualText(str(healing_amount), (0, 0, 140), visual_text_position, Millis(600))

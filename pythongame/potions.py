@@ -1,6 +1,6 @@
 from pythongame.common import *
 from pythongame.game_state import GameState
-from pythongame.visual_effects import VisualCircle
+from pythongame.visual_effects import VisualCircle, create_visual_healing_text, create_visual_mana_text
 
 
 class PotionWasConsumed:
@@ -23,14 +23,18 @@ def try_consume_potion(potion_type: PotionType, game_state: GameState):
     if potion_type == PotionType.HEALTH:
         if game_state.player_state.health < game_state.player_state.max_health:
             _create_visual_effect_at_player(game_state)
-            player_state.gain_health(100)
+            healing_amount = 100
+            game_state.visual_effects.append(create_visual_healing_text(game_state.player_entity, healing_amount))
+            player_state.gain_health(healing_amount)
             return PotionWasConsumed()
         else:
             return PotionFailedToBeConsumed("Already at full health!")
     elif potion_type == PotionType.MANA:
         if game_state.player_state.mana < game_state.player_state.max_mana:
             _create_visual_effect_at_player(game_state)
-            player_state.gain_mana(25)
+            mana_amount = 25
+            player_state.gain_mana(mana_amount)
+            game_state.visual_effects.append(create_visual_mana_text(game_state.player_entity, mana_amount))
             return PotionWasConsumed()
         else:
             return PotionFailedToBeConsumed("Already at full mana!")
