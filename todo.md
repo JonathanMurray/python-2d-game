@@ -15,8 +15,8 @@
 
 #### Game engine:
 * Use 8 directions instead of 4?
-* Introduce obstacles that block enemies
 * Add path-finding for enemies
+* Use pygame C code for vector math
 
 #### Features:
 * New advanced enemy behaviors
