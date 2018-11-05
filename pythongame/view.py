@@ -69,10 +69,10 @@ class View:
     def _fill_rect(self, color, rect):
         pygame.draw.rect(self.screen, color, rect)
 
-    def draw_line(self, color, start_position, end_position, line_width):
+    def _draw_line(self, color, start_position, end_position, line_width):
         pygame.draw.line(self.screen, color, start_position, end_position, line_width)
 
-    def draw_circle(self, color, position, radius, line_width):
+    def _draw_circle(self, color, position, radius, line_width):
         pygame.draw.circle(self.screen, color, position, radius, line_width)
 
     def _render_entity_sprite(self, image, entity, camera_world_area):
@@ -96,13 +96,13 @@ class View:
         camera_y = camera_world_area.y
         start_position = line.start_position[0] - camera_x, line.start_position[1] - camera_y
         end_position = line.end_position[0] - camera_x, line.end_position[1] - camera_y
-        self.draw_line(line.color, start_position, end_position, line.line_width)
+        self._draw_line(line.color, start_position, end_position, line.line_width)
 
     def _draw_visual_circle(self, visual_circle, camera_world_area):
         position = visual_circle.circle()[0]
         radius = visual_circle.circle()[1]
         translated_position = position[0] - camera_world_area.x, position[1] - camera_world_area.y
-        self.draw_circle(visual_circle.color, translated_position, radius, visual_circle.line_width)
+        self._draw_circle(visual_circle.color, translated_position, radius, visual_circle.line_width)
 
     def _draw_visual_rect(self, visual_rect, camera_world_area):
         self._render_rect_in_world(camera_world_area, visual_rect.color, visual_rect.rect(), 1)
@@ -181,12 +181,12 @@ class View:
             world_x = col * grid_width
             screen_x = world_x - camera_world_area.x
             if 0 < screen_x < self.screen_size[0]:
-                self.draw_line(line_color, (screen_x, 0), (screen_x, self.screen_size[1]), 1)
+                self._draw_line(line_color, (screen_x, 0), (screen_x, self.screen_size[1]), 1)
         for row in range(num_squares):
             world_y = row * grid_width
             screen_y = world_y - camera_world_area.y
             if 0 < screen_y < self.screen_size[1]:
-                self.draw_line(line_color, (0, screen_y), (self.screen_size[0], screen_y), 1)
+                self._draw_line(line_color, (0, screen_y), (self.screen_size[0], screen_y), 1)
 
     def _render_minimap(self, position_in_ui, size, player_relative_position):
         rect_in_screen = (self.ui_screen_area.x + position_in_ui[0], self.ui_screen_area.y + position_in_ui[1],
