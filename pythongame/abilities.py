@@ -26,8 +26,7 @@ def _apply_heal(game_state: GameState):
 
 def _apply_attack(game_state: GameState):
     player_center_position = game_state.player_entity.get_center_position()
-    projectile_pos = (player_center_position[0] - ATTACK_PROJECTILE_SIZE[0] / 2,
-                      player_center_position[1] - ATTACK_PROJECTILE_SIZE[1] / 2)
+    projectile_pos = get_position_from_center_position(player_center_position, ATTACK_PROJECTILE_SIZE)
     entity = WorldEntity(projectile_pos, ATTACK_PROJECTILE_SIZE, Sprite.FIREBALL, game_state.player_entity.direction,
                          0.3)
     projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER))
@@ -38,18 +37,20 @@ def _apply_aoe_attack(game_state: GameState):
     x, y = game_state.player_entity.get_center_position()
     direction = game_state.player_entity.direction
     distance = 60
+    # TODO extract
     if direction == Direction.RIGHT:
-        aoe_pos = (x + distance - AOE_PROJECTILE_SIZE[0] / 2, y - AOE_PROJECTILE_SIZE[1] / 2)
+        aoe_mid_pos = x + distance, y
     elif direction == Direction.DOWN:
-        aoe_pos = (x - AOE_PROJECTILE_SIZE[0] / 2, y + distance - AOE_PROJECTILE_SIZE[1] / 2)
+        aoe_mid_pos = x, y + distance
     elif direction == Direction.LEFT:
-        aoe_pos = (x - distance - AOE_PROJECTILE_SIZE[0] / 2, y - AOE_PROJECTILE_SIZE[1] / 2)
+        aoe_mid_pos = x - distance, y
     elif direction == Direction.UP:
-        aoe_pos = (x - AOE_PROJECTILE_SIZE[0] / 2, y - distance - AOE_PROJECTILE_SIZE[1] / 2)
+        aoe_mid_pos = x, y - distance
     else:
         raise Exception("Unhandled direction: " + str(direction))
 
     projectile_speed = 0.07
+    aoe_pos = get_position_from_center_position(aoe_mid_pos, AOE_PROJECTILE_SIZE)
     entity = WorldEntity(aoe_pos, AOE_PROJECTILE_SIZE, Sprite.WHIRLWIND, game_state.player_entity.direction,
                          projectile_speed)
     projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER_AOE))

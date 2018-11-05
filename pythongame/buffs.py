@@ -101,8 +101,7 @@ class ChannelingMagicMissiles(AbstractBuff):
         if self._time_since_firing > 150:
             self._time_since_firing = 0
             player_center_position = game_state.player_entity.get_center_position()
-            projectile_pos = (player_center_position[0] - MAGIC_MISSILE_PROJECTILE_SIZE[0] / 2,
-                              player_center_position[1] - MAGIC_MISSILE_PROJECTILE_SIZE[1] / 2)
+            projectile_pos = get_position_from_center_position(player_center_position, MAGIC_MISSILE_PROJECTILE_SIZE)
             entity = WorldEntity(projectile_pos, MAGIC_MISSILE_PROJECTILE_SIZE, Sprite.MAGIC_MISSILE,
                                  game_state.player_entity.direction, 0.5)
             projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER_MAGIC_MISSILE))

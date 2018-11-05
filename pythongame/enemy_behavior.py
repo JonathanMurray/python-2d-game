@@ -74,8 +74,7 @@ class SmartEnemyMind:
                     self._update_firing_cooldown()
                     enemy.world_entity.set_not_moving()
                     center_position = enemy.world_entity.get_center_position()
-                    projectile_pos = (center_position[0] - ENEMY_PROJECTILE_SIZE[0] / 2,
-                                      center_position[1] - ENEMY_PROJECTILE_SIZE[1] / 2)
+                    projectile_pos = get_position_from_center_position(center_position, ENEMY_PROJECTILE_SIZE)
                     entity = WorldEntity(projectile_pos, ENEMY_PROJECTILE_SIZE, Sprite.POISONBALL,
                                          enemy.world_entity.direction, 0.1)
                     projectile = Projectile(entity, create_projectile_controller(ProjectileType.ENEMY_POISON))
@@ -105,8 +104,7 @@ class MageEnemyMind:
         if self._time_since_firing > self._firing_cooldown:
             self._time_since_firing = 0
             center_position = enemy.world_entity.get_center_position()
-            projectile_pos = (center_position[0] - ENEMY_PROJECTILE_SIZE[0] / 2,
-                              center_position[1] - ENEMY_PROJECTILE_SIZE[1] / 2)
+            projectile_pos = get_position_from_center_position(center_position, ENEMY_PROJECTILE_SIZE)
             entities = [WorldEntity(projectile_pos, ENEMY_PROJECTILE_SIZE, Sprite.POISONBALL, direction, 0.1)
                         for direction in get_all_directions()]
             projectiles = [Projectile(entity, create_projectile_controller(ProjectileType.ENEMY_POISON))

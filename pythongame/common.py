@@ -1,7 +1,7 @@
 import random
 from enum import Enum
 
-from typing import NewType
+from typing import NewType, Tuple
 
 Millis = NewType('Millis', int)
 
@@ -67,6 +67,10 @@ def get_opposite_direction(direction: Direction):
 
 def get_all_directions():
     return [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT]
+
+
+def get_position_from_center_position(center_position: Tuple[int, int], size: Tuple[int, int]):
+    return center_position[0] - size[0] / 2, center_position[1] - size[1] / 2
 
 
 class PotionType(Enum):
