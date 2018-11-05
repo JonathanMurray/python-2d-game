@@ -50,12 +50,10 @@ ENTITY_SPRITE_INITIALIZERS = {
 
 UI_ICON_SPRITE_PATHS = {
     UiIconSprite.SPEED_POTION: "resources/white_potion.gif",
-    UiIconSprite.INVISIBILITY_POTION: "resources/invis_potion.png",
 }
 
 POTION_ICON_SPRITES = {
     PotionType.SPEED: UiIconSprite.SPEED_POTION,
-    PotionType.INVISIBILITY: UiIconSprite.INVISIBILITY_POTION
 }
 
 ABILITIES = {}
@@ -63,7 +61,6 @@ ABILITIES = {}
 BUFF_TEXTS = {
     BuffType.DAMAGE_OVER_TIME: "Poison",
     BuffType.INCREASED_MOVE_SPEED: "Speed",
-    BuffType.INVISIBILITY: "Invisibility",
 }
 
 

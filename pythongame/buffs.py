@@ -51,32 +51,12 @@ class IncreasedMoveSpeed(AbstractBuff):
         game_state.player_entity.add_to_speed_multiplier(-1)
 
 
-class Invisibility(AbstractBuff):
-    def __init__(self):
-        self._time_since_graphics = 0
-
-    def apply_start_effect(self, game_state: GameState):
-        game_state.player_state.is_invisible = True
-
-    def apply_middle_effect(self, game_state: GameState, time_passed: Millis):
-        self._time_since_graphics += time_passed
-        if self._time_since_graphics > 320:
-            self._time_since_graphics = 0
-            game_state.visual_effects.append(
-                VisualRect((0, 0, 250), game_state.player_entity.get_center_position(), 60, Millis(400),
-                           game_state.player_entity))
-
-    def apply_end_effect(self, game_state: GameState):
-        game_state.player_state.is_invisible = False
-
-
 
 
 
 BUFF_EFFECTS = {
     BuffType.DAMAGE_OVER_TIME: DamageOverTime(),
     BuffType.INCREASED_MOVE_SPEED: IncreasedMoveSpeed(),
-    BuffType.INVISIBILITY: Invisibility()
 }
 
 

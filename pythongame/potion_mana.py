@@ -1,5 +1,4 @@
 from pythongame.common import PotionType
-from pythongame.visual_effects import create_visual_mana_text
 from pythongame.game_data import register_ui_icon_sprite_path, UiIconSprite, register_potion_icon_sprite
 from pythongame.game_state import GameState
 from pythongame.potions import create_potion_visual_effect_at_player, PotionWasConsumed, PotionFailedToBeConsumed, \
