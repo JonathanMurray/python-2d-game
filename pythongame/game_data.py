@@ -1,5 +1,3 @@
-import pygame
-
 from pythongame.common import *
 
 PLAYER_ENTITY_SIZE = (60, 60)
@@ -56,7 +54,6 @@ UI_ICON_SPRITE_PATHS = {
     UiIconSprite.MANA_POTION: "resources/ui_mana_potion.png",
     UiIconSprite.SPEED_POTION: "resources/white_potion.gif",
     UiIconSprite.INVISIBILITY_POTION: "resources/invis_potion.png",
-    UiIconSprite.TELEPORT: "resources/teleport_icon.png",
 }
 
 POTION_ICON_SPRITES = {
@@ -66,9 +63,7 @@ POTION_ICON_SPRITES = {
     PotionType.INVISIBILITY: UiIconSprite.INVISIBILITY_POTION
 }
 
-ABILITIES = {
-    AbilityType.TELEPORT: AbilityData(UiIconSprite.TELEPORT, 2, "T", pygame.K_t, Millis(500)),
-}
+ABILITIES = {}
 
 BUFF_TEXTS = {
     BuffType.DAMAGE_OVER_TIME: "Poison",

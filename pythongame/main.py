@@ -5,6 +5,7 @@ import pygame
 from pythongame.ability_aoe_attack import register_aoe_attack_ability
 from pythongame.ability_channel_attack import register_channel_attack_ability
 from pythongame.ability_heal import register_heal_ability
+from pythongame.ability_teleport import register_teleport_ability
 from pythongame.common import Millis
 from pythongame.game_engine import GameEngine
 from pythongame.game_world_init import init_game_state_from_file
@@ -21,6 +22,7 @@ register_attack_ability()
 register_heal_ability()
 register_aoe_attack_ability()
 register_channel_attack_ability()
+register_teleport_ability()
 
 def main():
     game_state = init_game_state_from_file(CAMERA_SIZE)
