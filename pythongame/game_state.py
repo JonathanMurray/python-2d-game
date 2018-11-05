@@ -1,5 +1,5 @@
 import math
-from typing import Tuple, List, Optional, Dict
+from typing import List, Optional, Dict
 
 from pygame.rect import Rect
 
@@ -128,7 +128,7 @@ class PlayerBuffsUpdate:
 
 class PlayerState:
     def __init__(self, health: int, max_health: int, mana: int, max_mana: int, mana_regen: float,
-                 potion_slots: List[PotionType], abilities: List[AbilityType],
+                 potion_slots: Dict[int, PotionType], abilities: List[AbilityType],
                  max_ability_cooldowns: Dict[AbilityType, int]):
         self.health = health
         self._health_float = health

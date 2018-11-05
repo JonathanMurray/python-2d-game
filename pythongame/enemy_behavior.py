@@ -122,7 +122,7 @@ class MageEnemyMind:
                 healing_target = nearby_hurt_enemies[0]
                 healing_target.gain_health(5)
                 healing_target_pos = healing_target.world_entity.get_center_position()
-                visual_line = VisualLine((80, 80, 250), mage_pos, healing_target_pos, 350, 3)
+                visual_line = VisualLine((80, 80, 250), mage_pos, healing_target_pos, Millis(350), 3)
                 game_state.visual_effects.append(visual_line)
 
         if self._time_since_decision > self._decision_interval:
@@ -165,4 +165,5 @@ class BerserkerEnemyMind:
                     damage_amount = 12
                     game_state.player_state.lose_health(damage_amount)
                     game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, damage_amount))
-                    game_state.visual_effects.append(VisualLine((220, 0, 0), enemy_position, player_center_pos, 100, 3))
+                    game_state.visual_effects.append(
+                        VisualLine((220, 0, 0), enemy_position, player_center_pos, Millis(100), 3))

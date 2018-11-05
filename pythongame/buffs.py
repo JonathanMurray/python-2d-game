@@ -81,7 +81,7 @@ class Invisibility(AbstractBuff):
         if self._time_since_graphics > 320:
             self._time_since_graphics = 0
             game_state.visual_effects.append(
-                VisualRect((0, 0, 250), game_state.player_entity.get_center_position(), 60, 400,
+                VisualRect((0, 0, 250), game_state.player_entity.get_center_position(), 60, Millis(400),
                            game_state.player_entity))
 
     def apply_end_effect(self, game_state: GameState):
@@ -106,7 +106,7 @@ class ChannelingMagicMissiles(AbstractBuff):
                                  game_state.player_entity.direction, 0.5)
             projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER_MAGIC_MISSILE))
             game_state.projectile_entities.append(projectile)
-            game_state.visual_effects.append(VisualRect((250, 0, 250), player_center_position, 60, 250))
+            game_state.visual_effects.append(VisualRect((250, 0, 250), player_center_position, 60, Millis(250)))
 
     def apply_end_effect(self, game_state: GameState):
         game_state.player_state.is_stunned = False

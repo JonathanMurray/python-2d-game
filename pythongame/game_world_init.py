@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from pythongame.common import *
 from pythongame.enemy_behavior import create_enemy_mind
 from pythongame.game_data import PLAYER_ENTITY_SIZE, ENEMY_ENTITY_SIZE, ENEMY_2_ENTITY_SIZE, POTION_ENTITY_SIZE, \
