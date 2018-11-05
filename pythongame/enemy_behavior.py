@@ -6,16 +6,7 @@ from pythongame.visual_effects import VisualLine, create_visual_damage_text
 
 
 def create_enemy_mind(enemy_behavior: EnemyBehavior):
-    if enemy_behavior == EnemyBehavior.DUMB:
-        return DumbEnemyMind()
-    elif enemy_behavior == EnemyBehavior.SMART:
-        return SmartEnemyMind()
-    elif enemy_behavior == EnemyBehavior.MAGE:
-        return MageEnemyMind()
-    elif enemy_behavior == EnemyBehavior.BERSERKER:
-        return BerserkerEnemyMind()
-    else:
-        raise Exception("Unhandled behavior: " + str(enemy_behavior))
+    return enemy_mind_constructors[enemy_behavior]()
 
 
 class DumbEnemyMind:
@@ -164,3 +155,15 @@ class BerserkerEnemyMind:
                     game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, damage_amount))
                     game_state.visual_effects.append(
                         VisualLine((220, 0, 0), enemy_position, player_center_pos, Millis(100), 3))
+
+
+enemy_mind_constructors = {
+    EnemyBehavior.DUMB: DumbEnemyMind,
+    EnemyBehavior.SMART: SmartEnemyMind,
+    EnemyBehavior.MAGE: MageEnemyMind,
+    EnemyBehavior.BERSERKER: BerserkerEnemyMind
+}
+
+
+def register_enemy_behavior(enemy_behavior: EnemyBehavior, mind_constructor):
+    enemy_mind_constructors[enemy_behavior] = mind_constructor
