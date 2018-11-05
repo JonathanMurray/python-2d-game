@@ -3,10 +3,13 @@ from typing import Dict
 from pythongame.common import *
 
 PLAYER_ENTITY_SIZE = (60, 60)
+
+# TODO: These should be defined where the rest of the enemy data is. Perhaps add register_enemy_size method
 ENEMY_ENTITY_SIZE = (28, 28)
 ENEMY_2_ENTITY_SIZE = (60, 60)
 ENEMY_MAGE_ENTITY_SIZE = (60, 60)
 ENEMY_BERSERKER_SIZE = (50, 50)
+
 ENEMY_PROJECTILE_SIZE = (50, 50)
 POTION_ENTITY_SIZE = (30, 30)
 WALL_SIZE = (50, 50)
