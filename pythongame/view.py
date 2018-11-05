@@ -72,6 +72,9 @@ class View:
     def draw_line(self, color, start_position, end_position, line_width):
         pygame.draw.line(self.screen, color, start_position, end_position, line_width)
 
+    def draw_circle(self, color, position, radius, line_width):
+        pygame.draw.circle(self.screen, color, position, radius, line_width)
+
     def _render_entity_sprite(self, image, entity, camera_world_area):
         pos = (entity.x - camera_world_area.x, entity.y - camera_world_area.y)
         self.screen.blit(image, pos)
@@ -99,7 +102,7 @@ class View:
         position = visual_circle.circle()[0]
         radius = visual_circle.circle()[1]
         translated_position = position[0] - camera_world_area.x, position[1] - camera_world_area.y
-        pygame.draw.circle(self.screen, visual_circle.color, translated_position, radius, visual_circle.line_width)
+        self.draw_circle(visual_circle.color, translated_position, radius, visual_circle.line_width)
 
     def _draw_visual_rect(self, visual_rect, camera_world_area):
         self._render_rect_in_world(camera_world_area, visual_rect.color, visual_rect.rect(), 1)
