@@ -1,3 +1,5 @@
+from typing import Dict, Type
+
 from pythongame.common import *
 from pythongame.game_state import Projectile, Enemy, GameState
 
@@ -23,8 +25,8 @@ class AbstractProjectileController:
         return False
 
 
-projectile_controllers = {}
+projectile_controllers: Dict[ProjectileType, Type[AbstractProjectileController]] = {}
 
 
-def register_projectile_controller(projectile_type: ProjectileType, controller):
+def register_projectile_controller(projectile_type: ProjectileType, controller: Type[AbstractProjectileController]):
     projectile_controllers[projectile_type] = controller

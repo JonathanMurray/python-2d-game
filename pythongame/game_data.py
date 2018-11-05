@@ -1,3 +1,5 @@
+from typing import Dict
+
 from pythongame.common import *
 
 PLAYER_ENTITY_SIZE = (60, 60)
@@ -38,18 +40,18 @@ class AbilityData:
         self.cooldown = cooldown
 
 
-ENTITY_SPRITE_INITIALIZERS = {
+ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, SpriteInitializer] = {
     Sprite.PLAYER: SpriteInitializer("resources/player.png", PLAYER_ENTITY_SIZE),
     Sprite.WALL: SpriteInitializer("resources/stone_tile.png", WALL_SIZE)
 }
 
-UI_ICON_SPRITE_PATHS = {}
+UI_ICON_SPRITE_PATHS: Dict[UiIconSprite, str] = {}
 
-POTION_ICON_SPRITES = {}
+POTION_ICON_SPRITES: Dict[PotionType, UiIconSprite] = {}
 
-ABILITIES = {}
+ABILITIES: Dict[AbilityType, AbilityData] = {}
 
-BUFF_TEXTS = {}
+BUFF_TEXTS: Dict[BuffType: str] = {}
 
 
 def register_ability_data(ability_type: AbilityType, ability_data: AbilityData):

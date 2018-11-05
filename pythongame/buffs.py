@@ -1,3 +1,5 @@
+from typing import Dict
+
 from pythongame.common import *
 from pythongame.game_state import GameState
 
@@ -13,7 +15,7 @@ class AbstractBuff:
         pass
 
 
-BUFF_EFFECTS = {}
+BUFF_EFFECTS: Dict[BuffType, AbstractBuff] = {}
 
 
 def register_buff_effect(buff_type: BuffType, effect: AbstractBuff):

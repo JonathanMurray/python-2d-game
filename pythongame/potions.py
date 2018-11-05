@@ -1,3 +1,5 @@
+from typing import Any, Dict
+
 from pythongame.common import *
 from pythongame.game_state import GameState
 from pythongame.visual_effects import VisualCircle
@@ -22,8 +24,11 @@ def try_consume_potion(potion_type: PotionType, game_state: GameState):
     return potion_effects[potion_type](game_state)
 
 
-potion_effects = {}
+potion_effects: Dict[PotionType, Any] = {}
 
 
-def register_potion_effect(potion_type: PotionType, effect_method):
-    potion_effects[potion_type] = effect_method
+# TODO Create an interface for the potion effect functions
+
+
+def register_potion_effect(potion_type: PotionType, effect_function):
+    potion_effects[potion_type] = effect_function
