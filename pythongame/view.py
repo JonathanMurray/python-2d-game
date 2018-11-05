@@ -61,7 +61,13 @@ class View:
     # TODO: Flesh this out more. Reduce boiler-plate of translating coordinates with the camera
     def _render_rect_in_world(self, camera_world_area, color, rect, line_width=0):
         translated_rect = (rect[0] - camera_world_area.x, rect[1] - camera_world_area.y, rect[2], rect[3])
-        pygame.draw.rect(self.screen, color, translated_rect, line_width)
+        self._draw_rect(color, translated_rect, line_width)
+
+    def _draw_rect(self, color, rect, line_width):
+        pygame.draw.rect(self.screen, color, rect, line_width)
+
+    def _fill_rect(self, color, rect):
+        pygame.draw.rect(self.screen, color, rect)
 
     def _render_entity_sprite(self, image, entity, camera_world_area):
         pos = (entity.x - camera_world_area.x, entity.y - camera_world_area.y)
@@ -102,11 +108,10 @@ class View:
                          translated_position)
 
     def _render_stat_bar(self, x, y, w, h, stat, max_stat, color, border):
-
-        pygame.draw.rect(self.screen, (0, 0, 0), (x - 1, y - 1, w + 2, h + 2))
+        self._fill_rect((0, 0, 0), (x - 1, y - 1, w + 2, h + 2))
         if border:
-            pygame.draw.rect(self.screen, (250, 250, 250), (x - 2, y - 2, w + 4, h + 4), 2)
-        pygame.draw.rect(self.screen, color, (x, y, w * stat / max_stat, h))
+            self._draw_rect((250, 250, 250), (x - 2, y - 2, w + 4, h + 4), 2)
+        self._fill_rect(color, (x, y, w * stat / max_stat, h))
 
     def _render_stat_bar_for_entity(self, world_entity, h, stat, max_stat, color, camera_world_area):
         self._render_stat_bar(world_entity.x - camera_world_area.x + 1,
@@ -123,13 +128,13 @@ class View:
         h = size[1]
         x = self.ui_screen_area.x + x_in_ui
         y = self.ui_screen_area.y + y_in_ui
-        pygame.draw.rect(self.screen, (40, 40, 40), (x, y, w, h))
+        self._fill_rect((40, 40, 40), (x, y, w, h))
         if potion_type:
             icon_sprite = POTION_ICON_SPRITES[potion_type]
             self.screen.blit(self.images_by_ui_sprite[icon_sprite], (x, y))
-        pygame.draw.rect(self.screen, COLOR_WHITE, (x, y, w, h), 2)
+        self._draw_rect(COLOR_WHITE, (x, y, w, h), 2)
         if highlighted_potion_action == potion_number:
-            pygame.draw.rect(self.screen, COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
+            self._draw_rect(COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
         self.screen.blit(self.font_tiny.render(str(potion_number), False, COLOR_WHITE), (x + 8, y + h + 4))
 
     def _render_ui_ability(self, x_in_ui, y_in_ui, size, ability_type, highlighted_ability_action,
@@ -141,18 +146,18 @@ class View:
         ability = ABILITIES[ability_type]
         mana_cost = ability.mana_cost
         icon_sprite = ability.icon_sprite
-        pygame.draw.rect(self.screen, (40, 40, 40), (x, y, w, h))
+        self._fill_rect((40, 40, 40), (x, y, w, h))
         self.screen.blit(self.images_by_ui_sprite[icon_sprite], (x, y))
-        pygame.draw.rect(self.screen, COLOR_WHITE, (x, y, w, h), 2)
+        self._draw_rect(COLOR_WHITE, (x, y, w, h), 2)
         if highlighted_ability_action == ability_type:
-            pygame.draw.rect(self.screen, COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
+            self._draw_rect(COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
         self.screen.blit(self.font_tiny.render(ability.key_string, False, COLOR_WHITE), (x + 8, y + h + 4))
         self.screen.blit(self.font_tiny.render("" + str(mana_cost) + "", False, COLOR_WHITE), (x + 8, y + h + 19))
 
         if ability_cooldowns_remaining[ability_type] > 0:
             ratio_remaining = ability_cooldowns_remaining[ability_type] / max_ability_cooldowns[ability_type]
-            pygame.draw.rect(self.screen, (100, 30, 30),
-                             (x + 2, y + 2 + (h - 4) * (1 - ratio_remaining), w - 4, (h - 4) * ratio_remaining + 2))
+            self._fill_rect((100, 30, 30),
+                            (x + 2, y + 2 + (h - 4) * (1 - ratio_remaining), w - 4, (h - 4) * ratio_remaining + 2))
 
     def _render_ui_text(self, font, text, x, y):
         screen_pos = (self.ui_screen_area.x + x, self.ui_screen_area.y + y)
@@ -160,12 +165,6 @@ class View:
 
     def _render_text(self, font, text, screen_pos):
         self.screen.blit(font.render(text, False, COLOR_WHITE), screen_pos)
-
-    def _render_rect(self, color, rect, width):
-        pygame.draw.rect(self.screen, color, rect, width)
-
-    def _render_rect_filled(self, color, rect):
-        pygame.draw.rect(self.screen, color, rect)
 
     def _draw_ground(self, camera_world_area):
         line_color = (190, 190, 200)
@@ -186,12 +185,12 @@ class View:
     def _render_minimap(self, position_in_ui, size, player_relative_position):
         rect_in_screen = (self.ui_screen_area.x + position_in_ui[0], self.ui_screen_area.y + position_in_ui[1],
                           size[0], size[1])
-        self._render_rect_filled((100, 100, 100), rect_in_screen)
-        self._render_rect(COLOR_WHITE, rect_in_screen, 2)
+        self._fill_rect((100, 100, 100), rect_in_screen)
+        self._draw_rect(COLOR_WHITE, rect_in_screen, 2)
         dot_x = rect_in_screen[0] + player_relative_position[0] * size[0]
         dot_y = rect_in_screen[1] + player_relative_position[1] * size[1]
         dot_w = 4
-        self._render_rect_filled((0, 200, 0), (dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
+        self._fill_rect((0, 200, 0), (dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
     def render_everything(self, all_entities, player_entity, is_player_invisible, camera_world_area, enemies,
                           player_health, player_max_health, player_mana, player_max_mana, potion_slots,
@@ -225,9 +224,9 @@ class View:
         for visual_effect in visual_effects:
             self._draw_visual_effect(visual_effect, camera_world_area)
 
-        self._render_rect(COLOR_BLACK, (0, 0, self.camera_size[0], self.camera_size[1]), 3)
-        self._render_rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
-                                               self.screen_size[1] - self.camera_size[1]))
+        self._draw_rect(COLOR_BLACK, (0, 0, self.camera_size[0], self.camera_size[1]), 3)
+        self._fill_rect(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
+                                      self.screen_size[1] - self.camera_size[1]))
 
         y_1 = 17
         y_2 = y_1 + 20
@@ -275,9 +274,9 @@ class View:
         for i, text in enumerate(buff_texts):
             self._render_ui_text(self.font_small, text, 550, 15 + i * 25)
 
-        self._render_rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
+        self._draw_rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
 
-        self._render_rect(COLOR_BLACK, (0, 0, 60, 24), 0)
+        self._draw_rect(COLOR_BLACK, (0, 0, 60, 24), 0)
         self._render_text(self.font_small, fps_string + " fps", (5, 3))
 
         self._render_text(self.font_small, message, (self.ui_screen_area.w / 2 - 80, self.ui_screen_area.y - 30))
