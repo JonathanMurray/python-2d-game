@@ -46,14 +46,7 @@ class WorldEntity:
     def get_new_position_according_to_dir_and_speed(self, time_passed: Millis) -> Optional:
         distance = self._effective_speed * time_passed
         if self._is_moving:
-            if self.direction == Direction.LEFT:
-                return self.x - distance, self.y
-            elif self.direction == Direction.RIGHT:
-                return self.x + distance, self.y
-            elif self.direction == Direction.UP:
-                return self.x, self.y - distance
-            elif self.direction == Direction.DOWN:
-                return self.x, self.y + distance
+            return translate_in_direction((self.x, self.y), self.direction, distance)
         return None
 
     def get_center_position(self):
@@ -214,10 +207,9 @@ class GameState:
 
     def center_camera_on_player(self):
         player_center_position = self.player_entity.get_center_position()
-        self.camera_world_area.x = int(min(max(player_center_position[0] - self.camera_size[0] / 2, 0),
-                                           self.game_world_size[0] - self.camera_size[0]))
-        self.camera_world_area.y = int(min(max(player_center_position[1] - self.camera_size[1] / 2, 0),
-                                           self.game_world_size[1] - self.camera_size[1]))
+        new_camera_pos = get_position_from_center_position(player_center_position, self.camera_size)
+        self.camera_world_area.x = int(min(max(new_camera_pos[0], 0), self.game_world_size[0] - self.camera_size[0]))
+        self.camera_world_area.y = int(min(max(new_camera_pos[1], 0), self.game_world_size[1] - self.camera_size[1]))
 
     def get_projectiles_intersecting_with(self, entity) -> List[Projectile]:
         return [p for p in self.projectile_entities if boxes_intersect(entity, p.world_entity)]

@@ -1,6 +1,6 @@
 from pythongame.abilities import apply_ability_effect
 from pythongame.buffs import BUFF_EFFECTS
-from pythongame.common import boxes_intersect, AbilityType, Direction, Millis, rects_intersect
+from pythongame.common import *
 from pythongame.game_state import GameState
 from pythongame.player_controls import TryUseAbilityResult, PlayerControls
 from pythongame.potions import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
@@ -44,10 +44,8 @@ class GameEngine:
         self.game_state.player_entity.set_not_moving()
 
     def _is_enemy_close_to_camera(self, enemy):
-        camera_rect = self.game_state.camera_world_area.rect()
-        margin = 250
-        camera_rect_with_margin = (camera_rect[0] - margin, camera_rect[1] - margin, camera_rect[2] + margin * 2,
-                                   camera_rect[3] + margin * 2)
+        camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(
+            self.game_state.camera_world_area.rect(), 250)
         return rects_intersect(enemy.world_entity.rect(), camera_rect_with_margin)
 
     def run_one_frame(self, time_passed: Millis):
