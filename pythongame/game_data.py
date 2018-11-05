@@ -59,7 +59,6 @@ UI_ICON_SPRITE_PATHS = {
     UiIconSprite.MANA_POTION: "resources/ui_mana_potion.png",
     UiIconSprite.SPEED_POTION: "resources/white_potion.gif",
     UiIconSprite.INVISIBILITY_POTION: "resources/invis_potion.png",
-    UiIconSprite.HEAL_ABILITY: "resources/heal_ability.png",
     UiIconSprite.AOE_ABILITY: "resources/whirlwind.png",
     UiIconSprite.MAGIC_MISSILE: "resources/magic_missile.png",
     UiIconSprite.TELEPORT: "resources/teleport_icon.png",
@@ -73,7 +72,6 @@ POTION_ICON_SPRITES = {
 }
 
 ABILITIES = {
-    AbilityType.HEAL: AbilityData(UiIconSprite.HEAL_ABILITY, 10, "W", pygame.K_w, Millis(15000)),
     AbilityType.AOE_ATTACK: AbilityData(UiIconSprite.AOE_ABILITY, 5, "E", pygame.K_e, Millis(750)),
     AbilityType.CHANNEL_ATTACK: AbilityData(UiIconSprite.MAGIC_MISSILE, 12, "R", pygame.K_r, Millis(8000)),
     AbilityType.TELEPORT: AbilityData(UiIconSprite.TELEPORT, 2, "T", pygame.K_t, Millis(500)),
@@ -82,7 +80,6 @@ ABILITIES = {
 BUFF_TEXTS = {
     BuffType.DAMAGE_OVER_TIME: "Poison",
     BuffType.INCREASED_MOVE_SPEED: "Speed",
-    BuffType.HEALING_OVER_TIME: "Healing",
     BuffType.INVISIBILITY: "Invisibility",
     BuffType.CHANNELING_MAGIC_MISSILES: "Channeling"
 }
@@ -91,8 +88,14 @@ BUFF_TEXTS = {
 def register_ability_data(ability_type: AbilityType, ability_data: AbilityData):
     ABILITIES[ability_type] = ability_data
 
+
 def register_ui_icon_sprite_path(sprite: UiIconSprite, file_path: str):
     UI_ICON_SPRITE_PATHS[sprite] = file_path
 
+
 def register_entity_sprite_initializer(sprite: Sprite, initializer: SpriteInitializer):
     ENTITY_SPRITE_INITIALIZERS[sprite] = initializer
+
+
+def register_buff_text(buff_type: BuffType, text: str):
+    BUFF_TEXTS[buff_type] = text

@@ -9,10 +9,6 @@ def apply_ability_effect(game_state: GameState, ability_type: AbilityType):
     ability_effects[ability_type](game_state)
 
 
-def _apply_heal(game_state: GameState):
-    game_state.player_state.gain_buff(BuffType.HEALING_OVER_TIME, Millis(3500))
-
-
 def _apply_aoe_attack(game_state: GameState):
     player_entity = game_state.player_entity
     aoe_center_pos = translate_in_direction(player_entity.get_center_position(), player_entity.direction, 60)
@@ -43,7 +39,6 @@ def _apply_teleport(game_state: GameState):
 
 
 ability_effects = {
-    AbilityType.HEAL: _apply_heal,
     AbilityType.AOE_ATTACK: _apply_aoe_attack,
     AbilityType.CHANNEL_ATTACK: _apply_channel_attack,
     AbilityType.TELEPORT: _apply_teleport
