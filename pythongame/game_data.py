@@ -34,11 +34,12 @@ class UiIconSprite(Enum):
 
 
 class AbilityData:
-    def __init__(self, icon_sprite: UiIconSprite, mana_cost: int, key_string: str, pygame_key):
+    def __init__(self, icon_sprite: UiIconSprite, mana_cost: int, key_string: str, pygame_key, cooldown: Millis):
         self.icon_sprite = icon_sprite
         self.mana_cost = mana_cost
         self.key_string = key_string
         self.pygame_key = pygame_key
+        self.cooldown = cooldown
 
 
 ENTITY_SPRITE_INITIALIZERS = {
@@ -75,11 +76,11 @@ POTION_ICON_SPRITES = {
 }
 
 ABILITIES = {
-    AbilityType.ATTACK: AbilityData(UiIconSprite.ATTACK_ABILITY, 3, "Q", pygame.K_q),
-    AbilityType.HEAL: AbilityData(UiIconSprite.HEAL_ABILITY, 10, "W", pygame.K_w),
-    AbilityType.AOE_ATTACK: AbilityData(UiIconSprite.AOE_ABILITY, 5, "E", pygame.K_e),
-    AbilityType.CHANNEL_ATTACK: AbilityData(UiIconSprite.MAGIC_MISSILE, 12, "R", pygame.K_r),
-    AbilityType.TELEPORT: AbilityData(UiIconSprite.TELEPORT, 2, "T", pygame.K_t),
+    AbilityType.ATTACK: AbilityData(UiIconSprite.ATTACK_ABILITY, 3, "Q", pygame.K_q, Millis(200)),
+    AbilityType.HEAL: AbilityData(UiIconSprite.HEAL_ABILITY, 10, "W", pygame.K_w, Millis(15000)),
+    AbilityType.AOE_ATTACK: AbilityData(UiIconSprite.AOE_ABILITY, 5, "E", pygame.K_e, Millis(750)),
+    AbilityType.CHANNEL_ATTACK: AbilityData(UiIconSprite.MAGIC_MISSILE, 12, "R", pygame.K_r, Millis(8000)),
+    AbilityType.TELEPORT: AbilityData(UiIconSprite.TELEPORT, 2, "T", pygame.K_t, Millis(500)),
 }
 
 BUFF_TEXTS = {

@@ -1,7 +1,7 @@
 from pythongame.common import *
 from pythongame.enemy_behavior import create_enemy_mind
 from pythongame.game_data import PLAYER_ENTITY_SIZE, ENEMY_ENTITY_SIZE, ENEMY_2_ENTITY_SIZE, POTION_ENTITY_SIZE, \
-    ENEMY_MAGE_ENTITY_SIZE, ENEMY_BERSERKER_SIZE, WALL_SIZE
+    ENEMY_MAGE_ENTITY_SIZE, ENEMY_BERSERKER_SIZE, WALL_SIZE, ABILITIES
 from pythongame.game_state import WorldEntity, Enemy, GameState, PotionOnGround, PlayerState
 
 ENEMY_SPEED = 0.02
@@ -69,12 +69,13 @@ def init_game_state_from_file(camera_size: Tuple[int, int]):
         5: PotionType.INVISIBILITY
     }
     max_ability_cooldowns = {
-        AbilityType.ATTACK: 200,
-        AbilityType.HEAL: 15000,
-        AbilityType.AOE_ATTACK: 750,
-        AbilityType.CHANNEL_ATTACK: 8000,
-        AbilityType.TELEPORT: 500
+        AbilityType.ATTACK: ABILITIES[AbilityType.ATTACK].cooldown,
+        AbilityType.HEAL: ABILITIES[AbilityType.HEAL].cooldown,
+        AbilityType.AOE_ATTACK: ABILITIES[AbilityType.AOE_ATTACK].cooldown,
+        AbilityType.CHANNEL_ATTACK: ABILITIES[AbilityType.CHANNEL_ATTACK].cooldown,
+        AbilityType.TELEPORT: ABILITIES[AbilityType.TELEPORT].cooldown
     }
+
     abilities = list(max_ability_cooldowns.keys())
     player_state = PlayerState(300, 300, 90, 100, 0.002, player_potion_slots, abilities, max_ability_cooldowns)
     game_world_size = (max_col_index * col_width, max_row_index * row_height)
