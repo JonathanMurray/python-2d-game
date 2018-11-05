@@ -49,25 +49,14 @@ def _apply_channel_attack(game_state: GameState):
 
 
 def _apply_teleport(game_state: GameState):
-    direction = game_state.player_entity.direction
-    previous_position = game_state.player_entity.get_center_position()
+    player_entity = game_state.player_entity
+    previous_position = player_entity.get_center_position()
+    new_position = translate_in_direction((player_entity.x, player_entity.y), player_entity.direction, 140)
+    player_entity.set_position(new_position)
+    new_center_position = player_entity.get_center_position()
 
-    # TODO Extract this "move distance in given direction" and re-use
-    distance = 140
     color = (140, 140, 230)
     game_state.visual_effects.append(VisualCircle(color, previous_position, 35, Millis(150), 1))
     game_state.visual_effects.append(VisualRect(color, previous_position, 50, Millis(150)))
-    if direction == Direction.RIGHT:
-        game_state.player_entity.translate_x(distance)
-    elif direction == Direction.DOWN:
-        game_state.player_entity.translate_y(distance)
-    elif direction == Direction.LEFT:
-        game_state.player_entity.translate_x(-distance)
-    elif direction == Direction.UP:
-        game_state.player_entity.translate_y(-distance)
-    else:
-        raise Exception("Unhandled direction: " + str(direction))
-    new_position = game_state.player_entity.get_center_position()
-    game_state.visual_effects.append(VisualLine(color, previous_position, new_position, Millis(200), 1))
-    game_state.visual_effects.append(VisualCircle(color, new_position,
-                                                  50, Millis(300), 2, game_state.player_entity))
+    game_state.visual_effects.append(VisualLine(color, previous_position, new_center_position, Millis(200), 1))
+    game_state.visual_effects.append(VisualCircle(color, new_center_position, 50, Millis(300), 2, player_entity))
