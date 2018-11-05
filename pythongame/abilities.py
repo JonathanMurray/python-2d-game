@@ -34,24 +34,11 @@ def _apply_attack(game_state: GameState):
 
 
 def _apply_aoe_attack(game_state: GameState):
-    x, y = game_state.player_entity.get_center_position()
-    direction = game_state.player_entity.direction
-    distance = 60
-    # TODO extract
-    if direction == Direction.RIGHT:
-        aoe_mid_pos = x + distance, y
-    elif direction == Direction.DOWN:
-        aoe_mid_pos = x, y + distance
-    elif direction == Direction.LEFT:
-        aoe_mid_pos = x - distance, y
-    elif direction == Direction.UP:
-        aoe_mid_pos = x, y - distance
-    else:
-        raise Exception("Unhandled direction: " + str(direction))
-
+    player_entity = game_state.player_entity
+    aoe_center_pos = translate_in_direction(player_entity.get_center_position(), player_entity.direction, 60)
+    aoe_pos = get_position_from_center_position(aoe_center_pos, AOE_PROJECTILE_SIZE)
     projectile_speed = 0.07
-    aoe_pos = get_position_from_center_position(aoe_mid_pos, AOE_PROJECTILE_SIZE)
-    entity = WorldEntity(aoe_pos, AOE_PROJECTILE_SIZE, Sprite.WHIRLWIND, game_state.player_entity.direction,
+    entity = WorldEntity(aoe_pos, AOE_PROJECTILE_SIZE, Sprite.WHIRLWIND, player_entity.direction,
                          projectile_speed)
     projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER_AOE))
     game_state.projectile_entities.append(projectile)
