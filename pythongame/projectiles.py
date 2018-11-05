@@ -1,6 +1,5 @@
 from pythongame.common import *
 from pythongame.game_state import Projectile, Enemy, GameState
-from pythongame.visual_effects import VisualCircle, create_visual_damage_text
 
 
 def create_projectile_controller(projectile_type: ProjectileType):
@@ -24,23 +23,7 @@ class AbstractProjectileController:
         return False
 
 
-class EnemyPoisonProjectileController(AbstractProjectileController):
-    def __init__(self):
-        super().__init__(2000)
-
-    def apply_player_collision(self, game_state: GameState):
-        damage_amount = 1
-        game_state.player_state.lose_health(damage_amount)
-        game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, damage_amount))
-        game_state.player_state.gain_buff(BuffType.DAMAGE_OVER_TIME, Millis(2000))
-        game_state.visual_effects.append(VisualCircle((50, 180, 50), game_state.player_entity.get_center_position(),
-                                                      50, Millis(100), 0))
-        return True
-
-
-projectile_controllers = {
-    ProjectileType.ENEMY_POISON: EnemyPoisonProjectileController,
-}
+projectile_controllers = {}
 
 
 def register_projectile_controller(projectile_type: ProjectileType, controller):

@@ -13,6 +13,7 @@ from pythongame.potion_health import register_health_potion
 from pythongame.potion_invis import register_invis_potion
 from pythongame.potion_mana import register_mana_potion
 from pythongame.potion_speed import register_speed_potion
+from pythongame.projectile_enemy_poison import register_enemy_poison_projectile
 from pythongame.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame
 from pythongame.view import View
@@ -31,6 +32,7 @@ register_health_potion()
 register_mana_potion()
 register_invis_potion()
 register_speed_potion()
+register_enemy_poison_projectile()
 
 def main():
     game_state = init_game_state_from_file(CAMERA_SIZE)

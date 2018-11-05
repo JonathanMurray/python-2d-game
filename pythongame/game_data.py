@@ -44,7 +44,6 @@ ENTITY_SPRITE_INITIALIZERS = {
     Sprite.ENEMY_2: SpriteInitializer("resources/enemy2.png", ENEMY_2_ENTITY_SIZE),
     Sprite.ENEMY_MAGE: SpriteInitializer("resources/enemy_mage.png", ENEMY_MAGE_ENTITY_SIZE),
     Sprite.ENEMY_BERSERKER: SpriteInitializer("resources/orc_berserker.png", ENEMY_BERSERKER_SIZE),
-    Sprite.POISONBALL: SpriteInitializer("resources/poisonball.png", ENEMY_PROJECTILE_SIZE),
     Sprite.WALL: SpriteInitializer("resources/stone_tile.png", WALL_SIZE)
 }
 
@@ -54,9 +53,7 @@ POTION_ICON_SPRITES = {}
 
 ABILITIES = {}
 
-BUFF_TEXTS = {
-    BuffType.DAMAGE_OVER_TIME: "Poison",
-}
+BUFF_TEXTS = {}
 
 
 def register_ability_data(ability_type: AbilityType, ability_data: AbilityData):
