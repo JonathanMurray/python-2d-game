@@ -44,20 +44,17 @@ ENTITY_SPRITE_INITIALIZERS = {
     Sprite.ENEMY_2: SpriteInitializer("resources/enemy2.png", ENEMY_2_ENTITY_SIZE),
     Sprite.ENEMY_MAGE: SpriteInitializer("resources/enemy_mage.png", ENEMY_MAGE_ENTITY_SIZE),
     Sprite.ENEMY_BERSERKER: SpriteInitializer("resources/orc_berserker.png", ENEMY_BERSERKER_SIZE),
-    Sprite.HEALTH_POTION: SpriteInitializer("resources/ui_health_potion.png", POTION_ENTITY_SIZE),
     Sprite.POISONBALL: SpriteInitializer("resources/poisonball.png", ENEMY_PROJECTILE_SIZE),
     Sprite.WALL: SpriteInitializer("resources/stone_tile.png", WALL_SIZE)
 }
 
 UI_ICON_SPRITE_PATHS = {
-    UiIconSprite.HEALTH_POTION: "resources/ui_health_potion.png",
     UiIconSprite.MANA_POTION: "resources/ui_mana_potion.png",
     UiIconSprite.SPEED_POTION: "resources/white_potion.gif",
     UiIconSprite.INVISIBILITY_POTION: "resources/invis_potion.png",
 }
 
 POTION_ICON_SPRITES = {
-    PotionType.HEALTH: UiIconSprite.HEALTH_POTION,
     PotionType.MANA: UiIconSprite.MANA_POTION,
     PotionType.SPEED: UiIconSprite.SPEED_POTION,
     PotionType.INVISIBILITY: UiIconSprite.INVISIBILITY_POTION
@@ -86,3 +83,6 @@ def register_entity_sprite_initializer(sprite: Sprite, initializer: SpriteInitia
 
 def register_buff_text(buff_type: BuffType, text: str):
     BUFF_TEXTS[buff_type] = text
+
+def register_potion_icon_sprite(potion_type: PotionType, ui_icon_sprite: UiIconSprite):
+    POTION_ICON_SPRITES[potion_type] = ui_icon_sprite

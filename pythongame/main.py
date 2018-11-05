@@ -9,6 +9,7 @@ from pythongame.ability_teleport import register_teleport_ability
 from pythongame.common import Millis
 from pythongame.game_engine import GameEngine
 from pythongame.game_world_init import init_game_state_from_file
+from pythongame.potion_health import register_health_potion
 from pythongame.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame
 from pythongame.view import View
@@ -23,6 +24,7 @@ register_heal_ability()
 register_aoe_attack_ability()
 register_channel_attack_ability()
 register_teleport_ability()
+register_health_potion()
 
 def main():
     game_state = init_game_state_from_file(CAMERA_SIZE)
