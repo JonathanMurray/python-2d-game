@@ -49,13 +49,11 @@ ENTITY_SPRITE_INITIALIZERS = {
 }
 
 UI_ICON_SPRITE_PATHS = {
-    UiIconSprite.MANA_POTION: "resources/ui_mana_potion.png",
     UiIconSprite.SPEED_POTION: "resources/white_potion.gif",
     UiIconSprite.INVISIBILITY_POTION: "resources/invis_potion.png",
 }
 
 POTION_ICON_SPRITES = {
-    PotionType.MANA: UiIconSprite.MANA_POTION,
     PotionType.SPEED: UiIconSprite.SPEED_POTION,
     PotionType.INVISIBILITY: UiIconSprite.INVISIBILITY_POTION
 }

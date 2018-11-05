@@ -1,6 +1,6 @@
 from pythongame.common import *
 from pythongame.game_state import GameState
-from pythongame.visual_effects import VisualCircle, create_visual_mana_text
+from pythongame.visual_effects import VisualCircle
 
 
 class PotionWasConsumed:
@@ -34,20 +34,7 @@ def _apply_speed(game_state: GameState):
     return PotionWasConsumed()
 
 
-def _apply_mana(game_state: GameState):
-    player_state = game_state.player_state
-    if game_state.player_state.mana < game_state.player_state.max_mana:
-        create_potion_visual_effect_at_player(game_state)
-        mana_amount = 25
-        player_state.gain_mana(mana_amount)
-        game_state.visual_effects.append(create_visual_mana_text(game_state.player_entity, mana_amount))
-        return PotionWasConsumed()
-    else:
-        return PotionFailedToBeConsumed("Already at full mana!")
-
-
 potion_effects = {
-    PotionType.MANA: _apply_mana,
     PotionType.INVISIBILITY: _apply_invis,
     PotionType.SPEED: _apply_speed
 }
