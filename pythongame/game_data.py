@@ -7,7 +7,6 @@ ENEMY_ENTITY_SIZE = (28, 28)
 ENEMY_2_ENTITY_SIZE = (60, 60)
 ENEMY_MAGE_ENTITY_SIZE = (60, 60)
 ENEMY_BERSERKER_SIZE = (50, 50)
-ATTACK_PROJECTILE_SIZE = (25, 25)
 MAGIC_MISSILE_PROJECTILE_SIZE = (30, 30)
 ENEMY_PROJECTILE_SIZE = (50, 50)
 AOE_PROJECTILE_SIZE = (140, 140)
@@ -48,7 +47,6 @@ ENTITY_SPRITE_INITIALIZERS = {
     Sprite.ENEMY_2: SpriteInitializer("resources/enemy2.png", ENEMY_2_ENTITY_SIZE),
     Sprite.ENEMY_MAGE: SpriteInitializer("resources/enemy_mage.png", ENEMY_MAGE_ENTITY_SIZE),
     Sprite.ENEMY_BERSERKER: SpriteInitializer("resources/orc_berserker.png", ENEMY_BERSERKER_SIZE),
-    Sprite.FIREBALL: SpriteInitializer("resources/fireball.png", ATTACK_PROJECTILE_SIZE),
     Sprite.MAGIC_MISSILE: SpriteInitializer("resources/magic_missile.png", MAGIC_MISSILE_PROJECTILE_SIZE),
     Sprite.WHIRLWIND: SpriteInitializer("resources/whirlwind.png", AOE_PROJECTILE_SIZE),
     Sprite.HEALTH_POTION: SpriteInitializer("resources/ui_health_potion.png", POTION_ENTITY_SIZE),
@@ -61,7 +59,6 @@ UI_ICON_SPRITE_PATHS = {
     UiIconSprite.MANA_POTION: "resources/ui_mana_potion.png",
     UiIconSprite.SPEED_POTION: "resources/white_potion.gif",
     UiIconSprite.INVISIBILITY_POTION: "resources/invis_potion.png",
-    UiIconSprite.ATTACK_ABILITY: "resources/fireball.png",
     UiIconSprite.HEAL_ABILITY: "resources/heal_ability.png",
     UiIconSprite.AOE_ABILITY: "resources/whirlwind.png",
     UiIconSprite.MAGIC_MISSILE: "resources/magic_missile.png",
@@ -76,7 +73,6 @@ POTION_ICON_SPRITES = {
 }
 
 ABILITIES = {
-    AbilityType.ATTACK: AbilityData(UiIconSprite.ATTACK_ABILITY, 3, "Q", pygame.K_q, Millis(200)),
     AbilityType.HEAL: AbilityData(UiIconSprite.HEAL_ABILITY, 10, "W", pygame.K_w, Millis(15000)),
     AbilityType.AOE_ATTACK: AbilityData(UiIconSprite.AOE_ABILITY, 5, "E", pygame.K_e, Millis(750)),
     AbilityType.CHANNEL_ATTACK: AbilityData(UiIconSprite.MAGIC_MISSILE, 12, "R", pygame.K_r, Millis(8000)),
@@ -90,3 +86,13 @@ BUFF_TEXTS = {
     BuffType.INVISIBILITY: "Invisibility",
     BuffType.CHANNELING_MAGIC_MISSILES: "Channeling"
 }
+
+
+def register_ability_data(ability_type: AbilityType, ability_data: AbilityData):
+    ABILITIES[ability_type] = ability_data
+
+def register_ui_icon_sprite_path(sprite: UiIconSprite, file_path: str):
+    UI_ICON_SPRITE_PATHS[sprite] = file_path
+
+def register_entity_sprite_initializer(sprite: Sprite, initializer: SpriteInitializer):
+    ENTITY_SPRITE_INITIALIZERS[sprite] = initializer

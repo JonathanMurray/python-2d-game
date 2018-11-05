@@ -4,14 +4,7 @@ from pythongame.visual_effects import VisualCircle, create_visual_damage_text
 
 
 def create_projectile_controller(projectile_type: ProjectileType):
-    if projectile_type == ProjectileType.PLAYER:
-        return PlayerProjectileController()
-    if projectile_type == ProjectileType.PLAYER_AOE:
-        return PlayerAoeProjectileController()
-    if projectile_type == ProjectileType.ENEMY_POISON:
-        return EnemyPoisonProjectileController()
-    if projectile_type == ProjectileType.PLAYER_MAGIC_MISSILE:
-        return PlayerMagicMissileProjectileController()
+    return projectile_controllers[projectile_type]()
 
 
 class AbstractProjectileController:
@@ -29,19 +22,6 @@ class AbstractProjectileController:
 
     def apply_player_collision(self, _game_state: GameState):
         return False
-
-
-class PlayerProjectileController(AbstractProjectileController):
-    def __init__(self):
-        super().__init__(3000)
-
-    def apply_enemy_collision(self, enemy: Enemy, game_state: GameState):
-        damage_amount = 3
-        enemy.lose_health(damage_amount)
-        game_state.visual_effects.append(create_visual_damage_text(enemy.world_entity, damage_amount))
-        game_state.visual_effects.append(VisualCircle((250, 100, 50), enemy.world_entity.get_center_position(), 45,
-                                                      Millis(100), 0))
-        return True
 
 
 class PlayerAoeProjectileController(AbstractProjectileController):
@@ -92,3 +72,14 @@ class EnemyPoisonProjectileController(AbstractProjectileController):
         game_state.visual_effects.append(VisualCircle((50, 180, 50), game_state.player_entity.get_center_position(),
                                                       50, Millis(100), 0))
         return True
+
+
+projectile_controllers = {
+    ProjectileType.PLAYER_AOE: PlayerAoeProjectileController,
+    ProjectileType.ENEMY_POISON: EnemyPoisonProjectileController,
+    ProjectileType.PLAYER_MAGIC_MISSILE: PlayerMagicMissileProjectileController
+}
+
+
+def register_projectile_controller(projectile_type: ProjectileType, controller: AbstractProjectileController):
+    projectile_controllers[projectile_type] = controller

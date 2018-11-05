@@ -9,10 +9,12 @@ from pythongame.user_input import get_user_actions, ActionExitGame, ActionTryUse
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame
 from pythongame.view import View
 from pythongame.view_state import ViewState
+from pythongame.ability_attack import register_attack_ability
 
 SCREEN_SIZE = (700, 600)
 CAMERA_SIZE = (700, 400)
 
+register_attack_ability()
 
 def main():
     game_state = init_game_state_from_file(CAMERA_SIZE)
