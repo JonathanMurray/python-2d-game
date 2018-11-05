@@ -19,32 +19,48 @@ def _create_visual_effect_at_player(game_state):
 
 
 def try_consume_potion(potion_type: PotionType, game_state: GameState):
+    return potion_effects[potion_type](game_state)
+
+
+def _apply_health(game_state: GameState):
     player_state = game_state.player_state
-    if potion_type == PotionType.HEALTH:
-        if game_state.player_state.health < game_state.player_state.max_health:
-            _create_visual_effect_at_player(game_state)
-            healing_amount = 100
-            game_state.visual_effects.append(create_visual_healing_text(game_state.player_entity, healing_amount))
-            player_state.gain_health(healing_amount)
-            return PotionWasConsumed()
-        else:
-            return PotionFailedToBeConsumed("Already at full health!")
-    elif potion_type == PotionType.MANA:
-        if game_state.player_state.mana < game_state.player_state.max_mana:
-            _create_visual_effect_at_player(game_state)
-            mana_amount = 25
-            player_state.gain_mana(mana_amount)
-            game_state.visual_effects.append(create_visual_mana_text(game_state.player_entity, mana_amount))
-            return PotionWasConsumed()
-        else:
-            return PotionFailedToBeConsumed("Already at full mana!")
-    elif potion_type == PotionType.SPEED:
+    if game_state.player_state.health < game_state.player_state.max_health:
         _create_visual_effect_at_player(game_state)
-        game_state.player_state.gain_buff(BuffType.INCREASED_MOVE_SPEED, Millis(3500))
-        return PotionWasConsumed()
-    elif potion_type == PotionType.INVISIBILITY:
-        _create_visual_effect_at_player(game_state)
-        game_state.player_state.gain_buff(BuffType.INVISIBILITY, Millis(5000))
+        healing_amount = 100
+        game_state.visual_effects.append(create_visual_healing_text(game_state.player_entity, healing_amount))
+        player_state.gain_health(healing_amount)
         return PotionWasConsumed()
     else:
-        raise Exception("Unhandled potion: " + str(potion_type))
+        return PotionFailedToBeConsumed("Already at full health!")
+
+
+def _apply_invis(game_state: GameState):
+    _create_visual_effect_at_player(game_state)
+    game_state.player_state.gain_buff(BuffType.INVISIBILITY, Millis(5000))
+    return PotionWasConsumed()
+
+
+def _apply_speed(game_state: GameState):
+    _create_visual_effect_at_player(game_state)
+    game_state.player_state.gain_buff(BuffType.INCREASED_MOVE_SPEED, Millis(3500))
+    return PotionWasConsumed()
+
+
+def _apply_mana(game_state: GameState):
+    player_state = game_state.player_state
+    if game_state.player_state.mana < game_state.player_state.max_mana:
+        _create_visual_effect_at_player(game_state)
+        mana_amount = 25
+        player_state.gain_mana(mana_amount)
+        game_state.visual_effects.append(create_visual_mana_text(game_state.player_entity, mana_amount))
+        return PotionWasConsumed()
+    else:
+        return PotionFailedToBeConsumed("Already at full mana!")
+
+
+potion_effects = {
+    PotionType.HEALTH: _apply_health,
+    PotionType.MANA: _apply_mana,
+    PotionType.INVISIBILITY: _apply_invis,
+    PotionType.SPEED: _apply_speed
+}
