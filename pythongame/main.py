@@ -82,8 +82,7 @@ def main():
                                highlighted_potion_action=view_state.highlighted_potion_action,
                                highlighted_ability_action=view_state.highlighted_ability_action,
                                is_paused=is_paused,
-                               ability_cooldowns_remaining=game_state.player_state.ability_cooldowns_remaining,
-                               max_ability_cooldowns=game_state.player_state.max_ability_cooldowns)
+                               ability_cooldowns_remaining=game_state.player_state.ability_cooldowns_remaining)
 
 if __name__ == "__main__":
     main()

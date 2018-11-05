@@ -125,8 +125,7 @@ class PlayerBuffsUpdate:
 
 class PlayerState:
     def __init__(self, health: int, max_health: int, mana: int, max_mana: int, mana_regen: float,
-                 potion_slots: Dict[int, PotionType], abilities: List[AbilityType],
-                 max_ability_cooldowns: Dict[AbilityType, int]):
+                 potion_slots: Dict[int, PotionType], abilities: List[AbilityType]):
         self.health = health
         self._health_float = health
         self.max_health = max_health
@@ -136,7 +135,6 @@ class PlayerState:
         self.mana_regen = mana_regen
         self.potion_slots = potion_slots
         self.abilities = abilities
-        self.max_ability_cooldowns = max_ability_cooldowns
         self.ability_cooldowns_remaining = {ability_type: 0 for ability_type in abilities}
         self.active_buffs: List[Buff] = []
         self.is_invisible = False

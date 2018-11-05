@@ -68,15 +68,9 @@ def init_game_state_from_file(camera_size: Tuple[int, int]):
         4: PotionType.INVISIBILITY,
         5: PotionType.INVISIBILITY
     }
-    max_ability_cooldowns = {
-        AbilityType.ATTACK: ABILITIES[AbilityType.ATTACK].cooldown,
-        AbilityType.HEAL: ABILITIES[AbilityType.HEAL].cooldown,
-        AbilityType.AOE_ATTACK: ABILITIES[AbilityType.AOE_ATTACK].cooldown,
-        AbilityType.CHANNEL_ATTACK: ABILITIES[AbilityType.CHANNEL_ATTACK].cooldown,
-        AbilityType.TELEPORT: ABILITIES[AbilityType.TELEPORT].cooldown
-    }
 
-    abilities = list(max_ability_cooldowns.keys())
-    player_state = PlayerState(300, 300, 90, 100, 0.002, player_potion_slots, abilities, max_ability_cooldowns)
+    abilities = [AbilityType.ATTACK, AbilityType.HEAL, AbilityType.AOE_ATTACK, AbilityType.CHANNEL_ATTACK,
+                 AbilityType.TELEPORT]
+    player_state = PlayerState(300, 300, 90, 100, 0.002, player_potion_slots, abilities)
     game_world_size = (max_col_index * col_width, max_row_index * row_height)
     return GameState(player_entity, potions, enemies, walls, camera_size, game_world_size, player_state)

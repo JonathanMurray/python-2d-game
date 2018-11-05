@@ -189,7 +189,7 @@ class View:
         self._text(self.font_tiny, str(potion_number), (x + 8, y + h + 4))
 
     def _ability_icon_in_ui(self, x_in_ui, y_in_ui, size, ability_type, highlighted_ability_action,
-                            ability_cooldowns_remaining, max_ability_cooldowns):
+                            ability_cooldowns_remaining):
         w = size[0]
         h = size[1]
         x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
@@ -205,7 +205,7 @@ class View:
         self._text(self.font_tiny, str(mana_cost), (x + 8, y + h + 19))
 
         if ability_cooldowns_remaining[ability_type] > 0:
-            ratio_remaining = ability_cooldowns_remaining[ability_type] / max_ability_cooldowns[ability_type]
+            ratio_remaining = ability_cooldowns_remaining[ability_type] / ability.cooldown
             cooldown_rect = (x + 2, y + 2 + (h - 4) * (1 - ratio_remaining), w - 4, (h - 4) * ratio_remaining + 2)
             self._rect_filled((100, 30, 30), cooldown_rect)
 
@@ -227,7 +227,7 @@ class View:
                           player_health, player_max_health, player_mana, player_max_mana, potion_slots,
                           player_active_buffs, visual_effects, fps_string,
                           player_minimap_relative_position, abilities, message, highlighted_potion_action,
-                          highlighted_ability_action, is_paused, ability_cooldowns_remaining, max_ability_cooldowns):
+                          highlighted_ability_action, is_paused, ability_cooldowns_remaining):
 
         self.camera_world_area = camera_world_area
 
@@ -293,8 +293,7 @@ class View:
         self._text_in_ui(self.font_large, "SPELLS", x_1, y_3)
         for i, ability_type in enumerate(abilities):
             self._ability_icon_in_ui(x_1 + i * (UI_ICON_SIZE[0] + icon_space), y_4, UI_ICON_SIZE, ability_type,
-                                     highlighted_ability_action, ability_cooldowns_remaining,
-                                     max_ability_cooldowns)
+                                     highlighted_ability_action, ability_cooldowns_remaining)
 
         x_2 = 390
         self._text_in_ui(self.font_large, "MAP", x_2, y_1)
