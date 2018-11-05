@@ -70,37 +70,15 @@ class Invisibility(AbstractBuff):
         game_state.player_state.is_invisible = False
 
 
-class ChannelingMagicMissiles(AbstractBuff):
-    def __init__(self):
-        self._time_since_firing = 0
 
-    def apply_start_effect(self, game_state: GameState):
-        game_state.player_state.is_stunned = True
-        game_state.player_entity.set_not_moving()
-
-    def apply_middle_effect(self, game_state: GameState, time_passed: Millis):
-        self._time_since_firing += time_passed
-        if self._time_since_firing > 150:
-            self._time_since_firing = 0
-            player_center_position = game_state.player_entity.get_center_position()
-            projectile_pos = get_position_from_center_position(player_center_position, MAGIC_MISSILE_PROJECTILE_SIZE)
-            entity = WorldEntity(projectile_pos, MAGIC_MISSILE_PROJECTILE_SIZE, Sprite.MAGIC_MISSILE,
-                                 game_state.player_entity.direction, 0.5)
-            projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER_MAGIC_MISSILE))
-            game_state.projectile_entities.append(projectile)
-            game_state.visual_effects.append(VisualRect((250, 0, 250), player_center_position, 60, Millis(250)))
-
-    def apply_end_effect(self, game_state: GameState):
-        game_state.player_state.is_stunned = False
 
 
 BUFF_EFFECTS = {
     BuffType.DAMAGE_OVER_TIME: DamageOverTime(),
     BuffType.INCREASED_MOVE_SPEED: IncreasedMoveSpeed(),
-    BuffType.INVISIBILITY: Invisibility(),
-    BuffType.CHANNELING_MAGIC_MISSILES: ChannelingMagicMissiles()
+    BuffType.INVISIBILITY: Invisibility()
 }
 
 
-def register_buff_effect(buff_type: BuffType, effect):
+def register_buff_effect(buff_type: BuffType, effect: AbstractBuff):
     BUFF_EFFECTS[buff_type] = effect

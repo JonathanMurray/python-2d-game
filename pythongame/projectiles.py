@@ -24,22 +24,6 @@ class AbstractProjectileController:
         return False
 
 
-class PlayerMagicMissileProjectileController(AbstractProjectileController):
-    def __init__(self):
-        super().__init__(400)
-        self._enemies_hit = []
-
-    def apply_enemy_collision(self, enemy: Enemy, game_state: GameState):
-        if enemy not in self._enemies_hit:
-            damage_amount = 1
-            enemy.lose_health(damage_amount)
-            game_state.visual_effects.append(create_visual_damage_text(enemy.world_entity, damage_amount))
-            game_state.visual_effects.append(VisualCircle((250, 100, 250), enemy.world_entity.get_center_position(), 25,
-                                                          Millis(100), 0))
-            self._enemies_hit.append(enemy)
-        return False
-
-
 class EnemyPoisonProjectileController(AbstractProjectileController):
     def __init__(self):
         super().__init__(2000)
@@ -56,7 +40,6 @@ class EnemyPoisonProjectileController(AbstractProjectileController):
 
 projectile_controllers = {
     ProjectileType.ENEMY_POISON: EnemyPoisonProjectileController,
-    ProjectileType.PLAYER_MAGIC_MISSILE: PlayerMagicMissileProjectileController
 }
 
 

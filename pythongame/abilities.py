@@ -7,10 +7,6 @@ def apply_ability_effect(game_state: GameState, ability_type: AbilityType):
     ability_effects[ability_type](game_state)
 
 
-def _apply_channel_attack(game_state: GameState):
-    game_state.player_state.gain_buff(BuffType.CHANNELING_MAGIC_MISSILES, Millis(1000))
-
-
 def _apply_teleport(game_state: GameState):
     player_entity = game_state.player_entity
     previous_position = player_entity.get_center_position()
@@ -26,7 +22,6 @@ def _apply_teleport(game_state: GameState):
 
 
 ability_effects = {
-    AbilityType.CHANNEL_ATTACK: _apply_channel_attack,
     AbilityType.TELEPORT: _apply_teleport
 }
 
