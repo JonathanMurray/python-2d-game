@@ -48,19 +48,14 @@ ENTITY_SPRITE_INITIALIZERS = {
     Sprite.WALL: SpriteInitializer("resources/stone_tile.png", WALL_SIZE)
 }
 
-UI_ICON_SPRITE_PATHS = {
-    UiIconSprite.SPEED_POTION: "resources/white_potion.gif",
-}
+UI_ICON_SPRITE_PATHS = {}
 
-POTION_ICON_SPRITES = {
-    PotionType.SPEED: UiIconSprite.SPEED_POTION,
-}
+POTION_ICON_SPRITES = {}
 
 ABILITIES = {}
 
 BUFF_TEXTS = {
     BuffType.DAMAGE_OVER_TIME: "Poison",
-    BuffType.INCREASED_MOVE_SPEED: "Speed",
 }
 
 
@@ -78,6 +73,7 @@ def register_entity_sprite_initializer(sprite: Sprite, initializer: SpriteInitia
 
 def register_buff_text(buff_type: BuffType, text: str):
     BUFF_TEXTS[buff_type] = text
+
 
 def register_potion_icon_sprite(potion_type: PotionType, ui_icon_sprite: UiIconSprite):
     POTION_ICON_SPRITES[potion_type] = ui_icon_sprite

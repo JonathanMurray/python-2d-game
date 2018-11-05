@@ -22,15 +22,7 @@ def try_consume_potion(potion_type: PotionType, game_state: GameState):
     return potion_effects[potion_type](game_state)
 
 
-def _apply_speed(game_state: GameState):
-    create_potion_visual_effect_at_player(game_state)
-    game_state.player_state.gain_buff(BuffType.INCREASED_MOVE_SPEED, Millis(3500))
-    return PotionWasConsumed()
-
-
-potion_effects = {
-    PotionType.SPEED: _apply_speed
-}
+potion_effects = {}
 
 
 def register_potion_effect(potion_type: PotionType, effect_method):

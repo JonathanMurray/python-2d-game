@@ -1,8 +1,6 @@
 from pythongame.common import *
-from pythongame.game_data import MAGIC_MISSILE_PROJECTILE_SIZE
-from pythongame.game_state import GameState, WorldEntity, Projectile
-from pythongame.projectiles import create_projectile_controller
-from pythongame.visual_effects import VisualCircle, VisualRect, create_visual_damage_text
+from pythongame.game_state import GameState
+from pythongame.visual_effects import VisualCircle, create_visual_damage_text
 
 
 class AbstractBuff:
@@ -33,30 +31,8 @@ class DamageOverTime(AbstractBuff):
             self._time_since_graphics = 0
 
 
-class IncreasedMoveSpeed(AbstractBuff):
-    def __init__(self):
-        self._time_since_graphics = 0
-
-    def apply_start_effect(self, game_state: GameState):
-        game_state.player_entity.add_to_speed_multiplier(1)
-
-    def apply_middle_effect(self, game_state: GameState, time_passed: Millis):
-        self._time_since_graphics += time_passed
-        if self._time_since_graphics > 100:
-            game_state.visual_effects.append(
-                VisualCircle((150, 200, 250), game_state.player_entity.get_center_position(), 10, Millis(200), 0))
-            self._time_since_graphics = 0
-
-    def apply_end_effect(self, game_state: GameState):
-        game_state.player_entity.add_to_speed_multiplier(-1)
-
-
-
-
-
 BUFF_EFFECTS = {
     BuffType.DAMAGE_OVER_TIME: DamageOverTime(),
-    BuffType.INCREASED_MOVE_SPEED: IncreasedMoveSpeed(),
 }
 
 
