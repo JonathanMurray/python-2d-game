@@ -8,6 +8,7 @@ from pythongame.ability_heal import register_heal_ability
 from pythongame.ability_teleport import register_teleport_ability
 from pythongame.common import Millis
 from pythongame.enemy_dumb import register_dumb_enemy
+from pythongame.enemy_smart import register_smart_enemy
 from pythongame.game_engine import GameEngine
 from pythongame.game_world_init import init_game_state_from_file
 from pythongame.potion_health import register_health_potion
@@ -35,6 +36,7 @@ register_invis_potion()
 register_speed_potion()
 register_enemy_poison_projectile()
 register_dumb_enemy()
+register_smart_enemy()
 
 def main():
     game_state = init_game_state_from_file(CAMERA_SIZE)
