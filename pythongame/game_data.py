@@ -40,7 +40,6 @@ class AbilityData:
 
 ENTITY_SPRITE_INITIALIZERS = {
     Sprite.PLAYER: SpriteInitializer("resources/player.png", PLAYER_ENTITY_SIZE),
-    Sprite.ENEMY_BERSERKER: SpriteInitializer("resources/orc_berserker.png", ENEMY_BERSERKER_SIZE),
     Sprite.WALL: SpriteInitializer("resources/stone_tile.png", WALL_SIZE)
 }
 
