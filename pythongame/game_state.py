@@ -16,6 +16,10 @@ class WorldArea:
         self.w = size[0]
         self.h = size[1]
 
+    def set_position(self, new_position):
+        self.x = new_position[0]
+        self.y = new_position[1]
+
     def rect(self):
         return self.x, self.y, self.w, self.h
 
@@ -206,10 +210,9 @@ class GameState:
                [p.world_entity for p in self.potions_on_ground] + [e.world_entity for e in self.enemies] + walls
 
     def center_camera_on_player(self):
-        player_center_position = self.player_entity.get_center_position()
-        new_camera_pos = get_position_from_center_position(player_center_position, self.camera_size)
-        self.camera_world_area.x = int(min(max(new_camera_pos[0], 0), self.game_world_size[0] - self.camera_size[0]))
-        self.camera_world_area.y = int(min(max(new_camera_pos[1], 0), self.game_world_size[1] - self.camera_size[1]))
+        new_camera_pos = get_position_from_center_position(self.player_entity.get_center_position(), self.camera_size)
+        new_camera_pos_within_world = self.get_within_world(new_camera_pos, (self.camera_size[0], self.camera_size[1]))
+        self.camera_world_area.set_position(new_camera_pos_within_world)
 
     def get_projectiles_intersecting_with(self, entity) -> List[Projectile]:
         return [p for p in self.projectile_entities if boxes_intersect(entity, p.world_entity)]
@@ -222,8 +225,7 @@ class GameState:
         new_position = entity.get_new_position_according_to_dir_and_speed(time_passed)
         if new_position:
             old_pos = entity.x, entity.y
-            new_pos_within_world = (min(max(new_position[0], 0), self.game_world_size[0] - entity.w),
-                                    min(max(new_position[1], 0), self.game_world_size[1] - entity.h))
+            new_pos_within_world = self.get_within_world(new_position, (entity.w, entity.h))
             entity.set_position(new_pos_within_world)
             walls = self._get_walls_from_buckets_adjacent_to_entity(entity)
             other_entities = [e.world_entity for e in self.enemies] + [self.player_entity] + walls
@@ -231,6 +233,10 @@ class GameState:
                              and entity is not other])
             if collision:
                 entity.set_position(old_pos)
+
+    def get_within_world(self, pos, size):
+        return (min(max(pos[0], 0), self.game_world_size[0] - size[0]),
+                min(max(pos[1], 0), self.game_world_size[1] - size[1]))
 
     def is_within_game_world(self, box) -> bool:
         return boxes_intersect(box, self.entire_world_area)
