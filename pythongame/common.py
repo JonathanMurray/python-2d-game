@@ -85,6 +85,11 @@ def translate_in_direction(position: Tuple[int, int], direction: Direction, amou
     else:
         raise Exception("Unhandled direction: " + str(direction))
 
+
+def is_x_and_y_within_distance(a: Tuple[int, int], b: Tuple[int, int], distance: int):
+    return abs(a[0] - b[0]) < distance and abs(a[1] - b[1]) < distance
+
+
 class PotionType(Enum):
     HEALTH = 1
     MANA = 2

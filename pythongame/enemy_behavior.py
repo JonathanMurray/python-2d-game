@@ -114,10 +114,9 @@ class MageEnemyMind:
         if self._time_since_healing > self._healing_cooldown:
             self._time_since_healing = 0
             mage_pos = enemy.world_entity.get_center_position()
-            healing_range = 200
-            nearby_hurt_enemies = [e for e in game_state.enemies if abs(e.world_entity.x - mage_pos[0]) < healing_range
-                                   and abs(e.world_entity.y - mage_pos[1]) < healing_range and e != enemy
-                                   and e.health < e.max_health]
+            nearby_hurt_enemies = [e for e in game_state.enemies
+                                   if is_x_and_y_within_distance(mage_pos, e.world_entity.get_center_position(), 200)
+                                   and e != enemy and e.health < e.max_health]
             if nearby_hurt_enemies:
                 healing_target = nearby_hurt_enemies[0]
                 healing_target.gain_health(5)
@@ -159,9 +158,7 @@ class BerserkerEnemyMind:
             if not is_player_invisible:
                 enemy_position = enemy.world_entity.get_center_position()
                 player_center_pos = game_state.player_entity.get_center_position()
-                attack_range = 80
-                if abs(enemy_position[0] - player_center_pos[0]) < attack_range \
-                        and abs(enemy_position[1] - player_center_pos[1]) < attack_range:
+                if is_x_and_y_within_distance(enemy_position, player_center_pos, 80):
                     damage_amount = 12
                     game_state.player_state.lose_health(damage_amount)
                     game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, damage_amount))
