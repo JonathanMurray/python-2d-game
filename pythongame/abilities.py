@@ -1,23 +1,10 @@
 from pythongame.common import *
-from pythongame.game_data import AOE_PROJECTILE_SIZE
-from pythongame.game_state import WorldEntity, Projectile, GameState
-from pythongame.projectiles import create_projectile_controller
+from pythongame.game_state import GameState
 from pythongame.visual_effects import VisualCircle, VisualLine, VisualRect
 
 
 def apply_ability_effect(game_state: GameState, ability_type: AbilityType):
     ability_effects[ability_type](game_state)
-
-
-def _apply_aoe_attack(game_state: GameState):
-    player_entity = game_state.player_entity
-    aoe_center_pos = translate_in_direction(player_entity.get_center_position(), player_entity.direction, 60)
-    aoe_pos = get_position_from_center_position(aoe_center_pos, AOE_PROJECTILE_SIZE)
-    projectile_speed = 0.07
-    entity = WorldEntity(aoe_pos, AOE_PROJECTILE_SIZE, Sprite.WHIRLWIND, player_entity.direction,
-                         projectile_speed)
-    projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER_AOE))
-    game_state.projectile_entities.append(projectile)
 
 
 def _apply_channel_attack(game_state: GameState):
@@ -39,7 +26,6 @@ def _apply_teleport(game_state: GameState):
 
 
 ability_effects = {
-    AbilityType.AOE_ATTACK: _apply_aoe_attack,
     AbilityType.CHANNEL_ATTACK: _apply_channel_attack,
     AbilityType.TELEPORT: _apply_teleport
 }

@@ -24,26 +24,6 @@ class AbstractProjectileController:
         return False
 
 
-class PlayerAoeProjectileController(AbstractProjectileController):
-    def __init__(self):
-        super().__init__(3000)
-        self._dmg_cooldown = 350
-        self._time_since_dmg = self._dmg_cooldown
-
-    def notify_time_passed(self, game_state: GameState, projectile: Projectile, time_passed: Millis):
-        super().notify_time_passed(game_state, projectile, time_passed)
-        self._time_since_dmg += time_passed
-        if self._time_since_dmg > self._dmg_cooldown:
-            self._time_since_dmg = False
-            projectile_entity = projectile.world_entity
-            for enemy in game_state.get_enemies_intersecting_with(projectile_entity):
-                damage_amount = 1
-                enemy.lose_health(damage_amount)
-                game_state.visual_effects.append(create_visual_damage_text(enemy.world_entity, damage_amount))
-            if random.random() < 0.07:
-                projectile_entity.direction = random.choice(get_perpendicular_directions(projectile_entity.direction))
-
-
 class PlayerMagicMissileProjectileController(AbstractProjectileController):
     def __init__(self):
         super().__init__(400)
@@ -75,11 +55,10 @@ class EnemyPoisonProjectileController(AbstractProjectileController):
 
 
 projectile_controllers = {
-    ProjectileType.PLAYER_AOE: PlayerAoeProjectileController,
     ProjectileType.ENEMY_POISON: EnemyPoisonProjectileController,
     ProjectileType.PLAYER_MAGIC_MISSILE: PlayerMagicMissileProjectileController
 }
 
 
-def register_projectile_controller(projectile_type: ProjectileType, controller: AbstractProjectileController):
+def register_projectile_controller(projectile_type: ProjectileType, controller):
     projectile_controllers[projectile_type] = controller

@@ -2,6 +2,7 @@ import sys
 
 import pygame
 
+from pythongame.ability_aoe_attack import register_aoe_attack_ability
 from pythongame.ability_heal import register_heal_ability
 from pythongame.common import Millis
 from pythongame.game_engine import GameEngine
@@ -17,6 +18,7 @@ CAMERA_SIZE = (700, 400)
 
 register_attack_ability()
 register_heal_ability()
+register_aoe_attack_ability()
 
 def main():
     game_state = init_game_state_from_file(CAMERA_SIZE)

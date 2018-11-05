@@ -9,7 +9,6 @@ ENEMY_MAGE_ENTITY_SIZE = (60, 60)
 ENEMY_BERSERKER_SIZE = (50, 50)
 MAGIC_MISSILE_PROJECTILE_SIZE = (30, 30)
 ENEMY_PROJECTILE_SIZE = (50, 50)
-AOE_PROJECTILE_SIZE = (140, 140)
 POTION_ENTITY_SIZE = (30, 30)
 WALL_SIZE = (50, 50)
 
@@ -48,7 +47,6 @@ ENTITY_SPRITE_INITIALIZERS = {
     Sprite.ENEMY_MAGE: SpriteInitializer("resources/enemy_mage.png", ENEMY_MAGE_ENTITY_SIZE),
     Sprite.ENEMY_BERSERKER: SpriteInitializer("resources/orc_berserker.png", ENEMY_BERSERKER_SIZE),
     Sprite.MAGIC_MISSILE: SpriteInitializer("resources/magic_missile.png", MAGIC_MISSILE_PROJECTILE_SIZE),
-    Sprite.WHIRLWIND: SpriteInitializer("resources/whirlwind.png", AOE_PROJECTILE_SIZE),
     Sprite.HEALTH_POTION: SpriteInitializer("resources/ui_health_potion.png", POTION_ENTITY_SIZE),
     Sprite.POISONBALL: SpriteInitializer("resources/poisonball.png", ENEMY_PROJECTILE_SIZE),
     Sprite.WALL: SpriteInitializer("resources/stone_tile.png", WALL_SIZE)
@@ -59,7 +57,6 @@ UI_ICON_SPRITE_PATHS = {
     UiIconSprite.MANA_POTION: "resources/ui_mana_potion.png",
     UiIconSprite.SPEED_POTION: "resources/white_potion.gif",
     UiIconSprite.INVISIBILITY_POTION: "resources/invis_potion.png",
-    UiIconSprite.AOE_ABILITY: "resources/whirlwind.png",
     UiIconSprite.MAGIC_MISSILE: "resources/magic_missile.png",
     UiIconSprite.TELEPORT: "resources/teleport_icon.png",
 }
@@ -72,7 +69,6 @@ POTION_ICON_SPRITES = {
 }
 
 ABILITIES = {
-    AbilityType.AOE_ATTACK: AbilityData(UiIconSprite.AOE_ABILITY, 5, "E", pygame.K_e, Millis(750)),
     AbilityType.CHANNEL_ATTACK: AbilityData(UiIconSprite.MAGIC_MISSILE, 12, "R", pygame.K_r, Millis(8000)),
     AbilityType.TELEPORT: AbilityData(UiIconSprite.TELEPORT, 2, "T", pygame.K_t, Millis(500)),
 }
