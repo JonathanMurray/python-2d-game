@@ -6,6 +6,7 @@ from pythongame.enemy_behavior import register_enemy_behavior
 from pythongame.game_data import register_entity_sprite_initializer, SpriteInitializer, ENEMY_PROJECTILE_SIZE, \
     ENEMY_MAGE_ENTITY_SIZE
 from pythongame.game_state import GameState, Enemy, WorldEntity, Projectile
+from pythongame.projectile_enemy_poison import register_enemy_poison_projectile
 from pythongame.projectiles import create_projectile_controller
 from pythongame.visual_effects import VisualLine
 
@@ -60,4 +61,4 @@ def register_mage_enemy():
     register_enemy_behavior(EnemyBehavior.MAGE, MageEnemyMind)
     register_entity_sprite_initializer(
         Sprite.ENEMY_MAGE, SpriteInitializer("resources/enemy_mage.png", ENEMY_MAGE_ENTITY_SIZE))
-    # NOTE: projectile is registered in projectile_enemy_poison
+    register_enemy_poison_projectile()

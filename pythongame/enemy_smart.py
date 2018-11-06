@@ -6,6 +6,7 @@ from pythongame.enemy_behavior import register_enemy_behavior
 from pythongame.game_data import register_entity_sprite_initializer, SpriteInitializer, ENEMY_PROJECTILE_SIZE, \
     ENEMY_2_ENTITY_SIZE
 from pythongame.game_state import GameState, Enemy, WorldEntity, Projectile
+from pythongame.projectile_enemy_poison import register_enemy_poison_projectile
 from pythongame.projectiles import create_projectile_controller
 
 
@@ -49,4 +50,4 @@ class SmartEnemyMind:
 def register_smart_enemy():
     register_enemy_behavior(EnemyBehavior.SMART, SmartEnemyMind)
     register_entity_sprite_initializer(Sprite.ENEMY_2, SpriteInitializer("resources/enemy2.png", ENEMY_2_ENTITY_SIZE))
-    # NOTE: projectile is registered in projectile_enemy_poison
+    register_enemy_poison_projectile()

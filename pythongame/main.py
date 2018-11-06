@@ -3,6 +3,7 @@ import sys
 import pygame
 
 from pythongame.ability_aoe_attack import register_aoe_attack_ability
+from pythongame.ability_attack import register_attack_ability
 from pythongame.ability_channel_attack import register_channel_attack_ability
 from pythongame.ability_heal import register_heal_ability
 from pythongame.ability_teleport import register_teleport_ability
@@ -17,12 +18,10 @@ from pythongame.potion_health import register_health_potion
 from pythongame.potion_invis import register_invis_potion
 from pythongame.potion_mana import register_mana_potion
 from pythongame.potion_speed import register_speed_potion
-from pythongame.projectile_enemy_poison import register_enemy_poison_projectile
 from pythongame.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame
 from pythongame.view import View
 from pythongame.view_state import ViewState
-from pythongame.ability_attack import register_attack_ability
 
 SCREEN_SIZE = (700, 600)
 CAMERA_SIZE = (700, 400)
@@ -36,11 +35,11 @@ register_health_potion()
 register_mana_potion()
 register_invis_potion()
 register_speed_potion()
-register_enemy_poison_projectile()
 register_dumb_enemy()
 register_smart_enemy()
 register_mage_enemy()
 register_berserker_enemy()
+
 
 def main():
     game_state = init_game_state_from_file(CAMERA_SIZE)
@@ -111,6 +110,7 @@ def main():
                                highlighted_ability_action=view_state.highlighted_ability_action,
                                is_paused=is_paused,
                                ability_cooldowns_remaining=game_state.player_state.ability_cooldowns_remaining)
+
 
 if __name__ == "__main__":
     main()
