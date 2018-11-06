@@ -3,7 +3,7 @@ import random
 from pythongame.common import Millis, random_direction, get_direction_between, get_opposite_direction, \
     get_perpendicular_directions, EnemyType, Sprite
 from pythongame.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
-from pythongame.game_data import register_entity_sprite_initializer, SpriteInitializer, register_enemy_size
+from pythongame.game_data import register_entity_sprite_initializer, SpriteInitializer, register_enemy_data, EnemyData
 from pythongame.game_state import GameState, Enemy, WorldEntity
 
 
@@ -41,6 +41,6 @@ class DumbEnemyMind(AbstractEnemyMind):
 
 def register_dumb_enemy():
     size = (28, 28)
-    register_enemy_size(EnemyType.DUMB, size)
+    register_enemy_data(EnemyType.DUMB, EnemyData(Sprite.ENEMY, size, 5, 0.02))
     register_enemy_behavior(EnemyType.DUMB, DumbEnemyMind)
     register_entity_sprite_initializer(Sprite.ENEMY, SpriteInitializer("resources/enemy.png", size))

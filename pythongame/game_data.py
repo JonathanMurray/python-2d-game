@@ -36,7 +36,16 @@ class AbilityData:
         self.pygame_key = pygame_key
         self.cooldown = cooldown
 
-ENEMY_SIZES: Dict[EnemyType, Tuple[int, int]] = {}
+
+class EnemyData:
+    def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, speed: float):
+        self.sprite = sprite
+        self.size = size
+        self.max_health = max_health
+        self.speed = speed
+
+
+ENEMIES: Dict[EnemyType, EnemyData] = {}
 
 ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, SpriteInitializer] = {
     Sprite.PLAYER: SpriteInitializer("resources/player.png", PLAYER_ENTITY_SIZE),
@@ -51,8 +60,9 @@ ABILITIES: Dict[AbilityType, AbilityData] = {}
 
 BUFF_TEXTS: Dict[BuffType, str] = {}
 
-def register_enemy_size(enemy_type: EnemyType, size: Tuple[int, int]):
-    ENEMY_SIZES[enemy_type] = size
+
+def register_enemy_data(enemy_type: EnemyType, enemy_data: EnemyData):
+    ENEMIES[enemy_type] = enemy_data
 
 
 def register_ability_data(ability_type: AbilityType, ability_data: AbilityData):
