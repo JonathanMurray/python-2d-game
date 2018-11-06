@@ -53,7 +53,7 @@ POTION_ICON_SPRITES: Dict[PotionType, UiIconSprite] = {}
 
 ABILITIES: Dict[AbilityType, AbilityData] = {}
 
-BUFF_TEXTS: Dict[BuffType: str] = {}
+BUFF_TEXTS: Dict[BuffType, str] = {}
 
 
 def register_ability_data(ability_type: AbilityType, ability_data: AbilityData):
