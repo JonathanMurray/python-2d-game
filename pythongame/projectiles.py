@@ -4,10 +4,6 @@ from pythongame.common import *
 from pythongame.game_state import Projectile, Enemy, GameState
 
 
-def create_projectile_controller(projectile_type: ProjectileType):
-    return projectile_controllers[projectile_type]()
-
-
 class AbstractProjectileController:
     def __init__(self, max_age):
         self._age = 0
@@ -25,8 +21,12 @@ class AbstractProjectileController:
         return False
 
 
-projectile_controllers: Dict[ProjectileType, Type[AbstractProjectileController]] = {}
+_projectile_controllers: Dict[ProjectileType, Type[AbstractProjectileController]] = {}
 
 
 def register_projectile_controller(projectile_type: ProjectileType, controller: Type[AbstractProjectileController]):
-    projectile_controllers[projectile_type] = controller
+    _projectile_controllers[projectile_type] = controller
+
+
+def create_projectile_controller(projectile_type: ProjectileType):
+    return _projectile_controllers[projectile_type]()

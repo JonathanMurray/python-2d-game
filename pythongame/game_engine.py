@@ -1,5 +1,5 @@
 from pythongame.abilities import apply_ability_effect
-from pythongame.buffs import BUFF_EFFECTS
+from pythongame.buffs import get_buff_effect
 from pythongame.common import *
 from pythongame.game_state import GameState
 from pythongame.player_controls import TryUseAbilityResult, PlayerControls
@@ -85,11 +85,11 @@ class GameEngine:
                 buffs_that_ended.append(buff.buff_type)
 
         for buff_type in buffs_that_started:
-            BUFF_EFFECTS[buff_type].apply_start_effect(self.game_state)
+            get_buff_effect(buff_type).apply_start_effect(self.game_state)
         for buff_type in buffs_that_were_active:
-            BUFF_EFFECTS[buff_type].apply_middle_effect(self.game_state, time_passed)
+            get_buff_effect(buff_type).apply_middle_effect(self.game_state, time_passed)
         for buff_type in buffs_that_ended:
-            BUFF_EFFECTS[buff_type].apply_end_effect(self.game_state)
+            get_buff_effect(buff_type).apply_end_effect(self.game_state)
 
         self.game_state.player_state.regenerate_mana(time_passed)
         self.game_state.player_state.recharge_ability_cooldowns(time_passed)

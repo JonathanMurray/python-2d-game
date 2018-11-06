@@ -5,6 +5,8 @@ from pythongame.game_state import GameState
 from pythongame.visual_effects import VisualCircle
 
 
+# TODO Create an interface for the potion effect functions
+
 class PotionWasConsumed:
     pass
 
@@ -20,15 +22,12 @@ def create_potion_visual_effect_at_player(game_state):
         game_state.player_entity))
 
 
-def try_consume_potion(potion_type: PotionType, game_state: GameState):
-    return potion_effects[potion_type](game_state)
-
-
-potion_effects: Dict[PotionType, Any] = {}
-
-
-# TODO Create an interface for the potion effect functions
+_potion_effects: Dict[PotionType, Any] = {}
 
 
 def register_potion_effect(potion_type: PotionType, effect_function):
-    potion_effects[potion_type] = effect_function
+    _potion_effects[potion_type] = effect_function
+
+
+def try_consume_potion(potion_type: PotionType, game_state: GameState):
+    return _potion_effects[potion_type](game_state)

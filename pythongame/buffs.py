@@ -15,8 +15,12 @@ class AbstractBuff:
         pass
 
 
-BUFF_EFFECTS: Dict[BuffType, AbstractBuff] = {}
+_buff_effects: Dict[BuffType, AbstractBuff] = {}
 
 
 def register_buff_effect(buff_type: BuffType, effect: AbstractBuff):
-    BUFF_EFFECTS[buff_type] = effect
+    _buff_effects[buff_type] = effect
+
+
+def get_buff_effect(buff_type: BuffType) -> AbstractBuff:
+    return _buff_effects[buff_type]
