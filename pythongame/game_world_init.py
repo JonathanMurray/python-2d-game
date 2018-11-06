@@ -18,7 +18,7 @@ def init_game_state_from_file(camera_size: Tuple[int, int]):
     row_height = 50
     max_col_index = 0
     max_row_index = 0
-    with open("resources/map.txt") as map_file:
+    with open("resources/maps/map.txt") as map_file:
         row_index = 0
         for line in map_file:
             col_index = 0
