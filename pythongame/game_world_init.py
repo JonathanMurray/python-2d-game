@@ -1,7 +1,6 @@
 from pythongame.common import *
 from pythongame.enemy_behavior import create_enemy_mind
-from pythongame.game_data import PLAYER_ENTITY_SIZE, ENEMY_ENTITY_SIZE, ENEMY_2_ENTITY_SIZE, POTION_ENTITY_SIZE, \
-    ENEMY_MAGE_ENTITY_SIZE, ENEMY_BERSERKER_SIZE, WALL_SIZE
+from pythongame.game_data import PLAYER_ENTITY_SIZE, POTION_ENTITY_SIZE, WALL_SIZE, ENEMY_SIZES
 from pythongame.game_state import WorldEntity, Enemy, GameState, PotionOnGround, PlayerState
 
 ENEMY_SPEED = 0.02
@@ -50,15 +49,19 @@ def init_game_state_from_file(camera_size: Tuple[int, int]):
     player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
     potions = [PotionOnGround(WorldEntity(pos, POTION_ENTITY_SIZE, Sprite.HEALTH_POTION), PotionType.HEALTH)
                for pos in potion_positions]
-    dumb_enemies = [Enemy(WorldEntity(pos, ENEMY_ENTITY_SIZE, Sprite.ENEMY, Direction.LEFT, ENEMY_SPEED), 5, 5,
-                          create_enemy_mind(EnemyType.DUMB)) for pos in dumb_enemy_positions]
-    smart_enemies = [Enemy(WorldEntity(pos, ENEMY_2_ENTITY_SIZE, Sprite.ENEMY_2, Direction.LEFT, ENEMY_2_SPEED), 9, 9,
-                           create_enemy_mind(EnemyType.SMART)) for pos in smart_enemy_positions]
-    mage_enemies = [Enemy(WorldEntity(pos, ENEMY_MAGE_ENTITY_SIZE, Sprite.ENEMY_MAGE, Direction.LEFT, ENEMY_MAGE_SPEED),
-                          25, 25, create_enemy_mind(EnemyType.MAGE)) for pos in mage_enemy_positions]
-    berserker_enemies = [Enemy(WorldEntity(pos, ENEMY_BERSERKER_SIZE, Sprite.ENEMY_BERSERKER, Direction.LEFT,
-                                           ENEMY_BERSERKER_SPEED),
-                               25, 25, create_enemy_mind(EnemyType.BERSERKER)) for pos in berserker_positions]
+    dumb_enemies = [
+        Enemy(WorldEntity(pos, ENEMY_SIZES[EnemyType.DUMB], Sprite.ENEMY, Direction.LEFT, ENEMY_SPEED), 5, 5,
+              create_enemy_mind(EnemyType.DUMB)) for pos in dumb_enemy_positions]
+    smart_enemies = [
+        Enemy(WorldEntity(pos, ENEMY_SIZES[EnemyType.SMART], Sprite.ENEMY_2, Direction.LEFT, ENEMY_2_SPEED), 9, 9,
+              create_enemy_mind(EnemyType.SMART)) for pos in smart_enemy_positions]
+    mage_enemies = [
+        Enemy(WorldEntity(pos, ENEMY_SIZES[EnemyType.MAGE], Sprite.ENEMY_MAGE, Direction.LEFT, ENEMY_MAGE_SPEED),
+              25, 25, create_enemy_mind(EnemyType.MAGE)) for pos in mage_enemy_positions]
+    berserker_enemies = [
+        Enemy(WorldEntity(pos, ENEMY_SIZES[EnemyType.BERSERKER], Sprite.ENEMY_BERSERKER, Direction.LEFT,
+                          ENEMY_BERSERKER_SPEED),
+              25, 25, create_enemy_mind(EnemyType.BERSERKER)) for pos in berserker_positions]
     walls = [WorldEntity(pos, WALL_SIZE, Sprite.WALL) for pos in wall_positions]
     enemies = dumb_enemies + smart_enemies + mage_enemies + berserker_enemies
     player_potion_slots = {

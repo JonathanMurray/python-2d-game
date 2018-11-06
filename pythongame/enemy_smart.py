@@ -4,7 +4,7 @@ from pythongame.common import Millis, random_direction, get_direction_between, E
     get_position_from_center_position, ProjectileType
 from pythongame.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
 from pythongame.game_data import register_entity_sprite_initializer, SpriteInitializer, ENEMY_PROJECTILE_SIZE, \
-    ENEMY_2_ENTITY_SIZE
+    register_enemy_size
 from pythongame.game_state import GameState, Enemy, WorldEntity, Projectile
 from pythongame.projectile_enemy_poison import register_enemy_poison_projectile
 from pythongame.projectiles import create_projectile_controller
@@ -48,6 +48,8 @@ class SmartEnemyMind(AbstractEnemyMind):
 
 
 def register_smart_enemy():
+    size = (60, 60)
+    register_enemy_size(EnemyType.SMART, size)
     register_enemy_behavior(EnemyType.SMART, SmartEnemyMind)
-    register_entity_sprite_initializer(Sprite.ENEMY_2, SpriteInitializer("resources/enemy2.png", ENEMY_2_ENTITY_SIZE))
+    register_entity_sprite_initializer(Sprite.ENEMY_2, SpriteInitializer("resources/enemy2.png", size))
     register_enemy_poison_projectile()
