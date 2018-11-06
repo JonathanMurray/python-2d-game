@@ -1,6 +1,6 @@
 import random
 
-from pythongame.common import Millis, random_direction, EnemyBehavior, Sprite, \
+from pythongame.common import Millis, random_direction, EnemyType, Sprite, \
     get_position_from_center_position, ProjectileType, is_x_and_y_within_distance, get_all_directions
 from pythongame.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
 from pythongame.game_data import register_entity_sprite_initializer, SpriteInitializer, ENEMY_PROJECTILE_SIZE, \
@@ -58,7 +58,7 @@ class MageEnemyMind(AbstractEnemyMind):
 
 
 def register_mage_enemy():
-    register_enemy_behavior(EnemyBehavior.MAGE, MageEnemyMind)
+    register_enemy_behavior(EnemyType.MAGE, MageEnemyMind)
     register_entity_sprite_initializer(
         Sprite.ENEMY_MAGE, SpriteInitializer("resources/enemy_mage.png", ENEMY_MAGE_ENTITY_SIZE))
     register_enemy_poison_projectile()

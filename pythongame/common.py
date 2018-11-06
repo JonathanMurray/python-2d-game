@@ -102,7 +102,7 @@ class PotionType(Enum):
     INVISIBILITY = 4
 
 
-class EnemyBehavior(Enum):
+class EnemyType(Enum):
     DUMB = 1
     SMART = 2
     MAGE = 3

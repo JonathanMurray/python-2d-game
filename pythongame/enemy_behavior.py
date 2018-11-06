@@ -14,12 +14,12 @@ class AbstractEnemyMind:
         pass
 
 
-_enemy_mind_constructors: Dict[EnemyBehavior, Type[AbstractEnemyMind]] = {}
+_enemy_mind_constructors: Dict[EnemyType, Type[AbstractEnemyMind]] = {}
 
 
-def register_enemy_behavior(enemy_behavior: EnemyBehavior, mind_constructor: Type[AbstractEnemyMind]):
-    _enemy_mind_constructors[enemy_behavior] = mind_constructor
+def register_enemy_behavior(enemy_type: EnemyType, mind_constructor: Type[AbstractEnemyMind]):
+    _enemy_mind_constructors[enemy_type] = mind_constructor
 
 
-def create_enemy_mind(enemy_behavior: EnemyBehavior):
-    return _enemy_mind_constructors[enemy_behavior]()
+def create_enemy_mind(enemy_type: EnemyType):
+    return _enemy_mind_constructors[enemy_type]()

@@ -1,7 +1,7 @@
 import random
 
 from pythongame.common import Millis, random_direction, is_x_and_y_within_distance, get_direction_between, \
-    get_perpendicular_directions, EnemyBehavior, Sprite
+    get_perpendicular_directions, EnemyType, Sprite
 from pythongame.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
 from pythongame.game_data import register_entity_sprite_initializer, SpriteInitializer, ENEMY_BERSERKER_SIZE
 from pythongame.game_state import GameState, Enemy, WorldEntity
@@ -42,6 +42,6 @@ class BerserkerEnemyMind(AbstractEnemyMind):
 
 
 def register_berserker_enemy():
-    register_enemy_behavior(EnemyBehavior.BERSERKER, BerserkerEnemyMind)
+    register_enemy_behavior(EnemyType.BERSERKER, BerserkerEnemyMind)
     register_entity_sprite_initializer(
         Sprite.ENEMY_BERSERKER, SpriteInitializer("resources/orc_berserker.png", ENEMY_BERSERKER_SIZE))
