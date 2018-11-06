@@ -2,7 +2,7 @@ import random
 
 from pythongame.common import Millis, random_direction, EnemyBehavior, Sprite, \
     get_position_from_center_position, ProjectileType, is_x_and_y_within_distance, get_all_directions
-from pythongame.enemy_behavior import register_enemy_behavior
+from pythongame.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
 from pythongame.game_data import register_entity_sprite_initializer, SpriteInitializer, ENEMY_PROJECTILE_SIZE, \
     ENEMY_MAGE_ENTITY_SIZE
 from pythongame.game_state import GameState, Enemy, WorldEntity, Projectile
@@ -11,7 +11,7 @@ from pythongame.projectiles import create_projectile_controller
 from pythongame.visual_effects import VisualLine
 
 
-class MageEnemyMind:
+class MageEnemyMind(AbstractEnemyMind):
     def __init__(self):
         self._time_since_decision = 0
         self._decision_interval = 750

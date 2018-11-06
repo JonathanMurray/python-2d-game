@@ -1,14 +1,12 @@
-from typing import Any, Dict
+from typing import Any, Dict, Callable
 
 from pythongame.common import *
 from pythongame.game_state import GameState
 
-# TODO Create an interface for the ability effect functions
-
-_ability_effects: Dict[AbilityType, Any] = {}
+_ability_effects: Dict[AbilityType, Callable[[GameState], Any]] = {}
 
 
-def register_ability_effect(ability_type: AbilityType, effect_function):
+def register_ability_effect(ability_type: AbilityType, effect_function: Callable[[GameState], None]):
     _ability_effects[ability_type] = effect_function
 
 

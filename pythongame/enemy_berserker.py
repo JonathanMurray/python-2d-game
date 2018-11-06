@@ -2,13 +2,13 @@ import random
 
 from pythongame.common import Millis, random_direction, is_x_and_y_within_distance, get_direction_between, \
     get_perpendicular_directions, EnemyBehavior, Sprite
-from pythongame.enemy_behavior import register_enemy_behavior
+from pythongame.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
 from pythongame.game_data import register_entity_sprite_initializer, SpriteInitializer, ENEMY_BERSERKER_SIZE
 from pythongame.game_state import GameState, Enemy, WorldEntity
 from pythongame.visual_effects import VisualLine, create_visual_damage_text
 
 
-class BerserkerEnemyMind:
+class BerserkerEnemyMind(AbstractEnemyMind):
     def __init__(self):
         self._decision_interval = 750
         self._time_since_decision = self._decision_interval

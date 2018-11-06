@@ -2,12 +2,12 @@ import random
 
 from pythongame.common import Millis, random_direction, get_direction_between, get_opposite_direction, \
     get_perpendicular_directions, EnemyBehavior, Sprite
-from pythongame.enemy_behavior import register_enemy_behavior
+from pythongame.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
 from pythongame.game_data import register_entity_sprite_initializer, SpriteInitializer, ENEMY_ENTITY_SIZE
 from pythongame.game_state import GameState, Enemy, WorldEntity
 
 
-class DumbEnemyMind:
+class DumbEnemyMind(AbstractEnemyMind):
     def __init__(self):
         self._time_since_decision = 0
         self._decision_interval = 750
