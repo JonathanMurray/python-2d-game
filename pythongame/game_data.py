@@ -21,6 +21,7 @@ class SpriteInitializer:
         self.scaling_size = scaling_size
 
 
+# TODO Ideally this shouldn't need to be defined here
 class UiIconSprite(Enum):
     HEALTH_POTION = 1
     MANA_POTION = 2
