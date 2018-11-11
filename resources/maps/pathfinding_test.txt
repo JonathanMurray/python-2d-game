@@ -1,9 +1,12 @@
+X       PX
+BBBBB    XBBB
+BBBBB    XXXB X
+         XBBB X
+BBBBB    XB   XXXXXX
+         XB XXX   X
+ BBBB    X     X X
+         XX
+          XXXX
 
-  XXXX
-    X
- P  X  B       X
-    X
-    XXXXXX    XXXXXXXX
 
-
-XXXXXXXXXXXXXXXXX
+        XXXXXXXXXXX

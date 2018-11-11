@@ -47,6 +47,19 @@ def get_direction_between(from_entity, to_entity):
     return direction
 
 
+# Returns 2 directions, starting with vertical or horizontal depending on which is closer to the true direction
+# Example: (0, 0) -> (2, 1) gives [RIGHT, DOWN]
+def get_directions_to_position(from_entity, position):
+    dx = position[0] - from_entity.x
+    dy = position[1] - from_entity.y
+    dir_from_dx = lambda dx: Direction.RIGHT if dx > 0 else (Direction.LEFT if dx < 0 else None)
+    dir_from_dy = lambda dy: Direction.UP if dy < 0 else (Direction.DOWN if dy > 0 else None)
+    if abs(dx) > abs(dy):
+        return dir_from_dx(dx), dir_from_dy(dy)
+    else:
+        return dir_from_dy(dy), dir_from_dx(dx)
+
+
 def get_perpendicular_directions(direction: Direction):
     if direction == direction.LEFT or direction == direction.RIGHT:
         return [Direction.UP, Direction.DOWN]

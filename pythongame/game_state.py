@@ -5,6 +5,8 @@ from pygame.rect import Rect
 
 from pythongame.common import *
 
+GRID_CELL_WIDTH = 50
+
 WALL_BUCKET_WIDTH = 100
 WALL_BUCKET_HEIGHT = 100
 
@@ -40,7 +42,9 @@ class WorldEntity:
         self._is_moving = True
         self.pygame_collision_rect = Rect(self.collision_rect())
 
-    def set_moving_in_dir(self, direction):
+    def set_moving_in_dir(self, direction: Direction):
+        if direction is None:
+            raise Exception("Need to provide a valid direciton to move in")
         self.direction = direction
         self._is_moving = True
 
@@ -195,6 +199,30 @@ class GameState:
         self.player_state = player_state
         self.game_world_size = game_world_size
         self.entire_world_area = WorldArea((0, 0), self.game_world_size)
+        self.grid = self._setup_grid(game_world_size, walls)
+
+    def _setup_grid(self, game_world_size: Tuple[int, int], walls: List[WorldEntity]):
+        world_w = game_world_size[0]
+        world_h = game_world_size[1]
+        grid_width = world_w // GRID_CELL_WIDTH
+        grid_height = world_h // GRID_CELL_WIDTH
+        grid = []
+        print("Creating wall grid (for pathfinding)")
+        print("World dimensions: " + str((world_w, world_h)))
+        print("Grid dimensions: " + str((grid_width, grid_height)))
+        for x in range(grid_width):
+            grid.append(grid_height * [0])
+        for w in walls:
+            cell_x = w.x // GRID_CELL_WIDTH
+            cell_y = w.y // GRID_CELL_WIDTH
+            grid[cell_x][cell_y] = 1
+
+        print("Grid:")
+        for y in range(grid_height):
+            for x in range(grid_width):
+                print(str(grid[x][y]) + " ", end='')
+            print("")
+        return grid
 
     # entities_to_remove aren't necessarily of the class WorldEntity
     def remove_entities(self, entities_to_remove: List):
@@ -222,15 +250,21 @@ class GameState:
     def update_world_entity_position_within_game_world(self, entity: WorldEntity, time_passed: Millis):
         new_position = entity.get_new_position_according_to_dir_and_speed(time_passed)
         if new_position:
-            old_pos = entity.x, entity.y
             new_pos_within_world = self.get_within_world(new_position, (entity.w, entity.h))
-            entity.set_position(new_pos_within_world)
-            walls = self._get_walls_from_buckets_adjacent_to_entity(entity)
-            other_entities = [e.world_entity for e in self.enemies] + [self.player_entity] + walls
-            collision = any([other for other in other_entities if self._entities_collide(entity, other)
-                             and entity is not other])
-            if collision:
-                entity.set_position(old_pos)
+            if not self.would_entity_collide_if_new_pos(entity, new_pos_within_world):
+                entity.set_position(new_pos_within_world)
+
+
+    # TODO Improve the interaction between functions in here
+    def would_entity_collide_if_new_pos(self, entity, new_pos_within_world):
+        old_pos = entity.x, entity.y
+        entity.set_position(new_pos_within_world)
+        walls = self._get_walls_from_buckets_adjacent_to_entity(entity)
+        other_entities = [e.world_entity for e in self.enemies] + [self.player_entity] + walls
+        collision = any([other for other in other_entities if self._entities_collide(entity, other)
+                         and entity is not other])
+        entity.set_position(old_pos)
+        return collision
 
     def get_within_world(self, pos, size):
         return (min(max(pos[0], 0), self.game_world_size[0] - size[0]),
@@ -271,8 +305,9 @@ class GameState:
         entity_x_bucket = int(entity.x) // WALL_BUCKET_WIDTH
         entity_y_bucket = int(entity.y) // WALL_BUCKET_HEIGHT
         walls = []
-        for x_bucket in range(max(0, entity_x_bucket - 1), entity_x_bucket + 2):
-            for y_bucket in range(max(0, entity_y_bucket - 1), entity_y_bucket + 2):
+        for x_bucket in range(max(0, entity_x_bucket - 1), min(len(self._wall_buckets), entity_x_bucket + 2)):
+            for y_bucket in range(max(0, entity_y_bucket - 1),
+                                  min(len(self._wall_buckets[x_bucket]), entity_y_bucket + 2)):
                 walls += self._wall_buckets[x_bucket][y_bucket]
         return walls
 

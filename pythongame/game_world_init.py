@@ -18,7 +18,9 @@ def init_game_state_from_file(camera_size: Tuple[int, int]):
     row_height = 50
     max_col_index = 0
     max_row_index = 0
-    with open("resources/maps/map.txt") as map_file:
+    MAP_FILE = "resources/maps/pathfinding_test.txt"
+    #MAP_FILE = "resources/maps/load_test_10k_walls_160_enemies.txt"
+    with open(MAP_FILE) as map_file:
         row_index = 0
         for line in map_file:
             col_index = 0
@@ -39,7 +41,8 @@ def init_game_state_from_file(camera_size: Tuple[int, int]):
                 if char == 'X':
                     wall_positions.append(game_world_pos)
                 col_index += 1
-                max_col_index = max(col_index, max_col_index)
+                if char != '\n':
+                    max_col_index = max(col_index, max_col_index)
             row_index += 1
             max_row_index = max(row_index, max_row_index)
     player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
