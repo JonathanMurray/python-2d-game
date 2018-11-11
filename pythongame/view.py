@@ -253,9 +253,6 @@ class View:
         for enemy in enemies:
             self._stat_bar_for_world_entity(enemy.world_entity, 5, enemy.health, enemy.max_health, COLOR_RED)
 
-        for visual_effect in visual_effects:
-            self._visual_effect(visual_effect)
-
         self._rect(COLOR_BLACK, (0, 0, self.camera_size[0], self.camera_size[1]), 3)
         self._rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
                                         self.screen_size[1] - self.camera_size[1]))
@@ -314,5 +311,8 @@ class View:
         self._text(self.font_small, message, (self.ui_screen_area.w / 2 - 80, self.ui_screen_area.y - 30))
         if is_paused:
             self._text(self.font_huge, "PAUSED", (self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50))
+
+        for visual_effect in visual_effects:
+            self._visual_effect(visual_effect)
 
         pygame.display.update()
