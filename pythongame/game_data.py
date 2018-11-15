@@ -47,9 +47,14 @@ class EnemyData:
 
 ENEMIES: Dict[EnemyType, EnemyData] = {}
 
-ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, SpriteInitializer] = {
-    Sprite.PLAYER: SpriteInitializer("resources/player.png", PLAYER_ENTITY_SIZE),
-    Sprite.WALL: SpriteInitializer("resources/stone_tile.png", WALL_SIZE)
+ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, SpriteInitializer]] = {
+    Sprite.PLAYER: {
+        Direction.DOWN: SpriteInitializer("resources/player/player_down.png", PLAYER_ENTITY_SIZE),
+        Direction.RIGHT: SpriteInitializer("resources/player/player_right.png", PLAYER_ENTITY_SIZE),
+        Direction.LEFT: SpriteInitializer("resources/player/player_left.png", PLAYER_ENTITY_SIZE),
+        Direction.UP: SpriteInitializer("resources/player/player_up.png", PLAYER_ENTITY_SIZE)
+    },
+    Sprite.WALL: {Direction.DOWN: SpriteInitializer("resources/stone_tile.png", WALL_SIZE)}
 }
 
 UI_ICON_SPRITE_PATHS: Dict[UiIconSprite, str] = {}
@@ -74,7 +79,8 @@ def register_ui_icon_sprite_path(sprite: UiIconSprite, file_path: str):
 
 
 def register_entity_sprite_initializer(sprite: Sprite, initializer: SpriteInitializer):
-    ENTITY_SPRITE_INITIALIZERS[sprite] = initializer
+    # TODO Support different sprites for different directions
+    ENTITY_SPRITE_INITIALIZERS[sprite] = {Direction.DOWN: initializer}
 
 
 def register_buff_text(buff_type: BuffType, text: str):

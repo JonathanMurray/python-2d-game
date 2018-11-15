@@ -1,7 +1,11 @@
+from typing import Dict, Any
+
 import pygame
 
+from pythongame.common import Direction, Sprite
 from pythongame.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS
+from pythongame.game_state import WorldEntity
 from pythongame.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText
 
 COLOR_WHITE = (250, 250, 250)
@@ -27,9 +31,18 @@ class ScreenArea:
         return self.x, self.y, self.w, self.h
 
 
-def load_and_scale_sprite(sprite_initializer):
+def load_and_scale_sprite(sprite_initializer: SpriteInitializer):
     image = pygame.image.load(sprite_initializer.image_file_path).convert_alpha()
     return pygame.transform.scale(image, sprite_initializer.scaling_size)
+
+
+def load_and_scale_directional_sprites(sprite_initializers_by_dir: Dict[Direction, SpriteInitializer]):
+    images = {}
+    for direction in sprite_initializers_by_dir:
+        sprite_initializer = sprite_initializers_by_dir[direction]
+        image = pygame.image.load(sprite_initializer.image_file_path).convert_alpha()
+        images[direction] = pygame.transform.scale(image, sprite_initializer.scaling_size)
+    return images
 
 
 class View:
@@ -44,8 +57,10 @@ class View:
         self.font_large = pygame.font.SysFont('Arial', 22)
         self.font_small = pygame.font.Font(None, 25)
         self.font_tiny = pygame.font.Font(None, 19)
-        self.images_by_sprite = {sprite: load_and_scale_sprite(ENTITY_SPRITE_INITIALIZERS[sprite])
-                                 for sprite in ENTITY_SPRITE_INITIALIZERS}
+        self.images_by_sprite: Dict[Sprite, Dict[Direction, Any]] = {
+            sprite: load_and_scale_directional_sprites(ENTITY_SPRITE_INITIALIZERS[sprite])
+            for sprite in ENTITY_SPRITE_INITIALIZERS
+        }
         self.images_by_ui_sprite = {sprite: load_and_scale_sprite(
             SpriteInitializer(UI_ICON_SPRITE_PATHS[sprite], UI_ICON_SIZE))
             for sprite in UI_ICON_SPRITE_PATHS}
@@ -133,15 +148,22 @@ class View:
         translated_pos = self._translate_world_position_to_screen((world_rect[0], world_rect[1]))
         self._rect(color, (translated_pos[0], translated_pos[1], world_rect[2], world_rect[3]), line_width)
 
-    def _world_entity(self, entity):
+    def _world_entity(self, entity: WorldEntity):
         if entity.sprite is None:
             raise Exception("Entity has no sprite: " + str(entity))
         elif entity.sprite in self.images_by_sprite:
-            image = self.images_by_sprite[entity.sprite]
+            images = self.images_by_sprite[entity.sprite]
+            image = self._get_image_from_direction(images, entity.direction)
             pos = self._translate_world_position_to_screen((entity.x, entity.y))
             self._image(image, pos)
         else:
             raise Exception("Unhandled sprite: " + str(entity.sprite))
+
+    def _get_image_from_direction(self, images, direction):
+        if direction in images:
+            return images[direction]
+        else:
+            return next(iter(images.values()))
 
     def _visual_effect(self, visual_effect):
         if isinstance(visual_effect, VisualLine):
