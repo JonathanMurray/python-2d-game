@@ -1,9 +1,10 @@
-from typing import Tuple
+from typing import Tuple, Any, Optional
 
-from pythongame.common import Millis, is_x_and_y_within_distance, get_directions_to_position, get_opposite_direction
-from pythongame.game_state import GRID_CELL_WIDTH, GameState, WorldEntity, Enemy
+from pythongame.common import Millis, is_x_and_y_within_distance, get_directions_to_position, get_opposite_direction, \
+    Direction
+from pythongame.game_state import GRID_CELL_WIDTH, GameState, WorldEntity
 from pythongame.grid_astar_pathfinder import run_pathfinder
-from pythongame.visual_effects import VisualLine
+from pythongame.visual_effects import VisualLine, VisualRect
 
 DEBUG_RENDER_PATHFINDING = False
 DEBUG_PATHFINDER_INTERVAL = 900
@@ -14,72 +15,113 @@ class EnemyPathfinder:
     def __init__(self):
         self.path = None
 
-    def update_path(self, enemy, game_state):
-        enemy_position = enemy.world_entity.get_center_position()
-        enemy_cell = (enemy_position[0] // GRID_CELL_WIDTH, enemy_position[1] // GRID_CELL_WIDTH)
-        player_position = game_state.player_entity.get_center_position()
-        player_cell = (player_position[0] // GRID_CELL_WIDTH, player_position[1] // GRID_CELL_WIDTH)
-        print("From " + str(enemy_position) + " to " + str(player_position))
-        print("Cell " + str(enemy_cell) + " to " + str(player_cell))
+    def update_path(self, enemy_entity: WorldEntity, game_state):
+        enemy_cell = _get_cell_from_position(enemy_entity.get_position())
+        player_cell = _get_cell_from_position(game_state.player_entity.get_position())
         path_with_cells = run_pathfinder(game_state.grid, enemy_cell, player_cell)
         if path_with_cells:
             path = [(cell[0] * GRID_CELL_WIDTH, cell[1] * GRID_CELL_WIDTH) for cell in path_with_cells]
-            print("Found new path: " + str(path))
-            print("Position: " + str((enemy.world_entity.x, enemy.world_entity.y)))
             if DEBUG_RENDER_PATHFINDING:
-                for i in range(len(path) - 1):
-                    game_state.visual_effects.append(
-                        VisualLine((250, 250, 250), path[i],
-                                   path[i + 1], Millis(DEBUG_PATHFINDER_INTERVAL), 3))
+                _add_visual_lines_along_path(game_state, path)
             self.path = path
         else:
             self.path = None
 
-    def move_enemy_along_path(self, enemy: Enemy, game_state: GameState, just_found_path: bool):
+    def get_next_waypoint_along_path(self, enemy_entity: WorldEntity) -> Optional[Any]:
         if self.path:
+            # -----------------------------------------------
+            # 1: Remove first waypoint if close enough to it
+            # -----------------------------------------------
             # TODO: Does this cause problems for specific entity sizes / movement speeds?
             closeness_margin = 15
-            if is_x_and_y_within_distance((enemy.world_entity.x, enemy.world_entity.y), self.path[0], closeness_margin):
+            if is_x_and_y_within_distance(enemy_entity.get_position(), self.path[0], closeness_margin):
+                #print("Popping " + str(self.path[0]) + " as I'm so close to it.")
                 self.path.pop(0)
                 if self.path:
-                    self._move_enemy_towards(game_state, enemy.world_entity, self.path[0])
+                    #print("After popping, returning " + str(self.path[0]))
+                    return self.path[0]
                 else:
-                    enemy.world_entity.set_not_moving()
-            if len(self.path) >= 2:
-                dir_to_waypoint_0 = get_directions_to_position(enemy.world_entity, self.path[0])[0]
-                dir_to_waypoint_1 = get_directions_to_position(enemy.world_entity, self.path[1])[0]
-                if dir_to_waypoint_0 == get_opposite_direction(dir_to_waypoint_1):
-                    print("Not gonna go back. Popping " + str(self.path[0]))
-                    self.path.pop(0)
-                    print("position: " + str((enemy.world_entity.x, enemy.world_entity.y)))
-                    print("Popped first position. Next waypoint: " + str(self.path[0]))
-                    if self.path:
-                        self._move_enemy_towards(game_state, enemy.world_entity, self.path[0])
-                    else:
-                        enemy.world_entity.set_not_moving()
-                        return
-            if just_found_path:
-                if self.path:
-                    self._move_enemy_towards(game_state, enemy.world_entity, self.path[0])
-        else:
-            print("no path found. stopping.")
-            enemy.world_entity.set_not_moving()
+                    #print("no path after popping. stopping.")
+                    return None
 
-    def _move_enemy_towards(self, game_state: GameState, enemy_entity: WorldEntity, destination: Tuple[int, int]):
+            # -----------------------------------------------
+            # 2: Remove first waypoint if it's opposite direction of second waypoint
+            # -----------------------------------------------
+            if len(self.path) >= 2:
+                dir_to_waypoint_0 = get_directions_to_position(enemy_entity, self.path[0])[0]
+                dir_to_waypoint_1 = get_directions_to_position(enemy_entity, self.path[1])[0]
+                if dir_to_waypoint_0 == get_opposite_direction(dir_to_waypoint_1):
+                    # print("Not gonna go back. Popping " + str(self.path[0]))
+                    self.path.pop(0)
+                    # print("position: " + str((enemy_entity.x, enemy_entity.y)))
+                    # print("Popped first position. Next waypoint: " + str(self.path[0]))
+                    return self.path[0]
+                if self.path:
+                    return self.path[0]
+        else:
+            # print("no path found. stopping.")
+            return None
+        # print("Leaked through. returning none")
+        return None
+
+    def get_dir_towards_considering_collisions(self, game_state: GameState, enemy_entity: WorldEntity,
+                                               destination: Tuple[int, int]) -> Optional[Direction]:
         if DEBUG_RENDER_PATHFINDING:
-            game_state.visual_effects.append(
-                VisualLine((0, 0, 150), (enemy_entity.x, enemy_entity.y),
-                           destination, Millis(200), 2))
+            _add_visual_line_to_next_waypoint(destination, enemy_entity, game_state)
         directions = get_directions_to_position(enemy_entity, destination)
         if directions:
             # TODO Refactor collision checking
-            enemy_entity.set_moving_in_dir(directions[0])
-            future_pos = enemy_entity.get_new_position_according_to_dir_and_speed(Millis(100))
-            future_pos_within_world = game_state.get_within_world(future_pos, (enemy_entity.w, enemy_entity.h))
-            would_collide = game_state.would_entity_collide_if_new_pos(enemy_entity, future_pos_within_world)
-            if would_collide:
+            # enemy_entity.set_moving_in_dir(directions[0])
+            if _would_collide_with_dir(directions[0], enemy_entity, game_state):
                 if len(directions) > 1 and directions[1]:
-                    print("Colliding in main direction (" + str(directions[0]) + ") so will use " + str(directions[1]))
-                    enemy_entity.set_moving_in_dir(directions[1])
+                    # print("Colliding in main direction (" + str(directions[0]) + ")")
+                    if not _would_collide_with_dir(directions[1], enemy_entity, game_state):
+                        # print("Will use other direction")
+                        return directions[1]
+                    else:
+                        # print("Both directions collide...")
+                        return None
                 else:
-                    print("Colliding in main direction (" + str(directions[0]) + ") but there is no other choice")
+                    # print("Colliding in main direction (" + str(directions[0]) + ") but there is no other choice")
+                    return None
+            else:
+                return directions[0]
+        return None
+
+
+def _add_visual_line_to_next_waypoint(destination, enemy_entity, game_state):
+    game_state.visual_effects.append(
+        VisualLine((150, 150, 150), _get_middle_of_cell_from_position(enemy_entity.get_position()),
+                   _get_middle_of_cell_from_position(destination), Millis(100), 2))
+
+
+def _add_visual_lines_along_path(game_state, path):
+    for i in range(len(path) - 1):
+        current = path[i]
+        next = path[i + 1]
+        game_state.visual_effects.append(
+            VisualRect((100, 150, 150),
+                       _get_middle_of_cell_from_position(current), 10, Millis(DEBUG_PATHFINDER_INTERVAL)))
+        game_state.visual_effects.append(
+            VisualLine((250, 250, 250),
+                       _get_middle_of_cell_from_position(current),
+                       _get_middle_of_cell_from_position(next),
+                       Millis(DEBUG_PATHFINDER_INTERVAL), 1))
+
+
+def _get_middle_of_cell_from_position(position):
+    return position[0] + GRID_CELL_WIDTH // 2, position[1] + GRID_CELL_WIDTH // 2
+
+
+def _would_collide_with_dir(direction: Direction, enemy_entity: WorldEntity, game_state: GameState):
+    # TODO Is this too naive to work?
+    future_time = Millis(100)
+    future_pos = enemy_entity.get_new_position_according_to_other_dir_and_speed(direction, future_time)
+    future_pos_within_world = game_state.get_within_world(future_pos, (enemy_entity.w, enemy_entity.h))
+    would_collide = game_state.would_entity_collide_if_new_pos(enemy_entity, future_pos_within_world)
+    return would_collide
+
+
+def _get_cell_from_position(position):
+    return (int((position[0] + GRID_CELL_WIDTH / 2) // GRID_CELL_WIDTH),
+            int((position[1] + GRID_CELL_WIDTH / 2) // GRID_CELL_WIDTH))

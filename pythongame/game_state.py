@@ -57,8 +57,15 @@ class WorldEntity:
             return translate_in_direction((self.x, self.y), self.direction, distance)
         return None
 
+    def get_new_position_according_to_other_dir_and_speed(self, direction: Direction, time_passed: Millis) -> Optional:
+        distance = self._effective_speed * time_passed
+        return translate_in_direction((self.x, self.y), direction, distance)
+
     def get_center_position(self):
         return int(self.x + self.w / 2), int(self.y + self.h / 2)
+
+    def get_position(self):
+        return self.x, self.y
 
     def add_to_speed_multiplier(self, amount):
         self._speed_multiplier += amount

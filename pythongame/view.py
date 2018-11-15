@@ -13,6 +13,7 @@ COLOR_HIGHLIGHTED_ICON = (250, 250, 150)
 UI_ICON_SIZE = (36, 36)
 
 RENDER_HIT_AND_COLLISION_BOXES = False
+RENDER_WORLD_COORDINATES = False
 
 
 class ScreenArea:
@@ -116,6 +117,17 @@ class View:
             screen_y = self._translate_world_y_to_screen(world_y)
             if 0 < screen_y < self.screen_size[1]:
                 self._line(line_color, (0, screen_y), (self.screen_size[0], screen_y), 1)
+
+        if RENDER_WORLD_COORDINATES:
+            for col in range(num_squares):
+                for row in range(num_squares):
+                    if col % 4 == 0 and row % 4 == 0:
+                        world_x = col * grid_width
+                        screen_x = self._translate_world_x_to_screen(world_x)
+                        world_y = row * grid_width
+                        screen_y = self._translate_world_y_to_screen(world_y)
+                        self._text(self.font_tiny, str(world_x) + "," + str(world_y), (screen_x, screen_y),
+                                   (250, 250, 250))
 
     def _world_rect(self, color, world_rect, line_width=0):
         translated_pos = self._translate_world_position_to_screen((world_rect[0], world_rect[1]))
