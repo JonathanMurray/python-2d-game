@@ -1,7 +1,7 @@
 from pythongame.core.common import *
 from pythongame.core.enemy_behavior import create_enemy_mind
 from pythongame.core.game_data import WALL_SIZE, ENEMIES
-from pythongame.player_data import PLAYER_ENTITY_SIZE
+from pythongame.player_data import PLAYER_ENTITY_SIZE, INTIAL_PLAYER_STATE
 from pythongame.core.game_state import WorldEntity, Enemy, GameState, PotionOnGround, PlayerState
 from pythongame.potion_health import POTION_ENTITY_SIZE
 
@@ -56,19 +56,9 @@ def init_game_state_from_file(camera_size: Tuple[int, int]):
     berserker_enemies = [_create_enemy_at_position(EnemyType.BERSERKER, pos) for pos in berserker_positions]
     walls = [WorldEntity(pos, WALL_SIZE, Sprite.WALL) for pos in wall_positions]
     enemies = dumb_enemies + smart_enemies + mage_enemies + berserker_enemies
-    player_potion_slots = {
-        1: PotionType.SPEED,
-        2: PotionType.MANA,
-        3: PotionType.HEALTH,
-        4: PotionType.INVISIBILITY,
-        5: PotionType.INVISIBILITY
-    }
 
-    abilities = [AbilityType.ATTACK, AbilityType.HEAL, AbilityType.AOE_ATTACK, AbilityType.CHANNEL_ATTACK,
-                 AbilityType.TELEPORT]
-    player_state = PlayerState(300, 300, 90, 100, 0.002, player_potion_slots, abilities)
     game_world_size = (max_col_index * col_width, max_row_index * row_height)
-    return GameState(player_entity, potions, enemies, walls, camera_size, game_world_size, player_state)
+    return GameState(player_entity, potions, enemies, walls, camera_size, game_world_size, INTIAL_PLAYER_STATE)
 
 
 def _create_enemy_at_position(enemy_type: EnemyType, pos: Tuple[int, int]):
