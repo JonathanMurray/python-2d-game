@@ -1,6 +1,7 @@
 from pythongame.core.common import *
 from pythongame.core.enemy_behavior import create_enemy_mind
-from pythongame.core.game_data import PLAYER_ENTITY_SIZE, WALL_SIZE, ENEMIES
+from pythongame.core.game_data import WALL_SIZE, ENEMIES
+from pythongame.player_data import PLAYER_ENTITY_SIZE
 from pythongame.core.game_state import WorldEntity, Enemy, GameState, PotionOnGround, PlayerState
 from pythongame.potion_health import POTION_ENTITY_SIZE
 

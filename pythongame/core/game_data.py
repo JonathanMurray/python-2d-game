@@ -2,8 +2,6 @@ from typing import Dict
 
 from pythongame.core.common import *
 
-PLAYER_ENTITY_SIZE = (60, 60)
-
 WALL_SIZE = (50, 50)
 
 
@@ -46,12 +44,6 @@ class EnemyData:
 ENEMIES: Dict[EnemyType, EnemyData] = {}
 
 ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, SpriteInitializer]] = {
-    Sprite.PLAYER: {
-        Direction.DOWN: SpriteInitializer("resources/player/player_down.png", PLAYER_ENTITY_SIZE),
-        Direction.RIGHT: SpriteInitializer("resources/player/player_right.png", PLAYER_ENTITY_SIZE),
-        Direction.LEFT: SpriteInitializer("resources/player/player_left.png", PLAYER_ENTITY_SIZE),
-        Direction.UP: SpriteInitializer("resources/player/player_up.png", PLAYER_ENTITY_SIZE)
-    },
     Sprite.WALL: {Direction.DOWN: SpriteInitializer("resources/stone_tile.png", WALL_SIZE)}
 }
 
@@ -79,6 +71,12 @@ def register_ui_icon_sprite_path(sprite: UiIconSprite, file_path: str):
 def register_entity_sprite_initializer(sprite: Sprite, initializer: SpriteInitializer):
     # TODO Support different sprites for different directions
     ENTITY_SPRITE_INITIALIZERS[sprite] = {Direction.DOWN: initializer}
+
+
+def register_directional_entity_sprite_initializers(sprite: Sprite, initializers: Dict[Direction, SpriteInitializer]):
+    ENTITY_SPRITE_INITIALIZERS[sprite] = {}
+    for direction in initializers:
+        ENTITY_SPRITE_INITIALIZERS[sprite][direction] = initializers[direction]
 
 
 def register_buff_text(buff_type: BuffType, text: str):

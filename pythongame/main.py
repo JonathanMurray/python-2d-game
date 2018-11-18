@@ -14,6 +14,7 @@ from pythongame.enemy_mage import register_mage_enemy
 from pythongame.enemy_smart import register_smart_enemy
 from pythongame.core.game_engine import GameEngine
 from pythongame.game_world_init import init_game_state_from_file
+from pythongame.player_data import register_player_data
 from pythongame.potion_health import register_health_potion
 from pythongame.potion_invis import register_invis_potion
 from pythongame.potion_mana import register_mana_potion
@@ -39,6 +40,7 @@ register_dumb_enemy()
 register_smart_enemy()
 register_mage_enemy()
 register_berserker_enemy()
+register_player_data()
 
 
 def main():
