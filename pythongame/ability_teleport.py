@@ -1,10 +1,10 @@
 import pygame
 
-from pythongame.abilities import register_ability_effect
-from pythongame.common import translate_in_direction, Millis, AbilityType
-from pythongame.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path
-from pythongame.game_state import GameState
-from pythongame.visual_effects import VisualCircle, VisualRect, VisualLine
+from pythongame.core.abilities import register_ability_effect
+from pythongame.core.common import translate_in_direction, Millis, AbilityType
+from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path
+from pythongame.core.game_state import GameState
+from pythongame.core.visual_effects import VisualCircle, VisualRect, VisualLine
 
 
 def _apply_teleport(game_state: GameState):

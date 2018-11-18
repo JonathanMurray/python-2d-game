@@ -1,10 +1,10 @@
 from typing import Tuple, Any, Optional
 
-from pythongame.common import Millis, is_x_and_y_within_distance, get_directions_to_position, get_opposite_direction, \
+from pythongame.core.common import Millis, is_x_and_y_within_distance, get_directions_to_position, get_opposite_direction, \
     Direction
-from pythongame.game_state import GRID_CELL_WIDTH, GameState, WorldEntity
-from pythongame.grid_astar_pathfinder import run_pathfinder
-from pythongame.visual_effects import VisualLine, VisualRect
+from pythongame.core.game_state import GRID_CELL_WIDTH, GameState, WorldEntity
+from pythongame.core.grid_astar_pathfinder import run_pathfinder
+from pythongame.core.visual_effects import VisualLine, VisualRect
 
 DEBUG_RENDER_PATHFINDING = False
 DEBUG_PATHFINDER_INTERVAL = 900

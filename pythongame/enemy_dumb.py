@@ -1,11 +1,11 @@
 import random
 
-from pythongame.common import Millis, get_opposite_direction, \
+from pythongame.core.common import Millis, get_opposite_direction, \
     get_perpendicular_directions, EnemyType, Sprite
-from pythongame.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
-from pythongame.enemy_pathfinding import EnemyPathfinder
-from pythongame.game_data import register_entity_sprite_initializer, SpriteInitializer, register_enemy_data, EnemyData
-from pythongame.game_state import GameState, Enemy, WorldEntity
+from pythongame.core.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
+from pythongame.core.enemy_pathfinding import EnemyPathfinder
+from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer, register_enemy_data, EnemyData
+from pythongame.core.game_state import GameState, Enemy, WorldEntity
 
 
 class DumbEnemyMind(AbstractEnemyMind):

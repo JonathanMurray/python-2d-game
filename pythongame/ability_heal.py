@@ -1,12 +1,12 @@
 import pygame
 
-from pythongame.abilities import register_ability_effect
-from pythongame.buffs import AbstractBuff, register_buff_effect
-from pythongame.common import BuffType, Millis, AbilityType
-from pythongame.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path, \
+from pythongame.core.abilities import register_ability_effect
+from pythongame.core.buffs import AbstractBuff, register_buff_effect
+from pythongame.core.common import BuffType, Millis, AbilityType
+from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path, \
     register_buff_text
-from pythongame.game_state import GameState
-from pythongame.visual_effects import create_visual_healing_text, VisualCircle
+from pythongame.core.game_state import GameState
+from pythongame.core.visual_effects import create_visual_healing_text, VisualCircle
 
 
 def _apply_heal(game_state: GameState):

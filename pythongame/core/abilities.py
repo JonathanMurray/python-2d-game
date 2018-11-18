@@ -1,7 +1,7 @@
 from typing import Any, Dict, Callable
 
-from pythongame.common import *
-from pythongame.game_state import GameState
+from pythongame.core.common import *
+from pythongame.core.game_state import GameState
 
 _ability_effects: Dict[AbilityType, Callable[[GameState], Any]] = {}
 

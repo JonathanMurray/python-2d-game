@@ -1,10 +1,10 @@
-from pythongame.buffs import AbstractBuff, register_buff_effect
-from pythongame.common import PotionType, BuffType, Millis
-from pythongame.game_data import register_ui_icon_sprite_path, UiIconSprite, register_potion_icon_sprite, \
+from pythongame.core.buffs import AbstractBuff, register_buff_effect
+from pythongame.core.common import PotionType, BuffType, Millis
+from pythongame.core.game_data import register_ui_icon_sprite_path, UiIconSprite, register_potion_icon_sprite, \
     register_buff_text
-from pythongame.game_state import GameState
-from pythongame.potions import create_potion_visual_effect_at_player, PotionWasConsumed, register_potion_effect
-from pythongame.visual_effects import VisualCircle
+from pythongame.core.game_state import GameState
+from pythongame.core.potions import create_potion_visual_effect_at_player, PotionWasConsumed, register_potion_effect
+from pythongame.core.visual_effects import VisualCircle
 
 
 def _apply_speed(game_state: GameState):

@@ -1,7 +1,7 @@
 from typing import Tuple
 
-from pythongame.common import Millis
-from pythongame.game_state import WorldEntity
+from pythongame.core.common import Millis
+from pythongame.core.game_state import WorldEntity
 
 
 class VisualEffect:

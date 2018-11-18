@@ -1,14 +1,14 @@
 import pygame
 
-from pythongame.abilities import register_ability_effect
-from pythongame.buffs import AbstractBuff, register_buff_effect
-from pythongame.common import BuffType, Millis, AbilityType, Sprite, ProjectileType, get_position_from_center_position
-from pythongame.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path, \
+from pythongame.core.abilities import register_ability_effect
+from pythongame.core.buffs import AbstractBuff, register_buff_effect
+from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, ProjectileType, get_position_from_center_position
+from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path, \
     register_entity_sprite_initializer, SpriteInitializer, register_buff_text
-from pythongame.game_state import GameState, Enemy, WorldEntity, Projectile
-from pythongame.projectiles import AbstractProjectileController, register_projectile_controller, \
+from pythongame.core.game_state import GameState, Enemy, WorldEntity, Projectile
+from pythongame.core.projectiles import AbstractProjectileController, register_projectile_controller, \
     create_projectile_controller
-from pythongame.visual_effects import create_visual_damage_text, VisualCircle, VisualRect
+from pythongame.core.visual_effects import create_visual_damage_text, VisualCircle, VisualRect
 
 MAGIC_MISSILE_PROJECTILE_SIZE = (30, 30)
 

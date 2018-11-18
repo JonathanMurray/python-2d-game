@@ -1,4 +1,4 @@
-from pythongame.astar import AStar
+from pythongame.core.astar import AStar
 
 
 class GridBasedAStar(AStar):

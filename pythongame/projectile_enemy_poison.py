@@ -1,10 +1,10 @@
-from pythongame.buffs import AbstractBuff, register_buff_effect
-from pythongame.common import BuffType, Millis, ProjectileType, Sprite
-from pythongame.game_data import register_buff_text, register_entity_sprite_initializer, SpriteInitializer, \
+from pythongame.core.buffs import AbstractBuff, register_buff_effect
+from pythongame.core.common import BuffType, Millis, ProjectileType, Sprite
+from pythongame.core.game_data import register_buff_text, register_entity_sprite_initializer, SpriteInitializer, \
     ENEMY_PROJECTILE_SIZE
-from pythongame.game_state import GameState
-from pythongame.projectiles import AbstractProjectileController, register_projectile_controller
-from pythongame.visual_effects import create_visual_damage_text, VisualCircle
+from pythongame.core.game_state import GameState
+from pythongame.core.projectiles import AbstractProjectileController, register_projectile_controller
+from pythongame.core.visual_effects import create_visual_damage_text, VisualCircle
 
 
 class EnemyPoisonProjectileController(AbstractProjectileController):

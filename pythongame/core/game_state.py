@@ -3,7 +3,7 @@ from typing import List, Optional, Dict
 
 from pygame.rect import Rect
 
-from pythongame.common import *
+from pythongame.core.common import *
 
 GRID_CELL_WIDTH = 50
 

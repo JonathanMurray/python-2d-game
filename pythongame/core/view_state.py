@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from pythongame.common import AbilityType, Millis
+from pythongame.core.common import AbilityType, Millis
 
 MINIMAP_UPDATE_INTERVAL = 1000
 MESSAGE_DURATION = 2500

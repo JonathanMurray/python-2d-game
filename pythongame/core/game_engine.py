@@ -1,10 +1,10 @@
-from pythongame.abilities import apply_ability_effect
-from pythongame.buffs import get_buff_effect
-from pythongame.common import *
-from pythongame.game_state import GameState
-from pythongame.player_controls import TryUseAbilityResult, PlayerControls
-from pythongame.potions import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
-from pythongame.view_state import ViewState
+from pythongame.core.abilities import apply_ability_effect
+from pythongame.core.buffs import get_buff_effect
+from pythongame.core.common import *
+from pythongame.core.game_state import GameState
+from pythongame.core.player_controls import TryUseAbilityResult, PlayerControls
+from pythongame.core.potions import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
+from pythongame.core.view_state import ViewState
 
 
 class GameEngine:

@@ -1,8 +1,8 @@
 from enum import Enum
 
-from pythongame.common import AbilityType, Millis
-from pythongame.game_data import ABILITIES
-from pythongame.game_state import PlayerState
+from pythongame.core.common import AbilityType, Millis
+from pythongame.core.game_data import ABILITIES
+from pythongame.core.game_state import PlayerState
 
 ABILITY_COOLDOWN = 200
 

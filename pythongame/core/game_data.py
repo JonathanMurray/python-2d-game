@@ -1,6 +1,6 @@
 from typing import Dict
 
-from pythongame.common import *
+from pythongame.core.common import *
 
 PLAYER_ENTITY_SIZE = (60, 60)
 

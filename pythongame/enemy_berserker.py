@@ -1,9 +1,9 @@
-from pythongame.common import Millis, is_x_and_y_within_distance, EnemyType, Sprite
-from pythongame.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
-from pythongame.enemy_pathfinding import EnemyPathfinder
-from pythongame.game_data import register_entity_sprite_initializer, SpriteInitializer, register_enemy_data, EnemyData
-from pythongame.game_state import GameState, Enemy, WorldEntity
-from pythongame.visual_effects import VisualLine, create_visual_damage_text
+from pythongame.core.common import Millis, is_x_and_y_within_distance, EnemyType, Sprite
+from pythongame.core.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
+from pythongame.core.enemy_pathfinding import EnemyPathfinder
+from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer, register_enemy_data, EnemyData
+from pythongame.core.game_state import GameState, Enemy, WorldEntity
+from pythongame.core.visual_effects import VisualLine, create_visual_damage_text
 
 
 class BerserkerEnemyMind(AbstractEnemyMind):

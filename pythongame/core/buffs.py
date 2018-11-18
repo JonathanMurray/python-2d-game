@@ -1,7 +1,7 @@
 from typing import Dict
 
-from pythongame.common import *
-from pythongame.game_state import GameState
+from pythongame.core.common import *
+from pythongame.core.game_state import GameState
 
 
 class AbstractBuff:

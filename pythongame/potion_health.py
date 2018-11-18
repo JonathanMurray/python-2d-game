@@ -1,10 +1,10 @@
-from pythongame.common import PotionType, Sprite
-from pythongame.game_data import register_entity_sprite_initializer, SpriteInitializer, POTION_ENTITY_SIZE, \
+from pythongame.core.common import PotionType, Sprite
+from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer, POTION_ENTITY_SIZE, \
     register_ui_icon_sprite_path, UiIconSprite, register_potion_icon_sprite
-from pythongame.game_state import GameState
-from pythongame.potions import create_potion_visual_effect_at_player, PotionWasConsumed, PotionFailedToBeConsumed, \
+from pythongame.core.game_state import GameState
+from pythongame.core.potions import create_potion_visual_effect_at_player, PotionWasConsumed, PotionFailedToBeConsumed, \
     register_potion_effect
-from pythongame.visual_effects import create_visual_healing_text
+from pythongame.core.visual_effects import create_visual_healing_text
 
 
 def _apply_health(game_state: GameState):

@@ -1,8 +1,8 @@
 from typing import Dict, Callable
 
-from pythongame.common import *
-from pythongame.game_state import GameState
-from pythongame.visual_effects import VisualCircle
+from pythongame.core.common import *
+from pythongame.core.game_state import GameState
+from pythongame.core.visual_effects import VisualCircle
 
 
 class AbstractPotionResult:

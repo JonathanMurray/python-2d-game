@@ -1,7 +1,7 @@
-from pythongame.common import *
-from pythongame.enemy_behavior import create_enemy_mind
-from pythongame.game_data import PLAYER_ENTITY_SIZE, POTION_ENTITY_SIZE, WALL_SIZE, ENEMIES
-from pythongame.game_state import WorldEntity, Enemy, GameState, PotionOnGround, PlayerState
+from pythongame.core.common import *
+from pythongame.core.enemy_behavior import create_enemy_mind
+from pythongame.core.game_data import PLAYER_ENTITY_SIZE, POTION_ENTITY_SIZE, WALL_SIZE, ENEMIES
+from pythongame.core.game_state import WorldEntity, Enemy, GameState, PotionOnGround, PlayerState
 
 PLAYER_ENTITY_SPEED = 0.13
 

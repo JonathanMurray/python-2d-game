@@ -2,11 +2,11 @@ from typing import Dict, Any
 
 import pygame
 
-from pythongame.common import Direction, Sprite
-from pythongame.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
+from pythongame.core.common import Direction, Sprite
+from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS
-from pythongame.game_state import WorldEntity
-from pythongame.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText
+from pythongame.core.game_state import WorldEntity
+from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
