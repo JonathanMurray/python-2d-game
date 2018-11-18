@@ -4,7 +4,6 @@ from pythongame.core.common import *
 
 PLAYER_ENTITY_SIZE = (60, 60)
 
-POTION_ENTITY_SIZE = (30, 30)
 WALL_SIZE = (50, 50)
 
 
