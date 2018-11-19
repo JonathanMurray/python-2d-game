@@ -1,4 +1,3 @@
-import random
 from typing import Dict, Any, Union, List
 
 import pygame
@@ -172,17 +171,18 @@ class View:
             raise Exception("Entity has no sprite: " + str(entity))
         elif entity.sprite in self.images_by_sprite:
             images: Dict[Direction, Any] = self.images_by_sprite[entity.sprite]
-            image = self._get_image_from_direction(images, entity.direction)
+            image = self._get_image_from_direction(images, entity.direction, entity.movement_animation_progress)
             pos = self._translate_world_position_to_screen((entity.x, entity.y))
             self._image(image, pos)
         else:
             raise Exception("Unhandled sprite: " + str(entity.sprite))
 
-    def _get_image_from_direction(self, images: Dict[Direction, Any], direction: Direction):
+    def _get_image_from_direction(self, images: Dict[Direction, Any], direction: Direction, animation_progress: float):
         # TODO Improve how this is handled. Should be more clear if it's a list or not
         for_this_dir = images[direction] if direction in images else next(iter(images.values()))
         if isinstance(for_this_dir, List):
-            return random.choice(for_this_dir)
+            animation_frame_index = int(len(for_this_dir) * animation_progress)
+            return for_this_dir[animation_frame_index]
         return for_this_dir
 
     def _visual_effect(self, visual_effect):

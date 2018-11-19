@@ -41,6 +41,7 @@ class WorldEntity:
         self._effective_speed = speed
         self._is_moving = True
         self.pygame_collision_rect = Rect(self.collision_rect())
+        self.movement_animation_progress: float = 0 # goes from 0 to 1 repeatedly
 
     def set_moving_in_dir(self, direction: Direction):
         if direction is None:
@@ -56,6 +57,12 @@ class WorldEntity:
         if self._is_moving:
             return translate_in_direction((self.x, self.y), self.direction, distance)
         return None
+
+    def update_movement_animation(self, time_passed: Millis):
+        if self._is_moving:
+            self.movement_animation_progress = (self.movement_animation_progress + float(time_passed) / 1000) % 1
+        else:
+            self.movement_animation_progress = 0
 
     def get_new_position_according_to_other_dir_and_speed(self, direction: Direction, time_passed: Millis) -> Optional:
         distance = self._effective_speed * time_passed

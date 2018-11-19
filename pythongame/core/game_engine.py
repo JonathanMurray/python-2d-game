@@ -94,6 +94,10 @@ class GameEngine:
         self.game_state.player_state.regenerate_mana(time_passed)
         self.game_state.player_state.recharge_ability_cooldowns(time_passed)
 
+        self.game_state.player_entity.update_movement_animation(time_passed)
+        for e in self.game_state.enemies:
+            e.world_entity.update_movement_animation(time_passed)
+
         for e in self.game_state.enemies:
             # Enemies shouldn't move towards player when they are out of sight
             if self._is_enemy_close_to_camera(e):
