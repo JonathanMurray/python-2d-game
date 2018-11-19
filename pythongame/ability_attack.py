@@ -37,7 +37,7 @@ def _apply_attack(game_state: GameState):
 def register_attack_ability():
     register_ability_effect(AbilityType.ATTACK, _apply_attack)
     register_ability_data(AbilityType.ATTACK, AbilityData(UiIconSprite.ATTACK_ABILITY, 3, "Q", pygame.K_q, Millis(200)))
-    register_ui_icon_sprite_path(UiIconSprite.ATTACK_ABILITY, "resources/fireball.png")
+    register_ui_icon_sprite_path(UiIconSprite.ATTACK_ABILITY, "resources/graphics/fireball.png")
     register_entity_sprite_initializer(
-        Sprite.FIREBALL, SpriteInitializer("resources/fireball.png", ATTACK_PROJECTILE_SIZE))
+        Sprite.FIREBALL, SpriteInitializer("resources/graphics/fireball.png", ATTACK_PROJECTILE_SIZE))
     register_projectile_controller(ProjectileType.PLAYER, PlayerProjectileController)

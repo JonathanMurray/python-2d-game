@@ -62,5 +62,5 @@ def register_mage_enemy():
     register_enemy_data(EnemyType.MAGE, EnemyData(Sprite.ENEMY_MAGE, size, 25, 0.02))
     register_enemy_behavior(EnemyType.MAGE, MageEnemyMind)
     register_entity_sprite_initializer(
-        Sprite.ENEMY_MAGE, SpriteInitializer("resources/enemy_mage.png", size))
+        Sprite.ENEMY_MAGE, SpriteInitializer("resources/graphics/enemy_mage.png", size))
     register_enemy_poison_projectile()

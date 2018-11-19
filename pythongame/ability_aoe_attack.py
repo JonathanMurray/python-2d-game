@@ -50,7 +50,7 @@ def register_aoe_attack_ability():
     register_ability_effect(AbilityType.AOE_ATTACK, _apply_aoe_attack)
     register_ability_data(
         AbilityType.AOE_ATTACK, AbilityData(UiIconSprite.AOE_ABILITY, 5, "E", pygame.K_e, Millis(750)))
-    register_ui_icon_sprite_path(UiIconSprite.AOE_ABILITY, "resources/whirlwind.png")
+    register_ui_icon_sprite_path(UiIconSprite.AOE_ABILITY, "resources/graphics/whirlwind.png")
     register_entity_sprite_initializer(
-        Sprite.WHIRLWIND, SpriteInitializer("resources/whirlwind.png", AOE_PROJECTILE_SIZE))
+        Sprite.WHIRLWIND, SpriteInitializer("resources/graphics/whirlwind.png", AOE_PROJECTILE_SIZE))
     register_projectile_controller(ProjectileType.PLAYER_AOE, PlayerAoeProjectileController)

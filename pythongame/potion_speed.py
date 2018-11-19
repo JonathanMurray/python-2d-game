@@ -36,4 +36,4 @@ def register_speed_potion():
     register_buff_effect(BuffType.INCREASED_MOVE_SPEED, IncreasedMoveSpeed())
     register_buff_text(BuffType.INCREASED_MOVE_SPEED, "Speed")
     register_potion_icon_sprite(PotionType.SPEED, UiIconSprite.SPEED_POTION)
-    register_ui_icon_sprite_path(UiIconSprite.SPEED_POTION, "resources/white_potion.gif")
+    register_ui_icon_sprite_path(UiIconSprite.SPEED_POTION, "resources/graphics/white_potion.gif")

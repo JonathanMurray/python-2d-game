@@ -44,7 +44,7 @@ class EnemyData:
 ENEMIES: Dict[EnemyType, EnemyData] = {}
 
 ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, SpriteInitializer]] = {
-    Sprite.WALL: {Direction.DOWN: SpriteInitializer("resources/stone_tile.png", (WALL_SIZE[0] - 1, WALL_SIZE[1] - 1))}
+    Sprite.WALL: {Direction.DOWN: SpriteInitializer("resources/graphics/stone_tile.png", (WALL_SIZE[0] - 1, WALL_SIZE[1] - 1))}
 }
 
 UI_ICON_SPRITE_PATHS: Dict[UiIconSprite, str] = {}

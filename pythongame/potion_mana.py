@@ -21,4 +21,4 @@ def _apply_mana(game_state: GameState):
 def register_mana_potion():
     register_potion_effect(PotionType.MANA, _apply_mana)
     register_potion_icon_sprite(PotionType.MANA, UiIconSprite.MANA_POTION)
-    register_ui_icon_sprite_path(UiIconSprite.MANA_POTION, "resources/ui_mana_potion.png")
+    register_ui_icon_sprite_path(UiIconSprite.MANA_POTION, "resources/graphics/ui_mana_potion.png")

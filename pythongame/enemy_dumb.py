@@ -77,4 +77,4 @@ def register_dumb_enemy():
     size = (28, 28)
     register_enemy_data(EnemyType.DUMB, EnemyData(Sprite.ENEMY, size, 5, 0.02))
     register_enemy_behavior(EnemyType.DUMB, DumbEnemyMind)
-    register_entity_sprite_initializer(Sprite.ENEMY, SpriteInitializer("resources/enemy.png", size))
+    register_entity_sprite_initializer(Sprite.ENEMY, SpriteInitializer("resources/graphics/enemy.png", size))

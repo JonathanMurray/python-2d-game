@@ -19,9 +19,9 @@ INTIAL_PLAYER_STATE = PlayerState(300, 300, 90, 100, 0.002, _player_potion_slots
 
 def register_player_data():
     initializers = {
-        Direction.DOWN: SpriteInitializer("resources/player/player_down.png", PLAYER_ENTITY_SIZE),
-        Direction.RIGHT: SpriteInitializer("resources/player/player_right.png", PLAYER_ENTITY_SIZE),
-        Direction.LEFT: SpriteInitializer("resources/player/player_left.png", PLAYER_ENTITY_SIZE),
-        Direction.UP: SpriteInitializer("resources/player/player_up.png", PLAYER_ENTITY_SIZE)
+        Direction.DOWN: SpriteInitializer("resources/graphics/player/player_down.png", PLAYER_ENTITY_SIZE),
+        Direction.RIGHT: SpriteInitializer("resources/graphics/player/player_right.png", PLAYER_ENTITY_SIZE),
+        Direction.LEFT: SpriteInitializer("resources/graphics/player/player_left.png", PLAYER_ENTITY_SIZE),
+        Direction.UP: SpriteInitializer("resources/graphics/player/player_up.png", PLAYER_ENTITY_SIZE)
     }
     register_directional_entity_sprite_initializers(Sprite.PLAYER, initializers)

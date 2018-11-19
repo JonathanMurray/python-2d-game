@@ -68,4 +68,4 @@ def register_berserker_enemy():
     register_enemy_data(EnemyType.BERSERKER, EnemyData(Sprite.ENEMY_BERSERKER, size, 5, 0.1))
     register_enemy_behavior(EnemyType.BERSERKER, BerserkerEnemyMind)
     register_entity_sprite_initializer(
-        Sprite.ENEMY_BERSERKER, SpriteInitializer("resources/orc_berserker.png", size))
+        Sprite.ENEMY_BERSERKER, SpriteInitializer("resources/graphics/orc_berserker.png", size))

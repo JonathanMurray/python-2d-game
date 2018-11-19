@@ -34,6 +34,6 @@ class HealingOverTime(AbstractBuff):
 def register_heal_ability():
     register_ability_effect(AbilityType.HEAL, _apply_heal)
     register_ability_data(AbilityType.HEAL, AbilityData(UiIconSprite.HEAL_ABILITY, 10, "W", pygame.K_w, Millis(15000)))
-    register_ui_icon_sprite_path(UiIconSprite.HEAL_ABILITY, "resources/heal_ability.png")
+    register_ui_icon_sprite_path(UiIconSprite.HEAL_ABILITY, "resources/graphics/heal_ability.png")
     register_buff_effect(BuffType.HEALING_OVER_TIME, HealingOverTime())
     register_buff_text(BuffType.HEALING_OVER_TIME, "Healing")

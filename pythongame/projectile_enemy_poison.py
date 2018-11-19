@@ -42,7 +42,7 @@ class DamageOverTime(AbstractBuff):
 def register_enemy_poison_projectile():
     register_projectile_controller(ProjectileType.ENEMY_POISON, EnemyPoisonProjectileController)
     register_entity_sprite_initializer(
-        Sprite.POISONBALL, SpriteInitializer("resources/poisonball.png", ENEMY_PROJECTILE_SIZE))
+        Sprite.POISONBALL, SpriteInitializer("resources/graphics/poisonball.png", ENEMY_PROJECTILE_SIZE))
     # TODO Should we create a new buff every time?
     register_buff_effect(BuffType.DAMAGE_OVER_TIME, DamageOverTime())
     register_buff_text(BuffType.DAMAGE_OVER_TIME, "Poison")

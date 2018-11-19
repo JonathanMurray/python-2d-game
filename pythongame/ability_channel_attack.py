@@ -62,9 +62,9 @@ def register_channel_attack_ability():
     register_ability_data(
         AbilityType.CHANNEL_ATTACK, AbilityData(UiIconSprite.MAGIC_MISSILE, 12, "R", pygame.K_r, Millis(8000)))
 
-    register_ui_icon_sprite_path(UiIconSprite.MAGIC_MISSILE, "resources/magic_missile.png")
+    register_ui_icon_sprite_path(UiIconSprite.MAGIC_MISSILE, "resources/graphics/magic_missile.png")
     register_buff_effect(BuffType.CHANNELING_MAGIC_MISSILES, ChannelingMagicMissiles())
     register_entity_sprite_initializer(
-        Sprite.MAGIC_MISSILE, SpriteInitializer("resources/magic_missile.png", MAGIC_MISSILE_PROJECTILE_SIZE))
+        Sprite.MAGIC_MISSILE, SpriteInitializer("resources/graphics/magic_missile.png", MAGIC_MISSILE_PROJECTILE_SIZE))
     register_projectile_controller(ProjectileType.PLAYER_MAGIC_MISSILE, PlayerMagicMissileProjectileController)
     register_buff_text(BuffType.CHANNELING_MAGIC_MISSILES, "Channeling")

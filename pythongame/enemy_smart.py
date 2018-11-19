@@ -50,5 +50,5 @@ def register_smart_enemy():
     size = (60, 60)
     register_enemy_data(EnemyType.SMART, EnemyData(Sprite.ENEMY_2, size, 9, 0.032))
     register_enemy_behavior(EnemyType.SMART, SmartEnemyMind)
-    register_entity_sprite_initializer(Sprite.ENEMY_2, SpriteInitializer("resources/enemy2.png", size))
+    register_entity_sprite_initializer(Sprite.ENEMY_2, SpriteInitializer("resources/graphics/enemy2.png", size))
     register_enemy_poison_projectile()
