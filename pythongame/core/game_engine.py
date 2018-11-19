@@ -97,6 +97,8 @@ class GameEngine:
         self.game_state.player_entity.update_movement_animation(time_passed)
         for e in self.game_state.enemies:
             e.world_entity.update_movement_animation(time_passed)
+        for projectile in self.game_state.projectile_entities:
+            projectile.world_entity.update_movement_animation(time_passed)
 
         for e in self.game_state.enemies:
             # Enemies shouldn't move towards player when they are out of sight

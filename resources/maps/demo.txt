@@ -7,14 +7,14 @@ X                               X
 X                               X
 X                               X
 X                               X
-X              P                X
+X       P                  B    X
+X                               X
+X                               X
+X                          B    X
 X                               X
 X                               X
 X                               X
-X                               X
-X                               X
-X                               X
-X                               X
+X                          B    X
 X                               X
 X                               X
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

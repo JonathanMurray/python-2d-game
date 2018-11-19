@@ -3,8 +3,8 @@ import sys
 import pygame
 
 from pythongame.ability_aoe_attack import register_aoe_attack_ability
-from pythongame.ability_attack import register_attack_ability
 from pythongame.ability_channel_attack import register_channel_attack_ability
+from pythongame.ability_fireball import register_fireball_ability
 from pythongame.ability_heal import register_heal_ability
 from pythongame.ability_teleport import register_teleport_ability
 from pythongame.core.common import Millis
@@ -27,7 +27,7 @@ from pythongame.core.view_state import ViewState
 SCREEN_SIZE = (700, 600)
 CAMERA_SIZE = (700, 400)
 
-register_attack_ability()
+register_fireball_ability()
 register_heal_ability()
 register_aoe_attack_ability()
 register_channel_attack_ability()
@@ -92,7 +92,7 @@ def main():
         #          RENDER EVERYTHING
         # ------------------------------------
 
-        view.render_everything(all_entities=game_state.get_all_entities_to_render(),
+        view.render_everything(all_entities_to_render=game_state.get_all_entities_to_render(),
                                player_entity=game_state.player_entity,
                                is_player_invisible=game_state.player_state.is_invisible,
                                camera_world_area=game_state.camera_world_area,

@@ -137,7 +137,7 @@ class View:
 
     def _world_ground(self):
         line_color = (190, 190, 200)
-        grid_width = 25
+        grid_width = 50
         # TODO num squares should depend on map size. Ideally this dumb looping logic should change.
         num_squares = 200
         for col in range(num_squares):
@@ -280,7 +280,7 @@ class View:
 
     def render_everything(
             self,
-            all_entities: List[Any],
+            all_entities_to_render: List[WorldEntity],
             player_entity: WorldEntity,
             is_player_invisible: bool,
             camera_world_area: WorldArea,
@@ -306,17 +306,17 @@ class View:
         self.screen.fill(COLOR_BACKGROUND)
         self._world_ground()
 
-        for entity in all_entities:
-            if entity != player_entity:
-                self._world_entity(entity)
-
         if is_player_invisible:
             self._world_rect((200, 100, 250), player_entity.rect(), 1)
         else:
             self._world_entity(player_entity)
 
+        for entity in all_entities_to_render:
+            if entity != player_entity:
+                self._world_entity(entity)
+
         if RENDER_HIT_AND_COLLISION_BOXES:
-            for entity in all_entities:
+            for entity in all_entities_to_render:
                 # hit box
                 self._world_rect((250, 250, 250), entity.rect(), 1)
                 # collision box

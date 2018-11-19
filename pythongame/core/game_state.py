@@ -204,7 +204,7 @@ class GameState:
         self.camera_size = camera_size
         self.camera_world_area = WorldArea((0, 0), self.camera_size)
         self.player_entity = player_entity
-        self.projectile_entities = []
+        self.projectile_entities: List[Projectile] = []
         self.potions_on_ground = potions_on_ground
         self.enemies = enemies
         self.walls = walls

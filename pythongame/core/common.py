@@ -124,7 +124,7 @@ class EnemyType(Enum):
 
 class AbilityType(Enum):
     HEAL = 1
-    ATTACK = 2
+    FIREBALL = 2
     AOE_ATTACK = 3
     CHANNEL_ATTACK = 4
     TELEPORT = 5
@@ -134,7 +134,7 @@ class Sprite(Enum):
     PLAYER = 1
     ENEMY = 2
     ENEMY_2 = 3
-    FIREBALL = 4
+    PROJECTILE_PLAYER_FIREBALL = 4
     WHIRLWIND = 5
     HEALTH_POTION = 6
     POISONBALL = 7
@@ -153,7 +153,7 @@ class BuffType(Enum):
 
 
 class ProjectileType(Enum):
-    PLAYER = 1
+    PLAYER_FIREBALL = 1
     PLAYER_AOE = 2
     ENEMY_POISON = 3
     PLAYER_MAGIC_MISSILE = 4
