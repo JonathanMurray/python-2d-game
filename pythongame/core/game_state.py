@@ -5,7 +5,7 @@ from pygame.rect import Rect
 
 from pythongame.core.common import *
 
-GRID_CELL_WIDTH = 50
+GRID_CELL_WIDTH = 25
 
 WALL_BUCKET_WIDTH = 100
 WALL_BUCKET_HEIGHT = 100
@@ -260,7 +260,6 @@ class GameState:
             new_pos_within_world = self.get_within_world(new_position, (entity.w, entity.h))
             if not self.would_entity_collide_if_new_pos(entity, new_pos_within_world):
                 entity.set_position(new_pos_within_world)
-
 
     # TODO Improve the interaction between functions in here
     def would_entity_collide_if_new_pos(self, entity, new_pos_within_world):

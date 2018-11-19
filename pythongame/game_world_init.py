@@ -16,11 +16,11 @@ def init_game_state_from_file(camera_size: Tuple[int, int]):
     player_pos = (0, 0)
     berserker_positions = []
     wall_positions = []
-    col_width = 50
-    row_height = 50
+    col_width = 25
+    row_height = 25
     max_col_index = 0
     max_row_index = 0
-    MAP_FILE = "resources/maps/pathfinding_test.txt"
+    MAP_FILE = "resources/maps/map.txt"
     #MAP_FILE = "resources/maps/load_test_10k_walls_160_enemies.txt"
     with open(MAP_FILE) as map_file:
         row_index = 0

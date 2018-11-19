@@ -2,7 +2,7 @@ from typing import Dict
 
 from pythongame.core.common import *
 
-WALL_SIZE = (50, 50)
+WALL_SIZE = (25, 25)
 
 
 class SpriteInitializer:
@@ -44,7 +44,7 @@ class EnemyData:
 ENEMIES: Dict[EnemyType, EnemyData] = {}
 
 ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, SpriteInitializer]] = {
-    Sprite.WALL: {Direction.DOWN: SpriteInitializer("resources/stone_tile.png", WALL_SIZE)}
+    Sprite.WALL: {Direction.DOWN: SpriteInitializer("resources/stone_tile.png", (WALL_SIZE[0] - 1, WALL_SIZE[1] - 1))}
 }
 
 UI_ICON_SPRITE_PATHS: Dict[UiIconSprite, str] = {}
