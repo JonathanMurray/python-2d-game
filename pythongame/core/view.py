@@ -1,12 +1,12 @@
-from typing import Dict, Any, Union, List
+from typing import Dict, Any, Union, List, Tuple, Optional
 
 import pygame
 
-from pythongame.core.common import Direction, Sprite
+from pythongame.core.common import Direction, Sprite, PotionType, AbilityType
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS, SpriteMapInitializer
-from pythongame.core.game_state import WorldEntity
-from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText
+from pythongame.core.game_state import WorldEntity, WorldArea, Enemy, Buff
+from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualEffect
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -229,7 +229,8 @@ class View:
         x, y = self._translate_ui_position_to_screen(position_in_ui)
         self._stat_bar(x, y, w, h, stat, max_stat, color, True)
 
-    def _potion_icon_in_ui(self, x_in_ui, y_in_ui, size, potion_number, potion_type, highlighted_potion_action):
+    def _potion_icon_in_ui(self, x_in_ui, y_in_ui, size, potion_number, potion_type: PotionType,
+                           highlighted_potion_action):
         w = size[0]
         h = size[1]
         x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
@@ -277,11 +278,28 @@ class View:
         dot_w = 4
         self._rect_filled((0, 200, 0), (dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
-    def render_everything(self, all_entities, player_entity, is_player_invisible, camera_world_area, enemies,
-                          player_health, player_max_health, player_mana, player_max_mana, potion_slots,
-                          player_active_buffs, visual_effects, fps_string,
-                          player_minimap_relative_position, abilities, message, highlighted_potion_action,
-                          highlighted_ability_action, is_paused, ability_cooldowns_remaining):
+    def render_everything(
+            self,
+            all_entities: List[Any],
+            player_entity: WorldEntity,
+            is_player_invisible: bool,
+            camera_world_area: WorldArea,
+            enemies: List[Enemy],
+            player_health: int,
+            player_max_health: int,
+            player_mana: int,
+            player_max_mana: int,
+            potion_slots: List[PotionType],
+            player_active_buffs: List[Buff],
+            visual_effects: List[VisualEffect],
+            fps_string: str,
+            player_minimap_relative_position: Tuple[float, float],
+            abilities: List[AbilityType],
+            message: str,
+            highlighted_potion_action: Optional[int],
+            highlighted_ability_action: Optional[AbilityType],
+            is_paused: bool,
+            ability_cooldowns_remaining: Dict[AbilityType, int]):
 
         self.camera_world_area = camera_world_area
 

@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Optional
 
 from pythongame.core.common import AbilityType, Millis
 
@@ -20,10 +20,10 @@ class ViewState:
         self._ticks_since_last_potion_action = 0
         self._ticks_since_last_ability_action = 0
 
-        self.player_minimap_relative_position = (0, 0)
+        self.player_minimap_relative_position: Tuple[float, float] = (0, 0)
         self.message = ""
-        self.highlighted_potion_action = None
-        self.highlighted_ability_action = None
+        self.highlighted_potion_action: Optional[int] = None
+        self.highlighted_ability_action: Optional[AbilityType] = None
 
     def notify_ability_was_clicked(self, ability_type: AbilityType):
         self.highlighted_ability_action = ability_type
