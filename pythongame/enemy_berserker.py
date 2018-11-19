@@ -1,7 +1,8 @@
-from pythongame.core.common import Millis, is_x_and_y_within_distance, EnemyType, Sprite
+from pythongame.core.common import Millis, is_x_and_y_within_distance, EnemyType, Sprite, Direction
 from pythongame.core.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
 from pythongame.core.enemy_pathfinding import EnemyPathfinder
-from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer, register_enemy_data, EnemyData
+from pythongame.core.game_data import register_enemy_data, \
+    EnemyData, SpriteMapInitializer, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, Enemy, WorldEntity
 from pythongame.core.visual_effects import VisualLine, create_visual_damage_text
 
@@ -57,15 +58,23 @@ class BerserkerEnemyMind(AbstractEnemyMind):
                     game_state.visual_effects.append(
                         VisualLine((220, 0, 0), enemy_position, player_center_pos, Millis(100), 3))
 
+
 def _move_in_dir(enemy_entity, direction):
     if direction:
         enemy_entity.set_moving_in_dir(direction)
     else:
         enemy_entity.set_not_moving()
 
+
 def register_berserker_enemy():
     size = (50, 50)
     register_enemy_data(EnemyType.BERSERKER, EnemyData(Sprite.ENEMY_BERSERKER, size, 5, 0.1))
     register_enemy_behavior(EnemyType.BERSERKER, BerserkerEnemyMind)
-    register_entity_sprite_initializer(
-        Sprite.ENEMY_BERSERKER, SpriteInitializer("resources/graphics/orc_berserker.png", size))
+    berserker_sprite_map_initializer = SpriteSheet("resources/graphics/skeleton_sprite_map.png")
+    initializers = {
+        Direction.DOWN: SpriteMapInitializer(berserker_sprite_map_initializer, (32, 48), (50, 50), (0, 0)),
+        Direction.LEFT: SpriteMapInitializer(berserker_sprite_map_initializer, (32, 48), (50, 50), (0, 1)),
+        Direction.RIGHT: SpriteMapInitializer(berserker_sprite_map_initializer, (32, 48), (50, 50), (0, 2)),
+        Direction.UP: SpriteMapInitializer(berserker_sprite_map_initializer, (32, 48), (50, 50), (0, 3))
+    }
+    register_entity_sprite_map(Sprite.ENEMY_BERSERKER, initializers)

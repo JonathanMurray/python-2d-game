@@ -1,4 +1,7 @@
-from typing import Dict
+from typing import Dict, Union
+
+# We should probably not load image files in here!
+import pygame
 
 from pythongame.core.common import *
 
@@ -9,6 +12,36 @@ class SpriteInitializer:
     def __init__(self, image_file_path: str, scaling_size: Tuple[int, int]):
         self.image_file_path = image_file_path
         self.scaling_size = scaling_size
+
+
+class SpriteSheet(object):
+    def __init__(self, file_path: str):
+        self.file_path = file_path
+        self.sheet = None
+
+    def _load_sheet(self):
+        self.sheet = pygame.image.load(self.file_path).convert_alpha()
+
+    def image_at(self, rectangle: Tuple[int, int, int, int]):
+        if self.sheet is None:
+            self._load_sheet()
+
+        rect = pygame.Rect(rectangle)
+        image = pygame.Surface(rect.size).convert()
+        destination_in_image = (0, 0)
+        image.blit(self.sheet, destination_in_image, rect)
+        transparent_color_in_image = (0, 0, 0)
+        image.set_colorkey(transparent_color_in_image, pygame.RLEACCEL)
+        return image
+
+
+class SpriteMapInitializer:
+    def __init__(self, sprite_sheet: SpriteSheet, original_sprite_size: Tuple[int, int], scaling_size: Tuple[int, int],
+                 index_position_within_map: Tuple[int, int]):
+        self.sprite_sheet = sprite_sheet
+        self.original_sprite_size = original_sprite_size
+        self.scaling_size = scaling_size
+        self.index_position_within_map = index_position_within_map
 
 
 # TODO Ideally this shouldn't need to be defined here
@@ -43,8 +76,10 @@ class EnemyData:
 
 ENEMIES: Dict[EnemyType, EnemyData] = {}
 
-ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, SpriteInitializer]] = {
-    Sprite.WALL: {Direction.DOWN: SpriteInitializer("resources/graphics/stone_tile.png", (WALL_SIZE[0] - 1, WALL_SIZE[1] - 1))}
+ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Union[SpriteInitializer, SpriteMapInitializer]]] = {
+    Sprite.WALL: {
+        Direction.DOWN: SpriteInitializer("resources/graphics/stone_tile.png", (WALL_SIZE[0] - 1, WALL_SIZE[1] - 1))
+    }
 }
 
 UI_ICON_SPRITE_PATHS: Dict[UiIconSprite, str] = {}
@@ -74,6 +109,12 @@ def register_entity_sprite_initializer(sprite: Sprite, initializer: SpriteInitia
 
 
 def register_directional_entity_sprite_initializers(sprite: Sprite, initializers: Dict[Direction, SpriteInitializer]):
+    ENTITY_SPRITE_INITIALIZERS[sprite] = {}
+    for direction in initializers:
+        ENTITY_SPRITE_INITIALIZERS[sprite][direction] = initializers[direction]
+
+
+def register_entity_sprite_map(sprite: Sprite, initializers: Dict[Direction, SpriteMapInitializer]):
     ENTITY_SPRITE_INITIALIZERS[sprite] = {}
     for direction in initializers:
         ENTITY_SPRITE_INITIALIZERS[sprite][direction] = initializers[direction]

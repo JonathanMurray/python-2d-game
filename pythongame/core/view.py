@@ -1,10 +1,10 @@
-from typing import Dict, Any
+from typing import Dict, Any, Union
 
 import pygame
 
 from pythongame.core.common import Direction, Sprite
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
-    POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS
+    POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS, SpriteMapInitializer
 from pythongame.core.game_state import WorldEntity
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText
 
@@ -36,12 +36,26 @@ def load_and_scale_sprite(sprite_initializer: SpriteInitializer):
     return pygame.transform.scale(image, sprite_initializer.scaling_size)
 
 
-def load_and_scale_directional_sprites(sprite_initializers_by_dir: Dict[Direction, SpriteInitializer]):
+def load_and_scale_directional_sprites(
+        sprite_initializers_by_dir: Dict[Direction, Union[SpriteMapInitializer, SpriteInitializer]]):
     images = {}
     for direction in sprite_initializers_by_dir:
         sprite_initializer = sprite_initializers_by_dir[direction]
-        image = pygame.image.load(sprite_initializer.image_file_path).convert_alpha()
-        images[direction] = pygame.transform.scale(image, sprite_initializer.scaling_size)
+        if isinstance(sprite_initializer, SpriteInitializer):
+            image = pygame.image.load(sprite_initializer.image_file_path).convert_alpha()
+            images[direction] = pygame.transform.scale(image, sprite_initializer.scaling_size)
+        elif isinstance(sprite_initializer, SpriteMapInitializer):
+            sprite_sheet = sprite_initializer.sprite_sheet
+            index_position_within_map = sprite_initializer.index_position_within_map
+            original_sprite_size = sprite_initializer.original_sprite_size
+            rectangle = (index_position_within_map[0] * original_sprite_size[0],
+                         index_position_within_map[1] * original_sprite_size[1],
+                         original_sprite_size[0],
+                         original_sprite_size[1])
+            image = sprite_sheet.image_at(rectangle)
+            images[direction] = pygame.transform.scale(image, sprite_initializer.scaling_size)
+        else:
+            raise Exception("Unhandled: " + str(sprite_initializer))
     return images
 
 
