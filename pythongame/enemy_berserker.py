@@ -2,7 +2,7 @@ from pythongame.core.common import Millis, is_x_and_y_within_distance, EnemyType
 from pythongame.core.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
 from pythongame.core.enemy_pathfinding import EnemyPathfinder
 from pythongame.core.game_data import register_enemy_data, \
-    EnemyData, SpriteMapInitializer, SpriteSheet, register_entity_sprite_map
+    EnemyData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, Enemy, WorldEntity
 from pythongame.core.visual_effects import VisualLine, create_visual_damage_text
 
@@ -70,11 +70,14 @@ def register_berserker_enemy():
     size = (50, 50)
     register_enemy_data(EnemyType.BERSERKER, EnemyData(Sprite.ENEMY_BERSERKER, size, 5, 0.1))
     register_enemy_behavior(EnemyType.BERSERKER, BerserkerEnemyMind)
-    berserker_sprite_map_initializer = SpriteSheet("resources/graphics/skeleton_sprite_map.png")
-    initializers = {
-        Direction.DOWN: SpriteMapInitializer(berserker_sprite_map_initializer, (32, 48), (50, 50), (0, 0)),
-        Direction.LEFT: SpriteMapInitializer(berserker_sprite_map_initializer, (32, 48), (50, 50), (0, 1)),
-        Direction.RIGHT: SpriteMapInitializer(berserker_sprite_map_initializer, (32, 48), (50, 50), (0, 2)),
-        Direction.UP: SpriteMapInitializer(berserker_sprite_map_initializer, (32, 48), (50, 50), (0, 3))
+    berserker_sprite_sheet = SpriteSheet("resources/graphics/skeleton_sprite_map.png")
+    original_sprite_size = (32, 48)
+    scaled_sprite_size = (50, 50)
+    indices_by_dir = {
+        Direction.DOWN: [(0, 0), (1, 0), (2, 0), (3, 0)],
+        Direction.LEFT: [(0, 1), (1, 1), (2, 1), (3, 1)],
+        Direction.RIGHT: [(0, 2), (1, 2), (2, 2), (3, 2)],
+        Direction.UP: [(0, 3), (1, 3), (2, 3), (3, 3)]
     }
-    register_entity_sprite_map(Sprite.ENEMY_BERSERKER, initializers)
+    register_entity_sprite_map(Sprite.ENEMY_BERSERKER, berserker_sprite_sheet, original_sprite_size,
+                               scaled_sprite_size, indices_by_dir)

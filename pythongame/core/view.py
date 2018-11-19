@@ -1,4 +1,5 @@
-from typing import Dict, Any, Union
+import random
+from typing import Dict, Any, Union, List
 
 import pygame
 
@@ -37,23 +38,27 @@ def load_and_scale_sprite(sprite_initializer: SpriteInitializer):
 
 
 def load_and_scale_directional_sprites(
-        sprite_initializers_by_dir: Dict[Direction, Union[SpriteMapInitializer, SpriteInitializer]]):
+        sprite_initializers_by_dir: Dict[Direction, Union[SpriteInitializer, List[SpriteMapInitializer]]]) \
+        -> Dict[Direction, Any]:
     images = {}
     for direction in sprite_initializers_by_dir:
         sprite_initializer = sprite_initializers_by_dir[direction]
         if isinstance(sprite_initializer, SpriteInitializer):
             image = pygame.image.load(sprite_initializer.image_file_path).convert_alpha()
             images[direction] = pygame.transform.scale(image, sprite_initializer.scaling_size)
-        elif isinstance(sprite_initializer, SpriteMapInitializer):
-            sprite_sheet = sprite_initializer.sprite_sheet
-            index_position_within_map = sprite_initializer.index_position_within_map
-            original_sprite_size = sprite_initializer.original_sprite_size
-            rectangle = (index_position_within_map[0] * original_sprite_size[0],
-                         index_position_within_map[1] * original_sprite_size[1],
-                         original_sprite_size[0],
-                         original_sprite_size[1])
-            image = sprite_sheet.image_at(rectangle)
-            images[direction] = pygame.transform.scale(image, sprite_initializer.scaling_size)
+        elif isinstance(sprite_initializer, List):
+            images_for_dir = []
+            for sprite_init in sprite_initializer:
+                sprite_sheet = sprite_init.sprite_sheet
+                index_position_within_map = sprite_init.index_position_within_map
+                original_sprite_size = sprite_init.original_sprite_size
+                rectangle = (index_position_within_map[0] * original_sprite_size[0],
+                             index_position_within_map[1] * original_sprite_size[1],
+                             original_sprite_size[0],
+                             original_sprite_size[1])
+                image = sprite_sheet.image_at(rectangle)
+                images_for_dir.append(pygame.transform.scale(image, sprite_init.scaling_size))
+            images[direction] = images_for_dir
         else:
             raise Exception("Unhandled: " + str(sprite_initializer))
     return images
@@ -166,18 +171,19 @@ class View:
         if entity.sprite is None:
             raise Exception("Entity has no sprite: " + str(entity))
         elif entity.sprite in self.images_by_sprite:
-            images = self.images_by_sprite[entity.sprite]
+            images: Dict[Direction, Any] = self.images_by_sprite[entity.sprite]
             image = self._get_image_from_direction(images, entity.direction)
             pos = self._translate_world_position_to_screen((entity.x, entity.y))
             self._image(image, pos)
         else:
             raise Exception("Unhandled sprite: " + str(entity.sprite))
 
-    def _get_image_from_direction(self, images, direction):
-        if direction in images:
-            return images[direction]
-        else:
-            return next(iter(images.values()))
+    def _get_image_from_direction(self, images: Dict[Direction, Any], direction: Direction):
+        # TODO Improve how this is handled. Should be more clear if it's a list or not
+        for_this_dir = images[direction] if direction in images else next(iter(images.values()))
+        if isinstance(for_this_dir, List):
+            return random.choice(for_this_dir)
+        return for_this_dir
 
     def _visual_effect(self, visual_effect):
         if isinstance(visual_effect, VisualLine):

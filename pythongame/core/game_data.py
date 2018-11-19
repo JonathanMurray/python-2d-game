@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Dict, Union, List
 
 # We should probably not load image files in here!
 import pygame
@@ -76,7 +76,7 @@ class EnemyData:
 
 ENEMIES: Dict[EnemyType, EnemyData] = {}
 
-ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Union[SpriteInitializer, SpriteMapInitializer]]] = {
+ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Union[SpriteInitializer, List[SpriteMapInitializer]]]] = {
     Sprite.WALL: {
         Direction.DOWN: SpriteInitializer("resources/graphics/stone_tile.png", (WALL_SIZE[0] - 1, WALL_SIZE[1] - 1))
     }
@@ -108,15 +108,21 @@ def register_entity_sprite_initializer(sprite: Sprite, initializer: SpriteInitia
     ENTITY_SPRITE_INITIALIZERS[sprite] = {Direction.DOWN: initializer}
 
 
-def register_directional_entity_sprite_initializers(sprite: Sprite, initializers: Dict[Direction, SpriteInitializer]):
+def register_entity_sprite_map(
+        sprite: Sprite,
+        sprite_sheet: SpriteSheet,
+        original_sprite_size: Tuple[int, int],
+        scaled_sprite_size: Tuple[int, int],
+        indices_by_dir: Dict[Direction, List[Tuple[int, int]]]):
+    initializers = {
+        direction: [SpriteMapInitializer(sprite_sheet, original_sprite_size, scaled_sprite_size, index)
+                    for index in indices_by_dir[direction]]
+        for direction in indices_by_dir
+    }
     ENTITY_SPRITE_INITIALIZERS[sprite] = {}
     for direction in initializers:
-        ENTITY_SPRITE_INITIALIZERS[sprite][direction] = initializers[direction]
-
-
-def register_entity_sprite_map(sprite: Sprite, initializers: Dict[Direction, SpriteMapInitializer]):
-    ENTITY_SPRITE_INITIALIZERS[sprite] = {}
-    for direction in initializers:
+        if len(initializers[direction]) == 0:
+            raise Exception("Invalid input: " + str(initializers))
         ENTITY_SPRITE_INITIALIZERS[sprite][direction] = initializers[direction]
 
 
