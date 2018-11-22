@@ -37,17 +37,19 @@ def load_and_scale_sprite(sprite_initializer: SpriteInitializer):
 
 
 def load_and_scale_directional_sprites(
-        sprite_initializers_by_dir: Dict[Direction, Union[SpriteInitializer, List[SpriteMapInitializer]]]) \
-        -> Dict[Direction, Any]:
-    images = {}
+        sprite_initializers_by_dir: Dict[Direction, List[Union[SpriteInitializer, SpriteMapInitializer]]]) \
+        -> Dict[Direction, List[Any]]:
+    images: Dict[Direction, List[Any]] = {}
     for direction in sprite_initializers_by_dir:
-        sprite_initializer = sprite_initializers_by_dir[direction]
-        if isinstance(sprite_initializer, SpriteInitializer):
-            image = pygame.image.load(sprite_initializer.image_file_path).convert_alpha()
-            images[direction] = pygame.transform.scale(image, sprite_initializer.scaling_size)
-        elif isinstance(sprite_initializer, List):
-            images_for_dir = []
-            for sprite_init in sprite_initializer:
+        sprite_initializers = sprite_initializers_by_dir[direction]
+        images_for_dir = []
+        for sprite_init in sprite_initializers:
+            if isinstance(sprite_init, SpriteInitializer):
+                sprite_init: SpriteInitializer = sprite_init
+                image = pygame.image.load(sprite_init.image_file_path).convert_alpha()
+                images_for_dir.append(pygame.transform.scale(image, sprite_init.scaling_size))
+            elif isinstance(sprite_init, SpriteMapInitializer):
+                sprite_init: SpriteMapInitializer = sprite_init
                 sprite_sheet = sprite_init.sprite_sheet
                 index_position_within_map = sprite_init.index_position_within_map
                 original_sprite_size = sprite_init.original_sprite_size
@@ -57,9 +59,9 @@ def load_and_scale_directional_sprites(
                              original_sprite_size[1])
                 image = sprite_sheet.image_at(rectangle)
                 images_for_dir.append(pygame.transform.scale(image, sprite_init.scaling_size))
-            images[direction] = images_for_dir
-        else:
-            raise Exception("Unhandled: " + str(sprite_initializer))
+            else:
+                raise Exception("Unhandled: " + str(sprite_init))
+        images[direction] = images_for_dir
     return images
 
 
@@ -75,7 +77,7 @@ class View:
         self.font_large = pygame.font.SysFont('Arial', 22)
         self.font_small = pygame.font.Font(None, 25)
         self.font_tiny = pygame.font.Font(None, 19)
-        self.images_by_sprite: Dict[Sprite, Dict[Direction, Any]] = {
+        self.images_by_sprite: Dict[Sprite, Dict[Direction, List[Any]]] = {
             sprite: load_and_scale_directional_sprites(ENTITY_SPRITE_INITIALIZERS[sprite])
             for sprite in ENTITY_SPRITE_INITIALIZERS
         }
@@ -170,20 +172,18 @@ class View:
         if entity.sprite is None:
             raise Exception("Entity has no sprite: " + str(entity))
         elif entity.sprite in self.images_by_sprite:
-            images: Dict[Direction, Any] = self.images_by_sprite[entity.sprite]
+            images: Dict[Direction, List[Any]] = self.images_by_sprite[entity.sprite]
             image = self._get_image_from_direction(images, entity.direction, entity.movement_animation_progress)
             pos = self._translate_world_position_to_screen((entity.x, entity.y))
             self._image(image, pos)
         else:
             raise Exception("Unhandled sprite: " + str(entity.sprite))
 
-    def _get_image_from_direction(self, images: Dict[Direction, Any], direction: Direction, animation_progress: float):
-        # TODO Improve how this is handled. Should be more clear if it's a list or not
-        for_this_dir = images[direction] if direction in images else next(iter(images.values()))
-        if isinstance(for_this_dir, List):
-            animation_frame_index = int(len(for_this_dir) * animation_progress)
-            return for_this_dir[animation_frame_index]
-        return for_this_dir
+    def _get_image_from_direction(self, images: Dict[Direction, List[Any]], direction: Direction,
+                                  animation_progress: float):
+        for_this_dir: List[Any] = images[direction] if direction in images else next(iter(images.values()))
+        animation_frame_index = int(len(for_this_dir) * animation_progress)
+        return for_this_dir[animation_frame_index]
 
     def _visual_effect(self, visual_effect):
         if isinstance(visual_effect, VisualLine):

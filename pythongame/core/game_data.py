@@ -76,9 +76,9 @@ class EnemyData:
 
 ENEMIES: Dict[EnemyType, EnemyData] = {}
 
-ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Union[SpriteInitializer, List[SpriteMapInitializer]]]] = {
+ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, List[Union[SpriteInitializer, SpriteMapInitializer]]]] = {
     Sprite.WALL: {
-        Direction.DOWN: SpriteInitializer("resources/graphics/stone_tile.png", (WALL_SIZE[0] - 1, WALL_SIZE[1] - 1))
+        Direction.DOWN: [SpriteInitializer("resources/graphics/stone_tile.png", (WALL_SIZE[0] - 1, WALL_SIZE[1] - 1))]
     }
 }
 
@@ -103,9 +103,9 @@ def register_ui_icon_sprite_path(sprite: UiIconSprite, file_path: str):
     UI_ICON_SPRITE_PATHS[sprite] = file_path
 
 
+# Deprecated
 def register_entity_sprite_initializer(sprite: Sprite, initializer: SpriteInitializer):
-    # TODO Support different sprites for different directions
-    ENTITY_SPRITE_INITIALIZERS[sprite] = {Direction.DOWN: initializer}
+    ENTITY_SPRITE_INITIALIZERS[sprite] = {Direction.DOWN: [initializer]}
 
 
 def register_entity_sprite_map(
