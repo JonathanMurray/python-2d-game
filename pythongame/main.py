@@ -12,6 +12,7 @@ from pythongame.enemy_berserker import register_berserker_enemy
 from pythongame.enemy_dumb import register_dumb_enemy
 from pythongame.enemy_mage import register_mage_enemy
 from pythongame.enemy_rat_1 import register_rat_1_enemy
+from pythongame.enemy_rat_2 import register_rat_2_enemy
 from pythongame.enemy_smart import register_smart_enemy
 from pythongame.core.game_engine import GameEngine
 from pythongame.game_world_init import init_game_state_from_file
@@ -43,6 +44,7 @@ register_mage_enemy()
 register_berserker_enemy()
 register_player_data()
 register_rat_1_enemy()
+register_rat_2_enemy()
 
 
 def main():
