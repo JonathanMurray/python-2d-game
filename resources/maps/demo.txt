@@ -1,20 +1,20 @@
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 X                               X
+X                    R          X
 X                               X
 X                               X
 X                               X
 X                               X
 X                               X
 X                               X
-X                               X
-X       P                  B    X
-X                               X
-X                               X
-X                          B    X
+X       P                  R    X
 X                               X
 X                               X
+X                             R X
 X                               X
-X                          B    X
+X                               X
+X                     R         X
+X                               X
 X                               X
 X                               X
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

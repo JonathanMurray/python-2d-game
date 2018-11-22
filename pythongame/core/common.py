@@ -120,6 +120,7 @@ class EnemyType(Enum):
     SMART = 2
     MAGE = 3
     BERSERKER = 4
+    RAT_1 = 5
 
 
 class AbilityType(Enum):
@@ -142,6 +143,7 @@ class Sprite(Enum):
     ENEMY_BERSERKER = 9
     MAGIC_MISSILE = 10
     WALL = 11
+    RAT_1 = 12
 
 
 class BuffType(Enum):

@@ -16,6 +16,7 @@ def init_game_state_from_file(camera_size: Tuple[int, int]):
     player_pos = (0, 0)
     berserker_positions = []
     wall_positions = []
+    rat_1_positions = []
     col_width = 25
     row_height = 25
     max_col_index = 0
@@ -41,6 +42,8 @@ def init_game_state_from_file(camera_size: Tuple[int, int]):
                     potion_positions.append(game_world_pos)
                 if char == 'B':
                     berserker_positions.append(game_world_pos)
+                if char == 'R':
+                    rat_1_positions.append(game_world_pos)
                 if char == 'X':
                     wall_positions.append(game_world_pos)
                 col_index += 1
@@ -55,8 +58,9 @@ def init_game_state_from_file(camera_size: Tuple[int, int]):
     smart_enemies = [_create_enemy_at_position(EnemyType.SMART, pos) for pos in smart_enemy_positions]
     mage_enemies = [_create_enemy_at_position(EnemyType.MAGE, pos) for pos in mage_enemy_positions]
     berserker_enemies = [_create_enemy_at_position(EnemyType.BERSERKER, pos) for pos in berserker_positions]
+    rat_1_enemies = [_create_enemy_at_position(EnemyType.RAT_1, pos) for pos in rat_1_positions]
     walls = [WorldEntity(pos, WALL_SIZE, Sprite.WALL) for pos in wall_positions]
-    enemies = dumb_enemies + smart_enemies + mage_enemies + berserker_enemies
+    enemies = dumb_enemies + smart_enemies + mage_enemies + berserker_enemies + rat_1_enemies
 
     game_world_size = (max_col_index * col_width, max_row_index * row_height)
     return GameState(player_entity, potions, enemies, walls, camera_size, game_world_size, INTIAL_PLAYER_STATE)

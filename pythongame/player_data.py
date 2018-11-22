@@ -14,7 +14,10 @@ _player_potion_slots = {
 
 _abilities = [AbilityType.FIREBALL, AbilityType.HEAL, AbilityType.AOE_ATTACK, AbilityType.CHANNEL_ATTACK,
               AbilityType.TELEPORT]
-INTIAL_PLAYER_STATE = PlayerState(300, 300, 90, 100, 0.002, _player_potion_slots, _abilities)
+health = 50
+mana = 100
+mana_regen = 0.002
+INTIAL_PLAYER_STATE = PlayerState(health, health, mana, mana, mana_regen, _player_potion_slots, _abilities)
 
 
 def register_player_data():
