@@ -1,10 +1,10 @@
-from typing import Dict, Any, Union, List, Tuple, Optional
+from typing import Dict, Any, List, Tuple, Optional
 
 import pygame
 
 from pythongame.core.common import Direction, Sprite, PotionType, AbilityType
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
-    POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS, SpriteMapInitializer
+    POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS, Animation
 from pythongame.core.game_state import WorldEntity, WorldArea, Enemy, Buff
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualEffect
 
@@ -37,30 +37,30 @@ def load_and_scale_sprite(sprite_initializer: SpriteInitializer):
 
 
 def load_and_scale_directional_sprites(
-        sprite_initializers_by_dir: Dict[Direction, List[Union[SpriteInitializer, SpriteMapInitializer]]]) \
+        animations_by_dir: Dict[Direction, Animation]) \
         -> Dict[Direction, List[Any]]:
     images: Dict[Direction, List[Any]] = {}
-    for direction in sprite_initializers_by_dir:
-        sprite_initializers = sprite_initializers_by_dir[direction]
+    for direction in animations_by_dir:
+        animation = animations_by_dir[direction]
         images_for_dir = []
-        for sprite_init in sprite_initializers:
-            if isinstance(sprite_init, SpriteInitializer):
+        if animation.sprite_initializers:
+            for sprite_init in animation.sprite_initializers:
                 sprite_init: SpriteInitializer = sprite_init
                 image = pygame.image.load(sprite_init.image_file_path).convert_alpha()
                 images_for_dir.append(pygame.transform.scale(image, sprite_init.scaling_size))
-            elif isinstance(sprite_init, SpriteMapInitializer):
-                sprite_init: SpriteMapInitializer = sprite_init
-                sprite_sheet = sprite_init.sprite_sheet
-                index_position_within_map = sprite_init.index_position_within_map
-                original_sprite_size = sprite_init.original_sprite_size
+        elif animation.sprite_map_initializers:
+            for sprite_map_init in animation.sprite_map_initializers:
+                sprite_sheet = sprite_map_init.sprite_sheet
+                index_position_within_map = sprite_map_init.index_position_within_map
+                original_sprite_size = sprite_map_init.original_sprite_size
                 rectangle = (index_position_within_map[0] * original_sprite_size[0],
                              index_position_within_map[1] * original_sprite_size[1],
                              original_sprite_size[0],
                              original_sprite_size[1])
                 image = sprite_sheet.image_at(rectangle)
-                images_for_dir.append(pygame.transform.scale(image, sprite_init.scaling_size))
-            else:
-                raise Exception("Unhandled: " + str(sprite_init))
+                images_for_dir.append(pygame.transform.scale(image, sprite_map_init.scaling_size))
+        else:
+            raise Exception("Invalid animation: " + str(animation))
         images[direction] = images_for_dir
     return images
 
