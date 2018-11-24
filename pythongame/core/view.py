@@ -1,12 +1,12 @@
-from typing import Dict, Any, List, Tuple, Optional
+from typing import Dict, Any, List, Tuple
 
 import pygame
 
-from pythongame.core.common import Direction, Sprite, PotionType, AbilityType, sum_of_vectors
+from pythongame.core.common import Direction, Sprite, PotionType, sum_of_vectors
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS, Animation
-from pythongame.core.game_state import WorldEntity, WorldArea, Enemy, Buff
-from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualEffect
+from pythongame.core.game_state import WorldEntity
+from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -292,29 +292,8 @@ class View:
         dot_w = 4
         self._rect_filled((0, 200, 0), (dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
-    def render_everything(
-            self,
-            all_entities_to_render: List[WorldEntity],
-            player_entity: WorldEntity,
-            is_player_invisible: bool,
-            camera_world_area: WorldArea,
-            enemies: List[Enemy],
-            player_health: int,
-            player_max_health: int,
-            player_mana: int,
-            player_max_mana: int,
-            potion_slots: List[PotionType],
-            player_active_buffs: List[Buff],
-            visual_effects: List[VisualEffect],
-            fps_string: str,
-            player_minimap_relative_position: Tuple[float, float],
-            abilities: List[AbilityType],
-            message: str,
-            highlighted_potion_action: Optional[int],
-            highlighted_ability_action: Optional[AbilityType],
-            is_paused: bool,
-            ability_cooldowns_remaining: Dict[AbilityType, int]):
-
+    def render_world(self, all_entities_to_render, camera_world_area, enemies, is_player_invisible, player_entity,
+                     visual_effects):
         self.camera_world_area = camera_world_area
 
         self.screen.fill(COLOR_BACKGROUND)
@@ -338,6 +317,13 @@ class View:
 
         for enemy in enemies:
             self._stat_bar_for_world_entity(enemy.world_entity, 5, enemy.health, enemy.max_health, COLOR_RED)
+        for visual_effect in visual_effects:
+            self._visual_effect(visual_effect)
+
+    def render_ui(self, fps_string, is_paused, abilities, ability_cooldowns_remaining,
+                  highlighted_ability_action, highlighted_potion_action, message, player_active_buffs,
+                  player_health, player_mana, player_max_health, player_max_mana,
+                  player_minimap_relative_position, potion_slots):
 
         self._rect(COLOR_BLACK, (0, 0, self.camera_size[0], self.camera_size[1]), 3)
         self._rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
@@ -398,7 +384,5 @@ class View:
         if is_paused:
             self._text(self.font_huge, "PAUSED", (self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50))
 
-        for visual_effect in visual_effects:
-            self._visual_effect(visual_effect)
-
+    def update_display(self):
         pygame.display.update()

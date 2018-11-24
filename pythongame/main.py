@@ -8,23 +8,23 @@ from pythongame.ability_fireball import register_fireball_ability
 from pythongame.ability_heal import register_heal_ability
 from pythongame.ability_teleport import register_teleport_ability
 from pythongame.core.common import Millis
+from pythongame.core.game_engine import GameEngine
+from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
+    ActionMoveInDirection, ActionStopMoving, ActionPauseGame
+from pythongame.core.view import View
+from pythongame.core.view_state import ViewState
 from pythongame.enemy_berserker import register_berserker_enemy
 from pythongame.enemy_dumb import register_dumb_enemy
 from pythongame.enemy_mage import register_mage_enemy
 from pythongame.enemy_rat_1 import register_rat_1_enemy
 from pythongame.enemy_rat_2 import register_rat_2_enemy
 from pythongame.enemy_smart import register_smart_enemy
-from pythongame.core.game_engine import GameEngine
 from pythongame.game_world_init import init_game_state_from_file
 from pythongame.player_data import register_player_data
 from pythongame.potion_health import register_health_potion
 from pythongame.potion_invis import register_invis_potion
 from pythongame.potion_mana import register_mana_potion
 from pythongame.potion_speed import register_speed_potion
-from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
-    ActionMoveInDirection, ActionStopMoving, ActionPauseGame
-from pythongame.core.view import View
-from pythongame.core.view_state import ViewState
 
 SCREEN_SIZE = (700, 600)
 CAMERA_SIZE = (700, 400)
@@ -96,26 +96,31 @@ def main():
         #          RENDER EVERYTHING
         # ------------------------------------
 
-        view.render_everything(all_entities_to_render=game_state.get_all_entities_to_render(),
-                               player_entity=game_state.player_entity,
-                               is_player_invisible=game_state.player_state.is_invisible,
-                               camera_world_area=game_state.camera_world_area,
-                               enemies=game_state.enemies,
-                               player_health=game_state.player_state.health,
-                               player_max_health=game_state.player_state.max_health,
-                               player_mana=game_state.player_state.mana,
-                               player_max_mana=game_state.player_state.max_mana,
-                               potion_slots=game_state.player_state.potion_slots,
-                               player_active_buffs=game_state.player_state.active_buffs,
-                               visual_effects=game_state.visual_effects,
-                               fps_string=str(int(clock.get_fps())),
-                               player_minimap_relative_position=view_state.player_minimap_relative_position,
-                               abilities=game_state.player_state.abilities,
-                               message=view_state.message,
-                               highlighted_potion_action=view_state.highlighted_potion_action,
-                               highlighted_ability_action=view_state.highlighted_ability_action,
-                               is_paused=is_paused,
-                               ability_cooldowns_remaining=game_state.player_state.ability_cooldowns_remaining)
+        view.render_world(
+            all_entities_to_render=game_state.get_all_entities_to_render(),
+            player_entity=game_state.player_entity,
+            is_player_invisible=game_state.player_state.is_invisible,
+            camera_world_area=game_state.camera_world_area,
+            enemies=game_state.enemies,
+            visual_effects=game_state.visual_effects)
+
+        view.render_ui(
+            player_health=game_state.player_state.health,
+            player_max_health=game_state.player_state.max_health,
+            player_mana=game_state.player_state.mana,
+            player_max_mana=game_state.player_state.max_mana,
+            potion_slots=game_state.player_state.potion_slots,
+            player_active_buffs=game_state.player_state.active_buffs,
+            fps_string=str(int(clock.get_fps())),
+            player_minimap_relative_position=view_state.player_minimap_relative_position,
+            abilities=game_state.player_state.abilities,
+            message=view_state.message,
+            highlighted_potion_action=view_state.highlighted_potion_action,
+            highlighted_ability_action=view_state.highlighted_ability_action,
+            is_paused=is_paused,
+            ability_cooldowns_remaining=game_state.player_state.ability_cooldowns_remaining)
+
+        view.update_display()
 
 
 if __name__ == "__main__":
