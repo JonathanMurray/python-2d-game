@@ -1,14 +1,14 @@
 from pythongame.core.common import *
 from pythongame.core.enemy_behavior import create_enemy_mind
 from pythongame.core.game_data import WALL_SIZE, ENEMIES
+from pythongame.core.game_state import WorldEntity, Enemy, GameState, PotionOnGround
 from pythongame.player_data import PLAYER_ENTITY_SIZE, INTIAL_PLAYER_STATE
-from pythongame.core.game_state import WorldEntity, Enemy, GameState, PotionOnGround, PlayerState
 from pythongame.potion_health import POTION_ENTITY_SIZE
 
 PLAYER_ENTITY_SPEED = 0.13
 
 
-def init_game_state_from_file(camera_size: Tuple[int, int]):
+def init_game_state_from_file(camera_size: Tuple[int, int], map_file: str):
     dumb_enemy_positions = []
     smart_enemy_positions = []
     mage_enemy_positions = []
@@ -22,10 +22,7 @@ def init_game_state_from_file(camera_size: Tuple[int, int]):
     row_height = 25
     max_col_index = 0
     max_row_index = 0
-    #MAP_FILE = "resources/maps/map.txt"
-    #MAP_FILE = "resources/maps/load_test_10k_walls_160_enemies.txt"
-    MAP_FILE = "resources/maps/demo.txt"
-    with open(MAP_FILE) as map_file:
+    with open(map_file) as map_file:
         row_index = 0
         for line in map_file:
             col_index = 0

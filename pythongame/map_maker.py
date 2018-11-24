@@ -44,7 +44,7 @@ register_rat_2_enemy()
 
 
 def main():
-    game_state = init_game_state_from_file(CAMERA_SIZE)
+    game_state = init_game_state_from_file(CAMERA_SIZE, "resources/maps/demo.txt")
     pygame.init()
 
     view = View(CAMERA_SIZE, SCREEN_SIZE)
