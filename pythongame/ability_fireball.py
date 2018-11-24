@@ -40,8 +40,8 @@ def _apply_ability(game_state: GameState):
     projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER_FIREBALL))
     game_state.projectile_entities.append(projectile)
     effect_circle_radius = 18
-    effect_position = (projectile_pos[0] +  PROJECTILE_SIZE[0] // 2,
-                       projectile_pos[1] +  PROJECTILE_SIZE[1] // 2)
+    effect_position = (projectile_pos[0] + PROJECTILE_SIZE[0] // 2,
+                       projectile_pos[1] + PROJECTILE_SIZE[1] // 2)
     game_state.visual_effects.append(VisualCircle((250, 150, 50), effect_position, effect_circle_radius,
                                                   Millis(80), 0))
 
@@ -62,4 +62,4 @@ def register_fireball_ability():
         Direction.DOWN: [(x, 6) for x in range(8)]
     }
     register_entity_sprite_map(Sprite.PROJECTILE_PLAYER_FIREBALL, sprite_sheet, original_sprite_size, PROJECTILE_SIZE,
-                               indices_by_dir)
+                               indices_by_dir, (0, 0))

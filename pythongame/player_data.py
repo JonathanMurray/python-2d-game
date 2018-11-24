@@ -2,7 +2,7 @@ from pythongame.core.game_data import Sprite, Direction, PotionType, AbilityType
     register_entity_sprite_map
 from pythongame.core.game_state import PlayerState
 
-PLAYER_ENTITY_SIZE = (60, 60)
+PLAYER_ENTITY_SIZE = (40, 30)
 
 _player_potion_slots = {
     1: PotionType.SPEED,
@@ -23,7 +23,8 @@ INTIAL_PLAYER_STATE = PlayerState(health, health, mana, mana, mana_regen, _playe
 def register_player_data():
     player_sprite_sheet = SpriteSheet("resources/graphics/player.gif")
     original_sprite_size = (32, 48)
-    scaled_sprite_size = PLAYER_ENTITY_SIZE
+    scaled_sprite_size = (60, 60)
+    sprite_position_relative_to_entity = (-10, -30)
     indices_by_dir = {
         Direction.DOWN: [(0, 0), (1, 0), (2, 0), (3, 0)],
         Direction.LEFT: [(0, 1), (1, 1), (2, 1), (3, 1)],
@@ -31,4 +32,4 @@ def register_player_data():
         Direction.UP: [(0, 3), (1, 3), (2, 3), (3, 3)]
     }
     register_entity_sprite_map(Sprite.PLAYER, player_sprite_sheet, original_sprite_size,
-                               scaled_sprite_size, indices_by_dir)
+                               scaled_sprite_size, indices_by_dir, sprite_position_relative_to_entity)

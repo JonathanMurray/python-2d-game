@@ -32,8 +32,9 @@ class WorldEntity:
         self.y = pos[1]
         self.w = size[0]
         self.h = size[1]
-        self.collision_w = self.w * 0.7
-        self.collision_h = self.h * 0.7
+        # TODO: Rethink how collision boxes should be handled. Disabled for now.
+        self.collision_w = self.w
+        self.collision_h = self.h
         self.sprite = sprite
         self.direction = direction
         self._speed = speed

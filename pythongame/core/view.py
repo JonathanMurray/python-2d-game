@@ -2,7 +2,7 @@ from typing import Dict, Any, List, Tuple, Optional
 
 import pygame
 
-from pythongame.core.common import Direction, Sprite, PotionType, AbilityType
+from pythongame.core.common import Direction, Sprite, PotionType, AbilityType, sum_of_vectors
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS, Animation
 from pythongame.core.game_state import WorldEntity, WorldArea, Enemy, Buff
@@ -31,6 +31,12 @@ class ScreenArea:
         return self.x, self.y, self.w, self.h
 
 
+class ImageWithRelativePosition:
+    def __init__(self, image: Any, position_relative_to_entity: Tuple[int, int]):
+        self.image = image
+        self.position_relative_to_entity = position_relative_to_entity
+
+
 def load_and_scale_sprite(sprite_initializer: SpriteInitializer):
     image = pygame.image.load(sprite_initializer.image_file_path).convert_alpha()
     return pygame.transform.scale(image, sprite_initializer.scaling_size)
@@ -38,16 +44,17 @@ def load_and_scale_sprite(sprite_initializer: SpriteInitializer):
 
 def load_and_scale_directional_sprites(
         animations_by_dir: Dict[Direction, Animation]) \
-        -> Dict[Direction, List[Any]]:
-    images: Dict[Direction, List[Any]] = {}
+        -> Dict[Direction, List[ImageWithRelativePosition]]:
+    images: Dict[Direction, List[ImageWithRelativePosition]] = {}
     for direction in animations_by_dir:
         animation = animations_by_dir[direction]
-        images_for_dir = []
+        images_for_dir: List[ImageWithRelativePosition] = []
         if animation.sprite_initializers:
             for sprite_init in animation.sprite_initializers:
                 sprite_init: SpriteInitializer = sprite_init
                 image = pygame.image.load(sprite_init.image_file_path).convert_alpha()
-                images_for_dir.append(pygame.transform.scale(image, sprite_init.scaling_size))
+                scaled_image = pygame.transform.scale(image, sprite_init.scaling_size)
+                images_for_dir.append(ImageWithRelativePosition(scaled_image, animation.position_relative_to_entity))
         elif animation.sprite_map_initializers:
             for sprite_map_init in animation.sprite_map_initializers:
                 sprite_sheet = sprite_map_init.sprite_sheet
@@ -58,7 +65,8 @@ def load_and_scale_directional_sprites(
                              original_sprite_size[0],
                              original_sprite_size[1])
                 image = sprite_sheet.image_at(rectangle)
-                images_for_dir.append(pygame.transform.scale(image, sprite_map_init.scaling_size))
+                scaled_image = pygame.transform.scale(image, sprite_map_init.scaling_size)
+                images_for_dir.append(ImageWithRelativePosition(scaled_image, animation.position_relative_to_entity))
         else:
             raise Exception("Invalid animation: " + str(animation))
         images[direction] = images_for_dir
@@ -77,7 +85,7 @@ class View:
         self.font_large = pygame.font.SysFont('Arial', 22)
         self.font_small = pygame.font.Font(None, 25)
         self.font_tiny = pygame.font.Font(None, 19)
-        self.images_by_sprite: Dict[Sprite, Dict[Direction, List[Any]]] = {
+        self.images_by_sprite: Dict[Sprite, Dict[Direction, List[ImageWithRelativePosition]]] = {
             sprite: load_and_scale_directional_sprites(ENTITY_SPRITE_INITIALIZERS[sprite])
             for sprite in ENTITY_SPRITE_INITIALIZERS
         }
@@ -172,18 +180,24 @@ class View:
         if entity.sprite is None:
             raise Exception("Entity has no sprite: " + str(entity))
         elif entity.sprite in self.images_by_sprite:
-            images: Dict[Direction, List[Any]] = self.images_by_sprite[entity.sprite]
-            image = self._get_image_from_direction(images, entity.direction, entity.movement_animation_progress)
+            images: Dict[Direction, List[ImageWithRelativePosition]] = self.images_by_sprite[entity.sprite]
+            image_with_relative_position = self._get_image_from_direction(images, entity.direction,
+                                                                          entity.movement_animation_progress)
             pos = self._translate_world_position_to_screen((entity.x, entity.y))
-            self._image(image, pos)
+            pos = sum_of_vectors(pos, image_with_relative_position.position_relative_to_entity)
+            self._image(image_with_relative_position.image, pos)
         else:
             raise Exception("Unhandled sprite: " + str(entity.sprite))
 
-    def _get_image_from_direction(self, images: Dict[Direction, List[Any]], direction: Direction,
-                                  animation_progress: float):
-        for_this_dir: List[Any] = images[direction] if direction in images else next(iter(images.values()))
-        animation_frame_index = int(len(for_this_dir) * animation_progress)
-        return for_this_dir[animation_frame_index]
+    def _get_image_from_direction(self, images: Dict[Direction, List[ImageWithRelativePosition]], direction: Direction,
+                                  animation_progress: float) -> ImageWithRelativePosition:
+        if direction in images:
+            images_for_this_direction = images[direction]
+        else:
+            images_for_this_direction = next(iter(images.values()))
+
+        animation_frame_index = int(len(images_for_this_direction) * animation_progress)
+        return images_for_this_direction[animation_frame_index]
 
     def _visual_effect(self, visual_effect):
         if isinstance(visual_effect, VisualLine):
@@ -306,14 +320,14 @@ class View:
         self.screen.fill(COLOR_BACKGROUND)
         self._world_ground()
 
+        for entity in all_entities_to_render:
+            if entity != player_entity:
+                self._world_entity(entity)
+
         if is_player_invisible:
             self._world_rect((200, 100, 250), player_entity.rect(), 1)
         else:
             self._world_entity(player_entity)
-
-        for entity in all_entities_to_render:
-            if entity != player_entity:
-                self._world_entity(entity)
 
         if RENDER_HIT_AND_COLLISION_BOXES:
             for entity in all_entities_to_render:

@@ -45,10 +45,14 @@ class SpriteMapInitializer:
 
 
 class Animation:
-    def __init__(self, sprite_initializers: Optional[List[SpriteInitializer]],
-                 sprite_map_initializers: Optional[List[SpriteMapInitializer]]):
+    def __init__(
+            self,
+            sprite_initializers: Optional[List[SpriteInitializer]],
+            sprite_map_initializers: Optional[List[SpriteMapInitializer]],
+            position_relative_to_entity: Tuple[int, int]):
         self.sprite_initializers = sprite_initializers
         self.sprite_map_initializers = sprite_map_initializers
+        self.position_relative_to_entity = position_relative_to_entity
 
 
 # TODO Ideally this shouldn't need to be defined here
@@ -83,10 +87,11 @@ class EnemyData:
 
 ENEMIES: Dict[EnemyType, EnemyData] = {}
 
+_stone_tile_file_name = "resources/graphics/stone_tile.png"
 ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Animation]] = {
     Sprite.WALL: {
         Direction.DOWN: Animation(
-            [SpriteInitializer("resources/graphics/stone_tile.png", (WALL_SIZE[0] - 1, WALL_SIZE[1] - 1))], None)
+            [SpriteInitializer(_stone_tile_file_name, (WALL_SIZE[0] - 2, WALL_SIZE[1] - 2))], None, (1, 1))
     }
 }
 
@@ -113,7 +118,7 @@ def register_ui_icon_sprite_path(sprite: UiIconSprite, file_path: str):
 
 # Deprecated
 def register_entity_sprite_initializer(sprite: Sprite, initializer: SpriteInitializer):
-    ENTITY_SPRITE_INITIALIZERS[sprite] = {Direction.DOWN: Animation([initializer], None)}
+    ENTITY_SPRITE_INITIALIZERS[sprite] = {Direction.DOWN: Animation([initializer], None, (0, 0))}
 
 
 def register_entity_sprite_map(
@@ -121,7 +126,8 @@ def register_entity_sprite_map(
         sprite_sheet: SpriteSheet,
         original_sprite_size: Tuple[int, int],
         scaled_sprite_size: Tuple[int, int],
-        indices_by_dir: Dict[Direction, List[Tuple[int, int]]]):
+        indices_by_dir: Dict[Direction, List[Tuple[int, int]]],
+        position_relative_to_entity: Tuple[int, int]):
     initializers: Dict[Direction: SpriteMapInitializer] = {
         direction: [SpriteMapInitializer(sprite_sheet, original_sprite_size, scaled_sprite_size, index)
                     for index in indices_by_dir[direction]]
@@ -131,7 +137,8 @@ def register_entity_sprite_map(
     for direction in initializers:
         if len(initializers[direction]) == 0:
             raise Exception("Invalid input: " + str(initializers))
-        ENTITY_SPRITE_INITIALIZERS[sprite][direction] = Animation(None, initializers[direction])
+        ENTITY_SPRITE_INITIALIZERS[sprite][direction] = Animation(
+            None, initializers[direction], position_relative_to_entity)
 
 
 def register_buff_text(buff_type: BuffType, text: str):

@@ -88,4 +88,4 @@ def register_rat_1_enemy():
         Direction.RIGHT: [(0, 2), (1, 2), (2, 2)],
         Direction.UP: [(0, 3), (1, 3), (2, 3)]
     }
-    register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir)
+    register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir, (0, 0))

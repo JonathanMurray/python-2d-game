@@ -99,6 +99,10 @@ def translate_in_direction(position: Tuple[int, int], direction: Direction, amou
         raise Exception("Unhandled direction: " + str(direction))
 
 
+def sum_of_vectors(v1: Tuple[int, int], v2: Tuple[int, int]) -> Tuple[int, int]:
+    return v1[0] + v2[0], v1[1] + v2[1]
+
+
 def is_x_and_y_within_distance(a: Tuple[int, int], b: Tuple[int, int], distance: int):
     return abs(a[0] - b[0]) < distance and abs(a[1] - b[1]) < distance
 

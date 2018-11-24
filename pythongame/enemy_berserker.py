@@ -80,4 +80,4 @@ def register_berserker_enemy():
         Direction.UP: [(0, 3), (1, 3), (2, 3), (3, 3)]
     }
     register_entity_sprite_map(Sprite.ENEMY_BERSERKER, berserker_sprite_sheet, original_sprite_size,
-                               scaled_sprite_size, indices_by_dir)
+                               scaled_sprite_size, indices_by_dir, (0, 0))
