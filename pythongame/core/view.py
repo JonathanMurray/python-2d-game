@@ -16,7 +16,6 @@ COLOR_BACKGROUND = (200, 200, 200)
 COLOR_HIGHLIGHTED_ICON = (250, 250, 150)
 UI_ICON_SIZE = (36, 36)
 
-RENDER_HIT_AND_COLLISION_BOXES = False
 RENDER_WORLD_COORDINATES = False
 
 
@@ -293,7 +292,7 @@ class View:
         self._rect_filled((0, 200, 0), (dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
     def render_world(self, all_entities_to_render, camera_world_area, enemies, is_player_invisible, player_entity,
-                     visual_effects):
+                     visual_effects, render_hit_and_collision_boxes):
         self.camera_world_area = camera_world_area
 
         self.screen.fill(COLOR_BACKGROUND)
@@ -308,7 +307,7 @@ class View:
         else:
             self._world_entity(player_entity)
 
-        if RENDER_HIT_AND_COLLISION_BOXES:
+        if render_hit_and_collision_boxes:
             for entity in all_entities_to_render:
                 # hit box
                 self._world_rect((250, 250, 250), entity.rect(), 1)
@@ -383,6 +382,16 @@ class View:
         self._text(self.font_small, message, (self.ui_screen_area.w / 2 - 80, self.ui_screen_area.y - 30))
         if is_paused:
             self._text(self.font_huge, "PAUSED", (self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50))
+
+    def render_mouse_selection_rect(self, mouse_selection_rect: Tuple[int, int, int, int]):
+        self._rect((50, 250, 0), mouse_selection_rect, 3)
+
+    def render_mapmaker_world_entity(self, entity: WorldEntity, entity_position: Tuple[int, int]):
+        images: Dict[Direction, List[ImageWithRelativePosition]] = self.images_by_sprite[entity.sprite]
+        image_with_relative_position = self._get_image_from_direction(images, Direction.DOWN, 0)
+        sprite_position = sum_of_vectors(entity_position, image_with_relative_position.position_relative_to_entity)
+        self._image(image_with_relative_position.image, sprite_position)
+        self._rect((50, 250, 0), (entity_position[0], entity_position[1], entity.w, entity.h), 3)
 
     def update_display(self):
         pygame.display.update()

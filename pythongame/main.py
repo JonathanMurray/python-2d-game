@@ -102,7 +102,8 @@ def main():
             is_player_invisible=game_state.player_state.is_invisible,
             camera_world_area=game_state.camera_world_area,
             enemies=game_state.enemies,
-            visual_effects=game_state.visual_effects)
+            visual_effects=game_state.visual_effects,
+            render_hit_and_collision_boxes=False)
 
         view.render_ui(
             player_health=game_state.player_state.health,
