@@ -19,7 +19,7 @@ from pythongame.enemy_mage import register_mage_enemy
 from pythongame.enemy_rat_1 import register_rat_1_enemy
 from pythongame.enemy_rat_2 import register_rat_2_enemy
 from pythongame.enemy_smart import register_smart_enemy
-from pythongame.game_world_init import init_game_state_from_file
+from pythongame.game_world_init import create_game_state_from_file
 from pythongame.player_data import register_player_data
 from pythongame.potion_health import register_health_potion
 from pythongame.potion_invis import register_invis_potion
@@ -48,7 +48,7 @@ register_rat_2_enemy()
 
 
 def main():
-    game_state = init_game_state_from_file(CAMERA_SIZE, "resources/maps/demo.txt")
+    game_state = create_game_state_from_file(CAMERA_SIZE, "resources/maps/demo.txt")
     pygame.init()
 
     view = View(CAMERA_SIZE, SCREEN_SIZE)

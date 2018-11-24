@@ -4,12 +4,12 @@ X                               X
 X       2            2          X
 X                               X
 X                2    2         X
+X        R                      X
+X                 R   2         X
 X                               X
-X                 2   2         X
+X                    R     2    X
 X                               X
-X       P            2     2    X
-X                               X
-X             2                 X
+X   P         R                 X
 X                          2    X
 X                               X
 X                               X

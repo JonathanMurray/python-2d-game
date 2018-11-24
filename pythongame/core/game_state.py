@@ -114,7 +114,8 @@ class Projectile:
 
 
 class Enemy:
-    def __init__(self, world_entity: WorldEntity, health: int, max_health: int, enemy_mind):
+    def __init__(self, enemy_type: EnemyType, world_entity: WorldEntity, health: int, max_health: int, enemy_mind):
+        self.enemy_type = enemy_type
         self.world_entity = world_entity
         self.health = health
         self.max_health = max_health
