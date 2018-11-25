@@ -74,7 +74,7 @@ def _move_in_dir(enemy_entity, direction):
 
 
 def register_rat_2_enemy():
-    size = (49, 49)  # Must not align perfectly with grid cell size (pathfinding issues)
+    size = (40, 40)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.RAT_2
     enemy_type = EnemyType.RAT_2
     movement_speed = 0.08
@@ -90,4 +90,4 @@ def register_rat_2_enemy():
         Direction.RIGHT: [(0, 2), (1, 2), (2, 2)],
         Direction.UP: [(0, 3), (1, 3), (2, 3)]
     }
-    register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir, (0, 0))
+    register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir, (-5, -5))
