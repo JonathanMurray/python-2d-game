@@ -29,6 +29,8 @@ class EnemyMind(AbstractEnemyMind):
 
         enemy_entity = enemy.world_entity
 
+        self.pathfinder.ensure_is_intialized(game_state, enemy_entity)
+
         if self._time_since_updated_path > self._update_path_interval:
             self._time_since_updated_path = 0
             self.pathfinder.update_path(enemy_entity, game_state)
@@ -72,7 +74,7 @@ def _move_in_dir(enemy_entity, direction):
 
 
 def register_rat_1_enemy():
-    size = (50, 50)
+    size = (49, 49)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.RAT_1
     enemy_type = EnemyType.RAT_1
     movement_speed = 0.05

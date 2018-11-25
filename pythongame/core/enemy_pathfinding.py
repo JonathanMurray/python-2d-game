@@ -1,9 +1,10 @@
 from typing import Tuple, Any, Optional
 
-from pythongame.core.common import Millis, is_x_and_y_within_distance, get_directions_to_position, get_opposite_direction, \
+from pythongame.core.common import Millis, is_x_and_y_within_distance, get_directions_to_position, \
+    get_opposite_direction, \
     Direction
 from pythongame.core.game_state import GRID_CELL_WIDTH, GameState, WorldEntity
-from pythongame.core.grid_astar_pathfinder import run_pathfinder
+from pythongame.core.grid_astar_pathfinder import run_pathfinder, GridBasedAStar
 from pythongame.core.visual_effects import VisualLine, VisualRect
 
 DEBUG_RENDER_PATHFINDING = False
@@ -14,11 +15,18 @@ class EnemyPathfinder:
 
     def __init__(self):
         self.path = None
+        self.grid_based_a_star = None  # Not set up yet
+
+    # NOTE: This must be called before using the path finder
+    def ensure_is_intialized(self, game_state: GameState, agent_entity: WorldEntity):
+        if not self.grid_based_a_star:
+            agent_cell_size = (agent_entity.w // GRID_CELL_WIDTH, agent_entity.h // GRID_CELL_WIDTH)
+            self.grid_based_a_star = GridBasedAStar(game_state.grid, agent_cell_size)
 
     def update_path(self, enemy_entity: WorldEntity, game_state):
         enemy_cell = _get_cell_from_position(enemy_entity.get_position())
         player_cell = _get_cell_from_position(game_state.player_entity.get_position())
-        path_with_cells = run_pathfinder(game_state.grid, enemy_cell, player_cell)
+        path_with_cells = run_pathfinder(self.grid_based_a_star, enemy_cell, player_cell)
         if path_with_cells:
             path = [(cell[0] * GRID_CELL_WIDTH, cell[1] * GRID_CELL_WIDTH) for cell in path_with_cells]
             if DEBUG_RENDER_PATHFINDING:
@@ -33,7 +41,7 @@ class EnemyPathfinder:
             # 1: Remove first waypoint if close enough to it
             # -----------------------------------------------
             # TODO: Does this cause problems for specific entity sizes / movement speeds?
-            closeness_margin = 15
+            closeness_margin = 50
             if is_x_and_y_within_distance(enemy_entity.get_position(), self.path[0], closeness_margin):
                 #print("Popping " + str(self.path[0]) + " as I'm so close to it.")
                 self.path.pop(0)

@@ -15,7 +15,7 @@ class EnemyMind(AbstractEnemyMind):
         self._attack_interval = 1000
         self._time_since_attack = self._attack_interval
         self._update_path_interval = 900
-        self._time_since_updated_path = self._update_path_interval
+        self._time_since_updated_path = random.randint(0, self._update_path_interval)
         self.pathfinder = EnemyPathfinder()
         self.next_waypoint = None
         self._reevaluate_next_waypoint_direction_interval = 1000
@@ -28,6 +28,8 @@ class EnemyMind(AbstractEnemyMind):
         self._time_since_reevaluated += time_passed
 
         enemy_entity = enemy.world_entity
+
+        self.pathfinder.ensure_is_intialized(game_state, enemy_entity)
 
         if self._time_since_updated_path > self._update_path_interval:
             self._time_since_updated_path = 0
@@ -72,7 +74,7 @@ def _move_in_dir(enemy_entity, direction):
 
 
 def register_rat_2_enemy():
-    size = (50, 50)
+    size = (49, 49)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.RAT_2
     enemy_type = EnemyType.RAT_2
     movement_speed = 0.08
