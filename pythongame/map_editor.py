@@ -9,7 +9,6 @@ from pythongame.ability_fireball import register_fireball_ability
 from pythongame.ability_heal import register_heal_ability
 from pythongame.ability_teleport import register_teleport_ability
 from pythongame.core.common import EnemyType, Direction, Sprite, sum_of_vectors
-from pythongame.core.enemy_behavior import create_enemy_mind
 from pythongame.core.game_data import ENEMIES, WALL_SIZE
 from pythongame.core.game_state import WorldEntity, Enemy
 from pythongame.core.view import View
@@ -129,8 +128,7 @@ def main(args: List[str]):
                         data = ENEMIES[enemy_type]
                         entity = WorldEntity(snapped_mouse_world_position, data.size, data.sprite, Direction.DOWN,
                                              data.speed)
-                        enemy = Enemy(enemy_type, entity, data.max_health, data.max_health,
-                                      create_enemy_mind(enemy_type))
+                        enemy = Enemy(enemy_type, entity, data.max_health, data.max_health, None)
                         game_state.enemies.append(enemy)
                     elif placing_map_file_entity.is_wall:
                         game_state.add_wall(WorldEntity(snapped_mouse_world_position, WALL_SIZE, Sprite.WALL))
