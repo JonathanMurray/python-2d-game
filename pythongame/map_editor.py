@@ -58,7 +58,9 @@ def main(args: List[str]):
 
     view = View(CAMERA_SIZE, SCREEN_SIZE)
 
+    # Deleting entities when this is = None
     placing_map_file_entity: Optional[MapFileEntity] = None
+
     is_mouse_button_down = False
 
     grid_cell_size = 25
@@ -78,11 +80,19 @@ def main(args: List[str]):
                                                  (exact_mouse_screen_position[1] // grid_cell_size) * grid_cell_size)
                 snapped_mouse_world_position = sum_of_vectors(
                     snapped_mouse_screen_position, game_state.camera_world_area.get_position())
-                if is_mouse_button_down and placing_map_file_entity and placing_map_file_entity.is_wall:
-                    already_has_wall = any([w for w in game_state.walls
-                                            if w.get_position() == snapped_mouse_world_position])
-                    if not already_has_wall:
-                        game_state.add_wall(WorldEntity(snapped_mouse_world_position, WALL_SIZE, Sprite.WALL))
+                if is_mouse_button_down:
+                    if placing_map_file_entity and placing_map_file_entity.is_wall:
+                        already_has_wall = any([w for w in game_state.walls
+                                                if w.get_position() == snapped_mouse_world_position])
+                        if not already_has_wall:
+                            game_state.add_wall(WorldEntity(snapped_mouse_world_position, WALL_SIZE, Sprite.WALL))
+                    else:
+                        # delete entities
+                        for wall in [w for w in game_state.walls if w.get_position() == snapped_mouse_world_position]:
+                            game_state.remove_wall(wall)
+                        for enemy in [e for e in game_state.enemies if
+                                      e.world_entity.get_position() == snapped_mouse_world_position]:
+                            game_state.enemies.remove(enemy)
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
@@ -105,6 +115,9 @@ def main(args: List[str]):
                     game_state.translate_camera_position((-grid_cell_size, 0))
                 elif event.key == pygame.K_UP:
                     game_state.translate_camera_position((0, -grid_cell_size))
+                elif event.key == pygame.K_q:
+                    # Used for deleting entities
+                    placing_map_file_entity = None
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 is_mouse_button_down = True

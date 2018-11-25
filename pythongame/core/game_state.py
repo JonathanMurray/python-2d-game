@@ -331,6 +331,12 @@ class GameState:
         y_bucket = int(wall.y) // WALL_BUCKET_HEIGHT
         self._wall_buckets[x_bucket][y_bucket].append(wall)
 
+    def remove_wall(self, wall: WorldEntity):
+        self.walls.remove(wall)
+        x_bucket = int(wall.x) // WALL_BUCKET_WIDTH
+        y_bucket = int(wall.y) // WALL_BUCKET_HEIGHT
+        self._wall_buckets[x_bucket][y_bucket].remove(wall)
+
     def _get_walls_from_buckets_adjacent_to_entity(self, entity: WorldEntity):
         entity_x_bucket = int(entity.x) // WALL_BUCKET_WIDTH
         entity_y_bucket = int(entity.y) // WALL_BUCKET_HEIGHT
