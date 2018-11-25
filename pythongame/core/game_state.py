@@ -42,7 +42,7 @@ class WorldEntity:
         self._effective_speed = speed
         self._is_moving = True
         self.pygame_collision_rect = Rect(self.collision_rect())
-        self.movement_animation_progress: float = 0 # goes from 0 to 1 repeatedly
+        self.movement_animation_progress: float = 0  # goes from 0 to 1 repeatedly
 
     def set_moving_in_dir(self, direction: Direction):
         if direction is None:
@@ -315,6 +315,12 @@ class GameState:
             y_bucket = int(w.y) // WALL_BUCKET_HEIGHT
             wall_buckets[x_bucket][y_bucket].append(w)
         return wall_buckets
+
+    def add_wall(self, wall: WorldEntity):
+        self.walls.append(wall)
+        x_bucket = int(wall.x) // WALL_BUCKET_WIDTH
+        y_bucket = int(wall.y) // WALL_BUCKET_HEIGHT
+        self._wall_buckets[x_bucket][y_bucket].append(wall)
 
     def _get_walls_from_buckets_adjacent_to_entity(self, entity: WorldEntity):
         entity_x_bucket = int(entity.x) // WALL_BUCKET_WIDTH

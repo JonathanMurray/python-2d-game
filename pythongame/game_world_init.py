@@ -69,7 +69,7 @@ def create_game_state_from_file(camera_size: Tuple[int, int], map_file: str):
     return GameState(player_entity, potions, enemies, walls, camera_size, game_world_size, INTIAL_PLAYER_STATE)
 
 
-class EntityInCell:
+class MapFileEntity:
     def __init__(self, enemy_type: Optional[EnemyType], is_player: bool, is_wall: bool):
         self.enemy_type = enemy_type
         self.is_player = is_player
@@ -85,14 +85,14 @@ def save_game_state_to_file(game_state: GameState, map_file: str):
     for e in game_state.enemies:
         enemy_type = e.enemy_type
         grid_position = (e.world_entity.x // GRID_CELL_SIZE, e.world_entity.y // GRID_CELL_SIZE)
-        grid[grid_position] = EntityInCell(enemy_type, False, False)
+        grid[grid_position] = MapFileEntity(enemy_type, False, False)
 
     player_grid_position = game_state.player_entity.x // GRID_CELL_SIZE, game_state.player_entity.y // GRID_CELL_SIZE
-    grid[player_grid_position] = EntityInCell(None, True, False)
+    grid[player_grid_position] = MapFileEntity(None, True, False)
 
     for w in game_state.walls:
         grid_position = (w.x // GRID_CELL_SIZE, w.y // GRID_CELL_SIZE)
-        grid[grid_position] = EntityInCell(None, False, True)
+        grid[grid_position] = MapFileEntity(None, False, True)
 
     with open(map_file, 'w') as map_file:
         for row_index in range(grid_num_rows):

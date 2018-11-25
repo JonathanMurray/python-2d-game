@@ -3,18 +3,18 @@ X                               X
 X                               X
 X       2            2          X
 X                               X
-X                2    2         X
-X        R                      X
-X                 R   2         X
-X                               X
-X                    R     2    X
-X                               X
-X   P         R                 X
-X                          2    X
-X                               X
-X                               X
-X                     2         X
-X                               X
-X                               X
-X                               X
+X R  X           2    2         X
+X    X   R                      X
+X    X            R   2         X
+X 2  X                          X
+X    XXXXX           R     2    X
+X        X                      X
+X     2  X    R                 X
+X        X                 2    X
+X        X                      X
+X        XXXXXX                 X
+X        X            2         X
+X   P    X R  R                 X
+X        X                      X
+X        X                      X
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
