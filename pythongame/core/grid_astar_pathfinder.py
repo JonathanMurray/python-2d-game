@@ -13,7 +13,19 @@ class GridBasedAStar(AStar):
         # Wall size is (50, 50) and all walls are placed on the (50, 50) grid
         self.grid = grid
         self.agent_size = agent_size
-        self._cache: Dict[Tuple[int, int], bool] = {}
+        self._cache_is_cell_free: Dict[Tuple[int, int], bool] = {}
+
+        # Need to be initialized before running pathfinder
+        self.min_x = 0
+        self.min_y = 0
+        self.max_x = 0
+        self.max_y = 0
+
+    def set_pathfinding_bounds(self, min_x, min_y, max_x, max_y):
+        self.min_x = min_x
+        self.min_y = min_y
+        self.max_x = max_x
+        self.max_y = max_y
 
     def heuristic_cost_estimate(self, current, goal):
         return abs(current[0] - goal[0]) + abs(current[1] - goal[1])
@@ -29,17 +41,21 @@ class GridBasedAStar(AStar):
             (x + 1, y),  # right
             (x, y + 1),  # down
         ]
-        return [cell for cell in adjacent_cells if self._is_cell_free_considering_entity_size(cell[0], cell[1])]
+        return [cell for cell in adjacent_cells if self._is_cell_free(cell[0], cell[1])]
 
-    def _is_cell_free_considering_entity_size(self, x, y):
-        if (x, y) in self._cache:
-            return self._cache[(x, y)]
+    def _is_cell_free(self, x, y):
+        # Ignore cells that are too far out, to save resources. If agent strays too far, the path is aborted.
+        if not (self.min_x <= x <= self.max_x and self.min_y <= y <= self.max_y):
+            return False
+
+        if (x, y) in self._cache_is_cell_free:
+            return self._cache_is_cell_free[(x, y)]
         else:
-            is_free = self._compute_is_cell_free_considering_entity_size(x, y)
-            self._cache[(x, y)] = is_free
+            is_free = self._compute_is_cell_free(x, y)
+            self._cache_is_cell_free[(x, y)] = is_free
             return is_free
 
-    def _compute_is_cell_free_considering_entity_size(self, x, y):
+    def _compute_is_cell_free(self, x, y):
         # Check that all relevant cells are within the map
         if x < 0 or y < 0 or x + self.agent_size[0] >= len(self.grid) or y + self.agent_size[1] >= len(self.grid[x]):
             return False
@@ -52,6 +68,11 @@ class GridBasedAStar(AStar):
 
 
 def run_pathfinder(grid_based_a_star: GridBasedAStar, start_cell: Tuple[int, int], goal_cell: Tuple[int, int]):
+    path_max_distance_from_start = 20
+    grid_based_a_star.set_pathfinding_bounds(start_cell[0] - path_max_distance_from_start,
+                                             start_cell[1] - path_max_distance_from_start,
+                                             start_cell[0] + path_max_distance_from_start,
+                                             start_cell[1] + path_max_distance_from_start)
     result = grid_based_a_star.astar(start_cell, goal_cell)
 
     if result is None:
