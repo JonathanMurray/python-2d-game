@@ -3,7 +3,7 @@ from typing import List
 
 import pygame
 
-import pythongame.core.enemy_pathfinding
+import pythongame.core.pathfinding.enemy_pathfinding
 from pythongame.ability_aoe_attack import register_aoe_attack_ability
 from pythongame.ability_channel_attack import register_channel_attack_ability
 from pythongame.ability_fireball import register_fireball_ability
@@ -80,7 +80,8 @@ def main(args: List[str]):
             if isinstance(action, ActionToggleRenderDebugging):
                 render_hit_and_collision_boxes = not render_hit_and_collision_boxes
                 # TODO: Handle this better than accessing a global variable from here
-                pythongame.core.enemy_pathfinding.DEBUG_RENDER_PATHFINDING = not pythongame.core.enemy_pathfinding.DEBUG_RENDER_PATHFINDING
+                pythongame.core.pathfinding.enemy_pathfinding.DEBUG_RENDER_PATHFINDING = \
+                    not pythongame.core.pathfinding.enemy_pathfinding.DEBUG_RENDER_PATHFINDING
             if not is_paused:
                 if isinstance(action, ActionTryUseAbility):
                     game_engine.try_use_ability(action.ability_type)

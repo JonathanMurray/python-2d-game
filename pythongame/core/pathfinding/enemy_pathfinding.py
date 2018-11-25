@@ -4,7 +4,7 @@ from pythongame.core.common import Millis, is_x_and_y_within_distance, get_direc
     get_opposite_direction, \
     Direction
 from pythongame.core.game_state import GRID_CELL_WIDTH, GameState, WorldEntity
-from pythongame.core.grid_astar_pathfinder import run_pathfinder, GridBasedAStar
+from pythongame.core.pathfinding.grid_astar_pathfinder import run_pathfinder, GridBasedAStar
 from pythongame.core.visual_effects import VisualLine, VisualRect
 
 DEBUG_RENDER_PATHFINDING = False

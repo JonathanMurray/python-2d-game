@@ -1,6 +1,6 @@
 from typing import Tuple, Dict
 
-from pythongame.core.astar import AStar
+from pythongame.core.pathfinding.astar import AStar
 
 
 class GridBasedAStar(AStar):
