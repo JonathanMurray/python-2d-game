@@ -112,15 +112,15 @@ def main():
             if placing_map_file_entity.enemy_type:
                 data = ENEMIES[placing_map_file_entity.enemy_type]
                 entity = WorldEntity((0, 0), data.size, data.sprite, Direction.DOWN, data.speed)
-                view.render_mapmaker_world_entity(entity, snapped_mouse_position)
+                view.render_world_entity_at_position(entity, snapped_mouse_position)
             elif placing_map_file_entity.is_player:
-                view.render_mapmaker_world_entity(game_state.player_entity, snapped_mouse_position)
+                view.render_world_entity_at_position(game_state.player_entity, snapped_mouse_position)
             elif placing_map_file_entity.is_wall:
                 entity = WorldEntity((0, 0), WALL_SIZE, Sprite.WALL, Direction.DOWN, 0)
-                view.render_mapmaker_world_entity(entity, snapped_mouse_position)
+                view.render_world_entity_at_position(entity, snapped_mouse_position)
         else:
             snapped_mouse_rect = (snapped_mouse_position[0], snapped_mouse_position[1], grid_cell_size, grid_cell_size)
-            view.render_mouse_selection_rect(snapped_mouse_rect)
+            view.render_map_editor_mouse_rect(snapped_mouse_rect)
 
         view.update_display()
 

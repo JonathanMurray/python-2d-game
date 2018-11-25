@@ -383,15 +383,15 @@ class View:
         if is_paused:
             self._text(self.font_huge, "PAUSED", (self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50))
 
-    def render_mouse_selection_rect(self, mouse_selection_rect: Tuple[int, int, int, int]):
-        self._rect((50, 250, 0), mouse_selection_rect, 3)
+    def render_map_editor_mouse_rect(self, map_editor_mouse_rect: Tuple[int, int, int, int]):
+        self._rect((50, 250, 0), map_editor_mouse_rect, 3)
 
-    def render_mapmaker_world_entity(self, entity: WorldEntity, entity_position: Tuple[int, int]):
+    def render_world_entity_at_position(self, entity: WorldEntity, position: Tuple[int, int]):
         images: Dict[Direction, List[ImageWithRelativePosition]] = self.images_by_sprite[entity.sprite]
         image_with_relative_position = self._get_image_from_direction(images, Direction.DOWN, 0)
-        sprite_position = sum_of_vectors(entity_position, image_with_relative_position.position_relative_to_entity)
+        sprite_position = sum_of_vectors(position, image_with_relative_position.position_relative_to_entity)
         self._image(image_with_relative_position.image, sprite_position)
-        self._rect((50, 250, 0), (entity_position[0], entity_position[1], entity.w, entity.h), 3)
+        self._rect((50, 250, 0), (position[0], position[1], entity.w, entity.h), 3)
 
     def update_display(self):
         pygame.display.update()
