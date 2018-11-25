@@ -4,7 +4,7 @@ from pythongame.core.common import Millis, is_x_and_y_within_distance, get_direc
     get_opposite_direction, \
     Direction
 from pythongame.core.game_state import GRID_CELL_WIDTH, GameState, WorldEntity
-from pythongame.core.pathfinding.grid_astar_pathfinder import run_pathfinder, GridBasedAStar
+from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.visual_effects import VisualLine, VisualRect
 
 DEBUG_RENDER_PATHFINDING = False
@@ -13,20 +13,17 @@ DEBUG_PATHFINDER_INTERVAL = 900
 
 class EnemyPathfinder:
 
-    def __init__(self):
+    def __init__(self, global_path_finder):
         self.path = None
-        self.grid_based_a_star = None  # Not set up yet
-
-    # NOTE: This must be called before using the path finder
-    def ensure_is_intialized(self, game_state: GameState, agent_entity: WorldEntity):
-        if not self.grid_based_a_star:
-            agent_cell_size = (agent_entity.w // GRID_CELL_WIDTH + 1, agent_entity.h // GRID_CELL_WIDTH + 1)
-            self.grid_based_a_star = GridBasedAStar(game_state.grid, agent_cell_size)
+        self.global_path_finder: GlobalPathFinder = global_path_finder
 
     def update_path(self, enemy_entity: WorldEntity, game_state):
         enemy_cell = _get_cell_from_position(enemy_entity.get_position())
         player_cell = _get_cell_from_position(game_state.player_entity.get_position())
-        path_with_cells = run_pathfinder(self.grid_based_a_star, enemy_cell, player_cell)
+
+        agent_cell_size = (enemy_entity.w // GRID_CELL_WIDTH + 1, enemy_entity.h // GRID_CELL_WIDTH + 1)
+        self.global_path_finder.register_entity_size(agent_cell_size)
+        path_with_cells = self.global_path_finder.run(agent_cell_size, enemy_cell, player_cell)
         if path_with_cells:
             path = [(cell[0] * GRID_CELL_WIDTH, cell[1] * GRID_CELL_WIDTH) for cell in path_with_cells]
             if DEBUG_RENDER_PATHFINDING:

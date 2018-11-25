@@ -67,25 +67,41 @@ class GridBasedAStar(AStar):
         return True
 
 
-def run_pathfinder(grid_based_a_star: GridBasedAStar, start_cell: Tuple[int, int], goal_cell: Tuple[int, int]):
-    path_max_distance_from_start = 20
-    grid_based_a_star.set_pathfinding_bounds(start_cell[0] - path_max_distance_from_start,
-                                             start_cell[1] - path_max_distance_from_start,
-                                             start_cell[0] + path_max_distance_from_start,
-                                             start_cell[1] + path_max_distance_from_start)
-    result = grid_based_a_star.astar(start_cell, goal_cell)
+# One instance of this class is shared by all enemies. This should allow for better caching of computations
+class GlobalPathFinder:
+    def __init__(self):
+        self.grid = None  # grid must be set before you can use the pathfinder
+        self.astars_by_entity_size: Dict[Tuple[int, int], GridBasedAStar] = {}
 
-    if result is None:
-        # TODO: Handle this in a better way
-        # HACK:
-        # print("Couldn't find path. Trying with position right above player instead.")
-        goal_cell_2 = (goal_cell[0], goal_cell[1] - 1)
-        result = grid_based_a_star.astar(start_cell, goal_cell_2)
+    def set_grid(self, grid):
+        self.grid = grid
 
-    if result is None:
-        return None
+    def register_entity_size(self, size: Tuple[int, int]):
+        if not size in self.astars_by_entity_size:
+            self.astars_by_entity_size[size] = GridBasedAStar(self.grid, size)
 
-    path_list = []
-    for x in result:
-        path_list.append(x)
-    return path_list
+    def run(self, entity_size: Tuple[int, int], start_cell: Tuple[int, int], goal_cell: Tuple[int, int]):
+
+        astar = self.astars_by_entity_size[entity_size]
+        path_max_distance_from_start = 20
+        astar.set_pathfinding_bounds(start_cell[0] - path_max_distance_from_start,
+                                     start_cell[1] - path_max_distance_from_start,
+                                     start_cell[0] + path_max_distance_from_start,
+                                     start_cell[1] + path_max_distance_from_start)
+        result = astar.astar(start_cell, goal_cell)
+
+        if result is None:
+            # TODO: Handle this in a better way
+            # HACK:
+            # print("Couldn't find path. Trying with position right above player instead.")
+            goal_cell_2 = (goal_cell[0], goal_cell[1] - 1)
+            result = astar.astar(start_cell, goal_cell_2)
+
+        if result is None:
+            return None
+
+        path_list = []
+        for x in result:
+            path_list.append(x)
+
+        return path_list

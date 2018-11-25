@@ -4,6 +4,7 @@ from pythongame.core.common import *
 from pythongame.core.enemy_behavior import create_enemy_mind
 from pythongame.core.game_data import WALL_SIZE, ENEMIES
 from pythongame.core.game_state import WorldEntity, Enemy, GameState, PotionOnGround
+from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.player_data import PLAYER_ENTITY_SIZE, INTIAL_PLAYER_STATE, PLAYER_ENTITY_SPEED
 from pythongame.potion_health import POTION_ENTITY_SIZE
 
@@ -54,17 +55,20 @@ def create_game_state_from_file(camera_size: Tuple[int, int], map_file: str):
     player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
     potions = [PotionOnGround(WorldEntity(pos, POTION_ENTITY_SIZE, Sprite.HEALTH_POTION), PotionType.HEALTH)
                for pos in potion_positions]
-    dumb_enemies = [_create_enemy_at_position(EnemyType.DUMB, pos) for pos in dumb_enemy_positions]
-    smart_enemies = [_create_enemy_at_position(EnemyType.SMART, pos) for pos in smart_enemy_positions]
-    mage_enemies = [_create_enemy_at_position(EnemyType.MAGE, pos) for pos in mage_enemy_positions]
-    berserker_enemies = [_create_enemy_at_position(EnemyType.BERSERKER, pos) for pos in berserker_positions]
-    rat_1_enemies = [_create_enemy_at_position(EnemyType.RAT_1, pos) for pos in rat_1_positions]
-    rat_2_enemies = [_create_enemy_at_position(EnemyType.RAT_2, pos) for pos in rat_2_positions]
+    path_finder = GlobalPathFinder()
+    dumb_enemies = [_create_enemy_at_position(EnemyType.DUMB, pos, path_finder) for pos in dumb_enemy_positions]
+    smart_enemies = [_create_enemy_at_position(EnemyType.SMART, pos, path_finder) for pos in smart_enemy_positions]
+    mage_enemies = [_create_enemy_at_position(EnemyType.MAGE, pos, path_finder) for pos in mage_enemy_positions]
+    berserker_enemies = [_create_enemy_at_position(EnemyType.BERSERKER, pos, path_finder) for pos in berserker_positions]
+    rat_1_enemies = [_create_enemy_at_position(EnemyType.RAT_1, pos, path_finder) for pos in rat_1_positions]
+    rat_2_enemies = [_create_enemy_at_position(EnemyType.RAT_2, pos, path_finder) for pos in rat_2_positions]
     walls = [WorldEntity(pos, WALL_SIZE, Sprite.WALL) for pos in wall_positions]
     enemies = dumb_enemies + smart_enemies + mage_enemies + berserker_enemies + rat_1_enemies + rat_2_enemies
 
     game_world_size = (max_col_index * GRID_CELL_SIZE, max_row_index * GRID_CELL_SIZE)
-    return GameState(player_entity, potions, enemies, walls, camera_size, game_world_size, INTIAL_PLAYER_STATE)
+    game_state = GameState(player_entity, potions, enemies, walls, camera_size, game_world_size, INTIAL_PLAYER_STATE)
+    path_finder.set_grid(game_state.grid)
+    return game_state
 
 
 class MapFileEntity:
@@ -111,7 +115,8 @@ def save_game_state_to_file(game_state: GameState, map_file: str):
             map_file.write("\n")
 
 
-def _create_enemy_at_position(enemy_type: EnemyType, pos: Tuple[int, int]):
+def _create_enemy_at_position(enemy_type: EnemyType, pos: Tuple[int, int], global_path_finder: GlobalPathFinder):
     data = ENEMIES[enemy_type]
     entity = WorldEntity(pos, data.size, data.sprite, Direction.LEFT, data.speed)
-    return Enemy(enemy_type, entity, data.max_health, data.max_health, create_enemy_mind(enemy_type))
+    enemy_mind = create_enemy_mind(enemy_type, global_path_finder)
+    return Enemy(enemy_type, entity, data.max_health, data.max_health, enemy_mind)
