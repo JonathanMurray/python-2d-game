@@ -1,4 +1,5 @@
 import sys
+from typing import List
 
 import pygame
 
@@ -47,8 +48,12 @@ register_rat_1_enemy()
 register_rat_2_enemy()
 
 
-def main():
-    game_state = create_game_state_from_file(CAMERA_SIZE, "resources/maps/demo.txt")
+def main(args: List[str]):
+    if len(args) == 1:
+        map_file = args[0]
+    else:
+        map_file = "resources/maps/demo.txt"
+    game_state = create_game_state_from_file(CAMERA_SIZE, map_file)
     pygame.init()
 
     view = View(CAMERA_SIZE, SCREEN_SIZE)

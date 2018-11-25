@@ -1,5 +1,5 @@
 import sys
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List
 
 import pygame
 
@@ -26,8 +26,6 @@ from pythongame.potion_invis import register_invis_potion
 from pythongame.potion_mana import register_mana_potion
 from pythongame.potion_speed import register_speed_potion
 
-MAP_FILE = "resources/maps/demo.txt"
-
 SCREEN_SIZE = (700, 600)
 CAMERA_SIZE = (700, 400)
 
@@ -49,8 +47,13 @@ register_rat_1_enemy()
 register_rat_2_enemy()
 
 
-def main():
-    game_state = create_game_state_from_file(CAMERA_SIZE, MAP_FILE)
+def main(args: List[str]):
+    if len(args) == 1:
+        map_file = args[0]
+    else:
+        map_file = "resources/maps/demo.txt"
+
+    game_state = create_game_state_from_file(CAMERA_SIZE, map_file)
     pygame.init()
 
     view = View(CAMERA_SIZE, SCREEN_SIZE)
@@ -80,7 +83,7 @@ def main():
                 elif event.key == pygame.K_x:
                     placing_map_file_entity = MapFileEntity(None, False, True)
                 elif event.key == pygame.K_s:
-                    save_file = MAP_FILE
+                    save_file = map_file
                     save_game_state_to_file(game_state, save_file)
                     print("Saved state to " + save_file)
 
