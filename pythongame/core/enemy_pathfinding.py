@@ -43,13 +43,13 @@ class EnemyPathfinder:
             # TODO: Does this cause problems for specific entity sizes / movement speeds?
             closeness_margin = 50
             if is_x_and_y_within_distance(enemy_entity.get_position(), self.path[0], closeness_margin):
-                #print("Popping " + str(self.path[0]) + " as I'm so close to it.")
+                # print("Popping " + str(self.path[0]) + " as I'm so close to it.")
                 self.path.pop(0)
                 if self.path:
-                    #print("After popping, returning " + str(self.path[0]))
+                    # print("After popping, returning " + str(self.path[0]))
                     return self.path[0]
                 else:
-                    #print("no path after popping. stopping.")
+                    # print("no path after popping. stopping.")
                     return None
 
             # -----------------------------------------------

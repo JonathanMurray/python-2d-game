@@ -3,10 +3,11 @@ import random
 from pythongame.core.common import Millis, random_direction, get_direction_between, EnemyType, Sprite, \
     get_position_from_center_position, ProjectileType
 from pythongame.core.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
-from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer, register_enemy_data, EnemyData
+from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer, register_enemy_data, \
+    EnemyData
 from pythongame.core.game_state import GameState, Enemy, WorldEntity, Projectile
-from pythongame.projectile_enemy_poison import register_enemy_poison_projectile, ENEMY_PROJECTILE_SIZE
 from pythongame.core.projectiles import create_projectile_controller
+from pythongame.projectile_enemy_poison import register_enemy_poison_projectile, ENEMY_PROJECTILE_SIZE
 
 
 class SmartEnemyMind(AbstractEnemyMind):
