@@ -3,6 +3,7 @@ from typing import List
 
 import pygame
 
+import pythongame.core.enemy_pathfinding
 from pythongame.ability_aoe_attack import register_aoe_attack_ability
 from pythongame.ability_channel_attack import register_channel_attack_ability
 from pythongame.ability_fireball import register_fireball_ability
@@ -11,7 +12,7 @@ from pythongame.ability_teleport import register_teleport_ability
 from pythongame.core.common import Millis
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
-    ActionMoveInDirection, ActionStopMoving, ActionPauseGame
+    ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging
 from pythongame.core.view import View
 from pythongame.core.view_state import ViewState
 from pythongame.enemy_berserker import register_berserker_enemy
@@ -63,6 +64,7 @@ def main(args: List[str]):
     game_engine = GameEngine(game_state, view_state)
 
     is_paused = False
+    render_hit_and_collision_boxes = False
 
     while True:
 
@@ -75,6 +77,10 @@ def main(args: List[str]):
             if isinstance(action, ActionExitGame):
                 pygame.quit()
                 sys.exit()
+            if isinstance(action, ActionToggleRenderDebugging):
+                render_hit_and_collision_boxes = not render_hit_and_collision_boxes
+                # TODO: Handle this better than accessing a global variable from here
+                pythongame.core.enemy_pathfinding.DEBUG_RENDER_PATHFINDING = not pythongame.core.enemy_pathfinding.DEBUG_RENDER_PATHFINDING
             if not is_paused:
                 if isinstance(action, ActionTryUseAbility):
                     game_engine.try_use_ability(action.ability_type)
@@ -108,7 +114,7 @@ def main(args: List[str]):
             camera_world_area=game_state.camera_world_area,
             enemies=game_state.enemies,
             visual_effects=game_state.visual_effects,
-            render_hit_and_collision_boxes=False)
+            render_hit_and_collision_boxes=render_hit_and_collision_boxes)
 
         view.render_ui(
             player_health=game_state.player_state.health,
