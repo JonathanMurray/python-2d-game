@@ -194,7 +194,7 @@ class PlayerState:
 
     def regenerate_mana(self, time_passed: Millis):
         self.gain_mana(
-            self.mana_regen * time_passed)
+            self.mana_regen * float(time_passed))
 
     def recharge_ability_cooldowns(self, time_passed: Millis):
         for ability_type in self.ability_cooldowns_remaining:
