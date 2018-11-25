@@ -43,10 +43,10 @@ class GridBasedAStar(AStar):
         # Check that all relevant cells are within the map
         if x < 0 or y < 0 or x + self.agent_size[0] >= len(self.grid) or y + self.agent_size[1] >= len(self.grid[x]):
             return False
-        for _x in range(x, x + self.agent_size[0] + 1):
-            for _y in range(y, y + self.agent_size[1] + 1):
+        for _x in range(x, x + self.agent_size[0]):
+            for _y in range(y, y + self.agent_size[1]):
                 # Check if there is a wall at cell: if so, it's not free
-                if self.grid[x][y] == 1:
+                if self.grid[_x][_y] == 1:
                     return False
         return True
 

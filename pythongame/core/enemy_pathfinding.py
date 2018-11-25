@@ -20,7 +20,7 @@ class EnemyPathfinder:
     # NOTE: This must be called before using the path finder
     def ensure_is_intialized(self, game_state: GameState, agent_entity: WorldEntity):
         if not self.grid_based_a_star:
-            agent_cell_size = (agent_entity.w // GRID_CELL_WIDTH, agent_entity.h // GRID_CELL_WIDTH)
+            agent_cell_size = (agent_entity.w // GRID_CELL_WIDTH + 1, agent_entity.h // GRID_CELL_WIDTH + 1)
             self.grid_based_a_star = GridBasedAStar(game_state.grid, agent_cell_size)
 
     def update_path(self, enemy_entity: WorldEntity, game_state):
