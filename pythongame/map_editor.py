@@ -63,6 +63,7 @@ def main(args: List[str]):
 
     grid_cell_size = 25
     snapped_mouse_screen_position = (0, 0)
+    snapped_mouse_world_position = (0, 0)
 
     while True:
 
