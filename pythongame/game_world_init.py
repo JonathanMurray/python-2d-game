@@ -4,10 +4,8 @@ from pythongame.core.common import *
 from pythongame.core.enemy_behavior import create_enemy_mind
 from pythongame.core.game_data import WALL_SIZE, ENEMIES
 from pythongame.core.game_state import WorldEntity, Enemy, GameState, PotionOnGround
-from pythongame.player_data import PLAYER_ENTITY_SIZE, INTIAL_PLAYER_STATE
+from pythongame.player_data import PLAYER_ENTITY_SIZE, INTIAL_PLAYER_STATE, PLAYER_ENTITY_SPEED
 from pythongame.potion_health import POTION_ENTITY_SIZE
-
-PLAYER_ENTITY_SPEED = 0.13
 
 GRID_CELL_SIZE = 25
 

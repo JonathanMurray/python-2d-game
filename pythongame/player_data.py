@@ -3,6 +3,7 @@ from pythongame.core.game_data import Sprite, Direction, PotionType, AbilityType
 from pythongame.core.game_state import PlayerState
 
 PLAYER_ENTITY_SIZE = (40, 30)
+PLAYER_ENTITY_SPEED = 0.13
 
 _player_potion_slots = {
     1: PotionType.SPEED,
