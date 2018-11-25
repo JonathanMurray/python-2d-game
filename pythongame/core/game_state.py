@@ -18,6 +18,9 @@ class WorldArea:
         self.w = size[0]
         self.h = size[1]
 
+    def get_position(self):
+        return self.x, self.y
+
     def set_position(self, new_position):
         self.x = new_position[0]
         self.y = new_position[1]
@@ -253,6 +256,12 @@ class GameState:
 
     def center_camera_on_player(self):
         new_camera_pos = get_position_from_center_position(self.player_entity.get_center_position(), self.camera_size)
+        new_camera_pos_within_world = self.get_within_world(new_camera_pos, (self.camera_size[0], self.camera_size[1]))
+        self.camera_world_area.set_position(new_camera_pos_within_world)
+
+    def translate_camera_position(self, translation_vector: Tuple[int, int]):
+        new_camera_pos = (self.camera_world_area.x + translation_vector[0],
+                          self.camera_world_area.y + translation_vector[1])
         new_camera_pos_within_world = self.get_within_world(new_camera_pos, (self.camera_size[0], self.camera_size[1]))
         self.camera_world_area.set_position(new_camera_pos_within_world)
 
