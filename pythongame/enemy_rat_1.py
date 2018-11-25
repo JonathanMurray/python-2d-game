@@ -3,10 +3,10 @@ import random
 from pythongame.core.common import Millis, is_x_and_y_within_distance, EnemyType, Sprite, Direction, \
     get_perpendicular_directions
 from pythongame.core.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
-from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
 from pythongame.core.game_data import register_enemy_data, \
     EnemyData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, Enemy, WorldEntity
+from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
 from pythongame.core.visual_effects import VisualLine, create_visual_damage_text
 
 
@@ -81,7 +81,7 @@ def register_rat_1_enemy():
     register_enemy_behavior(enemy_type, EnemyMind)
     sprite_sheet = SpriteSheet("resources/graphics/brown_rat.png")
     original_sprite_size = (32, 32)
-    scaled_sprite_size = (50, 50)
+    scaled_sprite_size = (44, 44)
     indices_by_dir = {
         Direction.DOWN: [(0, 0), (1, 0), (2, 0)],
         Direction.LEFT: [(0, 1), (1, 1), (2, 1)],
@@ -89,4 +89,4 @@ def register_rat_1_enemy():
         Direction.UP: [(0, 3), (1, 3), (2, 3)]
     }
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir,
-                               (-10, -10))
+                               (-7, -7))
