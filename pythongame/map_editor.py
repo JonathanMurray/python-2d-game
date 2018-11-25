@@ -27,7 +27,7 @@ from pythongame.potion_mana import register_mana_potion
 from pythongame.potion_speed import register_speed_potion
 
 SCREEN_SIZE = (700, 600)
-CAMERA_SIZE = (700, 400)
+CAMERA_SIZE = (700, 600)
 
 register_fireball_ability()
 register_heal_ability()
@@ -59,6 +59,7 @@ def main(args: List[str]):
     view = View(CAMERA_SIZE, SCREEN_SIZE)
 
     placing_map_file_entity: Optional[MapFileEntity] = None
+    is_mouse_button_down = False
 
     grid_cell_size = 25
     snapped_mouse_position = (0, 0)
@@ -69,10 +70,16 @@ def main(args: List[str]):
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 pygame.quit()
                 sys.exit()
+
             if event.type == pygame.MOUSEMOTION:
                 exact_mouse_position: Tuple[int, int] = event.pos
                 snapped_mouse_position = ((exact_mouse_position[0] // grid_cell_size) * grid_cell_size,
                                           (exact_mouse_position[1] // grid_cell_size) * grid_cell_size)
+                if is_mouse_button_down and placing_map_file_entity and placing_map_file_entity.is_wall:
+                    already_has_wall = any([w for w in game_state.walls if w.get_position() == snapped_mouse_position])
+                    if not already_has_wall:
+                        game_state.add_wall(WorldEntity(snapped_mouse_position, WALL_SIZE, Sprite.WALL))
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_p:
                     placing_map_file_entity = MapFileEntity(None, True, False)
@@ -88,6 +95,7 @@ def main(args: List[str]):
                     print("Saved state to " + save_file)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
+                is_mouse_button_down = True
                 if placing_map_file_entity:
                     if placing_map_file_entity.is_player:
                         game_state.player_entity.set_position(snapped_mouse_position)
@@ -101,6 +109,9 @@ def main(args: List[str]):
                         game_state.enemies.append(enemy)
                     elif placing_map_file_entity.is_wall:
                         game_state.add_wall(WorldEntity(snapped_mouse_position, WALL_SIZE, Sprite.WALL))
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                is_mouse_button_down = False
 
         view.render_world(
             all_entities_to_render=game_state.get_all_entities_to_render(),
