@@ -1,39 +1,42 @@
-from pythongame.core.buffs import AbstractBuff, register_buff_effect
+from pythongame.core.buffs import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import PotionType, BuffType, Millis
 from pythongame.core.game_data import register_ui_icon_sprite_path, UiIconSprite, register_potion_icon_sprite, \
     register_buff_text
-from pythongame.core.game_state import GameState
+from pythongame.core.game_state import GameState, WorldEntity
 from pythongame.core.potions import create_potion_visual_effect_at_player, PotionWasConsumed, register_potion_effect
 from pythongame.core.visual_effects import VisualCircle
 
 
 def _apply_speed(game_state: GameState):
     create_potion_visual_effect_at_player(game_state)
-    game_state.player_state.gain_buff(BuffType.INCREASED_MOVE_SPEED, Millis(3500))
+    game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.INCREASED_MOVE_SPEED), Millis(3500))
     return PotionWasConsumed()
 
 
-class IncreasedMoveSpeed(AbstractBuff):
+class IncreasedMoveSpeed(AbstractBuffEffect):
     def __init__(self):
         self._time_since_graphics = 0
 
-    def apply_start_effect(self, game_state: GameState):
+    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity):
         game_state.player_entity.add_to_speed_multiplier(1)
 
-    def apply_middle_effect(self, game_state: GameState, time_passed: Millis):
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, time_passed: Millis):
         self._time_since_graphics += time_passed
         if self._time_since_graphics > 100:
             game_state.visual_effects.append(
                 VisualCircle((150, 200, 250), game_state.player_entity.get_center_position(), 10, Millis(200), 0))
             self._time_since_graphics = 0
 
-    def apply_end_effect(self, game_state: GameState):
+    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity):
         game_state.player_entity.add_to_speed_multiplier(-1)
+
+    def get_buff_type(self):
+        return BuffType.INCREASED_MOVE_SPEED
 
 
 def register_speed_potion():
     register_potion_effect(PotionType.SPEED, _apply_speed)
-    register_buff_effect(BuffType.INCREASED_MOVE_SPEED, IncreasedMoveSpeed())
+    register_buff_effect(BuffType.INCREASED_MOVE_SPEED, IncreasedMoveSpeed)
     register_buff_text(BuffType.INCREASED_MOVE_SPEED, "Speed")
     register_potion_icon_sprite(PotionType.SPEED, UiIconSprite.SPEED_POTION)
     register_ui_icon_sprite_path(UiIconSprite.SPEED_POTION, "resources/graphics/white_potion.gif")

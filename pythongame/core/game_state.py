@@ -1,5 +1,5 @@
 import math
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 
 from pygame.rect import Rect
 
@@ -123,6 +123,7 @@ class Enemy:
         self.health = health
         self.max_health = max_health
         self.enemy_mind = enemy_mind
+        self.active_buffs: List[BuffWithDuration] = []
 
     def lose_health(self, amount):
         self.health = max(self.health - amount, 0)
@@ -130,19 +131,27 @@ class Enemy:
     def gain_health(self, amount):
         self.health = min(self.health + amount, self.max_health)
 
+    def gain_buff_effect(self, buff: Any, duration: Millis):
+        existing_buffs_with_this_type = [b for b in self.active_buffs
+                                         if b.buff_effect.get_buff_type() == buff.get_buff_type()]
+        if existing_buffs_with_this_type:
+            existing_buffs_with_this_type[0].time_until_expiration = duration
+        else:
+            self.active_buffs.append(BuffWithDuration(buff, duration))
 
-class Buff:
-    def __init__(self, buff_type: BuffType, time_until_expiration: Millis):
-        self.buff_type = buff_type
+
+class BuffWithDuration:
+    def __init__(self, buff_effect: Any, time_until_expiration: Millis):
+        self.buff_effect = buff_effect
         self.time_until_expiration = time_until_expiration
         self.has_applied_start_effect = False
 
 
-class PlayerBuffsUpdate:
-    def __init__(self, buffs_that_started: List[BuffType], active_buffs: List[BuffType],
-                 buffs_that_ended: List[BuffType]):
+class AgentBuffsUpdate:
+    def __init__(self, buffs_that_started: List[Any], buffs_that_were_active: List[Any],
+                 buffs_that_ended: List[Any]):
         self.buffs_that_started = buffs_that_started
-        self.active_buffs = active_buffs
+        self.buffs_that_were_active = buffs_that_were_active
         self.buffs_that_ended = buffs_that_ended
 
 
@@ -159,7 +168,7 @@ class PlayerState:
         self.potion_slots = potion_slots
         self.abilities = abilities
         self.ability_cooldowns_remaining = {ability_type: 0 for ability_type in abilities}
-        self.active_buffs: List[Buff] = []
+        self.active_buffs: List[BuffWithDuration] = []
         self.is_invisible = False
         self.is_stunned = False
 
@@ -185,12 +194,13 @@ class PlayerState:
             return empty_slots[0]
         return None
 
-    def gain_buff(self, buff_type: BuffType, duration: Millis):
-        existing_buffs_with_this_type = [e for e in self.active_buffs if e.buff_type == buff_type]
+    def gain_buff_effect(self, buff: Any, duration: Millis):
+        existing_buffs_with_this_type = [b for b in self.active_buffs
+                                         if b.buff_effect.get_buff_type() == buff.get_buff_type()]
         if existing_buffs_with_this_type:
             existing_buffs_with_this_type[0].time_until_expiration = duration
         else:
-            self.active_buffs.append(Buff(buff_type, duration))
+            self.active_buffs.append(BuffWithDuration(buff, duration))
 
     def regenerate_mana(self, time_passed: Millis):
         self.gain_mana(
@@ -200,6 +210,22 @@ class PlayerState:
         for ability_type in self.ability_cooldowns_remaining:
             if self.ability_cooldowns_remaining[ability_type] > 0:
                 self.ability_cooldowns_remaining[ability_type] -= time_passed
+
+
+def handle_buffs(active_buffs: List[BuffWithDuration], time_passed: Millis):
+    copied_buffs_list = list(active_buffs)
+    buffs_that_started = []
+    buffs_that_were_active = [b.buff_effect for b in copied_buffs_list]
+    buffs_that_ended = []
+    for buff in copied_buffs_list:
+        buff.time_until_expiration -= time_passed
+        if not buff.has_applied_start_effect:
+            buffs_that_started.append(buff.buff_effect)
+            buff.has_applied_start_effect = True
+        elif buff.time_until_expiration <= 0:
+            active_buffs.remove(buff)
+            buffs_that_ended.append(buff.buff_effect)
+    return AgentBuffsUpdate(buffs_that_started, buffs_that_were_active, buffs_that_ended)
 
 
 class GameState:

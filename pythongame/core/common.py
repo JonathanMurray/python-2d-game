@@ -160,6 +160,7 @@ class BuffType(Enum):
     INCREASED_MOVE_SPEED = 3
     INVISIBILITY = 4
     CHANNELING_MAGIC_MISSILES = 5
+    REDUCED_MOVEMENT_SPEED = 6
 
 
 class ProjectileType(Enum):

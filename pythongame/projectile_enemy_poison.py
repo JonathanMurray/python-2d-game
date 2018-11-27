@@ -1,7 +1,7 @@
-from pythongame.core.buffs import AbstractBuff, register_buff_effect
+from pythongame.core.buffs import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, ProjectileType, Sprite
 from pythongame.core.game_data import register_buff_text, register_entity_sprite_initializer, SpriteInitializer
-from pythongame.core.game_state import GameState
+from pythongame.core.game_state import GameState, WorldEntity
 from pythongame.core.projectiles import AbstractProjectileController, register_projectile_controller
 from pythongame.core.visual_effects import create_visual_damage_text, VisualCircle
 
@@ -16,20 +16,20 @@ class EnemyPoisonProjectileController(AbstractProjectileController):
         damage_amount = 1
         game_state.player_state.lose_health(damage_amount)
         game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, damage_amount))
-        game_state.player_state.gain_buff(BuffType.DAMAGE_OVER_TIME, Millis(2000))
+        game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.DAMAGE_OVER_TIME), Millis(2000))
         game_state.visual_effects.append(VisualCircle((50, 180, 50), game_state.player_entity.get_center_position(),
                                                       50, Millis(100), 0))
         return True
 
 
-class DamageOverTime(AbstractBuff):
+class DamageOverTime(AbstractBuffEffect):
     def __init__(self):
         self._time_since_graphics = 0
 
-    def apply_middle_effect(self, game_state: GameState, time_passed: Millis):
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, time_passed: Millis):
         self._time_since_graphics += time_passed
         damage_per_ms = 0.02
-        game_state.player_state.lose_health(damage_per_ms * time_passed)
+        game_state.player_state.lose_health(damage_per_ms * float(time_passed))
         graphics_cooldown = 300
         if self._time_since_graphics > graphics_cooldown:
             game_state.visual_effects.append(VisualCircle((50, 180, 50), game_state.player_entity.get_center_position(),
@@ -38,11 +38,12 @@ class DamageOverTime(AbstractBuff):
             game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, estimate_damage_taken))
             self._time_since_graphics = 0
 
+    def get_buff_type(self):
+        return BuffType.DAMAGE_OVER_TIME
 
 def register_enemy_poison_projectile():
     register_projectile_controller(ProjectileType.ENEMY_POISON, EnemyPoisonProjectileController)
     register_entity_sprite_initializer(
         Sprite.POISONBALL, SpriteInitializer("resources/graphics/poisonball.png", ENEMY_PROJECTILE_SIZE))
-    # TODO Should we create a new buff every time?
-    register_buff_effect(BuffType.DAMAGE_OVER_TIME, DamageOverTime())
+    register_buff_effect(BuffType.DAMAGE_OVER_TIME, DamageOverTime)
     register_buff_text(BuffType.DAMAGE_OVER_TIME, "Poison")

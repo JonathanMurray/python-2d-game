@@ -1,7 +1,7 @@
 import pygame
 
 from pythongame.core.abilities import register_ability_effect
-from pythongame.core.buffs import AbstractBuff, register_buff_effect
+from pythongame.core.buffs import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, ProjectileType, \
     get_position_from_center_position
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path, \
@@ -15,18 +15,18 @@ MAGIC_MISSILE_PROJECTILE_SIZE = (30, 30)
 
 
 def _apply_channel_attack(game_state: GameState):
-    game_state.player_state.gain_buff(BuffType.CHANNELING_MAGIC_MISSILES, Millis(1000))
+    game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.CHANNELING_MAGIC_MISSILES), Millis(1000))
 
 
-class ChannelingMagicMissiles(AbstractBuff):
+class ChannelingMagicMissiles(AbstractBuffEffect):
     def __init__(self):
         self._time_since_firing = 0
 
-    def apply_start_effect(self, game_state: GameState):
+    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity):
         game_state.player_state.is_stunned = True
         game_state.player_entity.set_not_moving()
 
-    def apply_middle_effect(self, game_state: GameState, time_passed: Millis):
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, time_passed: Millis):
         self._time_since_firing += time_passed
         if self._time_since_firing > 150:
             self._time_since_firing = 0
@@ -38,8 +38,11 @@ class ChannelingMagicMissiles(AbstractBuff):
             game_state.projectile_entities.append(projectile)
             game_state.visual_effects.append(VisualRect((250, 0, 250), player_center_position, 60, Millis(250)))
 
-    def apply_end_effect(self, game_state: GameState):
+    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity):
         game_state.player_state.is_stunned = False
+
+    def get_buff_type(self):
+        return BuffType.CHANNELING_MAGIC_MISSILES
 
 
 class PlayerMagicMissileProjectileController(AbstractProjectileController):
@@ -64,7 +67,7 @@ def register_channel_attack_ability():
         AbilityType.CHANNEL_ATTACK, AbilityData(UiIconSprite.MAGIC_MISSILE, 12, "R", pygame.K_r, Millis(8000)))
 
     register_ui_icon_sprite_path(UiIconSprite.MAGIC_MISSILE, "resources/graphics/magic_missile.png")
-    register_buff_effect(BuffType.CHANNELING_MAGIC_MISSILES, ChannelingMagicMissiles())
+    register_buff_effect(BuffType.CHANNELING_MAGIC_MISSILES, ChannelingMagicMissiles)
     register_entity_sprite_initializer(
         Sprite.MAGIC_MISSILE, SpriteInitializer("resources/graphics/magic_missile.png", MAGIC_MISSILE_PROJECTILE_SIZE))
     register_projectile_controller(ProjectileType.PLAYER_MAGIC_MISSILE, PlayerMagicMissileProjectileController)

@@ -1,7 +1,6 @@
 from pythongame.core.abilities import apply_ability_effect
-from pythongame.core.buffs import get_buff_effect
 from pythongame.core.common import *
-from pythongame.core.game_state import GameState
+from pythongame.core.game_state import GameState, handle_buffs
 from pythongame.core.player_controls import TryUseAbilityResult, PlayerControls
 from pythongame.core.potions import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
 from pythongame.core.view_state import ViewState
@@ -71,25 +70,22 @@ class GameEngine:
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_effects()
 
-        copied_buffs_list = list(self.game_state.player_state.active_buffs)
-        buffs_that_started = []
-        buffs_that_were_active = [b.buff_type for b in copied_buffs_list]
-        buffs_that_ended = []
-        for buff in copied_buffs_list:
-            buff.time_until_expiration -= time_passed
-            if not buff.has_applied_start_effect:
-                buffs_that_started.append(buff.buff_type)
-                buff.has_applied_start_effect = True
-            elif buff.time_until_expiration <= 0:
-                self.game_state.player_state.active_buffs.remove(buff)
-                buffs_that_ended.append(buff.buff_type)
+        player_buffs_update = handle_buffs(self.game_state.player_state.active_buffs, time_passed)
+        for buff_effect in player_buffs_update.buffs_that_started:
+            buff_effect.apply_start_effect(self.game_state, self.game_state.player_entity)
+        for buff_effect in player_buffs_update.buffs_that_were_active:
+            buff_effect.apply_middle_effect(self.game_state, self.game_state.player_entity, time_passed)
+        for buff_effect in player_buffs_update.buffs_that_ended:
+            buff_effect.apply_end_effect(self.game_state, self.game_state.player_entity)
 
-        for buff_type in buffs_that_started:
-            get_buff_effect(buff_type).apply_start_effect(self.game_state)
-        for buff_type in buffs_that_were_active:
-            get_buff_effect(buff_type).apply_middle_effect(self.game_state, time_passed)
-        for buff_type in buffs_that_ended:
-            get_buff_effect(buff_type).apply_end_effect(self.game_state)
+        for enemy in self.game_state.enemies:
+            buffs_update = handle_buffs(enemy.active_buffs, time_passed)
+            for buff_effect in buffs_update.buffs_that_started:
+                buff_effect.apply_start_effect(self.game_state, enemy.world_entity)
+            for buff_effect in buffs_update.buffs_that_were_active:
+                buff_effect.apply_middle_effect(self.game_state, enemy.world_entity, time_passed)
+            for buff_effect in buffs_update.buffs_that_ended:
+                buff_effect.apply_end_effect(self.game_state, enemy.world_entity)
 
         self.game_state.player_state.regenerate_mana(time_passed)
         self.game_state.player_state.recharge_ability_cooldowns(time_passed)
