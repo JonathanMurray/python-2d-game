@@ -1,7 +1,5 @@
 import random
 
-import pygame
-
 from pythongame.core.abilities import register_ability_effect
 from pythongame.core.common import AbilityType, translate_in_direction, get_position_from_center_position, Sprite, \
     ProjectileType, Millis, get_perpendicular_directions
@@ -48,8 +46,7 @@ class PlayerAoeProjectileController(AbstractProjectileController):
 
 def register_aoe_attack_ability():
     register_ability_effect(AbilityType.AOE_ATTACK, _apply_aoe_attack)
-    register_ability_data(
-        AbilityType.AOE_ATTACK, AbilityData(UiIconSprite.AOE_ABILITY, 5, "E", pygame.K_e, Millis(750)))
+    register_ability_data(AbilityType.AOE_ATTACK, AbilityData(UiIconSprite.AOE_ABILITY, 5, Millis(750)))
     register_ui_icon_sprite_path(UiIconSprite.AOE_ABILITY, "resources/graphics/whirlwind.png")
     register_entity_sprite_initializer(
         Sprite.WHIRLWIND, SpriteInitializer("resources/graphics/whirlwind.png", AOE_PROJECTILE_SIZE))

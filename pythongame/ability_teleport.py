@@ -23,5 +23,5 @@ def _apply_teleport(game_state: GameState):
 
 def register_teleport_ability():
     register_ability_effect(AbilityType.TELEPORT, _apply_teleport)
-    register_ability_data(AbilityType.TELEPORT, AbilityData(UiIconSprite.TELEPORT, 2, "T", pygame.K_t, Millis(500)))
+    register_ability_data(AbilityType.TELEPORT, AbilityData(UiIconSprite.TELEPORT, 2, Millis(500)))
     register_ui_icon_sprite_path(UiIconSprite.TELEPORT, "resources/graphics/teleport_icon.png")

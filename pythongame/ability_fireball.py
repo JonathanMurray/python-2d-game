@@ -1,5 +1,3 @@
-import pygame
-
 from pythongame.core.abilities import register_ability_effect
 from pythongame.core.common import get_position_from_center_position, Sprite, ProjectileType, AbilityType, Millis, \
     Direction, translate_in_direction
@@ -48,8 +46,7 @@ def _apply_ability(game_state: GameState):
 
 def register_fireball_ability():
     register_ability_effect(AbilityType.FIREBALL, _apply_ability)
-    register_ability_data(AbilityType.FIREBALL, AbilityData(UiIconSprite.ABILITY_FIREBALL, 3, "Q",
-                                                            pygame.K_q, Millis(200)))
+    register_ability_data(AbilityType.FIREBALL, AbilityData(UiIconSprite.ABILITY_FIREBALL, 3, Millis(200)))
     register_ui_icon_sprite_path(UiIconSprite.ABILITY_FIREBALL, "resources/graphics/icon_fireball.png")
     register_projectile_controller(ProjectileType.PLAYER_FIREBALL, ProjectileController)
 

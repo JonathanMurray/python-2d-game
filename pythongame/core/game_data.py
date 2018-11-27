@@ -70,12 +70,16 @@ class UiIconSprite(Enum):
 
 
 class AbilityData:
-    def __init__(self, icon_sprite: UiIconSprite, mana_cost: int, key_string: str, pygame_key, cooldown: Millis):
+    def __init__(self, icon_sprite: UiIconSprite, mana_cost: int, cooldown: Millis):
         self.icon_sprite = icon_sprite
         self.mana_cost = mana_cost
+        self.cooldown = cooldown
+
+
+class UserAbilityKey:
+    def __init__(self, key_string: str, pygame_key):
         self.key_string = key_string
         self.pygame_key = pygame_key
-        self.cooldown = cooldown
 
 
 class EnemyData:
@@ -102,6 +106,8 @@ POTION_ICON_SPRITES: Dict[PotionType, UiIconSprite] = {}
 
 ABILITIES: Dict[AbilityType, AbilityData] = {}
 
+USER_ABILITY_KEYS: Dict[AbilityType, UserAbilityKey] = {}
+
 BUFF_TEXTS: Dict[BuffType, str] = {}
 
 
@@ -111,6 +117,10 @@ def register_enemy_data(enemy_type: EnemyType, enemy_data: EnemyData):
 
 def register_ability_data(ability_type: AbilityType, ability_data: AbilityData):
     ABILITIES[ability_type] = ability_data
+
+
+def register_user_ability_key(ability_type: AbilityType, user_ability_key: UserAbilityKey):
+    USER_ABILITY_KEYS[ability_type] = user_ability_key
 
 
 def register_ui_icon_sprite_path(sprite: UiIconSprite, file_path: str):

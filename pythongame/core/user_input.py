@@ -1,7 +1,7 @@
 import pygame
 
 from pythongame.core.common import *
-from pythongame.core.game_data import ABILITIES
+from pythongame.core.game_data import USER_ABILITY_KEYS
 
 
 class ActionExitGame:
@@ -29,6 +29,7 @@ class ActionStopMoving:
 
 class ActionPauseGame:
     pass
+
 
 class ActionToggleRenderDebugging:
     pass
@@ -71,8 +72,8 @@ def get_user_actions():
             elif event.key == pygame.K_RETURN:
                 actions.append(ActionPauseGame())
             else:
-                for ability_type in ABILITIES:
-                    if event.key == ABILITIES[ability_type].pygame_key:
+                for ability_type in USER_ABILITY_KEYS:
+                    if event.key == USER_ABILITY_KEYS[ability_type].pygame_key:
                         actions.append(ActionTryUseAbility(ability_type))
 
         if event.type == pygame.KEYUP:

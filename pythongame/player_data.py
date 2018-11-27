@@ -1,20 +1,23 @@
+import pygame
+
 from pythongame.core.game_data import Sprite, Direction, PotionType, AbilityType, SpriteSheet, \
-    register_entity_sprite_map
+    register_entity_sprite_map, register_user_ability_key, UserAbilityKey
 from pythongame.core.game_state import PlayerState
 
 PLAYER_ENTITY_SIZE = (40, 30)
 PLAYER_ENTITY_SPEED = 0.13
 
 _player_potion_slots = {
-    1: PotionType.SPEED,
+    1: PotionType.MANA,
     2: PotionType.MANA,
-    3: PotionType.HEALTH,
-    4: PotionType.INVISIBILITY,
-    5: PotionType.INVISIBILITY
+    3: PotionType.MANA,
+    4: PotionType.MANA,
+    5: PotionType.MANA
 }
 
-_abilities = [AbilityType.FIREBALL, AbilityType.FROST_NOVA, AbilityType.AOE_ATTACK, AbilityType.CHANNEL_ATTACK,
-              AbilityType.TELEPORT]
+_abilities = [AbilityType.FIREBALL, AbilityType.FROST_NOVA]
+register_user_ability_key(AbilityType.FIREBALL, UserAbilityKey("Q", pygame.K_q))
+register_user_ability_key(AbilityType.FROST_NOVA, UserAbilityKey("W", pygame.K_w))
 health = 50
 mana = 100
 mana_regen = 0.002

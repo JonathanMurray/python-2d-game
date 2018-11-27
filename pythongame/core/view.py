@@ -4,7 +4,7 @@ import pygame
 
 from pythongame.core.common import Direction, Sprite, PotionType, sum_of_vectors
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
-    POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS, Animation
+    POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS
 from pythongame.core.game_state import WorldEntity
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 
@@ -278,6 +278,7 @@ class View:
         h = size[1]
         x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
         ability = ABILITIES[ability_type]
+        ability_key = USER_ABILITY_KEYS[ability_type]
         mana_cost = ability.mana_cost
         icon_sprite = ability.icon_sprite
         self._rect_filled((40, 40, 40), (x, y, w, h))
@@ -285,7 +286,7 @@ class View:
         self._rect(COLOR_WHITE, (x, y, w, h), 2)
         if highlighted_ability_action == ability_type:
             self._rect(COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
-        self._text(self.font_tiny, ability.key_string, (x + 8, y + h + 4))
+        self._text(self.font_tiny, ability_key.key_string, (x + 8, y + h + 4))
         self._text(self.font_tiny, str(mana_cost), (x + 8, y + h + 19))
 
         if ability_cooldowns_remaining[ability_type] > 0:

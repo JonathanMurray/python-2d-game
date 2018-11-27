@@ -1,5 +1,3 @@
-import pygame
-
 from pythongame.core.abilities import register_ability_effect
 from pythongame.core.buffs import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, ProjectileType, \
@@ -63,8 +61,7 @@ class PlayerMagicMissileProjectileController(AbstractProjectileController):
 
 def register_channel_attack_ability():
     register_ability_effect(AbilityType.CHANNEL_ATTACK, _apply_channel_attack)
-    register_ability_data(
-        AbilityType.CHANNEL_ATTACK, AbilityData(UiIconSprite.MAGIC_MISSILE, 12, "R", pygame.K_r, Millis(8000)))
+    register_ability_data(AbilityType.CHANNEL_ATTACK, AbilityData(UiIconSprite.MAGIC_MISSILE, 12, Millis(8000)))
 
     register_ui_icon_sprite_path(UiIconSprite.MAGIC_MISSILE, "resources/graphics/magic_missile.png")
     register_buff_effect(BuffType.CHANNELING_MAGIC_MISSILES, ChannelingMagicMissiles)
