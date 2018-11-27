@@ -252,9 +252,6 @@ class GameState:
         grid_width = world_w // GRID_CELL_WIDTH
         grid_height = world_h // GRID_CELL_WIDTH
         grid = []
-        print("Creating wall grid (for pathfinding)")
-        print("World dimensions: " + str((world_w, world_h)))
-        print("Grid dimensions: " + str((grid_width, grid_height)))
         for x in range(grid_width):
             grid.append(grid_height * [0])
         for w in walls:
@@ -262,11 +259,6 @@ class GameState:
             cell_y = w.y // GRID_CELL_WIDTH
             grid[cell_x][cell_y] = 1
 
-        print("Grid:")
-        for y in range(grid_height):
-            for x in range(grid_width):
-                print(str(grid[x][y]) + " ", end='')
-            print("")
         return grid
 
     # entities_to_remove aren't necessarily of the class WorldEntity
