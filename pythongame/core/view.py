@@ -6,7 +6,7 @@ from pythongame.core.common import Direction, Sprite, PotionType, sum_of_vectors
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS, Animation
 from pythongame.core.game_state import WorldEntity
-from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText
+from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -207,8 +207,10 @@ class View:
             self._visual_rect(visual_effect)
         elif isinstance(visual_effect, VisualText):
             self._visual_text(visual_effect)
+        elif isinstance(visual_effect, VisualSprite):
+            self._visual_sprite(visual_effect)
         else:
-            raise Exception("Unhandled visual effect: " + visual_effect)
+            raise Exception("Unhandled visual effect: " + str(visual_effect))
 
     def _visual_line(self, line):
         start_position = self._translate_world_position_to_screen(line.start_position)
@@ -228,6 +230,20 @@ class View:
         position = visual_effect.position
         translated_position = self._translate_world_position_to_screen(position)
         self._text(self.font_tiny, visual_effect.text, translated_position, visual_effect.color)
+
+    def _visual_sprite(self, visual_sprite):
+        position = visual_sprite.position
+        animation_progress = visual_sprite.animation_progress()
+        sprite = visual_sprite.sprite
+        translated_position = self._translate_world_position_to_screen(position)
+        if sprite in self.images_by_sprite:
+            images: Dict[Direction, List[ImageWithRelativePosition]] = self.images_by_sprite[sprite]
+            image_with_relative_position = self._get_image_from_direction(images, Direction.DOWN,
+                                                                          animation_progress)
+            pos = sum_of_vectors(translated_position, image_with_relative_position.position_relative_to_entity)
+            self._image(image_with_relative_position.image, pos)
+        else:
+            raise Exception("Unhandled sprite: " + str(sprite))
 
     def _stat_bar_for_world_entity(self, world_entity, h, stat, max_stat, color):
         position_on_screen = self._translate_world_position_to_screen((world_entity.x, world_entity.y))

@@ -134,6 +134,7 @@ class AbilityType(Enum):
     AOE_ATTACK = 3
     CHANNEL_ATTACK = 4
     TELEPORT = 5
+    FROST_NOVA = 6
 
 
 class Sprite(Enum):
@@ -150,6 +151,7 @@ class Sprite(Enum):
     WALL = 11
     RAT_1 = 12
     RAT_2 = 13
+    EFFECT_ABILITY_FROST_NOVA = 14
 
 
 class BuffType(Enum):

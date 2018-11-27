@@ -271,6 +271,10 @@ class GameState:
     def get_enemies_intersecting_with(self, entity) -> List[Enemy]:
         return [e for e in self.enemies if boxes_intersect(e.world_entity, entity)]
 
+    def get_enemies_within_x_y_distance_of(self, distance: int, position: Tuple[int, int]):
+        return [e for e in self.enemies
+                if is_x_and_y_within_distance(e.world_entity.get_center_position(), position, distance)]
+
     # NOTE: Very naive brute-force collision checking
     def update_world_entity_position_within_game_world(self, entity: WorldEntity, time_passed: Millis):
         new_position = entity.get_new_position_according_to_dir_and_speed(time_passed)

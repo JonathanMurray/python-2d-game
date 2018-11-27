@@ -66,6 +66,7 @@ class UiIconSprite(Enum):
     INVISIBILITY_POTION = 7
     MAGIC_MISSILE = 8
     TELEPORT = 9
+    ABILITY_FROST_NOVA = 10
 
 
 class AbilityData:

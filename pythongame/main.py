@@ -7,6 +7,7 @@ import pythongame.core.pathfinding.enemy_pathfinding
 from pythongame.ability_aoe_attack import register_aoe_attack_ability
 from pythongame.ability_channel_attack import register_channel_attack_ability
 from pythongame.ability_fireball import register_fireball_ability
+from pythongame.ability_frost_nova import register_frost_nova_ability
 from pythongame.ability_heal import register_heal_ability
 from pythongame.ability_teleport import register_teleport_ability
 from pythongame.core.common import Millis
@@ -32,6 +33,7 @@ SCREEN_SIZE = (700, 600)
 CAMERA_SIZE = (700, 400)
 
 register_fireball_ability()
+register_frost_nova_ability()
 register_heal_ability()
 register_aoe_attack_ability()
 register_channel_attack_ability()

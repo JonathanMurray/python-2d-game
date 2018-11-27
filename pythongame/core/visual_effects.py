@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from pythongame.core.common import Millis
+from pythongame.core.common import Millis, Sprite
 from pythongame.core.game_state import WorldEntity
 
 
@@ -75,6 +75,18 @@ class VisualText(VisualEffect):
         self.text = text
         self.color = color
         self.position = position
+
+
+class VisualSprite(VisualEffect):
+    def __init__(self, sprite: Sprite, position: Tuple[int, int], max_age: Millis):
+        super().__init__(max_age)
+        self.sprite = sprite
+        self.position = position
+        self._animation_progress = 0
+        self.max_age = max_age
+
+    def animation_progress(self):
+        return (self._animation_progress + float(self._age) / float(self.max_age)) % 1
 
 
 def create_visual_damage_text(entity, damage_amount):

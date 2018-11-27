@@ -13,7 +13,7 @@ _player_potion_slots = {
     5: PotionType.INVISIBILITY
 }
 
-_abilities = [AbilityType.FIREBALL, AbilityType.HEAL, AbilityType.AOE_ATTACK, AbilityType.CHANNEL_ATTACK,
+_abilities = [AbilityType.FIREBALL, AbilityType.FROST_NOVA, AbilityType.AOE_ATTACK, AbilityType.CHANNEL_ATTACK,
               AbilityType.TELEPORT]
 health = 50
 mana = 100
