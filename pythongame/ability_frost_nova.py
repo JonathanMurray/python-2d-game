@@ -53,7 +53,7 @@ def register_frost_nova_ability():
     ability_type = AbilityType.FROST_NOVA
     register_ability_effect(ability_type, _apply_ability)
     ui_icon_sprite = UiIconSprite.ABILITY_FROST_NOVA
-    register_ability_data(ability_type, AbilityData(ui_icon_sprite, 5, Millis(2000)))
+    register_ability_data(ability_type, AbilityData(ui_icon_sprite, 5, Millis(3000)))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/ui_icon_ability_frost_nova.png")
 
     sprite_sheet = SpriteSheet("resources/graphics/effect_frost_explosion.png")

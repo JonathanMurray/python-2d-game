@@ -152,6 +152,7 @@ class Sprite(Enum):
     RAT_1 = 12
     RAT_2 = 13
     EFFECT_ABILITY_FROST_NOVA = 14
+    MANA_POTION = 15
 
 
 class BuffType(Enum):

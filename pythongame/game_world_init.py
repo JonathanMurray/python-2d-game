@@ -53,7 +53,7 @@ def create_game_state_from_file(camera_size: Tuple[int, int], map_file: str):
             row_index += 1
             max_row_index = max(row_index, max_row_index)
     player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
-    potions = [PotionOnGround(WorldEntity(pos, POTION_ENTITY_SIZE, Sprite.HEALTH_POTION), PotionType.HEALTH)
+    potions = [PotionOnGround(WorldEntity(pos, POTION_ENTITY_SIZE, Sprite.MANA_POTION), PotionType.MANA)
                for pos in potion_positions]
     path_finder = GlobalPathFinder()
     dumb_enemies = [_create_enemy_at_position(EnemyType.DUMB, pos, path_finder) for pos in dumb_enemy_positions]

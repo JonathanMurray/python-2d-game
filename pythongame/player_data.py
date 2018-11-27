@@ -8,11 +8,11 @@ PLAYER_ENTITY_SIZE = (40, 30)
 PLAYER_ENTITY_SPEED = 0.13
 
 _player_potion_slots = {
-    1: PotionType.MANA,
+    1: PotionType.HEALTH,
     2: PotionType.MANA,
-    3: PotionType.MANA,
-    4: PotionType.MANA,
-    5: PotionType.MANA
+    3: None,
+    4: None,
+    5: None
 }
 
 _abilities = [AbilityType.FIREBALL, AbilityType.FROST_NOVA]
@@ -20,7 +20,7 @@ register_user_ability_key(AbilityType.FIREBALL, UserAbilityKey("Q", pygame.K_q))
 register_user_ability_key(AbilityType.FROST_NOVA, UserAbilityKey("W", pygame.K_w))
 health = 50
 mana = 100
-mana_regen = 0.002
+mana_regen = 0.0025
 INTIAL_PLAYER_STATE = PlayerState(health, health, mana, mana, mana_regen, _player_potion_slots, _abilities)
 
 
