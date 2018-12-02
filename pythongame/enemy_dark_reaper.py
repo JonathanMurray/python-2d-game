@@ -10,6 +10,8 @@ from pythongame.core.game_state import GameState, Enemy, WorldEntity
 from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
 from pythongame.core.visual_effects import VisualLine, create_visual_damage_text, VisualCircle, VisualText
 
+COLOR_SPEECH = (200, 100, 70)
+
 
 class EnemyMind(AbstractEnemyMind):
     def __init__(self, global_path_finder):
@@ -81,8 +83,9 @@ class EnemyMind(AbstractEnemyMind):
         if self._time_since_shield > self._shield_interval:
             self._time_since_shield = 0
             speech_text_pos = (enemy_entity.x - 40, enemy_entity.y - 30)
+
             game_state.visual_effects.append(
-                VisualText("WHAT NOW MORTAL?", (200, 100, 70), speech_text_pos, Millis(3000))
+                VisualText("WHAT NOW MORTAL?", COLOR_SPEECH, speech_text_pos, Millis(3000))
             )
             game_state.visual_effects.append(
                 VisualCircle((0, 0, 150), enemy_center_pos, 60, Millis(self._shield_duration), 2, enemy_entity)
@@ -93,13 +96,13 @@ class EnemyMind(AbstractEnemyMind):
             self._time_since_speech = 0
             speech_text_pos = (enemy_entity.x - 40, enemy_entity.y - 30)
             game_state.visual_effects.append(
-                VisualText("GIVE IN TO THE DARKNESS!!", (200, 100, 70), speech_text_pos, Millis(3000))
+                VisualText("GIVE IN TO THE DARKNESS!!", COLOR_SPEECH, speech_text_pos, Millis(3000))
             )
+
 
 class Invuln(AbstractBuffEffect):
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
         buffed_enemy.invulnerable = True
-
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
         buffed_enemy.invulnerable = False
