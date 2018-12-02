@@ -1,17 +1,18 @@
 from typing import Dict, Type
 
 from pythongame.core.common import *
-from pythongame.core.game_state import GameState, WorldEntity
+from pythongame.core.game_state import GameState, WorldEntity, Enemy
 
 
 class AbstractBuffEffect:
-    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity):
+    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
         pass
 
-    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, time_passed: Millis):
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy,
+                            time_passed: Millis):
         pass
 
-    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity):
+    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
         pass
 
     def get_buff_type(self):

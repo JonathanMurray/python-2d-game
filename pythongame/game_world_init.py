@@ -106,6 +106,8 @@ def save_game_state_to_file(game_state: GameState, map_file: str):
                             map_file.write("2")
                         elif entity_in_cell.enemy_type == EnemyType.RAT_1:
                             map_file.write("R")
+                        elif entity_in_cell.enemy_type == EnemyType.DARK_REAPER:
+                            map_file.write("D")
                     elif entity_in_cell.is_player:
                         map_file.write("P")
                     elif entity_in_cell.is_wall:

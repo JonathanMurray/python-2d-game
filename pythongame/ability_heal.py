@@ -3,7 +3,7 @@ from pythongame.core.buffs import AbstractBuffEffect, register_buff_effect, get_
 from pythongame.core.common import BuffType, Millis, AbilityType
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path, \
     register_buff_text
-from pythongame.core.game_state import GameState, WorldEntity
+from pythongame.core.game_state import GameState, WorldEntity, Enemy
 from pythongame.core.visual_effects import create_visual_healing_text, VisualCircle
 
 
@@ -15,7 +15,8 @@ class HealingOverTime(AbstractBuffEffect):
     def __init__(self):
         self._time_since_graphics = 0
 
-    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, time_passed: Millis):
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy,
+                            time_passed: Millis):
         self._time_since_graphics += time_passed
         healing_amount = 0.04
         game_state.player_state.gain_health(healing_amount * float(time_passed))

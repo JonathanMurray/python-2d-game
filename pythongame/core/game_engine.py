@@ -72,20 +72,20 @@ class GameEngine:
 
         player_buffs_update = handle_buffs(self.game_state.player_state.active_buffs, time_passed)
         for buff_effect in player_buffs_update.buffs_that_started:
-            buff_effect.apply_start_effect(self.game_state, self.game_state.player_entity)
+            buff_effect.apply_start_effect(self.game_state, self.game_state.player_entity, None)
         for buff_effect in player_buffs_update.buffs_that_were_active:
-            buff_effect.apply_middle_effect(self.game_state, self.game_state.player_entity, time_passed)
+            buff_effect.apply_middle_effect(self.game_state, self.game_state.player_entity, None, time_passed)
         for buff_effect in player_buffs_update.buffs_that_ended:
-            buff_effect.apply_end_effect(self.game_state, self.game_state.player_entity)
+            buff_effect.apply_end_effect(self.game_state, self.game_state.player_entity, None)
 
         for enemy in self.game_state.enemies:
             buffs_update = handle_buffs(enemy.active_buffs, time_passed)
             for buff_effect in buffs_update.buffs_that_started:
-                buff_effect.apply_start_effect(self.game_state, enemy.world_entity)
+                buff_effect.apply_start_effect(self.game_state, enemy.world_entity, enemy)
             for buff_effect in buffs_update.buffs_that_were_active:
-                buff_effect.apply_middle_effect(self.game_state, enemy.world_entity, time_passed)
+                buff_effect.apply_middle_effect(self.game_state, enemy.world_entity, enemy, time_passed)
             for buff_effect in buffs_update.buffs_that_ended:
-                buff_effect.apply_end_effect(self.game_state, enemy.world_entity)
+                buff_effect.apply_end_effect(self.game_state, enemy.world_entity, enemy)
 
         self.game_state.player_state.regenerate_mana(time_passed)
         self.game_state.player_state.recharge_ability_cooldowns(time_passed)

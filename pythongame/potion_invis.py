@@ -2,7 +2,7 @@ from pythongame.core.buffs import AbstractBuffEffect, register_buff_effect, get_
 from pythongame.core.common import PotionType, BuffType, Millis
 from pythongame.core.game_data import register_ui_icon_sprite_path, UiIconSprite, register_potion_icon_sprite, \
     register_buff_text
-from pythongame.core.game_state import GameState, WorldEntity
+from pythongame.core.game_state import GameState, WorldEntity, Enemy
 from pythongame.core.potions import create_potion_visual_effect_at_player, PotionWasConsumed, register_potion_effect
 from pythongame.core.visual_effects import VisualRect
 
@@ -17,10 +17,11 @@ class Invisibility(AbstractBuffEffect):
     def __init__(self):
         self._time_since_graphics = 0
 
-    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity):
+    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
         game_state.player_state.is_invisible = True
 
-    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, time_passed: Millis):
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy,
+                            time_passed: Millis):
         self._time_since_graphics += time_passed
         if self._time_since_graphics > 320:
             self._time_since_graphics = 0
@@ -28,7 +29,7 @@ class Invisibility(AbstractBuffEffect):
                 VisualRect((0, 0, 250), game_state.player_entity.get_center_position(), 60, Millis(400),
                            game_state.player_entity))
 
-    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity):
+    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
         game_state.player_state.is_invisible = False
 
     def get_buff_type(self):

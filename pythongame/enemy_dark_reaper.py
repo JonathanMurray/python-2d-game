@@ -1,7 +1,8 @@
 import random
 
+from pythongame.core.buffs import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import Millis, is_x_and_y_within_distance, EnemyType, Sprite, Direction, \
-    get_perpendicular_directions
+    get_perpendicular_directions, BuffType
 from pythongame.core.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
 from pythongame.core.game_data import register_enemy_data, \
     EnemyData, SpriteSheet, register_entity_sprite_map
@@ -20,8 +21,8 @@ class EnemyMind(AbstractEnemyMind):
         self.next_waypoint = None
         self._reevaluate_next_waypoint_direction_interval = 1000
         self._time_since_reevaluated = self._reevaluate_next_waypoint_direction_interval
-        self._shield_interval = 5000
-        self._shield_duration = 3000
+        self._shield_interval = 12000
+        self._shield_duration = 5000
         self._time_since_shield = 0
 
     def control_enemy(self, game_state: GameState, enemy: Enemy, player_entity: WorldEntity, is_player_invisible: bool,
@@ -79,6 +80,19 @@ class EnemyMind(AbstractEnemyMind):
             game_state.visual_effects.append(
                 VisualCircle((0, 0, 150), enemy_center_pos, 60, Millis(self._shield_duration), 2, enemy_entity)
             )
+            enemy.gain_buff_effect(get_buff_effect(BuffType.INVULNERABILITY), Millis(self._shield_duration))
+
+
+class Invuln(AbstractBuffEffect):
+    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
+        buffed_enemy.invulnerable = True
+
+
+    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
+        buffed_enemy.invulnerable = False
+
+    def get_buff_type(self):
+        return BuffType.INVULNERABILITY
 
 
 def _move_in_dir(enemy_entity, direction):
@@ -106,3 +120,4 @@ def register_dark_reaper_enemy():
         Direction.UP: [(9, 3), (10, 3), (11, 3)]
     }
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir, (0, 0))
+    register_buff_effect(BuffType.INVULNERABILITY, Invuln)

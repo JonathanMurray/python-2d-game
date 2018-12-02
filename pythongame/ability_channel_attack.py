@@ -20,11 +20,12 @@ class ChannelingMagicMissiles(AbstractBuffEffect):
     def __init__(self):
         self._time_since_firing = 0
 
-    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity):
+    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
         game_state.player_state.is_stunned = True
         game_state.player_entity.set_not_moving()
 
-    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, time_passed: Millis):
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy,
+                            time_passed: Millis):
         self._time_since_firing += time_passed
         if self._time_since_firing > 150:
             self._time_since_firing = 0
@@ -36,7 +37,7 @@ class ChannelingMagicMissiles(AbstractBuffEffect):
             game_state.projectile_entities.append(projectile)
             game_state.visual_effects.append(VisualRect((250, 0, 250), player_center_position, 60, Millis(250)))
 
-    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity):
+    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
         game_state.player_state.is_stunned = False
 
     def get_buff_type(self):

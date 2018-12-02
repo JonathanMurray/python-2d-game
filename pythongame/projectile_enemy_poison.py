@@ -1,7 +1,7 @@
 from pythongame.core.buffs import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, ProjectileType, Sprite
 from pythongame.core.game_data import register_buff_text, register_entity_sprite_initializer, SpriteInitializer
-from pythongame.core.game_state import GameState, WorldEntity
+from pythongame.core.game_state import GameState, WorldEntity, Enemy
 from pythongame.core.projectiles import AbstractProjectileController, register_projectile_controller
 from pythongame.core.visual_effects import create_visual_damage_text, VisualCircle
 
@@ -26,7 +26,8 @@ class DamageOverTime(AbstractBuffEffect):
     def __init__(self):
         self._time_since_graphics = 0
 
-    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, time_passed: Millis):
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy,
+                            time_passed: Millis):
         self._time_since_graphics += time_passed
         damage_per_ms = 0.02
         game_state.player_state.lose_health(damage_per_ms * float(time_passed))
@@ -40,6 +41,7 @@ class DamageOverTime(AbstractBuffEffect):
 
     def get_buff_type(self):
         return BuffType.DAMAGE_OVER_TIME
+
 
 def register_enemy_poison_projectile():
     register_projectile_controller(ProjectileType.ENEMY_POISON, EnemyPoisonProjectileController)

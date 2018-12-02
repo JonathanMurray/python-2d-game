@@ -13,6 +13,7 @@ from pythongame.core.game_data import ENEMIES, WALL_SIZE
 from pythongame.core.game_state import WorldEntity, Enemy
 from pythongame.core.view import View
 from pythongame.enemy_berserker import register_berserker_enemy
+from pythongame.enemy_dark_reaper import register_dark_reaper_enemy
 from pythongame.enemy_dumb import register_dumb_enemy
 from pythongame.enemy_mage import register_mage_enemy
 from pythongame.enemy_rat_1 import register_rat_1_enemy
@@ -44,6 +45,7 @@ register_berserker_enemy()
 register_player_data()
 register_rat_1_enemy()
 register_rat_2_enemy()
+register_dark_reaper_enemy()
 
 
 def main(args: List[str]):
@@ -103,6 +105,8 @@ def main(args: List[str]):
                     placing_map_file_entity = MapFileEntity(EnemyType.RAT_2, False, False)
                 elif event.key == pygame.K_x:
                     placing_map_file_entity = MapFileEntity(None, False, True)
+                elif event.key == pygame.K_d:
+                    placing_map_file_entity = MapFileEntity(EnemyType.DARK_REAPER, False, False)
                 elif event.key == pygame.K_s:
                     save_file = map_file
                     save_game_state_to_file(game_state, save_file)
