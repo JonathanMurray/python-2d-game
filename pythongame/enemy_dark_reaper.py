@@ -8,7 +8,7 @@ from pythongame.core.game_data import register_enemy_data, \
     EnemyData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, Enemy, WorldEntity
 from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
-from pythongame.core.visual_effects import VisualLine, create_visual_damage_text, VisualCircle
+from pythongame.core.visual_effects import VisualLine, create_visual_damage_text, VisualCircle, VisualText
 
 
 class EnemyMind(AbstractEnemyMind):
@@ -21,9 +21,11 @@ class EnemyMind(AbstractEnemyMind):
         self.next_waypoint = None
         self._reevaluate_next_waypoint_direction_interval = 1000
         self._time_since_reevaluated = self._reevaluate_next_waypoint_direction_interval
-        self._shield_interval = 12000
+        self._shield_interval = 13000
         self._shield_duration = 5000
-        self._time_since_shield = 0
+        self._time_since_shield = 7000
+        self._speech_interval = 16000
+        self._time_since_speech = 0
 
     def control_enemy(self, game_state: GameState, enemy: Enemy, player_entity: WorldEntity, is_player_invisible: bool,
                       time_passed: Millis):
@@ -31,6 +33,7 @@ class EnemyMind(AbstractEnemyMind):
         self._time_since_updated_path += time_passed
         self._time_since_reevaluated += time_passed
         self._time_since_shield += time_passed
+        self._time_since_speech += time_passed
 
         enemy_entity = enemy.world_entity
 
@@ -77,11 +80,21 @@ class EnemyMind(AbstractEnemyMind):
 
         if self._time_since_shield > self._shield_interval:
             self._time_since_shield = 0
+            speech_text_pos = (enemy_entity.x - 40, enemy_entity.y - 30)
+            game_state.visual_effects.append(
+                VisualText("WHAT NOW MORTAL?", (200, 100, 70), speech_text_pos, Millis(3000))
+            )
             game_state.visual_effects.append(
                 VisualCircle((0, 0, 150), enemy_center_pos, 60, Millis(self._shield_duration), 2, enemy_entity)
             )
             enemy.gain_buff_effect(get_buff_effect(BuffType.INVULNERABILITY), Millis(self._shield_duration))
 
+        if self._time_since_speech > self._speech_interval:
+            self._time_since_speech = 0
+            speech_text_pos = (enemy_entity.x - 40, enemy_entity.y - 30)
+            game_state.visual_effects.append(
+                VisualText("GIVE IN TO THE DARKNESS!!", (200, 100, 70), speech_text_pos, Millis(3000))
+            )
 
 class Invuln(AbstractBuffEffect):
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
@@ -106,8 +119,8 @@ def register_dark_reaper_enemy():
     size = (50, 50)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.DARK_REAPER
     enemy_type = EnemyType.DARK_REAPER
-    movement_speed = 0.045
-    health = 70
+    movement_speed = 0.04
+    health = 80
     register_enemy_data(enemy_type, EnemyData(sprite, size, health, movement_speed))
     register_enemy_behavior(enemy_type, EnemyMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet.png")
