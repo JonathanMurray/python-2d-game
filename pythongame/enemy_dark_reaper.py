@@ -85,7 +85,7 @@ class EnemyMind(AbstractEnemyMind):
             speech_text_pos = (enemy_entity.x - 40, enemy_entity.y - 30)
 
             game_state.visual_effects.append(
-                VisualText("WHAT NOW MORTAL?", COLOR_SPEECH, speech_text_pos, Millis(3000))
+                VisualText("WHAT NOW MORTAL?", COLOR_SPEECH, speech_text_pos, speech_text_pos, Millis(3000))
             )
             game_state.visual_effects.append(
                 VisualCircle((0, 0, 150), enemy_center_pos, 60, Millis(self._shield_duration), 2, enemy_entity)
@@ -96,7 +96,7 @@ class EnemyMind(AbstractEnemyMind):
             self._time_since_speech = 0
             speech_text_pos = (enemy_entity.x - 40, enemy_entity.y - 30)
             game_state.visual_effects.append(
-                VisualText("GIVE IN TO THE DARKNESS!!", COLOR_SPEECH, speech_text_pos, Millis(3000))
+                VisualText("GIVE IN TO THE DARKNESS!!", COLOR_SPEECH, speech_text_pos, speech_text_pos, Millis(3000))
             )
 
 

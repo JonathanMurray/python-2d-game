@@ -227,7 +227,7 @@ class View:
         self._world_rect(visual_rect.color, visual_rect.rect(), 1)
 
     def _visual_text(self, visual_effect):
-        position = visual_effect.position
+        position = visual_effect.position()
         translated_position = self._translate_world_position_to_screen(position)
         self._text(self.font_tiny, visual_effect.text, translated_position, visual_effect.color)
 

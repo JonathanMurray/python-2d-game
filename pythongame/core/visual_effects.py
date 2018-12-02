@@ -70,11 +70,18 @@ class VisualRect(VisualEffect):
 
 
 class VisualText(VisualEffect):
-    def __init__(self, text: str, color: Tuple[int, int, int], position: Tuple[int, int], max_age: Millis):
+    def __init__(self, text: str, color: Tuple[int, int, int], start_position: Tuple[int, int],
+                 end_position: Tuple[int, int], max_age: Millis):
         super().__init__(max_age)
         self.text = text
         self.color = color
-        self.position = position
+        self.start_position = start_position
+        self.end_position = end_position
+
+    def position(self):
+        x = self.start_position[0] + int(self._age / self._max_age * (self.end_position[0] - self.start_position[0]))
+        y = self.start_position[1] + int(self._age / self._max_age * (self.end_position[1] - self.start_position[1]))
+        return x, y
 
 
 class VisualSprite(VisualEffect):
@@ -90,15 +97,18 @@ class VisualSprite(VisualEffect):
 
 
 def create_visual_damage_text(entity, damage_amount):
-    visual_text_position = (entity.x + 15, entity.y - 10)
-    return VisualText(str(damage_amount), (220, 0, 0), visual_text_position, Millis(600))
+    start_position = (entity.x + 15, entity.y - 10)
+    end_position = (entity.x + 15, entity.y - 40)
+    return VisualText(str(damage_amount), (220, 0, 0), start_position, end_position, Millis(800))
 
 
 def create_visual_healing_text(entity, healing_amount):
-    visual_text_position = (entity.x + 15, entity.y - 10)
-    return VisualText(str(healing_amount), (0, 140, 0), visual_text_position, Millis(600))
+    start_position = (entity.x + 15, entity.y - 10)
+    end_position = (entity.x + 15, entity.y - 40)
+    return VisualText(str(healing_amount), (0, 140, 0), start_position, end_position, Millis(800))
 
 
 def create_visual_mana_text(entity, healing_amount):
-    visual_text_position = (entity.x + 15, entity.y - 10)
-    return VisualText(str(healing_amount), (0, 0, 140), visual_text_position, Millis(600))
+    start_position = (entity.x + 15, entity.y - 10)
+    end_position = (entity.x + 15, entity.y - 40)
+    return VisualText(str(healing_amount), (0, 0, 140), start_position, end_position, Millis(800))
