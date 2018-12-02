@@ -34,6 +34,7 @@ def main(args: List[str]):
     game_engine = GameEngine(game_state, view_state)
 
     is_paused = False
+    is_game_over = False
     render_hit_and_collision_boxes = False
 
     while True:
@@ -52,7 +53,7 @@ def main(args: List[str]):
                 # TODO: Handle this better than accessing a global variable from here
                 pythongame.core.pathfinding.enemy_pathfinding.DEBUG_RENDER_PATHFINDING = \
                     not pythongame.core.pathfinding.enemy_pathfinding.DEBUG_RENDER_PATHFINDING
-            if not is_paused:
+            if not is_paused and not is_game_over:
                 if isinstance(action, ActionTryUseAbility):
                     game_engine.try_use_ability(action.ability_type)
                 elif isinstance(action, ActionTryUsePotion):
@@ -71,8 +72,10 @@ def main(args: List[str]):
         clock.tick()
         time_passed = Millis(clock.get_time())
 
-        if not is_paused:
-            game_engine.run_one_frame(time_passed)
+        if not is_paused and not is_game_over:
+            player_died = game_engine.run_one_frame(time_passed)
+            if player_died:
+                is_game_over = True
 
         # ------------------------------------
         #          RENDER EVERYTHING
@@ -103,6 +106,7 @@ def main(args: List[str]):
             highlighted_potion_action=view_state.highlighted_potion_action,
             highlighted_ability_action=view_state.highlighted_ability_action,
             is_paused=is_paused,
+            is_game_over=is_game_over,
             ability_cooldowns_remaining=game_state.player_state.ability_cooldowns_remaining)
 
         view.update_display()

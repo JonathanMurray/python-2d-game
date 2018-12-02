@@ -338,7 +338,7 @@ class View:
         for visual_effect in visual_effects:
             self._visual_effect(visual_effect)
 
-    def render_ui(self, fps_string, is_paused, abilities, ability_cooldowns_remaining,
+    def render_ui(self, fps_string, is_paused, is_game_over, abilities, ability_cooldowns_remaining,
                   highlighted_ability_action, highlighted_potion_action, message, player_active_buffs,
                   player_health, player_mana, player_max_health, player_max_mana,
                   player_minimap_relative_position, potion_slots):
@@ -399,7 +399,10 @@ class View:
         self._text(self.font_small, fps_string + " fps", (5, 3))
 
         self._text(self.font_small, message, (self.ui_screen_area.w / 2 - 80, self.ui_screen_area.y - 30))
-        if is_paused:
+
+        if is_game_over:
+            self._text(self.font_huge, "You died!", (self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50))
+        elif is_paused:
             self._text(self.font_huge, "PAUSED", (self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50))
 
     def render_map_editor_mouse_rect(self, map_editor_mouse_rect: Tuple[int, int, int, int]):

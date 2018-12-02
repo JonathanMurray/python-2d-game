@@ -48,6 +48,7 @@ class GameEngine:
             self.game_state.camera_world_area.rect(), 250)
         return rects_intersect(enemy.world_entity.rect(), camera_rect_with_margin)
 
+    # Returns True if player died
     def run_one_frame(self, time_passed: Millis):
         for e in self.game_state.enemies:
             # Enemy AI shouldn't run if enemy is too far out of sight
@@ -141,3 +142,6 @@ class GameEngine:
         # ------------------------------------
 
         self.game_state.center_camera_on_player()
+
+        if self.game_state.player_state.health <= 0:
+            return True # Game over
