@@ -63,6 +63,7 @@ def main(args: List[str]):
     is_mouse_button_down = False
 
     grid_cell_size = 25
+    camera_move_distance = grid_cell_size * 4
     snapped_mouse_screen_position = (0, 0)
     snapped_mouse_world_position = (0, 0)
 
@@ -107,13 +108,13 @@ def main(args: List[str]):
                     save_game_state_to_file(game_state, save_file)
                     print("Saved state to " + save_file)
                 elif event.key == pygame.K_RIGHT:
-                    game_state.translate_camera_position((grid_cell_size, 0))
+                    game_state.translate_camera_position((camera_move_distance, 0))
                 elif event.key == pygame.K_DOWN:
-                    game_state.translate_camera_position((0, grid_cell_size))
+                    game_state.translate_camera_position((0, camera_move_distance))
                 elif event.key == pygame.K_LEFT:
-                    game_state.translate_camera_position((-grid_cell_size, 0))
+                    game_state.translate_camera_position((-camera_move_distance, 0))
                 elif event.key == pygame.K_UP:
-                    game_state.translate_camera_position((0, -grid_cell_size))
+                    game_state.translate_camera_position((0, -camera_move_distance))
                 elif event.key == pygame.K_q:
                     # Used for deleting entities
                     placing_map_file_entity = None
