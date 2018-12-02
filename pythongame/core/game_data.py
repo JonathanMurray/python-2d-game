@@ -104,6 +104,8 @@ UI_ICON_SPRITE_PATHS: Dict[UiIconSprite, str] = {}
 
 POTION_ICON_SPRITES: Dict[PotionType, UiIconSprite] = {}
 
+POTION_ENTITY_SPRITES: Dict[PotionType, Sprite] = {}
+
 ABILITIES: Dict[AbilityType, AbilityData] = {}
 
 USER_ABILITY_KEYS: Dict[AbilityType, UserAbilityKey] = {}
@@ -158,3 +160,7 @@ def register_buff_text(buff_type: BuffType, text: str):
 
 def register_potion_icon_sprite(potion_type: PotionType, ui_icon_sprite: UiIconSprite):
     POTION_ICON_SPRITES[potion_type] = ui_icon_sprite
+
+
+def register_potion_entity_sprite(potion_type: PotionType, sprite: Sprite):
+    POTION_ENTITY_SPRITES[potion_type] = sprite

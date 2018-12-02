@@ -2,7 +2,7 @@ from typing import Optional, Dict, List
 
 from pythongame.core.common import *
 from pythongame.core.enemy_behavior import create_enemy_mind
-from pythongame.core.game_data import WALL_SIZE, ENEMIES
+from pythongame.core.game_data import WALL_SIZE, ENEMIES, POTION_ENTITY_SPRITES
 from pythongame.core.game_state import WorldEntity, Enemy, GameState, PotionOnGround
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.player_data import PLAYER_ENTITY_SIZE, INTIAL_PLAYER_STATE, PLAYER_ENTITY_SPEED
@@ -12,11 +12,12 @@ GRID_CELL_SIZE = 25
 
 
 class MapFileEntity:
-    def __init__(self, enemy_type: Optional[EnemyType], is_player: bool, is_wall: bool, is_potion: bool):
+    def __init__(self, enemy_type: Optional[EnemyType], is_player: bool, is_wall: bool,
+                 potion_type: Optional[PotionType]):
         self.enemy_type = enemy_type
         self.is_player = is_player
         self.is_wall = is_wall
-        self.is_potion = is_potion
+        self.potion_type = potion_type
 
     def __str__(self):
         return str(self.__dict__)
@@ -30,20 +31,20 @@ class MapFileEntity:
 
     @staticmethod
     def player():
-        return MapFileEntity(None, True, False, False)
+        return MapFileEntity(None, True, False, None)
 
     @staticmethod
     def enemy(enemy_type: EnemyType):
-        return MapFileEntity(enemy_type, False, False, False)
+        return MapFileEntity(enemy_type, False, False, None)
 
     @staticmethod
     def wall():
-        return MapFileEntity(None, False, True, False)
+        return MapFileEntity(None, False, True, None)
 
     # TODO handle more potions
     @staticmethod
-    def potion():
-        return MapFileEntity(None, False, False, True)
+    def potion(potion_type: PotionType):
+        return MapFileEntity(None, False, False, potion_type)
 
 
 MAP_FILE_ENTITIES_BY_CHAR: Dict[str, MapFileEntity] = {
@@ -52,7 +53,8 @@ MAP_FILE_ENTITIES_BY_CHAR: Dict[str, MapFileEntity] = {
     'D': MapFileEntity.enemy(EnemyType.DARK_REAPER),
     'R': MapFileEntity.enemy(EnemyType.RAT_1),
     '2': MapFileEntity.enemy(EnemyType.RAT_2),
-    'H': MapFileEntity.potion()
+    'H': MapFileEntity.potion(PotionType.HEALTH),
+    'M': MapFileEntity.potion(PotionType.MANA)
 }
 
 CHARS_BY_MAP_FILE_ENTITY: Dict[MapFileEntity, str] = {v: k for k, v in MAP_FILE_ENTITIES_BY_CHAR.items()}
@@ -82,11 +84,14 @@ def create_game_state_from_file(camera_size: Tuple[int, int], map_file: str):
     player_pos = positions_by_map_file_entity[MapFileEntity.player()][0]
     player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
 
-    potion_positions = positions_by_map_file_entity.get(MapFileEntity.potion(), [])
-    potions = [PotionOnGround(WorldEntity(pos, POTION_ENTITY_SIZE, Sprite.MANA_POTION), PotionType.MANA)
-               for pos in potion_positions]
-    path_finder = GlobalPathFinder()
+    potions = []
+    for char in MAP_FILE_ENTITIES_BY_CHAR.keys():
+        entity = MAP_FILE_ENTITIES_BY_CHAR[char]
+        if entity.potion_type:
+            potions += [_create_potion_at_position(entity.potion_type, pos)
+                        for pos in positions_by_map_file_entity.get(entity, [])]
 
+    path_finder = GlobalPathFinder()
     enemies = []
     for char in MAP_FILE_ENTITIES_BY_CHAR.keys():
         if MAP_FILE_ENTITIES_BY_CHAR[char].enemy_type:
@@ -120,7 +125,9 @@ def save_game_state_to_file(game_state: GameState, map_file: str):
         grid_position = (w.x // GRID_CELL_SIZE, w.y // GRID_CELL_SIZE)
         grid[grid_position] = MapFileEntity.wall()
 
-    # TODO save potions
+    for p in game_state.potions_on_ground:
+        grid_position = (p.world_entity.x // GRID_CELL_SIZE, p.world_entity.y // GRID_CELL_SIZE)
+        grid[grid_position] = MapFileEntity.potion(p.potion_type)
 
     with open(map_file, 'w') as map_file:
         for row_index in range(grid_num_rows):
@@ -139,3 +146,8 @@ def _create_enemy_at_position(enemy_type: EnemyType, pos: Tuple[int, int], globa
     entity = WorldEntity(pos, data.size, data.sprite, Direction.LEFT, data.speed)
     enemy_mind = create_enemy_mind(enemy_type, global_path_finder)
     return Enemy(enemy_type, entity, data.max_health, data.max_health, enemy_mind)
+
+
+def _create_potion_at_position(potion_type: PotionType, pos: Tuple[int, int]):
+    entity = WorldEntity(pos, POTION_ENTITY_SIZE, POTION_ENTITY_SPRITES[potion_type])
+    return PotionOnGround(entity, potion_type)

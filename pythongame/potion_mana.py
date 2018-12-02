@@ -1,6 +1,6 @@
 from pythongame.core.common import PotionType, Sprite
 from pythongame.core.game_data import register_ui_icon_sprite_path, UiIconSprite, register_potion_icon_sprite, \
-    register_entity_sprite_initializer, SpriteInitializer
+    register_entity_sprite_initializer, SpriteInitializer, register_potion_entity_sprite
 from pythongame.core.game_state import GameState
 from pythongame.core.potions import create_potion_visual_effect_at_player, PotionWasConsumed, PotionFailedToBeConsumed, \
     register_potion_effect
@@ -21,8 +21,13 @@ def _apply_mana(game_state: GameState):
 
 
 def register_mana_potion():
-    register_potion_effect(PotionType.MANA, _apply_mana)
+    potion_type = PotionType.MANA
+    sprite = Sprite.MANA_POTION
+    ui_icon_sprite = UiIconSprite.MANA_POTION
+
+    register_potion_effect(potion_type, _apply_mana)
     register_entity_sprite_initializer(
-        Sprite.MANA_POTION, SpriteInitializer("resources/graphics/ui_mana_potion.png", POTION_ENTITY_SIZE))
-    register_potion_icon_sprite(PotionType.MANA, UiIconSprite.MANA_POTION)
-    register_ui_icon_sprite_path(UiIconSprite.MANA_POTION, "resources/graphics/ui_mana_potion.png")
+        sprite, SpriteInitializer("resources/graphics/ui_mana_potion.png", POTION_ENTITY_SIZE))
+    register_potion_icon_sprite(potion_type, ui_icon_sprite)
+    register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/ui_mana_potion.png")
+    register_potion_entity_sprite(potion_type, sprite)
