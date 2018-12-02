@@ -50,7 +50,7 @@ def _apply_ability(game_state: GameState):
 
 def register_fireball_ability():
     register_ability_effect(AbilityType.FIREBALL, _apply_ability)
-    register_ability_data(AbilityType.FIREBALL, AbilityData(UiIconSprite.ABILITY_FIREBALL, 3, Millis(200)))
+    register_ability_data(AbilityType.FIREBALL, AbilityData(UiIconSprite.ABILITY_FIREBALL, 3, Millis(300)))
     register_ui_icon_sprite_path(UiIconSprite.ABILITY_FIREBALL, "resources/graphics/icon_fireball.png")
     register_projectile_controller(ProjectileType.PLAYER_FIREBALL, ProjectileController)
 
