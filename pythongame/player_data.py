@@ -5,7 +5,7 @@ from pythongame.core.game_data import Sprite, Direction, PotionType, AbilityType
 from pythongame.core.game_state import PlayerState
 
 PLAYER_ENTITY_SIZE = (40, 30)
-PLAYER_ENTITY_SPEED = 0.13
+PLAYER_ENTITY_SPEED = 0.1
 
 _player_potion_slots = {
     1: PotionType.HEALTH,
@@ -20,8 +20,9 @@ register_user_ability_key(AbilityType.FIREBALL, UserAbilityKey("Q", pygame.K_q))
 register_user_ability_key(AbilityType.FROST_NOVA, UserAbilityKey("W", pygame.K_w))
 health = 50
 mana = 100
-mana_regen = 0.0025
-INTIAL_PLAYER_STATE = PlayerState(health, health, mana, mana, mana_regen, _player_potion_slots, _abilities)
+max_mana = 150
+mana_regen = 0.0028
+INTIAL_PLAYER_STATE = PlayerState(health, health, mana, max_mana, mana_regen, _player_potion_slots, _abilities)
 
 
 def register_player_data():
