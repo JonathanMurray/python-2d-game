@@ -3,11 +3,12 @@ from typing import Tuple, Optional, List
 
 import pygame
 
-from pythongame.core.common import EnemyType, Direction, Sprite, sum_of_vectors
+from pythongame.core.common import Direction, Sprite, sum_of_vectors
 from pythongame.core.game_data import ENEMIES, WALL_SIZE
 from pythongame.core.game_state import WorldEntity, Enemy
 from pythongame.core.view import View
-from pythongame.game_world_init import create_game_state_from_file, save_game_state_to_file, MapFileEntity
+from pythongame.game_world_init import create_game_state_from_file, save_game_state_to_file, MapFileEntity, \
+    MAP_FILE_ENTITIES_BY_CHAR
 from pythongame.register_game_data import register_all_game_data
 
 SCREEN_SIZE = (1200, 700)
@@ -65,16 +66,8 @@ def main(args: List[str]):
                             game_state.enemies.remove(enemy)
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:
-                    placing_map_file_entity = MapFileEntity(None, True, False)
-                elif event.key == pygame.K_r:
-                    placing_map_file_entity = MapFileEntity(EnemyType.RAT_1, False, False)
-                elif event.key == pygame.K_2:
-                    placing_map_file_entity = MapFileEntity(EnemyType.RAT_2, False, False)
-                elif event.key == pygame.K_x:
-                    placing_map_file_entity = MapFileEntity(None, False, True)
-                elif event.key == pygame.K_d:
-                    placing_map_file_entity = MapFileEntity(EnemyType.DARK_REAPER, False, False)
+                if event.unicode.upper() in MAP_FILE_ENTITIES_BY_CHAR:
+                    placing_map_file_entity = MAP_FILE_ENTITIES_BY_CHAR[event.unicode.upper()]
                 elif event.key == pygame.K_s:
                     save_file = map_file
                     save_game_state_to_file(game_state, save_file)
