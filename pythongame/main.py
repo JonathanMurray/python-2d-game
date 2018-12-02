@@ -85,7 +85,9 @@ def main(args: List[str]):
             camera_world_area=game_state.camera_world_area,
             enemies=game_state.enemies,
             visual_effects=game_state.visual_effects,
-            render_hit_and_collision_boxes=render_hit_and_collision_boxes)
+            render_hit_and_collision_boxes=render_hit_and_collision_boxes,
+            player_health=game_state.player_state.health,
+            player_max_health=game_state.player_state.max_health)
 
         view.render_ui(
             player_health=game_state.player_state.health,

@@ -245,9 +245,9 @@ class View:
         else:
             raise Exception("Unhandled sprite: " + str(sprite))
 
-    def _stat_bar_for_world_entity(self, world_entity, h, stat, max_stat, color):
+    def _stat_bar_for_world_entity(self, world_entity, h, relative_y, stat, max_stat, color):
         position_on_screen = self._translate_world_position_to_screen((world_entity.x, world_entity.y))
-        self._stat_bar(position_on_screen[0] + 1, position_on_screen[1] - 10,
+        self._stat_bar(position_on_screen[0] + 1, position_on_screen[1] + relative_y,
                        world_entity.w - 2, h, stat, max_stat, color, False)
 
     # ------------------------------------
@@ -309,7 +309,7 @@ class View:
         self._rect_filled((0, 200, 0), (dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
     def render_world(self, all_entities_to_render, camera_world_area, enemies, is_player_invisible, player_entity,
-                     visual_effects, render_hit_and_collision_boxes):
+                     visual_effects, render_hit_and_collision_boxes, player_health, player_max_health):
         self.camera_world_area = camera_world_area
 
         self.screen.fill(COLOR_BACKGROUND)
@@ -324,6 +324,8 @@ class View:
         else:
             self._world_entity(player_entity)
 
+        self._stat_bar_for_world_entity(player_entity, 5, -35, player_health, player_max_health, (100, 200, 0))
+
         if render_hit_and_collision_boxes:
             for entity in all_entities_to_render:
                 # hit box
@@ -332,7 +334,7 @@ class View:
                 self._world_rect((50, 250, 0), entity.collision_rect(), 2)
 
         for enemy in enemies:
-            self._stat_bar_for_world_entity(enemy.world_entity, 5, enemy.health, enemy.max_health, COLOR_RED)
+            self._stat_bar_for_world_entity(enemy.world_entity, 5, -10, enemy.health, enemy.max_health, COLOR_RED)
         for visual_effect in visual_effects:
             self._visual_effect(visual_effect)
 
