@@ -24,6 +24,21 @@ Simply run
 ```
 ./run.py
 ```
+or to play a specific map
+```
+./run.py resources/maps/demo.txt
+```
+
+## Launching the map editor
+
+Simply run
+```
+./map_editor.py
+```
+or to edit a specific map
+```
+./map_editor.py resources/maps/demo.txt
+```
 
 ## Gameplay basics
 
