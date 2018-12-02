@@ -17,6 +17,7 @@ from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionT
 from pythongame.core.view import View
 from pythongame.core.view_state import ViewState
 from pythongame.enemy_berserker import register_berserker_enemy
+from pythongame.enemy_dark_reaper import register_dark_reaper_enemy
 from pythongame.enemy_dumb import register_dumb_enemy
 from pythongame.enemy_mage import register_mage_enemy
 from pythongame.enemy_rat_1 import register_rat_1_enemy
@@ -49,6 +50,7 @@ register_berserker_enemy()
 register_player_data()
 register_rat_1_enemy()
 register_rat_2_enemy()
+register_dark_reaper_enemy()
 
 
 def main(args: List[str]):

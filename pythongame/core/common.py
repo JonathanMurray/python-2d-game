@@ -126,6 +126,7 @@ class EnemyType(Enum):
     BERSERKER = 4
     RAT_1 = 5
     RAT_2 = 6
+    DARK_REAPER = 7
 
 
 class AbilityType(Enum):
@@ -153,6 +154,7 @@ class Sprite(Enum):
     RAT_2 = 13
     EFFECT_ABILITY_FROST_NOVA = 14
     MANA_POTION = 15
+    DARK_REAPER = 16
 
 
 class BuffType(Enum):

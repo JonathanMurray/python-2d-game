@@ -12,7 +12,7 @@ GRID_CELL_SIZE = 25
 
 
 def create_game_state_from_file(camera_size: Tuple[int, int], map_file: str):
-    dumb_enemy_positions = []
+    dark_reaper_positions = []
     smart_enemy_positions = []
     mage_enemy_positions = []
     potion_positions = []
@@ -32,7 +32,7 @@ def create_game_state_from_file(camera_size: Tuple[int, int], map_file: str):
                 if char == 'P':
                     player_pos = game_world_pos
                 if char == 'D':
-                    dumb_enemy_positions.append(game_world_pos)
+                    dark_reaper_positions.append(game_world_pos)
                 if char == 'S':
                     smart_enemy_positions.append(game_world_pos)
                 if char == 'M':
@@ -56,14 +56,14 @@ def create_game_state_from_file(camera_size: Tuple[int, int], map_file: str):
     potions = [PotionOnGround(WorldEntity(pos, POTION_ENTITY_SIZE, Sprite.MANA_POTION), PotionType.MANA)
                for pos in potion_positions]
     path_finder = GlobalPathFinder()
-    dumb_enemies = [_create_enemy_at_position(EnemyType.DUMB, pos, path_finder) for pos in dumb_enemy_positions]
+    dark_reapers = [_create_enemy_at_position(EnemyType.DARK_REAPER, pos, path_finder) for pos in dark_reaper_positions]
     smart_enemies = [_create_enemy_at_position(EnemyType.SMART, pos, path_finder) for pos in smart_enemy_positions]
     mage_enemies = [_create_enemy_at_position(EnemyType.MAGE, pos, path_finder) for pos in mage_enemy_positions]
     berserker_enemies = [_create_enemy_at_position(EnemyType.BERSERKER, pos, path_finder) for pos in berserker_positions]
     rat_1_enemies = [_create_enemy_at_position(EnemyType.RAT_1, pos, path_finder) for pos in rat_1_positions]
     rat_2_enemies = [_create_enemy_at_position(EnemyType.RAT_2, pos, path_finder) for pos in rat_2_positions]
     walls = [WorldEntity(pos, WALL_SIZE, Sprite.WALL) for pos in wall_positions]
-    enemies = dumb_enemies + smart_enemies + mage_enemies + berserker_enemies + rat_1_enemies + rat_2_enemies
+    enemies = dark_reapers + smart_enemies + mage_enemies + berserker_enemies + rat_1_enemies + rat_2_enemies
 
     game_world_size = (max_col_index * GRID_CELL_SIZE, max_row_index * GRID_CELL_SIZE)
     game_state = GameState(player_entity, potions, enemies, walls, camera_size, game_world_size, INTIAL_PLAYER_STATE)
