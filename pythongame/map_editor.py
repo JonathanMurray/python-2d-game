@@ -38,6 +38,7 @@ def main(args: List[str]):
     camera_move_distance = grid_cell_size * 4
     snapped_mouse_screen_position = (0, 0)
     snapped_mouse_world_position = (0, 0)
+    is_snapped_mouse_within_world = True
 
     while True:
 
@@ -52,6 +53,7 @@ def main(args: List[str]):
                                                  (exact_mouse_screen_position[1] // grid_cell_size) * grid_cell_size)
                 snapped_mouse_world_position = sum_of_vectors(
                     snapped_mouse_screen_position, game_state.camera_world_area.get_position())
+                is_snapped_mouse_within_world = game_state.is_position_within_game_world(snapped_mouse_world_position)
                 if is_mouse_button_down:
                     if placing_map_file_entity and placing_map_file_entity.is_wall:
                         already_has_wall = any([w for w in game_state.walls
@@ -91,21 +93,23 @@ def main(args: List[str]):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 is_mouse_button_down = True
                 if placing_map_file_entity:
-                    if placing_map_file_entity.is_player:
-                        game_state.player_entity.set_position(snapped_mouse_world_position)
-                    elif placing_map_file_entity.enemy_type:
-                        enemy_type = placing_map_file_entity.enemy_type
-                        data = ENEMIES[enemy_type]
-                        entity = WorldEntity(snapped_mouse_world_position, data.size, data.sprite, Direction.DOWN,
-                                             data.speed)
-                        enemy = Enemy(enemy_type, entity, data.max_health, data.max_health, None)
-                        game_state.enemies.append(enemy)
-                    elif placing_map_file_entity.is_wall:
-                        game_state.add_wall(WorldEntity(snapped_mouse_world_position, WALL_SIZE, Sprite.WALL))
-                    elif placing_map_file_entity.potion_type:
-                        sprite = POTION_ENTITY_SPRITES[placing_map_file_entity.potion_type]
-                        entity = WorldEntity(snapped_mouse_world_position, POTION_ENTITY_SIZE, sprite)
-                        game_state.potions_on_ground.append(PotionOnGround(entity, placing_map_file_entity.potion_type))
+                    if is_snapped_mouse_within_world:
+                        if placing_map_file_entity.is_player:
+                            game_state.player_entity.set_position(snapped_mouse_world_position)
+                        elif placing_map_file_entity.enemy_type:
+                            enemy_type = placing_map_file_entity.enemy_type
+                            data = ENEMIES[enemy_type]
+                            entity = WorldEntity(snapped_mouse_world_position, data.size, data.sprite, Direction.DOWN,
+                                                 data.speed)
+                            enemy = Enemy(enemy_type, entity, data.max_health, data.max_health, None)
+                            game_state.enemies.append(enemy)
+                        elif placing_map_file_entity.is_wall:
+                            game_state.add_wall(WorldEntity(snapped_mouse_world_position, WALL_SIZE, Sprite.WALL))
+                        elif placing_map_file_entity.potion_type:
+                            sprite = POTION_ENTITY_SPRITES[placing_map_file_entity.potion_type]
+                            entity = WorldEntity(snapped_mouse_world_position, POTION_ENTITY_SIZE, sprite)
+                            game_state.potions_on_ground.append(
+                                PotionOnGround(entity, placing_map_file_entity.potion_type))
 
             if event.type == pygame.MOUSEBUTTONUP:
                 is_mouse_button_down = False
@@ -119,9 +123,14 @@ def main(args: List[str]):
             visual_effects=game_state.visual_effects,
             render_hit_and_collision_boxes=True,
             player_health=game_state.player_state.health,
-            player_max_health=game_state.player_state.max_health)
+            player_max_health=game_state.player_state.max_health,
+            game_world_size=game_state.game_world_size)
 
-        if placing_map_file_entity:
+        if not is_snapped_mouse_within_world:
+            snapped_mouse_rect = (snapped_mouse_screen_position[0], snapped_mouse_screen_position[1],
+                                  grid_cell_size, grid_cell_size)
+            view.render_map_editor_mouse_rect((250, 50, 0), snapped_mouse_rect)
+        elif placing_map_file_entity:
             if placing_map_file_entity.enemy_type:
                 data = ENEMIES[placing_map_file_entity.enemy_type]
                 entity = WorldEntity((0, 0), data.size, data.sprite, Direction.DOWN, data.speed)
@@ -138,7 +147,7 @@ def main(args: List[str]):
         else:
             snapped_mouse_rect = (snapped_mouse_screen_position[0], snapped_mouse_screen_position[1],
                                   grid_cell_size, grid_cell_size)
-            view.render_map_editor_mouse_rect(snapped_mouse_rect)
+            view.render_map_editor_mouse_rect((50, 250, 0), snapped_mouse_rect)
 
         view.update_display()
 

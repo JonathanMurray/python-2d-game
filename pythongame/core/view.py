@@ -144,21 +144,27 @@ class View:
     #       DRAWING THE GAME WORLD
     # ------------------------------------
 
-    def _world_ground(self):
+    def _world_ground(self, game_world_size):
         line_color = (190, 190, 200)
         grid_width = 50
         # TODO num squares should depend on map size. Ideally this dumb looping logic should change.
         num_squares = 200
+        column_screen_y_0 = self._translate_world_y_to_screen(max(0, self.camera_world_area.y))
+        column_screen_y_1 = self._translate_world_y_to_screen(
+            min(game_world_size[1], self.camera_world_area.y + self.camera_world_area.h))
         for col in range(num_squares):
             world_x = col * grid_width
-            screen_x = self._translate_world_x_to_screen(world_x)
-            if 0 < screen_x < self.screen_size[0]:
-                self._line(line_color, (screen_x, 0), (screen_x, self.screen_size[1]), 1)
+            if 0 < world_x < game_world_size[0]:
+                screen_x = self._translate_world_x_to_screen(world_x)
+                self._line(line_color, (screen_x, column_screen_y_0), (screen_x, column_screen_y_1), 1)
+        row_screen_x_0 = self._translate_world_x_to_screen(max(0, self.camera_world_area.x))
+        row_screen_x_1 = self._translate_world_x_to_screen(
+            min(game_world_size[0], self.camera_world_area.x + self.camera_world_area.w))
         for row in range(num_squares):
             world_y = row * grid_width
-            screen_y = self._translate_world_y_to_screen(world_y)
-            if 0 < screen_y < self.screen_size[1]:
-                self._line(line_color, (0, screen_y), (self.screen_size[0], screen_y), 1)
+            if 0 < world_y < game_world_size[1]:
+                screen_y = self._translate_world_y_to_screen(world_y)
+                self._line(line_color, (row_screen_x_0, screen_y), (row_screen_x_1, screen_y), 1)
 
         if RENDER_WORLD_COORDINATES:
             for col in range(num_squares):
@@ -309,11 +315,11 @@ class View:
         self._rect_filled((0, 200, 0), (dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
     def render_world(self, all_entities_to_render, camera_world_area, enemies, is_player_invisible, player_entity,
-                     visual_effects, render_hit_and_collision_boxes, player_health, player_max_health):
+                     visual_effects, render_hit_and_collision_boxes, player_health, player_max_health, game_world_size):
         self.camera_world_area = camera_world_area
 
         self.screen.fill(COLOR_BACKGROUND)
-        self._world_ground()
+        self._world_ground(game_world_size)
 
         for entity in all_entities_to_render:
             if entity != player_entity:
@@ -405,8 +411,9 @@ class View:
         elif is_paused:
             self._text(self.font_huge, "PAUSED", (self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50))
 
-    def render_map_editor_mouse_rect(self, map_editor_mouse_rect: Tuple[int, int, int, int]):
-        self._rect((50, 250, 0), map_editor_mouse_rect, 3)
+    def render_map_editor_mouse_rect(self, color: Tuple[int, int, int],
+                                     map_editor_mouse_rect: Tuple[int, int, int, int]):
+        self._rect(color, map_editor_mouse_rect, 3)
 
     def render_world_entity_at_position(self, entity: WorldEntity, position: Tuple[int, int]):
         images: Dict[Direction, List[ImageWithRelativePosition]] = self.images_by_sprite[entity.sprite]

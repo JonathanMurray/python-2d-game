@@ -28,6 +28,9 @@ class WorldArea:
     def rect(self):
         return self.x, self.y, self.w, self.h
 
+    def contains_position(self, position: Tuple[int, int]) -> bool:
+        return self.x <= position[0] <= self.x + self.w and self.y <= position[1] <= self.y + self.h
+
 
 class WorldEntity:
     def __init__(self, pos: Tuple[int, int], size: Tuple[int, int], sprite: Sprite, direction=Direction.LEFT, speed=0):
@@ -314,11 +317,11 @@ class GameState:
         return collision
 
     def get_within_world(self, pos, size):
-        return (min(max(pos[0], 0), self.game_world_size[0] - size[0]),
-                min(max(pos[1], 0), self.game_world_size[1] - size[1]))
+        return (max(0, min(self.game_world_size[0] - size[0], pos[0])),
+                max(0, min(self.game_world_size[1] - size[1], pos[1])))
 
-    def is_within_game_world(self, box) -> bool:
-        return boxes_intersect(box, self.entire_world_area)
+    def is_position_within_game_world(self, position: Tuple[int, int]) -> bool:
+        return self.entire_world_area.contains_position(position)
 
     def remove_expired_projectiles(self):
         self.projectile_entities = [p for p in self.projectile_entities if not p.has_expired]
@@ -376,7 +379,7 @@ class GameState:
         x1_bucket = int(self.camera_world_area.x + self.camera_world_area.w) // WALL_BUCKET_WIDTH
         y1_bucket = int(self.camera_world_area.y + self.camera_world_area.h) // WALL_BUCKET_HEIGHT
         walls = []
-        for x_bucket in range(max(0, x0_bucket), x1_bucket + 1):
-            for y_bucket in range(max(0, y0_bucket - 1), y1_bucket + 1):
+        for x_bucket in range(max(0, x0_bucket), min(x1_bucket + 1, len(self._wall_buckets))):
+            for y_bucket in range(max(0, y0_bucket - 1), min(y1_bucket + 1, len(self._wall_buckets[x_bucket]))):
                 walls += self._wall_buckets[x_bucket][y_bucket]
         return walls

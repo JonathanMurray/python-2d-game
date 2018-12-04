@@ -111,8 +111,9 @@ def create_game_state_from_file(camera_size: Tuple[int, int], map_file: str):
 def save_game_state_to_file(game_state: GameState, map_file: str):
     grid = {}
     game_world_size = game_state.game_world_size
-    grid_num_cols = game_world_size[0] // GRID_CELL_SIZE
-    grid_num_rows = game_world_size[1] // GRID_CELL_SIZE
+    # + 1 to account for entities that were placed right on the border of the game world
+    grid_num_cols = game_world_size[0] // GRID_CELL_SIZE + 1
+    grid_num_rows = game_world_size[1] // GRID_CELL_SIZE + 1
 
     for e in game_state.enemies:
         enemy_type = e.enemy_type

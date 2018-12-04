@@ -90,7 +90,8 @@ def main(args: List[str]):
             visual_effects=game_state.visual_effects,
             render_hit_and_collision_boxes=render_hit_and_collision_boxes,
             player_health=game_state.player_state.health,
-            player_max_health=game_state.player_state.max_health)
+            player_max_health=game_state.player_state.max_health,
+            game_world_size=game_state.game_world_size)
 
         view.render_ui(
             player_health=game_state.player_state.health,
