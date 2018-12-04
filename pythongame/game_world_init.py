@@ -94,9 +94,10 @@ def create_game_state_from_file(camera_size: Tuple[int, int], map_file: str):
     path_finder = GlobalPathFinder()
     enemies = []
     for char in MAP_FILE_ENTITIES_BY_CHAR.keys():
-        if MAP_FILE_ENTITIES_BY_CHAR[char].enemy_type:
-            enemies += [_create_enemy_at_position(MAP_FILE_ENTITIES_BY_CHAR[char].enemy_type, pos, path_finder)
-                        for pos in positions_by_map_file_entity[MAP_FILE_ENTITIES_BY_CHAR[char]]]
+        entity = MAP_FILE_ENTITIES_BY_CHAR[char]
+        if entity.enemy_type:
+            enemies += [_create_enemy_at_position(entity.enemy_type, pos, path_finder)
+                        for pos in positions_by_map_file_entity.get(entity, [])]
 
     wall_positions = positions_by_map_file_entity.get(MapFileEntity.wall(), [])
     walls = [WorldEntity(pos, WALL_SIZE, Sprite.WALL) for pos in wall_positions]
