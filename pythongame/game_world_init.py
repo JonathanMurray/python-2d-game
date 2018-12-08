@@ -54,7 +54,8 @@ MAP_FILE_ENTITIES_BY_CHAR: Dict[str, MapFileEntity] = {
     'R': MapFileEntity.enemy(EnemyType.RAT_1),
     '2': MapFileEntity.enemy(EnemyType.RAT_2),
     'H': MapFileEntity.potion(PotionType.HEALTH),
-    'M': MapFileEntity.potion(PotionType.MANA)
+    'M': MapFileEntity.potion(PotionType.MANA),
+    'W': MapFileEntity.enemy(EnemyType.GOBLIN_WARLOCK)
 }
 
 CHARS_BY_MAP_FILE_ENTITY: Dict[MapFileEntity, str] = {v: k for k, v in MAP_FILE_ENTITIES_BY_CHAR.items()}

@@ -126,6 +126,7 @@ class EnemyType(Enum):
     RAT_1 = 5
     RAT_2 = 6
     DARK_REAPER = 7
+    GOBLIN_WARLOCK = 8
 
 
 class AbilityType(Enum):
@@ -155,6 +156,8 @@ class Sprite(Enum):
     MANA_POTION = 15
     DARK_REAPER = 16
     PROJECTILE_PLAYER_WHIRLWIND = 17
+    ENEMY_GOBLIN_WARLOCK = 18
+    ENEMY_GOBLIN_WARLOCK_PROJECTILE = 19
 
 
 class BuffType(Enum):
@@ -166,6 +169,7 @@ class BuffType(Enum):
     REDUCED_MOVEMENT_SPEED = 6
     INVULNERABILITY = 7
     STUNNED_BY_WHIRLWIND = 8
+    ENEMY_GOBLIN_WARLOCK_BURNT = 9
 
 
 class ProjectileType(Enum):
@@ -174,3 +178,4 @@ class ProjectileType(Enum):
     ENEMY_POISON = 3
     PLAYER_MAGIC_MISSILE = 4
     PLAYER_WHIRLWIND = 5
+    ENEMY_GOBLIN_WARLOCK = 6
