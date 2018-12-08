@@ -12,8 +12,8 @@ from pythongame.game_world_init import create_game_state_from_file, save_game_st
 from pythongame.potion_health import POTION_ENTITY_SIZE
 from pythongame.register_game_data import register_all_game_data
 
-SCREEN_SIZE = (1200, 700)
-CAMERA_SIZE = SCREEN_SIZE
+SCREEN_SIZE = (1200, 750)
+CAMERA_SIZE = (1200, 600)
 
 register_all_game_data()
 
@@ -117,6 +117,8 @@ def main(args: List[str]):
             player_health=game_state.player_state.health,
             player_max_health=game_state.player_state.max_health,
             game_world_size=game_state.game_world_size)
+
+        view.render_map_editor_ui(MAP_FILE_ENTITIES_BY_CHAR, placing_map_file_entity)
 
         if not is_snapped_mouse_within_world:
             snapped_mouse_rect = (snapped_mouse_screen_position[0], snapped_mouse_screen_position[1],

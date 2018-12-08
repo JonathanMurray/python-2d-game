@@ -1,12 +1,13 @@
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List, Tuple, Optional
 
 import pygame
 
 from pythongame.core.common import Direction, Sprite, PotionType, sum_of_vectors
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
-    POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS
+    POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, ENEMIES
 from pythongame.core.game_state import WorldEntity
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
+from pythongame.game_world_init import MapFileEntity
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -15,6 +16,7 @@ COLOR_BLUE = (0, 0, 250)
 COLOR_BACKGROUND = (200, 200, 200)
 COLOR_HIGHLIGHTED_ICON = (250, 250, 150)
 UI_ICON_SIZE = (36, 36)
+MAP_EDITOR_UI_ICON_SIZE = (48, 48)
 
 RENDER_WORLD_COORDINATES = False
 
@@ -300,6 +302,33 @@ class View:
             cooldown_rect = (x + 2, y + 2 + (h - 4) * (1 - ratio_remaining), w - 4, (h - 4) * ratio_remaining + 2)
             self._rect_filled((100, 30, 30), cooldown_rect)
 
+    def _map_editor_icon_in_ui(self, x_in_ui, y_in_ui, size, highlighted: bool, user_input_key: str,
+                               map_file_entity: MapFileEntity):
+        w = size[0]
+        h = size[1]
+        x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
+
+        self._rect_filled((40, 40, 40), (x, y, w, h))
+        image = None
+        if map_file_entity.enemy_type:
+            enemy_data = ENEMIES[map_file_entity.enemy_type]
+            image = self.images_by_sprite[enemy_data.sprite][Direction.DOWN][0].image
+        elif map_file_entity.potion_type:
+            ui_icon_sprite = POTION_ICON_SPRITES[map_file_entity.potion_type]
+            image = self.images_by_ui_sprite[ui_icon_sprite]
+        elif map_file_entity.is_player:
+            image = self.images_by_sprite[Sprite.PLAYER][Direction.DOWN][0].image
+        elif map_file_entity.is_wall:
+            image = self.images_by_sprite[Sprite.WALL][Direction.DOWN][0].image
+
+        icon_scaled_image = pygame.transform.scale(image, size)
+        self._image(icon_scaled_image, (x, y))
+
+        self._rect(COLOR_WHITE, (x, y, w, h), 2)
+        if highlighted:
+            self._rect(COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
+        self._text(self.font_tiny, user_input_key, (x + 20, y + h + 4))
+
     def _text_in_ui(self, font, text, x, y):
         screen_pos = self._translate_ui_position_to_screen((x, y))
         self._text(font, text, screen_pos)
@@ -412,6 +441,29 @@ class View:
             self._text(self.font_huge, "You died!", (self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50))
         elif is_paused:
             self._text(self.font_huge, "PAUSED", (self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50))
+
+    def render_map_editor_ui(self, map_file_entities_by_char: Dict[str, MapFileEntity],
+                             placing_map_file_entity: Optional[MapFileEntity]):
+
+        self._rect(COLOR_BLACK, (0, 0, self.camera_size[0], self.camera_size[1]), 3)
+        self._rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
+                                        self.screen_size[1] - self.camera_size[1]))
+
+        y_1 = 17
+        y_2 = y_1 + 20
+
+        x_1 = 155
+        icon_space = 5
+        self._text_in_ui(self.font_large, "ENTITIES", x_1, y_1)
+        i = 0
+        for char in map_file_entities_by_char.keys():
+            map_file_entity = map_file_entities_by_char[char]
+            is_this_entity_being_placed = map_file_entity is placing_map_file_entity
+            self._map_editor_icon_in_ui(x_1 + i * (MAP_EDITOR_UI_ICON_SIZE[0] + icon_space), y_2,
+                                        MAP_EDITOR_UI_ICON_SIZE, is_this_entity_being_placed, char, map_file_entity)
+            i += 1
+
+        self._rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
 
     def render_map_editor_mouse_rect(self, color: Tuple[int, int, int],
                                      map_editor_mouse_rect: Tuple[int, int, int, int]):
