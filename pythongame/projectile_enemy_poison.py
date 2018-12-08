@@ -18,7 +18,7 @@ class EnemyPoisonProjectileController(AbstractProjectileController):
         game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, damage_amount))
         game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.DAMAGE_OVER_TIME), Millis(2000))
         game_state.visual_effects.append(VisualCircle((50, 180, 50), game_state.player_entity.get_center_position(),
-                                                      50, Millis(100), 0))
+                                                      25, 50, Millis(100), 0))
         return True
 
 
@@ -34,7 +34,7 @@ class DamageOverTime(AbstractBuffEffect):
         graphics_cooldown = 300
         if self._time_since_graphics > graphics_cooldown:
             game_state.visual_effects.append(VisualCircle((50, 180, 50), game_state.player_entity.get_center_position(),
-                                                          20, Millis(50), 0, game_state.player_entity))
+                                                          10, 20, Millis(50), 0, game_state.player_entity))
             estimate_damage_taken = int(damage_per_ms * graphics_cooldown)
             game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, estimate_damage_taken))
             self._time_since_graphics = 0

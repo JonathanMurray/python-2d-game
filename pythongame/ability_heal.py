@@ -26,7 +26,7 @@ class HealingOverTime(AbstractBuffEffect):
                 create_visual_healing_text(game_state.player_entity, estimate_health_gained))
             game_state.visual_effects.append(
                 VisualCircle((200, 200, 50), game_state.player_entity.get_center_position(),
-                             10, Millis(100), 0))
+                             5, 10, Millis(100), 0))
             self._time_since_graphics = 0
 
     def get_buff_type(self):

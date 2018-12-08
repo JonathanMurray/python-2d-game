@@ -75,11 +75,11 @@ class EnemyMind(AbstractEnemyMind):
                     game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, damage_amount))
 
                     game_state.visual_effects += [
-                        VisualCircle((0, 0, 0), enemy_center_pos, 50, Millis(200), 2, enemy_entity),
+                        VisualCircle((0, 0, 0), enemy_center_pos, 25, 50, Millis(200), 2, enemy_entity),
                         VisualLine((0, 100, 0), enemy_center_pos, player_center_pos, Millis(200), 2),
-                        VisualCircle((0, 100, 0), player_center_pos, 40, Millis(150), 2, player_entity),
-                        VisualCircle((0, 150, 0), player_center_pos, 50, Millis(200), 2, player_entity),
-                        VisualCircle((0, 200, 0), player_center_pos, 60, Millis(300), 2, player_entity),
+                        VisualCircle((0, 100, 0), player_center_pos, 20, 40, Millis(150), 2, player_entity),
+                        VisualCircle((0, 150, 0), player_center_pos, 25, 50, Millis(200), 2, player_entity),
+                        VisualCircle((0, 200, 0), player_center_pos, 30, 60, Millis(300), 2, player_entity),
                     ]
 
         if self._time_since_shield > self._shield_interval:

@@ -123,6 +123,7 @@ class WorldEntity:
         }
         self.direction = dirs[self.direction]
 
+
 class PotionOnGround:
     def __init__(self, world_entity: WorldEntity, potion_type: PotionType):
         self.world_entity = world_entity

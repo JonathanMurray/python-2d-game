@@ -30,13 +30,13 @@ class VisualLine(VisualEffect):
 
 
 class VisualCircle(VisualEffect):
-    def __init__(self, color: Tuple[int, int, int], center_position: Tuple[int, int], radius: int, max_age: Millis,
-                 line_width: int, attached_to_entity: WorldEntity = None):
+    def __init__(self, color: Tuple[int, int, int], center_position: Tuple[int, int], start_radius: int,
+                 end_radius: int, max_age: Millis, line_width: int, attached_to_entity: WorldEntity = None):
         super().__init__(max_age)
         self.color = color
         self.center_position = center_position
-        self.start_radius = int(radius / 2)
-        self.end_radius = radius
+        self.start_radius = start_radius
+        self.end_radius = end_radius
         self.line_width = line_width
         self._attached_to_entity = attached_to_entity
 

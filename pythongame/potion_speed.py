@@ -25,7 +25,7 @@ class IncreasedMoveSpeed(AbstractBuffEffect):
         self._time_since_graphics += time_passed
         if self._time_since_graphics > 100:
             game_state.visual_effects.append(
-                VisualCircle((150, 200, 250), game_state.player_entity.get_center_position(), 10, Millis(200), 0))
+                VisualCircle((150, 200, 250), game_state.player_entity.get_center_position(), 5, 10, Millis(200), 0))
             self._time_since_graphics = 0
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):

@@ -24,8 +24,8 @@ class ProjectileController(AbstractProjectileController):
             damage_amount = 3
             enemy.lose_health(damage_amount)
             game_state.visual_effects.append(create_visual_damage_text(enemy.world_entity, damage_amount))
-            game_state.visual_effects.append(VisualCircle((250, 100, 50), enemy.world_entity.get_center_position(), 45,
-                                                          Millis(100), 0))
+            game_state.visual_effects.append(VisualCircle((250, 100, 50), enemy.world_entity.get_center_position(), 22,
+                                                          45, Millis(100), 0))
             return True
 
 
@@ -41,11 +41,9 @@ def _apply_ability(game_state: GameState):
                          projectile_speed)
     projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER_FIREBALL))
     game_state.projectile_entities.append(projectile)
-    effect_circle_radius = 18
     effect_position = (projectile_pos[0] + PROJECTILE_SIZE[0] // 2,
                        projectile_pos[1] + PROJECTILE_SIZE[1] // 2)
-    game_state.visual_effects.append(VisualCircle((250, 150, 50), effect_position, effect_circle_radius,
-                                                  Millis(80), 0))
+    game_state.visual_effects.append(VisualCircle((250, 150, 50), effect_position, 9, 18, Millis(80), 0))
 
 
 def register_fireball_ability():

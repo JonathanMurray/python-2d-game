@@ -144,4 +144,4 @@ class GameEngine:
         self.game_state.center_camera_on_player()
 
         if self.game_state.player_state.health <= 0:
-            return True # Game over
+            return True  # Game over

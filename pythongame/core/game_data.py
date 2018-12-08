@@ -168,5 +168,6 @@ def register_potion_icon_sprite(potion_type: PotionType, ui_icon_sprite: UiIconS
 def register_potion_entity_sprite(potion_type: PotionType, sprite: Sprite):
     POTION_ENTITY_SPRITES[potion_type] = sprite
 
+
 def register_potion_name(potion_type: PotionType, name: str):
     POTION_NAMES[potion_type] = name
