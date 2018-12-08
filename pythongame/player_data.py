@@ -24,7 +24,7 @@ health = 50
 mana = 100
 max_mana = 150
 mana_regen = 0.0028
-_items = [ItemType.AMULET_OF_MANA]
+_items = [ItemType.SWORD_OF_LEECHING]
 INTIAL_PLAYER_STATE = PlayerState(health, health, mana, max_mana, mana_regen, _player_potion_slots, _abilities, _items)
 
 

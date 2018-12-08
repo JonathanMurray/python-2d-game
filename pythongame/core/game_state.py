@@ -203,6 +203,7 @@ class PlayerState:
         self.is_invisible = False
         self.is_stunned = False
         self.items = items
+        self.life_steal_ratio = 0
 
     def gain_health(self, amount: float):
         self._health_float = min(self._health_float + amount, self.max_health)
