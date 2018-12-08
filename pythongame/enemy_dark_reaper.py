@@ -92,6 +92,7 @@ class EnemyMind(AbstractEnemyMind):
                 game_state.visual_effects.append(
                     VisualText("WHAT NOW MORTAL?", COLOR_SPEECH, speech_text_pos, speech_text_pos, SPEECH_DURATION)
                 )
+
             game_state.visual_effects.append(
                 VisualCircle((0, 0, 150), enemy_center_pos, 60, 20, Millis(self._shield_duration), 2, enemy_entity)
             )

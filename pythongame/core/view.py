@@ -230,7 +230,7 @@ class View:
         self._circle(visual_circle.color, translated_position, radius, visual_circle.line_width)
 
     def _visual_rect(self, visual_rect):
-        self._world_rect(visual_rect.color, visual_rect.rect(), 1)
+        self._world_rect(visual_rect.color, visual_rect.rect(), visual_rect.line_width)
 
     def _visual_text(self, visual_effect):
         position = visual_effect.position()

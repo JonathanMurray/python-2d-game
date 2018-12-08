@@ -41,7 +41,7 @@ class ReducedMovementSpeed(AbstractBuffEffect):
         self._time_since_graphics += time_passed
         if self._time_since_graphics > 250:
             game_state.visual_effects.append(
-                VisualRect((0, 100, 200), buffed_entity.get_center_position(), 50, Millis(80), buffed_entity))
+                VisualRect((0, 100, 200), buffed_entity.get_center_position(), 50, 50, Millis(80), 1, buffed_entity))
             self._time_since_graphics = 0
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):

@@ -51,13 +51,14 @@ class VisualCircle(VisualEffect):
 
 
 class VisualRect(VisualEffect):
-    def __init__(self, color: Tuple[int, int, int], center_position: Tuple[int, int], width: int, max_age: Millis,
-                 attached_to_entity: WorldEntity = None):
+    def __init__(self, color: Tuple[int, int, int], center_position: Tuple[int, int], start_width: int, end_width: int,
+                 max_age: Millis, line_width: int, attached_to_entity: WorldEntity = None):
         super().__init__(max_age)
         self.color = color
         self.center_position = center_position
-        self.start_width = int(width * 0.75)
-        self.end_width = width
+        self.start_width = start_width
+        self.end_width = end_width
+        self.line_width = line_width
         self._attached_to_entity = attached_to_entity
 
     def rect(self):

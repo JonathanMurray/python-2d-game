@@ -106,7 +106,7 @@ def _add_visual_lines_along_path(game_state, path):
         next = path[i + 1]
         game_state.visual_effects.append(
             VisualRect((100, 150, 150),
-                       _get_middle_of_cell_from_position(current), 10, Millis(DEBUG_PATHFINDER_INTERVAL)))
+                       _get_middle_of_cell_from_position(current), 7, 10, Millis(DEBUG_PATHFINDER_INTERVAL), 1))
         game_state.visual_effects.append(
             VisualLine((250, 250, 250),
                        _get_middle_of_cell_from_position(current),

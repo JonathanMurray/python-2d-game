@@ -35,7 +35,7 @@ class ChannelingMagicMissiles(AbstractBuffEffect):
                                  game_state.player_entity.direction, 0.5)
             projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER_MAGIC_MISSILE))
             game_state.projectile_entities.append(projectile)
-            game_state.visual_effects.append(VisualRect((250, 0, 250), player_center_position, 60, Millis(250)))
+            game_state.visual_effects.append(VisualRect((250, 0, 250), player_center_position, 45, 60, Millis(250), 1))
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
         game_state.player_state.is_stunned = False

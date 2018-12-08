@@ -82,7 +82,7 @@ class Stunned(AbstractBuffEffect):
         buffed_enemy.is_stunned = True
         effect_position = buffed_entity.get_center_position()
         game_state.visual_effects.append(
-            VisualRect((250, 250, 50), effect_position, 40, Millis(100), buffed_entity))
+            VisualRect((250, 250, 50), effect_position, 30, 40, Millis(100), 1, buffed_entity))
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy,
                             time_passed: Millis):

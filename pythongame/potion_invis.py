@@ -26,8 +26,8 @@ class Invisibility(AbstractBuffEffect):
         if self._time_since_graphics > 320:
             self._time_since_graphics = 0
             game_state.visual_effects.append(
-                VisualRect((0, 0, 250), game_state.player_entity.get_center_position(), 60, Millis(400),
-                           game_state.player_entity))
+                VisualRect((0, 0, 250), game_state.player_entity.get_center_position(), 45, 60, Millis(400),
+                           1, game_state.player_entity))
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
         game_state.player_state.is_invisible = False

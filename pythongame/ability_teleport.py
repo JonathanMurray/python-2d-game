@@ -14,7 +14,7 @@ def _apply_teleport(game_state: GameState):
 
     color = (140, 140, 230)
     game_state.visual_effects.append(VisualCircle(color, previous_position, 17, 35, Millis(150), 1))
-    game_state.visual_effects.append(VisualRect(color, previous_position, 50, Millis(150)))
+    game_state.visual_effects.append(VisualRect(color, previous_position, 37, 50, Millis(150), 1))
     game_state.visual_effects.append(VisualLine(color, previous_position, new_center_position, Millis(200), 1))
     game_state.visual_effects.append(VisualCircle(color, new_center_position, 25, 50, Millis(300), 2, player_entity))
 
