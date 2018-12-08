@@ -40,6 +40,8 @@ def main(args: List[str]):
     snapped_mouse_world_position = (0, 0)
     is_snapped_mouse_within_world = True
 
+    game_state.center_camera_on_player()
+
     while True:
 
         for event in pygame.event.get():
