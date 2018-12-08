@@ -394,8 +394,10 @@ class View:
 
         buff_texts = []
         for active_buff in player_active_buffs:
-            buff_name = BUFF_TEXTS[active_buff.buff_effect.get_buff_type()]
-            buff_texts.append(buff_name + " (" + str(int(active_buff.time_until_expiration / 1000)) + ")")
+            buff_type = active_buff.buff_effect.get_buff_type()
+            if buff_type in BUFF_TEXTS:
+                buff_texts.append(
+                    BUFF_TEXTS[buff_type] + " (" + str(int(active_buff.time_until_expiration / 1000)) + ")")
         for i, text in enumerate(buff_texts):
             self._text_in_ui(self.font_small, text, 550, 15 + i * 25)
 
