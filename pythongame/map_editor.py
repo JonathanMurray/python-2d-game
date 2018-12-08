@@ -55,21 +55,11 @@ def main(args: List[str]):
                     snapped_mouse_screen_position, game_state.camera_world_area.get_position())
                 is_snapped_mouse_within_world = game_state.is_position_within_game_world(snapped_mouse_world_position)
                 if is_mouse_button_down:
-                    if placing_map_file_entity and placing_map_file_entity.is_wall:
-                        already_has_wall = any([w for w in game_state.walls
-                                                if w.get_position() == snapped_mouse_world_position])
-                        if not already_has_wall:
-                            game_state.add_wall(WorldEntity(snapped_mouse_world_position, WALL_SIZE, Sprite.WALL))
+                    if placing_map_file_entity:
+                        if placing_map_file_entity.is_wall:
+                            _add_wall_to_position(game_state, snapped_mouse_world_position)
                     else:
-                        # delete entities
-                        for wall in [w for w in game_state.walls if w.get_position() == snapped_mouse_world_position]:
-                            game_state.remove_wall(wall)
-                        for enemy in [e for e in game_state.enemies if
-                                      e.world_entity.get_position() == snapped_mouse_world_position]:
-                            game_state.enemies.remove(enemy)
-                        for potion in [p for p in game_state.potions_on_ground
-                                       if p.world_entity.get_position() == snapped_mouse_world_position]:
-                            game_state.potions_on_ground.remove(potion)
+                        _delete_map_entities_from_position(game_state, snapped_mouse_world_position)
 
             if event.type == pygame.KEYDOWN:
                 if event.unicode.upper() in MAP_FILE_ENTITIES_BY_CHAR:
@@ -104,12 +94,14 @@ def main(args: List[str]):
                             enemy = Enemy(enemy_type, entity, data.max_health, data.max_health, data.health_regen, None)
                             game_state.enemies.append(enemy)
                         elif placing_map_file_entity.is_wall:
-                            game_state.add_wall(WorldEntity(snapped_mouse_world_position, WALL_SIZE, Sprite.WALL))
+                            _add_wall_to_position(game_state, snapped_mouse_world_position)
                         elif placing_map_file_entity.potion_type:
                             sprite = POTION_ENTITY_SPRITES[placing_map_file_entity.potion_type]
                             entity = WorldEntity(snapped_mouse_world_position, POTION_ENTITY_SIZE, sprite)
                             game_state.potions_on_ground.append(
                                 PotionOnGround(entity, placing_map_file_entity.potion_type))
+                else:
+                    _delete_map_entities_from_position(game_state, snapped_mouse_world_position)
 
             if event.type == pygame.MOUSEBUTTONUP:
                 is_mouse_button_down = False
@@ -150,6 +142,24 @@ def main(args: List[str]):
             view.render_map_editor_mouse_rect((50, 250, 0), snapped_mouse_rect)
 
         view.update_display()
+
+
+def _add_wall_to_position(game_state, snapped_mouse_world_position: Tuple[int, int]):
+    already_has_wall = any([w for w in game_state.walls
+                            if w.get_position() == snapped_mouse_world_position])
+    if not already_has_wall:
+        game_state.add_wall(WorldEntity(snapped_mouse_world_position, WALL_SIZE, Sprite.WALL))
+
+
+def _delete_map_entities_from_position(game_state, snapped_mouse_world_position: Tuple[int, int]):
+    for wall in [w for w in game_state.walls if w.get_position() == snapped_mouse_world_position]:
+        game_state.remove_wall(wall)
+    for enemy in [e for e in game_state.enemies if
+                  e.world_entity.get_position() == snapped_mouse_world_position]:
+        game_state.enemies.remove(enemy)
+    for potion in [p for p in game_state.potions_on_ground
+                   if p.world_entity.get_position() == snapped_mouse_world_position]:
+        game_state.potions_on_ground.remove(potion)
 
 
 if __name__ == "__main__":
