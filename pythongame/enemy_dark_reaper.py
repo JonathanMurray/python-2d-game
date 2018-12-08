@@ -17,7 +17,7 @@ COLOR_SPEECH = (200, 100, 70)
 
 class EnemyMind(AbstractEnemyMind):
     def __init__(self, global_path_finder):
-        self._attack_interval = 3500
+        self._attack_interval = 1000
         self._time_since_attack = self._attack_interval
         self._update_path_interval = 900
         self._time_since_updated_path = random.randint(0, self._update_path_interval)
@@ -67,10 +67,12 @@ class EnemyMind(AbstractEnemyMind):
 
         if self._time_since_attack > self._attack_interval:
             self._time_since_attack = 0
+            game_state.visual_effects.append(VisualCircle((100, 100, 100), enemy_center_pos, 180, 180,
+                                                          Millis(self._attack_interval), 1, enemy_entity))
             if not is_player_invisible:
                 player_center_pos = game_state.player_entity.get_center_position()
-                if is_x_and_y_within_distance(enemy_center_pos, player_center_pos, 180):
-                    damage_amount = 6
+                if is_x_and_y_within_distance(enemy_center_pos, player_center_pos, 160):
+                    damage_amount = 3
                     game_state.player_state.lose_health(damage_amount)
                     game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, damage_amount))
 
@@ -91,7 +93,7 @@ class EnemyMind(AbstractEnemyMind):
                     VisualText("WHAT NOW MORTAL?", COLOR_SPEECH, speech_text_pos, speech_text_pos, SPEECH_DURATION)
                 )
             game_state.visual_effects.append(
-                VisualCircle((0, 0, 150), enemy_center_pos, 60, Millis(self._shield_duration), 2, enemy_entity)
+                VisualCircle((0, 0, 150), enemy_center_pos, 60, 20, Millis(self._shield_duration), 2, enemy_entity)
             )
             enemy.gain_buff_effect(get_buff_effect(BuffType.INVULNERABILITY), Millis(self._shield_duration))
 
