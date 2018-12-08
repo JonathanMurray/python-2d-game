@@ -126,6 +126,7 @@ class EnemyType(Enum):
     RAT_2 = 6
     DARK_REAPER = 7
     GOBLIN_WARLOCK = 8
+    MUMMY = 9
 
 
 class AbilityType(Enum):
@@ -156,6 +157,7 @@ class Sprite(Enum):
     PROJECTILE_PLAYER_WHIRLWIND = 17
     ENEMY_GOBLIN_WARLOCK = 18
     ENEMY_GOBLIN_WARLOCK_PROJECTILE = 19
+    ENEMY_MUMMY = 20
 
 
 class BuffType(Enum):

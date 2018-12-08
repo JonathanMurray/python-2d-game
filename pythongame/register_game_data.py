@@ -9,6 +9,7 @@ from pythongame.enemy_berserker import register_berserker_enemy
 from pythongame.enemy_dark_reaper import register_dark_reaper_enemy
 from pythongame.enemy_goblin_warlock import register_goblin_warlock_enemy
 from pythongame.enemy_mage import register_mage_enemy
+from pythongame.enemy_mummy import register_mummy_enemy
 from pythongame.enemy_rat_1 import register_rat_1_enemy
 from pythongame.enemy_rat_2 import register_rat_2_enemy
 from pythongame.player_data import register_player_data
@@ -37,3 +38,4 @@ def register_all_game_data():
     register_dark_reaper_enemy()
     register_whirlwind_ability()
     register_goblin_warlock_enemy()
+    register_mummy_enemy()
