@@ -69,6 +69,7 @@ class UiIconSprite(Enum):
     ABILITY_FROST_NOVA = 10
     ABILITY_WHIRLWIND = 11
     ITEM_WINGED_BOOTS = 12
+    ITEM_AMULET_OF_MANA = 13
 
 
 class AbilityData:

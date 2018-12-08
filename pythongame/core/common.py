@@ -174,6 +174,7 @@ class BuffType(Enum):
 
 class ItemType(Enum):
     WINGED_BOOTS = 1
+    AMULET_OF_MANA = 2
 
 class ProjectileType(Enum):
     PLAYER_FIREBALL = 1
