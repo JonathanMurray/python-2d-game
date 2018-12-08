@@ -10,6 +10,8 @@ from pythongame.core.game_state import GameState, Enemy, WorldEntity
 from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
 from pythongame.core.visual_effects import VisualLine, create_visual_damage_text, VisualCircle, VisualText
 
+SPEECH_DURATION = Millis(3000)
+
 COLOR_SPEECH = (200, 100, 70)
 
 
@@ -84,19 +86,20 @@ class EnemyMind(AbstractEnemyMind):
             self._time_since_shield = 0
             speech_text_pos = (enemy_entity.x - 40, enemy_entity.y - 30)
 
-            game_state.visual_effects.append(
-                VisualText("WHAT NOW MORTAL?", COLOR_SPEECH, speech_text_pos, speech_text_pos, Millis(3000))
-            )
+            if self._time_since_speech > SPEECH_DURATION:
+                game_state.visual_effects.append(
+                    VisualText("WHAT NOW MORTAL?", COLOR_SPEECH, speech_text_pos, speech_text_pos, SPEECH_DURATION)
+                )
             game_state.visual_effects.append(
                 VisualCircle((0, 0, 150), enemy_center_pos, 60, Millis(self._shield_duration), 2, enemy_entity)
             )
             enemy.gain_buff_effect(get_buff_effect(BuffType.INVULNERABILITY), Millis(self._shield_duration))
 
-        if self._time_since_speech > self._speech_interval:
+        if self._time_since_speech > self._speech_interval and self._time_since_shield > SPEECH_DURATION:
             self._time_since_speech = 0
             speech_text_pos = (enemy_entity.x - 40, enemy_entity.y - 30)
             game_state.visual_effects.append(
-                VisualText("GIVE IN TO THE DARKNESS!!", COLOR_SPEECH, speech_text_pos, speech_text_pos, Millis(3000))
+                VisualText("GIVE IN TO THE DARKNESS!!", COLOR_SPEECH, speech_text_pos, speech_text_pos, SPEECH_DURATION)
             )
 
 
