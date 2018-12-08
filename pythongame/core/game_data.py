@@ -67,6 +67,7 @@ class UiIconSprite(Enum):
     MAGIC_MISSILE = 8
     TELEPORT = 9
     ABILITY_FROST_NOVA = 10
+    ABILITY_WHIRLWIND = 11
 
 
 class AbilityData:

@@ -105,6 +105,23 @@ class WorldEntity:
         collision_y = self.get_center_position()[1] - self.collision_h / 2
         return collision_x, collision_y, self.collision_w, self.collision_h
 
+    def rotate_right(self):
+        dirs = {
+            Direction.DOWN: Direction.LEFT,
+            Direction.LEFT: Direction.UP,
+            Direction.UP: Direction.RIGHT,
+            Direction.RIGHT: Direction.DOWN
+        }
+        self.direction = dirs[self.direction]
+
+    def rotate_left(self):
+        dirs = {
+            Direction.DOWN: Direction.RIGHT,
+            Direction.RIGHT: Direction.UP,
+            Direction.UP: Direction.LEFT,
+            Direction.LEFT: Direction.DOWN
+        }
+        self.direction = dirs[self.direction]
 
 class PotionOnGround:
     def __init__(self, world_entity: WorldEntity, potion_type: PotionType):
@@ -273,8 +290,8 @@ class GameState:
 
     def get_all_entities_to_render(self) -> List[WorldEntity]:
         walls = self._get_walls_from_buckets_in_camera()
-        return [self.player_entity] + [p.world_entity for p in self.projectile_entities] + \
-               [p.world_entity for p in self.potions_on_ground] + [e.world_entity for e in self.enemies] + walls
+        return [self.player_entity] + [p.world_entity for p in self.potions_on_ground] + \
+               [e.world_entity for e in self.enemies] + walls + [p.world_entity for p in self.projectile_entities]
 
     def center_camera_on_player(self):
         new_camera_pos = get_position_from_center_position(self.player_entity.get_center_position(), self.camera_size)

@@ -136,6 +136,7 @@ class AbilityType(Enum):
     CHANNEL_ATTACK = 4
     TELEPORT = 5
     FROST_NOVA = 6
+    WHIRLWIND = 7
 
 
 class Sprite(Enum):
@@ -155,6 +156,7 @@ class Sprite(Enum):
     EFFECT_ABILITY_FROST_NOVA = 14
     MANA_POTION = 15
     DARK_REAPER = 16
+    PROJECTILE_PLAYER_WHIRLWIND = 17
 
 
 class BuffType(Enum):
@@ -172,3 +174,4 @@ class ProjectileType(Enum):
     PLAYER_AOE = 2
     ENEMY_POISON = 3
     PLAYER_MAGIC_MISSILE = 4
+    PLAYER_WHIRLWIND = 5

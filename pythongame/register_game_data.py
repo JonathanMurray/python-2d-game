@@ -4,6 +4,7 @@ from pythongame.ability_fireball import register_fireball_ability
 from pythongame.ability_frost_nova import register_frost_nova_ability
 from pythongame.ability_heal import register_heal_ability
 from pythongame.ability_teleport import register_teleport_ability
+from pythongame.ability_whirlwind import register_whirlwind_ability
 from pythongame.enemy_berserker import register_berserker_enemy
 from pythongame.enemy_dark_reaper import register_dark_reaper_enemy
 from pythongame.enemy_dumb import register_dumb_enemy
@@ -37,3 +38,4 @@ def register_all_game_data():
     register_rat_1_enemy()
     register_rat_2_enemy()
     register_dark_reaper_enemy()
+    register_whirlwind_ability()

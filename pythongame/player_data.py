@@ -15,9 +15,10 @@ _player_potion_slots = {
     5: None
 }
 
-_abilities = [AbilityType.FIREBALL, AbilityType.FROST_NOVA]
+_abilities = [AbilityType.FIREBALL, AbilityType.FROST_NOVA, AbilityType.WHIRLWIND]
 register_user_ability_key(AbilityType.FIREBALL, UserAbilityKey("Q", pygame.K_q))
 register_user_ability_key(AbilityType.FROST_NOVA, UserAbilityKey("W", pygame.K_w))
+register_user_ability_key(AbilityType.WHIRLWIND, UserAbilityKey("E", pygame.K_e))
 health = 50
 mana = 100
 max_mana = 150
