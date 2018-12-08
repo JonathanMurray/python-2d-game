@@ -7,7 +7,6 @@ from pythongame.ability_teleport import register_teleport_ability
 from pythongame.ability_whirlwind import register_whirlwind_ability
 from pythongame.enemy_berserker import register_berserker_enemy
 from pythongame.enemy_dark_reaper import register_dark_reaper_enemy
-from pythongame.enemy_dumb import register_dumb_enemy
 from pythongame.enemy_mage import register_mage_enemy
 from pythongame.enemy_rat_1 import register_rat_1_enemy
 from pythongame.enemy_rat_2 import register_rat_2_enemy
@@ -30,7 +29,6 @@ def register_all_game_data():
     register_mana_potion()
     register_invis_potion()
     register_speed_potion()
-    register_dumb_enemy()
     register_smart_enemy()
     register_mage_enemy()
     register_berserker_enemy()
