@@ -1,5 +1,6 @@
 import pygame
 
+from pythongame.core.common import ItemType
 from pythongame.core.game_data import Sprite, Direction, PotionType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_user_ability_key, UserAbilityKey
 from pythongame.core.game_state import PlayerState
@@ -23,7 +24,8 @@ health = 50
 mana = 100
 max_mana = 150
 mana_regen = 0.0028
-INTIAL_PLAYER_STATE = PlayerState(health, health, mana, max_mana, mana_regen, _player_potion_slots, _abilities)
+_items = [ItemType.WINGED_BOOTS]
+INTIAL_PLAYER_STATE = PlayerState(health, health, mana, max_mana, mana_regen, _player_potion_slots, _abilities, _items)
 
 
 def register_player_data():

@@ -37,6 +37,8 @@ def main(args: List[str]):
     is_game_over = False
     render_hit_and_collision_boxes = False
 
+    game_engine.initialize()
+
     while True:
 
         # ------------------------------------
@@ -108,7 +110,8 @@ def main(args: List[str]):
             highlighted_ability_action=view_state.highlighted_ability_action,
             is_paused=is_paused,
             is_game_over=is_game_over,
-            ability_cooldowns_remaining=game_state.player_state.ability_cooldowns_remaining)
+            ability_cooldowns_remaining=game_state.player_state.ability_cooldowns_remaining,
+            items=game_state.player_state.items)
 
         view.update_display()
 

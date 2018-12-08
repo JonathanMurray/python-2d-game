@@ -188,7 +188,7 @@ class AgentBuffsUpdate:
 
 class PlayerState:
     def __init__(self, health: int, max_health: int, mana: int, max_mana: int, mana_regen: float,
-                 potion_slots: Dict[int, PotionType], abilities: List[AbilityType]):
+                 potion_slots: Dict[int, PotionType], abilities: List[AbilityType], items: List[ItemType]):
         self.health = health
         self._health_float = health
         self.max_health = max_health
@@ -202,6 +202,7 @@ class PlayerState:
         self.active_buffs: List[BuffWithDuration] = []
         self.is_invisible = False
         self.is_stunned = False
+        self.items = items
 
     def gain_health(self, amount: float):
         self._health_float = min(self._health_float + amount, self.max_health)

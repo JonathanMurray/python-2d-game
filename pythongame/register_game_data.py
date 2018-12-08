@@ -12,6 +12,7 @@ from pythongame.enemy_mage import register_mage_enemy
 from pythongame.enemy_mummy import register_mummy_enemy
 from pythongame.enemy_rat_1 import register_rat_1_enemy
 from pythongame.enemy_rat_2 import register_rat_2_enemy
+from pythongame.item_winged_boots import register_winged_boots_item
 from pythongame.player_data import register_player_data
 from pythongame.potion_health import register_health_potion
 from pythongame.potion_invis import register_invis_potion
@@ -39,3 +40,4 @@ def register_all_game_data():
     register_whirlwind_ability()
     register_goblin_warlock_enemy()
     register_mummy_enemy()
+    register_winged_boots_item()

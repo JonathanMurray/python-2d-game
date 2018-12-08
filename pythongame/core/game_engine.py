@@ -2,6 +2,7 @@ from pythongame.core.abilities import apply_ability_effect
 from pythongame.core.common import *
 from pythongame.core.game_data import POTION_NAMES
 from pythongame.core.game_state import GameState, handle_buffs
+from pythongame.core.items import get_item_effect
 from pythongame.core.player_controls import TryUseAbilityResult, PlayerControls
 from pythongame.core.potions import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
 from pythongame.core.view_state import ViewState
@@ -13,6 +14,11 @@ class GameEngine:
         self.game_state = game_state
         self.player_controls = PlayerControls()
         self.view_state = view_state
+
+    def initialize(self):
+        for item_type in self.game_state.player_state.items:
+            item_effect = get_item_effect(item_type)
+            item_effect.apply_start_effect(self.game_state)
 
     def try_use_ability(self, ability_type: AbilityType):
         if not self.game_state.player_state.is_stunned:

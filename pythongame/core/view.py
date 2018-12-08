@@ -2,10 +2,11 @@ from typing import Dict, Any, List, Tuple, Optional
 
 import pygame
 
-from pythongame.core.common import Direction, Sprite, PotionType, sum_of_vectors
+from pythongame.core.common import Direction, Sprite, PotionType, sum_of_vectors, AbilityType, ItemType
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
-    POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, ENEMIES
+    POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, ENEMIES, UiIconSprite
 from pythongame.core.game_state import WorldEntity
+from pythongame.core.items import get_item_ui_icon_sprite
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 from pythongame.game_world_init import MapFileEntity
 
@@ -302,6 +303,15 @@ class View:
             cooldown_rect = (x + 2, y + 2 + (h - 4) * (1 - ratio_remaining), w - 4, (h - 4) * ratio_remaining + 2)
             self._rect_filled((100, 30, 30), cooldown_rect)
 
+    def _item_icon_in_ui(self, x_in_ui, y_in_ui, size, item_type: ItemType):
+        w = size[0]
+        h = size[1]
+        x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
+        self._rect_filled((40, 40, 40), (x, y, w, h))
+        ui_icon_sprite = get_item_ui_icon_sprite(item_type)
+        self._image(self.images_by_ui_sprite[ui_icon_sprite], (x, y))
+        self._rect(COLOR_WHITE, (x, y, w, h), 2)
+
     def _map_editor_icon_in_ui(self, x_in_ui, y_in_ui, size, highlighted: bool, user_input_key: str,
                                map_file_entity: MapFileEntity):
         w = size[0]
@@ -376,7 +386,7 @@ class View:
     def render_ui(self, fps_string, is_paused, is_game_over, abilities, ability_cooldowns_remaining,
                   highlighted_ability_action, highlighted_potion_action, message, player_active_buffs,
                   player_health, player_mana, player_max_health, player_max_mana,
-                  player_minimap_relative_position, potion_slots):
+                  player_minimap_relative_position, potion_slots, items: List[ItemType]):
 
         self._rect(COLOR_BLACK, (0, 0, self.camera_size[0], self.camera_size[1]), 3)
         self._rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
@@ -389,17 +399,17 @@ class View:
 
         x_0 = 20
         self._text_in_ui(self.font_large, "HEALTH", x_0, y_1)
-        self._stat_bar_in_ui((x_0, y_2), 100, 36, player_health, player_max_health,
+        self._stat_bar_in_ui((x_0, y_2 + 2), 100, 32, player_health, player_max_health,
                              COLOR_RED)
         health_text = str(player_health) + "/" + str(player_max_health)
         self._text_in_ui(self.font_large, health_text, x_0 + 20, y_2 + 12)
 
         self._text_in_ui(self.font_large, "MANA", x_0, y_3)
-        self._stat_bar_in_ui((x_0, y_4), 100, 36, player_mana, player_max_mana, COLOR_BLUE)
+        self._stat_bar_in_ui((x_0, y_4 + 2), 100, 32, player_mana, player_max_mana, COLOR_BLUE)
         mana_text = str(player_mana) + "/" + str(player_max_mana)
         self._text_in_ui(self.font_large, mana_text, x_0 + 20, y_4 + 12)
 
-        x_1 = 155
+        x_1 = 140
         icon_space = 5
         self._text_in_ui(self.font_large, "POTIONS", x_1, y_1)
         self._potion_icon_in_ui(x_1, y_2, UI_ICON_SIZE, 1, potion_slots[1], highlighted_potion_action)
@@ -417,10 +427,16 @@ class View:
             self._ability_icon_in_ui(x_1 + i * (UI_ICON_SIZE[0] + icon_space), y_4, UI_ICON_SIZE, ability_type,
                                      highlighted_ability_action, ability_cooldowns_remaining)
 
-        x_2 = 390
-        self._text_in_ui(self.font_large, "MAP", x_2, y_1)
-        self._minimap_in_ui((x_2, y_2), (125, 125), player_minimap_relative_position)
+        x_2 = 365
+        self._text_in_ui(self.font_large, "ITEM", x_2, y_1)
+        for i, item_type in enumerate(items):
+            self._item_icon_in_ui(x_2 + i * (UI_ICON_SIZE[0] + icon_space), y_2, UI_ICON_SIZE, item_type)
 
+        x_3 = 440
+        self._text_in_ui(self.font_large, "MAP", x_3, y_1)
+        self._minimap_in_ui((x_3, y_2), (115, 115), player_minimap_relative_position)
+
+        x_4 = 585
         buff_texts = []
         for active_buff in player_active_buffs:
             buff_type = active_buff.buff_effect.get_buff_type()
@@ -428,7 +444,7 @@ class View:
                 buff_texts.append(
                     BUFF_TEXTS[buff_type] + " (" + str(int(active_buff.time_until_expiration / 1000)) + ")")
         for i, text in enumerate(buff_texts):
-            self._text_in_ui(self.font_small, text, 550, 15 + i * 25)
+            self._text_in_ui(self.font_small, text, x_4, 15 + i * 25)
 
         self._rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
 

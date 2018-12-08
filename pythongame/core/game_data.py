@@ -68,6 +68,7 @@ class UiIconSprite(Enum):
     TELEPORT = 9
     ABILITY_FROST_NOVA = 10
     ABILITY_WHIRLWIND = 11
+    ITEM_WINGED_BOOTS = 12
 
 
 class AbilityData:

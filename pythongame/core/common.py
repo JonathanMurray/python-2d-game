@@ -172,6 +172,9 @@ class BuffType(Enum):
     ENEMY_GOBLIN_WARLOCK_BURNT = 9
 
 
+class ItemType(Enum):
+    WINGED_BOOTS = 1
+
 class ProjectileType(Enum):
     PLAYER_FIREBALL = 1
     PLAYER_AOE = 2
