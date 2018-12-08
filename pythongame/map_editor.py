@@ -41,6 +41,8 @@ def main(args: List[str]):
     is_snapped_mouse_within_world = True
 
     game_state.center_camera_on_player()
+    game_state.camera_world_area.set_position(((game_state.camera_world_area.x // grid_cell_size) * grid_cell_size,
+                                              (game_state.camera_world_area.y // grid_cell_size) * grid_cell_size))
 
     while True:
 
