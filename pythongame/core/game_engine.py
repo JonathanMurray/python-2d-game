@@ -81,6 +81,7 @@ class GameEngine:
             buff_effect.apply_end_effect(self.game_state, self.game_state.player_entity, None)
 
         for enemy in self.game_state.enemies:
+            enemy.regenerate_health(time_passed)
             buffs_update = handle_buffs(enemy.active_buffs, time_passed)
             for buff_effect in buffs_update.buffs_that_started:
                 buff_effect.apply_start_effect(self.game_state, enemy.world_entity, enemy)

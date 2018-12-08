@@ -68,7 +68,7 @@ def _move_in_dir(enemy_entity, direction):
 
 def register_berserker_enemy():
     size = (50, 50)
-    register_enemy_data(EnemyType.BERSERKER, EnemyData(Sprite.ENEMY_BERSERKER, size, 5, 0.1))
+    register_enemy_data(EnemyType.BERSERKER, EnemyData(Sprite.ENEMY_BERSERKER, size, 5, 0, 0.1))
     register_enemy_behavior(EnemyType.BERSERKER, BerserkerEnemyMind)
     berserker_sprite_sheet = SpriteSheet("resources/graphics/skeleton_sprite_map.png")
     original_sprite_size = (32, 48)

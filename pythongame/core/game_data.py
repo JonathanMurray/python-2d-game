@@ -84,10 +84,11 @@ class UserAbilityKey:
 
 
 class EnemyData:
-    def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, speed: float):
+    def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float):
         self.sprite = sprite
         self.size = size
         self.max_health = max_health
+        self.health_regen = health_regen
         self.speed = speed
 
 

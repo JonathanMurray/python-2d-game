@@ -138,21 +138,26 @@ class Projectile:
 
 
 class Enemy:
-    def __init__(self, enemy_type: EnemyType, world_entity: WorldEntity, health: int, max_health: int, enemy_mind):
+    def __init__(self, enemy_type: EnemyType, world_entity: WorldEntity, health: int, max_health: int,
+                 health_regen: float, enemy_mind):
         self.enemy_type = enemy_type
         self.world_entity = world_entity
+        self._health_float = health
         self.health = health
         self.max_health = max_health
+        self.health_regen = health_regen
         self.enemy_mind = enemy_mind
         self.active_buffs: List[BuffWithDuration] = []
         self.invulnerable: bool = False
         self.is_stunned = False
 
     def lose_health(self, amount):
-        self.health = max(self.health - amount, 0)
+        self._health_float = min(self._health_float - amount, self.max_health)
+        self.health = int(math.floor(self._health_float))
 
     def gain_health(self, amount):
-        self.health = min(self.health + amount, self.max_health)
+        self._health_float = min(self._health_float + amount, self.max_health)
+        self.health = int(math.floor(self._health_float))
 
     def gain_buff_effect(self, buff: Any, duration: Millis):
         existing_buffs_with_this_type = [b for b in self.active_buffs
@@ -161,6 +166,9 @@ class Enemy:
             existing_buffs_with_this_type[0].time_until_expiration = duration
         else:
             self.active_buffs.append(BuffWithDuration(buff, duration))
+
+    def regenerate_health(self, time_passed: Millis):
+        self.gain_health(self.health_regen * float(time_passed))
 
 
 class BuffWithDuration:

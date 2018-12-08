@@ -59,7 +59,7 @@ class MageEnemyMind(AbstractEnemyMind):
 
 def register_mage_enemy():
     size = (60, 60)
-    register_enemy_data(EnemyType.MAGE, EnemyData(Sprite.ENEMY_MAGE, size, 25, 0.02))
+    register_enemy_data(EnemyType.MAGE, EnemyData(Sprite.ENEMY_MAGE, size, 25, 0, 0.02))
     register_enemy_behavior(EnemyType.MAGE, MageEnemyMind)
     register_entity_sprite_initializer(
         Sprite.ENEMY_MAGE, SpriteInitializer("resources/graphics/enemy_mage.png", size))

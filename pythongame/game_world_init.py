@@ -149,7 +149,7 @@ def _create_enemy_at_position(enemy_type: EnemyType, pos: Tuple[int, int], globa
     data = ENEMIES[enemy_type]
     entity = WorldEntity(pos, data.size, data.sprite, Direction.LEFT, data.speed)
     enemy_mind = create_enemy_mind(enemy_type, global_path_finder)
-    return Enemy(enemy_type, entity, data.max_health, data.max_health, enemy_mind)
+    return Enemy(enemy_type, entity, data.max_health, data.max_health, data.health_regen, enemy_mind)
 
 
 def _create_potion_at_position(potion_type: PotionType, pos: Tuple[int, int]):

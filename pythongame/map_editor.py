@@ -101,7 +101,7 @@ def main(args: List[str]):
                             data = ENEMIES[enemy_type]
                             entity = WorldEntity(snapped_mouse_world_position, data.size, data.sprite, Direction.DOWN,
                                                  data.speed)
-                            enemy = Enemy(enemy_type, entity, data.max_health, data.max_health, None)
+                            enemy = Enemy(enemy_type, entity, data.max_health, data.max_health, data.health_regen, None)
                             game_state.enemies.append(enemy)
                         elif placing_map_file_entity.is_wall:
                             game_state.add_wall(WorldEntity(snapped_mouse_world_position, WALL_SIZE, Sprite.WALL))
