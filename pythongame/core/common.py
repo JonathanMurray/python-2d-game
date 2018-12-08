@@ -120,7 +120,6 @@ class PotionType(Enum):
 
 
 class EnemyType(Enum):
-    SMART = 2
     MAGE = 3
     BERSERKER = 4
     RAT_1 = 5
@@ -141,7 +140,6 @@ class AbilityType(Enum):
 
 class Sprite(Enum):
     PLAYER = 1
-    ENEMY_2 = 3
     PROJECTILE_PLAYER_FIREBALL = 4
     WHIRLWIND = 5
     HEALTH_POTION = 6
