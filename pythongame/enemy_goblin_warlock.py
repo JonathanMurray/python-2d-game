@@ -11,12 +11,13 @@ from pythongame.core.game_state import GameState, Enemy, WorldEntity, Projectile
 from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
 from pythongame.core.projectiles import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
-from pythongame.core.visual_effects import create_visual_damage_text, VisualCircle
+from pythongame.core.visual_effects import create_visual_damage_text, VisualCircle, VisualText
 
 BUFF_TYPE = BuffType.ENEMY_GOBLIN_WARLOCK_BURNT
 PROJECTILE_TYPE = ProjectileType.ENEMY_GOBLIN_WARLOCK
 PROJECTILE_SPRITE = Sprite.ENEMY_GOBLIN_WARLOCK_PROJECTILE
 PROJECTILE_SIZE = (20, 20)
+COLOR_SPEECH = (200, 100, 70)
 
 
 class EnemyMind(AbstractEnemyMind):
@@ -29,12 +30,15 @@ class EnemyMind(AbstractEnemyMind):
         self.next_waypoint = None
         self._reevaluate_next_waypoint_direction_interval = 1000
         self._time_since_reevaluated = self._reevaluate_next_waypoint_direction_interval
+        self._update_speech_interval()
+        self._time_since_speech = 0
 
     def control_enemy(self, game_state: GameState, enemy: Enemy, player_entity: WorldEntity, is_player_invisible: bool,
                       time_passed: Millis):
         self._time_since_attack += time_passed
         self._time_since_updated_path += time_passed
         self._time_since_reevaluated += time_passed
+        self._time_since_speech += time_passed
 
         enemy_entity = enemy.world_entity
 
@@ -75,8 +79,19 @@ class EnemyMind(AbstractEnemyMind):
             projectile = Projectile(projectile_entity, create_projectile_controller(PROJECTILE_TYPE))
             game_state.projectile_entities.append(projectile)
 
+        if self._time_since_speech > self._speech_interval:
+            self._time_since_speech = 0
+            self._update_speech_interval()
+            speech_text_pos = (enemy_entity.x - 20, enemy_entity.y - 30)
+            speech_line = random.choice(["EHEHEHE", "HOT! SO HOT!!"])
+            game_state.visual_effects.append(
+                VisualText(speech_line, COLOR_SPEECH, speech_text_pos, speech_text_pos, Millis(3500)))
+
     def _update_attack_interval(self):
         self._attack_interval = 2000 + random.random() * 4000
+
+    def _update_speech_interval(self):
+        self._speech_interval = 8000 + random.random() * 10000
 
 
 def _move_in_dir(enemy_entity, direction):
