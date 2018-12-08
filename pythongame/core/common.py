@@ -167,6 +167,7 @@ class BuffType(Enum):
     CHANNELING_MAGIC_MISSILES = 5
     REDUCED_MOVEMENT_SPEED = 6
     INVULNERABILITY = 7
+    STUNNED_BY_WHIRLWIND = 8
 
 
 class ProjectileType(Enum):

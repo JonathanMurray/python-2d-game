@@ -145,6 +145,7 @@ class Enemy:
         self.enemy_mind = enemy_mind
         self.active_buffs: List[BuffWithDuration] = []
         self.invulnerable: bool = False
+        self.is_stunned = False
 
     def lose_health(self, amount):
         self.health = max(self.health - amount, 0)

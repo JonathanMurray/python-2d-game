@@ -100,7 +100,7 @@ class GameEngine:
 
         for e in self.game_state.enemies:
             # Enemies shouldn't move towards player when they are out of sight
-            if self._is_enemy_close_to_camera(e):
+            if self._is_enemy_close_to_camera(e) and not e.is_stunned:
                 self.game_state.update_world_entity_position_within_game_world(e.world_entity, time_passed)
         if not self.game_state.player_state.is_stunned:
             self.game_state.update_world_entity_position_within_game_world(self.game_state.player_entity, time_passed)

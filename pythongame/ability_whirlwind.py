@@ -1,15 +1,17 @@
 import random
 
 from pythongame.core.abilities import register_ability_effect
+from pythongame.core.buffs import AbstractBuffEffect, get_buff_effect, register_buff_effect
 from pythongame.core.common import AbilityType, translate_in_direction, get_position_from_center_position, Sprite, \
-    ProjectileType, Millis, Direction
+    ProjectileType, Millis, Direction, BuffType
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, register_entity_sprite_map, SpriteSheet
-from pythongame.core.game_state import GameState, WorldEntity, Projectile
+from pythongame.core.game_state import GameState, WorldEntity, Projectile, Enemy
 from pythongame.core.projectiles import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
-from pythongame.core.visual_effects import create_visual_damage_text
+from pythongame.core.visual_effects import create_visual_damage_text, VisualRect
 
+BUFF_TYPE = BuffType.STUNNED_BY_WHIRLWIND
 PROJECTILE_SPRITE = Sprite.PROJECTILE_PLAYER_WHIRLWIND
 PROJECTILE_TYPE = ProjectileType.PLAYER_WHIRLWIND
 PROJECTILE_SIZE = (120, 90)
@@ -19,7 +21,7 @@ def _apply_ability(game_state: GameState):
     player_entity = game_state.player_entity
     aoe_center_pos = translate_in_direction(player_entity.get_center_position(), player_entity.direction, 60)
     aoe_pos = get_position_from_center_position(aoe_center_pos, PROJECTILE_SIZE)
-    projectile_speed = 0.06
+    projectile_speed = 0.08
     entity = WorldEntity(aoe_pos, PROJECTILE_SIZE, PROJECTILE_SPRITE, player_entity.direction, projectile_speed)
     projectile = Projectile(entity, create_projectile_controller(PROJECTILE_TYPE))
     game_state.projectile_entities.append(projectile)
@@ -33,6 +35,7 @@ class ProjectileController(AbstractProjectileController):
         self._direction_change_cooldown = 250
         self._time_since_direction_change = self._direction_change_cooldown
         self._relative_direction = 0
+        self._stun_duration = 300
 
         self._rotation_motion = random.choice([-1, 1])
 
@@ -47,20 +50,49 @@ class ProjectileController(AbstractProjectileController):
                 damage_amount = 1
                 enemy.lose_health(damage_amount)
                 game_state.visual_effects.append(create_visual_damage_text(enemy.world_entity, damage_amount))
+                enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(self._stun_duration))
 
         if self._time_since_direction_change > self._direction_change_cooldown:
             self._time_since_direction_change = 0
 
-            if self._rotation_motion == 1:
-                projectile_entity.rotate_right()
-                self._relative_direction += 90
-            elif self._rotation_motion == -1:
-                projectile_entity.rotate_left()
-                self._relative_direction -= 90
-            if self._relative_direction == 90:
-                self._rotation_motion = -1
-            elif self._relative_direction == -90:
-                self._rotation_motion = 1
+            should_rotate = True
+            # keep going straight ahead sometimes
+            if self._relative_direction == 0 and random.random() < 0.5:
+                should_rotate = False
+
+            if should_rotate:
+                if self._rotation_motion == 1:
+                    projectile_entity.rotate_right()
+                    self._relative_direction += 90
+                elif self._rotation_motion == -1:
+                    projectile_entity.rotate_left()
+                    self._relative_direction -= 90
+
+                if self._relative_direction == 90:
+                    self._rotation_motion = -1
+                elif self._relative_direction == -90:
+                    self._rotation_motion = 1
+
+
+class Stunned(AbstractBuffEffect):
+    def __init__(self):
+        pass
+
+    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
+        buffed_enemy.is_stunned = True
+        effect_position = buffed_entity.get_center_position()
+        game_state.visual_effects.append(
+            VisualRect((250, 250, 50), effect_position, 40, Millis(100), buffed_entity))
+
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy,
+                            time_passed: Millis):
+        pass
+
+    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
+        buffed_enemy.is_stunned = False
+
+    def get_buff_type(self):
+        return BUFF_TYPE
 
 
 def register_whirlwind_ability():
@@ -81,3 +113,4 @@ def register_whirlwind_ability():
     register_entity_sprite_map(PROJECTILE_SPRITE, sprite_sheet, original_sprite_size, scaled_sprite_size,
                                indices_by_dir, (-20, -50))
     register_projectile_controller(PROJECTILE_TYPE, ProjectileController)
+    register_buff_effect(BUFF_TYPE, Stunned)
