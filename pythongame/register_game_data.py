@@ -13,6 +13,7 @@ from pythongame.game_data.enemy_mummy import register_mummy_enemy
 from pythongame.game_data.enemy_rat_1 import register_rat_1_enemy
 from pythongame.game_data.enemy_rat_2 import register_rat_2_enemy
 from pythongame.game_data.item_amulet_of_mana import register_amulet_of_mana_item
+from pythongame.game_data.item_rod_of_lightning import register_rod_of_lightning_item
 from pythongame.game_data.item_sword_of_leeching import register_sword_of_leeching_item
 from pythongame.game_data.item_winged_boots import register_winged_boots_item
 from pythongame.game_data.player_data import register_player_data
@@ -45,3 +46,4 @@ def register_all_game_data():
     register_winged_boots_item()
     register_amulet_of_mana_item()
     register_sword_of_leeching_item()
+    register_rod_of_lightning_item()

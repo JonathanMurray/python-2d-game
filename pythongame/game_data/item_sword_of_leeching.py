@@ -21,6 +21,6 @@ class ItemEffect(AbstractItemEffect):
 def register_sword_of_leeching_item():
     ui_icon_sprite = UiIconSprite.ITEM_SWORD_OF_LEECHING
 
-    register_item_effect(ITEM_TYPE, ItemEffect)
+    register_item_effect(ITEM_TYPE, ItemEffect())
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/item_sword_of_leeching.png")
     register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, "Sword of Leeching"))

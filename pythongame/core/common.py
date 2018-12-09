@@ -177,6 +177,7 @@ class ItemType(Enum):
     WINGED_BOOTS = 1
     AMULET_OF_MANA = 2
     SWORD_OF_LEECHING = 3
+    ROD_OF_LIGHTNING = 4
 
 
 class ProjectileType(Enum):

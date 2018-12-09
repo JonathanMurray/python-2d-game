@@ -18,12 +18,12 @@ class AbstractItemEffect:
         pass
 
 
-_item_effects: Dict[ItemType, Type[AbstractItemEffect]] = {}
+_item_effects: Dict[ItemType, AbstractItemEffect] = {}
 
 
-def register_item_effect(item_type: ItemType, effect: Type[AbstractItemEffect]):
+def register_item_effect(item_type: ItemType, effect: AbstractItemEffect):
     _item_effects[item_type] = effect
 
 
 def get_item_effect(item_type: ItemType) -> AbstractItemEffect:
-    return _item_effects[item_type]()
+    return _item_effects[item_type]

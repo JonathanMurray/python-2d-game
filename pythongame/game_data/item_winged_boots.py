@@ -22,6 +22,6 @@ class ItemEffect(AbstractItemEffect):
 def register_winged_boots_item():
     ui_icon_sprite = UiIconSprite.ITEM_WINGED_BOOTS
 
-    register_item_effect(ITEM_TYPE, ItemEffect)
+    register_item_effect(ITEM_TYPE, ItemEffect())
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/item_winged_boots.png")
     register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, "Winged Boots"))

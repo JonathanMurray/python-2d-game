@@ -72,6 +72,7 @@ class UiIconSprite(Enum):
     ITEM_WINGED_BOOTS = 12
     ITEM_AMULET_OF_MANA = 13
     ITEM_SWORD_OF_LEECHING = 14
+    ITEM_ROD_OF_LIGHTNING = 15
 
 
 class AbilityData:

@@ -96,6 +96,9 @@ class GameEngine:
             for buff_effect in buffs_update.buffs_that_ended:
                 buff_effect.apply_end_effect(self.game_state, enemy.world_entity, enemy)
 
+        for item_type in self.game_state.player_state.items:
+            get_item_effect(item_type).apply_middle_effect(self.game_state, time_passed)
+
         self.game_state.player_state.regenerate_mana(time_passed)
         self.game_state.player_state.recharge_ability_cooldowns(time_passed)
 

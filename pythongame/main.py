@@ -59,7 +59,8 @@ def main(args: List[str]):
                 pythongame.core.pathfinding.enemy_pathfinding.DEBUG_RENDER_PATHFINDING = \
                     not pythongame.core.pathfinding.enemy_pathfinding.DEBUG_RENDER_PATHFINDING
             if isinstance(action, ActionDebugToggleItems):  # TODO: Replace this with proper item handling.
-                available_items = [ItemType.WINGED_BOOTS, ItemType.SWORD_OF_LEECHING, ItemType.AMULET_OF_MANA]
+                available_items = [ItemType.SWORD_OF_LEECHING, ItemType.ROD_OF_LIGHTNING, ItemType.WINGED_BOOTS,
+                                   ItemType.AMULET_OF_MANA]
                 debug_item_index = (debug_item_index + 1) % len(available_items)
                 for item_type in game_state.player_state.items:
                     get_item_effect(item_type).apply_end_effect(game_state)
