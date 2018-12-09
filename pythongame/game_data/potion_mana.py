@@ -25,8 +25,8 @@ def _apply_mana(game_state: GameState):
 
 def register_mana_potion():
     potion_type = PotionType.MANA
-    sprite = Sprite.MANA_POTION
-    ui_icon_sprite = UiIconSprite.MANA_POTION
+    sprite = Sprite.POTION_MANA
+    ui_icon_sprite = UiIconSprite.POTION_MANA
 
     register_potion_effect(potion_type, _apply_mana)
     register_entity_sprite_initializer(

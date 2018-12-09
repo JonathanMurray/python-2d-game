@@ -73,7 +73,7 @@ def _move_in_dir(enemy_entity, direction):
 
 def register_rat_2_enemy():
     size = (40, 40)  # Must not align perfectly with grid cell size (pathfinding issues)
-    sprite = Sprite.RAT_2
+    sprite = Sprite.ENEMY_RAT_2
     enemy_type = EnemyType.RAT_2
     movement_speed = 0.08
     health = 14

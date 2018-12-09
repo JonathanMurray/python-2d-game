@@ -24,8 +24,8 @@ def _apply_health(game_state: GameState):
 
 def register_health_potion():
     potion_type = PotionType.HEALTH
-    sprite = Sprite.HEALTH_POTION
-    ui_icon_sprite = UiIconSprite.HEALTH_POTION
+    sprite = Sprite.POTION_HEALTH
+    ui_icon_sprite = UiIconSprite.POTION_HEALTH
 
     register_potion_effect(potion_type, _apply_health)
     register_entity_sprite_initializer(

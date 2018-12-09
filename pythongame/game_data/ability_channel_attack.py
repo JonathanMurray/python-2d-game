@@ -10,7 +10,7 @@ from pythongame.core.projectile_controllers import AbstractProjectileController,
     create_projectile_controller
 from pythongame.core.visual_effects import VisualCircle, VisualRect
 
-MAGIC_MISSILE_PROJECTILE_SIZE = (30, 30)
+PROJECTILE_SIZE = (30, 30)
 
 
 def _apply_channel_attack(game_state: GameState):
@@ -31,8 +31,8 @@ class ChannelingMagicMissiles(AbstractBuffEffect):
         if self._time_since_firing > 150:
             self._time_since_firing = 0
             player_center_position = game_state.player_entity.get_center_position()
-            projectile_pos = get_position_from_center_position(player_center_position, MAGIC_MISSILE_PROJECTILE_SIZE)
-            entity = WorldEntity(projectile_pos, MAGIC_MISSILE_PROJECTILE_SIZE, Sprite.MAGIC_MISSILE,
+            projectile_pos = get_position_from_center_position(player_center_position, PROJECTILE_SIZE)
+            entity = WorldEntity(projectile_pos, PROJECTILE_SIZE, Sprite.PROJECTILE_PLAYER_MAGIC_MISSILE,
                                  game_state.player_entity.direction, 0.5)
             projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER_MAGIC_MISSILE))
             game_state.projectile_entities.append(projectile)
@@ -61,11 +61,12 @@ class PlayerMagicMissileProjectileController(AbstractProjectileController):
 
 def register_channel_attack_ability():
     register_ability_effect(AbilityType.CHANNEL_ATTACK, _apply_channel_attack)
-    register_ability_data(AbilityType.CHANNEL_ATTACK, AbilityData(UiIconSprite.MAGIC_MISSILE, 12, Millis(8000)))
+    register_ability_data(AbilityType.CHANNEL_ATTACK, AbilityData(UiIconSprite.ABILITY_MAGIC_MISSILE, 12, Millis(8000)))
 
-    register_ui_icon_sprite_path(UiIconSprite.MAGIC_MISSILE, "resources/graphics/magic_missile.png")
+    register_ui_icon_sprite_path(UiIconSprite.ABILITY_MAGIC_MISSILE, "resources/graphics/magic_missile.png")
     register_buff_effect(BuffType.CHANNELING_MAGIC_MISSILES, ChannelingMagicMissiles)
     register_entity_sprite_initializer(
-        Sprite.MAGIC_MISSILE, SpriteInitializer("resources/graphics/magic_missile.png", MAGIC_MISSILE_PROJECTILE_SIZE))
+        Sprite.PROJECTILE_PLAYER_MAGIC_MISSILE,
+        SpriteInitializer("resources/graphics/magic_missile.png", PROJECTILE_SIZE))
     register_projectile_controller(ProjectileType.PLAYER_MAGIC_MISSILE, PlayerMagicMissileProjectileController)
     register_buff_text(BuffType.CHANNELING_MAGIC_MISSILES, "Channeling")

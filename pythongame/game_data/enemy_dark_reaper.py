@@ -12,8 +12,8 @@ from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualText
 
+BUFF_TYPE_INVULN = BuffType.INVULNERABILITY
 SPEECH_DURATION = Millis(3000)
-
 COLOR_SPEECH = (200, 100, 70)
 
 
@@ -96,7 +96,7 @@ class EnemyMind(AbstractEnemyMind):
             game_state.visual_effects.append(
                 VisualCircle((0, 0, 150), enemy_center_pos, 60, 20, Millis(self._shield_duration), 2, enemy_entity)
             )
-            enemy.gain_buff_effect(get_buff_effect(BuffType.INVULNERABILITY), Millis(self._shield_duration))
+            enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE_INVULN), Millis(self._shield_duration))
 
         if self._time_since_speech > self._speech_interval and self._time_since_shield > SPEECH_DURATION:
             self._time_since_speech = 0
@@ -114,7 +114,7 @@ class Invuln(AbstractBuffEffect):
         buffed_enemy.invulnerable = False
 
     def get_buff_type(self):
-        return BuffType.INVULNERABILITY
+        return BUFF_TYPE_INVULN
 
 
 def _move_in_dir(enemy_entity, direction):
@@ -126,7 +126,7 @@ def _move_in_dir(enemy_entity, direction):
 
 def register_dark_reaper_enemy():
     size = (50, 50)  # Must not align perfectly with grid cell size (pathfinding issues)
-    sprite = Sprite.DARK_REAPER
+    sprite = Sprite.ENEMY_DARK_REAPER
     enemy_type = EnemyType.DARK_REAPER
     movement_speed = 0.04
     health = 80
@@ -142,4 +142,4 @@ def register_dark_reaper_enemy():
         Direction.UP: [(9, 3), (10, 3), (11, 3)]
     }
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir, (0, 0))
-    register_buff_effect(BuffType.INVULNERABILITY, Invuln)
+    register_buff_effect(BUFF_TYPE_INVULN, Invuln)

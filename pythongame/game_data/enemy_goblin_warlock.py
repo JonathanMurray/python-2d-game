@@ -17,7 +17,7 @@ from pythongame.core.visual_effects import VisualCircle, VisualText
 
 BUFF_TYPE = BuffType.ENEMY_GOBLIN_WARLOCK_BURNT
 PROJECTILE_TYPE = ProjectileType.ENEMY_GOBLIN_WARLOCK
-PROJECTILE_SPRITE = Sprite.ENEMY_GOBLIN_WARLOCK_PROJECTILE
+PROJECTILE_SPRITE = Sprite.PROJECTILE_ENEMY_GOBLIN_WARLOCK
 PROJECTILE_SIZE = (20, 20)
 COLOR_SPEECH = (200, 100, 70)
 
@@ -162,7 +162,7 @@ def register_goblin_warlock_enemy():
     projectile_indices_by_dir = {
         Direction.DOWN: [(0, 0), (1, 0), (2, 0), (3, 0)]
     }
-    projectile_sprite = Sprite.ENEMY_GOBLIN_WARLOCK_PROJECTILE
+    projectile_sprite = Sprite.PROJECTILE_ENEMY_GOBLIN_WARLOCK
     register_entity_sprite_map(projectile_sprite, projectile_sprite_sheet, projectile_original_sprite_size,
                                projectile_scaled_sprite_size, projectile_indices_by_dir, (0, 0))
 
