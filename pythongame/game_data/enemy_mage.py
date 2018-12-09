@@ -8,7 +8,7 @@ from pythongame.core.game_data import register_entity_sprite_initializer, Sprite
 from pythongame.core.game_state import GameState, Enemy, WorldEntity, Projectile
 from pythongame.core.projectiles import create_projectile_controller
 from pythongame.core.visual_effects import VisualLine
-from pythongame.projectile_enemy_poison import register_enemy_poison_projectile, ENEMY_PROJECTILE_SIZE
+from pythongame.game_data.projectile_enemy_poison import register_enemy_poison_projectile, ENEMY_PROJECTILE_SIZE
 
 
 class MageEnemyMind(AbstractEnemyMind):

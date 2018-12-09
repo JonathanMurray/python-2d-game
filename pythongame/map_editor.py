@@ -9,8 +9,10 @@ from pythongame.core.game_state import WorldEntity, Enemy, PotionOnGround
 from pythongame.core.view import View
 from pythongame.game_world_init import create_game_state_from_file, save_game_state_to_file, MapFileEntity, \
     MAP_FILE_ENTITIES_BY_CHAR
-from pythongame.potion_health import POTION_ENTITY_SIZE
+from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
 from pythongame.register_game_data import register_all_game_data
+
+# TODO Avoid depending on pythongame.game_data from here
 
 SCREEN_SIZE = (1200, 750)
 CAMERA_SIZE = (1200, 600)

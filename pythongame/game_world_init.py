@@ -5,8 +5,10 @@ from pythongame.core.enemy_behavior import create_enemy_mind
 from pythongame.core.game_data import WALL_SIZE, ENEMIES, POTION_ENTITY_SPRITES
 from pythongame.core.game_state import WorldEntity, Enemy, GameState, PotionOnGround
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
-from pythongame.player_data import PLAYER_ENTITY_SIZE, INTIAL_PLAYER_STATE, PLAYER_ENTITY_SPEED
-from pythongame.potion_health import POTION_ENTITY_SIZE
+from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE, INTIAL_PLAYER_STATE, PLAYER_ENTITY_SPEED
+from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
+
+# TODO Avoid depending on pythongame.game_data from here
 
 GRID_CELL_SIZE = 25
 

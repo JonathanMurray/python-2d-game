@@ -5,8 +5,9 @@ from pythongame.core.game_state import GameState
 from pythongame.core.potions import create_potion_visual_effect_at_player, PotionWasConsumed, PotionFailedToBeConsumed, \
     register_potion_effect
 from pythongame.core.visual_effects import create_visual_mana_text
-from pythongame.potion_health import POTION_ENTITY_SIZE
+from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
 
+# TODO Don't depend on potion_health from here
 
 def _apply_mana(game_state: GameState):
     player_state = game_state.player_state
