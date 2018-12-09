@@ -20,5 +20,3 @@ def deal_damage_to_player(game_state: GameState, amount: float):
     rounded_amount = round(amount)
     if rounded_amount > 0:
         game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, rounded_amount))
-
-# TODO Handle invulnerability in this package?
