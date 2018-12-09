@@ -2,12 +2,12 @@ import random
 
 from pythongame.core.common import Millis, random_direction, EnemyType, Sprite, \
     get_position_from_center_position, ProjectileType, is_x_and_y_within_distance, get_all_directions
-from pythongame.core.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
+from pythongame.core.enemy_behaviors import register_enemy_behavior, AbstractEnemyMind
 from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer, register_enemy_data, \
     EnemyData
 from pythongame.core.game_state import GameState, Enemy, WorldEntity, Projectile
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
-from pythongame.core.projectiles import create_projectile_controller
+from pythongame.core.projectile_controllers import create_projectile_controller
 from pythongame.core.visual_effects import VisualLine
 from pythongame.game_data.projectile_enemy_poison import register_enemy_poison_projectile, ENEMY_PROJECTILE_SIZE
 

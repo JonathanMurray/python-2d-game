@@ -116,6 +116,8 @@ POTION_NAMES: Dict[PotionType, str] = {}
 
 ITEM_NAMES: Dict[ItemType, str] = {}
 
+ITEM_ICON_SPRITES: Dict[ItemType, UiIconSprite] = {}
+
 ABILITIES: Dict[AbilityType, AbilityData] = {}
 
 USER_ABILITY_KEYS: Dict[AbilityType, UserAbilityKey] = {}
@@ -179,5 +181,10 @@ def register_potion_entity_sprite(potion_type: PotionType, sprite: Sprite):
 def register_potion_name(potion_type: PotionType, name: str):
     POTION_NAMES[potion_type] = name
 
+
 def register_item_name(item_type: ItemType, name: str):
     ITEM_NAMES[item_type] = name
+
+
+def register_item_icon_sprite(item_type: ItemType, ui_icon_sprite: UiIconSprite):
+    ITEM_ICON_SPRITES[item_type] = ui_icon_sprite

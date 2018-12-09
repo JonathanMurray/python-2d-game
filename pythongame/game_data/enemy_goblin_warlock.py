@@ -1,17 +1,17 @@
 import random
 
-from pythongame.core.buffs import get_buff_effect, AbstractBuffEffect, register_buff_effect
+from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
 from pythongame.core.common import Millis, EnemyType, Sprite, \
     get_position_from_center_position, ProjectileType, BuffType, Direction, get_perpendicular_directions, \
     translate_in_direction
 from pythongame.core.damage_interactions import deal_damage_to_player
-from pythongame.core.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
+from pythongame.core.enemy_behaviors import register_enemy_behavior, AbstractEnemyMind
 from pythongame.core.game_data import register_enemy_data, \
     EnemyData, register_buff_text, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, Enemy, WorldEntity, Projectile
 from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
-from pythongame.core.projectiles import create_projectile_controller, AbstractProjectileController, \
+from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
 from pythongame.core.visual_effects import VisualCircle, VisualText
 

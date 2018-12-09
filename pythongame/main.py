@@ -7,7 +7,7 @@ import pythongame.core.pathfinding.enemy_pathfinding
 from pythongame.core.common import Millis, ItemType
 from pythongame.core.game_data import ITEM_NAMES
 from pythongame.core.game_engine import GameEngine
-from pythongame.core.items import get_item_effect
+from pythongame.core.item_effects import get_item_effect
 from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionDebugToggleItems
 from pythongame.core.view import View

@@ -1,13 +1,13 @@
 import random
 
-from pythongame.core.abilities import register_ability_effect
+from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.common import AbilityType, translate_in_direction, get_position_from_center_position, Sprite, \
     ProjectileType, Millis, get_perpendicular_directions
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, SpriteInitializer, register_entity_sprite_initializer
 from pythongame.core.game_state import GameState, WorldEntity, Projectile
-from pythongame.core.projectiles import create_projectile_controller, AbstractProjectileController, \
+from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
 
 AOE_PROJECTILE_SIZE = (140, 140)

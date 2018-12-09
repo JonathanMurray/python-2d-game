@@ -1,7 +1,7 @@
 from typing import Optional, Dict, List
 
 from pythongame.core.common import *
-from pythongame.core.enemy_behavior import create_enemy_mind
+from pythongame.core.enemy_behaviors import create_enemy_mind
 from pythongame.core.game_data import WALL_SIZE, ENEMIES, POTION_ENTITY_SPRITES
 from pythongame.core.game_state import WorldEntity, Enemy, GameState, PotionOnGround
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder

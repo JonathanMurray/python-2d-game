@@ -3,7 +3,7 @@ import random
 from pythongame.core.common import Millis, is_x_and_y_within_distance, EnemyType, Sprite, Direction, \
     get_perpendicular_directions
 from pythongame.core.damage_interactions import deal_damage_to_player
-from pythongame.core.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
+from pythongame.core.enemy_behaviors import register_enemy_behavior, AbstractEnemyMind
 from pythongame.core.game_data import register_enemy_data, EnemyData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, Enemy, WorldEntity
 from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder

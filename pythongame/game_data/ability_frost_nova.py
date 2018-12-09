@@ -1,5 +1,5 @@
-from pythongame.core.abilities import register_ability_effect, Sprite
-from pythongame.core.buffs import AbstractBuffEffect, register_buff_effect, get_buff_effect
+from pythongame.core.ability_effects import register_ability_effect, Sprite
+from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import AbilityType, Millis, \
     Direction, get_position_from_center_position, BuffType
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy

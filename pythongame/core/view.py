@@ -4,9 +4,8 @@ import pygame
 
 from pythongame.core.common import Direction, Sprite, PotionType, sum_of_vectors, ItemType
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
-    POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, ENEMIES
+    POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, ENEMIES, ITEM_ICON_SPRITES
 from pythongame.core.game_state import WorldEntity
-from pythongame.core.items import get_item_ui_icon_sprite
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 from pythongame.game_world_init import MapFileEntity
 
@@ -309,7 +308,7 @@ class View:
         h = size[1]
         x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
         self._rect_filled((40, 40, 40), (x, y, w, h))
-        ui_icon_sprite = get_item_ui_icon_sprite(item_type)
+        ui_icon_sprite = ITEM_ICON_SPRITES[item_type]
         self._image(self.images_by_ui_sprite[ui_icon_sprite], (x, y))
         self._rect(COLOR_WHITE, (x, y, w, h), 2)
 

@@ -2,7 +2,7 @@ from pythongame.core.common import PotionType, Sprite
 from pythongame.core.game_data import register_ui_icon_sprite_path, UiIconSprite, register_potion_icon_sprite, \
     register_entity_sprite_initializer, SpriteInitializer, register_potion_entity_sprite, register_potion_name
 from pythongame.core.game_state import GameState
-from pythongame.core.potions import create_potion_visual_effect_at_player, PotionWasConsumed, PotionFailedToBeConsumed, \
+from pythongame.core.potion_effects import create_potion_visual_effect_at_player, PotionWasConsumed, PotionFailedToBeConsumed, \
     register_potion_effect
 from pythongame.core.visual_effects import create_visual_mana_text
 from pythongame.game_data.potion_health import POTION_ENTITY_SIZE

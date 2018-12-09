@@ -1,4 +1,4 @@
-from pythongame.core.abilities import register_ability_effect
+from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.common import get_position_from_center_position, Sprite, ProjectileType, AbilityType, Millis, \
     Direction, translate_in_direction
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
@@ -6,7 +6,7 @@ from pythongame.core.game_data import register_ability_data, AbilityData, UiIcon
     register_ui_icon_sprite_path, SpriteSheet, \
     register_entity_sprite_map
 from pythongame.core.game_state import GameState, WorldEntity, Projectile, Enemy
-from pythongame.core.projectiles import create_projectile_controller, AbstractProjectileController, \
+from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
 from pythongame.core.visual_effects import VisualCircle
 
