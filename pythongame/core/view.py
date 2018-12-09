@@ -2,9 +2,9 @@ from typing import Dict, Any, List, Tuple, Optional
 
 import pygame
 
-from pythongame.core.common import Direction, Sprite, PotionType, sum_of_vectors, AbilityType, ItemType
+from pythongame.core.common import Direction, Sprite, PotionType, sum_of_vectors, ItemType
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
-    POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, ENEMIES, UiIconSprite
+    POTION_ICON_SPRITES, ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, ENEMIES
 from pythongame.core.game_state import WorldEntity
 from pythongame.core.items import get_item_ui_icon_sprite
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
@@ -197,7 +197,8 @@ class View:
         else:
             raise Exception("Unhandled sprite: " + str(entity.sprite))
 
-    def _get_image_from_direction(self, images: Dict[Direction, List[ImageWithRelativePosition]], direction: Direction,
+    @staticmethod
+    def _get_image_from_direction(images: Dict[Direction, List[ImageWithRelativePosition]], direction: Direction,
                                   animation_progress: float) -> ImageWithRelativePosition:
         if direction in images:
             images_for_this_direction = images[direction]
@@ -492,5 +493,6 @@ class View:
         self._image(image_with_relative_position.image, sprite_position)
         self._rect((50, 250, 0), (position[0], position[1], entity.w, entity.h), 3)
 
-    def update_display(self):
+    @staticmethod
+    def update_display():
         pygame.display.update()

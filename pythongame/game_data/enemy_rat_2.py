@@ -3,15 +3,16 @@ import random
 from pythongame.core.common import Millis, is_x_and_y_within_distance, EnemyType, Sprite, Direction, \
     get_perpendicular_directions
 from pythongame.core.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
-from pythongame.core.game_data import register_enemy_data, \
-    EnemyData, SpriteSheet, register_entity_sprite_map
+from pythongame.core.game_data import register_enemy_data, EnemyData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, Enemy, WorldEntity
 from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
+from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.visual_effects import VisualLine, create_visual_damage_text
 
 
 class EnemyMind(AbstractEnemyMind):
-    def __init__(self, global_path_finder):
+    def __init__(self, global_path_finder: GlobalPathFinder):
+        super().__init__(global_path_finder)
         self._attack_interval = 1000
         self._time_since_attack = self._attack_interval
         self._update_path_interval = 900

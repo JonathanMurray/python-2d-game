@@ -7,6 +7,7 @@ from pythongame.core.potions import create_potion_visual_effect_at_player, Potio
 from pythongame.core.visual_effects import create_visual_mana_text
 from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
 
+
 # TODO Don't depend on potion_health from here
 
 def _apply_mana(game_state: GameState):

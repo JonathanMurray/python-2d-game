@@ -7,9 +7,9 @@ from pythongame.core.common import Direction, Sprite, sum_of_vectors
 from pythongame.core.game_data import ENEMIES, WALL_SIZE, POTION_ENTITY_SPRITES
 from pythongame.core.game_state import WorldEntity, Enemy, PotionOnGround
 from pythongame.core.view import View
+from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
 from pythongame.game_world_init import create_game_state_from_file, save_game_state_to_file, MapFileEntity, \
     MAP_FILE_ENTITIES_BY_CHAR
-from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
 from pythongame.register_game_data import register_all_game_data
 
 # TODO Avoid depending on pythongame.game_data from here
@@ -44,7 +44,7 @@ def main(args: List[str]):
 
     game_state.center_camera_on_player()
     game_state.camera_world_area.set_position(((game_state.camera_world_area.x // grid_cell_size) * grid_cell_size,
-                                              (game_state.camera_world_area.y // grid_cell_size) * grid_cell_size))
+                                               (game_state.camera_world_area.y // grid_cell_size) * grid_cell_size))
 
     while True:
 
@@ -168,7 +168,3 @@ def _delete_map_entities_from_position(game_state, snapped_mouse_world_position:
     for potion in [p for p in game_state.potions_on_ground
                    if p.world_entity.get_position() == snapped_mouse_world_position]:
         game_state.potions_on_ground.remove(potion)
-
-
-if __name__ == "__main__":
-    main()

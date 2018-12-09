@@ -49,6 +49,7 @@ def get_direction_between(from_entity, to_entity):
 
 # Returns 2 directions, starting with vertical or horizontal depending on which is closer to the true direction
 # Example: (0, 0) -> (2, 1) gives [RIGHT, DOWN]
+# noinspection PyShadowingNames
 def get_directions_to_position(from_entity, position):
     dx = position[0] - from_entity.x
     dy = position[1] - from_entity.y
@@ -176,6 +177,7 @@ class ItemType(Enum):
     WINGED_BOOTS = 1
     AMULET_OF_MANA = 2
     SWORD_OF_LEECHING = 3
+
 
 class ProjectileType(Enum):
     PLAYER_FIREBALL = 1

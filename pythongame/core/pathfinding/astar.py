@@ -63,33 +63,34 @@ class AStar:
         """ returns true when we can consider that 'current' is the goal"""
         return current == goal
 
-    def reconstruct_path(self, last, reversePath=False):
+    @staticmethod
+    def reconstruct_path(last, reverse_path=False):
         def _gen():
             current = last
             while current:
                 yield current.data
                 current = current.came_from
 
-        if reversePath:
+        if reverse_path:
             return _gen()
         else:
             return reversed(list(_gen()))
 
-    def astar(self, start, goal, reversePath=False):
+    def astar(self, start, goal, reverse_path=False):
         if self.is_goal_reached(start, goal):
             return [start]
-        searchNodes = AStar.SearchNodeDict()
-        startNode = searchNodes[start] = AStar.SearchNode(
+        search_nodes = AStar.SearchNodeDict()
+        start_node = search_nodes[start] = AStar.SearchNode(
             start, gscore=.0, fscore=self.heuristic_cost_estimate(start, goal))
-        openSet = []
-        heappush(openSet, startNode)
-        while openSet:
-            current = heappop(openSet)
+        open_set = []
+        heappush(open_set, start_node)
+        while open_set:
+            current = heappop(open_set)
             if self.is_goal_reached(current.data, goal):
-                return self.reconstruct_path(current, reversePath)
+                return self.reconstruct_path(current, reverse_path)
             current.out_openset = True
             current.closed = True
-            for neighbor in [searchNodes[n] for n in self.neighbors(current.data)]:
+            for neighbor in [search_nodes[n] for n in self.neighbors(current.data)]:
                 if neighbor.closed:
                     continue
                 tentative_gscore = current.gscore + \
@@ -102,14 +103,15 @@ class AStar:
                                   self.heuristic_cost_estimate(neighbor.data, goal)
                 if neighbor.out_openset:
                     neighbor.out_openset = False
-                    heappush(openSet, neighbor)
+                    heappush(open_set, neighbor)
         return None
 
 
-def find_path(start, goal, neighbors_fnct, reversePath=False, heuristic_cost_estimate_fnct=lambda a, b: Infinite,
+def find_path(start, goal, neighbors_fnct, reverse_path=False, heuristic_cost_estimate_fnct=lambda a, b: Infinite,
               distance_between_fnct=lambda a, b: 1.0, is_goal_reached_fnct=lambda a, b: a == b):
     """A non-class version of the path finding algorithm"""
 
+    # noinspection PyShadowingNames
     class FindPath(AStar):
 
         def heuristic_cost_estimate(self, current, goal):
@@ -124,7 +126,7 @@ def find_path(start, goal, neighbors_fnct, reversePath=False, heuristic_cost_est
         def is_goal_reached(self, current, goal):
             return is_goal_reached_fnct(current, goal)
 
-    return FindPath().astar(start, goal, reversePath)
+    return FindPath().astar(start, goal, reverse_path)
 
 
 __all__ = ['AStar', 'find_path']

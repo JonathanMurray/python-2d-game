@@ -9,6 +9,7 @@ from pythongame.core.game_data import register_enemy_data, \
     EnemyData, register_buff_text, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, Enemy, WorldEntity, Projectile
 from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
+from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.projectiles import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
 from pythongame.core.visual_effects import create_visual_damage_text, VisualCircle, VisualText
@@ -21,7 +22,8 @@ COLOR_SPEECH = (200, 100, 70)
 
 
 class EnemyMind(AbstractEnemyMind):
-    def __init__(self, global_path_finder):
+    def __init__(self, global_path_finder: GlobalPathFinder):
+        super().__init__(global_path_finder)
         self._update_attack_interval()
         self._time_since_attack = self._attack_interval
         self._update_path_interval = 900

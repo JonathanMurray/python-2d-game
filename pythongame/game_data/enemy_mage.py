@@ -6,13 +6,15 @@ from pythongame.core.enemy_behavior import register_enemy_behavior, AbstractEnem
 from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer, register_enemy_data, \
     EnemyData
 from pythongame.core.game_state import GameState, Enemy, WorldEntity, Projectile
+from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.projectiles import create_projectile_controller
 from pythongame.core.visual_effects import VisualLine
 from pythongame.game_data.projectile_enemy_poison import register_enemy_poison_projectile, ENEMY_PROJECTILE_SIZE
 
 
 class MageEnemyMind(AbstractEnemyMind):
-    def __init__(self):
+    def __init__(self, global_path_finder: GlobalPathFinder):
+        super().__init__(global_path_finder)
         self._time_since_decision = 0
         self._decision_interval = 750
         self._time_since_firing = 0

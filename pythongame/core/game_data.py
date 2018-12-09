@@ -27,6 +27,7 @@ class SpriteSheet(object):
             self._load_sheet()
 
         rect = pygame.Rect(rectangle)
+        # noinspection PyArgumentList
         image = pygame.Surface(rect.size).convert()
         destination_in_image = (0, 0)
         image.blit(self.sheet, destination_in_image, rect)

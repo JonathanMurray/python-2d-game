@@ -114,7 +114,3 @@ def main(args: List[str]):
             items=game_state.player_state.items)
 
         view.update_display()
-
-
-if __name__ == "__main__":
-    main()

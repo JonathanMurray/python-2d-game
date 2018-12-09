@@ -7,11 +7,13 @@ from pythongame.core.game_data import register_enemy_data, \
     EnemyData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, Enemy, WorldEntity
 from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
+from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.visual_effects import VisualLine, create_visual_damage_text
 
 
 class EnemyMind(AbstractEnemyMind):
-    def __init__(self, global_path_finder):
+    def __init__(self, global_path_finder: GlobalPathFinder):
+        super().__init__(global_path_finder)
         self._attack_interval = 2000
         self._time_since_attack = self._attack_interval
         self._update_path_interval = 900
@@ -77,7 +79,7 @@ def register_mummy_enemy():
     enemy_type = EnemyType.MUMMY
     movement_speed = 0.09
     health = 14
-    health_regen = 0.001 # per ms
+    health_regen = 0.001  # per ms
     register_enemy_data(enemy_type, EnemyData(sprite, size, health, health_regen, movement_speed))
     register_enemy_behavior(enemy_type, EnemyMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")

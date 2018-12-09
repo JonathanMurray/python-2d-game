@@ -279,7 +279,8 @@ class GameState:
         self.entire_world_area = WorldArea((0, 0), self.game_world_size)
         self.grid = self._setup_grid(game_world_size, walls)
 
-    def _setup_grid(self, game_world_size: Tuple[int, int], walls: List[WorldEntity]):
+    @staticmethod
+    def _setup_grid(game_world_size: Tuple[int, int], walls: List[WorldEntity]):
         world_w = game_world_size[0]
         world_h = game_world_size[1]
         grid_width = world_w // GRID_CELL_WIDTH
@@ -361,14 +362,16 @@ class GameState:
     def remove_expired_visual_effects(self):
         self.visual_effects = [v for v in self.visual_effects if not v.has_expired]
 
-    def _entities_collide(self, r1, r2):
+    @staticmethod
+    def _entities_collide(r1, r2):
         # Optimization: collision checking done with C-code from Pygame
         return r1.pygame_collision_rect.colliderect(r2.pygame_collision_rect)
 
     # Wall buckets:
     # Optimization for only checking collision with walls that are known beforehand (through use of buckets) to be
     # somewhat close to the entity
-    def _put_walls_in_buckets(self, game_world_size: Tuple[int, int], walls: List[WorldEntity]):
+    @staticmethod
+    def _put_walls_in_buckets(game_world_size: Tuple[int, int], walls: List[WorldEntity]):
         wall_buckets = {}
         for x_bucket in range(game_world_size[0] // WALL_BUCKET_WIDTH + 1):
             wall_buckets[x_bucket] = {}
