@@ -97,19 +97,19 @@ class VisualSprite(VisualEffect):
         return (self._animation_progress + float(self._age) / float(self.max_age)) % 1
 
 
-def create_visual_damage_text(entity, damage_amount):
+def create_visual_damage_text(entity: WorldEntity, damage_amount: int):
     start_position = (entity.x + 15, entity.y - 10)
     end_position = (entity.x + 15, entity.y - 40)
     return VisualText(str(damage_amount), (220, 0, 0), start_position, end_position, Millis(800))
 
 
-def create_visual_healing_text(entity, healing_amount):
+def create_visual_healing_text(entity: WorldEntity, healing_amount: int):
     start_position = (entity.x + 15, entity.y - 10)
     end_position = (entity.x + 15, entity.y - 40)
     return VisualText(str(healing_amount), (0, 140, 0), start_position, end_position, Millis(800))
 
 
-def create_visual_mana_text(entity, healing_amount):
+def create_visual_mana_text(entity: WorldEntity, healing_amount: int):
     start_position = (entity.x + 15, entity.y - 10)
     end_position = (entity.x + 15, entity.y - 40)
     return VisualText(str(healing_amount), (0, 0, 140), start_position, end_position, Millis(800))

@@ -8,6 +8,11 @@ def deal_player_damage_to_enemy(game_state: GameState, enemy: Enemy, amount: int
     health_from_life_steal = game_state.player_state.life_steal_ratio * float(amount)
     game_state.player_state.gain_health(health_from_life_steal)
 
-# TODO Add method handling enemy -> player
+
+def deal_damage_to_player(game_state: GameState, amount: float):
+    game_state.player_state.lose_health(amount)
+    rounded_amount = round(amount)
+    if rounded_amount > 0:
+        game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, rounded_amount))
 
 # TODO Handle invulnerability in this package?

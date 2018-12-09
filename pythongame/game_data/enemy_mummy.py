@@ -2,13 +2,14 @@ import random
 
 from pythongame.core.common import Millis, is_x_and_y_within_distance, EnemyType, Sprite, Direction, \
     get_perpendicular_directions
+from pythongame.core.damage_interactions import deal_damage_to_player
 from pythongame.core.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
 from pythongame.core.game_data import register_enemy_data, \
     EnemyData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, Enemy, WorldEntity
 from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
-from pythongame.core.visual_effects import VisualLine, create_visual_damage_text
+from pythongame.core.visual_effects import VisualLine
 
 
 class EnemyMind(AbstractEnemyMind):
@@ -59,9 +60,7 @@ class EnemyMind(AbstractEnemyMind):
                 enemy_position = enemy_entity.get_center_position()
                 player_center_pos = game_state.player_entity.get_center_position()
                 if is_x_and_y_within_distance(enemy_position, player_center_pos, 100):
-                    damage_amount = 3
-                    game_state.player_state.lose_health(damage_amount)
-                    game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, damage_amount))
+                    deal_damage_to_player(game_state, 3)
                     game_state.visual_effects.append(
                         VisualLine((220, 0, 0), enemy_position, player_center_pos, Millis(100), 3))
 

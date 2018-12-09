@@ -1,5 +1,6 @@
 from pythongame.core.buffs import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, ProjectileType, Sprite
+from pythongame.core.damage_interactions import deal_damage_to_player
 from pythongame.core.game_data import register_buff_text, register_entity_sprite_initializer, SpriteInitializer
 from pythongame.core.game_state import GameState, WorldEntity, Enemy
 from pythongame.core.projectiles import AbstractProjectileController, register_projectile_controller
@@ -13,9 +14,7 @@ class EnemyPoisonProjectileController(AbstractProjectileController):
         super().__init__(2000)
 
     def apply_player_collision(self, game_state: GameState):
-        damage_amount = 1
-        game_state.player_state.lose_health(damage_amount)
-        game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, damage_amount))
+        deal_damage_to_player(game_state, 1)
         game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.DAMAGE_OVER_TIME), Millis(2000))
         game_state.visual_effects.append(VisualCircle((50, 180, 50), game_state.player_entity.get_center_position(),
                                                       25, 50, Millis(100), 0))
@@ -30,7 +29,7 @@ class DamageOverTime(AbstractBuffEffect):
                             time_passed: Millis):
         self._time_since_graphics += time_passed
         damage_per_ms = 0.02
-        game_state.player_state.lose_health(damage_per_ms * float(time_passed))
+        deal_damage_to_player(game_state, damage_per_ms * float(time_passed))
         graphics_cooldown = 300
         if self._time_since_graphics > graphics_cooldown:
             game_state.visual_effects.append(VisualCircle((50, 180, 50), game_state.player_entity.get_center_position(),

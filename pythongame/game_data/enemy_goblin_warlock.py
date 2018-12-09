@@ -4,6 +4,7 @@ from pythongame.core.buffs import get_buff_effect, AbstractBuffEffect, register_
 from pythongame.core.common import Millis, EnemyType, Sprite, \
     get_position_from_center_position, ProjectileType, BuffType, Direction, get_perpendicular_directions, \
     translate_in_direction
+from pythongame.core.damage_interactions import deal_damage_to_player
 from pythongame.core.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
 from pythongame.core.game_data import register_enemy_data, \
     EnemyData, register_buff_text, SpriteSheet, register_entity_sprite_map
@@ -12,7 +13,7 @@ from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.projectiles import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
-from pythongame.core.visual_effects import create_visual_damage_text, VisualCircle, VisualText
+from pythongame.core.visual_effects import VisualCircle, VisualText
 
 BUFF_TYPE = BuffType.ENEMY_GOBLIN_WARLOCK_BURNT
 PROJECTILE_TYPE = ProjectileType.ENEMY_GOBLIN_WARLOCK
@@ -108,9 +109,7 @@ class ProjectileController(AbstractProjectileController):
         super().__init__(2000)
 
     def apply_player_collision(self, game_state: GameState):
-        damage_amount = 1
-        game_state.player_state.lose_health(damage_amount)
-        game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, damage_amount))
+        deal_damage_to_player(game_state, 1)
         game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.ENEMY_GOBLIN_WARLOCK_BURNT), Millis(5000))
         game_state.visual_effects.append(VisualCircle((180, 50, 50), game_state.player_entity.get_center_position(),
                                                       25, 50, Millis(100), 0))
@@ -126,11 +125,9 @@ class Burnt(AbstractBuffEffect):
         self._time_since_graphics += time_passed
         if self._time_since_graphics > 500:
             self._time_since_graphics = 0
-            damage = 1
-            game_state.player_state.lose_health(damage)
+            deal_damage_to_player(game_state, 1)
             game_state.visual_effects.append(VisualCircle((180, 50, 50), game_state.player_entity.get_center_position(),
                                                           10, 20, Millis(50), 0, game_state.player_entity))
-            game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, damage))
 
     def get_buff_type(self):
         return BUFF_TYPE
