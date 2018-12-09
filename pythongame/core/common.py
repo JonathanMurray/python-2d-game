@@ -122,7 +122,6 @@ class PotionType(Enum):
 
 class EnemyType(Enum):
     NECROMANCER = 3
-    BERSERKER = 4
     RAT_1 = 5
     RAT_2 = 6
     DARK_REAPER = 7
@@ -144,9 +143,7 @@ class Sprite(Enum):
     PLAYER = 1
     PROJECTILE_PLAYER_FIREBALL = 4
     HEALTH_POTION = 6
-    POISONBALL = 7
     ENEMY_NECROMANCER = 8
-    ENEMY_BERSERKER = 9
     MAGIC_MISSILE = 10
     WALL = 11
     RAT_1 = 12
@@ -163,7 +160,6 @@ class Sprite(Enum):
 
 class BuffType(Enum):
     HEALING_OVER_TIME = 1
-    DAMAGE_OVER_TIME = 2
     INCREASED_MOVE_SPEED = 3
     INVISIBILITY = 4
     CHANNELING_MAGIC_MISSILES = 5
@@ -183,7 +179,6 @@ class ItemType(Enum):
 
 class ProjectileType(Enum):
     PLAYER_FIREBALL = 1
-    ENEMY_POISON = 3
     PLAYER_MAGIC_MISSILE = 4
     PLAYER_WHIRLWIND = 5
     ENEMY_GOBLIN_WARLOCK = 6

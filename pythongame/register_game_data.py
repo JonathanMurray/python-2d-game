@@ -5,7 +5,6 @@ from pythongame.game_data.ability_frost_nova import register_frost_nova_ability
 from pythongame.game_data.ability_heal import register_heal_ability
 from pythongame.game_data.ability_teleport import register_teleport_ability
 from pythongame.game_data.ability_whirlwind import register_whirlwind_ability
-from pythongame.game_data.enemy_berserker import register_berserker_enemy
 from pythongame.game_data.enemy_dark_reaper import register_dark_reaper_enemy
 from pythongame.game_data.enemy_goblin_warlock import register_goblin_warlock_enemy
 from pythongame.game_data.enemy_necromancer import register_necromancer_enemy
@@ -34,7 +33,6 @@ def register_all_game_data():
     register_invis_potion()
     register_speed_potion()
     register_necromancer_enemy()
-    register_berserker_enemy()
     register_player_data()
     register_rat_1_enemy()
     register_rat_2_enemy()
