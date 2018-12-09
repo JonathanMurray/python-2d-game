@@ -4,12 +4,13 @@ from pythongame.core.abilities import register_ability_effect
 from pythongame.core.buffs import AbstractBuffEffect, get_buff_effect, register_buff_effect
 from pythongame.core.common import AbilityType, translate_in_direction, get_position_from_center_position, Sprite, \
     ProjectileType, Millis, Direction, BuffType
+from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, register_entity_sprite_map, SpriteSheet
 from pythongame.core.game_state import GameState, WorldEntity, Projectile, Enemy
 from pythongame.core.projectiles import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
-from pythongame.core.visual_effects import create_visual_damage_text, VisualRect
+from pythongame.core.visual_effects import VisualRect
 
 BUFF_TYPE = BuffType.STUNNED_BY_WHIRLWIND
 PROJECTILE_SPRITE = Sprite.PROJECTILE_PLAYER_WHIRLWIND
@@ -48,8 +49,7 @@ class ProjectileController(AbstractProjectileController):
             self._time_since_dmg = 0
             for enemy in game_state.get_enemies_intersecting_with(projectile_entity):
                 damage_amount = 1
-                enemy.lose_health(damage_amount)
-                game_state.visual_effects.append(create_visual_damage_text(enemy.world_entity, damage_amount))
+                deal_player_damage_to_enemy(game_state, enemy, damage_amount)
                 enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(self._stun_duration))
 
         if self._time_since_direction_change > self._direction_change_cooldown:

@@ -2,12 +2,13 @@ from pythongame.core.abilities import register_ability_effect
 from pythongame.core.buffs import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, ProjectileType, \
     get_position_from_center_position
+from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path, \
     register_entity_sprite_initializer, SpriteInitializer, register_buff_text
 from pythongame.core.game_state import GameState, Enemy, WorldEntity, Projectile
 from pythongame.core.projectiles import AbstractProjectileController, register_projectile_controller, \
     create_projectile_controller
-from pythongame.core.visual_effects import create_visual_damage_text, VisualCircle, VisualRect
+from pythongame.core.visual_effects import VisualCircle, VisualRect
 
 MAGIC_MISSILE_PROJECTILE_SIZE = (30, 30)
 
@@ -52,8 +53,7 @@ class PlayerMagicMissileProjectileController(AbstractProjectileController):
     def apply_enemy_collision(self, enemy: Enemy, game_state: GameState):
         if enemy not in self._enemies_hit:
             damage_amount = 1
-            enemy.lose_health(damage_amount)
-            game_state.visual_effects.append(create_visual_damage_text(enemy.world_entity, damage_amount))
+            deal_player_damage_to_enemy(game_state, enemy, damage_amount)
             game_state.visual_effects.append(VisualCircle((250, 100, 250), enemy.world_entity.get_center_position(), 15,
                                                           25, Millis(100), 0))
             self._enemies_hit.append(enemy)

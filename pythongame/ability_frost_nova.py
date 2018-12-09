@@ -2,10 +2,11 @@ from pythongame.core.abilities import register_ability_effect, Sprite
 from pythongame.core.buffs import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import AbilityType, Millis, \
     Direction, get_position_from_center_position, BuffType
+from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, WorldEntity, Enemy
-from pythongame.core.visual_effects import VisualCircle, create_visual_damage_text, VisualSprite, VisualRect
+from pythongame.core.visual_effects import VisualCircle, VisualSprite, VisualRect
 
 EFFECT_SPRITE_SIZE = (230, 230)
 
@@ -23,8 +24,7 @@ def _apply_ability(game_state: GameState):
         # TODO Centralise handling of invulnerability
         if not enemy.invulnerable:
             damage_amount = 2
-            enemy.lose_health(damage_amount)
-            game_state.visual_effects.append(create_visual_damage_text(enemy.world_entity, damage_amount))
+            deal_player_damage_to_enemy(game_state, enemy, damage_amount)
             enemy.gain_buff_effect(get_buff_effect(BuffType.REDUCED_MOVEMENT_SPEED), Millis(4000))
 
 

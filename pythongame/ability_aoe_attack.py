@@ -3,12 +3,12 @@ import random
 from pythongame.core.abilities import register_ability_effect
 from pythongame.core.common import AbilityType, translate_in_direction, get_position_from_center_position, Sprite, \
     ProjectileType, Millis, get_perpendicular_directions
+from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, SpriteInitializer, register_entity_sprite_initializer
 from pythongame.core.game_state import GameState, WorldEntity, Projectile
 from pythongame.core.projectiles import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
-from pythongame.core.visual_effects import create_visual_damage_text
 
 AOE_PROJECTILE_SIZE = (140, 140)
 
@@ -38,8 +38,8 @@ class PlayerAoeProjectileController(AbstractProjectileController):
             projectile_entity = projectile.world_entity
             for enemy in game_state.get_enemies_intersecting_with(projectile_entity):
                 damage_amount = 1
-                enemy.lose_health(damage_amount)
-                game_state.visual_effects.append(create_visual_damage_text(enemy.world_entity, damage_amount))
+                deal_player_damage_to_enemy(game_state, enemy, damage_amount)
+
             if random.random() < 0.07:
                 projectile_entity.direction = random.choice(get_perpendicular_directions(projectile_entity.direction))
 
