@@ -138,6 +138,7 @@ class AbilityType(Enum):
     TELEPORT = 5
     FROST_NOVA = 6
     WHIRLWIND = 7
+    ENTANGLING_ROOTS = 8
 
 
 class Sprite(Enum):
@@ -159,6 +160,7 @@ class Sprite(Enum):
     ENEMY_GOBLIN_WARLOCK = 18
     ENEMY_GOBLIN_WARLOCK_PROJECTILE = 19
     ENEMY_MUMMY = 20
+    PROJECTILE_PLAYER_ENTANGLING_ROOTS = 21
 
 
 class BuffType(Enum):
@@ -171,6 +173,7 @@ class BuffType(Enum):
     INVULNERABILITY = 7
     STUNNED_BY_WHIRLWIND = 8
     ENEMY_GOBLIN_WARLOCK_BURNT = 9
+    ROOTED_BY_ENTANGLING_ROOTS = 10
 
 
 class ItemType(Enum):
@@ -187,3 +190,4 @@ class ProjectileType(Enum):
     PLAYER_MAGIC_MISSILE = 4
     PLAYER_WHIRLWIND = 5
     ENEMY_GOBLIN_WARLOCK = 6
+    PLAYER_ENTANGLING_ROOTS = 7

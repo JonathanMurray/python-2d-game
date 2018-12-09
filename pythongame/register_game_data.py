@@ -1,5 +1,6 @@
 from pythongame.game_data.ability_aoe_attack import register_aoe_attack_ability
 from pythongame.game_data.ability_channel_attack import register_channel_attack_ability
+from pythongame.game_data.ability_entangling_roots import register_entangling_roots_ability
 from pythongame.game_data.ability_fireball import register_fireball_ability
 from pythongame.game_data.ability_frost_nova import register_frost_nova_ability
 from pythongame.game_data.ability_heal import register_heal_ability
@@ -47,3 +48,4 @@ def register_all_game_data():
     register_amulet_of_mana_item()
     register_sword_of_leeching_item()
     register_rod_of_lightning_item()
+    register_entangling_roots_ability()
