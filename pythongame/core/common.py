@@ -121,7 +121,7 @@ class PotionType(Enum):
 
 
 class EnemyType(Enum):
-    MAGE = 3
+    NECROMANCER = 3
     BERSERKER = 4
     RAT_1 = 5
     RAT_2 = 6
@@ -145,7 +145,7 @@ class Sprite(Enum):
     PROJECTILE_PLAYER_FIREBALL = 4
     HEALTH_POTION = 6
     POISONBALL = 7
-    ENEMY_MAGE = 8
+    ENEMY_NECROMANCER = 8
     ENEMY_BERSERKER = 9
     MAGIC_MISSILE = 10
     WALL = 11

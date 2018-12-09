@@ -1,9 +1,9 @@
 from typing import Optional, Dict, List
 
 from pythongame.core.common import *
-from pythongame.core.enemy_behaviors import create_enemy_mind
-from pythongame.core.game_data import WALL_SIZE, ENEMIES, POTIONS
-from pythongame.core.game_state import WorldEntity, Enemy, GameState, PotionOnGround
+from pythongame.core.enemy_creation import create_enemy, set_global_path_finder
+from pythongame.core.game_data import WALL_SIZE, POTIONS
+from pythongame.core.game_state import WorldEntity, GameState, PotionOnGround
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE, INTIAL_PLAYER_STATE, PLAYER_ENTITY_SPEED
 from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
@@ -58,7 +58,8 @@ MAP_FILE_ENTITIES_BY_CHAR: Dict[str, MapFileEntity] = {
     'H': MapFileEntity.potion(PotionType.HEALTH),
     'M': MapFileEntity.potion(PotionType.MANA),
     'W': MapFileEntity.enemy(EnemyType.GOBLIN_WARLOCK),
-    'U': MapFileEntity.enemy(EnemyType.MUMMY)
+    'U': MapFileEntity.enemy(EnemyType.MUMMY),
+    'A': MapFileEntity.enemy(EnemyType.NECROMANCER)
 }
 
 CHARS_BY_MAP_FILE_ENTITY: Dict[MapFileEntity, str] = {v: k for k, v in MAP_FILE_ENTITIES_BY_CHAR.items()}
@@ -96,11 +97,12 @@ def create_game_state_from_file(camera_size: Tuple[int, int], map_file: str):
                         for pos in positions_by_map_file_entity.get(entity, [])]
 
     path_finder = GlobalPathFinder()
+    set_global_path_finder(path_finder)
     enemies = []
     for char in MAP_FILE_ENTITIES_BY_CHAR.keys():
         entity = MAP_FILE_ENTITIES_BY_CHAR[char]
         if entity.enemy_type:
-            enemies += [_create_enemy_at_position(entity.enemy_type, pos, path_finder)
+            enemies += [create_enemy(entity.enemy_type, pos)
                         for pos in positions_by_map_file_entity.get(entity, [])]
 
     wall_positions = positions_by_map_file_entity.get(MapFileEntity.wall(), [])
@@ -145,13 +147,6 @@ def save_game_state_to_file(game_state: GameState, map_file: str):
                 else:
                     map_file.write(" ")
             map_file.write("\n")
-
-
-def _create_enemy_at_position(enemy_type: EnemyType, pos: Tuple[int, int], global_path_finder: GlobalPathFinder):
-    data = ENEMIES[enemy_type]
-    entity = WorldEntity(pos, data.size, data.sprite, Direction.LEFT, data.speed)
-    enemy_mind = create_enemy_mind(enemy_type, global_path_finder)
-    return Enemy(enemy_type, entity, data.max_health, data.max_health, data.health_regen, enemy_mind)
 
 
 def _create_potion_at_position(potion_type: PotionType, pos: Tuple[int, int]):

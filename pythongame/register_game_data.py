@@ -8,7 +8,7 @@ from pythongame.game_data.ability_whirlwind import register_whirlwind_ability
 from pythongame.game_data.enemy_berserker import register_berserker_enemy
 from pythongame.game_data.enemy_dark_reaper import register_dark_reaper_enemy
 from pythongame.game_data.enemy_goblin_warlock import register_goblin_warlock_enemy
-from pythongame.game_data.enemy_mage import register_mage_enemy
+from pythongame.game_data.enemy_necromancer import register_necromancer_enemy
 from pythongame.game_data.enemy_mummy import register_mummy_enemy
 from pythongame.game_data.enemy_rat_1 import register_rat_1_enemy
 from pythongame.game_data.enemy_rat_2 import register_rat_2_enemy
@@ -33,7 +33,7 @@ def register_all_game_data():
     register_mana_potion()
     register_invis_potion()
     register_speed_potion()
-    register_mage_enemy()
+    register_necromancer_enemy()
     register_berserker_enemy()
     register_player_data()
     register_rat_1_enemy()
