@@ -1,4 +1,3 @@
-from pythongame.game_data.ability_aoe_attack import register_aoe_attack_ability
 from pythongame.game_data.ability_channel_attack import register_channel_attack_ability
 from pythongame.game_data.ability_entangling_roots import register_entangling_roots_ability
 from pythongame.game_data.ability_fireball import register_fireball_ability
@@ -28,7 +27,6 @@ def register_all_game_data():
     register_fireball_ability()
     register_frost_nova_ability()
     register_heal_ability()
-    register_aoe_attack_ability()
     register_channel_attack_ability()
     register_teleport_ability()
     register_health_potion()

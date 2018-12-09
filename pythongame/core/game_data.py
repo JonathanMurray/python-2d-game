@@ -63,7 +63,6 @@ class UiIconSprite(Enum):
     SPEED_POTION = 3
     ABILITY_FIREBALL = 4
     HEAL_ABILITY = 5
-    AOE_ABILITY = 6
     INVISIBILITY_POTION = 7
     MAGIC_MISSILE = 8
     TELEPORT = 9
