@@ -66,7 +66,8 @@ class EnemyMind(AbstractEnemyMind):
 
 def register_necromancer_enemy():
     size = (50, 60)
-    register_enemy_data(ENEMY_TYPE, EnemyData(SPRITE, size, 25, 0, 0.02))
+    health = 25
+    register_enemy_data(ENEMY_TYPE, EnemyData(SPRITE, size, health, 0, 0.02))
     register_enemy_behavior(ENEMY_TYPE, EnemyMind)
 
     enemy_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")

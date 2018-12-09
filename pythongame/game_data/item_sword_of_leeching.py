@@ -4,7 +4,7 @@ from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
 
 ITEM_TYPE = ItemType.SWORD_OF_LEECHING
-LIFE_STEAL_BOOST = 0.1
+LIFE_STEAL_BOOST = 0.25
 
 
 class ItemEffect(AbstractItemEffect):

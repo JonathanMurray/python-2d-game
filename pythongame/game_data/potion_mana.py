@@ -15,7 +15,7 @@ def _apply_mana(game_state: GameState):
     player_state = game_state.player_state
     if game_state.player_state.mana < game_state.player_state.max_mana:
         create_potion_visual_effect_at_player(game_state)
-        mana_amount = 50
+        mana_amount = 100
         player_state.gain_mana(mana_amount)
         game_state.visual_effects.append(create_visual_mana_text(game_state.player_entity, mana_amount))
         return PotionWasConsumed()
