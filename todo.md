@@ -15,7 +15,13 @@
     * text on screen visualizing enemy sounds
 * Save functionality
     * save the current game_state into a JSON file and load it on startup
-* Introduce "items" (wearables that give you some buff)
-    * Increased health/mana regen
+* More advanced abilities:
+    * summon creatures to fight for you
+    * debuffs that spread between enemies
+    * effects that have a chance to trigger
+    * effects that trigger if last-hitting an enemy
+    * life-steal
+    * buff that damages nearby enemies
+    * buff that bounces damage back to enemies
+* More advanced items
     * Unlocks a new ability
-    * Invisibility (enemies will not react to your presence)
