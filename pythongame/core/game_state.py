@@ -149,7 +149,7 @@ class Enemy:
         self.enemy_mind = enemy_mind
         self.active_buffs: List[BuffWithDuration] = []
         self.invulnerable: bool = False
-        self.is_stunned = False
+        self._number_of_active_stuns = 0
 
     def lose_health(self, amount):
         self._health_float = min(self._health_float - amount, self.max_health)
@@ -169,6 +169,17 @@ class Enemy:
 
     def regenerate_health(self, time_passed: Millis):
         self.gain_health(self.health_regen * float(time_passed))
+
+    def add_stun(self):
+        self._number_of_active_stuns += 1
+
+    def remove_stun(self):
+        self._number_of_active_stuns -= 1
+        if self._number_of_active_stuns < 0:
+            raise Exception("Number of active stuns went below 0 down to " + str(self._number_of_active_stuns))
+
+    def is_stunned(self):
+        return self._number_of_active_stuns > 0
 
 
 class BuffWithDuration:

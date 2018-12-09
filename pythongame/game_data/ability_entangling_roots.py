@@ -58,7 +58,7 @@ class Rooted(AbstractBuffEffect):
         self._time_since_graphics = self._graphics_interval
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
-        buffed_enemy.is_stunned = True
+        buffed_enemy.add_stun()
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy,
                             time_passed: Millis):
@@ -73,10 +73,7 @@ class Rooted(AbstractBuffEffect):
                 VisualCircle((0, 150, 0), buffed_entity.get_center_position(), 30, 55, Millis(150), 2, buffed_entity))
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
-        # TODO Fix bug:
-        # This doesn't interact well with other stun debuffs. If there is another stun active, this shouldn't remove
-        # that one!
-        buffed_enemy.is_stunned = False
+        buffed_enemy.remove_stun()
 
     def get_buff_type(self):
         return BUFF_TYPE

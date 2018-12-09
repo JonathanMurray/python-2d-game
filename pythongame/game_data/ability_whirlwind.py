@@ -80,7 +80,7 @@ class Stunned(AbstractBuffEffect):
         pass
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
-        buffed_enemy.is_stunned = True
+        buffed_enemy.add_stun()
         effect_position = buffed_entity.get_center_position()
         game_state.visual_effects.append(
             VisualRect((250, 250, 50), effect_position, 30, 40, Millis(100), 1, buffed_entity))
@@ -90,7 +90,7 @@ class Stunned(AbstractBuffEffect):
         pass
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
-        buffed_enemy.is_stunned = False
+        buffed_enemy.remove_stun()
 
     def get_buff_type(self):
         return BUFF_TYPE
