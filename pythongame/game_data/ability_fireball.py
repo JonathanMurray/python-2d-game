@@ -18,15 +18,12 @@ class ProjectileController(AbstractProjectileController):
         super().__init__(1500)
 
     def apply_enemy_collision(self, enemy: Enemy, game_state: GameState):
-        # TODO Centralise handling of invulnerability
-        if enemy.invulnerable:
+        damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, 3)
+        if not damage_was_dealt:
             return False
-        else:
-            damage_amount = 3
-            deal_player_damage_to_enemy(game_state, enemy, damage_amount)
-            game_state.visual_effects.append(VisualCircle((250, 100, 50), enemy.world_entity.get_center_position(), 22,
-                                                          45, Millis(100), 0))
-            return True
+        game_state.visual_effects.append(
+            VisualCircle((250, 100, 50), enemy.world_entity.get_center_position(), 22, 45, Millis(100), 0))
+        return True
 
 
 def _apply_ability(game_state: GameState):

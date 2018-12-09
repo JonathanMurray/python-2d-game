@@ -21,10 +21,8 @@ def _apply_ability(game_state: GameState):
     effect_position = get_position_from_center_position(player_center_pos, EFFECT_SPRITE_SIZE)
     game_state.visual_effects.append(VisualSprite(Sprite.EFFECT_ABILITY_FROST_NOVA, effect_position, Millis(200)))
     for enemy in affected_enemies:
-        # TODO Centralise handling of invulnerability
-        if not enemy.invulnerable:
-            damage_amount = 2
-            deal_player_damage_to_enemy(game_state, enemy, damage_amount)
+        damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, 2)
+        if damage_was_dealt:
             enemy.gain_buff_effect(get_buff_effect(BuffType.REDUCED_MOVEMENT_SPEED), Millis(4000))
 
 

@@ -49,8 +49,9 @@ class ProjectileController(AbstractProjectileController):
             self._time_since_dmg = 0
             for enemy in game_state.get_enemies_intersecting_with(projectile_entity):
                 damage_amount = 1
-                deal_player_damage_to_enemy(game_state, enemy, damage_amount)
-                enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(self._stun_duration))
+                damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, damage_amount)
+                if damage_was_dealt:
+                    enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(self._stun_duration))
 
         if self._time_since_direction_change > self._direction_change_cooldown:
             self._time_since_direction_change = 0

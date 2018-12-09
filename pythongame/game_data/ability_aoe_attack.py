@@ -37,9 +37,7 @@ class PlayerAoeProjectileController(AbstractProjectileController):
             self._time_since_dmg = False
             projectile_entity = projectile.world_entity
             for enemy in game_state.get_enemies_intersecting_with(projectile_entity):
-                damage_amount = 1
-                deal_player_damage_to_enemy(game_state, enemy, damage_amount)
-
+                deal_player_damage_to_enemy(game_state, enemy, 1)
             if random.random() < 0.07:
                 projectile_entity.direction = random.choice(get_perpendicular_directions(projectile_entity.direction))
 
