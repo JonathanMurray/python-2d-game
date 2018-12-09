@@ -96,6 +96,19 @@ class EnemyData:
         self.speed = speed
 
 
+class PotionData:
+    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Optional[Sprite], name: str):
+        self.icon_sprite = icon_sprite
+        self.entity_sprite = entity_sprite
+        self.name = name
+
+
+class ItemData:
+    def __init__(self, icon_sprite: UiIconSprite, name: str):
+        self.icon_sprite = icon_sprite
+        self.name = name
+
+
 ENEMIES: Dict[EnemyType, EnemyData] = {}
 
 _stone_tile_file_name = "resources/graphics/stone_tile.png"
@@ -108,15 +121,9 @@ ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Animation]] = {
 
 UI_ICON_SPRITE_PATHS: Dict[UiIconSprite, str] = {}
 
-POTION_ICON_SPRITES: Dict[PotionType, UiIconSprite] = {}
+POTIONS: Dict[PotionType, PotionData] = {}
 
-POTION_ENTITY_SPRITES: Dict[PotionType, Sprite] = {}
-
-POTION_NAMES: Dict[PotionType, str] = {}
-
-ITEM_NAMES: Dict[ItemType, str] = {}
-
-ITEM_ICON_SPRITES: Dict[ItemType, UiIconSprite] = {}
+ITEMS: Dict[ItemType, ItemData] = {}
 
 ABILITIES: Dict[AbilityType, AbilityData] = {}
 
@@ -170,21 +177,9 @@ def register_buff_text(buff_type: BuffType, text: str):
     BUFF_TEXTS[buff_type] = text
 
 
-def register_potion_icon_sprite(potion_type: PotionType, ui_icon_sprite: UiIconSprite):
-    POTION_ICON_SPRITES[potion_type] = ui_icon_sprite
+def register_potion_data(potion_type: PotionType, potion_data: PotionData):
+    POTIONS[potion_type] = potion_data
 
 
-def register_potion_entity_sprite(potion_type: PotionType, sprite: Sprite):
-    POTION_ENTITY_SPRITES[potion_type] = sprite
-
-
-def register_potion_name(potion_type: PotionType, name: str):
-    POTION_NAMES[potion_type] = name
-
-
-def register_item_name(item_type: ItemType, name: str):
-    ITEM_NAMES[item_type] = name
-
-
-def register_item_icon_sprite(item_type: ItemType, ui_icon_sprite: UiIconSprite):
-    ITEM_ICON_SPRITES[item_type] = ui_icon_sprite
+def register_item_data(item_type: ItemType, item_data: ItemData):
+    ITEMS[item_type] = item_data

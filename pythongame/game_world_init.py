@@ -2,7 +2,7 @@ from typing import Optional, Dict, List
 
 from pythongame.core.common import *
 from pythongame.core.enemy_behaviors import create_enemy_mind
-from pythongame.core.game_data import WALL_SIZE, ENEMIES, POTION_ENTITY_SPRITES
+from pythongame.core.game_data import WALL_SIZE, ENEMIES, POTIONS
 from pythongame.core.game_state import WorldEntity, Enemy, GameState, PotionOnGround
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE, INTIAL_PLAYER_STATE, PLAYER_ENTITY_SPEED
@@ -155,5 +155,5 @@ def _create_enemy_at_position(enemy_type: EnemyType, pos: Tuple[int, int], globa
 
 
 def _create_potion_at_position(potion_type: PotionType, pos: Tuple[int, int]):
-    entity = WorldEntity(pos, POTION_ENTITY_SIZE, POTION_ENTITY_SPRITES[potion_type])
+    entity = WorldEntity(pos, POTION_ENTITY_SIZE, POTIONS[potion_type].entity_sprite)
     return PotionOnGround(entity, potion_type)

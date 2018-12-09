@@ -1,9 +1,10 @@
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import PotionType, BuffType, Millis
-from pythongame.core.game_data import register_ui_icon_sprite_path, UiIconSprite, register_potion_icon_sprite, \
-    register_buff_text
+from pythongame.core.game_data import register_ui_icon_sprite_path, UiIconSprite, register_buff_text, \
+    register_potion_data, PotionData
 from pythongame.core.game_state import GameState, WorldEntity, Enemy
-from pythongame.core.potion_effects import create_potion_visual_effect_at_player, PotionWasConsumed, register_potion_effect
+from pythongame.core.potion_effects import create_potion_visual_effect_at_player, PotionWasConsumed, \
+    register_potion_effect
 from pythongame.core.visual_effects import VisualCircle
 
 
@@ -39,5 +40,5 @@ def register_speed_potion():
     register_potion_effect(PotionType.SPEED, _apply_speed)
     register_buff_effect(BuffType.INCREASED_MOVE_SPEED, IncreasedMoveSpeed)
     register_buff_text(BuffType.INCREASED_MOVE_SPEED, "Speed")
-    register_potion_icon_sprite(PotionType.SPEED, UiIconSprite.SPEED_POTION)
     register_ui_icon_sprite_path(UiIconSprite.SPEED_POTION, "resources/graphics/white_potion.gif")
+    register_potion_data(PotionType.SPEED, PotionData(UiIconSprite.SPEED_POTION, None, "Speed potion"))

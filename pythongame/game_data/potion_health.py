@@ -1,7 +1,6 @@
 from pythongame.core.common import PotionType, Sprite
 from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer, \
-    register_ui_icon_sprite_path, UiIconSprite, register_potion_icon_sprite, register_potion_entity_sprite, \
-    register_potion_name
+    register_ui_icon_sprite_path, UiIconSprite, register_potion_data, PotionData
 from pythongame.core.game_state import GameState
 from pythongame.core.potion_effects import create_potion_visual_effect_at_player, PotionWasConsumed, PotionFailedToBeConsumed, \
     register_potion_effect
@@ -30,7 +29,5 @@ def register_health_potion():
     register_potion_effect(potion_type, _apply_health)
     register_entity_sprite_initializer(
         sprite, SpriteInitializer("resources/graphics/ui_health_potion.png", POTION_ENTITY_SIZE))
-    register_potion_icon_sprite(potion_type, ui_icon_sprite)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/ui_health_potion.png")
-    register_potion_entity_sprite(potion_type, sprite)
-    register_potion_name(potion_type, "Health potion")
+    register_potion_data(potion_type, PotionData(ui_icon_sprite, sprite, "Health potion"))

@@ -5,7 +5,7 @@ import pygame
 
 import pythongame.core.pathfinding.enemy_pathfinding
 from pythongame.core.common import Millis, ItemType
-from pythongame.core.game_data import ITEM_NAMES
+from pythongame.core.game_data import ITEMS
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
@@ -65,7 +65,7 @@ def main(args: List[str]):
                     get_item_effect(item_type).apply_end_effect(game_state)
                 new_item_type = available_items[debug_item_index]
                 get_item_effect(new_item_type).apply_start_effect(game_state)
-                view_state.set_message("You equipped " + ITEM_NAMES[new_item_type])
+                view_state.set_message("You equipped " + ITEMS[new_item_type].name)
                 game_state.player_state.items = [new_item_type]
             if not is_paused and not is_game_over:
                 if isinstance(action, ActionTryUseAbility):

@@ -4,7 +4,7 @@ from typing import Tuple, Optional, List
 import pygame
 
 from pythongame.core.common import Direction, Sprite, sum_of_vectors
-from pythongame.core.game_data import ENEMIES, WALL_SIZE, POTION_ENTITY_SPRITES
+from pythongame.core.game_data import ENEMIES, WALL_SIZE, POTIONS
 from pythongame.core.game_state import WorldEntity, Enemy, PotionOnGround
 from pythongame.core.view import View
 from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
@@ -102,7 +102,7 @@ def main(args: List[str]):
                         elif placing_map_file_entity.is_wall:
                             _add_wall_to_position(game_state, snapped_mouse_world_position)
                         elif placing_map_file_entity.potion_type:
-                            sprite = POTION_ENTITY_SPRITES[placing_map_file_entity.potion_type]
+                            sprite = POTIONS[placing_map_file_entity.potion_type].entity_sprite
                             entity = WorldEntity(snapped_mouse_world_position, POTION_ENTITY_SIZE, sprite)
                             game_state.potions_on_ground.append(
                                 PotionOnGround(entity, placing_map_file_entity.potion_type))
@@ -141,7 +141,7 @@ def main(args: List[str]):
                 entity = WorldEntity((0, 0), WALL_SIZE, Sprite.WALL)
                 view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
             elif placing_map_file_entity.potion_type:
-                sprite = POTION_ENTITY_SPRITES[placing_map_file_entity.potion_type]
+                sprite = POTIONS[placing_map_file_entity.potion_type].entity_sprite
                 entity = WorldEntity((0, 0), POTION_ENTITY_SIZE, sprite)
                 view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
         else:

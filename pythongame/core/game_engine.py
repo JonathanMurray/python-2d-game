@@ -1,6 +1,6 @@
 from pythongame.core.ability_effects import apply_ability_effect
 from pythongame.core.common import *
-from pythongame.core.game_data import POTION_NAMES
+from pythongame.core.game_data import POTIONS
 from pythongame.core.game_state import GameState, handle_buffs
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.player_controls import TryUseAbilityResult, PlayerControls
@@ -128,7 +128,7 @@ class GameEngine:
                 empty_potion_slot = self.game_state.player_state.find_first_empty_potion_slot()
                 if empty_potion_slot:
                     self.game_state.player_state.potion_slots[empty_potion_slot] = potion.potion_type
-                    self.view_state.set_message("You picked up " + POTION_NAMES[potion.potion_type])
+                    self.view_state.set_message("You picked up " + POTIONS[potion.potion_type].name)
                     entities_to_remove.append(potion)
         for enemy in self.game_state.enemies:
             for projectile in self.game_state.get_projectiles_intersecting_with(enemy.world_entity):
