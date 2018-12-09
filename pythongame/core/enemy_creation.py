@@ -10,9 +10,11 @@ from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
 global_path_finder: GlobalPathFinder = None
 
+
 def set_global_path_finder(_global_path_finder: GlobalPathFinder):
     global global_path_finder
     global_path_finder = _global_path_finder
+
 
 def create_enemy(enemy_type: EnemyType, pos: Tuple[int, int]) -> Enemy:
     data = ENEMIES[enemy_type]
