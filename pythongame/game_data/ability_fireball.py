@@ -10,7 +10,7 @@ from pythongame.core.projectile_controllers import create_projectile_controller,
     register_projectile_controller
 from pythongame.core.visual_effects import VisualCircle
 
-PROJECTILE_SIZE = (48, 48)
+PROJECTILE_SIZE = (30, 30)
 
 
 class ProjectileController(AbstractProjectileController):
@@ -57,5 +57,6 @@ def register_fireball_ability():
         Direction.RIGHT: [(x, 4) for x in range(8)],
         Direction.DOWN: [(x, 6) for x in range(8)]
     }
-    register_entity_sprite_map(Sprite.PROJECTILE_PLAYER_FIREBALL, sprite_sheet, original_sprite_size, PROJECTILE_SIZE,
-                               indices_by_dir, (0, 0))
+    scaled_sprite_size = (48, 48)
+    register_entity_sprite_map(Sprite.PROJECTILE_PLAYER_FIREBALL, sprite_sheet, original_sprite_size,
+                               scaled_sprite_size, indices_by_dir, (-9, -9))
