@@ -4,10 +4,12 @@ from typing import List
 import pygame
 
 import pythongame.core.pathfinding.enemy_pathfinding
-from pythongame.core.common import Millis
+from pythongame.core.common import Millis, ItemType
+from pythongame.core.game_data import ITEM_NAMES
 from pythongame.core.game_engine import GameEngine
+from pythongame.core.items import get_item_effect
 from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
-    ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging
+    ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionDebugToggleItems
 from pythongame.core.view import View
 from pythongame.core.view_state import ViewState
 from pythongame.game_world_init import create_game_state_from_file
@@ -36,6 +38,7 @@ def main(args: List[str]):
     is_paused = False
     is_game_over = False
     render_hit_and_collision_boxes = False
+    debug_item_index = 0  # TODO replace this with proper item handling.
 
     game_engine.initialize()
 
@@ -55,6 +58,15 @@ def main(args: List[str]):
                 # TODO: Handle this better than accessing a global variable from here
                 pythongame.core.pathfinding.enemy_pathfinding.DEBUG_RENDER_PATHFINDING = \
                     not pythongame.core.pathfinding.enemy_pathfinding.DEBUG_RENDER_PATHFINDING
+            if isinstance(action, ActionDebugToggleItems):  # TODO: Replace this with proper item handling.
+                available_items = [ItemType.WINGED_BOOTS, ItemType.SWORD_OF_LEECHING, ItemType.AMULET_OF_MANA]
+                debug_item_index = (debug_item_index + 1) % len(available_items)
+                for item_type in game_state.player_state.items:
+                    get_item_effect(item_type).apply_end_effect(game_state)
+                new_item_type = available_items[debug_item_index]
+                get_item_effect(new_item_type).apply_start_effect(game_state)
+                view_state.set_message("You equipped " + ITEM_NAMES[new_item_type])
+                game_state.player_state.items = [new_item_type]
             if not is_paused and not is_game_over:
                 if isinstance(action, ActionTryUseAbility):
                     game_engine.try_use_ability(action.ability_type)
