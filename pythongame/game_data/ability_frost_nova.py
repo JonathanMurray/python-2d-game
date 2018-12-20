@@ -21,7 +21,7 @@ def _apply_ability(game_state: GameState):
     effect_position = get_position_from_center_position(player_center_pos, EFFECT_SPRITE_SIZE)
     game_state.visual_effects.append(VisualSprite(Sprite.EFFECT_ABILITY_FROST_NOVA, effect_position, Millis(200)))
     for enemy in affected_enemies:
-        damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, 2)
+        damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, 4)
         if damage_was_dealt:
             enemy.gain_buff_effect(get_buff_effect(BuffType.REDUCED_MOVEMENT_SPEED), Millis(4000))
 
@@ -53,7 +53,7 @@ def register_frost_nova_ability():
     ability_type = AbilityType.FROST_NOVA
     register_ability_effect(ability_type, _apply_ability)
     ui_icon_sprite = UiIconSprite.ABILITY_FROST_NOVA
-    register_ability_data(ability_type, AbilityData(ui_icon_sprite, 5, Millis(3000)))
+    register_ability_data(ability_type, AbilityData(ui_icon_sprite, 10, Millis(3000)))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/ui_icon_ability_frost_nova.png")
 
     sprite_sheet = SpriteSheet("resources/graphics/effect_frost_explosion.png")
