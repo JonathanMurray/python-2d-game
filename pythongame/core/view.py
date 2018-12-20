@@ -418,15 +418,9 @@ class View:
         x_1 = 140
         icon_space = 5
         self._text_in_ui(self.font_large, "POTIONS", x_1, y_1)
-        self._potion_icon_in_ui(x_1, y_2, UI_ICON_SIZE, 1, potion_slots[1], highlighted_potion_action)
-        self._potion_icon_in_ui(x_1 + (UI_ICON_SIZE[0] + icon_space), y_2, UI_ICON_SIZE, 2, potion_slots[2],
-                                highlighted_potion_action)
-        self._potion_icon_in_ui(x_1 + 2 * (UI_ICON_SIZE[0] + icon_space), y_2, UI_ICON_SIZE, 3, potion_slots[3],
-                                highlighted_potion_action)
-        self._potion_icon_in_ui(x_1 + 3 * (UI_ICON_SIZE[0] + icon_space), y_2, UI_ICON_SIZE, 4, potion_slots[4],
-                                highlighted_potion_action)
-        self._potion_icon_in_ui(x_1 + 4 * (UI_ICON_SIZE[0] + icon_space), y_2, UI_ICON_SIZE, 5, potion_slots[5],
-                                highlighted_potion_action)
+        for i, slot_number in enumerate(potion_slots):
+            self._potion_icon_in_ui(x_1 + i * (UI_ICON_SIZE[0] + icon_space), y_2, UI_ICON_SIZE, slot_number,
+                                    potion_slots[slot_number], highlighted_potion_action)
 
         self._text_in_ui(self.font_large, "SPELLS", x_1, y_3)
         for i, ability_type in enumerate(abilities):
