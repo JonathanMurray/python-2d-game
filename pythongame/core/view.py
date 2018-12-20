@@ -127,6 +127,13 @@ class View:
     def _rect_filled(self, color, rect):
         pygame.draw.rect(self.screen, color, rect)
 
+    def _rect_transparent(self, rect, alpha, color):
+        # Using a separate surface is the only way to render a transparent rectangle
+        surface = pygame.Surface((rect[2], rect[3]))
+        surface.set_alpha(alpha)
+        surface.fill(color)
+        self.screen.blit(surface, (rect[0], rect[1]))
+
     def _line(self, color, start_position, end_position, line_width):
         pygame.draw.line(self.screen, color, start_position, end_position, line_width)
 
@@ -362,20 +369,19 @@ class View:
         dot_w = 4
         self._rect_filled((0, 200, 0), (dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
-    def _tooltip(self, title: str, details: List[str], position_bottom_left: Tuple[int, int]):
+    def _message(self, message):
+        x_message = self.ui_screen_area.w / 2 - 140
+        y_message = self.ui_screen_area.y - 30
+        self._rect_transparent((x_message - 10, y_message - 5, 280, 28), 85, (0, 0, 0))
+        self._text(self.font_small, message, (x_message, y_message))
 
+    def _tooltip(self, title: str, details: List[str], position_bottom_left: Tuple[int, int]):
         w_tooltip = 320
         h_tooltip = 130
         x_tooltip = position_bottom_left[0]
         y_tooltip = position_bottom_left[1] - h_tooltip
         rect_tooltip = (x_tooltip, y_tooltip, w_tooltip, h_tooltip)
-
-        # Using a separate surface is the only way to render a transparent rectangle
-        surface_tooltip = pygame.Surface((w_tooltip, h_tooltip))
-        surface_tooltip.set_alpha(240)
-        surface_tooltip.fill((0, 0, 30))
-        self.screen.blit(surface_tooltip, (x_tooltip, y_tooltip))
-
+        self._rect_transparent((x_tooltip, y_tooltip, w_tooltip, h_tooltip), 240, (0, 0, 30))
         self._rect(COLOR_WHITE, rect_tooltip, 2)
         self._text(self.font_large, title, (x_tooltip + 20, y_tooltip + 15), COLOR_WHITE)
         y_separator = y_tooltip + 40
@@ -502,10 +508,11 @@ class View:
 
         self._rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
 
-        self._rect(COLOR_BLACK, (0, 0, 60, 24), 0)
-        self._text(self.font_small, fps_string + " fps", (5, 3))
+        self._rect_transparent((0, 0, 50, 20), 100, COLOR_BLACK)
+        self._text(self.font_tiny, fps_string + " fps", (5, 3))
 
-        self._text(self.font_small, message, (self.ui_screen_area.w / 2 - 80, self.ui_screen_area.y - 30))
+        if message:
+            self._message(message)
 
         if tooltip_title:
             self._tooltip(tooltip_title, tooltip_details, tooltip_bottom_left_position)
