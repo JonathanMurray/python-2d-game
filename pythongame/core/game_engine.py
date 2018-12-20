@@ -16,7 +16,7 @@ class GameEngine:
         self.view_state = view_state
 
     def initialize(self):
-        for item_type in self.game_state.player_state.items.values():
+        for item_type in self.game_state.player_state.item_slots.values():
             if item_type:
                 item_effect = get_item_effect(item_type)
                 item_effect.apply_start_effect(self.game_state)
@@ -97,7 +97,7 @@ class GameEngine:
             for buff_effect in buffs_update.buffs_that_ended:
                 buff_effect.apply_end_effect(self.game_state, enemy.world_entity, enemy)
 
-        for item_type in self.game_state.player_state.items.values():
+        for item_type in self.game_state.player_state.item_slots.values():
             if item_type:
                 get_item_effect(item_type).apply_middle_effect(self.game_state, time_passed)
 
@@ -139,7 +139,7 @@ class GameEngine:
             if boxes_intersect(self.game_state.player_entity, item.world_entity):
                 empty_item_slot = self.game_state.player_state.find_first_empty_item_slot()
                 if empty_item_slot:
-                    self.game_state.player_state.items[empty_item_slot] = item.item_type
+                    self.game_state.player_state.item_slots[empty_item_slot] = item.item_type
                     item_effect = get_item_effect(item.item_type)
                     item_effect.apply_start_effect(self.game_state)
                     self.view_state.set_message("You picked up " + ITEMS[item.item_type].name)

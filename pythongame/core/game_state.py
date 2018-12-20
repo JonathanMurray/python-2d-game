@@ -205,7 +205,7 @@ class AgentBuffsUpdate:
 
 class PlayerState:
     def __init__(self, health: int, max_health: int, mana: int, max_mana: int, mana_regen: float,
-                 potion_slots: Dict[int, PotionType], abilities: List[AbilityType], items: Dict[int, ItemType]):
+                 potion_slots: Dict[int, PotionType], abilities: List[AbilityType], item_slots: Dict[int, ItemType]):
         self.health = health
         self._health_float = health
         self.max_health = max_health
@@ -219,7 +219,7 @@ class PlayerState:
         self.active_buffs: List[BuffWithDuration] = []
         self.is_invisible = False
         self.is_stunned = False
-        self.items = items
+        self.item_slots = item_slots
         self.life_steal_ratio = 0
 
     def gain_health(self, amount: float):
@@ -245,7 +245,7 @@ class PlayerState:
         return None
 
     def find_first_empty_item_slot(self) -> Optional[int]:
-        empty_slots = [slot for slot in self.items if not self.items[slot]]
+        empty_slots = [slot for slot in self.item_slots if not self.item_slots[slot]]
         if empty_slots:
             return empty_slots[0]
         return None

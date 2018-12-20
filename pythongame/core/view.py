@@ -392,7 +392,7 @@ class View:
     def render_ui(self, fps_string, is_paused, is_game_over, abilities, ability_cooldowns_remaining,
                   highlighted_ability_action, highlighted_potion_action, message, player_active_buffs,
                   player_health, player_mana, player_max_health, player_max_mana,
-                  player_minimap_relative_position, potion_slots, items: Dict[int, ItemType]):
+                  player_minimap_relative_position, potion_slots, item_slots: Dict[int, ItemType]):
 
         self._rect(COLOR_BLACK, (0, 0, self.camera_size[0], self.camera_size[1]), 3)
         self._rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
@@ -435,7 +435,7 @@ class View:
 
         x_2 = 338
         self._text_in_ui(self.font_large, "INVENTORY", x_2, y_1)
-        for i, item_type in enumerate(items.values()):
+        for i, item_type in enumerate(item_slots.values()):
             self._item_icon_in_ui(x_2 + i * (UI_ICON_SIZE[0] + icon_space), y_2, UI_ICON_SIZE, item_type)
 
         x_3 = 465
