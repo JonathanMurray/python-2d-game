@@ -471,6 +471,7 @@ class View:
             if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
                 if item_type:
                     tooltip_title = ITEMS[item_type].name
+                    tooltip_details = [ITEMS[item_type].description]
             self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type)
 
         x_3 = 465

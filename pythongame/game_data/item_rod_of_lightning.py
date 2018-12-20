@@ -40,4 +40,6 @@ def register_rod_of_lightning_item():
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/item_rod_of_lightning.png")
     register_entity_sprite_initializer(
         sprite, SpriteInitializer("resources/graphics/item_rod_of_lightning.png", ITEM_ENTITY_SIZE))
-    register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, sprite, "Rod of Lightning"))
+    register_item_data(
+        ITEM_TYPE,
+        ItemData(ui_icon_sprite, sprite, "Rod of Lightning", "Periodically damages nearby enemies"))

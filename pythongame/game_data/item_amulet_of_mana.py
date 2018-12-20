@@ -27,4 +27,6 @@ def register_amulet_of_mana_item():
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/item_amulet.png")
     register_entity_sprite_initializer(
         sprite, SpriteInitializer("resources/graphics/item_amulet.png", ITEM_ENTITY_SIZE))
-    register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, sprite, "Amulet of Mana"))
+    register_item_data(
+        ITEM_TYPE,
+        ItemData(ui_icon_sprite, sprite, "Amulet of Mana", "Grants increased mana regeneration"))
