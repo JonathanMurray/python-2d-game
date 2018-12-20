@@ -31,8 +31,4 @@
 * more varied enemy AI
     * some enemies shouldn't aggro until very close
     * all enemies should at least wander around randomly when in sight
-* Mouse over things in UI to give more information about them
-    * mana cost
-    * description
-    * cooldown
-    * etc
+* Fix ugly font
