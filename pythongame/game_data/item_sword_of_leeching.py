@@ -1,5 +1,6 @@
-from pythongame.core.common import ItemType
-from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData
+from pythongame.core.common import ItemType, Sprite
+from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
+    register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
 
@@ -20,7 +21,9 @@ class ItemEffect(AbstractItemEffect):
 
 def register_sword_of_leeching_item():
     ui_icon_sprite = UiIconSprite.ITEM_SWORD_OF_LEECHING
-
+    sprite = Sprite.ITEM_SWORD_OF_LEECHING
     register_item_effect(ITEM_TYPE, ItemEffect())
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/item_sword_of_leeching.png")
-    register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, "Sword of Leeching"))
+    register_entity_sprite_initializer(
+        sprite, SpriteInitializer("resources/graphics/item_sword_of_leeching.png", ITEM_ENTITY_SIZE))
+    register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, sprite, "Sword of Leeching"))

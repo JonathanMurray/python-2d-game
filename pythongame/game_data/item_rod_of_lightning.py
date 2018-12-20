@@ -1,6 +1,7 @@
-from pythongame.core.common import ItemType, Millis
+from pythongame.core.common import ItemType, Millis, Sprite
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
-from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData
+from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
+    register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
 from pythongame.core.visual_effects import VisualCircle, VisualLine
@@ -34,6 +35,9 @@ class ItemEffect(AbstractItemEffect):
 
 def register_rod_of_lightning_item():
     ui_icon_sprite = UiIconSprite.ITEM_ROD_OF_LIGHTNING
+    sprite = Sprite.ITEM_ROD_OF_LIGHTNING
     register_item_effect(ITEM_TYPE, ItemEffect())
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/item_rod_of_lightning.png")
-    register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, "Rod of Lightning"))
+    register_entity_sprite_initializer(
+        sprite, SpriteInitializer("resources/graphics/item_rod_of_lightning.png", ITEM_ENTITY_SIZE))
+    register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, sprite, "Rod of Lightning"))

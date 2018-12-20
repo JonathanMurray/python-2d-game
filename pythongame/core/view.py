@@ -15,7 +15,7 @@ COLOR_RED = (250, 0, 0)
 COLOR_BLUE = (0, 0, 250)
 COLOR_BACKGROUND = (200, 200, 200)
 COLOR_HIGHLIGHTED_ICON = (250, 250, 150)
-UI_ICON_SIZE = (36, 36)
+UI_ICON_SIZE = (32, 32)
 MAP_EDITOR_UI_ICON_SIZE = (48, 48)
 
 RENDER_WORLD_COORDINATES = False
@@ -308,8 +308,9 @@ class View:
         h = size[1]
         x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
         self._rect_filled((40, 40, 40), (x, y, w, h))
-        ui_icon_sprite = ITEMS[item_type].icon_sprite
-        self._image(self.images_by_ui_sprite[ui_icon_sprite], (x, y))
+        if item_type:
+            ui_icon_sprite = ITEMS[item_type].icon_sprite
+            self._image(self.images_by_ui_sprite[ui_icon_sprite], (x, y))
         self._rect(COLOR_WHITE, (x, y, w, h), 2)
 
     def _map_editor_icon_in_ui(self, x_in_ui, y_in_ui, size, highlighted: bool, user_input_key: str,
@@ -319,7 +320,7 @@ class View:
         x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
 
         self._rect_filled((40, 40, 40), (x, y, w, h))
-        image = None
+
         if map_file_entity.enemy_type:
             enemy_data = ENEMIES[map_file_entity.enemy_type]
             image = self.images_by_sprite[enemy_data.sprite][Direction.DOWN][0].image
@@ -330,6 +331,11 @@ class View:
             image = self.images_by_sprite[Sprite.PLAYER][Direction.DOWN][0].image
         elif map_file_entity.is_wall:
             image = self.images_by_sprite[Sprite.WALL][Direction.DOWN][0].image
+        elif map_file_entity.item_type:
+            ui_icon_sprite = ITEMS[map_file_entity.item_type].icon_sprite
+            image = self.images_by_ui_sprite[ui_icon_sprite]
+        else:
+            raise Exception("Unknown entity: " + str(map_file_entity))
 
         icon_scaled_image = pygame.transform.scale(image, size)
         self._image(icon_scaled_image, (x, y))
@@ -386,7 +392,7 @@ class View:
     def render_ui(self, fps_string, is_paused, is_game_over, abilities, ability_cooldowns_remaining,
                   highlighted_ability_action, highlighted_potion_action, message, player_active_buffs,
                   player_health, player_mana, player_max_health, player_max_mana,
-                  player_minimap_relative_position, potion_slots, items: List[ItemType]):
+                  player_minimap_relative_position, potion_slots, items: Dict[int, ItemType]):
 
         self._rect(COLOR_BLACK, (0, 0, self.camera_size[0], self.camera_size[1]), 3)
         self._rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
@@ -399,13 +405,13 @@ class View:
 
         x_0 = 20
         self._text_in_ui(self.font_large, "HEALTH", x_0, y_1)
-        self._stat_bar_in_ui((x_0, y_2 + 2), 100, 32, player_health, player_max_health,
+        self._stat_bar_in_ui((x_0, y_2 + 2), 100, 28, player_health, player_max_health,
                              COLOR_RED)
         health_text = str(player_health) + "/" + str(player_max_health)
         self._text_in_ui(self.font_large, health_text, x_0 + 20, y_2 + 12)
 
         self._text_in_ui(self.font_large, "MANA", x_0, y_3)
-        self._stat_bar_in_ui((x_0, y_4 + 2), 100, 32, player_mana, player_max_mana, COLOR_BLUE)
+        self._stat_bar_in_ui((x_0, y_4 + 2), 100, 28, player_mana, player_max_mana, COLOR_BLUE)
         mana_text = str(player_mana) + "/" + str(player_max_mana)
         self._text_in_ui(self.font_large, mana_text, x_0 + 20, y_4 + 12)
 
@@ -427,12 +433,12 @@ class View:
             self._ability_icon_in_ui(x_1 + i * (UI_ICON_SIZE[0] + icon_space), y_4, UI_ICON_SIZE, ability_type,
                                      highlighted_ability_action, ability_cooldowns_remaining)
 
-        x_2 = 365
-        self._text_in_ui(self.font_large, "ITEM", x_2, y_1)
-        for i, item_type in enumerate(items):
+        x_2 = 338
+        self._text_in_ui(self.font_large, "INVENTORY", x_2, y_1)
+        for i, item_type in enumerate(items.values()):
             self._item_icon_in_ui(x_2 + i * (UI_ICON_SIZE[0] + icon_space), y_2, UI_ICON_SIZE, item_type)
 
-        x_3 = 440
+        x_3 = 465
         self._text_in_ui(self.font_large, "MAP", x_3, y_1)
         self._minimap_in_ui((x_3, y_2), (115, 115), player_minimap_relative_position)
 

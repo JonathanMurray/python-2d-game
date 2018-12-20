@@ -130,6 +130,12 @@ class PotionOnGround:
         self.potion_type = potion_type
 
 
+class ItemOnGround:
+    def __init__(self, world_entity: WorldEntity, item_type: ItemType):
+        self.world_entity = world_entity
+        self.item_type = item_type
+
+
 class Projectile:
     def __init__(self, world_entity: WorldEntity, projectile_controller):
         self.world_entity = world_entity
@@ -199,7 +205,7 @@ class AgentBuffsUpdate:
 
 class PlayerState:
     def __init__(self, health: int, max_health: int, mana: int, max_mana: int, mana_regen: float,
-                 potion_slots: Dict[int, PotionType], abilities: List[AbilityType], items: List[ItemType]):
+                 potion_slots: Dict[int, PotionType], abilities: List[AbilityType], items: Dict[int, ItemType]):
         self.health = health
         self._health_float = health
         self.max_health = max_health
@@ -213,7 +219,7 @@ class PlayerState:
         self.active_buffs: List[BuffWithDuration] = []
         self.is_invisible = False
         self.is_stunned = False
-        self.items: List[ItemType] = items
+        self.items = items
         self.life_steal_ratio = 0
 
     def gain_health(self, amount: float):
@@ -234,6 +240,12 @@ class PlayerState:
 
     def find_first_empty_potion_slot(self) -> Optional[int]:
         empty_slots = [slot for slot in self.potion_slots if not self.potion_slots[slot]]
+        if empty_slots:
+            return empty_slots[0]
+        return None
+
+    def find_first_empty_item_slot(self) -> Optional[int]:
+        empty_slots = [slot for slot in self.items if not self.items[slot]]
         if empty_slots:
             return empty_slots[0]
         return None
@@ -273,7 +285,8 @@ def handle_buffs(active_buffs: List[BuffWithDuration], time_passed: Millis):
 
 
 class GameState:
-    def __init__(self, player_entity: WorldEntity, potions_on_ground: List[PotionOnGround], enemies: List[Enemy],
+    def __init__(self, player_entity: WorldEntity, potions_on_ground: List[PotionOnGround],
+                 items_on_ground: List[ItemOnGround], enemies: List[Enemy],
                  walls: List[WorldEntity], camera_size: Tuple[int, int], game_world_size: Tuple[int, int],
                  player_state: PlayerState):
         self.camera_size = camera_size
@@ -281,6 +294,7 @@ class GameState:
         self.player_entity = player_entity
         self.projectile_entities: List[Projectile] = []
         self.potions_on_ground = potions_on_ground
+        self.items_on_ground = items_on_ground
         self.enemies = enemies
         self.walls = walls
         self._wall_buckets = self._put_walls_in_buckets(game_world_size, walls)
@@ -310,11 +324,13 @@ class GameState:
     def remove_entities(self, entities_to_remove: List):
         self.projectile_entities = [p for p in self.projectile_entities if p not in entities_to_remove]
         self.potions_on_ground = [p for p in self.potions_on_ground if p not in entities_to_remove]
+        self.items_on_ground = [i for i in self.items_on_ground if i not in entities_to_remove]
         self.enemies = [e for e in self.enemies if e not in entities_to_remove]
 
     def get_all_entities_to_render(self) -> List[WorldEntity]:
         walls = self._get_walls_from_buckets_in_camera()
         return [self.player_entity] + [p.world_entity for p in self.potions_on_ground] + \
+               [i.world_entity for i in self.items_on_ground] + \
                [e.world_entity for e in self.enemies] + walls + [p.world_entity for p in self.projectile_entities]
 
     def center_camera_on_player(self):

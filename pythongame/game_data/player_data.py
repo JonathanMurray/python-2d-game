@@ -25,7 +25,11 @@ health = 50
 mana = 100
 max_mana = 150
 mana_regen = 0.0028
-_items = [ItemType.SWORD_OF_LEECHING]
+_items = {
+    1: None,
+    2: None,
+    3: None
+}
 INTIAL_PLAYER_STATE = PlayerState(health, health, mana, max_mana, mana_regen, _player_potion_slots, _abilities, _items)
 
 

@@ -4,8 +4,8 @@ from typing import Tuple, Optional, List
 import pygame
 
 from pythongame.core.common import Direction, Sprite, sum_of_vectors
-from pythongame.core.game_data import ENEMIES, WALL_SIZE, POTIONS
-from pythongame.core.game_state import WorldEntity, Enemy, PotionOnGround
+from pythongame.core.game_data import ENEMIES, WALL_SIZE, POTIONS, ITEMS, ITEM_ENTITY_SIZE
+from pythongame.core.game_state import WorldEntity, Enemy, PotionOnGround, ItemOnGround
 from pythongame.core.view import View
 from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
 from pythongame.game_world_init import create_game_state_from_file, save_game_state_to_file, MapFileEntity, \
@@ -106,6 +106,13 @@ def main(args: List[str]):
                             entity = WorldEntity(snapped_mouse_world_position, POTION_ENTITY_SIZE, sprite)
                             game_state.potions_on_ground.append(
                                 PotionOnGround(entity, placing_map_file_entity.potion_type))
+                        elif placing_map_file_entity.item_type:
+                            sprite = ITEMS[placing_map_file_entity.item_type].entity_sprite
+                            entity = WorldEntity(snapped_mouse_world_position, ITEM_ENTITY_SIZE, sprite)
+                            game_state.items_on_ground.append(
+                                ItemOnGround(entity, placing_map_file_entity.item_type))
+                        else:
+                            raise Exception("Unknown entity: " + str(placing_map_file_entity))
                 else:
                     _delete_map_entities_from_position(game_state, snapped_mouse_world_position)
 
@@ -144,6 +151,12 @@ def main(args: List[str]):
                 sprite = POTIONS[placing_map_file_entity.potion_type].entity_sprite
                 entity = WorldEntity((0, 0), POTION_ENTITY_SIZE, sprite)
                 view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
+            elif placing_map_file_entity.item_type:
+                sprite = ITEMS[placing_map_file_entity.item_type].entity_sprite
+                entity = WorldEntity((0, 0), ITEM_ENTITY_SIZE, sprite)
+                view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
+            else:
+                raise Exception("Unknown entity: " + str(placing_map_file_entity))
         else:
             snapped_mouse_rect = (snapped_mouse_screen_position[0], snapped_mouse_screen_position[1],
                                   grid_cell_size, grid_cell_size)
@@ -168,3 +181,6 @@ def _delete_map_entities_from_position(game_state, snapped_mouse_world_position:
     for potion in [p for p in game_state.potions_on_ground
                    if p.world_entity.get_position() == snapped_mouse_world_position]:
         game_state.potions_on_ground.remove(potion)
+    for item in [i for i in game_state.items_on_ground
+                 if i.world_entity.get_position() == snapped_mouse_world_position]:
+        game_state.items_on_ground.remove(item)

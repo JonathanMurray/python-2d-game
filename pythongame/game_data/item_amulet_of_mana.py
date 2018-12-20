@@ -1,5 +1,6 @@
-from pythongame.core.common import ItemType
-from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData
+from pythongame.core.common import ItemType, Sprite
+from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
+    register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
 
@@ -21,7 +22,9 @@ class ItemEffect(AbstractItemEffect):
 
 def register_amulet_of_mana_item():
     ui_icon_sprite = UiIconSprite.ITEM_AMULET_OF_MANA
-
+    sprite = Sprite.ITEM_AMULET_OF_MANA
     register_item_effect(ITEM_TYPE, ItemEffect())
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/item_amulet.png")
-    register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, "Amulet of Mana"))
+    register_entity_sprite_initializer(
+        sprite, SpriteInitializer("resources/graphics/item_amulet.png", ITEM_ENTITY_SIZE))
+    register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, sprite, "Amulet of Mana"))

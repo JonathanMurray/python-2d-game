@@ -25,3 +25,9 @@
     * buff that bounces damage back to enemies
 * More advanced items
     * Unlocks a new ability
+* Have coins on map that you can pick up or some other way of measuring progress
+* Render enemy locations on minimap?
+* Some significant entity at start of map (that you can teleport back to?)
+* more varied enemy AI
+    * some enemies shouldn't aggro until very close
+    * all enemies should at least wander around randomly when in sight

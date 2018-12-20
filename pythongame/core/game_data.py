@@ -7,6 +7,8 @@ from pythongame.core.common import *
 
 WALL_SIZE = (25, 25)
 
+ITEM_ENTITY_SIZE = (30, 30)
+
 
 class SpriteInitializer:
     def __init__(self, image_file_path: str, scaling_size: Tuple[int, int]):
@@ -105,8 +107,9 @@ class PotionData:
 
 
 class ItemData:
-    def __init__(self, icon_sprite: UiIconSprite, name: str):
+    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Sprite, name: str):
         self.icon_sprite = icon_sprite
+        self.entity_sprite = entity_sprite
         self.name = name
 
 
