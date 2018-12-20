@@ -134,7 +134,7 @@ class View:
         self._rect_filled((0, 0, 0), (x - 1, y - 1, w + 2, h + 2))
         if border:
             self._rect((250, 250, 250), (x - 2, y - 2, w + 4, h + 4), 2)
-        self._rect_filled(color, (x, y, w * stat / max_stat, h))
+        self._rect_filled(color, (x, y, max(w * stat / max_stat, 0), h))
 
     def _text(self, font, text, screen_pos, color=COLOR_WHITE):
         self.screen.blit(font.render(text, False, color), screen_pos)
