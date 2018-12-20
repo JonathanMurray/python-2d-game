@@ -1,9 +1,10 @@
-from pythongame.core.buffs import AbstractBuffEffect, register_buff_effect, get_buff_effect
+from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import PotionType, BuffType, Millis
-from pythongame.core.game_data import register_ui_icon_sprite_path, UiIconSprite, register_potion_icon_sprite, \
-    register_buff_text
+from pythongame.core.game_data import register_ui_icon_sprite_path, UiIconSprite, register_buff_text, \
+    register_potion_data, PotionData
 from pythongame.core.game_state import GameState, WorldEntity, Enemy
-from pythongame.core.potions import create_potion_visual_effect_at_player, PotionWasConsumed, register_potion_effect
+from pythongame.core.potion_effects import create_potion_visual_effect_at_player, PotionWasConsumed, \
+    register_potion_effect
 from pythongame.core.visual_effects import VisualCircle
 
 
@@ -25,7 +26,7 @@ class IncreasedMoveSpeed(AbstractBuffEffect):
         self._time_since_graphics += time_passed
         if self._time_since_graphics > 100:
             game_state.visual_effects.append(
-                VisualCircle((150, 200, 250), game_state.player_entity.get_center_position(), 10, Millis(200), 0))
+                VisualCircle((150, 200, 250), game_state.player_entity.get_center_position(), 5, 10, Millis(200), 0))
             self._time_since_graphics = 0
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
@@ -39,5 +40,5 @@ def register_speed_potion():
     register_potion_effect(PotionType.SPEED, _apply_speed)
     register_buff_effect(BuffType.INCREASED_MOVE_SPEED, IncreasedMoveSpeed)
     register_buff_text(BuffType.INCREASED_MOVE_SPEED, "Speed")
-    register_potion_icon_sprite(PotionType.SPEED, UiIconSprite.SPEED_POTION)
-    register_ui_icon_sprite_path(UiIconSprite.SPEED_POTION, "resources/graphics/white_potion.gif")
+    register_ui_icon_sprite_path(UiIconSprite.POTION_SPEED, "resources/graphics/white_potion.gif")
+    register_potion_data(PotionType.SPEED, PotionData(UiIconSprite.POTION_SPEED, None, "Speed potion"))

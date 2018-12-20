@@ -7,6 +7,8 @@ from pythongame.core.common import *
 
 WALL_SIZE = (25, 25)
 
+ITEM_ENTITY_SIZE = (30, 30)
+
 
 class SpriteInitializer:
     def __init__(self, image_file_path: str, scaling_size: Tuple[int, int]):
@@ -27,6 +29,7 @@ class SpriteSheet(object):
             self._load_sheet()
 
         rect = pygame.Rect(rectangle)
+        # noinspection PyArgumentList
         image = pygame.Surface(rect.size).convert()
         destination_in_image = (0, 0)
         image.blit(self.sheet, destination_in_image, rect)
@@ -57,16 +60,21 @@ class Animation:
 
 # TODO Ideally this shouldn't need to be defined here
 class UiIconSprite(Enum):
-    HEALTH_POTION = 1
-    MANA_POTION = 2
-    SPEED_POTION = 3
-    ABILITY_FIREBALL = 4
-    HEAL_ABILITY = 5
-    AOE_ABILITY = 6
-    INVISIBILITY_POTION = 7
-    MAGIC_MISSILE = 8
-    TELEPORT = 9
-    ABILITY_FROST_NOVA = 10
+    POTION_HEALTH = 1
+    POTION_MANA = 2
+    POTION_SPEED = 3
+    POTION_INVISIBILITY = 4
+    ABILITY_FIREBALL = 101
+    ABILITY_HEAL = 102
+    ABILITY_MAGIC_MISSILE = 103
+    ABILITY_TELEPORT = 104
+    ABILITY_FROST_NOVA = 105
+    ABILITY_WHIRLWIND = 106
+    ABILITY_ENTANGLING_ROOTS = 107
+    ITEM_WINGED_BOOTS = 201
+    ITEM_AMULET_OF_MANA = 202
+    ITEM_SWORD_OF_LEECHING = 203
+    ITEM_ROD_OF_LIGHTNING = 204
 
 
 class AbilityData:
@@ -83,11 +91,26 @@ class UserAbilityKey:
 
 
 class EnemyData:
-    def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, speed: float):
+    def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float):
         self.sprite = sprite
         self.size = size
         self.max_health = max_health
+        self.health_regen = health_regen
         self.speed = speed
+
+
+class PotionData:
+    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Optional[Sprite], name: str):
+        self.icon_sprite = icon_sprite
+        self.entity_sprite = entity_sprite
+        self.name = name
+
+
+class ItemData:
+    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Sprite, name: str):
+        self.icon_sprite = icon_sprite
+        self.entity_sprite = entity_sprite
+        self.name = name
 
 
 ENEMIES: Dict[EnemyType, EnemyData] = {}
@@ -102,11 +125,9 @@ ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Animation]] = {
 
 UI_ICON_SPRITE_PATHS: Dict[UiIconSprite, str] = {}
 
-POTION_ICON_SPRITES: Dict[PotionType, UiIconSprite] = {}
+POTIONS: Dict[PotionType, PotionData] = {}
 
-POTION_ENTITY_SPRITES: Dict[PotionType, Sprite] = {}
-
-POTION_NAMES: Dict[PotionType, str] = {}
+ITEMS: Dict[ItemType, ItemData] = {}
 
 ABILITIES: Dict[AbilityType, AbilityData] = {}
 
@@ -160,12 +181,9 @@ def register_buff_text(buff_type: BuffType, text: str):
     BUFF_TEXTS[buff_type] = text
 
 
-def register_potion_icon_sprite(potion_type: PotionType, ui_icon_sprite: UiIconSprite):
-    POTION_ICON_SPRITES[potion_type] = ui_icon_sprite
+def register_potion_data(potion_type: PotionType, potion_data: PotionData):
+    POTIONS[potion_type] = potion_data
 
 
-def register_potion_entity_sprite(potion_type: PotionType, sprite: Sprite):
-    POTION_ENTITY_SPRITES[potion_type] = sprite
-
-def register_potion_name(potion_type: PotionType, name: str):
-    POTION_NAMES[potion_type] = name
+def register_item_data(item_type: ItemType, item_data: ItemData):
+    ITEMS[item_type] = item_data

@@ -13,8 +13,8 @@ from pythongame.core.view_state import ViewState
 from pythongame.game_world_init import create_game_state_from_file
 from pythongame.register_game_data import register_all_game_data
 
-SCREEN_SIZE = (700, 600)
-CAMERA_SIZE = (700, 400)
+SCREEN_SIZE = (700, 700)
+CAMERA_SIZE = (700, 500)
 
 register_all_game_data()
 
@@ -23,7 +23,7 @@ def main(args: List[str]):
     if len(args) == 1:
         map_file = args[0]
     else:
-        map_file = "resources/maps/demo.txt"
+        map_file = "resources/maps/demo3.txt"
     game_state = create_game_state_from_file(CAMERA_SIZE, map_file)
     pygame.init()
 
@@ -36,6 +36,9 @@ def main(args: List[str]):
     is_paused = False
     is_game_over = False
     render_hit_and_collision_boxes = False
+    debug_item_index = 0  # TODO replace this with proper item handling.
+
+    game_engine.initialize()
 
     while True:
 
@@ -108,10 +111,7 @@ def main(args: List[str]):
             highlighted_ability_action=view_state.highlighted_ability_action,
             is_paused=is_paused,
             is_game_over=is_game_over,
-            ability_cooldowns_remaining=game_state.player_state.ability_cooldowns_remaining)
+            ability_cooldowns_remaining=game_state.player_state.ability_cooldowns_remaining,
+            items=game_state.player_state.items)
 
         view.update_display()
-
-
-if __name__ == "__main__":
-    main()

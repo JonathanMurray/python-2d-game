@@ -49,6 +49,7 @@ def get_direction_between(from_entity, to_entity):
 
 # Returns 2 directions, starting with vertical or horizontal depending on which is closer to the true direction
 # Example: (0, 0) -> (2, 1) gives [RIGHT, DOWN]
+# noinspection PyShadowingNames
 def get_directions_to_position(from_entity, position):
     dx = position[0] - from_entity.x
     dy = position[1] - from_entity.y
@@ -120,55 +121,69 @@ class PotionType(Enum):
 
 
 class EnemyType(Enum):
-    DUMB = 1
-    SMART = 2
-    MAGE = 3
-    BERSERKER = 4
+    NECROMANCER = 3
     RAT_1 = 5
     RAT_2 = 6
     DARK_REAPER = 7
+    GOBLIN_WARLOCK = 8
+    MUMMY = 9
 
 
 class AbilityType(Enum):
     HEAL = 1
     FIREBALL = 2
-    AOE_ATTACK = 3
     CHANNEL_ATTACK = 4
     TELEPORT = 5
     FROST_NOVA = 6
+    WHIRLWIND = 7
+    ENTANGLING_ROOTS = 8
 
 
 class Sprite(Enum):
     PLAYER = 1
-    ENEMY = 2
-    ENEMY_2 = 3
-    PROJECTILE_PLAYER_FIREBALL = 4
-    WHIRLWIND = 5
-    HEALTH_POTION = 6
-    POISONBALL = 7
-    ENEMY_MAGE = 8
-    ENEMY_BERSERKER = 9
-    MAGIC_MISSILE = 10
-    WALL = 11
-    RAT_1 = 12
-    RAT_2 = 13
-    EFFECT_ABILITY_FROST_NOVA = 14
-    MANA_POTION = 15
-    DARK_REAPER = 16
+    WALL = 2
+    EFFECT_ABILITY_FROST_NOVA = 3
+    PROJECTILE_PLAYER_FIREBALL = 11
+    PROJECTILE_PLAYER_MAGIC_MISSILE = 12
+    PROJECTILE_PLAYER_WHIRLWIND = 13
+    PROJECTILE_ENEMY_GOBLIN_WARLOCK = 14
+    PROJECTILE_PLAYER_ENTANGLING_ROOTS = 15
+    POTION_HEALTH = 101
+    POTION_MANA = 102
+    ENEMY_NECROMANCER = 201
+    ENEMY_RAT_1 = 202
+    ENEMY_RAT_2 = 203
+    ENEMY_DARK_REAPER = 204
+    ENEMY_GOBLIN_WARLOCK = 205
+    ENEMY_MUMMY = 206
+    ITEM_AMULET_OF_MANA = 301
+    ITEM_WINGED_BOOTS = 302
+    ITEM_ROD_OF_LIGHTNING = 303
+    ITEM_SWORD_OF_LEECHING = 304
 
 
 class BuffType(Enum):
     HEALING_OVER_TIME = 1
-    DAMAGE_OVER_TIME = 2
     INCREASED_MOVE_SPEED = 3
     INVISIBILITY = 4
     CHANNELING_MAGIC_MISSILES = 5
     REDUCED_MOVEMENT_SPEED = 6
     INVULNERABILITY = 7
+    STUNNED_BY_WHIRLWIND = 8
+    ENEMY_GOBLIN_WARLOCK_BURNT = 9
+    ROOTED_BY_ENTANGLING_ROOTS = 10
+
+
+class ItemType(Enum):
+    WINGED_BOOTS = 1
+    AMULET_OF_MANA = 2
+    SWORD_OF_LEECHING = 3
+    ROD_OF_LIGHTNING = 4
 
 
 class ProjectileType(Enum):
     PLAYER_FIREBALL = 1
-    PLAYER_AOE = 2
-    ENEMY_POISON = 3
-    PLAYER_MAGIC_MISSILE = 4
+    PLAYER_MAGIC_MISSILE = 2
+    PLAYER_WHIRLWIND = 3
+    PLAYER_ENTANGLING_ROOTS = 4
+    ENEMY_GOBLIN_WARLOCK = 101

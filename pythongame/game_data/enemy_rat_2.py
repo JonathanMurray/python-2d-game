@@ -2,16 +2,18 @@ import random
 
 from pythongame.core.common import Millis, is_x_and_y_within_distance, EnemyType, Sprite, Direction, \
     get_perpendicular_directions
-from pythongame.core.enemy_behavior import register_enemy_behavior, AbstractEnemyMind
-from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
-from pythongame.core.game_data import register_enemy_data, \
-    EnemyData, SpriteSheet, register_entity_sprite_map
+from pythongame.core.damage_interactions import deal_damage_to_player
+from pythongame.core.enemy_behaviors import register_enemy_behavior, AbstractEnemyMind
+from pythongame.core.game_data import register_enemy_data, EnemyData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, Enemy, WorldEntity
-from pythongame.core.visual_effects import VisualLine, create_visual_damage_text
+from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
+from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.visual_effects import VisualLine
 
 
 class EnemyMind(AbstractEnemyMind):
-    def __init__(self, global_path_finder):
+    def __init__(self, global_path_finder: GlobalPathFinder):
+        super().__init__(global_path_finder)
         self._attack_interval = 1000
         self._time_since_attack = self._attack_interval
         self._update_path_interval = 900
@@ -57,9 +59,7 @@ class EnemyMind(AbstractEnemyMind):
                 enemy_position = enemy_entity.get_center_position()
                 player_center_pos = game_state.player_entity.get_center_position()
                 if is_x_and_y_within_distance(enemy_position, player_center_pos, 80):
-                    damage_amount = 1
-                    game_state.player_state.lose_health(damage_amount)
-                    game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, damage_amount))
+                    deal_damage_to_player(game_state, 1)
                     game_state.visual_effects.append(
                         VisualLine((220, 0, 0), enemy_position, player_center_pos, Millis(100), 3))
 
@@ -73,11 +73,11 @@ def _move_in_dir(enemy_entity, direction):
 
 def register_rat_2_enemy():
     size = (40, 40)  # Must not align perfectly with grid cell size (pathfinding issues)
-    sprite = Sprite.RAT_2
+    sprite = Sprite.ENEMY_RAT_2
     enemy_type = EnemyType.RAT_2
     movement_speed = 0.08
-    health = 14
-    register_enemy_data(enemy_type, EnemyData(sprite, size, health, movement_speed))
+    health = 11
+    register_enemy_data(enemy_type, EnemyData(sprite, size, health, 0, movement_speed))
     register_enemy_behavior(enemy_type, EnemyMind)
     sprite_sheet = SpriteSheet("resources/graphics/gray_rat.png")
     original_sprite_size = (32, 32)

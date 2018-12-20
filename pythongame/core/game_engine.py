@@ -1,9 +1,10 @@
-from pythongame.core.abilities import apply_ability_effect
+from pythongame.core.ability_effects import apply_ability_effect
 from pythongame.core.common import *
-from pythongame.core.game_data import POTION_NAMES
+from pythongame.core.game_data import POTIONS, ITEMS
 from pythongame.core.game_state import GameState, handle_buffs
+from pythongame.core.item_effects import get_item_effect
 from pythongame.core.player_controls import TryUseAbilityResult, PlayerControls
-from pythongame.core.potions import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
+from pythongame.core.potion_effects import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
 from pythongame.core.view_state import ViewState
 
 
@@ -13,6 +14,12 @@ class GameEngine:
         self.game_state = game_state
         self.player_controls = PlayerControls()
         self.view_state = view_state
+
+    def initialize(self):
+        for item_type in self.game_state.player_state.items.values():
+            if item_type:
+                item_effect = get_item_effect(item_type)
+                item_effect.apply_start_effect(self.game_state)
 
     def try_use_ability(self, ability_type: AbilityType):
         if not self.game_state.player_state.is_stunned:
@@ -81,6 +88,7 @@ class GameEngine:
             buff_effect.apply_end_effect(self.game_state, self.game_state.player_entity, None)
 
         for enemy in self.game_state.enemies:
+            enemy.regenerate_health(time_passed)
             buffs_update = handle_buffs(enemy.active_buffs, time_passed)
             for buff_effect in buffs_update.buffs_that_started:
                 buff_effect.apply_start_effect(self.game_state, enemy.world_entity, enemy)
@@ -88,6 +96,10 @@ class GameEngine:
                 buff_effect.apply_middle_effect(self.game_state, enemy.world_entity, enemy, time_passed)
             for buff_effect in buffs_update.buffs_that_ended:
                 buff_effect.apply_end_effect(self.game_state, enemy.world_entity, enemy)
+
+        for item_type in self.game_state.player_state.items.values():
+            if item_type:
+                get_item_effect(item_type).apply_middle_effect(self.game_state, time_passed)
 
         self.game_state.player_state.regenerate_mana(time_passed)
         self.game_state.player_state.recharge_ability_cooldowns(time_passed)
@@ -100,7 +112,7 @@ class GameEngine:
 
         for e in self.game_state.enemies:
             # Enemies shouldn't move towards player when they are out of sight
-            if self._is_enemy_close_to_camera(e):
+            if self._is_enemy_close_to_camera(e) and not e.is_stunned():
                 self.game_state.update_world_entity_position_within_game_world(e.world_entity, time_passed)
         if not self.game_state.player_state.is_stunned:
             self.game_state.update_world_entity_position_within_game_world(self.game_state.player_entity, time_passed)
@@ -121,8 +133,18 @@ class GameEngine:
                 empty_potion_slot = self.game_state.player_state.find_first_empty_potion_slot()
                 if empty_potion_slot:
                     self.game_state.player_state.potion_slots[empty_potion_slot] = potion.potion_type
-                    self.view_state.set_message("You picked up " + POTION_NAMES[potion.potion_type])
+                    self.view_state.set_message("You picked up " + POTIONS[potion.potion_type].name)
                     entities_to_remove.append(potion)
+        for item in self.game_state.items_on_ground:
+            if boxes_intersect(self.game_state.player_entity, item.world_entity):
+                empty_item_slot = self.game_state.player_state.find_first_empty_item_slot()
+                if empty_item_slot:
+                    self.game_state.player_state.items[empty_item_slot] = item.item_type
+                    item_effect = get_item_effect(item.item_type)
+                    item_effect.apply_start_effect(self.game_state)
+                    self.view_state.set_message("You picked up " + ITEMS[item.item_type].name)
+                    entities_to_remove.append(item)
+
         for enemy in self.game_state.enemies:
             for projectile in self.game_state.get_projectiles_intersecting_with(enemy.world_entity):
                 should_remove_projectile = projectile.projectile_controller.apply_enemy_collision(
@@ -144,4 +166,4 @@ class GameEngine:
         self.game_state.center_camera_on_player()
 
         if self.game_state.player_state.health <= 0:
-            return True # Game over
+            return True  # Game over

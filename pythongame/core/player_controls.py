@@ -36,3 +36,5 @@ class PlayerControls:
 
     def notify_time_passed(self, time_passed: Millis):
         self.ticks_since_ability_used += time_passed
+
+    # TODO Move more player controls into this package?

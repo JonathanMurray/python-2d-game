@@ -30,13 +30,13 @@ class VisualLine(VisualEffect):
 
 
 class VisualCircle(VisualEffect):
-    def __init__(self, color: Tuple[int, int, int], center_position: Tuple[int, int], radius: int, max_age: Millis,
-                 line_width: int, attached_to_entity: WorldEntity = None):
+    def __init__(self, color: Tuple[int, int, int], center_position: Tuple[int, int], start_radius: int,
+                 end_radius: int, max_age: Millis, line_width: int, attached_to_entity: WorldEntity = None):
         super().__init__(max_age)
         self.color = color
         self.center_position = center_position
-        self.start_radius = int(radius / 2)
-        self.end_radius = radius
+        self.start_radius = start_radius
+        self.end_radius = end_radius
         self.line_width = line_width
         self._attached_to_entity = attached_to_entity
 
@@ -51,13 +51,14 @@ class VisualCircle(VisualEffect):
 
 
 class VisualRect(VisualEffect):
-    def __init__(self, color: Tuple[int, int, int], center_position: Tuple[int, int], width: int, max_age: Millis,
-                 attached_to_entity: WorldEntity = None):
+    def __init__(self, color: Tuple[int, int, int], center_position: Tuple[int, int], start_width: int, end_width: int,
+                 max_age: Millis, line_width: int, attached_to_entity: WorldEntity = None):
         super().__init__(max_age)
         self.color = color
         self.center_position = center_position
-        self.start_width = int(width * 0.75)
-        self.end_width = width
+        self.start_width = start_width
+        self.end_width = end_width
+        self.line_width = line_width
         self._attached_to_entity = attached_to_entity
 
     def rect(self):
@@ -96,19 +97,19 @@ class VisualSprite(VisualEffect):
         return (self._animation_progress + float(self._age) / float(self.max_age)) % 1
 
 
-def create_visual_damage_text(entity, damage_amount):
+def create_visual_damage_text(entity: WorldEntity, damage_amount: int):
     start_position = (entity.x + 15, entity.y - 10)
     end_position = (entity.x + 15, entity.y - 40)
     return VisualText(str(damage_amount), (220, 0, 0), start_position, end_position, Millis(800))
 
 
-def create_visual_healing_text(entity, healing_amount):
+def create_visual_healing_text(entity: WorldEntity, healing_amount: int):
     start_position = (entity.x + 15, entity.y - 10)
     end_position = (entity.x + 15, entity.y - 40)
     return VisualText(str(healing_amount), (0, 140, 0), start_position, end_position, Millis(800))
 
 
-def create_visual_mana_text(entity, healing_amount):
+def create_visual_mana_text(entity: WorldEntity, healing_amount: int):
     start_position = (entity.x + 15, entity.y - 10)
     end_position = (entity.x + 15, entity.y - 40)
     return VisualText(str(healing_amount), (0, 0, 140), start_position, end_position, Millis(800))

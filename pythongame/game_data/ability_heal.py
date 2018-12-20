@@ -1,5 +1,5 @@
-from pythongame.core.abilities import register_ability_effect
-from pythongame.core.buffs import AbstractBuffEffect, register_buff_effect, get_buff_effect
+from pythongame.core.ability_effects import register_ability_effect
+from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, AbilityType
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path, \
     register_buff_text
@@ -26,7 +26,7 @@ class HealingOverTime(AbstractBuffEffect):
                 create_visual_healing_text(game_state.player_entity, estimate_health_gained))
             game_state.visual_effects.append(
                 VisualCircle((200, 200, 50), game_state.player_entity.get_center_position(),
-                             10, Millis(100), 0))
+                             5, 10, Millis(100), 0))
             self._time_since_graphics = 0
 
     def get_buff_type(self):
@@ -35,7 +35,7 @@ class HealingOverTime(AbstractBuffEffect):
 
 def register_heal_ability():
     register_ability_effect(AbilityType.HEAL, _apply_heal)
-    register_ability_data(AbilityType.HEAL, AbilityData(UiIconSprite.HEAL_ABILITY, 10, Millis(15000)))
-    register_ui_icon_sprite_path(UiIconSprite.HEAL_ABILITY, "resources/graphics/heal_ability.png")
+    register_ability_data(AbilityType.HEAL, AbilityData(UiIconSprite.ABILITY_HEAL, 10, Millis(15000)))
+    register_ui_icon_sprite_path(UiIconSprite.ABILITY_HEAL, "resources/graphics/heal_ability.png")
     register_buff_effect(BuffType.HEALING_OVER_TIME, HealingOverTime)
     register_buff_text(BuffType.HEALING_OVER_TIME, "Healing")

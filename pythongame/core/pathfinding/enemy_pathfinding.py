@@ -69,7 +69,8 @@ class EnemyPathfinder:
         # print("Leaked through. returning none")
         return None
 
-    def get_dir_towards_considering_collisions(self, game_state: GameState, enemy_entity: WorldEntity,
+    @staticmethod
+    def get_dir_towards_considering_collisions(game_state: GameState, enemy_entity: WorldEntity,
                                                destination: Tuple[int, int]) -> Optional[Direction]:
         if DEBUG_RENDER_PATHFINDING:
             _add_visual_line_to_next_waypoint(destination, enemy_entity, game_state)
@@ -102,15 +103,15 @@ def _add_visual_line_to_next_waypoint(destination, enemy_entity, game_state):
 
 def _add_visual_lines_along_path(game_state, path):
     for i in range(len(path) - 1):
-        current = path[i]
-        next = path[i + 1]
+        current_pos = path[i]
+        next_pos = path[i + 1]
         game_state.visual_effects.append(
             VisualRect((100, 150, 150),
-                       _get_middle_of_cell_from_position(current), 10, Millis(DEBUG_PATHFINDER_INTERVAL)))
+                       _get_middle_of_cell_from_position(current_pos), 7, 10, Millis(DEBUG_PATHFINDER_INTERVAL), 1))
         game_state.visual_effects.append(
             VisualLine((250, 250, 250),
-                       _get_middle_of_cell_from_position(current),
-                       _get_middle_of_cell_from_position(next),
+                       _get_middle_of_cell_from_position(current_pos),
+                       _get_middle_of_cell_from_position(next_pos),
                        Millis(DEBUG_PATHFINDER_INTERVAL), 1))
 
 

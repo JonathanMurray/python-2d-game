@@ -15,7 +15,19 @@
     * text on screen visualizing enemy sounds
 * Save functionality
     * save the current game_state into a JSON file and load it on startup
-* Introduce "items" (wearables that give you some buff)
-    * Increased health/mana regen
+* More advanced abilities:
+    * summon creatures to fight for you
+    * debuffs that spread between enemies
+    * effects that have a chance to trigger
+    * effects that trigger if last-hitting an enemy
+    * life-steal
+    * buff that damages nearby enemies
+    * buff that bounces damage back to enemies
+* More advanced items
     * Unlocks a new ability
-    * Invisibility (enemies will not react to your presence)
+* Have coins on map that you can pick up or some other way of measuring progress
+* Render enemy locations on minimap?
+* Some significant entity at start of map (that you can teleport back to?)
+* more varied enemy AI
+    * some enemies shouldn't aggro until very close
+    * all enemies should at least wander around randomly when in sight
