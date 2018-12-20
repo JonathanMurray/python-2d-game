@@ -140,7 +140,7 @@ class View:
         self._rect_filled(color, (x, y, max(w * stat / max_stat, 0), h))
 
     def _text(self, font, text, screen_pos, color=COLOR_WHITE):
-        self.screen.blit(font.render(text, False, color), screen_pos)
+        self.screen.blit(font.render(text, True, color), screen_pos)
 
     def _image(self, image, position):
         self.screen.blit(image, position)
