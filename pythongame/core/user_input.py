@@ -35,10 +35,6 @@ class ActionToggleRenderDebugging:
     pass
 
 
-class ActionDebugToggleItems:
-    pass
-
-
 PYGAME_MOVEMENT_KEYS = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
 DIRECTION_BY_PYGAME_MOVEMENT_KEY = {
     pygame.K_LEFT: Direction.LEFT,
@@ -69,8 +65,6 @@ def get_user_actions():
                 actions.append(ActionTryUsePotion(4))
             elif event.key == pygame.K_5:
                 actions.append(ActionTryUsePotion(5))
-            elif event.key == pygame.K_9:
-                actions.append(ActionDebugToggleItems())
             elif event.key == pygame.K_0:
                 actions.append(ActionToggleRenderDebugging())
             elif event.key == pygame.K_ESCAPE:
