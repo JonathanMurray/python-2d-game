@@ -27,6 +27,14 @@ def rects_intersect(r1, r2):
            and _ranges_overlap(r1[1], r1[1] + r1[3], r2[1], r2[1] + r2[3])
 
 
+def is_point_in_rect(point: Tuple[int, int], rect: Tuple[int, int, int, int]):
+    rect_left = rect[0]
+    rect_right = rect[0] + rect[2]
+    rect_top = rect[1]
+    rect_bot = rect[1] + rect[3]
+    return rect_left <= point[0] <= rect_right and rect_top <= point[1] <= rect_bot
+
+
 def random_direction():
     return random.choice([Direction.LEFT, Direction.RIGHT, Direction.UP, Direction.DOWN])
 

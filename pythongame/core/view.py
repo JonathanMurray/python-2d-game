@@ -2,7 +2,7 @@ from typing import Dict, Any, List, Tuple, Optional
 
 import pygame
 
-from pythongame.core.common import Direction, Sprite, PotionType, sum_of_vectors, ItemType
+from pythongame.core.common import Direction, Sprite, PotionType, sum_of_vectors, ItemType, is_point_in_rect
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, ENEMIES, POTIONS, ITEMS
 from pythongame.core.game_state import WorldEntity
@@ -113,6 +113,9 @@ class View:
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
+
+    def _translate_screen_position_to_ui(self, position: Tuple[int, int]):
+        return position[0] - self.ui_screen_area.x, position[1] - self.ui_screen_area.y
 
     # ------------------------------------
     #           GENERAL DRAWING
@@ -392,7 +395,11 @@ class View:
     def render_ui(self, fps_string, is_paused, is_game_over, abilities, ability_cooldowns_remaining,
                   highlighted_ability_action, highlighted_potion_action, message, player_active_buffs,
                   player_health, player_mana, player_max_health, player_max_mana,
-                  player_minimap_relative_position, potion_slots, item_slots: Dict[int, ItemType]):
+                  player_minimap_relative_position, potion_slots, item_slots: Dict[int, ItemType],
+                  mouse_screen_position: Tuple[int, int]):
+
+        mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
+        description_of_element_that_mouse_hovers = ""
 
         self._rect(COLOR_BLACK, (0, 0, self.camera_size[0], self.camera_size[1]), 3)
         self._rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
@@ -419,18 +426,34 @@ class View:
         icon_space = 5
         self._text_in_ui(self.font_large, "POTIONS", x_1, y_1)
         for i, slot_number in enumerate(potion_slots):
-            self._potion_icon_in_ui(x_1 + i * (UI_ICON_SIZE[0] + icon_space), y_2, UI_ICON_SIZE, slot_number,
-                                    potion_slots[slot_number], highlighted_potion_action)
+            x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
+            y = y_2
+            potion_type = potion_slots[slot_number]
+            if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
+                if potion_type:
+                    description_of_element_that_mouse_hovers = POTIONS[potion_type].name
+            self._potion_icon_in_ui(x, y, UI_ICON_SIZE, slot_number,
+                                    potion_type, highlighted_potion_action)
 
         self._text_in_ui(self.font_large, "SPELLS", x_1, y_3)
         for i, ability_type in enumerate(abilities):
-            self._ability_icon_in_ui(x_1 + i * (UI_ICON_SIZE[0] + icon_space), y_4, UI_ICON_SIZE, ability_type,
+            x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
+            y = y_4
+            if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
+                if ability_type:
+                    description_of_element_that_mouse_hovers = ABILITIES[ability_type].name
+            self._ability_icon_in_ui(x, y, UI_ICON_SIZE, ability_type,
                                      highlighted_ability_action, ability_cooldowns_remaining)
 
         x_2 = 338
         self._text_in_ui(self.font_large, "INVENTORY", x_2, y_1)
         for i, item_type in enumerate(item_slots.values()):
-            self._item_icon_in_ui(x_2 + i * (UI_ICON_SIZE[0] + icon_space), y_2, UI_ICON_SIZE, item_type)
+            x = x_2 + i * (UI_ICON_SIZE[0] + icon_space)
+            y = y_2
+            if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
+                if item_type:
+                    description_of_element_that_mouse_hovers = ITEMS[item_type].name
+            self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type)
 
         x_3 = 465
         self._text_in_ui(self.font_large, "MAP", x_3, y_1)
@@ -450,6 +473,11 @@ class View:
 
         self._rect(COLOR_BLACK, (0, 0, 60, 24), 0)
         self._text(self.font_small, fps_string + " fps", (5, 3))
+
+        # TODO come up with a nicer way of showing the text of hovered elements
+        # If user is hovering over a UI element with the mouse, that overrides any other message
+        if description_of_element_that_mouse_hovers:
+            message = description_of_element_that_mouse_hovers
 
         self._text(self.font_small, message, (self.ui_screen_area.w / 2 - 80, self.ui_screen_area.y - 30))
 

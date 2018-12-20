@@ -114,6 +114,7 @@ def main(args: List[str]):
             is_paused=is_paused,
             is_game_over=is_game_over,
             ability_cooldowns_remaining=game_state.player_state.ability_cooldowns_remaining,
-            item_slots=game_state.player_state.item_slots)
+            item_slots=game_state.player_state.item_slots,
+            mouse_screen_position=mouse_screen_position)
 
         view.update_display()

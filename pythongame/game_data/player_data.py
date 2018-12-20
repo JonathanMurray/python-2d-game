@@ -26,7 +26,7 @@ mana = 100
 max_mana = 150
 mana_regen = 0.0028
 _items = {
-    1: None,
+    1: ItemType.WINGED_BOOTS,
     2: None,
     3: None
 }
