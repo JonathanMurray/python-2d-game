@@ -45,5 +45,6 @@ def register_invis_potion():
     register_buff_effect(BUFF_TYPE, Invisibility)
     register_buff_text(BUFF_TYPE, "Invisibility")
     register_ui_icon_sprite_path(UiIconSprite.POTION_INVISIBILITY, "resources/graphics/invis_potion.png")
-    register_potion_data(POTION_TYPE,
-                         PotionData(UiIconSprite.POTION_INVISIBILITY, None, "Invisibility potion"))
+    register_potion_data(
+        POTION_TYPE,
+        PotionData(UiIconSprite.POTION_INVISIBILITY, None, "Invisibility potion", "Grants temporary invisibility"))

@@ -32,4 +32,6 @@ def register_mana_potion():
     register_entity_sprite_initializer(
         sprite, SpriteInitializer("resources/graphics/ui_mana_potion.png", POTION_ENTITY_SIZE))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/ui_mana_potion.png")
-    register_potion_data(potion_type, PotionData(ui_icon_sprite, sprite, "Mana potion"))
+    register_potion_data(
+        potion_type,
+        PotionData(ui_icon_sprite, sprite, "Mana potion", "Restores 100 mana"))

@@ -31,4 +31,3 @@
 * more varied enemy AI
     * some enemies shouldn't aggro until very close
     * all enemies should at least wander around randomly when in sight
-* Fix ugly font

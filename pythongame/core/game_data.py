@@ -102,10 +102,11 @@ class EnemyData:
 
 
 class PotionData:
-    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Optional[Sprite], name: str):
+    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Optional[Sprite], name: str, description: str):
         self.icon_sprite = icon_sprite
         self.entity_sprite = entity_sprite
         self.name = name
+        self.description = description
 
 
 class ItemData:

@@ -461,6 +461,7 @@ class View:
             if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
                 if potion_type:
                     tooltip_title = POTIONS[potion_type].name
+                    tooltip_details = [POTIONS[potion_type].description]
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
             self._potion_icon_in_ui(x, y, UI_ICON_SIZE, slot_number,
                                     potion_type, highlighted_potion_action)

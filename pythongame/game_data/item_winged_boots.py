@@ -29,4 +29,5 @@ def register_winged_boots_item():
         sprite, SpriteInitializer("resources/graphics/item_winged_boots.png", ITEM_ENTITY_SIZE))
     register_item_data(
         ITEM_TYPE,
-        ItemData(ui_icon_sprite, sprite, "Winged Boots", "Grants increased movement speed"))
+        ItemData(ui_icon_sprite, sprite, "Winged Boots",
+                 "Grants " + str(int(SPEED_MULTIPLIER * 100)) + "% increased movement speed"))
