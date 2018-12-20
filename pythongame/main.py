@@ -7,7 +7,7 @@ import pythongame.core.pathfinding.enemy_pathfinding
 from pythongame.core.common import Millis
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
-    ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging
+    ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement
 from pythongame.core.view import View
 from pythongame.core.view_state import ViewState
 from pythongame.game_world_init import create_game_state_from_file
@@ -36,7 +36,7 @@ def main(args: List[str]):
     is_paused = False
     is_game_over = False
     render_hit_and_collision_boxes = False
-    debug_item_index = 0  # TODO replace this with proper item handling.
+    mouse_screen_position = (0, 0)
 
     game_engine.initialize()
 
@@ -67,6 +67,8 @@ def main(args: List[str]):
                     game_engine.stop_moving()
             if isinstance(action, ActionPauseGame):
                 is_paused = not is_paused
+            if isinstance(action, ActionMouseMovement):
+                mouse_screen_position = action.mouse_screen_position
 
         # ------------------------------------
         #     UPDATE STATE BASED ON CLOCK

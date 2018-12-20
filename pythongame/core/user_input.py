@@ -35,6 +35,11 @@ class ActionToggleRenderDebugging:
     pass
 
 
+class ActionMouseMovement:
+    def __init__(self, mouse_screen_position: Tuple[int, int]):
+        self.mouse_screen_position = mouse_screen_position
+
+
 PYGAME_MOVEMENT_KEYS = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
 DIRECTION_BY_PYGAME_MOVEMENT_KEY = {
     pygame.K_LEFT: Direction.LEFT,
@@ -80,6 +85,9 @@ def get_user_actions():
             if event.key in PYGAME_MOVEMENT_KEYS:
                 if event.key in movement_keys_down:
                     movement_keys_down.remove(event.key)
+
+        if event.type == pygame.MOUSEMOTION:
+            actions.append(ActionMouseMovement(event.pos))
 
         if movement_keys_down:
             last_pressed_movement_key = movement_keys_down[-1]
