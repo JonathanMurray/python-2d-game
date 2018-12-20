@@ -362,13 +362,21 @@ class View:
         dot_w = 4
         self._rect_filled((0, 200, 0), (dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
-    def _tooltip(self, title: str, details: List[str]):
-        x_tooltip = 175
-        y_tooltip = 280
-        w_tooltip = 350
-        rect_tooltip = (x_tooltip, y_tooltip, w_tooltip, 170)
-        self._rect_filled((100, 100, 130), rect_tooltip)
-        self._rect(COLOR_WHITE, rect_tooltip, 3)
+    def _tooltip(self, title: str, details: List[str], position_bottom_left: Tuple[int, int]):
+
+        w_tooltip = 320
+        h_tooltip = 130
+        x_tooltip = position_bottom_left[0]
+        y_tooltip = position_bottom_left[1] - h_tooltip
+        rect_tooltip = (x_tooltip, y_tooltip, w_tooltip, h_tooltip)
+
+        # Using a separate surface is the only way to render a transparent rectangle
+        surface_tooltip = pygame.Surface((w_tooltip, h_tooltip))
+        surface_tooltip.set_alpha(240)
+        surface_tooltip.fill((0, 0, 30))
+        self.screen.blit(surface_tooltip, (x_tooltip, y_tooltip))
+
+        self._rect(COLOR_WHITE, rect_tooltip, 2)
         self._text(self.font_large, title, (x_tooltip + 20, y_tooltip + 15), COLOR_WHITE)
         y_separator = y_tooltip + 40
         self._line(COLOR_WHITE, (x_tooltip + 10, y_separator), (x_tooltip + w_tooltip - 10, y_separator), 1)
@@ -414,6 +422,7 @@ class View:
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
         tooltip_title = ""
         tooltip_details = []
+        tooltip_bottom_left_position = (175, 450)
 
         self._rect(COLOR_BLACK, (0, 0, self.camera_size[0], self.camera_size[1]), 3)
         self._rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
@@ -446,6 +455,7 @@ class View:
             if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
                 if potion_type:
                     tooltip_title = POTIONS[potion_type].name
+                    tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
             self._potion_icon_in_ui(x, y, UI_ICON_SIZE, slot_number,
                                     potion_type, highlighted_potion_action)
 
@@ -460,6 +470,7 @@ class View:
                     cooldown = str(ability_data.cooldown / 1000.0)
                     mana_cost = str(ability_data.mana_cost)
                     tooltip_details = ["Cooldown: " + cooldown + " s", "Mana: " + mana_cost, ability_data.description]
+                    tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
             self._ability_icon_in_ui(x, y, UI_ICON_SIZE, ability_type,
                                      highlighted_ability_action, ability_cooldowns_remaining)
 
@@ -472,6 +483,7 @@ class View:
                 if item_type:
                     tooltip_title = ITEMS[item_type].name
                     tooltip_details = [ITEMS[item_type].description]
+                    tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
             self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type)
 
         x_3 = 465
@@ -493,10 +505,10 @@ class View:
         self._rect(COLOR_BLACK, (0, 0, 60, 24), 0)
         self._text(self.font_small, fps_string + " fps", (5, 3))
 
-        if tooltip_title:
-            self._tooltip(tooltip_title, tooltip_details)
-
         self._text(self.font_small, message, (self.ui_screen_area.w / 2 - 80, self.ui_screen_area.y - 30))
+
+        if tooltip_title:
+            self._tooltip(tooltip_title, tooltip_details, tooltip_bottom_left_position)
 
         if is_game_over:
             self._text(self.font_huge, "You died!", (self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50))
