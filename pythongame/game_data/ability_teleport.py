@@ -21,5 +21,7 @@ def _apply_teleport(game_state: GameState):
 
 def register_teleport_ability():
     register_ability_effect(AbilityType.TELEPORT, _apply_teleport)
-    register_ability_data(AbilityType.TELEPORT, AbilityData("Teleport", UiIconSprite.ABILITY_TELEPORT, 2, Millis(500)))
+    register_ability_data(
+        AbilityType.TELEPORT,
+        AbilityData("Teleport", UiIconSprite.ABILITY_TELEPORT, 2, Millis(500), "Teleport a short distance"))
     register_ui_icon_sprite_path(UiIconSprite.ABILITY_TELEPORT, "resources/graphics/teleport_icon.png")

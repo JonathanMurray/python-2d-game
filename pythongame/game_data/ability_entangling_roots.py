@@ -81,8 +81,9 @@ class Rooted(AbstractBuffEffect):
 
 def register_entangling_roots_ability():
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    register_ability_data(ABILITY_TYPE,
-                          AbilityData("Entangling roots", ICON_SPRITE, 5, Millis(3000)))
+    register_ability_data(
+        ABILITY_TYPE,
+        AbilityData("Entangling roots", ICON_SPRITE, 5, Millis(3000), "Roots an enemy and deals damage over time"))
     register_ui_icon_sprite_path(ICON_SPRITE, "resources/graphics/ability_icon_entangling_roots.png")
     register_projectile_controller(PROJECTILE_TYPE, ProjectileController)
 

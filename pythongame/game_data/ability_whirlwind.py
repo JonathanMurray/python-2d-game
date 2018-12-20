@@ -103,7 +103,9 @@ def register_whirlwind_ability():
     cooldown = Millis(750)
 
     register_ability_effect(ability_type, _apply_ability)
-    register_ability_data(ability_type, AbilityData("Whirlwind", ui_icon_sprite, mana_cost, cooldown))
+    register_ability_data(
+        ability_type,
+        AbilityData("Whirlwind", ui_icon_sprite, mana_cost, cooldown, "Deals damage to all enemies along its path"))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/whirlwind.png")
     sprite_sheet = SpriteSheet("resources/graphics/ability_whirlwind_transparent_spritemap.png")
     original_sprite_size = (94, 111)

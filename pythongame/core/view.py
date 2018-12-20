@@ -362,6 +362,19 @@ class View:
         dot_w = 4
         self._rect_filled((0, 200, 0), (dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
+    def _tooltip(self, title: str, details: List[str]):
+        x_tooltip = 175
+        y_tooltip = 280
+        w_tooltip = 350
+        rect_tooltip = (x_tooltip, y_tooltip, w_tooltip, 170)
+        self._rect_filled((100, 100, 130), rect_tooltip)
+        self._rect(COLOR_WHITE, rect_tooltip, 3)
+        self._text(self.font_large, title, (x_tooltip + 20, y_tooltip + 15), COLOR_WHITE)
+        y_separator = y_tooltip + 40
+        self._line(COLOR_WHITE, (x_tooltip + 10, y_separator), (x_tooltip + w_tooltip - 10, y_separator), 1)
+        for i, detail in enumerate(details):
+            self._text(self.font_tiny, detail, (x_tooltip + 20, y_tooltip + 60 + i * 20), COLOR_WHITE)
+
     def render_world(self, all_entities_to_render, camera_world_area, enemies, is_player_invisible, player_entity,
                      visual_effects, render_hit_and_collision_boxes, player_health, player_max_health, game_world_size):
         self.camera_world_area = camera_world_area
@@ -399,7 +412,8 @@ class View:
                   mouse_screen_position: Tuple[int, int]):
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
-        description_of_element_that_mouse_hovers = ""
+        tooltip_title = ""
+        tooltip_details = []
 
         self._rect(COLOR_BLACK, (0, 0, self.camera_size[0], self.camera_size[1]), 3)
         self._rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
@@ -431,7 +445,7 @@ class View:
             potion_type = potion_slots[slot_number]
             if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
                 if potion_type:
-                    description_of_element_that_mouse_hovers = POTIONS[potion_type].name
+                    tooltip_title = POTIONS[potion_type].name
             self._potion_icon_in_ui(x, y, UI_ICON_SIZE, slot_number,
                                     potion_type, highlighted_potion_action)
 
@@ -441,7 +455,11 @@ class View:
             y = y_4
             if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
                 if ability_type:
-                    description_of_element_that_mouse_hovers = ABILITIES[ability_type].name
+                    ability_data = ABILITIES[ability_type]
+                    tooltip_title = ability_data.name
+                    cooldown = str(ability_data.cooldown / 1000.0)
+                    mana_cost = str(ability_data.mana_cost)
+                    tooltip_details = ["Cooldown: " + cooldown + " s", "Mana: " + mana_cost, ability_data.description]
             self._ability_icon_in_ui(x, y, UI_ICON_SIZE, ability_type,
                                      highlighted_ability_action, ability_cooldowns_remaining)
 
@@ -452,7 +470,7 @@ class View:
             y = y_2
             if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
                 if item_type:
-                    description_of_element_that_mouse_hovers = ITEMS[item_type].name
+                    tooltip_title = ITEMS[item_type].name
             self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type)
 
         x_3 = 465
@@ -474,10 +492,8 @@ class View:
         self._rect(COLOR_BLACK, (0, 0, 60, 24), 0)
         self._text(self.font_small, fps_string + " fps", (5, 3))
 
-        # TODO come up with a nicer way of showing the text of hovered elements
-        # If user is hovering over a UI element with the mouse, that overrides any other message
-        if description_of_element_that_mouse_hovers:
-            message = description_of_element_that_mouse_hovers
+        if tooltip_title:
+            self._tooltip(tooltip_title, tooltip_details)
 
         self._text(self.font_small, message, (self.ui_screen_area.w / 2 - 80, self.ui_screen_area.y - 30))
 

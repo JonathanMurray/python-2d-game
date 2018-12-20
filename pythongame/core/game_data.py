@@ -78,11 +78,12 @@ class UiIconSprite(Enum):
 
 
 class AbilityData:
-    def __init__(self, name: str, icon_sprite: UiIconSprite, mana_cost: int, cooldown: Millis):
+    def __init__(self, name: str, icon_sprite: UiIconSprite, mana_cost: int, cooldown: Millis, description: str):
         self.name = name
         self.icon_sprite = icon_sprite
         self.mana_cost = mana_cost
         self.cooldown = cooldown
+        self.description = description
 
 
 class UserAbilityKey:
