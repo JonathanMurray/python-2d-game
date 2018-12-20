@@ -10,10 +10,10 @@ PLAYER_ENTITY_SPEED = 0.1
 
 _player_potion_slots = {
     1: PotionType.HEALTH,
-    2: PotionType.HEALTH,
-    3: PotionType.MANA,
-    4: PotionType.MANA,
-    5: PotionType.MANA
+    2: None,
+    3: None,
+    4: None,
+    5: None
 }
 
 _abilities = [AbilityType.FIREBALL, AbilityType.FROST_NOVA, AbilityType.WHIRLWIND, AbilityType.ENTANGLING_ROOTS]
