@@ -86,7 +86,7 @@ def main(args: List[str]):
                     elif user_state.deleting_entities:
                         _delete_map_entities_from_position(game_state, snapped_mouse_world_position)
                     else:
-                        print("Not supported")
+                        _delete_map_decorations_from_position(game_state, snapped_mouse_world_position)
 
             if event.type == pygame.KEYDOWN:
                 if event.unicode.upper() in MAP_FILE_ENTITIES_BY_CHAR:
@@ -111,34 +111,35 @@ def main(args: List[str]):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 is_mouse_button_down = True
                 if user_state.placing_map_file_entity:
+                    entity_being_placed = user_state.placing_map_file_entity
                     if is_snapped_mouse_within_world:
-                        if user_state.placing_map_file_entity.is_player:
+                        if entity_being_placed.is_player:
                             game_state.player_entity.set_position(snapped_mouse_world_position)
-                        elif user_state.placing_map_file_entity.enemy_type:
-                            enemy_type = user_state.placing_map_file_entity.enemy_type
+                        elif entity_being_placed.enemy_type:
+                            enemy_type = entity_being_placed.enemy_type
                             data = ENEMIES[enemy_type]
                             entity = WorldEntity(snapped_mouse_world_position, data.size, data.sprite, Direction.DOWN,
                                                  data.speed)
                             enemy = Enemy(enemy_type, entity, data.max_health, data.max_health, data.health_regen, None)
                             game_state.enemies.append(enemy)
-                        elif user_state.placing_map_file_entity.is_wall:
+                        elif entity_being_placed.is_wall:
                             _add_wall_to_position(game_state, snapped_mouse_world_position)
-                        elif user_state.placing_map_file_entity.potion_type:
-                            sprite = POTIONS[user_state.placing_map_file_entity.potion_type].entity_sprite
+                        elif entity_being_placed.potion_type:
+                            sprite = POTIONS[entity_being_placed.potion_type].entity_sprite
                             entity = WorldEntity(snapped_mouse_world_position, POTION_ENTITY_SIZE, sprite)
                             game_state.potions_on_ground.append(
-                                PotionOnGround(entity, user_state.placing_map_file_entity.potion_type))
-                        elif user_state.placing_map_file_entity.item_type:
-                            sprite = ITEMS[user_state.placing_map_file_entity.item_type].entity_sprite
+                                PotionOnGround(entity, entity_being_placed.potion_type))
+                        elif entity_being_placed.item_type:
+                            sprite = ITEMS[entity_being_placed.item_type].entity_sprite
                             entity = WorldEntity(snapped_mouse_world_position, ITEM_ENTITY_SIZE, sprite)
                             game_state.items_on_ground.append(
-                                ItemOnGround(entity, user_state.placing_map_file_entity.item_type))
-                        elif user_state.placing_map_file_entity.decoration_sprite:
+                                ItemOnGround(entity, entity_being_placed.item_type))
+                        elif entity_being_placed.decoration_sprite:
                             decoration_entity = DecorationEntity(
-                                snapped_mouse_world_position, user_state.placing_map_file_entity.decoration_sprite)
+                                snapped_mouse_world_position, entity_being_placed.decoration_sprite)
                             game_state.decoration_entities.append(decoration_entity)
                         else:
-                            raise Exception("Unknown entity: " + str(user_state.placing_map_file_entity))
+                            raise Exception("Unknown entity: " + str(entity_being_placed))
                 elif user_state.deleting_entities:
                     _delete_map_entities_from_position(game_state, snapped_mouse_world_position)
                 else:
@@ -167,28 +168,29 @@ def main(args: List[str]):
                                   grid_cell_size, grid_cell_size)
             view.render_map_editor_mouse_rect((250, 50, 0), snapped_mouse_rect)
         elif user_state.placing_map_file_entity:
-            if user_state.placing_map_file_entity.enemy_type:
-                data = ENEMIES[user_state.placing_map_file_entity.enemy_type]
+            entity_being_placed = user_state.placing_map_file_entity
+            if entity_being_placed.enemy_type:
+                data = ENEMIES[entity_being_placed.enemy_type]
                 entity = WorldEntity((0, 0), data.size, data.sprite, Direction.DOWN, data.speed)
                 view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
-            elif user_state.placing_map_file_entity.is_player:
+            elif entity_being_placed.is_player:
                 view.render_world_entity_at_position(game_state.player_entity, snapped_mouse_screen_position)
-            elif user_state.placing_map_file_entity.is_wall:
+            elif entity_being_placed.is_wall:
                 entity = WorldEntity((0, 0), WALL_SIZE, Sprite.WALL)
                 view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
-            elif user_state.placing_map_file_entity.potion_type:
-                sprite = POTIONS[user_state.placing_map_file_entity.potion_type].entity_sprite
+            elif entity_being_placed.potion_type:
+                sprite = POTIONS[entity_being_placed.potion_type].entity_sprite
                 entity = WorldEntity((0, 0), POTION_ENTITY_SIZE, sprite)
                 view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
-            elif user_state.placing_map_file_entity.item_type:
-                sprite = ITEMS[user_state.placing_map_file_entity.item_type].entity_sprite
+            elif entity_being_placed.item_type:
+                sprite = ITEMS[entity_being_placed.item_type].entity_sprite
                 entity = WorldEntity((0, 0), ITEM_ENTITY_SIZE, sprite)
                 view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
-            elif user_state.placing_map_file_entity.decoration_sprite:
-                entity = WorldEntity((0, 0), (0, 0), user_state.placing_map_file_entity.decoration_sprite)
+            elif entity_being_placed.decoration_sprite:
+                entity = WorldEntity((0, 0), (0, 0), entity_being_placed.decoration_sprite)
                 view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
             else:
-                raise Exception("Unknown entity: " + str(user_state.placing_map_file_entity))
+                raise Exception("Unknown entity: " + str(entity_being_placed))
         elif user_state.deleting_entities:
             snapped_mouse_rect = (snapped_mouse_screen_position[0], snapped_mouse_screen_position[1],
                                   grid_cell_size, grid_cell_size)
