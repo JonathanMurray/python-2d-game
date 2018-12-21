@@ -10,7 +10,7 @@ from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionT
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement
 from pythongame.core.view import View
 from pythongame.core.view_state import ViewState
-from pythongame.game_world_init import create_game_state_from_file
+from pythongame.game_world_init import create_game_state_from_json_file
 from pythongame.register_game_data import register_all_game_data
 
 SCREEN_SIZE = (700, 700)
@@ -24,7 +24,7 @@ def main(args: List[str]):
         map_file = args[0]
     else:
         map_file = "resources/maps/demo3.txt"
-    game_state = create_game_state_from_file(CAMERA_SIZE, map_file)
+    game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file)
     pygame.init()
 
     view = View(CAMERA_SIZE, SCREEN_SIZE)

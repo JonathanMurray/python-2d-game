@@ -8,8 +8,8 @@ from pythongame.core.game_data import ENEMIES, WALL_SIZE, POTIONS, ITEMS, ITEM_E
 from pythongame.core.game_state import WorldEntity, Enemy, PotionOnGround, ItemOnGround
 from pythongame.core.view import View
 from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
-from pythongame.game_world_init import create_game_state_from_file, save_game_state_to_file, MapFileEntity, \
-    MAP_FILE_ENTITIES_BY_CHAR
+from pythongame.game_world_init import MapFileEntity, \
+    MAP_FILE_ENTITIES_BY_CHAR, save_game_state_to_json_file, create_game_state_from_json_file
 from pythongame.register_game_data import register_all_game_data
 
 # TODO Avoid depending on pythongame.game_data from here
@@ -26,7 +26,7 @@ def main(args: List[str]):
     else:
         map_file = "resources/maps/demo3.txt"
 
-    game_state = create_game_state_from_file(CAMERA_SIZE, map_file)
+    game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file)
     pygame.init()
 
     view = View(CAMERA_SIZE, SCREEN_SIZE)
@@ -72,7 +72,7 @@ def main(args: List[str]):
                     placing_map_file_entity = MAP_FILE_ENTITIES_BY_CHAR[event.unicode.upper()]
                 elif event.key == pygame.K_s:
                     save_file = map_file
-                    save_game_state_to_file(game_state, save_file)
+                    save_game_state_to_json_file(game_state, save_file)
                     print("Saved state to " + save_file)
                 elif event.key == pygame.K_RIGHT:
                     game_state.translate_camera_position((camera_move_distance, 0))

@@ -311,8 +311,8 @@ class GameState:
         grid_width = world_w // GRID_CELL_WIDTH
         grid_height = world_h // GRID_CELL_WIDTH
         grid = []
-        for x in range(grid_width):
-            grid.append(grid_height * [0])
+        for x in range(grid_width + 1):
+            grid.append((grid_height + 1) * [0])
         for w in walls:
             cell_x = w.x // GRID_CELL_WIDTH
             cell_y = w.y // GRID_CELL_WIDTH
