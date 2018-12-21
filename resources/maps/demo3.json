@@ -31,13 +31,6 @@
     {
       "enemy_type": "RAT_1",
       "position": [
-        2525,
-        450
-      ]
-    },
-    {
-      "enemy_type": "RAT_1",
-      "position": [
         2650,
         625
       ]
@@ -741,12 +734,26 @@
         2950,
         1900
       ]
+    },
+    {
+      "enemy_type": "RAT_1",
+      "position": [
+        2575,
+        450
+      ]
+    },
+    {
+      "enemy_type": "RAT_1",
+      "position": [
+        2150,
+        450
+      ]
     }
   ],
   "player": {
     "position": [
-      1525,
-      450
+      1700,
+      475
     ]
   },
   "wall_positions": [
@@ -1555,10 +1562,6 @@
       400
     ],
     [
-      1450,
-      400
-    ],
-    [
       2650,
       400
     ],
@@ -1587,10 +1590,6 @@
       425
     ],
     [
-      1450,
-      425
-    ],
-    [
       3000,
       425
     ],
@@ -1615,10 +1614,6 @@
       450
     ],
     [
-      1450,
-      450
-    ],
-    [
       3000,
       450
     ],
@@ -1640,10 +1635,6 @@
     ],
     [
       900,
-      475
-    ],
-    [
-      1450,
       475
     ],
     [
@@ -1671,10 +1662,6 @@
       500
     ],
     [
-      1450,
-      500
-    ],
-    [
       3000,
       500
     ],
@@ -1696,10 +1683,6 @@
     ],
     [
       900,
-      525
-    ],
-    [
-      1450,
       525
     ],
     [
@@ -6565,6 +6548,70 @@
     [
       3625,
       2650
+    ],
+    [
+      1425,
+      550
+    ],
+    [
+      1400,
+      550
+    ],
+    [
+      1400,
+      375
+    ],
+    [
+      1425,
+      375
+    ],
+    [
+      1525,
+      525
+    ],
+    [
+      1525,
+      500
+    ],
+    [
+      1525,
+      475
+    ],
+    [
+      1525,
+      450
+    ],
+    [
+      1525,
+      425
+    ],
+    [
+      1525,
+      400
+    ],
+    [
+      1400,
+      525
+    ],
+    [
+      1400,
+      500
+    ],
+    [
+      1400,
+      475
+    ],
+    [
+      1400,
+      450
+    ],
+    [
+      1400,
+      425
+    ],
+    [
+      1400,
+      400
     ]
   ],
   "potions_on_ground": [
@@ -6778,13 +6825,6 @@
     {
       "sprite": "DECORATION_GROUND_STONE",
       "position": [
-        1500.0,
-        500.0
-      ]
-    },
-    {
-      "sprite": "DECORATION_GROUND_STONE",
-      "position": [
         1450.0,
         500.0
       ]
@@ -6800,13 +6840,6 @@
       "sprite": "DECORATION_GROUND_STONE",
       "position": [
         1450.0,
-        450.0
-      ]
-    },
-    {
-      "sprite": "DECORATION_GROUND_STONE",
-      "position": [
-        1500.0,
         450.0
       ]
     },
@@ -7515,6 +7548,90 @@
       "position": [
         2300.0,
         450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2400.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2400.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2400.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2450.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2450.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2450.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1400.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1400.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1400.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1500.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1500.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_STATUE",
+      "position": [
+        1450.0,
+        425.0
       ]
     }
   ],

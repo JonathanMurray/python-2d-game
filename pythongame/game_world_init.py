@@ -76,7 +76,8 @@ MAP_FILE_ENTITIES_BY_CHAR: Dict[str, MapFileEntity] = {
     'L': MapFileEntity.item(ItemType.ROD_OF_LIGHTNING),
     'E': MapFileEntity.item(ItemType.AMULET_OF_MANA),
 
-    'G': MapFileEntity.decoration(Sprite.DECORATION_GROUND_STONE)
+    'G': MapFileEntity.decoration(Sprite.DECORATION_GROUND_STONE),
+    'T': MapFileEntity.decoration(Sprite.DECORATION_STATUE)
 }
 
 CHARS_BY_MAP_FILE_ENTITY: Dict[MapFileEntity, str] = {v: k for k, v in MAP_FILE_ENTITIES_BY_CHAR.items()}

@@ -19,6 +19,10 @@ CAMERA_SIZE = (1200, 600)
 
 register_all_game_data()
 
+if 'S' in MAP_FILE_ENTITIES_BY_CHAR:
+    raise Exception("'S' key should be reserved for saving, but it's claimed by entity: "
+                    + str(MAP_FILE_ENTITIES_BY_CHAR['S']))
+
 
 class UserState:
     def __init__(self, placing_map_file_entity: Optional[MapFileEntity], deleting_entities: bool,
