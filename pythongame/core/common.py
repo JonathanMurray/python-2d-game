@@ -168,6 +168,7 @@ class Sprite(Enum):
     ITEM_WINGED_BOOTS = 302
     ITEM_ROD_OF_LIGHTNING = 303
     ITEM_SWORD_OF_LEECHING = 304
+    DECORATION_GROUND_STONE = 401
 
 
 class BuffType(Enum):

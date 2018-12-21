@@ -1,5 +1,5 @@
 import math
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Union
 
 from pygame.rect import Rect
 
@@ -284,11 +284,21 @@ def handle_buffs(active_buffs: List[BuffWithDuration], time_passed: Millis):
     return AgentBuffsUpdate(buffs_that_started, buffs_that_were_active, buffs_that_ended)
 
 
+class DecorationEntity:
+    def __init__(self, pos: Tuple[int, int], sprite: Sprite):
+        self.x = pos[0]
+        self.y = pos[1]
+        self.sprite = sprite
+        # The fields below are needed for the view module to be able to handle this class the same as WorldEntity
+        self.direction = Direction.DOWN  # The view module uses direction to determine which image to render
+        self.movement_animation_progress: float = 0  # The view module uses this to determine which frame to render
+
+
 class GameState:
     def __init__(self, player_entity: WorldEntity, potions_on_ground: List[PotionOnGround],
                  items_on_ground: List[ItemOnGround], enemies: List[Enemy],
                  walls: List[WorldEntity], camera_size: Tuple[int, int], game_world_size: Tuple[int, int],
-                 player_state: PlayerState):
+                 player_state: PlayerState, decoration_entities: List[DecorationEntity]):
         self.camera_size = camera_size
         self.camera_world_area = WorldArea((0, 0), self.camera_size)
         self.player_entity = player_entity
@@ -303,6 +313,7 @@ class GameState:
         self.game_world_size = game_world_size
         self.entire_world_area = WorldArea((0, 0), self.game_world_size)
         self.grid = self._setup_grid(game_world_size, walls)
+        self.decoration_entities = decoration_entities
 
     @staticmethod
     def _setup_grid(game_world_size: Tuple[int, int], walls: List[WorldEntity]):
@@ -327,11 +338,12 @@ class GameState:
         self.items_on_ground = [i for i in self.items_on_ground if i not in entities_to_remove]
         self.enemies = [e for e in self.enemies if e not in entities_to_remove]
 
-    def get_all_entities_to_render(self) -> List[WorldEntity]:
+    def get_all_entities_to_render(self) -> List[Union[WorldEntity, DecorationEntity]]:
         walls = self._get_walls_from_buckets_in_camera()
         return [self.player_entity] + [p.world_entity for p in self.potions_on_ground] + \
                [i.world_entity for i in self.items_on_ground] + \
-               [e.world_entity for e in self.enemies] + walls + [p.world_entity for p in self.projectile_entities]
+               [e.world_entity for e in self.enemies] + walls + [p.world_entity for p in self.projectile_entities] + \
+               self.decoration_entities
 
     def center_camera_on_player(self):
         new_camera_pos = get_position_from_center_position(self.player_entity.get_center_position(), self.camera_size)

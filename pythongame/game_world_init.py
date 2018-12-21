@@ -4,7 +4,7 @@ from typing import Optional, Dict
 from pythongame.core.common import *
 from pythongame.core.enemy_creation import create_enemy, set_global_path_finder
 from pythongame.core.game_data import WALL_SIZE, POTIONS, ITEM_ENTITY_SIZE, ITEMS
-from pythongame.core.game_state import WorldEntity, GameState, PotionOnGround, ItemOnGround
+from pythongame.core.game_state import WorldEntity, GameState, PotionOnGround, ItemOnGround, DecorationEntity
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE, INTIAL_PLAYER_STATE, PLAYER_ENTITY_SPEED
 from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
@@ -149,8 +149,13 @@ def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str
         walls = [WorldEntity(pos, WALL_SIZE, Sprite.WALL) for pos in wall_positions]
 
         game_world_size = json_data["game_world_size"]
+        decoration_entities = [
+            DecorationEntity((1540, 490), Sprite.DECORATION_GROUND_STONE),
+            DecorationEntity((1572, 490), Sprite.DECORATION_GROUND_STONE),
+            DecorationEntity((1604, 490), Sprite.DECORATION_GROUND_STONE),
+        ]
         game_state = GameState(player_entity, potions, items, enemies, walls, camera_size, game_world_size,
-                               INTIAL_PLAYER_STATE)
+                               INTIAL_PLAYER_STATE, decoration_entities)
         path_finder.set_grid(game_state.grid)
         return game_state
 

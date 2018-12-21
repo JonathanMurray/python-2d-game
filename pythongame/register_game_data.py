@@ -5,6 +5,7 @@ from pythongame.game_data.ability_frost_nova import register_frost_nova_ability
 from pythongame.game_data.ability_heal import register_heal_ability
 from pythongame.game_data.ability_teleport import register_teleport_ability
 from pythongame.game_data.ability_whirlwind import register_whirlwind_ability
+from pythongame.game_data.decorations import register_decorations
 from pythongame.game_data.enemy_dark_reaper import register_dark_reaper_enemy
 from pythongame.game_data.enemy_goblin_warlock import register_goblin_warlock_enemy
 from pythongame.game_data.enemy_mummy import register_mummy_enemy
@@ -45,3 +46,4 @@ def register_all_game_data():
     register_sword_of_leeching_item()
     register_rod_of_lightning_item()
     register_entangling_roots_ability()
+    register_decorations()
