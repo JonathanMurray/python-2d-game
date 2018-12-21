@@ -160,7 +160,7 @@ def main(args: List[str]):
         else:
             snapped_mouse_rect = (snapped_mouse_screen_position[0], snapped_mouse_screen_position[1],
                                   grid_cell_size, grid_cell_size)
-            view.render_map_editor_mouse_rect((50, 250, 0), snapped_mouse_rect)
+            view.render_map_editor_mouse_rect((250, 250, 0), snapped_mouse_rect)
 
         view.update_display()
 

@@ -79,7 +79,7 @@ class WorldEntity:
         return int(self.x + self.w / 2), int(self.y + self.h / 2)
 
     def get_position(self):
-        return self.x, self.y
+        return int(self.x), int(self.y)
 
     def add_to_speed_multiplier(self, amount):
         self._speed_multiplier += amount
@@ -284,6 +284,7 @@ def handle_buffs(active_buffs: List[BuffWithDuration], time_passed: Millis):
     return AgentBuffsUpdate(buffs_that_started, buffs_that_were_active, buffs_that_ended)
 
 
+# TODO Is there a way to handle this better in the view module? This class shouldn't need to masquerade as a WorldEntity
 class DecorationEntity:
     def __init__(self, pos: Tuple[int, int], sprite: Sprite):
         self.x = pos[0]
@@ -292,6 +293,14 @@ class DecorationEntity:
         # The fields below are needed for the view module to be able to handle this class the same as WorldEntity
         self.direction = Direction.DOWN  # The view module uses direction to determine which image to render
         self.movement_animation_progress: float = 0  # The view module uses this to determine which frame to render
+
+    def rect(self):
+        # Used by view module in map_editor
+        return self.x, self.y, 0, 0
+
+    def collision_rect(self):
+        # Used by view module in map_editor
+        return self.x, self.y, 0, 0
 
 
 class GameState:
