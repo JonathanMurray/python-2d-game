@@ -88,6 +88,7 @@ def main(args: List[str]):
 
         view.render_world(
             all_entities_to_render=game_state.get_all_entities_to_render(),
+            decorations_to_render=game_state.get_decorations_to_render(),
             player_entity=game_state.player_entity,
             is_player_invisible=game_state.player_state.is_invisible,
             camera_world_area=game_state.camera_world_area,

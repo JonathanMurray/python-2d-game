@@ -1,11 +1,11 @@
-from typing import Dict, Any, List, Tuple, Optional
+from typing import Dict, Any, List, Tuple, Optional, Union
 
 import pygame
 
 from pythongame.core.common import Direction, Sprite, PotionType, sum_of_vectors, ItemType, is_point_in_rect
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, ENEMIES, POTIONS, ITEMS, UiIconSprite
-from pythongame.core.game_state import WorldEntity
+from pythongame.core.game_state import WorldEntity, DecorationEntity
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 from pythongame.game_world_init import MapFileEntity
 
@@ -193,7 +193,7 @@ class View:
         translated_pos = self._translate_world_position_to_screen((world_rect[0], world_rect[1]))
         self._rect(color, (translated_pos[0], translated_pos[1], world_rect[2], world_rect[3]), line_width)
 
-    def _world_entity(self, entity: WorldEntity):
+    def _world_entity(self, entity: Union[WorldEntity, DecorationEntity]):
         if entity.sprite is None:
             raise Exception("Entity has no sprite: " + str(entity))
         elif entity.sprite in self.images_by_sprite:
@@ -394,21 +394,24 @@ class View:
         for i, detail in enumerate(details):
             self._text(self.font_tiny, detail, (x_tooltip + 20, y_tooltip + 60 + i * 20), COLOR_WHITE)
 
-    def render_world(self, all_entities_to_render, camera_world_area, enemies, is_player_invisible, player_entity,
+    def render_world(self, all_entities_to_render: List[WorldEntity], decorations_to_render: List[DecorationEntity],
+                     camera_world_area, enemies, is_player_invisible, player_entity,
                      visual_effects, render_hit_and_collision_boxes, player_health, player_max_health, game_world_size):
         self.camera_world_area = camera_world_area
 
         self.screen.fill(COLOR_BACKGROUND)
         self._world_ground(game_world_size)
 
-        for entity in all_entities_to_render:
-            if entity != player_entity:
-                self._world_entity(entity)
+        all_entities_to_render.sort(key=lambda entry: entry.y)
 
-        if is_player_invisible:
-            self._world_rect((200, 100, 250), player_entity.rect(), 1)
-        else:
-            self._world_entity(player_entity)
+        for decoration_entity in decorations_to_render:
+            self._world_entity(decoration_entity)
+
+        for entity in all_entities_to_render:
+            if entity == player_entity and is_player_invisible:
+                self._world_rect((200, 100, 250), player_entity.rect(), 1)
+            else:
+                self._world_entity(entity)
 
         self._stat_bar_for_world_entity(player_entity, 5, -35, player_health, player_max_health, (100, 200, 0))
 
