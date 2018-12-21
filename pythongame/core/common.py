@@ -139,6 +139,7 @@ class EnemyType(Enum):
 
 class WallType(Enum):
     WALL = 1
+    STATUE = 2
 
 
 class AbilityType(Enum):
@@ -153,7 +154,6 @@ class AbilityType(Enum):
 
 class Sprite(Enum):
     PLAYER = 1
-    WALL = 2
     EFFECT_ABILITY_FROST_NOVA = 3
     PROJECTILE_PLAYER_FIREBALL = 11
     PROJECTILE_PLAYER_MAGIC_MISSILE = 12
@@ -173,8 +173,9 @@ class Sprite(Enum):
     ITEM_ROD_OF_LIGHTNING = 303
     ITEM_SWORD_OF_LEECHING = 304
     DECORATION_GROUND_STONE = 401
-    DECORATION_STATUE = 402
     DECORATION_PLANT = 403
+    WALL = 501
+    WALL_STATUE = 502
 
 
 class BuffType(Enum):

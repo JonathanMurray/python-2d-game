@@ -61,7 +61,10 @@ class MapFileEntity:
 
 MAP_FILE_ENTITIES_BY_CHAR: Dict[str, MapFileEntity] = {
     'P': MapFileEntity.player(),
+
     'X': MapFileEntity.wall(WallType.WALL),
+    'T': MapFileEntity.wall(WallType.STATUE),
+
     'D': MapFileEntity.enemy(EnemyType.DARK_REAPER),
     'R': MapFileEntity.enemy(EnemyType.RAT_1),
     '2': MapFileEntity.enemy(EnemyType.RAT_2),
@@ -77,7 +80,7 @@ MAP_FILE_ENTITIES_BY_CHAR: Dict[str, MapFileEntity] = {
     'E': MapFileEntity.item(ItemType.AMULET_OF_MANA),
 
     'G': MapFileEntity.decoration(Sprite.DECORATION_GROUND_STONE),
-    'T': MapFileEntity.decoration(Sprite.DECORATION_STATUE),
+
     'N': MapFileEntity.decoration(Sprite.DECORATION_PLANT)
 }
 

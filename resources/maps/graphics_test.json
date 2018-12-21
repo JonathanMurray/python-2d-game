@@ -20,6 +20,41 @@
         325,
         250
       ]
+    },
+    {
+      "wall_type": "STATUE",
+      "position": [
+        200,
+        125
+      ]
+    },
+    {
+      "wall_type": "STATUE",
+      "position": [
+        275,
+        125
+      ]
+    },
+    {
+      "wall_type": "STATUE",
+      "position": [
+        350,
+        125
+      ]
+    },
+    {
+      "wall_type": "STATUE",
+      "position": [
+        475,
+        125
+      ]
+    },
+    {
+      "wall_type": "STATUE",
+      "position": [
+        100,
+        125
+      ]
     }
   ],
   "potions_on_ground": [],
@@ -254,34 +289,6 @@
       "position": [
         450,
         100
-      ]
-    },
-    {
-      "sprite": "DECORATION_STATUE",
-      "position": [
-        425,
-        75
-      ]
-    },
-    {
-      "sprite": "DECORATION_STATUE",
-      "position": [
-        350,
-        75
-      ]
-    },
-    {
-      "sprite": "DECORATION_STATUE",
-      "position": [
-        275,
-        75
-      ]
-    },
-    {
-      "sprite": "DECORATION_STATUE",
-      "position": [
-        200,
-        75
       ]
     },
     {
