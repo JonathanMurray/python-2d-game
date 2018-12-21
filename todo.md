@@ -10,9 +10,6 @@
 * Use pygame C code for vector math
 
 #### Features:
-* New advanced enemy behaviors
-    * summoning new enemies?
-    * text on screen visualizing enemy sounds
 * Save functionality
     * save the current game_state into a JSON file and load it on startup
 * More advanced abilities:
