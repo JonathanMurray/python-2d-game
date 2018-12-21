@@ -86,7 +86,8 @@ class EnemyMind(AbstractEnemyMind):
             self._time_since_speech = 0
             self._update_speech_interval()
             speech_text_pos = (enemy_entity.x - 20, enemy_entity.y - 30)
-            speech_line = random.choice(["EHEHEHE", "HOT! SO HOT!!"])
+            speech_line = random.choice(
+                ["EHEHEHE", "HOT! SO HOT!!", "I'VE GOT SOMETHING FOR YOU!", "NO SMOKE WITHOUT... FIRE!!"])
             game_state.visual_effects.append(
                 VisualText(speech_line, COLOR_SPEECH, speech_text_pos, speech_text_pos, Millis(3500)))
 
@@ -94,7 +95,7 @@ class EnemyMind(AbstractEnemyMind):
         self._attack_interval = 2000 + random.random() * 4000
 
     def _update_speech_interval(self):
-        self._speech_interval = 8000 + random.random() * 10000
+        self._speech_interval = 5000 + random.random() * 15000
 
 
 def _move_in_dir(enemy_entity, direction):
