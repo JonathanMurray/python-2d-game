@@ -5,7 +5,7 @@ from pythongame.core.game_data import Sprite, Direction, PotionType, AbilityType
     register_entity_sprite_map, register_user_ability_key, UserAbilityKey
 from pythongame.core.game_state import PlayerState
 
-PLAYER_ENTITY_SIZE = (40, 30)
+PLAYER_ENTITY_SIZE = (30, 30)
 PLAYER_ENTITY_SPEED = 0.1
 
 _player_potion_slots = {
@@ -37,7 +37,7 @@ def register_player_data():
     player_sprite_sheet = SpriteSheet("resources/graphics/player.gif")
     original_sprite_size = (32, 48)
     scaled_sprite_size = (60, 60)
-    sprite_position_relative_to_entity = (-10, -30)
+    sprite_position_relative_to_entity = (-15, -30)
     indices_by_dir = {
         Direction.DOWN: [(0, 0), (1, 0), (2, 0), (3, 0)],
         Direction.LEFT: [(0, 1), (1, 1), (2, 1), (3, 1)],

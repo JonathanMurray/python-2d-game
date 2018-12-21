@@ -28,5 +28,5 @@ def _register_statue():
     scaled_sprite_size = (50, 100)
     indices_by_dir = {Direction.DOWN: [(13, 3)]}
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size,
-                               indices_by_dir, (0, -50))
-    register_wall_data(WallType.STATUE, WallData(sprite, (50, 50)))
+                               indices_by_dir, (-4, -54))
+    register_wall_data(WallType.STATUE, WallData(sprite, (42, 46)))
