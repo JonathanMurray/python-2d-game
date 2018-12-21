@@ -5,8 +5,6 @@ import pygame
 
 from pythongame.core.common import *
 
-WALL_SIZE = (25, 25)
-
 ITEM_ENTITY_SIZE = (30, 30)
 
 
@@ -127,13 +125,7 @@ class WallData:
 
 ENEMIES: Dict[EnemyType, EnemyData] = {}
 
-_stone_tile_file_name = "resources/graphics/stone_tile.png"
-ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Animation]] = {
-    Sprite.WALL: {
-        Direction.DOWN: Animation(
-            [SpriteInitializer(_stone_tile_file_name, (WALL_SIZE[0] - 2, WALL_SIZE[1] - 2))], None, (1, 1))
-    }
-}
+ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Animation]] = {}
 
 UI_ICON_SPRITE_PATHS: Dict[UiIconSprite, str] = {}
 

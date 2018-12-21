@@ -5,7 +5,7 @@ from typing import Tuple, Optional, List
 import pygame
 
 from pythongame.core.common import Direction, Sprite, sum_of_vectors, WallType
-from pythongame.core.game_data import ENEMIES, WALL_SIZE, POTIONS, ITEMS, ITEM_ENTITY_SIZE
+from pythongame.core.game_data import ENEMIES, POTIONS, ITEMS, ITEM_ENTITY_SIZE, WALLS
 from pythongame.core.game_state import WorldEntity, Enemy, PotionOnGround, ItemOnGround, DecorationEntity, GameState, \
     Wall
 from pythongame.core.view import View
@@ -94,7 +94,8 @@ def main(args: List[str]):
                 if is_mouse_button_down:
                     if user_state.placing_map_file_entity:
                         if user_state.placing_map_file_entity.wall_type:
-                            _add_wall_to_position(game_state, snapped_mouse_world_position)
+                            _add_wall_to_position(game_state, snapped_mouse_world_position,
+                                                  user_state.placing_map_file_entity.wall_type)
                     elif user_state.deleting_entities:
                         _delete_map_entities_from_position(game_state, snapped_mouse_world_position)
                     else:
@@ -135,7 +136,8 @@ def main(args: List[str]):
                             enemy = Enemy(enemy_type, entity, data.max_health, data.max_health, data.health_regen, None)
                             game_state.enemies.append(enemy)
                         elif entity_being_placed.wall_type:
-                            _add_wall_to_position(game_state, snapped_mouse_world_position)
+                            _add_wall_to_position(game_state, snapped_mouse_world_position,
+                                                  entity_being_placed.wall_type)
                         elif entity_being_placed.potion_type:
                             sprite = POTIONS[entity_being_placed.potion_type].entity_sprite
                             entity = WorldEntity(snapped_mouse_world_position, POTION_ENTITY_SIZE, sprite)
@@ -188,7 +190,8 @@ def main(args: List[str]):
             elif entity_being_placed.is_player:
                 view.render_world_entity_at_position(game_state.player_entity, snapped_mouse_screen_position)
             elif entity_being_placed.wall_type:
-                entity = WorldEntity((0, 0), WALL_SIZE, Sprite.WALL)
+                data = WALLS[entity_being_placed.wall_type]
+                entity = WorldEntity((0, 0), data.size, data.sprite)
                 view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
             elif entity_being_placed.potion_type:
                 sprite = POTIONS[entity_being_placed.potion_type].entity_sprite
@@ -215,11 +218,12 @@ def main(args: List[str]):
         view.update_display()
 
 
-def _add_wall_to_position(game_state, snapped_mouse_world_position: Tuple[int, int]):
+def _add_wall_to_position(game_state, snapped_mouse_world_position: Tuple[int, int], wall_type: WallType):
+    data = WALLS[wall_type]
     already_has_wall = any([w for w in game_state.walls
                             if w.world_entity.get_position() == snapped_mouse_world_position])
     if not already_has_wall:
-        game_state.add_wall(Wall(WallType.WALL, WorldEntity(snapped_mouse_world_position, WALL_SIZE, Sprite.WALL)))
+        game_state.add_wall(Wall(wall_type, WorldEntity(snapped_mouse_world_position, data.size, data.sprite)))
 
 
 def _delete_map_entities_from_position(game_state, snapped_mouse_world_position: Tuple[int, int]):
