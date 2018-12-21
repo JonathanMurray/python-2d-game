@@ -188,6 +188,12 @@ class Enemy:
         return self._number_of_active_stuns > 0
 
 
+class Wall:
+    def __init__(self, wall_type: WallType, world_entity: WorldEntity):
+        self.wall_type = wall_type
+        self.world_entity = world_entity
+
+
 class BuffWithDuration:
     def __init__(self, buff_effect: Any, time_until_expiration: Millis):
         self.buff_effect = buff_effect
@@ -309,7 +315,7 @@ class DecorationEntity:
 class GameState:
     def __init__(self, player_entity: WorldEntity, potions_on_ground: List[PotionOnGround],
                  items_on_ground: List[ItemOnGround], enemies: List[Enemy],
-                 walls: List[WorldEntity], camera_size: Tuple[int, int], game_world_size: Tuple[int, int],
+                 walls: List[Wall], camera_size: Tuple[int, int], game_world_size: Tuple[int, int],
                  player_state: PlayerState, decoration_entities: List[DecorationEntity]):
         self.camera_size = camera_size
         self.camera_world_area = WorldArea((0, 0), self.camera_size)
@@ -318,13 +324,13 @@ class GameState:
         self.potions_on_ground = potions_on_ground
         self.items_on_ground = items_on_ground
         self.enemies = enemies
-        self.walls = walls
-        self._wall_buckets = self._put_walls_in_buckets(game_world_size, walls)
+        self.walls: List[Wall] = walls
+        self._wall_buckets = self._put_walls_in_buckets(game_world_size, [w.world_entity for w in walls])
         self.visual_effects = []
         self.player_state: PlayerState = player_state
         self.game_world_size = game_world_size
         self.entire_world_area = WorldArea((0, 0), self.game_world_size)
-        self.grid = self._setup_grid(game_world_size, walls)
+        self.grid = self._setup_grid(game_world_size, [w.world_entity for w in walls])
         self.decoration_entities = decoration_entities
 
     @staticmethod
@@ -433,17 +439,17 @@ class GameState:
             wall_buckets[x_bucket][y_bucket].append(w)
         return wall_buckets
 
-    def add_wall(self, wall: WorldEntity):
+    def add_wall(self, wall: Wall):
         self.walls.append(wall)
-        x_bucket = int(wall.x) // WALL_BUCKET_WIDTH
-        y_bucket = int(wall.y) // WALL_BUCKET_HEIGHT
-        self._wall_buckets[x_bucket][y_bucket].append(wall)
+        x_bucket = int(wall.world_entity.x) // WALL_BUCKET_WIDTH
+        y_bucket = int(wall.world_entity.y) // WALL_BUCKET_HEIGHT
+        self._wall_buckets[x_bucket][y_bucket].append(wall.world_entity)
 
-    def remove_wall(self, wall: WorldEntity):
+    def remove_wall(self, wall: Wall):
         self.walls.remove(wall)
-        x_bucket = int(wall.x) // WALL_BUCKET_WIDTH
-        y_bucket = int(wall.y) // WALL_BUCKET_HEIGHT
-        self._wall_buckets[x_bucket][y_bucket].remove(wall)
+        x_bucket = int(wall.world_entity.x) // WALL_BUCKET_WIDTH
+        y_bucket = int(wall.world_entity.y) // WALL_BUCKET_HEIGHT
+        self._wall_buckets[x_bucket][y_bucket].remove(wall.world_entity)
 
     def _get_walls_from_buckets_adjacent_to_entity(self, entity: WorldEntity):
         entity_x_bucket = int(entity.x) // WALL_BUCKET_WIDTH

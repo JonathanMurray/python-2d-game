@@ -340,7 +340,7 @@ class View:
                 image = self.images_by_ui_sprite[ui_icon_sprite]
             elif map_file_entity.is_player:
                 image = self.images_by_sprite[Sprite.PLAYER][Direction.DOWN][0].image
-            elif map_file_entity.is_wall:
+            elif map_file_entity.wall_type:
                 image = self.images_by_sprite[Sprite.WALL][Direction.DOWN][0].image
             elif map_file_entity.item_type:
                 ui_icon_sprite = ITEMS[map_file_entity.item_type].icon_sprite

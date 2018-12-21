@@ -119,6 +119,12 @@ class ItemData:
         self.description = description
 
 
+class WallData:
+    def __init__(self, sprite: Sprite, size: Tuple[int, int]):
+        self.sprite = sprite
+        self.size = size
+
+
 ENEMIES: Dict[EnemyType, EnemyData] = {}
 
 _stone_tile_file_name = "resources/graphics/stone_tile.png"
@@ -133,6 +139,8 @@ UI_ICON_SPRITE_PATHS: Dict[UiIconSprite, str] = {}
 
 POTIONS: Dict[PotionType, PotionData] = {}
 
+WALLS: Dict[WallType, WallData] = {}
+
 ITEMS: Dict[ItemType, ItemData] = {}
 
 ABILITIES: Dict[AbilityType, AbilityData] = {}
@@ -144,6 +152,10 @@ BUFF_TEXTS: Dict[BuffType, str] = {}
 
 def register_enemy_data(enemy_type: EnemyType, enemy_data: EnemyData):
     ENEMIES[enemy_type] = enemy_data
+
+
+def register_wall_data(wall_type: WallType, wall_data: WallData):
+    WALLS[wall_type] = wall_data
 
 
 def register_ability_data(ability_type: AbilityType, ability_data: AbilityData):

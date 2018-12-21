@@ -6,7 +6,22 @@
       250
     ]
   },
-  "wall_positions": [],
+  "walls": [
+    {
+      "wall_type": "WALL",
+      "position": [
+        300,
+        250
+      ]
+    },
+    {
+      "wall_type": "WALL",
+      "position": [
+        325,
+        250
+      ]
+    }
+  ],
   "potions_on_ground": [],
   "items_on_ground": [],
   "decorations": [

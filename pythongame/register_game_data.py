@@ -22,6 +22,7 @@ from pythongame.game_data.potion_health import register_health_potion
 from pythongame.game_data.potion_invis import register_invis_potion
 from pythongame.game_data.potion_mana import register_mana_potion
 from pythongame.game_data.potion_speed import register_speed_potion
+from pythongame.game_data.walls import register_walls
 
 
 def register_all_game_data():
@@ -49,3 +50,4 @@ def register_all_game_data():
     register_entangling_roots_ability()
     register_decorations()
     register_map_editor_icons()
+    register_walls()

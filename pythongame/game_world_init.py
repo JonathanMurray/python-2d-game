@@ -3,8 +3,8 @@ from typing import Optional, Dict
 
 from pythongame.core.common import *
 from pythongame.core.enemy_creation import create_enemy, set_global_path_finder
-from pythongame.core.game_data import WALL_SIZE, POTIONS, ITEM_ENTITY_SIZE, ITEMS
-from pythongame.core.game_state import WorldEntity, GameState, PotionOnGround, ItemOnGround, DecorationEntity
+from pythongame.core.game_data import POTIONS, ITEM_ENTITY_SIZE, ITEMS, WALLS
+from pythongame.core.game_state import WorldEntity, GameState, PotionOnGround, ItemOnGround, DecorationEntity, Wall
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE, INTIAL_PLAYER_STATE, PLAYER_ENTITY_SPEED
 from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
@@ -15,11 +15,11 @@ GRID_CELL_SIZE = 25
 
 
 class MapFileEntity:
-    def __init__(self, enemy_type: Optional[EnemyType], is_player: bool, is_wall: bool,
+    def __init__(self, enemy_type: Optional[EnemyType], is_player: bool, wall_type: WallType,
                  potion_type: Optional[PotionType], item_type: Optional[ItemType], decoration_sprite: Optional[Sprite]):
         self.enemy_type = enemy_type
         self.is_player = is_player
-        self.is_wall = is_wall
+        self.wall_type = wall_type
         self.potion_type = potion_type
         self.item_type = item_type
         self.decoration_sprite = decoration_sprite
@@ -36,32 +36,32 @@ class MapFileEntity:
 
     @staticmethod
     def player():
-        return MapFileEntity(None, True, False, None, None, None)
+        return MapFileEntity(None, True, None, None, None, None)
 
     @staticmethod
     def enemy(enemy_type: EnemyType):
-        return MapFileEntity(enemy_type, False, False, None, None, None)
+        return MapFileEntity(enemy_type, False, None, None, None, None)
 
     @staticmethod
-    def wall():
-        return MapFileEntity(None, False, True, None, None, None)
+    def wall(wall_type: WallType):
+        return MapFileEntity(None, False, wall_type, None, None, None)
 
     @staticmethod
     def potion(potion_type: PotionType):
-        return MapFileEntity(None, False, False, potion_type, None, None)
+        return MapFileEntity(None, False, None, potion_type, None, None)
 
     @staticmethod
     def item(item_type: ItemType):
-        return MapFileEntity(None, False, False, None, item_type, None)
+        return MapFileEntity(None, False, None, None, item_type, None)
 
     @staticmethod
     def decoration(sprite: Sprite):
-        return MapFileEntity(None, False, False, None, None, sprite)
+        return MapFileEntity(None, False, None, None, None, sprite)
 
 
 MAP_FILE_ENTITIES_BY_CHAR: Dict[str, MapFileEntity] = {
     'P': MapFileEntity.player(),
-    'X': MapFileEntity.wall(),
+    'X': MapFileEntity.wall(WallType.WALL),
     'D': MapFileEntity.enemy(EnemyType.DARK_REAPER),
     'R': MapFileEntity.enemy(EnemyType.RAT_1),
     '2': MapFileEntity.enemy(EnemyType.RAT_2),
@@ -154,8 +154,7 @@ def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str
         set_global_path_finder(path_finder)
         enemies = [create_enemy(EnemyType[e["enemy_type"]], e["position"]) for e in json_data["enemies"]]
 
-        wall_positions = json_data["wall_positions"]
-        walls = [WorldEntity(pos, WALL_SIZE, Sprite.WALL) for pos in wall_positions]
+        walls = [_create_wall_at_position(WallType[w["wall_type"]], w["position"]) for w in json_data["walls"]]
 
         game_world_size = json_data["game_world_size"]
 
@@ -215,9 +214,9 @@ def save_game_state_to_json_file(game_state: GameState, map_file: str):
 
     json_data["player"] = {"position": game_state.player_entity.get_position()}
 
-    json_data["wall_positions"] = []
+    json_data["walls"] = []
     for w in game_state.walls:
-        json_data["wall_positions"].append(w.get_position())
+        json_data["walls"].append({"wall_type": w.wall_type.name, "position": w.world_entity.get_position()})
 
     json_data["potions_on_ground"] = []
     for p in game_state.potions_on_ground:
@@ -246,3 +245,7 @@ def _create_potion_at_position(potion_type: PotionType, pos: Tuple[int, int]):
 def _create_item_at_position(item_type: ItemType, pos: Tuple[int, int]):
     entity = WorldEntity(pos, ITEM_ENTITY_SIZE, ITEMS[item_type].entity_sprite)
     return ItemOnGround(entity, item_type)
+
+
+def _create_wall_at_position(wall_type: WallType, pos: Tuple[int, int]) -> Wall:
+    return Wall(wall_type, WorldEntity(pos, WALLS[wall_type].size, WALLS[wall_type].sprite))

@@ -137,6 +137,10 @@ class EnemyType(Enum):
     MUMMY = 9
 
 
+class WallType(Enum):
+    WALL = 1
+
+
 class AbilityType(Enum):
     HEAL = 1
     FIREBALL = 2
