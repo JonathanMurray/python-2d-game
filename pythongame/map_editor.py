@@ -1,12 +1,14 @@
 import sys
+from pathlib import Path
 from typing import Tuple, Optional, List
 
 import pygame
 
 from pythongame.core.common import Direction, Sprite, sum_of_vectors
 from pythongame.core.game_data import ENEMIES, WALL_SIZE, POTIONS, ITEMS, ITEM_ENTITY_SIZE
-from pythongame.core.game_state import WorldEntity, Enemy, PotionOnGround, ItemOnGround, DecorationEntity
+from pythongame.core.game_state import WorldEntity, Enemy, PotionOnGround, ItemOnGround, DecorationEntity, GameState
 from pythongame.core.view import View
+from pythongame.game_data.player_data import INTIAL_PLAYER_STATE, PLAYER_ENTITY_SIZE, PLAYER_ENTITY_SPEED
 from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
 from pythongame.game_world_init import MapFileEntity, \
     MAP_FILE_ENTITIES_BY_CHAR, save_game_state_to_json_file, create_game_state_from_json_file
@@ -50,7 +52,12 @@ def main(args: List[str]):
     else:
         map_file = "resources/maps/demo3.json"
 
-    game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file)
+    if Path(map_file).exists():
+        game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file)
+    else:
+        player_entity = WorldEntity((250, 250), PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
+        game_state = GameState(player_entity, [], [], [], [], CAMERA_SIZE, (500, 500), INTIAL_PLAYER_STATE, [])
+
     pygame.init()
 
     view = View(CAMERA_SIZE, SCREEN_SIZE)
