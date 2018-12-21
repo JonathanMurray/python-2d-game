@@ -7633,6 +7633,20 @@
         1450.0,
         425.0
       ]
+    },
+    {
+      "sprite": "DECORATION_PLANT",
+      "position": [
+        1900.0,
+        375.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_PLANT",
+      "position": [
+        2225.0,
+        400.0
+      ]
     }
   ],
   "game_world_size": [

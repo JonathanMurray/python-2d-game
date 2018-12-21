@@ -170,6 +170,7 @@ class Sprite(Enum):
     ITEM_SWORD_OF_LEECHING = 304
     DECORATION_GROUND_STONE = 401
     DECORATION_STATUE = 402
+    DECORATION_PLANT = 403
 
 
 class BuffType(Enum):
