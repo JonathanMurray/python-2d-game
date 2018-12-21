@@ -16,6 +16,7 @@ from pythongame.game_data.item_amulet_of_mana import register_amulet_of_mana_ite
 from pythongame.game_data.item_rod_of_lightning import register_rod_of_lightning_item
 from pythongame.game_data.item_sword_of_leeching import register_sword_of_leeching_item
 from pythongame.game_data.item_winged_boots import register_winged_boots_item
+from pythongame.game_data.map_editor_icons import register_map_editor_icons
 from pythongame.game_data.player_data import register_player_data
 from pythongame.game_data.potion_health import register_health_potion
 from pythongame.game_data.potion_invis import register_invis_potion
@@ -47,3 +48,4 @@ def register_all_game_data():
     register_rod_of_lightning_item()
     register_entangling_roots_ability()
     register_decorations()
+    register_map_editor_icons()

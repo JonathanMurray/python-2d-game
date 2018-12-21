@@ -16,12 +16,13 @@ GRID_CELL_SIZE = 25
 
 class MapFileEntity:
     def __init__(self, enemy_type: Optional[EnemyType], is_player: bool, is_wall: bool,
-                 potion_type: Optional[PotionType], item_type: Optional[ItemType]):
+                 potion_type: Optional[PotionType], item_type: Optional[ItemType], decoration_sprite: Optional[Sprite]):
         self.enemy_type = enemy_type
         self.is_player = is_player
         self.is_wall = is_wall
         self.potion_type = potion_type
         self.item_type = item_type
+        self.decoration_sprite = decoration_sprite
 
     def __str__(self):
         return str(self.__dict__)
@@ -35,23 +36,27 @@ class MapFileEntity:
 
     @staticmethod
     def player():
-        return MapFileEntity(None, True, False, None, None)
+        return MapFileEntity(None, True, False, None, None, None)
 
     @staticmethod
     def enemy(enemy_type: EnemyType):
-        return MapFileEntity(enemy_type, False, False, None, None)
+        return MapFileEntity(enemy_type, False, False, None, None, None)
 
     @staticmethod
     def wall():
-        return MapFileEntity(None, False, True, None, None)
+        return MapFileEntity(None, False, True, None, None, None)
 
     @staticmethod
     def potion(potion_type: PotionType):
-        return MapFileEntity(None, False, False, potion_type, None)
+        return MapFileEntity(None, False, False, potion_type, None, None)
 
     @staticmethod
     def item(item_type: ItemType):
-        return MapFileEntity(None, False, False, None, item_type)
+        return MapFileEntity(None, False, False, None, item_type, None)
+
+    @staticmethod
+    def decoration(sprite: Sprite):
+        return MapFileEntity(None, False, False, None, None, sprite)
 
 
 MAP_FILE_ENTITIES_BY_CHAR: Dict[str, MapFileEntity] = {
@@ -69,7 +74,9 @@ MAP_FILE_ENTITIES_BY_CHAR: Dict[str, MapFileEntity] = {
     'B': MapFileEntity.item(ItemType.WINGED_BOOTS),
     'O': MapFileEntity.item(ItemType.SWORD_OF_LEECHING),
     'L': MapFileEntity.item(ItemType.ROD_OF_LIGHTNING),
-    'E': MapFileEntity.item(ItemType.AMULET_OF_MANA)
+    'E': MapFileEntity.item(ItemType.AMULET_OF_MANA),
+
+    'G': MapFileEntity.decoration(Sprite.DECORATION_GROUND_STONE)
 }
 
 CHARS_BY_MAP_FILE_ENTITY: Dict[MapFileEntity, str] = {v: k for k, v in MAP_FILE_ENTITIES_BY_CHAR.items()}
@@ -149,11 +156,8 @@ def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str
         walls = [WorldEntity(pos, WALL_SIZE, Sprite.WALL) for pos in wall_positions]
 
         game_world_size = json_data["game_world_size"]
-        decoration_entities = [
-            DecorationEntity((1540, 490), Sprite.DECORATION_GROUND_STONE),
-            DecorationEntity((1572, 490), Sprite.DECORATION_GROUND_STONE),
-            DecorationEntity((1604, 490), Sprite.DECORATION_GROUND_STONE),
-        ]
+
+        decoration_entities = [DecorationEntity(d["position"], Sprite[d["sprite"]]) for d in json_data["decorations"]]
         game_state = GameState(player_entity, potions, items, enemies, walls, camera_size, game_world_size,
                                INTIAL_PLAYER_STATE, decoration_entities)
         path_finder.set_grid(game_state.grid)
@@ -221,6 +225,10 @@ def save_game_state_to_json_file(game_state: GameState, map_file: str):
     json_data["items_on_ground"] = []
     for i in game_state.items_on_ground:
         json_data["items_on_ground"].append({"item_type": i.item_type.name, "position": i.world_entity.get_position()})
+
+    json_data["decorations"] = []
+    for d in game_state.decoration_entities:
+        json_data["decorations"].append({"sprite": d.sprite.name, "position": d.get_position()})
 
     json_data["game_world_size"] = game_state.game_world_size
 

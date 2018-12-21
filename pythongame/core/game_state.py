@@ -302,6 +302,9 @@ class DecorationEntity:
         # Used by view module in map_editor
         return self.x, self.y, 0, 0
 
+    def get_position(self):
+        return self.x, self.y
+
 
 class GameState:
     def __init__(self, player_entity: WorldEntity, potions_on_ground: List[PotionOnGround],
@@ -349,10 +352,9 @@ class GameState:
 
     def get_all_entities_to_render(self) -> List[Union[WorldEntity, DecorationEntity]]:
         walls = self._get_walls_from_buckets_in_camera()
-        return [self.player_entity] + [p.world_entity for p in self.potions_on_ground] + \
+        return self.decoration_entities + [self.player_entity] + [p.world_entity for p in self.potions_on_ground] + \
                [i.world_entity for i in self.items_on_ground] + \
-               [e.world_entity for e in self.enemies] + walls + [p.world_entity for p in self.projectile_entities] + \
-               self.decoration_entities
+               [e.world_entity for e in self.enemies] + walls + [p.world_entity for p in self.projectile_entities]
 
     def center_camera_on_player(self):
         new_camera_pos = get_position_from_center_position(self.player_entity.get_center_position(), self.camera_size)
