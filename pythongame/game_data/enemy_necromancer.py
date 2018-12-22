@@ -20,7 +20,8 @@ class EnemyMind(AbstractEnemyMind):
         self._time_since_decision = 0
         self._decision_interval = 750
         self._time_since_summoning = 0
-        self._summoning_cooldown = 8000
+        self._max_summoning_cooldown = 8000
+        self._summoning_cooldown = self._max_summoning_cooldown
         self._time_since_healing = 0
         self._healing_cooldown = 5000
 
@@ -37,9 +38,13 @@ class EnemyMind(AbstractEnemyMind):
             mummy_pos = get_position_from_center_position(mummy_center_pos, ENEMIES[EnemyType.MUMMY].size)
             mummy_enemy = create_enemy(EnemyType.MUMMY, mummy_pos)
             if not game_state.would_entity_collide_if_new_pos(mummy_enemy.world_entity, mummy_pos):
+                self._summoning_cooldown = self._max_summoning_cooldown
                 game_state.enemies.append(mummy_enemy)
                 game_state.visual_effects.append(VisualCircle((80, 150, 100), necro_center_pos, 40, 70, Millis(120), 3))
                 game_state.visual_effects.append(VisualCircle((80, 150, 100), mummy_center_pos, 40, 70, Millis(120), 3))
+            else:
+                # Failed to summon, so try again without waiting full duration
+                self._summoning_cooldown = 1000
 
         if self._time_since_healing > self._healing_cooldown:
             self._time_since_healing = 0
