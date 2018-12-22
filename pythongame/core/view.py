@@ -9,11 +9,13 @@ from pythongame.core.game_state import WorldEntity, DecorationEntity
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 
+COLOR_BACKGROUND = (88, 72, 40)
+COLOR_BACKGROUND_LINES = (93, 77, 45)
+
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
 COLOR_RED = (250, 0, 0)
 COLOR_BLUE = (0, 0, 250)
-COLOR_BACKGROUND = (200, 200, 200)
 COLOR_HIGHLIGHTED_ICON = (250, 250, 150)
 UI_ICON_SIZE = (32, 32)
 MAP_EDITOR_UI_ICON_SIZE = (32, 32)
@@ -157,8 +159,7 @@ class View:
     # ------------------------------------
 
     def _world_ground(self, game_world_size):
-        line_color = (190, 190, 200)
-        grid_width = 50
+        grid_width = 35
         # TODO num squares should depend on map size. Ideally this dumb looping logic should change.
         num_squares = 200
         column_screen_y_0 = self._translate_world_y_to_screen(max(0, self.camera_world_area.y))
@@ -168,7 +169,7 @@ class View:
             world_x = col * grid_width
             if 0 < world_x < game_world_size[0]:
                 screen_x = self._translate_world_x_to_screen(world_x)
-                self._line(line_color, (screen_x, column_screen_y_0), (screen_x, column_screen_y_1), 1)
+                self._line(COLOR_BACKGROUND_LINES, (screen_x, column_screen_y_0), (screen_x, column_screen_y_1), 1)
         row_screen_x_0 = self._translate_world_x_to_screen(max(0, self.camera_world_area.x))
         row_screen_x_1 = self._translate_world_x_to_screen(
             min(game_world_size[0], self.camera_world_area.x + self.camera_world_area.w))
@@ -176,7 +177,7 @@ class View:
             world_y = row * grid_width
             if 0 < world_y < game_world_size[1]:
                 screen_y = self._translate_world_y_to_screen(world_y)
-                self._line(line_color, (row_screen_x_0, screen_y), (row_screen_x_1, screen_y), 1)
+                self._line(COLOR_BACKGROUND_LINES, (row_screen_x_0, screen_y), (row_screen_x_1, screen_y), 1)
 
         if RENDER_WORLD_COORDINATES:
             for col in range(num_squares):
