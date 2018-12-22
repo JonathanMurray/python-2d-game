@@ -108,6 +108,7 @@ def main(args: List[str]):
     snapped_mouse_screen_position = (0, 0)
     snapped_mouse_world_position = (0, 0)
     is_snapped_mouse_within_world = True
+    is_snapped_mouse_over_ui = False
 
     game_state.center_camera_on_player()
     game_state.camera_world_area.set_position(((game_state.camera_world_area.x // grid_cell_size) * grid_cell_size,
@@ -127,7 +128,8 @@ def main(args: List[str]):
                 snapped_mouse_world_position = sum_of_vectors(
                     snapped_mouse_screen_position, game_state.camera_world_area.get_position())
                 is_snapped_mouse_within_world = game_state.is_position_within_game_world(snapped_mouse_world_position)
-                if is_mouse_button_down:
+                is_snapped_mouse_over_ui = view.is_screen_position_within_ui(snapped_mouse_screen_position)
+                if is_mouse_button_down and is_snapped_mouse_within_world and not is_snapped_mouse_over_ui:
                     if user_state.placing_entity:
                         if user_state.placing_entity.wall_type:
                             _add_wall_to_position(game_state, snapped_mouse_world_position,
@@ -161,7 +163,7 @@ def main(args: List[str]):
                 is_mouse_button_down = True
                 if user_state.placing_entity:
                     entity_being_placed = user_state.placing_entity
-                    if is_snapped_mouse_within_world:
+                    if is_snapped_mouse_within_world and not is_snapped_mouse_over_ui:
                         if entity_being_placed.is_player:
                             game_state.player_entity.set_position(snapped_mouse_world_position)
                         elif entity_being_placed.enemy_type:
@@ -217,7 +219,10 @@ def main(args: List[str]):
                                   user_state.deleting_entities, user_state.deleting_decorations,
                                   len(game_state.enemies), len(game_state.walls), len(game_state.decoration_entities))
 
-        if not is_snapped_mouse_within_world:
+        if is_snapped_mouse_over_ui:
+            pass
+            # render nothing over UI
+        elif not is_snapped_mouse_within_world:
             snapped_mouse_rect = (snapped_mouse_screen_position[0], snapped_mouse_screen_position[1],
                                   grid_cell_size, grid_cell_size)
             view.render_map_editor_mouse_rect((250, 50, 0), snapped_mouse_rect)
@@ -250,10 +255,12 @@ def main(args: List[str]):
             snapped_mouse_rect = (snapped_mouse_screen_position[0], snapped_mouse_screen_position[1],
                                   grid_cell_size, grid_cell_size)
             view.render_map_editor_mouse_rect((250, 250, 0), snapped_mouse_rect)
-        else:
+        elif user_state.deleting_decorations:
             snapped_mouse_rect = (snapped_mouse_screen_position[0], snapped_mouse_screen_position[1],
                                   grid_cell_size, grid_cell_size)
             view.render_map_editor_mouse_rect((0, 250, 250), snapped_mouse_rect)
+        else:
+            raise Exception("Unhandled user_state: " + str(user_state))
 
         view.update_display()
 
