@@ -4,7 +4,7 @@ import pygame
 
 from pythongame.core.common import Direction, Sprite, PotionType, sum_of_vectors, ItemType, is_point_in_rect
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
-    ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, ENEMIES, POTIONS, ITEMS, UiIconSprite
+    ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, ENEMIES, POTIONS, ITEMS, UiIconSprite, WALLS
 from pythongame.core.game_state import WorldEntity, DecorationEntity
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 from pythongame.game_world_init import MapFileEntity
@@ -16,7 +16,7 @@ COLOR_BLUE = (0, 0, 250)
 COLOR_BACKGROUND = (200, 200, 200)
 COLOR_HIGHLIGHTED_ICON = (250, 250, 150)
 UI_ICON_SIZE = (32, 32)
-MAP_EDITOR_UI_ICON_SIZE = (48, 48)
+MAP_EDITOR_UI_ICON_SIZE = (32, 32)
 
 RENDER_WORLD_COORDINATES = False
 
@@ -341,7 +341,8 @@ class View:
             elif map_file_entity.is_player:
                 image = self.images_by_sprite[Sprite.PLAYER][Direction.DOWN][0].image
             elif map_file_entity.wall_type:
-                image = self.images_by_sprite[Sprite.WALL][Direction.DOWN][0].image
+                wall_data = WALLS[map_file_entity.wall_type]
+                image = self.images_by_sprite[wall_data.sprite][Direction.DOWN][0].image
             elif map_file_entity.item_type:
                 ui_icon_sprite = ITEMS[map_file_entity.item_type].icon_sprite
                 image = self.images_by_ui_sprite[ui_icon_sprite]
@@ -358,7 +359,7 @@ class View:
         self._rect(COLOR_WHITE, (x, y, w, h), 2)
         if highlighted:
             self._rect(COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
-        self._text(self.font_tiny, user_input_key, (x + 20, y + h + 4))
+        self._text(self.font_tiny, user_input_key, (x + 12, y + h + 4))
 
     def _text_in_ui(self, font, text, x, y):
         screen_pos = self._translate_ui_position_to_screen((x, y))
