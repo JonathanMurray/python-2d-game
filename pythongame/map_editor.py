@@ -12,66 +12,66 @@ from pythongame.core.view import View
 from pythongame.game_data.player_data import INTIAL_PLAYER_STATE, PLAYER_ENTITY_SIZE, PLAYER_ENTITY_SPEED
 from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
 from pythongame.game_world_init import save_game_state_to_json_file, create_game_state_from_json_file
-from pythongame.map_editor_world_entity import MapFileEntity
+from pythongame.map_editor_world_entity import MapEditorWorldEntity
 from pythongame.register_game_data import register_all_game_data
 
 # TODO Avoid depending on pythongame.game_data from here
 
 
-MAP_FILE_ENTITIES_BY_CHAR: Dict[str, MapFileEntity] = {
-    'P': MapFileEntity.player(),
+ENTITIES_BY_CHAR: Dict[str, MapEditorWorldEntity] = {
+    'P': MapEditorWorldEntity.player(),
 
-    'X': MapFileEntity.wall(WallType.WALL),
-    'T': MapFileEntity.wall(WallType.STATUE),
-    '3': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_N),
-    '4': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_NE),
-    '5': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_E),
-    '6': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_SE),
-    '7': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_S),
-    '8': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_SW),
-    '9': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_W),
-    '0': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_NW),
+    'X': MapEditorWorldEntity.wall(WallType.WALL),
+    'T': MapEditorWorldEntity.wall(WallType.STATUE),
+    '3': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_N),
+    '4': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_NE),
+    '5': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_E),
+    '6': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_SE),
+    '7': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_S),
+    '8': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_SW),
+    '9': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_W),
+    '0': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_NW),
 
-    'D': MapFileEntity.enemy(EnemyType.DARK_REAPER),
-    'R': MapFileEntity.enemy(EnemyType.RAT_1),
-    '2': MapFileEntity.enemy(EnemyType.RAT_2),
-    'H': MapFileEntity.potion(PotionType.HEALTH),
-    'M': MapFileEntity.potion(PotionType.MANA),
-    'W': MapFileEntity.enemy(EnemyType.GOBLIN_WARLOCK),
-    'U': MapFileEntity.enemy(EnemyType.MUMMY),
-    'A': MapFileEntity.enemy(EnemyType.NECROMANCER),
+    'D': MapEditorWorldEntity.enemy(EnemyType.DARK_REAPER),
+    'R': MapEditorWorldEntity.enemy(EnemyType.RAT_1),
+    '2': MapEditorWorldEntity.enemy(EnemyType.RAT_2),
+    'H': MapEditorWorldEntity.potion(PotionType.HEALTH),
+    'M': MapEditorWorldEntity.potion(PotionType.MANA),
+    'W': MapEditorWorldEntity.enemy(EnemyType.GOBLIN_WARLOCK),
+    'U': MapEditorWorldEntity.enemy(EnemyType.MUMMY),
+    'A': MapEditorWorldEntity.enemy(EnemyType.NECROMANCER),
 
-    'B': MapFileEntity.item(ItemType.WINGED_BOOTS),
-    'O': MapFileEntity.item(ItemType.SWORD_OF_LEECHING),
-    'L': MapFileEntity.item(ItemType.ROD_OF_LIGHTNING),
-    'E': MapFileEntity.item(ItemType.AMULET_OF_MANA),
+    'B': MapEditorWorldEntity.item(ItemType.WINGED_BOOTS),
+    'O': MapEditorWorldEntity.item(ItemType.SWORD_OF_LEECHING),
+    'L': MapEditorWorldEntity.item(ItemType.ROD_OF_LIGHTNING),
+    'E': MapEditorWorldEntity.item(ItemType.AMULET_OF_MANA),
 
-    'G': MapFileEntity.decoration(Sprite.DECORATION_GROUND_STONE),
+    'G': MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE),
 
-    'N': MapFileEntity.decoration(Sprite.DECORATION_PLANT)
+    'N': MapEditorWorldEntity.decoration(Sprite.DECORATION_PLANT)
 }
 
-CHARS_BY_MAP_FILE_ENTITY: Dict[MapFileEntity, str] = {v: k for k, v in MAP_FILE_ENTITIES_BY_CHAR.items()}
+CHARS_BY_ENTITY: Dict[MapEditorWorldEntity, str] = {v: k for k, v in ENTITIES_BY_CHAR.items()}
 
 SCREEN_SIZE = (1200, 750)
 CAMERA_SIZE = (1200, 600)
 
 register_all_game_data()
 
-if 'S' in MAP_FILE_ENTITIES_BY_CHAR:
+if 'S' in ENTITIES_BY_CHAR:
     raise Exception("'S' key should be reserved for saving, but it's claimed by entity: "
-                    + str(MAP_FILE_ENTITIES_BY_CHAR['S']))
+                    + str(ENTITIES_BY_CHAR['S']))
 
 
 class UserState:
-    def __init__(self, placing_map_file_entity: Optional[MapFileEntity], deleting_entities: bool,
+    def __init__(self, placing_entity: Optional[MapEditorWorldEntity], deleting_entities: bool,
                  deleting_decorations: bool):
-        self.placing_map_file_entity = placing_map_file_entity
+        self.placing_entity = placing_entity
         self.deleting_entities = deleting_entities
         self.deleting_decorations = deleting_decorations
 
     @staticmethod
-    def placing_entity(entity: MapFileEntity):
+    def placing_entity(entity: MapEditorWorldEntity):
         return UserState(entity, False, False)
 
     @staticmethod
@@ -128,18 +128,18 @@ def main(args: List[str]):
                     snapped_mouse_screen_position, game_state.camera_world_area.get_position())
                 is_snapped_mouse_within_world = game_state.is_position_within_game_world(snapped_mouse_world_position)
                 if is_mouse_button_down:
-                    if user_state.placing_map_file_entity:
-                        if user_state.placing_map_file_entity.wall_type:
+                    if user_state.placing_entity:
+                        if user_state.placing_entity.wall_type:
                             _add_wall_to_position(game_state, snapped_mouse_world_position,
-                                                  user_state.placing_map_file_entity.wall_type)
+                                                  user_state.placing_entity.wall_type)
                     elif user_state.deleting_entities:
                         _delete_map_entities_from_position(game_state, snapped_mouse_world_position)
                     else:
                         _delete_map_decorations_from_position(game_state, snapped_mouse_world_position)
 
             if event.type == pygame.KEYDOWN:
-                if event.unicode.upper() in MAP_FILE_ENTITIES_BY_CHAR:
-                    user_state = UserState.placing_entity(MAP_FILE_ENTITIES_BY_CHAR[event.unicode.upper()])
+                if event.unicode.upper() in ENTITIES_BY_CHAR:
+                    user_state = UserState.placing_entity(ENTITIES_BY_CHAR[event.unicode.upper()])
                 elif event.key == pygame.K_s:
                     save_file = map_file
                     save_game_state_to_json_file(game_state, save_file)
@@ -159,8 +159,8 @@ def main(args: List[str]):
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 is_mouse_button_down = True
-                if user_state.placing_map_file_entity:
-                    entity_being_placed = user_state.placing_map_file_entity
+                if user_state.placing_entity:
+                    entity_being_placed = user_state.placing_entity
                     if is_snapped_mouse_within_world:
                         if entity_being_placed.is_player:
                             game_state.player_entity.set_position(snapped_mouse_world_position)
@@ -213,7 +213,7 @@ def main(args: List[str]):
             player_max_health=game_state.player_state.max_health,
             game_world_size=game_state.game_world_size)
 
-        view.render_map_editor_ui(MAP_FILE_ENTITIES_BY_CHAR, user_state.placing_map_file_entity,
+        view.render_map_editor_ui(ENTITIES_BY_CHAR, user_state.placing_entity,
                                   user_state.deleting_entities, user_state.deleting_decorations,
                                   len(game_state.enemies), len(game_state.walls), len(game_state.decoration_entities))
 
@@ -221,8 +221,8 @@ def main(args: List[str]):
             snapped_mouse_rect = (snapped_mouse_screen_position[0], snapped_mouse_screen_position[1],
                                   grid_cell_size, grid_cell_size)
             view.render_map_editor_mouse_rect((250, 50, 0), snapped_mouse_rect)
-        elif user_state.placing_map_file_entity:
-            entity_being_placed = user_state.placing_map_file_entity
+        elif user_state.placing_entity:
+            entity_being_placed = user_state.placing_entity
             if entity_being_placed.enemy_type:
                 data = ENEMIES[entity_being_placed.enemy_type]
                 entity = WorldEntity((0, 0), data.size, data.sprite, Direction.DOWN, data.speed)

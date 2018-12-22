@@ -7,7 +7,7 @@ from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE
     ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, ENEMIES, POTIONS, ITEMS, UiIconSprite, WALLS
 from pythongame.core.game_state import WorldEntity, DecorationEntity
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
-from pythongame.map_editor_world_entity import MapFileEntity
+from pythongame.map_editor_world_entity import MapEditorWorldEntity
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -324,32 +324,32 @@ class View:
         self._rect(COLOR_WHITE, (x, y, w, h), 2)
 
     def _map_editor_icon_in_ui(self, x_in_ui, y_in_ui, size, highlighted: bool, user_input_key: str,
-                               map_file_entity: Optional[MapFileEntity], non_entity_icon: Optional[UiIconSprite]):
+                               entity: Optional[MapEditorWorldEntity], non_entity_icon: Optional[UiIconSprite]):
         w = size[0]
         h = size[1]
         x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
 
         self._rect_filled((40, 40, 40), (x, y, w, h))
 
-        if map_file_entity:
-            if map_file_entity.enemy_type:
-                enemy_data = ENEMIES[map_file_entity.enemy_type]
+        if entity:
+            if entity.enemy_type:
+                enemy_data = ENEMIES[entity.enemy_type]
                 image = self.images_by_sprite[enemy_data.sprite][Direction.DOWN][0].image
-            elif map_file_entity.potion_type:
-                ui_icon_sprite = POTIONS[map_file_entity.potion_type].icon_sprite
+            elif entity.potion_type:
+                ui_icon_sprite = POTIONS[entity.potion_type].icon_sprite
                 image = self.images_by_ui_sprite[ui_icon_sprite]
-            elif map_file_entity.is_player:
+            elif entity.is_player:
                 image = self.images_by_sprite[Sprite.PLAYER][Direction.DOWN][0].image
-            elif map_file_entity.wall_type:
-                wall_data = WALLS[map_file_entity.wall_type]
+            elif entity.wall_type:
+                wall_data = WALLS[entity.wall_type]
                 image = self.images_by_sprite[wall_data.sprite][Direction.DOWN][0].image
-            elif map_file_entity.item_type:
-                ui_icon_sprite = ITEMS[map_file_entity.item_type].icon_sprite
+            elif entity.item_type:
+                ui_icon_sprite = ITEMS[entity.item_type].icon_sprite
                 image = self.images_by_ui_sprite[ui_icon_sprite]
-            elif map_file_entity.decoration_sprite:
-                image = self.images_by_sprite[map_file_entity.decoration_sprite][Direction.DOWN][0].image
+            elif entity.decoration_sprite:
+                image = self.images_by_sprite[entity.decoration_sprite][Direction.DOWN][0].image
             else:
-                raise Exception("Unknown entity: " + str(map_file_entity))
+                raise Exception("Unknown entity: " + str(entity))
         else:
             image = self.images_by_ui_sprite[non_entity_icon]
 
@@ -533,7 +533,7 @@ class View:
             self._text(self.font_huge, "PAUSED", (self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50))
 
     def render_map_editor_ui(
-            self, map_file_entities_by_char: Dict[str, MapFileEntity], placing_map_file_entity: Optional[MapFileEntity],
+            self, entities_by_char: Dict[str, MapEditorWorldEntity], placing_entity: Optional[MapEditorWorldEntity],
             deleting_entities: bool, deleting_decorations: bool, num_enemies: int, num_walls: int,
             num_decorations: int):
 
@@ -555,12 +555,11 @@ class View:
         x_1 = 155
         self._text_in_ui(self.font_large, "ENTITIES", x_1, y_1)
         i = 0
-        for char in map_file_entities_by_char.keys():
-            map_file_entity = map_file_entities_by_char[char]
-            is_this_entity_being_placed = map_file_entity is placing_map_file_entity
+        for char in entities_by_char.keys():
+            entity = entities_by_char[char]
+            is_this_entity_being_placed = entity is placing_entity
             self._map_editor_icon_in_ui(x_1 + i * (MAP_EDITOR_UI_ICON_SIZE[0] + icon_space), y_2,
-                                        MAP_EDITOR_UI_ICON_SIZE, is_this_entity_being_placed, char, map_file_entity,
-                                        None)
+                                        MAP_EDITOR_UI_ICON_SIZE, is_this_entity_being_placed, char, entity, None)
             i += 1
 
         self._rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
