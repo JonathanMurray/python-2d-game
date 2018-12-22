@@ -534,7 +534,8 @@ class View:
 
     def render_map_editor_ui(
             self, map_file_entities_by_char: Dict[str, MapFileEntity], placing_map_file_entity: Optional[MapFileEntity],
-            deleting_entities: bool, deleting_decorations: bool):
+            deleting_entities: bool, deleting_decorations: bool, num_enemies: int, num_walls: int,
+            num_decorations: int):
 
         self._rect(COLOR_BLACK, (0, 0, self.camera_size[0], self.camera_size[1]), 3)
         self._rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
@@ -563,6 +564,11 @@ class View:
             i += 1
 
         self._rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
+
+        self._rect_transparent((0, 0, 150, 60), 100, COLOR_BLACK)
+        self._text(self.font_tiny, "# enemies: " + str(num_enemies), (5, 3))
+        self._text(self.font_tiny, "# walls: " + str(num_walls), (5, 20))
+        self._text(self.font_tiny, "# decorations: " + str(num_decorations), (5, 37))
 
     def render_map_editor_mouse_rect(self, color: Tuple[int, int, int],
                                      map_editor_mouse_rect: Tuple[int, int, int, int]):

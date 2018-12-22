@@ -162,9 +162,11 @@ def main(args: List[str]):
             if event.type == pygame.MOUSEBUTTONUP:
                 is_mouse_button_down = False
 
+        entities_to_render = game_state.get_all_entities_to_render()
+        decorations_to_render = game_state.get_decorations_to_render()
         view.render_world(
-            all_entities_to_render=game_state.get_all_entities_to_render(),
-            decorations_to_render=game_state.get_decorations_to_render(),
+            all_entities_to_render=entities_to_render,
+            decorations_to_render=decorations_to_render,
             player_entity=game_state.player_entity,
             is_player_invisible=game_state.player_state.is_invisible,
             camera_world_area=game_state.camera_world_area,
@@ -176,7 +178,8 @@ def main(args: List[str]):
             game_world_size=game_state.game_world_size)
 
         view.render_map_editor_ui(MAP_FILE_ENTITIES_BY_CHAR, user_state.placing_map_file_entity,
-                                  user_state.deleting_entities, user_state.deleting_decorations)
+                                  user_state.deleting_entities, user_state.deleting_decorations,
+                                  len(game_state.enemies), len(game_state.walls), len(game_state.decoration_entities))
 
         if not is_snapped_mouse_within_world:
             snapped_mouse_rect = (snapped_mouse_screen_position[0], snapped_mouse_screen_position[1],
