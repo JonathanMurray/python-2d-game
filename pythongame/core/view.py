@@ -529,9 +529,13 @@ class View:
             self._tooltip(tooltip_title, tooltip_details, tooltip_bottom_left_position)
 
         if is_game_over:
-            self._text(self.font_huge, "You died!", (self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50))
+            self._fat_text("You died!", self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50)
         elif is_paused:
-            self._text(self.font_huge, "PAUSED", (self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50))
+            self._fat_text("PAUSED", self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50)
+
+    def _fat_text(self, text, x, y):
+        self._text(self.font_huge, text, (x, y), COLOR_WHITE)
+        self._text(self.font_huge, text, (x + 2, y + 2), COLOR_BLACK)
 
     def render_map_editor_ui(
             self, entities_by_char: Dict[str, MapEditorWorldEntity], placing_entity: Optional[MapEditorWorldEntity],
