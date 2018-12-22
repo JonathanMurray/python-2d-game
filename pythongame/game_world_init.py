@@ -64,6 +64,15 @@ MAP_FILE_ENTITIES_BY_CHAR: Dict[str, MapFileEntity] = {
 
     'X': MapFileEntity.wall(WallType.WALL),
     'T': MapFileEntity.wall(WallType.STATUE),
+    '3': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_N),
+    '4': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_NE),
+    '5': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_E),
+    '6': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_SE),
+    '7': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_S),
+    '8': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_SW),
+    '9': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_W),
+    '0': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_NW),
+
 
     'D': MapFileEntity.enemy(EnemyType.DARK_REAPER),
     'R': MapFileEntity.enemy(EnemyType.RAT_1),

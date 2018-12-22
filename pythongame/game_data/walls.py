@@ -5,6 +5,7 @@ from pythongame.core.game_data import register_wall_data, WallData, register_ent
 def register_walls():
     _register_wall()
     _register_statue()
+    _register_directional_walls()
 
 
 def _register_wall():
@@ -19,6 +20,31 @@ def _register_wall():
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir,
                                (1, 1))
     register_wall_data(WallType.WALL, WallData(sprite, size))
+
+
+def _register_directional_walls():
+    _register_directional_wall(WallType.WALL_DIRECTIONAL_N, Sprite.WALL_DIRECTIONAL_N,
+                               "resources/graphics/hyrule_wall_top_corner.png", [0, 0])
+    _register_directional_wall(WallType.WALL_DIRECTIONAL_NE, Sprite.WALL_DIRECTIONAL_NE,
+                               "resources/graphics/hyrule_wall_top_corner.png", [1, 0])
+    _register_directional_wall(WallType.WALL_DIRECTIONAL_E, Sprite.WALL_DIRECTIONAL_E,
+                               "resources/graphics/hyrule_wall_right_corner.png", [0, 0])
+    _register_directional_wall(WallType.WALL_DIRECTIONAL_SE, Sprite.WALL_DIRECTIONAL_SE,
+                               "resources/graphics/hyrule_wall_right_corner.png", [0, 1])
+    _register_directional_wall(WallType.WALL_DIRECTIONAL_S, Sprite.WALL_DIRECTIONAL_S,
+                               "resources/graphics/hyrule_wall_left_corner_bot.png", [1, 1])
+    _register_directional_wall(WallType.WALL_DIRECTIONAL_SW, Sprite.WALL_DIRECTIONAL_SW,
+                               "resources/graphics/hyrule_wall_left_corner_bot.png", [0, 1])
+    _register_directional_wall(WallType.WALL_DIRECTIONAL_W, Sprite.WALL_DIRECTIONAL_W,
+                               "resources/graphics/hyrule_wall_left_corner_bot.png", [0, 0])
+    _register_directional_wall(WallType.WALL_DIRECTIONAL_NW, Sprite.WALL_DIRECTIONAL_NW,
+                               "resources/graphics/hyrule_wall_corner.png", [0, 0])
+
+def _register_directional_wall(wall_type, sprite, sprite_sheet_path, sprite_sheet_index):
+    register_entity_sprite_map(
+        sprite, SpriteSheet(sprite_sheet_path), (21, 21), (25, 25),
+        {Direction.DOWN: [sprite_sheet_index]}, (0, 0))
+    register_wall_data(wall_type, WallData(sprite, (25, 25)))
 
 
 def _register_statue():
