@@ -84,10 +84,19 @@ class View:
         self.ui_screen_area = ScreenArea((0, camera_size[1]), (screen_size[0], screen_size[1] - camera_size[1]))
         self.camera_size = camera_size
         self.screen_size = screen_size
-        self.font_huge = pygame.font.SysFont('Arial', 64)
-        self.font_large = pygame.font.SysFont('Arial', 22)
-        self.font_small = pygame.font.Font(None, 25)
-        self.font_tiny = pygame.font.Font(None, 19)
+
+        self.font_splash_screen = pygame.font.SysFont('Arial', 64)
+        self.font_ui_stat_bar_numbers = pygame.font.Font('/System/Library/Fonts/Monaco.dfont', 12)
+        self.font_ui_headers = pygame.font.Font('/Library/Fonts/Herculanum.ttf', 18)
+        self.font_tooltip_header = pygame.font.Font('/Library/Fonts/Herculanum.ttf', 16)
+        self.font_tooltip_details = pygame.font.Font('/System/Library/Fonts/Monaco.dfont', 12)
+        self.font_buff_texts = pygame.font.Font('/System/Library/Fonts/Monaco.dfont', 12)
+        self.font_message = pygame.font.Font('/System/Library/Fonts/Monaco.dfont', 14)
+        self.font_debug_info = pygame.font.Font(None, 19)
+        self.font_game_world_text = pygame.font.Font('/Library/Fonts/Arial Rounded Bold.ttf', 12)
+        self.font_game_world_text = pygame.font.Font(None, 19)
+        self.font_ui_icon_keys = pygame.font.Font('/Library/Fonts/Courier New Bold.ttf', 11)
+
         self.images_by_sprite: Dict[Sprite, Dict[Direction, List[ImageWithRelativePosition]]] = {
             sprite: load_and_scale_directional_sprites(ENTITY_SPRITE_INITIALIZERS[sprite])
             for sprite in ENTITY_SPRITE_INITIALIZERS
@@ -187,7 +196,7 @@ class View:
                         screen_x = self._translate_world_x_to_screen(world_x)
                         world_y = row * grid_width
                         screen_y = self._translate_world_y_to_screen(world_y)
-                        self._text(self.font_tiny, str(world_x) + "," + str(world_y), (screen_x, screen_y),
+                        self._text(self.font_debug_info, str(world_x) + "," + str(world_y), (screen_x, screen_y),
                                    (250, 250, 250))
 
     def _world_rect(self, color, world_rect, line_width=0):
@@ -249,7 +258,7 @@ class View:
     def _visual_text(self, visual_effect):
         position = visual_effect.position()
         translated_position = self._translate_world_position_to_screen(position)
-        self._text(self.font_tiny, visual_effect.text, translated_position, visual_effect.color)
+        self._text(self.font_game_world_text, visual_effect.text, translated_position, visual_effect.color)
 
     def _visual_sprite(self, visual_sprite):
         position = visual_sprite.position
@@ -290,7 +299,7 @@ class View:
         self._rect(COLOR_WHITE, (x, y, w, h), 2)
         if highlighted_potion_action == potion_number:
             self._rect(COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
-        self._text(self.font_tiny, str(potion_number), (x + 8, y + h + 4))
+        self._text(self.font_ui_icon_keys, str(potion_number), (x + 8, y + h + 4))
 
     def _ability_icon_in_ui(self, x_in_ui, y_in_ui, size, ability_type, highlighted_ability_action,
                             ability_cooldowns_remaining):
@@ -299,15 +308,13 @@ class View:
         x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
         ability = ABILITIES[ability_type]
         ability_key = USER_ABILITY_KEYS[ability_type]
-        mana_cost = ability.mana_cost
         icon_sprite = ability.icon_sprite
         self._rect_filled((40, 40, 40), (x, y, w, h))
         self._image(self.images_by_ui_sprite[icon_sprite], (x, y))
         self._rect(COLOR_WHITE, (x, y, w, h), 2)
         if highlighted_ability_action == ability_type:
             self._rect(COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
-        self._text(self.font_tiny, ability_key.key_string, (x + 8, y + h + 4))
-        self._text(self.font_tiny, str(mana_cost), (x + 8, y + h + 19))
+        self._text(self.font_ui_icon_keys, ability_key.key_string, (x + 8, y + h + 4))
 
         if ability_cooldowns_remaining[ability_type] > 0:
             ratio_remaining = ability_cooldowns_remaining[ability_type] / ability.cooldown
@@ -360,7 +367,7 @@ class View:
         self._rect(COLOR_WHITE, (x, y, w, h), 2)
         if highlighted:
             self._rect(COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
-        self._text(self.font_tiny, user_input_key, (x + 12, y + h + 4))
+        self._text(self.font_ui_icon_keys, user_input_key, (x + 12, y + h + 4))
 
     def _text_in_ui(self, font, text, x, y):
         screen_pos = self._translate_ui_position_to_screen((x, y))
@@ -380,7 +387,7 @@ class View:
         x_message = self.ui_screen_area.w / 2 - 140
         y_message = self.ui_screen_area.y - 30
         self._rect_transparent((x_message - 10, y_message - 5, 280, 28), 85, (0, 0, 0))
-        self._text(self.font_small, message, (x_message, y_message))
+        self._text(self.font_message, message, (x_message, y_message))
 
     def _tooltip(self, title: str, details: List[str], position_bottom_left: Tuple[int, int]):
         w_tooltip = 320
@@ -390,11 +397,11 @@ class View:
         rect_tooltip = (x_tooltip, y_tooltip, w_tooltip, h_tooltip)
         self._rect_transparent((x_tooltip, y_tooltip, w_tooltip, h_tooltip), 240, (0, 0, 30))
         self._rect(COLOR_WHITE, rect_tooltip, 2)
-        self._text(self.font_large, title, (x_tooltip + 20, y_tooltip + 15), COLOR_WHITE)
+        self._text(self.font_tooltip_header, title, (x_tooltip + 20, y_tooltip + 15), COLOR_WHITE)
         y_separator = y_tooltip + 40
         self._line(COLOR_WHITE, (x_tooltip + 10, y_separator), (x_tooltip + w_tooltip - 10, y_separator), 1)
         for i, detail in enumerate(details):
-            self._text(self.font_tiny, detail, (x_tooltip + 20, y_tooltip + 60 + i * 20), COLOR_WHITE)
+            self._text(self.font_tooltip_details, detail, (x_tooltip + 20, y_tooltip + 50 + i * 20), COLOR_WHITE)
 
     def render_world(self, all_entities_to_render: List[WorldEntity], decorations_to_render: List[DecorationEntity],
                      camera_world_area, enemies, is_player_invisible, player_entity,
@@ -444,26 +451,26 @@ class View:
         self._rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
                                         self.screen_size[1] - self.camera_size[1]))
 
-        y_1 = 17
-        y_2 = y_1 + 20
-        y_3 = 105
-        y_4 = y_3 + 20
+        y_1 = 15
+        y_2 = y_1 + 22
+        y_3 = 103
+        y_4 = y_3 + 22
 
         x_0 = 20
-        self._text_in_ui(self.font_large, "HEALTH", x_0, y_1)
+        self._text_in_ui(self.font_ui_headers, "HEALTH", x_0, y_1)
         self._stat_bar_in_ui((x_0, y_2 + 2), 100, 28, player_health, player_max_health,
                              COLOR_RED)
         health_text = str(player_health) + "/" + str(player_max_health)
-        self._text_in_ui(self.font_large, health_text, x_0 + 20, y_2 + 12)
+        self._text_in_ui(self.font_ui_stat_bar_numbers, health_text, x_0 + 20, y_2 + 10)
 
-        self._text_in_ui(self.font_large, "MANA", x_0, y_3)
+        self._text_in_ui(self.font_ui_headers, "MANA", x_0, y_3)
         self._stat_bar_in_ui((x_0, y_4 + 2), 100, 28, player_mana, player_max_mana, COLOR_BLUE)
         mana_text = str(player_mana) + "/" + str(player_max_mana)
-        self._text_in_ui(self.font_large, mana_text, x_0 + 20, y_4 + 12)
+        self._text_in_ui(self.font_ui_stat_bar_numbers, mana_text, x_0 + 20, y_4 + 10)
 
         x_1 = 140
         icon_space = 5
-        self._text_in_ui(self.font_large, "POTIONS", x_1, y_1)
+        self._text_in_ui(self.font_ui_headers, "POTIONS", x_1, y_1)
         for i, slot_number in enumerate(potion_slots):
             x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_2
@@ -476,7 +483,7 @@ class View:
             self._potion_icon_in_ui(x, y, UI_ICON_SIZE, slot_number,
                                     potion_type, highlighted_potion_action)
 
-        self._text_in_ui(self.font_large, "SPELLS", x_1, y_3)
+        self._text_in_ui(self.font_ui_headers, "SPELLS", x_1, y_3)
         for i, ability_type in enumerate(abilities):
             x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_4
@@ -492,7 +499,7 @@ class View:
                                      highlighted_ability_action, ability_cooldowns_remaining)
 
         x_2 = 338
-        self._text_in_ui(self.font_large, "INVENTORY", x_2, y_1)
+        self._text_in_ui(self.font_ui_headers, "INVENTORY", x_2, y_1)
         for i, item_type in enumerate(item_slots.values()):
             x = x_2 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_2
@@ -504,10 +511,10 @@ class View:
             self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type)
 
         x_3 = 465
-        self._text_in_ui(self.font_large, "MAP", x_3, y_1)
+        self._text_in_ui(self.font_ui_headers, "MAP", x_3, y_1)
         self._minimap_in_ui((x_3, y_2), (115, 115), player_minimap_relative_position)
 
-        x_4 = 585
+        x_4 = 602
         buff_texts = []
         for active_buff in player_active_buffs:
             buff_type = active_buff.buff_effect.get_buff_type()
@@ -515,12 +522,12 @@ class View:
                 buff_texts.append(
                     BUFF_TEXTS[buff_type] + " (" + str(int(active_buff.time_until_expiration / 1000)) + ")")
         for i, text in enumerate(buff_texts):
-            self._text_in_ui(self.font_small, text, x_4, 15 + i * 25)
+            self._text_in_ui(self.font_buff_texts, text, x_4, 15 + i * 25)
 
         self._rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
 
         self._rect_transparent((0, 0, 50, 20), 100, COLOR_BLACK)
-        self._text(self.font_tiny, fps_string + " fps", (5, 3))
+        self._text(self.font_debug_info, fps_string + " fps", (5, 3))
 
         if message:
             self._message(message)
@@ -529,13 +536,13 @@ class View:
             self._tooltip(tooltip_title, tooltip_details, tooltip_bottom_left_position)
 
         if is_game_over:
-            self._fat_text("You died!", self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50)
+            self._splash_screen_text("You died!", self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50)
         elif is_paused:
-            self._fat_text("PAUSED", self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50)
+            self._splash_screen_text("PAUSED", self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50)
 
-    def _fat_text(self, text, x, y):
-        self._text(self.font_huge, text, (x, y), COLOR_WHITE)
-        self._text(self.font_huge, text, (x + 2, y + 2), COLOR_BLACK)
+    def _splash_screen_text(self, text, x, y):
+        self._text(self.font_splash_screen, text, (x, y), COLOR_WHITE)
+        self._text(self.font_splash_screen, text, (x + 2, y + 2), COLOR_BLACK)
 
     def render_map_editor_ui(
             self, entities_by_char: Dict[str, MapEditorWorldEntity], placing_entity: Optional[MapEditorWorldEntity],
@@ -547,7 +554,7 @@ class View:
                                         self.screen_size[1] - self.camera_size[1]))
 
         y_1 = 17
-        y_2 = y_1 + 20
+        y_2 = y_1 + 22
 
         icon_space = 5
 
@@ -558,7 +565,7 @@ class View:
                                     deleting_decorations, 'Z', None, UiIconSprite.MAP_EDITOR_RECYCLING)
 
         x_1 = 155
-        self._text_in_ui(self.font_large, "ENTITIES", x_1, y_1)
+        self._text_in_ui(self.font_ui_headers, "ENTITIES", x_1, y_1)
         i = 0
         for char in entities_by_char.keys():
             entity = entities_by_char[char]
@@ -570,9 +577,9 @@ class View:
         self._rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
 
         self._rect_transparent((0, 0, 150, 60), 100, COLOR_BLACK)
-        self._text(self.font_tiny, "# enemies: " + str(num_enemies), (5, 3))
-        self._text(self.font_tiny, "# walls: " + str(num_walls), (5, 20))
-        self._text(self.font_tiny, "# decorations: " + str(num_decorations), (5, 37))
+        self._text(self.font_debug_info, "# enemies: " + str(num_enemies), (5, 3))
+        self._text(self.font_debug_info, "# walls: " + str(num_walls), (5, 20))
+        self._text(self.font_debug_info, "# decorations: " + str(num_decorations), (5, 37))
 
     def render_map_editor_mouse_rect(self, color: Tuple[int, int, int],
                                      map_editor_mouse_rect: Tuple[int, int, int, int]):
