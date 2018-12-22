@@ -1,5 +1,4 @@
 import json
-from typing import Optional, Dict
 
 from pythongame.core.common import *
 from pythongame.core.enemy_creation import create_enemy, set_global_path_finder
@@ -12,88 +11,6 @@ from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
 # TODO Avoid depending on pythongame.game_data from here
 
 GRID_CELL_SIZE = 25
-
-
-class MapFileEntity:
-    def __init__(self, enemy_type: Optional[EnemyType], is_player: bool, wall_type: WallType,
-                 potion_type: Optional[PotionType], item_type: Optional[ItemType], decoration_sprite: Optional[Sprite]):
-        self.enemy_type = enemy_type
-        self.is_player = is_player
-        self.wall_type = wall_type
-        self.potion_type = potion_type
-        self.item_type = item_type
-        self.decoration_sprite = decoration_sprite
-
-    def __str__(self):
-        return str(self.__dict__)
-
-    def __eq__(self, other):
-        return self.__dict__ == other.__dict__
-
-    def __hash__(self):
-        # No need for efficiency in this class
-        return 0
-
-    @staticmethod
-    def player():
-        return MapFileEntity(None, True, None, None, None, None)
-
-    @staticmethod
-    def enemy(enemy_type: EnemyType):
-        return MapFileEntity(enemy_type, False, None, None, None, None)
-
-    @staticmethod
-    def wall(wall_type: WallType):
-        return MapFileEntity(None, False, wall_type, None, None, None)
-
-    @staticmethod
-    def potion(potion_type: PotionType):
-        return MapFileEntity(None, False, None, potion_type, None, None)
-
-    @staticmethod
-    def item(item_type: ItemType):
-        return MapFileEntity(None, False, None, None, item_type, None)
-
-    @staticmethod
-    def decoration(sprite: Sprite):
-        return MapFileEntity(None, False, None, None, None, sprite)
-
-
-MAP_FILE_ENTITIES_BY_CHAR: Dict[str, MapFileEntity] = {
-    'P': MapFileEntity.player(),
-
-    'X': MapFileEntity.wall(WallType.WALL),
-    'T': MapFileEntity.wall(WallType.STATUE),
-    '3': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_N),
-    '4': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_NE),
-    '5': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_E),
-    '6': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_SE),
-    '7': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_S),
-    '8': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_SW),
-    '9': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_W),
-    '0': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_NW),
-
-
-    'D': MapFileEntity.enemy(EnemyType.DARK_REAPER),
-    'R': MapFileEntity.enemy(EnemyType.RAT_1),
-    '2': MapFileEntity.enemy(EnemyType.RAT_2),
-    'H': MapFileEntity.potion(PotionType.HEALTH),
-    'M': MapFileEntity.potion(PotionType.MANA),
-    'W': MapFileEntity.enemy(EnemyType.GOBLIN_WARLOCK),
-    'U': MapFileEntity.enemy(EnemyType.MUMMY),
-    'A': MapFileEntity.enemy(EnemyType.NECROMANCER),
-
-    'B': MapFileEntity.item(ItemType.WINGED_BOOTS),
-    'O': MapFileEntity.item(ItemType.SWORD_OF_LEECHING),
-    'L': MapFileEntity.item(ItemType.ROD_OF_LIGHTNING),
-    'E': MapFileEntity.item(ItemType.AMULET_OF_MANA),
-
-    'G': MapFileEntity.decoration(Sprite.DECORATION_GROUND_STONE),
-
-    'N': MapFileEntity.decoration(Sprite.DECORATION_PLANT)
-}
-
-CHARS_BY_MAP_FILE_ENTITY: Dict[MapFileEntity, str] = {v: k for k, v in MAP_FILE_ENTITIES_BY_CHAR.items()}
 
 
 # def create_game_state_from_file(camera_size: Tuple[int, int], map_file: str):

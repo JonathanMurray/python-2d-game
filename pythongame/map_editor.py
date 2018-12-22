@@ -1,21 +1,57 @@
 import sys
 from pathlib import Path
-from typing import Tuple, Optional, List
+from typing import Tuple, Optional, List, Dict
 
 import pygame
 
-from pythongame.core.common import Direction, Sprite, sum_of_vectors, WallType
+from pythongame.core.common import Direction, Sprite, sum_of_vectors, WallType, EnemyType, PotionType, ItemType
 from pythongame.core.game_data import ENEMIES, POTIONS, ITEMS, ITEM_ENTITY_SIZE, WALLS
 from pythongame.core.game_state import WorldEntity, Enemy, PotionOnGround, ItemOnGround, DecorationEntity, GameState, \
     Wall
 from pythongame.core.view import View
 from pythongame.game_data.player_data import INTIAL_PLAYER_STATE, PLAYER_ENTITY_SIZE, PLAYER_ENTITY_SPEED
 from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
-from pythongame.game_world_init import MapFileEntity, \
-    MAP_FILE_ENTITIES_BY_CHAR, save_game_state_to_json_file, create_game_state_from_json_file
+from pythongame.game_world_init import save_game_state_to_json_file, create_game_state_from_json_file
+from pythongame.map_editor_world_entity import MapFileEntity
 from pythongame.register_game_data import register_all_game_data
 
 # TODO Avoid depending on pythongame.game_data from here
+
+
+MAP_FILE_ENTITIES_BY_CHAR: Dict[str, MapFileEntity] = {
+    'P': MapFileEntity.player(),
+
+    'X': MapFileEntity.wall(WallType.WALL),
+    'T': MapFileEntity.wall(WallType.STATUE),
+    '3': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_N),
+    '4': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_NE),
+    '5': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_E),
+    '6': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_SE),
+    '7': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_S),
+    '8': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_SW),
+    '9': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_W),
+    '0': MapFileEntity.wall(WallType.WALL_DIRECTIONAL_NW),
+
+    'D': MapFileEntity.enemy(EnemyType.DARK_REAPER),
+    'R': MapFileEntity.enemy(EnemyType.RAT_1),
+    '2': MapFileEntity.enemy(EnemyType.RAT_2),
+    'H': MapFileEntity.potion(PotionType.HEALTH),
+    'M': MapFileEntity.potion(PotionType.MANA),
+    'W': MapFileEntity.enemy(EnemyType.GOBLIN_WARLOCK),
+    'U': MapFileEntity.enemy(EnemyType.MUMMY),
+    'A': MapFileEntity.enemy(EnemyType.NECROMANCER),
+
+    'B': MapFileEntity.item(ItemType.WINGED_BOOTS),
+    'O': MapFileEntity.item(ItemType.SWORD_OF_LEECHING),
+    'L': MapFileEntity.item(ItemType.ROD_OF_LIGHTNING),
+    'E': MapFileEntity.item(ItemType.AMULET_OF_MANA),
+
+    'G': MapFileEntity.decoration(Sprite.DECORATION_GROUND_STONE),
+
+    'N': MapFileEntity.decoration(Sprite.DECORATION_PLANT)
+}
+
+CHARS_BY_MAP_FILE_ENTITY: Dict[MapFileEntity, str] = {v: k for k, v in MAP_FILE_ENTITIES_BY_CHAR.items()}
 
 SCREEN_SIZE = (1200, 750)
 CAMERA_SIZE = (1200, 600)
