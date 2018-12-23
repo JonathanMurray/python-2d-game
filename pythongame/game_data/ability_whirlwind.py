@@ -99,7 +99,7 @@ class Stunned(AbstractBuffEffect):
 def register_whirlwind_ability():
     ability_type = AbilityType.WHIRLWIND
     ui_icon_sprite = UiIconSprite.ABILITY_WHIRLWIND
-    mana_cost = 8
+    mana_cost = 9
     cooldown = Millis(750)
 
     register_ability_effect(ability_type, _apply_ability)
