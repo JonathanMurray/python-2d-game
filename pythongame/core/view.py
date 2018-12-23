@@ -547,7 +547,11 @@ class View:
     def render_map_editor_ui(
             self, entities_by_char: Dict[str, MapEditorWorldEntity], placing_entity: Optional[MapEditorWorldEntity],
             deleting_entities: bool, deleting_decorations: bool, num_enemies: int, num_walls: int,
-            num_decorations: int):
+            num_decorations: int, mouse_screen_position: Tuple[int, int]) -> Optional[MapEditorWorldEntity]:
+
+        mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
+
+        hovered_by_mouse: MapEditorWorldEntity = None
 
         self._rect(COLOR_BLACK, (0, 0, self.camera_size[0], self.camera_size[1]), 3)
         self._rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
@@ -570,8 +574,11 @@ class View:
         for char in entities_by_char.keys():
             entity = entities_by_char[char]
             is_this_entity_being_placed = entity is placing_entity
-            self._map_editor_icon_in_ui(x_1 + i * (MAP_EDITOR_UI_ICON_SIZE[0] + icon_space), y_2,
-                                        MAP_EDITOR_UI_ICON_SIZE, is_this_entity_being_placed, char, entity, None)
+            x = x_1 + i * (MAP_EDITOR_UI_ICON_SIZE[0] + icon_space)
+            y = y_2
+            if is_point_in_rect(mouse_ui_position, (x, y, MAP_EDITOR_UI_ICON_SIZE[0], MAP_EDITOR_UI_ICON_SIZE[1])):
+                hovered_by_mouse = entity
+            self._map_editor_icon_in_ui(x, y, MAP_EDITOR_UI_ICON_SIZE, is_this_entity_being_placed, char, entity, None)
             i += 1
 
         self._rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
@@ -580,6 +587,8 @@ class View:
         self._text(self.font_debug_info, "# enemies: " + str(num_enemies), (5, 3))
         self._text(self.font_debug_info, "# walls: " + str(num_walls), (5, 20))
         self._text(self.font_debug_info, "# decorations: " + str(num_decorations), (5, 37))
+
+        return hovered_by_mouse
 
     def render_map_editor_mouse_rect(self, color: Tuple[int, int, int],
                                      map_editor_mouse_rect: Tuple[int, int, int, int]):
@@ -596,6 +605,6 @@ class View:
     def update_display():
         pygame.display.update()
 
-    def is_screen_position_within_ui(self, screen_position:Tuple[int,int]):
+    def is_screen_position_within_ui(self, screen_position: Tuple[int, int]):
         ui_position = self._translate_screen_position_to_ui(screen_position)
         return ui_position[1] >= 0

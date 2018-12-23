@@ -107,6 +107,7 @@ def main(args: List[str]):
     camera_move_distance = grid_cell_size * 4
     snapped_mouse_screen_position = (0, 0)
     snapped_mouse_world_position = (0, 0)
+    exact_mouse_screen_position = (0, 0)
     is_snapped_mouse_within_world = True
     is_snapped_mouse_over_ui = False
 
@@ -215,9 +216,18 @@ def main(args: List[str]):
             player_max_health=game_state.player_state.max_health,
             game_world_size=game_state.game_world_size)
 
-        view.render_map_editor_ui(ENTITIES_BY_CHAR, user_state.placing_entity,
-                                  user_state.deleting_entities, user_state.deleting_decorations,
-                                  len(game_state.enemies), len(game_state.walls), len(game_state.decoration_entities))
+        entity_icon_hovered_by_mouse = view.render_map_editor_ui(
+            entities_by_char=ENTITIES_BY_CHAR,
+            placing_entity=user_state.placing_entity,
+            deleting_entities=user_state.deleting_entities,
+            deleting_decorations=user_state.deleting_decorations,
+            num_enemies=len(game_state.enemies),
+            num_walls=len(game_state.walls),
+            num_decorations=len(game_state.decoration_entities),
+            mouse_screen_position=exact_mouse_screen_position)
+
+        if is_mouse_button_down and entity_icon_hovered_by_mouse:
+            user_state = UserState.placing_entity(entity_icon_hovered_by_mouse)
 
         if is_snapped_mouse_over_ui:
             pass
