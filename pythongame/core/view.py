@@ -9,8 +9,8 @@ from pythongame.core.game_state import WorldEntity, DecorationEntity
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 
-COLOR_BACKGROUND = (88, 72, 40)
-COLOR_BACKGROUND_LINES = (93, 77, 45)
+COLOR_BACKGROUND = (88+30, 72+30, 40+30)
+COLOR_BACKGROUND_LINES = (93+30, 77+30, 45+30)
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)

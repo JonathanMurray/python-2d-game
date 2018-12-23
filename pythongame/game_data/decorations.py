@@ -11,7 +11,8 @@ def _register_ground_decoration():
     sprite_sheet = SpriteSheet("resources/graphics/material_tileset.png")
     original_sprite_size = (32, 32)
     scaled_sprite_size = (50, 50)
-    indices_by_dir = {Direction.DOWN: [(0, 2)]}
+    # good looking floor tiles: 2,2     2,4     4,4     0,2
+    indices_by_dir = {Direction.DOWN: [(4,4)]}
     register_entity_sprite_map(Sprite.DECORATION_GROUND_STONE, sprite_sheet, original_sprite_size, scaled_sprite_size,
                                indices_by_dir, (0, 0))
 
