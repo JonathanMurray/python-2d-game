@@ -35,6 +35,7 @@ ENTITIES_BY_CHAR: Dict[str, MapEditorWorldEntity] = {
     ',': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_SE),
     '-': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_SW),
     '.': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_NW),
+    '_': MapEditorWorldEntity.wall(WallType.WALL_CHAIR),
 
     'D': MapEditorWorldEntity.enemy(EnemyType.DARK_REAPER),
     'R': MapEditorWorldEntity.enemy(EnemyType.RAT_1),

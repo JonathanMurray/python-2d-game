@@ -152,6 +152,7 @@ class WallType(Enum):
     WALL_DIRECTIONAL_POINTY_SE = 20
     WALL_DIRECTIONAL_POINTY_SW = 21
     WALL_DIRECTIONAL_POINTY_NW = 22
+    WALL_CHAIR = 30
 
 
 class AbilityType(Enum):
@@ -200,6 +201,7 @@ class Sprite(Enum):
     WALL_DIRECTIONAL_POINTY_SE = 520
     WALL_DIRECTIONAL_POINTY_SW = 521
     WALL_DIRECTIONAL_POINTY_NW = 522
+    WALL_CHAIR = 530
 
 
 class BuffType(Enum):

@@ -6,6 +6,7 @@ def register_walls():
     _register_wall()
     _register_statue()
     _register_directional_walls()
+    _register_chair()
 
 
 def _register_wall():
@@ -64,3 +65,13 @@ def _register_statue():
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size,
                                indices_by_dir, (-4, -54))
     register_wall_data(WallType.STATUE, WallData(sprite, (42, 46)))
+
+def _register_chair():
+    sprite = Sprite.WALL_CHAIR
+    sprite_sheet = SpriteSheet("resources/graphics/human_tileset.png")
+    original_sprite_size = (32, 32)
+    scaled_sprite_size = (50, 50)
+    indices_by_dir = {Direction.DOWN: [(7, 0)]}
+    register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size,
+                               indices_by_dir, (0, 0))
+    register_wall_data(WallType.WALL_CHAIR, WallData(sprite, (50, 50)))
