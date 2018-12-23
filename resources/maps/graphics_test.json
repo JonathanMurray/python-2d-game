@@ -513,20 +513,6 @@
       ]
     },
     {
-      "wall_type": "WALL_DIRECTIONAL_NE",
-      "position": [
-        500,
-        200
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_SE",
-      "position": [
-        500,
-        275
-      ]
-    },
-    {
       "wall_type": "WALL_DIRECTIONAL_S",
       "position": [
         650,
@@ -740,13 +726,6 @@
       "wall_type": "WALL_DIRECTIONAL_S",
       "position": [
         825,
-        275
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_SW",
-      "position": [
-        850,
         275
       ]
     },
@@ -1238,6 +1217,41 @@
       "position": [
         725,
         550
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_POINTY_SE",
+      "position": [
+        500,
+        275
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_POINTY_NE",
+      "position": [
+        500,
+        200
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_POINTY_SW",
+      "position": [
+        850,
+        275
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_POINTY_NW",
+      "position": [
+        850,
+        500
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_POINTY_NE",
+      "position": [
+        925,
+        500
       ]
     }
   ],

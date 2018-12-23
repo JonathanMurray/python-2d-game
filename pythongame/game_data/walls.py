@@ -39,6 +39,14 @@ def _register_directional_walls():
                                "resources/graphics/hyrule_wall_left_corner_bot.png", [0, 0])
     _register_directional_wall(WallType.WALL_DIRECTIONAL_NW, Sprite.WALL_DIRECTIONAL_NW,
                                "resources/graphics/hyrule_wall_corner.png", [0, 0])
+    _register_directional_wall(WallType.WALL_DIRECTIONAL_POINTY_NE, Sprite.WALL_DIRECTIONAL_POINTY_NE,
+                               "resources/graphics/hyrule_wall_pointy_corner_ne.png", [0, 0])
+    _register_directional_wall(WallType.WALL_DIRECTIONAL_POINTY_SE, Sprite.WALL_DIRECTIONAL_POINTY_SE,
+                               "resources/graphics/hyrule_wall_pointy_corner_se.png", [0, 0])
+    _register_directional_wall(WallType.WALL_DIRECTIONAL_POINTY_SW, Sprite.WALL_DIRECTIONAL_POINTY_SW,
+                               "resources/graphics/hyrule_wall_pointy_corner_sw.png", [0, 0])
+    _register_directional_wall(WallType.WALL_DIRECTIONAL_POINTY_NW, Sprite.WALL_DIRECTIONAL_POINTY_NW,
+                               "resources/graphics/hyrule_wall_pointy_corner_nw.png", [0, 0])
 
 def _register_directional_wall(wall_type, sprite, sprite_sheet_path, sprite_sheet_index):
     register_entity_sprite_map(
