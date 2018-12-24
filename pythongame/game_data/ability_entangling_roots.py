@@ -6,10 +6,10 @@ from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, SpriteSheet, \
     register_entity_sprite_map
-from pythongame.core.game_state import GameState, WorldEntity, Projectile, Enemy
+from pythongame.core.game_state import GameState, WorldEntity, Projectile, Enemy, DecorationEntity
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
-from pythongame.core.visual_effects import VisualCircle
+from pythongame.core.visual_effects import VisualCircle, VisualSprite
 
 BUFF_TYPE = BuffType.ROOTED_BY_ENTANGLING_ROOTS
 
@@ -28,7 +28,10 @@ class ProjectileController(AbstractProjectileController):
         damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, 1)
         if not damage_was_dealt:
             return False
-        enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(5000))
+        duration = Millis(5000)
+        enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE), duration)
+        game_state.visual_effects.append(
+            VisualSprite(Sprite.DECORATION_ENTANGLING_ROOTS_EFFECT, enemy.world_entity.get_position(), duration))
         return True
 
 
