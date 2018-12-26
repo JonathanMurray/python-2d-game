@@ -9,8 +9,8 @@ from pythongame.core.game_state import WorldEntity, DecorationEntity
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 
-COLOR_BACKGROUND = (88+30, 72+30, 40+30)
-COLOR_BACKGROUND_LINES = (93+30, 77+30, 45+30)
+COLOR_BACKGROUND = (88 + 30, 72 + 30, 40 + 30)
+COLOR_BACKGROUND_LINES = (93 + 30, 77 + 30, 45 + 30)
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -547,7 +547,8 @@ class View:
     def render_map_editor_ui(
             self, entities_by_char: Dict[str, MapEditorWorldEntity], placing_entity: Optional[MapEditorWorldEntity],
             deleting_entities: bool, deleting_decorations: bool, num_enemies: int, num_walls: int,
-            num_decorations: int, mouse_screen_position: Tuple[int, int]) -> Optional[MapEditorWorldEntity]:
+            num_decorations: int, grid_cell_size: int, mouse_screen_position: Tuple[int, int]) \
+            -> Optional[MapEditorWorldEntity]:
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
 
@@ -583,10 +584,11 @@ class View:
 
         self._rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
 
-        self._rect_transparent((0, 0, 150, 60), 100, COLOR_BLACK)
+        self._rect_transparent((0, 0, 150, 80), 100, COLOR_BLACK)
         self._text(self.font_debug_info, "# enemies: " + str(num_enemies), (5, 3))
         self._text(self.font_debug_info, "# walls: " + str(num_walls), (5, 20))
         self._text(self.font_debug_info, "# decorations: " + str(num_decorations), (5, 37))
+        self._text(self.font_debug_info, "Cell size: " + str(grid_cell_size), (5, 54))
 
         return hovered_by_mouse
 

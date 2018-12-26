@@ -33,7 +33,7 @@ ENTITIES_BY_CHAR: Dict[str, MapEditorWorldEntity] = {
     '0': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_NW),
     '1': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_NE),
     ',': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_SE),
-    '-': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_SW),
+    ';': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_SW),
     '.': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_NW),
     '_': MapEditorWorldEntity.wall(WallType.WALL_CHAIR),
 
@@ -108,8 +108,11 @@ def main(args: List[str]):
 
     is_mouse_button_down = False
 
-    grid_cell_size = 25
-    camera_move_distance = grid_cell_size * 4
+    possible_grid_cell_sizes = [25, 50]
+    grid_cell_size_index = 0
+    grid_cell_size = possible_grid_cell_sizes[grid_cell_size_index]
+
+    camera_move_distance = 100
     snapped_mouse_screen_position = (0, 0)
     snapped_mouse_world_position = (0, 0)
     exact_mouse_screen_position = (0, 0)
@@ -140,6 +143,9 @@ def main(args: List[str]):
                         if user_state.placing_entity.wall_type:
                             _add_wall_to_position(game_state, snapped_mouse_world_position,
                                                   user_state.placing_entity.wall_type)
+                        elif user_state.placing_entity.decoration:
+                            _add_decoration_to_position(user_state.placing_entity.decoration_sprite, game_state,
+                                                        snapped_mouse_world_position)
                     elif user_state.deleting_entities:
                         _delete_map_entities_from_position(game_state, snapped_mouse_world_position)
                     else:
@@ -164,6 +170,9 @@ def main(args: List[str]):
                     user_state = UserState.deleting_entities()
                 elif event.key == pygame.K_z:
                     user_state = UserState.deleting_decorations()
+                elif event.key == pygame.K_PLUS:
+                    grid_cell_size_index = (grid_cell_size_index + 1) % len(possible_grid_cell_sizes)
+                    grid_cell_size = possible_grid_cell_sizes[grid_cell_size_index]
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 is_mouse_button_down = True
@@ -193,9 +202,8 @@ def main(args: List[str]):
                             game_state.items_on_ground.append(
                                 ItemOnGround(entity, entity_being_placed.item_type))
                         elif entity_being_placed.decoration_sprite:
-                            decoration_entity = DecorationEntity(
-                                snapped_mouse_world_position, entity_being_placed.decoration_sprite)
-                            game_state.decoration_entities.append(decoration_entity)
+                            _add_decoration_to_position(entity_being_placed.decoration_sprite, game_state,
+                                                        snapped_mouse_world_position)
                         else:
                             raise Exception("Unknown entity: " + str(entity_being_placed))
                 elif user_state.deleting_entities:
@@ -229,6 +237,7 @@ def main(args: List[str]):
             num_enemies=len(game_state.enemies),
             num_walls=len(game_state.walls),
             num_decorations=len(game_state.decoration_entities),
+            grid_cell_size=grid_cell_size,
             mouse_screen_position=exact_mouse_screen_position)
 
         if is_mouse_button_down and entity_icon_hovered_by_mouse:
@@ -278,6 +287,14 @@ def main(args: List[str]):
             raise Exception("Unhandled user_state: " + str(user_state))
 
         view.update_display()
+
+
+def _add_decoration_to_position(decoration_sprite: Sprite, game_state, snapped_mouse_world_position):
+    decoration_entity = DecorationEntity(snapped_mouse_world_position, decoration_sprite)
+    already_has_decoration = any([d for d in game_state.decoration_entities
+                                  if d.get_position() == snapped_mouse_world_position])
+    if not already_has_decoration:
+        game_state.decoration_entities.append(decoration_entity)
 
 
 def _add_wall_to_position(game_state, snapped_mouse_world_position: Tuple[int, int], wall_type: WallType):
