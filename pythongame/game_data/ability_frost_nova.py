@@ -19,7 +19,8 @@ def _apply_ability(game_state: GameState):
         VisualCircle((150, 150, 250), player_center_pos, 95, 190, Millis(200), 3))
     affected_enemies = game_state.get_enemies_within_x_y_distance_of(180, player_center_pos)
     effect_position = get_position_from_center_position(player_center_pos, EFFECT_SPRITE_SIZE)
-    game_state.visual_effects.append(VisualSprite(Sprite.EFFECT_ABILITY_FROST_NOVA, effect_position, Millis(200)))
+    game_state.visual_effects.append(
+        VisualSprite(Sprite.EFFECT_ABILITY_FROST_NOVA, effect_position, Millis(200), player_entity))
     for enemy in affected_enemies:
         damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, 4)
         if damage_was_dealt:
