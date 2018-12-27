@@ -305,7 +305,6 @@ class PlayerState:
             return True
         return False
 
-
     def _on_level_up(self):
         self.max_health += 5
         self.max_mana += 5
@@ -363,7 +362,7 @@ class GameState:
         self.projectile_entities: List[Projectile] = []
         self.potions_on_ground = potions_on_ground
         self.items_on_ground: List[ItemOnGround] = items_on_ground
-        self.enemies = enemies
+        self.enemies: List[Enemy] = enemies
         self.walls: List[Wall] = walls
         self._wall_buckets = self._put_walls_in_buckets(game_world_size, [w.world_entity for w in walls])
         self.visual_effects = []

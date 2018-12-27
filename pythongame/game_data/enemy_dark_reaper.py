@@ -130,7 +130,7 @@ def register_dark_reaper_enemy():
     enemy_type = EnemyType.DARK_REAPER
     movement_speed = 0.04
     health = 80
-    register_enemy_data(enemy_type, EnemyData(sprite, size, health, 0, movement_speed))
+    register_enemy_data(enemy_type, EnemyData(sprite, size, health, 0, movement_speed, 40))
     register_enemy_behavior(enemy_type, EnemyMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet.png")
     original_sprite_size = (32, 32)

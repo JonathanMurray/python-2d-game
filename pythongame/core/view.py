@@ -479,7 +479,7 @@ class View:
 
         x_exp_bar = 20
         self._text_in_ui(self.font_level, "Level " + str(player_level), x_exp_bar, y_0)
-        self._stat_bar_in_ui((x_exp_bar, y_0 + 18), 200, 6, player_exp, player_max_exp_in_this_level, (200, 200, 200))
+        self._stat_bar_in_ui((x_exp_bar, y_0 + 18), 200, 4, player_exp, player_max_exp_in_this_level, COLOR_WHITE)
 
         x_0 = 20
         self._text_in_ui(self.font_ui_headers, "HEALTH", x_0, y_1)

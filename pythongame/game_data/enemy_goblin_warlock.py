@@ -140,7 +140,7 @@ def register_goblin_warlock_enemy():
     enemy_type = EnemyType.GOBLIN_WARLOCK
 
     health = 21
-    register_enemy_data(enemy_type, EnemyData(enemy_sprite, enemy_size, health, 0, 0.032))
+    register_enemy_data(enemy_type, EnemyData(enemy_sprite, enemy_size, health, 0, 0.032, 12))
     register_enemy_behavior(enemy_type, EnemyMind)
 
     enemy_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")

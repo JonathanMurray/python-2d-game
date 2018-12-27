@@ -113,3 +113,9 @@ def create_visual_mana_text(entity: WorldEntity, healing_amount: int):
     start_position = (entity.x + 15, entity.y - 10)
     end_position = (entity.x + 15, entity.y - 40)
     return VisualText(str(healing_amount), (0, 0, 140), start_position, end_position, Millis(800))
+
+
+def create_visual_exp_text(entity: WorldEntity, exp_amount: int):
+    start_position = (entity.x + 5, entity.y - 10)
+    end_position = (entity.x + 5, entity.y - 40)
+    return VisualText(str(exp_amount), (255, 255, 255), start_position, end_position, Millis(800))

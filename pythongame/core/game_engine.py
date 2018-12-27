@@ -1,11 +1,12 @@
 from pythongame.core.ability_effects import apply_ability_effect
 from pythongame.core.common import *
-from pythongame.core.game_data import POTIONS, ITEMS, ITEM_ENTITY_SIZE
+from pythongame.core.game_data import POTIONS, ITEMS, ITEM_ENTITY_SIZE, ENEMIES
 from pythongame.core.game_state import GameState, handle_buffs, WorldEntity, ItemOnGround, PotionOnGround
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.player_controls import TryUseAbilityResult, PlayerControls
 from pythongame.core.potion_effects import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
 from pythongame.core.view_state import ViewState
+from pythongame.core.visual_effects import create_visual_exp_text
 from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
 
 
@@ -96,10 +97,14 @@ class GameEngine:
             visual_effect.notify_time_passed(time_passed)
 
         enemies_that_died = self.game_state.remove_dead_enemies()
-        exp_gained = 10 * len(enemies_that_died)
-        did_player_level_up = self.game_state.player_state.gain_exp(exp_gained)
-        if did_player_level_up:
-            self.view_state.set_message("You reached a new level!")
+
+        if enemies_that_died:
+            exp_gained = sum([ENEMIES[e.enemy_type].exp_reward for e in enemies_that_died])
+            self.game_state.visual_effects.append(create_visual_exp_text(self.game_state.player_entity, exp_gained))
+            did_player_level_up = self.game_state.player_state.gain_exp(exp_gained)
+            if did_player_level_up:
+                self.view_state.set_message("You reached level " + str(self.game_state.player_state.level))
+
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_effects()
 
