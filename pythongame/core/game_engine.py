@@ -85,7 +85,11 @@ class GameEngine:
         for visual_effect in self.game_state.visual_effects:
             visual_effect.notify_time_passed(time_passed)
 
-        self.game_state.remove_dead_enemies()
+        enemies_that_died = self.game_state.remove_dead_enemies()
+        exp_gained = 10 * len(enemies_that_died)
+        did_player_level_up = self.game_state.player_state.gain_exp(exp_gained)
+        if did_player_level_up:
+            self.view_state.set_message("You reached a new level!")
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_effects()
 

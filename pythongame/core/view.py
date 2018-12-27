@@ -102,6 +102,7 @@ class View:
         self.font_game_world_text = pygame.font.Font('/Library/Fonts/Arial Rounded Bold.ttf', 12)
         self.font_game_world_text = pygame.font.Font(None, 19)
         self.font_ui_icon_keys = pygame.font.Font('/Library/Fonts/Courier New Bold.ttf', 11)
+        self.font_level = pygame.font.Font('/Library/Fonts/Courier New Bold.ttf', 11)
 
         self.images_by_sprite: Dict[Sprite, Dict[Direction, List[ImageWithRelativePosition]]] = {
             sprite: load_and_scale_directional_sprites(ENTITY_SPRITE_INITIALIZERS[sprite])
@@ -448,8 +449,9 @@ class View:
     def render_ui(self, fps_string, is_paused, is_game_over, abilities, ability_cooldowns_remaining,
                   highlighted_ability_action, highlighted_potion_action, message, player_active_buffs,
                   player_health, player_mana, player_max_health, player_max_mana,
-                  player_minimap_relative_position, potion_slots, item_slots: Dict[int, ItemType],
-                  mouse_screen_position: Tuple[int, int]) -> MouseHoverEvent:
+                  player_minimap_relative_position, potion_slots, item_slots: Dict[int, ItemType], player_level: int,
+                  mouse_screen_position: Tuple[int, int], player_exp: int, player_max_exp_in_this_level: int) \
+            -> MouseHoverEvent:
 
         hovered_item_slot_number = None
         is_mouse_hovering_ui = is_point_in_rect(
@@ -465,10 +467,16 @@ class View:
         self._rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
                                         self.screen_size[1] - self.camera_size[1]))
 
-        y_1 = 15
+        y_0 = 5
+
+        y_1 = 40
         y_2 = y_1 + 22
-        y_3 = 103
+        y_3 = 123
         y_4 = y_3 + 22
+
+        x_exp_bar = 20
+        self._text_in_ui(self.font_level, "Level " + str(player_level), x_exp_bar, y_0)
+        self._stat_bar_in_ui((x_exp_bar, y_0 + 18), 200, 6, player_exp, player_max_exp_in_this_level, (200, 200, 200))
 
         x_0 = 20
         self._text_in_ui(self.font_ui_headers, "HEALTH", x_0, y_1)

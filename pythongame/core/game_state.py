@@ -227,6 +227,9 @@ class PlayerState:
         self.is_stunned = False
         self.item_slots = item_slots
         self.life_steal_ratio = 0
+        self.exp = 0
+        self.level = 1
+        self.max_exp_in_this_level = 100
 
     def gain_health(self, amount: float):
         self._health_float = min(self._health_float + amount, self.max_health)
@@ -243,6 +246,14 @@ class PlayerState:
     def lose_mana(self, amount: float):
         self._mana_float -= amount
         self.mana = int(math.floor(self._mana_float))
+
+    def gain_full_health(self):
+        self._health_float = self.max_health
+        self.health = self.max_health
+
+    def gain_full_mana(self):
+        self._mana_float = self.max_mana
+        self.mana = self.max_mana
 
     def find_first_empty_potion_slot(self) -> Optional[int]:
         empty_slots = [slot for slot in self.potion_slots if not self.potion_slots[slot]]
@@ -277,6 +288,25 @@ class PlayerState:
         item_type_1 = self.item_slots[slot_1]
         self.item_slots[slot_1] = self.item_slots[slot_2]
         self.item_slots[slot_2] = item_type_1
+
+    # returns True if player leveled up
+    def gain_exp(self, amount):
+        self.exp += amount
+        if self.exp >= self.max_exp_in_this_level:
+            # TODO: handle case where you gain enough exp to gain 2 levels
+            self.exp -= self.max_exp_in_this_level
+            self.level += 1
+            self._on_level_up()
+            return True
+        return False
+
+
+    def _on_level_up(self):
+        self.max_health += 5
+        self.max_mana += 5
+        self.gain_full_health()
+        self.gain_full_mana()
+        self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.2)
 
 
 def handle_buffs(active_buffs: List[BuffWithDuration], time_passed: Millis):
@@ -421,7 +451,9 @@ class GameState:
         self.projectile_entities = [p for p in self.projectile_entities if not p.has_expired]
 
     def remove_dead_enemies(self):
+        enemies_that_died = [e for e in self.enemies if e.health <= 0]
         self.enemies = [e for e in self.enemies if e.health > 0]
+        return enemies_that_died
 
     def remove_expired_visual_effects(self):
         self.visual_effects = [v for v in self.visual_effects if not v.has_expired]

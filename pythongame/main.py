@@ -126,7 +126,10 @@ def main(args: List[str]):
             is_game_over=is_game_over,
             ability_cooldowns_remaining=game_state.player_state.ability_cooldowns_remaining,
             item_slots=game_state.player_state.item_slots,
-            mouse_screen_position=mouse_screen_position)
+            player_level=game_state.player_state.level,
+            mouse_screen_position=mouse_screen_position,
+            player_exp=game_state.player_state.exp,
+            player_max_exp_in_this_level=game_state.player_state.max_exp_in_this_level)
 
         # TODO There is a lot of details here about UI state (dragging items). Move that elsewhere.
 
@@ -144,7 +147,8 @@ def main(args: List[str]):
             if hovered_item_slot_number and item_slot_being_dragged != hovered_item_slot_number:
                 game_engine.switch_inventory_items(item_slot_being_dragged, hovered_item_slot_number)
             if mouse_hover_event.game_world_position:
-                game_engine.drop_inventory_item_on_ground(item_slot_being_dragged, mouse_hover_event.game_world_position)
+                game_engine.drop_inventory_item_on_ground(item_slot_being_dragged,
+                                                          mouse_hover_event.game_world_position)
             item_slot_being_dragged = False
 
         view.update_display()
