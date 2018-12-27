@@ -42,6 +42,7 @@ def main(args: List[str]):
     game_engine.initialize()
 
     item_slot_being_dragged: Optional[int] = None
+    potion_slot_being_dragged: Optional[int] = None
 
     while True:
 
@@ -134,6 +135,7 @@ def main(args: List[str]):
         # TODO There is a lot of details here about UI state (dragging items). Move that elsewhere.
 
         hovered_item_slot_number = mouse_hover_event.item_slot_number
+        hovered_potion_slot_number = mouse_hover_event.potion_slot_number
 
         if mouse_was_just_clicked and hovered_item_slot_number:
             if game_state.player_state.item_slots[hovered_item_slot_number]:
@@ -150,5 +152,20 @@ def main(args: List[str]):
                 game_engine.drop_inventory_item_on_ground(item_slot_being_dragged,
                                                           mouse_hover_event.game_world_position)
             item_slot_being_dragged = False
+
+        if mouse_was_just_clicked and hovered_potion_slot_number:
+            if game_state.player_state.potion_slots[hovered_potion_slot_number]:
+                potion_slot_being_dragged = hovered_potion_slot_number
+
+        if potion_slot_being_dragged:
+            potion_type = game_state.player_state.potion_slots[potion_slot_being_dragged]
+            view.render_potion_being_dragged(potion_type, mouse_screen_position)
+
+        if mouse_was_just_released and potion_slot_being_dragged:
+            if hovered_potion_slot_number and potion_slot_being_dragged != hovered_potion_slot_number:
+                game_engine.switch_potion_slots(potion_slot_being_dragged, hovered_potion_slot_number)
+            if mouse_hover_event.game_world_position:
+                game_engine.drop_potion_on_ground(potion_slot_being_dragged, mouse_hover_event.game_world_position)
+            potion_slot_being_dragged = False
 
         view.update_display()

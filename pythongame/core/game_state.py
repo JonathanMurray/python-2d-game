@@ -289,6 +289,11 @@ class PlayerState:
         self.item_slots[slot_1] = self.item_slots[slot_2]
         self.item_slots[slot_2] = item_type_1
 
+    def switch_potion_slots(self, slot_1, slot_2):
+        potion_type_1 = self.potion_slots[slot_1]
+        self.potion_slots[slot_1] = self.potion_slots[slot_2]
+        self.potion_slots[slot_2] = potion_type_1
+
     # returns True if player leveled up
     def gain_exp(self, amount):
         self.exp += amount

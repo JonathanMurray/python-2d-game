@@ -24,8 +24,10 @@ RENDER_WORLD_COORDINATES = False
 
 
 class MouseHoverEvent:
-    def __init__(self, item_slot_number: Optional[int], game_world_position: Optional[Tuple[int, int]]):
+    def __init__(self, item_slot_number: Optional[int], potion_slot_number: Optional[int],
+                 game_world_position: Optional[Tuple[int, int]]):
         self.item_slot_number = item_slot_number
+        self.potion_slot_number = potion_slot_number
         self.game_world_position = game_world_position
 
 
@@ -454,6 +456,7 @@ class View:
             -> MouseHoverEvent:
 
         hovered_item_slot_number = None
+        hovered_potion_slot_number = None
         is_mouse_hovering_ui = is_point_in_rect(
             mouse_screen_position,
             (self.ui_screen_area.x, self.ui_screen_area.y, self.ui_screen_area.w, self.ui_screen_area.h))
@@ -498,6 +501,7 @@ class View:
             y = y_2
             potion_type = potion_slots[slot_number]
             if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
+                hovered_potion_slot_number = slot_number
                 if potion_type:
                     tooltip_title = POTIONS[potion_type].name
                     tooltip_details = [POTIONS[potion_type].description]
@@ -567,10 +571,15 @@ class View:
         mouse_game_world_position = None
         if not is_mouse_hovering_ui:
             mouse_game_world_position = self._translate_screen_position_to_world(mouse_screen_position)
-        return MouseHoverEvent(hovered_item_slot_number, mouse_game_world_position)
+        return MouseHoverEvent(hovered_item_slot_number, hovered_potion_slot_number, mouse_game_world_position)
 
     def render_item_being_dragged(self, item_type: ItemType, mouse_screen_position: Tuple[int, int]):
         ui_icon_sprite = ITEMS[item_type].icon_sprite
+        position = (mouse_screen_position[0] - UI_ICON_SIZE[0] / 2, mouse_screen_position[1] - UI_ICON_SIZE[1] / 2)
+        self._image(self.images_by_ui_sprite[ui_icon_sprite], position)
+
+    def render_potion_being_dragged(self, potion_type: PotionType, mouse_screen_position: Tuple[int, int]):
+        ui_icon_sprite = POTIONS[potion_type].icon_sprite
         position = (mouse_screen_position[0] - UI_ICON_SIZE[0] / 2, mouse_screen_position[1] - UI_ICON_SIZE[1] / 2)
         self._image(self.images_by_ui_sprite[ui_icon_sprite], position)
 
