@@ -1,5 +1,5 @@
 import sys
-from typing import List
+from typing import List, Optional
 
 import pygame
 
@@ -7,8 +7,9 @@ import pythongame.core.pathfinding.enemy_pathfinding
 from pythongame.core.common import Millis
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
-    ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement
-from pythongame.core.view import View
+    ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
+    ActionMouseClicked, ActionMouseReleased
+from pythongame.core.view import View, MouseHoverEvent
 from pythongame.core.view_state import ViewState
 from pythongame.game_world_init import create_game_state_from_json_file
 from pythongame.register_game_data import register_all_game_data
@@ -40,7 +41,12 @@ def main(args: List[str]):
 
     game_engine.initialize()
 
+    item_slot_being_dragged: Optional[int] = None
+
     while True:
+
+        mouse_was_just_clicked = False
+        mouse_was_just_released = False
 
         # ------------------------------------
         #         HANDLE USER INPUT
@@ -69,6 +75,10 @@ def main(args: List[str]):
                 is_paused = not is_paused
             if isinstance(action, ActionMouseMovement):
                 mouse_screen_position = action.mouse_screen_position
+            if isinstance(action, ActionMouseClicked):
+                mouse_was_just_clicked = True
+            if isinstance(action, ActionMouseReleased):
+                mouse_was_just_released = True
 
         # ------------------------------------
         #     UPDATE STATE BASED ON CLOCK
@@ -99,7 +109,7 @@ def main(args: List[str]):
             player_max_health=game_state.player_state.max_health,
             game_world_size=game_state.game_world_size)
 
-        view.render_ui(
+        mouse_hover_event: MouseHoverEvent = view.render_ui(
             player_health=game_state.player_state.health,
             player_max_health=game_state.player_state.max_health,
             player_mana=game_state.player_state.mana,
@@ -117,5 +127,24 @@ def main(args: List[str]):
             ability_cooldowns_remaining=game_state.player_state.ability_cooldowns_remaining,
             item_slots=game_state.player_state.item_slots,
             mouse_screen_position=mouse_screen_position)
+
+        # TODO There is a lot of details here about UI state (dragging items). Move that elsewhere.
+
+        hovered_item_slot_number = mouse_hover_event.item_slot_number
+
+        if mouse_was_just_clicked and hovered_item_slot_number:
+            if game_state.player_state.item_slots[hovered_item_slot_number]:
+                item_slot_being_dragged = hovered_item_slot_number
+
+        if item_slot_being_dragged:
+            item_type = game_state.player_state.item_slots[item_slot_being_dragged]
+            view.render_item_being_dragged(item_type, mouse_screen_position)
+
+        if mouse_was_just_released and item_slot_being_dragged:
+            if hovered_item_slot_number and item_slot_being_dragged != hovered_item_slot_number:
+                game_engine.switch_inventory_items(item_slot_being_dragged, hovered_item_slot_number)
+            if mouse_hover_event.game_world_position:
+                game_engine.drop_inventory_item_on_ground(item_slot_being_dragged, mouse_hover_event.game_world_position)
+            item_slot_being_dragged = False
 
         view.update_display()

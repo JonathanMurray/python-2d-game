@@ -1,5 +1,5 @@
 import math
-from typing import List, Optional, Dict, Any, Union
+from typing import List, Optional, Dict, Any
 
 from pygame.rect import Rect
 
@@ -273,6 +273,11 @@ class PlayerState:
             if self.ability_cooldowns_remaining[ability_type] > 0:
                 self.ability_cooldowns_remaining[ability_type] -= time_passed
 
+    def switch_item_slots(self, slot_1, slot_2):
+        item_type_1 = self.item_slots[slot_1]
+        self.item_slots[slot_1] = self.item_slots[slot_2]
+        self.item_slots[slot_2] = item_type_1
+
 
 def handle_buffs(active_buffs: List[BuffWithDuration], time_passed: Millis):
     copied_buffs_list = list(active_buffs)
@@ -322,7 +327,7 @@ class GameState:
         self.player_entity = player_entity
         self.projectile_entities: List[Projectile] = []
         self.potions_on_ground = potions_on_ground
-        self.items_on_ground = items_on_ground
+        self.items_on_ground: List[ItemOnGround] = items_on_ground
         self.enemies = enemies
         self.walls: List[Wall] = walls
         self._wall_buckets = self._put_walls_in_buckets(game_world_size, [w.world_entity for w in walls])

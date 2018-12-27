@@ -1,7 +1,7 @@
 from pythongame.core.ability_effects import apply_ability_effect
 from pythongame.core.common import *
-from pythongame.core.game_data import POTIONS, ITEMS
-from pythongame.core.game_state import GameState, handle_buffs
+from pythongame.core.game_data import POTIONS, ITEMS, ITEM_ENTITY_SIZE
+from pythongame.core.game_state import GameState, handle_buffs, WorldEntity, ItemOnGround
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.player_controls import TryUseAbilityResult, PlayerControls
 from pythongame.core.potion_effects import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
@@ -49,6 +49,16 @@ class GameEngine:
 
     def stop_moving(self):
         self.game_state.player_entity.set_not_moving()
+
+    def switch_inventory_items(self, slot_1: int, slot_2: int):
+        self.game_state.player_state.switch_item_slots(slot_1, slot_2)
+
+    def drop_inventory_item_on_ground(self, item_slot: int, game_world_position: Tuple[int, int]):
+        item_type = self.game_state.player_state.item_slots[item_slot]
+        item_entity = WorldEntity(game_world_position, ITEM_ENTITY_SIZE, ITEMS[item_type].entity_sprite)
+        self.game_state.items_on_ground.append(ItemOnGround(item_entity, item_type))
+        get_item_effect(item_type).apply_end_effect(self.game_state)
+        self.game_state.player_state.item_slots[item_slot] = None
 
     def _is_enemy_close_to_camera(self, enemy):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(

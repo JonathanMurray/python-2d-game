@@ -23,6 +23,12 @@ MAP_EDITOR_UI_ICON_SIZE = (32, 32)
 RENDER_WORLD_COORDINATES = False
 
 
+class MouseHoverEvent:
+    def __init__(self, item_slot_number: Optional[int], game_world_position: Optional[Tuple[int, int]]):
+        self.item_slot_number = item_slot_number
+        self.game_world_position = game_world_position
+
+
 class ScreenArea:
     def __init__(self, pos, size):
         self.x = pos[0]
@@ -115,6 +121,9 @@ class View:
     def _translate_world_position_to_screen(self, world_position):
         return (self._translate_world_x_to_screen(world_position[0]),
                 self._translate_world_y_to_screen(world_position[1]))
+
+    def _translate_screen_position_to_world(self, screen_position):
+        return int(screen_position[0] + self.camera_world_area.x), int(screen_position[1] + self.camera_world_area.y)
 
     def _translate_world_x_to_screen(self, world_x):
         return int(world_x - self.camera_world_area.x)
@@ -440,7 +449,12 @@ class View:
                   highlighted_ability_action, highlighted_potion_action, message, player_active_buffs,
                   player_health, player_mana, player_max_health, player_max_mana,
                   player_minimap_relative_position, potion_slots, item_slots: Dict[int, ItemType],
-                  mouse_screen_position: Tuple[int, int]):
+                  mouse_screen_position: Tuple[int, int]) -> MouseHoverEvent:
+
+        hovered_item_slot_number = None
+        is_mouse_hovering_ui = is_point_in_rect(
+            mouse_screen_position,
+            (self.ui_screen_area.x, self.ui_screen_area.y, self.ui_screen_area.w, self.ui_screen_area.h))
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
         tooltip_title = ""
@@ -500,10 +514,12 @@ class View:
 
         x_2 = 338
         self._text_in_ui(self.font_ui_headers, "INVENTORY", x_2, y_1)
-        for i, item_type in enumerate(item_slots.values()):
+        for i, item_slot_number in enumerate(item_slots.keys()):
             x = x_2 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_2
+            item_type = item_slots[item_slot_number]
             if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
+                hovered_item_slot_number = item_slot_number
                 if item_type:
                     tooltip_title = ITEMS[item_type].name
                     tooltip_details = [ITEMS[item_type].description]
@@ -539,6 +555,16 @@ class View:
             self._splash_screen_text("You died!", self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50)
         elif is_paused:
             self._splash_screen_text("PAUSED", self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50)
+
+        mouse_game_world_position = None
+        if not is_mouse_hovering_ui:
+            mouse_game_world_position = self._translate_screen_position_to_world(mouse_screen_position)
+        return MouseHoverEvent(hovered_item_slot_number, mouse_game_world_position)
+
+    def render_item_being_dragged(self, item_type: ItemType, mouse_screen_position: Tuple[int, int]):
+        ui_icon_sprite = ITEMS[item_type].icon_sprite
+        position = (mouse_screen_position[0] - UI_ICON_SIZE[0] / 2, mouse_screen_position[1] - UI_ICON_SIZE[1] / 2)
+        self._image(self.images_by_ui_sprite[ui_icon_sprite], position)
 
     def _splash_screen_text(self, text, x, y):
         self._text(self.font_splash_screen, text, (x, y), COLOR_WHITE)
