@@ -126,7 +126,7 @@ class Burnt(AbstractBuffEffect):
         self._time_since_graphics += time_passed
         if self._time_since_graphics > 500:
             self._time_since_graphics = 0
-            deal_damage_to_player(game_state, 1)
+            deal_damage_to_player(game_state, 2)
             game_state.visual_effects.append(VisualCircle((180, 50, 50), game_state.player_entity.get_center_position(),
                                                           10, 20, Millis(50), 0, game_state.player_entity))
 

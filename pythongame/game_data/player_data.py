@@ -1,16 +1,15 @@
 import pygame
 
-from pythongame.core.common import ItemType
 from pythongame.core.game_data import Sprite, Direction, PotionType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_user_ability_key, UserAbilityKey
 from pythongame.core.game_state import PlayerState
 
 PLAYER_ENTITY_SIZE = (30, 30)
-PLAYER_ENTITY_SPEED = 0.1
+PLAYER_ENTITY_SPEED = 0.105
 
 _player_potion_slots = {
     1: PotionType.HEALTH,
-    2: None,
+    2: PotionType.MANA,
     3: None,
     4: None,
     5: None
@@ -26,7 +25,7 @@ mana = 100
 max_mana = 150
 mana_regen = 0.0028
 _items = {
-    1: ItemType.WINGED_BOOTS,
+    1: None,
     2: None,
     3: None
 }

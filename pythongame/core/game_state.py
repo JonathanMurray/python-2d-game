@@ -229,7 +229,7 @@ class PlayerState:
         self.life_steal_ratio = 0
         self.exp = 0
         self.level = 1
-        self.max_exp_in_this_level = 100
+        self.max_exp_in_this_level = 130
 
     def gain_health(self, amount: float):
         self._health_float = min(self._health_float + amount, self.max_health)
@@ -306,11 +306,11 @@ class PlayerState:
         return False
 
     def _on_level_up(self):
-        self.max_health += 5
+        self.max_health += 7
         self.max_mana += 5
         self.gain_full_health()
         self.gain_full_mana()
-        self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.2)
+        self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.3)
 
 
 def handle_buffs(active_buffs: List[BuffWithDuration], time_passed: Millis):
