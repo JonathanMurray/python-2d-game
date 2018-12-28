@@ -588,10 +588,10 @@ class View:
         self._text(self.font_splash_screen, text, (x + 2, y + 2), COLOR_BLACK)
 
     def render_map_editor_ui(
-            self, entities_by_char: Dict[str, MapEditorWorldEntity], placing_entity: Optional[MapEditorWorldEntity],
-            deleting_entities: bool, deleting_decorations: bool, num_enemies: int, num_walls: int,
-            num_decorations: int, grid_cell_size: int, mouse_screen_position: Tuple[int, int]) \
-            -> Optional[MapEditorWorldEntity]:
+            self, chars_by_entities: Dict[MapEditorWorldEntity, str], entities: List[MapEditorWorldEntity],
+            placing_entity: Optional[MapEditorWorldEntity], deleting_entities: bool, deleting_decorations: bool,
+            num_enemies: int, num_walls: int, num_decorations: int, grid_cell_size: int,
+            mouse_screen_position: Tuple[int, int]) -> Optional[MapEditorWorldEntity]:
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
 
@@ -601,10 +601,11 @@ class View:
         self._rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
                                         self.screen_size[1] - self.camera_size[1]))
 
+        icon_space = 5
+
         y_1 = 17
         y_2 = y_1 + 22
-
-        icon_space = 5
+        y_3 = y_2 + MAP_EDITOR_UI_ICON_SIZE[1] + 25
 
         x_0 = 20
         self._map_editor_icon_in_ui(x_0, y_2, MAP_EDITOR_UI_ICON_SIZE, deleting_entities, 'Q', None,
@@ -614,16 +615,18 @@ class View:
 
         x_1 = 155
         self._text_in_ui(self.font_ui_headers, "ENTITIES", x_1, y_1)
-        i = 0
-        for char in entities_by_char.keys():
-            entity = entities_by_char[char]
+        num_icons_per_row = 27
+        for i, entity in enumerate(entities):
+            if entity in chars_by_entities:
+                char = chars_by_entities[entity]
+            else:
+                char = ''
             is_this_entity_being_placed = entity is placing_entity
-            x = x_1 + i * (MAP_EDITOR_UI_ICON_SIZE[0] + icon_space)
-            y = y_2
+            x = x_1 + (i % num_icons_per_row) * (MAP_EDITOR_UI_ICON_SIZE[0] + icon_space)
+            y = y_2 if i < num_icons_per_row else y_3
             if is_point_in_rect(mouse_ui_position, (x, y, MAP_EDITOR_UI_ICON_SIZE[0], MAP_EDITOR_UI_ICON_SIZE[1])):
                 hovered_by_mouse = entity
             self._map_editor_icon_in_ui(x, y, MAP_EDITOR_UI_ICON_SIZE, is_this_entity_being_placed, char, entity, None)
-            i += 1
 
         self._rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
 

@@ -18,46 +18,53 @@ from pythongame.register_game_data import register_all_game_data
 # TODO Avoid depending on pythongame.game_data from here
 
 
-ENTITIES_BY_CHAR: Dict[str, MapEditorWorldEntity] = {
-    'P': MapEditorWorldEntity.player(),
+MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
+    MapEditorWorldEntity.player(),
 
-    'X': MapEditorWorldEntity.wall(WallType.WALL),
-    'T': MapEditorWorldEntity.wall(WallType.STATUE),
-    '3': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_N),
-    '4': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_NE),
-    '5': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_E),
-    '6': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_SE),
-    '7': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_S),
-    '8': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_SW),
-    '9': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_W),
-    '0': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_NW),
-    '1': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_NE),
-    ',': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_SE),
-    ';': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_SW),
-    '.': MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_NW),
-    '_': MapEditorWorldEntity.wall(WallType.WALL_CHAIR),
+    MapEditorWorldEntity.wall(WallType.WALL),
+    MapEditorWorldEntity.wall(WallType.STATUE),
+    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_N),
+    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_NE),
+    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_E),
+    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_SE),
+    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_S),
+    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_SW),
+    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_W),
+    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_NW),
+    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_NE),
+    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_SE),
+    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_SW),
+    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_NW),
+    MapEditorWorldEntity.wall(WallType.WALL_CHAIR),
 
-    'D': MapEditorWorldEntity.enemy(EnemyType.DARK_REAPER),
-    'R': MapEditorWorldEntity.enemy(EnemyType.RAT_1),
-    '2': MapEditorWorldEntity.enemy(EnemyType.RAT_2),
-    'H': MapEditorWorldEntity.potion(PotionType.HEALTH),
-    'M': MapEditorWorldEntity.potion(PotionType.MANA),
-    'W': MapEditorWorldEntity.enemy(EnemyType.GOBLIN_WARLOCK),
-    'U': MapEditorWorldEntity.enemy(EnemyType.MUMMY),
-    'A': MapEditorWorldEntity.enemy(EnemyType.NECROMANCER),
+    MapEditorWorldEntity.enemy(EnemyType.DARK_REAPER),
+    MapEditorWorldEntity.enemy(EnemyType.RAT_1),
+    MapEditorWorldEntity.enemy(EnemyType.RAT_2),
+    MapEditorWorldEntity.potion(PotionType.HEALTH),
+    MapEditorWorldEntity.potion(PotionType.MANA),
+    MapEditorWorldEntity.enemy(EnemyType.GOBLIN_WARLOCK),
+    MapEditorWorldEntity.enemy(EnemyType.MUMMY),
+    MapEditorWorldEntity.enemy(EnemyType.NECROMANCER),
 
-    'B': MapEditorWorldEntity.item(ItemType.WINGED_BOOTS),
-    'O': MapEditorWorldEntity.item(ItemType.SWORD_OF_LEECHING),
-    'L': MapEditorWorldEntity.item(ItemType.ROD_OF_LIGHTNING),
-    'E': MapEditorWorldEntity.item(ItemType.AMULET_OF_MANA),
-    'I': MapEditorWorldEntity.item(ItemType.SOLDIERS_HELMET),
-    'C': MapEditorWorldEntity.item(ItemType.BLESSED_SHIELD),
-    'F': MapEditorWorldEntity.item(ItemType.STAFF_OF_FIRE),
+    MapEditorWorldEntity.item(ItemType.WINGED_BOOTS),
+    MapEditorWorldEntity.item(ItemType.SWORD_OF_LEECHING),
+    MapEditorWorldEntity.item(ItemType.ROD_OF_LIGHTNING),
+    MapEditorWorldEntity.item(ItemType.AMULET_OF_MANA),
+    MapEditorWorldEntity.item(ItemType.SOLDIERS_HELMET),
+    MapEditorWorldEntity.item(ItemType.BLESSED_SHIELD),
+    MapEditorWorldEntity.item(ItemType.STAFF_OF_FIRE),
 
-    'G': MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE),
+    MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE),
 
-    'N': MapEditorWorldEntity.decoration(Sprite.DECORATION_PLANT)
-}
+    MapEditorWorldEntity.decoration(Sprite.DECORATION_PLANT)
+]
+
+MAP_EDITOR_INPUT_CHARS: List[str] = [
+    '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'A', 'D', 'F',
+    'G', 'H', 'J', 'K', 'L', 'C', 'V', 'B', 'N', 'M'
+]
+
+ENTITIES_BY_CHAR: Dict[str, MapEditorWorldEntity] = dict(zip(MAP_EDITOR_INPUT_CHARS, MAP_EDITOR_ENTITIES))
 
 CHARS_BY_ENTITY: Dict[MapEditorWorldEntity, str] = {v: k for k, v in ENTITIES_BY_CHAR.items()}
 
@@ -233,7 +240,8 @@ def main(args: List[str]):
             game_world_size=game_state.game_world_size)
 
         entity_icon_hovered_by_mouse = view.render_map_editor_ui(
-            entities_by_char=ENTITIES_BY_CHAR,
+            chars_by_entities=CHARS_BY_ENTITY,
+            entities=MAP_EDITOR_ENTITIES,
             placing_entity=user_state.placing_entity,
             deleting_entities=user_state.deleting_entities,
             deleting_decorations=user_state.deleting_decorations,
