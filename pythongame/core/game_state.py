@@ -255,6 +255,15 @@ class PlayerState:
         self._mana_float = self.max_mana
         self.mana = self.max_mana
 
+    def gain_max_health(self, amount: int):
+        self.max_health += amount
+
+    def lose_max_health(self, amount: int):
+        self.max_health -= amount
+        if self.health > self.max_health:
+            self._health_float = self.max_health
+            self.health = int(math.floor(self._health_float))
+
     def find_first_empty_potion_slot(self) -> Optional[int]:
         empty_slots = [slot for slot in self.potion_slots if not self.potion_slots[slot]]
         if empty_slots:

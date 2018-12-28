@@ -12562,6 +12562,13 @@
         1950,
         175
       ]
+    },
+    {
+      "item_type": "SOLDIERS_HELMET",
+      "position": [
+        275,
+        225
+      ]
     }
   ],
   "decorations": [
