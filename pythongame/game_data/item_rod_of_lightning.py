@@ -20,12 +20,12 @@ class ItemEffect(AbstractItemEffect):
             self._time_since_lightning = 0
             player_entity = game_state.player_entity
             player_center_position = player_entity.get_center_position()
-            game_state.visual_effects.append(
-                VisualCircle((250, 250, 0), player_center_position, 50, 140, Millis(100), 1, player_entity))
             close_enemies = game_state.get_enemies_within_x_y_distance_of(140, player_center_position)
             if close_enemies:
                 deal_player_damage_to_enemy(game_state, close_enemies[0], 5)
                 enemy_center_position = close_enemies[0].world_entity.get_center_position()
+                game_state.visual_effects.append(
+                    VisualCircle((250, 250, 0), player_center_position, 50, 140, Millis(100), 1, player_entity))
                 game_state.visual_effects.append(
                     VisualLine((250, 250, 0), player_center_position, enemy_center_position, Millis(80), 3))
 
