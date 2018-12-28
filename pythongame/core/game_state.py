@@ -215,10 +215,11 @@ class PlayerState:
         self.health = health
         self._health_float = health
         self.max_health = max_health
+        self.health_regen: float = 0
         self.mana = mana
         self._mana_float = mana
         self.max_mana = max_mana
-        self.mana_regen = mana_regen
+        self.mana_regen: float = mana_regen
         self.potion_slots = potion_slots
         self.abilities = abilities
         self.ability_cooldowns_remaining = {ability_type: 0 for ability_type in abilities}
@@ -284,9 +285,9 @@ class PlayerState:
         else:
             self.active_buffs.append(BuffWithDuration(buff, duration))
 
-    def regenerate_mana(self, time_passed: Millis):
-        self.gain_mana(
-            self.mana_regen * float(time_passed))
+    def regenerate_health_and_mana(self, time_passed: Millis):
+        self.gain_mana(self.mana_regen * float(time_passed))
+        self.gain_health(self.health_regen * float(time_passed))
 
     def recharge_ability_cooldowns(self, time_passed: Millis):
         for ability_type in self.ability_cooldowns_remaining:
