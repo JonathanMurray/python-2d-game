@@ -16,6 +16,7 @@ from pythongame.game_data.item_amulet_of_mana import register_amulet_of_mana_ite
 from pythongame.game_data.item_blessed_shield import register_blessed_shield_item
 from pythongame.game_data.item_rod_of_lightning import register_rod_of_lightning_item
 from pythongame.game_data.item_soldiers_helmet import register_soldiers_helmet_item
+from pythongame.game_data.item_staff_of_fire import register_staff_of_fire_item
 from pythongame.game_data.item_sword_of_leeching import register_sword_of_leeching_item
 from pythongame.game_data.item_winged_boots import register_winged_boots_item
 from pythongame.game_data.map_editor_icons import register_map_editor_icons
@@ -45,12 +46,15 @@ def register_all_game_data():
     register_whirlwind_ability()
     register_goblin_warlock_enemy()
     register_mummy_enemy()
+
     register_winged_boots_item()
     register_amulet_of_mana_item()
     register_sword_of_leeching_item()
     register_rod_of_lightning_item()
     register_soldiers_helmet_item()
     register_blessed_shield_item()
+    register_staff_of_fire_item()
+
     register_entangling_roots_ability()
     register_decorations()
     register_map_editor_icons()

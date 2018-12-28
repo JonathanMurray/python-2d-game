@@ -231,6 +231,7 @@ class PlayerState:
         self.exp = 0
         self.level = 1
         self.max_exp_in_this_level = 130
+        self.fireball_dmg_boost = 0
 
     def gain_health(self, amount: float):
         self._health_float = min(self._health_float + amount, self.max_health)

@@ -52,6 +52,7 @@ ENTITIES_BY_CHAR: Dict[str, MapEditorWorldEntity] = {
     'E': MapEditorWorldEntity.item(ItemType.AMULET_OF_MANA),
     'I': MapEditorWorldEntity.item(ItemType.SOLDIERS_HELMET),
     'C': MapEditorWorldEntity.item(ItemType.BLESSED_SHIELD),
+    'F': MapEditorWorldEntity.item(ItemType.STAFF_OF_FIRE),
 
     'G': MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE),
 

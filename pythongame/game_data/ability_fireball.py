@@ -18,7 +18,8 @@ class ProjectileController(AbstractProjectileController):
         super().__init__(1500)
 
     def apply_enemy_collision(self, enemy: Enemy, game_state: GameState):
-        damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, 3)
+        damage_amount = 3 + game_state.player_state.fireball_dmg_boost
+        damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, damage_amount)
         if not damage_was_dealt:
             return False
         game_state.visual_effects.append(
