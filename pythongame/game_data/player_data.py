@@ -1,5 +1,8 @@
+from typing import Dict
+
 import pygame
 
+from pythongame.core.common import ItemType
 from pythongame.core.game_data import Sprite, Direction, PotionType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_user_ability_key, UserAbilityKey
 from pythongame.core.game_state import PlayerState
@@ -23,8 +26,8 @@ register_user_ability_key(AbilityType.ENTANGLING_ROOTS, UserAbilityKey("R", pyga
 health = 50
 mana = 100
 max_mana = 150
-mana_regen = 0.0028
-_items = {
+mana_regen = 2.8
+_items: Dict[int, ItemType] = {
     1: None,
     2: None,
     3: None

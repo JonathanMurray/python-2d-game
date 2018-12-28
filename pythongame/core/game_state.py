@@ -174,7 +174,7 @@ class Enemy:
             self.active_buffs.append(BuffWithDuration(buff, duration))
 
     def regenerate_health(self, time_passed: Millis):
-        self.gain_health(self.health_regen * float(time_passed))
+        self.gain_health(self.health_regen / 1000.0 * float(time_passed))
 
     def add_stun(self):
         self._number_of_active_stuns += 1
@@ -286,8 +286,8 @@ class PlayerState:
             self.active_buffs.append(BuffWithDuration(buff, duration))
 
     def regenerate_health_and_mana(self, time_passed: Millis):
-        self.gain_mana(self.mana_regen * float(time_passed))
-        self.gain_health(self.health_regen * float(time_passed))
+        self.gain_mana(self.mana_regen / 1000.0 * float(time_passed))
+        self.gain_health(self.health_regen / 1000.0 * float(time_passed))
 
     def recharge_ability_cooldowns(self, time_passed: Millis):
         for ability_type in self.ability_cooldowns_remaining:

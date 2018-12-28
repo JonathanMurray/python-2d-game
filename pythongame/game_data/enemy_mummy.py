@@ -78,7 +78,7 @@ def register_mummy_enemy():
     enemy_type = EnemyType.MUMMY
     movement_speed = 0.06
     health = 12
-    health_regen = 0.001  # per ms
+    health_regen = 1
     register_enemy_data(enemy_type, EnemyData(sprite, size, health, health_regen, movement_speed, 10))
     register_enemy_behavior(enemy_type, EnemyMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")
