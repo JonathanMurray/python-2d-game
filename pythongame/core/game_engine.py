@@ -7,7 +7,7 @@ from pythongame.core.player_controls import TryUseAbilityResult, PlayerControls
 from pythongame.core.potion_effects import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
 from pythongame.core.view_state import ViewState
 from pythongame.core.visual_effects import create_visual_exp_text
-from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
+from pythongame.core.game_data import POTION_ENTITY_SIZE
 
 
 class GameEngine:

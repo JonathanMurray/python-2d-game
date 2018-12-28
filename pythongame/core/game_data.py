@@ -6,6 +6,7 @@ import pygame
 from pythongame.core.common import *
 
 ITEM_ENTITY_SIZE = (30, 30)
+POTION_ENTITY_SIZE = (30, 30)
 
 
 class SpriteInitializer:

@@ -6,11 +6,11 @@ import pygame
 
 from pythongame.core.common import Direction, Sprite, sum_of_vectors, WallType, EnemyType, PotionType, ItemType
 from pythongame.core.game_data import ENEMIES, POTIONS, ITEMS, ITEM_ENTITY_SIZE, WALLS
+from pythongame.core.game_data import POTION_ENTITY_SIZE
 from pythongame.core.game_state import WorldEntity, Enemy, PotionOnGround, ItemOnGround, DecorationEntity, GameState, \
     Wall
 from pythongame.core.view import View
 from pythongame.game_data.player_data import INTIAL_PLAYER_STATE, PLAYER_ENTITY_SIZE, PLAYER_ENTITY_SPEED
-from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
 from pythongame.game_world_init import save_game_state_to_json_file, create_game_state_from_json_file
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 from pythongame.register_game_data import register_all_game_data

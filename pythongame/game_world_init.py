@@ -3,10 +3,10 @@ import json
 from pythongame.core.common import *
 from pythongame.core.enemy_creation import create_enemy, set_global_path_finder
 from pythongame.core.game_data import POTIONS, ITEM_ENTITY_SIZE, ITEMS, WALLS
+from pythongame.core.game_data import POTION_ENTITY_SIZE
 from pythongame.core.game_state import WorldEntity, GameState, PotionOnGround, ItemOnGround, DecorationEntity, Wall
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE, INTIAL_PLAYER_STATE, PLAYER_ENTITY_SPEED
-from pythongame.game_data.potion_health import POTION_ENTITY_SIZE
 
 # TODO Avoid depending on pythongame.game_data from here
 
