@@ -874,12 +874,68 @@
         3925,
         2925
       ]
+    },
+    {
+      "enemy_type": "GOBLIN_WARLOCK",
+      "position": [
+        550,
+        3100
+      ]
+    },
+    {
+      "enemy_type": "GOBLIN_WARLOCK",
+      "position": [
+        625,
+        3100
+      ]
+    },
+    {
+      "enemy_type": "GOBLIN_WARLOCK",
+      "position": [
+        875,
+        2900
+      ]
+    },
+    {
+      "enemy_type": "NECROMANCER",
+      "position": [
+        3400,
+        2475
+      ]
+    },
+    {
+      "enemy_type": "GOBLIN_WARLOCK",
+      "position": [
+        3525,
+        2050
+      ]
+    },
+    {
+      "enemy_type": "GOBLIN_WARLOCK",
+      "position": [
+        3575,
+        2025
+      ]
+    },
+    {
+      "enemy_type": "GOBLIN_WARLOCK",
+      "position": [
+        3625,
+        2050
+      ]
+    },
+    {
+      "enemy_type": "NECROMANCER",
+      "position": [
+        3550,
+        2475
+      ]
     }
   ],
   "player": {
     "position": [
-      275,
-      175
+      300,
+      150
     ]
   },
   "walls": [
@@ -12467,62 +12523,20 @@
         1000,
         3000
       ]
+    },
+    {
+      "wall_type": "ALTAR",
+      "position": [
+        3550,
+        1950
+      ]
     }
   ],
   "potions_on_ground": [
     {
       "potion_type": "HEALTH",
       "position": [
-        450,
-        3100
-      ]
-    },
-    {
-      "potion_type": "HEALTH",
-      "position": [
-        2400,
-        425
-      ]
-    },
-    {
-      "potion_type": "MANA",
-      "position": [
-        2375,
-        1500
-      ]
-    },
-    {
-      "potion_type": "HEALTH",
-      "position": [
-        2325,
-        1500
-      ]
-    },
-    {
-      "potion_type": "HEALTH",
-      "position": [
-        300,
-        1725
-      ]
-    },
-    {
-      "potion_type": "HEALTH",
-      "position": [
-        3825,
-        3100
-      ]
-    },
-    {
-      "potion_type": "HEALTH",
-      "position": [
         3875,
-        3100
-      ]
-    },
-    {
-      "potion_type": "MANA",
-      "position": [
-        3925,
         3100
       ]
     },
@@ -12534,21 +12548,77 @@
       ]
     },
     {
+      "potion_type": "HEALTH_LESSER",
+      "position": [
+        300,
+        1725
+      ]
+    },
+    {
+      "potion_type": "HEALTH_LESSER",
+      "position": [
+        2400,
+        425
+      ]
+    },
+    {
+      "potion_type": "HEALTH_LESSER",
+      "position": [
+        2325,
+        1500
+      ]
+    },
+    {
+      "potion_type": "MANA_LESSER",
+      "position": [
+        2375,
+        1500
+      ]
+    },
+    {
       "potion_type": "MANA",
       "position": [
         1000,
         3300
       ]
+    },
+    {
+      "potion_type": "HEALTH_LESSER",
+      "position": [
+        3825,
+        3100
+      ]
+    },
+    {
+      "potion_type": "MANA_LESSER",
+      "position": [
+        3925,
+        3100
+      ]
+    },
+    {
+      "potion_type": "MANA_LESSER",
+      "position": [
+        2050,
+        3325
+      ]
+    },
+    {
+      "potion_type": "MANA_LESSER",
+      "position": [
+        375,
+        225
+      ]
+    },
+    {
+      "potion_type": "HEALTH",
+      "position": [
+        450,
+        3100
+      ]
     }
   ],
   "items_on_ground": [
-    {
-      "item_type": "SWORD_OF_LEECHING",
-      "position": [
-        3575,
-        1975
-      ]
-    },
     {
       "item_type": "WINGED_BOOTS",
       "position": [
@@ -12589,6 +12659,13 @@
       "position": [
         1025,
         3075
+      ]
+    },
+    {
+      "item_type": "SWORD_OF_LEECHING",
+      "position": [
+        3575,
+        2000
       ]
     }
   ],

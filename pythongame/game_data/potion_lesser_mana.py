@@ -7,7 +7,7 @@ from pythongame.core.potion_effects import create_potion_visual_effect_at_player
     PotionFailedToBeConsumed, register_potion_effect
 from pythongame.core.visual_effects import create_visual_mana_text
 
-MANA_AMOUNT = 150
+MANA_AMOUNT = 75
 
 
 def _apply_mana(game_state: GameState):
@@ -21,15 +21,15 @@ def _apply_mana(game_state: GameState):
         return PotionFailedToBeConsumed("Already at full mana!")
 
 
-def register_mana_potion():
-    potion_type = PotionType.MANA
-    sprite = Sprite.POTION_MANA
-    ui_icon_sprite = UiIconSprite.POTION_MANA
+def register_lesser_mana_potion():
+    potion_type = PotionType.MANA_LESSER
+    sprite = Sprite.POTION_MANA_LESSER
+    ui_icon_sprite = UiIconSprite.POTION_MANA_LESSER
 
     register_potion_effect(potion_type, _apply_mana)
-    image_path = "resources/graphics/icon_potion_mana.png"
+    image_path = "resources/graphics/icon_potion_lesser_mana.png"
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_path, POTION_ENTITY_SIZE))
     register_ui_icon_sprite_path(ui_icon_sprite, image_path)
     register_potion_data(
         potion_type,
-        PotionData(ui_icon_sprite, sprite, "Mana potion", "Restores " + str(MANA_AMOUNT) + " mana"))
+        PotionData(ui_icon_sprite, sprite, "Lesser mana potion", "Restores " + str(MANA_AMOUNT) + " mana"))

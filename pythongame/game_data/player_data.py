@@ -11,8 +11,8 @@ PLAYER_ENTITY_SIZE = (30, 30)
 PLAYER_ENTITY_SPEED = 0.105
 
 _player_potion_slots = {
-    1: PotionType.HEALTH,
-    2: PotionType.MANA,
+    1: PotionType.HEALTH_LESSER,
+    2: PotionType.MANA_LESSER,
     3: None,
     4: None,
     5: None

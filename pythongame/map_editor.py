@@ -41,11 +41,14 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.enemy(EnemyType.DARK_REAPER),
     MapEditorWorldEntity.enemy(EnemyType.RAT_1),
     MapEditorWorldEntity.enemy(EnemyType.RAT_2),
-    MapEditorWorldEntity.potion(PotionType.HEALTH),
-    MapEditorWorldEntity.potion(PotionType.MANA),
     MapEditorWorldEntity.enemy(EnemyType.GOBLIN_WARLOCK),
     MapEditorWorldEntity.enemy(EnemyType.MUMMY),
     MapEditorWorldEntity.enemy(EnemyType.NECROMANCER),
+
+    MapEditorWorldEntity.potion(PotionType.HEALTH_LESSER),
+    MapEditorWorldEntity.potion(PotionType.HEALTH),
+    MapEditorWorldEntity.potion(PotionType.MANA_LESSER),
+    MapEditorWorldEntity.potion(PotionType.MANA),
 
     MapEditorWorldEntity.item(ItemType.WINGED_BOOTS),
     MapEditorWorldEntity.item(ItemType.SWORD_OF_LEECHING),
@@ -56,7 +59,6 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.STAFF_OF_FIRE),
 
     MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE),
-
     MapEditorWorldEntity.decoration(Sprite.DECORATION_PLANT)
 ]
 

@@ -7,7 +7,7 @@ from pythongame.core.potion_effects import create_potion_visual_effect_at_player
     register_potion_effect
 from pythongame.core.visual_effects import create_visual_healing_text
 
-HEALING_AMOUNT = 80
+HEALING_AMOUNT = 40
 
 
 def _apply_health(game_state: GameState):
@@ -21,14 +21,14 @@ def _apply_health(game_state: GameState):
         return PotionFailedToBeConsumed("Already at full health!")
 
 
-def register_health_potion():
-    potion_type = PotionType.HEALTH
-    sprite = Sprite.POTION_HEALTH
-    ui_icon_sprite = UiIconSprite.POTION_HEALTH
+def register_lesser_health_potion():
+    potion_type = PotionType.HEALTH_LESSER
+    sprite = Sprite.POTION_HEALTH_LESSER
+    ui_icon_sprite = UiIconSprite.POTION_HEALTH_LESSER
 
     register_potion_effect(potion_type, _apply_health)
-    image_path = "resources/graphics/icon_potion_health.png"
+    image_path = "resources/graphics/icon_potion_lesser_health.png"
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_path, POTION_ENTITY_SIZE))
     register_ui_icon_sprite_path(ui_icon_sprite, image_path)
     description = "Restores " + str(HEALING_AMOUNT) + " health"
-    register_potion_data(potion_type, PotionData(ui_icon_sprite, sprite, "Health potion", description))
+    register_potion_data(potion_type, PotionData(ui_icon_sprite, sprite, "Lesser health potion", description))

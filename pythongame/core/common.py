@@ -122,10 +122,12 @@ def get_rect_with_increased_size_in_all_directions(rect, increased_amount):
 
 
 class PotionType(Enum):
-    HEALTH = 1
-    MANA = 2
-    SPEED = 3
-    INVISIBILITY = 4
+    HEALTH_LESSER = 1
+    HEALTH = 2
+    MANA_LESSER = 11
+    MANA = 12
+    SPEED = 21
+    INVISIBILITY = 22
 
 
 class EnemyType(Enum):
@@ -174,7 +176,9 @@ class Sprite(Enum):
     PROJECTILE_ENEMY_GOBLIN_WARLOCK = 14
     PROJECTILE_PLAYER_ENTANGLING_ROOTS = 15
     POTION_HEALTH = 101
-    POTION_MANA = 102
+    POTION_HEALTH_LESSER = 102
+    POTION_MANA = 103
+    POTION_MANA_LESSER = 104
     ENEMY_NECROMANCER = 201
     ENEMY_RAT_1 = 202
     ENEMY_RAT_2 = 203

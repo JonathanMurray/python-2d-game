@@ -23,6 +23,8 @@ from pythongame.game_data.map_editor_icons import register_map_editor_icons
 from pythongame.game_data.player_data import register_player_data
 from pythongame.game_data.potion_health import register_health_potion
 from pythongame.game_data.potion_invis import register_invis_potion
+from pythongame.game_data.potion_lesser_health import register_lesser_health_potion
+from pythongame.game_data.potion_lesser_mana import register_lesser_mana_potion
 from pythongame.game_data.potion_mana import register_mana_potion
 from pythongame.game_data.potion_speed import register_speed_potion
 from pythongame.game_data.walls import register_walls
@@ -34,10 +36,14 @@ def register_all_game_data():
     register_heal_ability()
     register_channel_attack_ability()
     register_teleport_ability()
+
+    register_lesser_health_potion()
     register_health_potion()
+    register_lesser_mana_potion()
     register_mana_potion()
     register_invis_potion()
     register_speed_potion()
+
     register_necromancer_enemy()
     register_player_data()
     register_rat_1_enemy()

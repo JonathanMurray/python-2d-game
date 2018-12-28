@@ -59,10 +59,12 @@ class Animation:
 
 # TODO Ideally this shouldn't need to be defined here
 class UiIconSprite(Enum):
-    POTION_HEALTH = 1
-    POTION_MANA = 2
-    POTION_SPEED = 3
-    POTION_INVISIBILITY = 4
+    POTION_HEALTH_LESSER = 1
+    POTION_HEALTH = 2
+    POTION_MANA_LESSER = 3
+    POTION_MANA = 4
+    POTION_SPEED = 11
+    POTION_INVISIBILITY = 12
     ABILITY_FIREBALL = 101
     ABILITY_HEAL = 102
     ABILITY_MAGIC_MISSILE = 103
