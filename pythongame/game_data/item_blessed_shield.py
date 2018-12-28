@@ -28,4 +28,4 @@ def register_blessed_shield_item():
         sprite, SpriteInitializer("resources/graphics/item_blessed_shield.png", ITEM_ENTITY_SIZE))
     register_item_data(
         ITEM_TYPE,
-        ItemData(ui_icon_sprite, sprite, "Blessed Shield", "Grants increased health regeneration"))
+        ItemData(ui_icon_sprite, sprite, "Blessed Shield", "Grants +" + str(HEALTH_REGEN_BOOST) + " health regeneration"))
