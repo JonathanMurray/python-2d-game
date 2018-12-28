@@ -7,6 +7,7 @@ def register_walls():
     _register_statue()
     _register_directional_walls()
     _register_chair()
+    _register_altar()
 
 
 def _register_wall():
@@ -49,6 +50,7 @@ def _register_directional_walls():
     _register_directional_wall(WallType.WALL_DIRECTIONAL_POINTY_NW, Sprite.WALL_DIRECTIONAL_POINTY_NW,
                                "resources/graphics/hyrule_wall_pointy_corner_nw.png", [0, 0])
 
+
 def _register_directional_wall(wall_type, sprite, sprite_sheet_path, sprite_sheet_index):
     register_entity_sprite_map(
         sprite, SpriteSheet(sprite_sheet_path), (21, 21), (25, 25),
@@ -65,6 +67,17 @@ def _register_statue():
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size,
                                indices_by_dir, (-4, -54))
     register_wall_data(WallType.STATUE, WallData(sprite, (42, 46)))
+
+
+def _register_altar():
+    sprite = Sprite.WALL_ALTAR
+    sprite_sheet = SpriteSheet("resources/graphics/wall_altar.png")
+    original_sprite_size = (88, 38)
+    scaled_sprite_size = (100, 50)
+    indices_by_dir = {Direction.DOWN: [(0, 0)]}
+    register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir, (0, -13))
+    register_wall_data(WallType.ALTAR, WallData(sprite, (100, 25)))  # table is roughly 13px tall
+
 
 def _register_chair():
     sprite = Sprite.WALL_CHAIR

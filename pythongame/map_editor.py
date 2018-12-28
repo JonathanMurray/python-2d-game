@@ -36,6 +36,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_SW),
     MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_NW),
     MapEditorWorldEntity.wall(WallType.WALL_CHAIR),
+    MapEditorWorldEntity.wall(WallType.ALTAR),
 
     MapEditorWorldEntity.enemy(EnemyType.DARK_REAPER),
     MapEditorWorldEntity.enemy(EnemyType.RAT_1),
@@ -60,7 +61,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
 ]
 
 MAP_EDITOR_INPUT_CHARS: List[str] = [
-    '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'A', 'D', 'F',
+    '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'A', 'D', 'F',
     'G', 'H', 'J', 'K', 'L', 'C', 'V', 'B', 'N', 'M'
 ]
 

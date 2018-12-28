@@ -11456,13 +11456,6 @@
     {
       "wall_type": "WALL_DIRECTIONAL_N",
       "position": [
-        1000,
-        2975
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
         1025,
         2975
       ]
@@ -12460,6 +12453,20 @@
         2850,
         2300
       ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        1000,
+        2975
+      ]
+    },
+    {
+      "wall_type": "ALTAR",
+      "position": [
+        1000,
+        3000
+      ]
     }
   ],
   "potions_on_ground": [
@@ -12550,13 +12557,6 @@
       ]
     },
     {
-      "item_type": "ROD_OF_LIGHTNING",
-      "position": [
-        1075,
-        3050
-      ]
-    },
-    {
       "item_type": "AMULET_OF_MANA",
       "position": [
         1950,
@@ -12582,6 +12582,13 @@
       "position": [
         225,
         225
+      ]
+    },
+    {
+      "item_type": "ROD_OF_LIGHTNING",
+      "position": [
+        1025,
+        3075
       ]
     }
   ],
