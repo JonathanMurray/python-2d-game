@@ -73,7 +73,7 @@ class GameEngine:
 
     def _is_enemy_close_to_camera(self, enemy):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(
-            self.game_state.camera_world_area.rect(), 250)
+            self.game_state.camera_world_area.rect(), 100)
         return rects_intersect(enemy.world_entity.rect(), camera_rect_with_margin)
 
     # Returns True if player died
