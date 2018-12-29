@@ -97,9 +97,9 @@ class GameEngine:
             visual_effect.notify_time_passed(time_passed)
 
         npcs_that_died = self.game_state.remove_dead_npcs()
-
-        if npcs_that_died:
-            exp_gained = sum([NON_PLAYER_CHARACTERS[e.npc_type].exp_reward for e in npcs_that_died])
+        enemies_that_died = [e for e in npcs_that_died if e.is_enemy]
+        if enemies_that_died:
+            exp_gained = sum([NON_PLAYER_CHARACTERS[e.npc_type].exp_reward for e in enemies_that_died])
             self.game_state.visual_effects.append(create_visual_exp_text(self.game_state.player_entity, exp_gained))
             did_player_level_up = self.game_state.player_state.gain_exp(exp_gained)
             if did_player_level_up:
@@ -179,7 +179,7 @@ class GameEngine:
                     self.view_state.set_message("You picked up " + ITEMS[item.item_type].name)
                     entities_to_remove.append(item)
 
-        for enemy in self.game_state.non_player_characters:
+        for enemy in [e for e in self.game_state.non_player_characters if e.is_enemy]:
             for projectile in self.game_state.get_projectiles_intersecting_with(enemy.world_entity):
                 should_remove_projectile = projectile.projectile_controller.apply_enemy_collision(
                     enemy, self.game_state)

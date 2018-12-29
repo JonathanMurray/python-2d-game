@@ -20,3 +20,10 @@ def deal_damage_to_player(game_state: GameState, amount: float):
     rounded_amount = round(amount)
     if rounded_amount > 0:
         game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, rounded_amount))
+
+
+def deal_npc_damage_to_npc(game_state: GameState, target: NonPlayerCharacter, amount: float):
+   target.lose_health(amount)
+   rounded_amount = round(amount)
+   if rounded_amount > 0:
+       game_state.visual_effects.append(create_visual_damage_text(target.world_entity, rounded_amount))

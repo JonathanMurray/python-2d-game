@@ -17,11 +17,11 @@ class EnemyPathfinder:
         self.path = None
         self.global_path_finder: GlobalPathFinder = global_path_finder
 
-    def update_path(self, enemy_entity: WorldEntity, game_state):
-        enemy_cell = _get_cell_from_position(enemy_entity.get_position())
-        player_cell = _get_cell_from_position(game_state.player_entity.get_position())
+    def update_path_towards_target(self, agent_entity: WorldEntity, game_state: GameState, target_entity: WorldEntity):
+        enemy_cell = _get_cell_from_position(agent_entity.get_position())
+        player_cell = _get_cell_from_position(target_entity.get_position())
 
-        agent_cell_size = (enemy_entity.w // GRID_CELL_WIDTH + 1, enemy_entity.h // GRID_CELL_WIDTH + 1)
+        agent_cell_size = (agent_entity.w // GRID_CELL_WIDTH + 1, agent_entity.h // GRID_CELL_WIDTH + 1)
         self.global_path_finder.register_entity_size(agent_cell_size)
         path_with_cells = self.global_path_finder.run(agent_cell_size, enemy_cell, player_cell)
         if path_with_cells:

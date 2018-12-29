@@ -375,6 +375,7 @@ class GameState:
         self.potions_on_ground = potions_on_ground
         self.items_on_ground: List[ItemOnGround] = items_on_ground
         self.non_player_characters: List[NonPlayerCharacter] = non_player_characters
+        self.non_enemy_npcs: List[NonPlayerCharacter] = []
         self.walls: List[Wall] = walls
         self._wall_buckets = self._put_walls_in_buckets(game_world_size, [w.world_entity for w in walls])
         self.visual_effects = []
@@ -400,6 +401,12 @@ class GameState:
 
         return grid
 
+    def add_non_player_character(self, npc: NonPlayerCharacter):
+        self.non_player_characters.append(npc)
+        if not npc.is_enemy:
+            self.non_enemy_npcs.append(npc)
+
+    # TODO clarify how this method should be used.
     # entities_to_remove aren't necessarily of the class WorldEntity
     def remove_entities(self, entities_to_remove: List):
         self.projectile_entities = [p for p in self.projectile_entities if p not in entities_to_remove]
@@ -411,7 +418,8 @@ class GameState:
         walls = self._get_walls_from_buckets_in_camera()
         return [self.player_entity] + [p.world_entity for p in self.potions_on_ground] + \
                [i.world_entity for i in self.items_on_ground] + \
-               [e.world_entity for e in self.non_player_characters] + walls + [p.world_entity for p in self.projectile_entities]
+               [e.world_entity for e in self.non_player_characters] + walls + [p.world_entity for p in
+                                                                               self.projectile_entities]
 
     def get_decorations_to_render(self) -> List[DecorationEntity]:
         return self.decoration_entities
@@ -430,12 +438,13 @@ class GameState:
     def get_projectiles_intersecting_with(self, entity) -> List[Projectile]:
         return [p for p in self.projectile_entities if boxes_intersect(entity, p.world_entity)]
 
-    def get_npc_intersecting_with(self, entity) -> List[NonPlayerCharacter]:
-        return [e for e in self.non_player_characters if boxes_intersect(e.world_entity, entity)]
+    def get_enemy_intersecting_with(self, entity) -> List[NonPlayerCharacter]:
+        return [e for e in self.non_player_characters if e.is_enemy and boxes_intersect(e.world_entity, entity)]
 
-    def get_npcs_within_x_y_distance_of(self, distance: int, position: Tuple[int, int]):
+    def get_enemies_within_x_y_distance_of(self, distance: int, position: Tuple[int, int]):
         return [e for e in self.non_player_characters
-                if is_x_and_y_within_distance(e.world_entity.get_center_position(), position, distance)]
+                if e.is_enemy
+                and is_x_and_y_within_distance(e.world_entity.get_center_position(), position, distance)]
 
     # NOTE: Very naive brute-force collision checking
     def update_world_entity_position_within_game_world(self, entity: WorldEntity, time_passed: Millis):
@@ -447,6 +456,8 @@ class GameState:
 
     # TODO Improve the interaction between functions in here
     def would_entity_collide_if_new_pos(self, entity, new_pos_within_world):
+        if not self.is_position_within_game_world(new_pos_within_world):
+            raise Exception("not within game-world: " + str(new_pos_within_world))
         old_pos = entity.x, entity.y
         entity.set_position(new_pos_within_world)
         walls = self._get_walls_from_buckets_adjacent_to_entity(entity)
@@ -468,6 +479,7 @@ class GameState:
 
     def remove_dead_npcs(self):
         npcs_that_died = [e for e in self.non_player_characters if e.health <= 0]
+        self.non_enemy_npcs = [npc for npc in self.non_enemy_npcs if npc.health > 0]
         self.non_player_characters = [e for e in self.non_player_characters if e.health > 0]
         return npcs_that_died
 

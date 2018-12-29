@@ -45,7 +45,7 @@ class NpcMind(AbstractNpcMind):
 
         if self._time_since_updated_path > self._update_path_interval:
             self._time_since_updated_path = 0
-            self.pathfinder.update_path(enemy_entity, game_state)
+            self.pathfinder.update_path_towards_target(enemy_entity, game_state, game_state.player_entity)
 
         new_next_waypoint = self.pathfinder.get_next_waypoint_along_path(enemy_entity)
 

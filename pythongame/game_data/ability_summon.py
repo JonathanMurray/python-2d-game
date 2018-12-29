@@ -17,10 +17,12 @@ def _apply_ability(game_state: GameState):
 
     relative_pos = (random.randint(-80, 80), random.randint(-80, 80))
     summon_center_pos = sum_of_vectors(player_entity.get_center_position(), relative_pos)
-    summon_pos = get_position_from_center_position(summon_center_pos, NON_PLAYER_CHARACTERS[NpcType.PLAYER_SUMMON].size)
+    summon_size = NON_PLAYER_CHARACTERS[NpcType.PLAYER_SUMMON].size
+    summon_pos = game_state.get_within_world(
+        get_position_from_center_position(summon_center_pos, summon_size), summon_size)
     summon = create_npc(NpcType.PLAYER_SUMMON, summon_pos)
     if not game_state.would_entity_collide_if_new_pos(summon.world_entity, summon_pos):
-        game_state.non_player_characters.append(summon)
+        game_state.add_non_player_character(summon)
 
 
 class NpcMind(AbstractNpcMind):
@@ -43,7 +45,12 @@ class NpcMind(AbstractNpcMind):
 
         if self._time_since_updated_path > self._update_path_interval:
             self._time_since_updated_path = 0
-            self.pathfinder.update_path(enemy_entity, game_state)
+            nearby_enemies = game_state.get_enemies_within_x_y_distance_of(250, npc.world_entity.get_position())
+            if nearby_enemies:
+                target_entity = nearby_enemies[0].world_entity
+            else:
+                target_entity = game_state.player_entity
+            self.pathfinder.update_path_towards_target(enemy_entity, game_state, target_entity)
 
         new_next_waypoint = self.pathfinder.get_next_waypoint_along_path(enemy_entity)
 

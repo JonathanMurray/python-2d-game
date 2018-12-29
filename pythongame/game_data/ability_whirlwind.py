@@ -47,7 +47,7 @@ class ProjectileController(AbstractProjectileController):
         projectile_entity = projectile.world_entity
         if self._time_since_dmg > self._dmg_cooldown:
             self._time_since_dmg = 0
-            for enemy in game_state.get_npc_intersecting_with(projectile_entity):
+            for enemy in game_state.get_enemy_intersecting_with(projectile_entity):
                 damage_amount = 1
                 damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, damage_amount)
                 if damage_was_dealt:

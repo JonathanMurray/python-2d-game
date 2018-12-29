@@ -35,11 +35,13 @@ class NpcMind(AbstractNpcMind):
             self._time_since_summoning = 0
             relative_pos_from_summoner = (random.randint(-150, 150), random.randint(-150, 150))
             mummy_center_pos = sum_of_vectors(necro_center_pos, relative_pos_from_summoner)
-            mummy_pos = get_position_from_center_position(mummy_center_pos, NON_PLAYER_CHARACTERS[NpcType.MUMMY].size)
+            mummy_size = NON_PLAYER_CHARACTERS[NpcType.MUMMY].size
+            mummy_pos = game_state.get_within_world(
+                get_position_from_center_position(mummy_center_pos, mummy_size), mummy_size)
             mummy_enemy = create_npc(NpcType.MUMMY, mummy_pos)
             if not game_state.would_entity_collide_if_new_pos(mummy_enemy.world_entity, mummy_pos):
                 self._summoning_cooldown = self._max_summoning_cooldown
-                game_state.non_player_characters.append(mummy_enemy)
+                game_state.add_non_player_character(mummy_enemy)
                 game_state.visual_effects.append(VisualCircle((80, 150, 100), necro_center_pos, 40, 70, Millis(120), 3))
                 game_state.visual_effects.append(VisualCircle((80, 150, 100), mummy_center_pos, 40, 70, Millis(120), 3))
             else:
@@ -49,10 +51,12 @@ class NpcMind(AbstractNpcMind):
         if self._time_since_healing > self._healing_cooldown:
             self._time_since_healing = 0
             necro_center_pos = npc.world_entity.get_center_position()
-            nearby_hurt_enemies = [e for e in game_state.non_player_characters
-                                   if is_x_and_y_within_distance(necro_center_pos, e.world_entity.get_center_position(),
-                                                                 200)
-                                   and e != npc and e.health < e.max_health]
+            nearby_hurt_enemies = [
+                e for e in game_state.non_player_characters
+                if e.is_enemy
+                   and is_x_and_y_within_distance(necro_center_pos, e.world_entity.get_center_position(), 200)
+                   and e != npc and e.health < e.max_health
+            ]
             if nearby_hurt_enemies:
                 healing_target = nearby_hurt_enemies[0]
                 healing_target.gain_health(5)

@@ -17,7 +17,7 @@ def _apply_ability(game_state: GameState):
     player_center_pos = player_entity.get_center_position()
     game_state.visual_effects.append(
         VisualCircle((150, 150, 250), player_center_pos, 95, 190, Millis(200), 3))
-    affected_enemies = game_state.get_npcs_within_x_y_distance_of(180, player_center_pos)
+    affected_enemies = game_state.get_enemies_within_x_y_distance_of(180, player_center_pos)
     effect_position = get_position_from_center_position(player_center_pos, EFFECT_SPRITE_SIZE)
     game_state.visual_effects.append(
         VisualSprite(Sprite.EFFECT_ABILITY_FROST_NOVA, effect_position, Millis(200), player_entity))
