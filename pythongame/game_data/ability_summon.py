@@ -10,8 +10,8 @@ from pythongame.core.game_data import register_ability_data, AbilityData, UiIcon
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.npc_creation import create_npc
-from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.visual_effects import VisualLine
 
 
@@ -35,7 +35,7 @@ class NpcMind(AbstractNpcMind):
         self._time_since_attack = self._attack_interval
         self._update_path_interval = 900
         self._time_since_updated_path = random.randint(0, self._update_path_interval)
-        self.pathfinder = EnemyPathfinder(global_path_finder)
+        self.pathfinder = NpcPathfinder(global_path_finder)
         self.next_waypoint = None
         self._reevaluate_next_waypoint_direction_interval = 1000
         self._time_since_reevaluated = self._reevaluate_next_waypoint_direction_interval

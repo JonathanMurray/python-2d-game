@@ -3,7 +3,7 @@ from typing import List, Optional
 
 import pygame
 
-import pythongame.core.pathfinding.enemy_pathfinding
+import pythongame.core.pathfinding.npc_pathfinding
 from pythongame.core.common import Millis
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
@@ -61,8 +61,8 @@ def main(args: List[str]):
             if isinstance(action, ActionToggleRenderDebugging):
                 render_hit_and_collision_boxes = not render_hit_and_collision_boxes
                 # TODO: Handle this better than accessing a global variable from here
-                pythongame.core.pathfinding.enemy_pathfinding.DEBUG_RENDER_PATHFINDING = \
-                    not pythongame.core.pathfinding.enemy_pathfinding.DEBUG_RENDER_PATHFINDING
+                pythongame.core.pathfinding.npc_pathfinding.DEBUG_RENDER_PATHFINDING = \
+                    not pythongame.core.pathfinding.npc_pathfinding.DEBUG_RENDER_PATHFINDING
             if not is_paused and not is_game_over:
                 if isinstance(action, ActionTryUseAbility):
                     game_engine.try_use_ability(action.ability_type)
