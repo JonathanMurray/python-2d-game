@@ -3,7 +3,7 @@ import random
 from pythongame.core.common import Millis, is_x_and_y_within_distance, NpcType, Sprite, Direction, \
     get_perpendicular_directions
 from pythongame.core.damage_interactions import deal_damage_to_player
-from pythongame.core.enemy_behaviors import register_enemy_behavior, AbstractEnemyMind
+from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.game_data import register_enemy_data, EnemyData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
@@ -11,7 +11,7 @@ from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.visual_effects import VisualLine
 
 
-class EnemyMind(AbstractEnemyMind):
+class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
         self._attack_interval = 1000
@@ -78,7 +78,7 @@ def register_rat_2_enemy():
     movement_speed = 0.08
     health = 11
     register_enemy_data(npc_type, EnemyData(sprite, size, health, 0, movement_speed, 8))
-    register_enemy_behavior(npc_type, EnemyMind)
+    register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/gray_rat.png")
     original_sprite_size = (32, 32)
     scaled_sprite_size = (50, 50)

@@ -2,8 +2,8 @@ import random
 
 from pythongame.core.common import Millis, random_direction, NpcType, Sprite, \
     is_x_and_y_within_distance, Direction, sum_of_vectors, get_position_from_center_position
-from pythongame.core.enemy_behaviors import register_enemy_behavior, AbstractEnemyMind
-from pythongame.core.enemy_creation import create_enemy
+from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
+from pythongame.core.npc_creation import create_npc
 from pythongame.core.game_data import register_enemy_data, \
     EnemyData, SpriteSheet, register_entity_sprite_map, ENEMIES
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
@@ -14,7 +14,7 @@ SPRITE = Sprite.ENEMY_NECROMANCER
 ENEMY_TYPE = NpcType.NECROMANCER
 
 
-class EnemyMind(AbstractEnemyMind):
+class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
         self._time_since_decision = 0
@@ -36,7 +36,7 @@ class EnemyMind(AbstractEnemyMind):
             relative_pos_from_summoner = (random.randint(-150, 150), random.randint(-150, 150))
             mummy_center_pos = sum_of_vectors(necro_center_pos, relative_pos_from_summoner)
             mummy_pos = get_position_from_center_position(mummy_center_pos, ENEMIES[NpcType.MUMMY].size)
-            mummy_enemy = create_enemy(NpcType.MUMMY, mummy_pos)
+            mummy_enemy = create_npc(NpcType.MUMMY, mummy_pos)
             if not game_state.would_entity_collide_if_new_pos(mummy_enemy.world_entity, mummy_pos):
                 self._summoning_cooldown = self._max_summoning_cooldown
                 game_state.non_player_characters.append(mummy_enemy)
@@ -73,7 +73,7 @@ def register_necromancer_enemy():
     size = (50, 60)
     health = 25
     register_enemy_data(ENEMY_TYPE, EnemyData(SPRITE, size, health, 0, 0.02, 15))
-    register_enemy_behavior(ENEMY_TYPE, EnemyMind)
+    register_npc_behavior(ENEMY_TYPE, NpcMind)
 
     enemy_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")
     enemy_original_sprite_size = (32, 32)

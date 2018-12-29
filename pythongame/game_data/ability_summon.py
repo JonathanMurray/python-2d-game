@@ -3,8 +3,8 @@ import random
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.common import get_position_from_center_position, Sprite, AbilityType, Millis, \
     sum_of_vectors, NpcType, get_perpendicular_directions
-from pythongame.core.enemy_behaviors import register_enemy_behavior, AbstractEnemyMind
-from pythongame.core.enemy_creation import create_enemy
+from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
+from pythongame.core.npc_creation import create_npc
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     ENEMIES, register_enemy_data, EnemyData
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
@@ -19,12 +19,12 @@ def _apply_ability(game_state: GameState):
     relative_pos = (random.randint(-80, 80), random.randint(-80, 80))
     summon_center_pos = sum_of_vectors(player_entity.get_center_position(), relative_pos)
     summon_pos = get_position_from_center_position(summon_center_pos, ENEMIES[NpcType.MUMMY].size)
-    summon = create_enemy(NpcType.PLAYER_SUMMON, summon_pos)
+    summon = create_npc(NpcType.PLAYER_SUMMON, summon_pos)
     if not game_state.would_entity_collide_if_new_pos(summon.world_entity, summon_pos):
         game_state.non_player_characters.append(summon)
 
 
-class EnemyMind(AbstractEnemyMind):
+class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
         self._update_path_interval = 900
@@ -79,4 +79,4 @@ def register_summon_ability():
 
     summoned_npc_type = NpcType.PLAYER_SUMMON
     register_enemy_data(summoned_npc_type, EnemyData(Sprite.ENEMY_MUMMY, (42, 42), 10, 0, 0.05, 0))
-    register_enemy_behavior(summoned_npc_type, EnemyMind)
+    register_npc_behavior(summoned_npc_type, NpcMind)

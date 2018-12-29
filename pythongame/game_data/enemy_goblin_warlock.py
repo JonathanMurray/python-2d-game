@@ -5,7 +5,7 @@ from pythongame.core.common import Millis, NpcType, Sprite, \
     get_position_from_center_position, ProjectileType, BuffType, Direction, get_perpendicular_directions, \
     translate_in_direction
 from pythongame.core.damage_interactions import deal_damage_to_player
-from pythongame.core.enemy_behaviors import register_enemy_behavior, AbstractEnemyMind
+from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.game_data import register_enemy_data, \
     EnemyData, register_buff_text, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
@@ -22,7 +22,7 @@ PROJECTILE_SIZE = (20, 20)
 COLOR_SPEECH = (200, 100, 70)
 
 
-class EnemyMind(AbstractEnemyMind):
+class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
         self._update_attack_interval()
@@ -141,7 +141,7 @@ def register_goblin_warlock_enemy():
 
     health = 21
     register_enemy_data(npc_type, EnemyData(enemy_sprite, enemy_size, health, 0, 0.032, 12))
-    register_enemy_behavior(npc_type, EnemyMind)
+    register_npc_behavior(npc_type, NpcMind)
 
     enemy_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")
     enemy_original_sprite_size = (32, 32)

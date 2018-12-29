@@ -5,7 +5,7 @@ from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntit
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
 
-class AbstractEnemyMind:
+class AbstractNpcMind:
 
     def __init__(self, _global_path_finder: GlobalPathFinder):
         pass
@@ -19,13 +19,13 @@ class AbstractEnemyMind:
         pass
 
 
-_enemy_mind_constructors: Dict[NpcType, Type[AbstractEnemyMind]] = {}
+_npc_mind_constructors: Dict[NpcType, Type[AbstractNpcMind]] = {}
 
 
-def register_enemy_behavior(npc_type: NpcType, mind_constructor: Type[AbstractEnemyMind]):
-    _enemy_mind_constructors[npc_type] = mind_constructor
+def register_npc_behavior(npc_type: NpcType, mind_constructor: Type[AbstractNpcMind]):
+    _npc_mind_constructors[npc_type] = mind_constructor
 
 
-def create_enemy_mind(npc_type: NpcType, global_path_finder: GlobalPathFinder):
-    constructor = _enemy_mind_constructors[npc_type]
+def create_npc_mind(npc_type: NpcType, global_path_finder: GlobalPathFinder):
+    constructor = _npc_mind_constructors[npc_type]
     return constructor(global_path_finder)

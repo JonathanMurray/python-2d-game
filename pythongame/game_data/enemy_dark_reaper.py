@@ -4,7 +4,7 @@ from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effec
 from pythongame.core.common import Millis, is_x_and_y_within_distance, NpcType, Sprite, Direction, \
     get_perpendicular_directions, BuffType
 from pythongame.core.damage_interactions import deal_damage_to_player
-from pythongame.core.enemy_behaviors import register_enemy_behavior, AbstractEnemyMind
+from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.game_data import register_enemy_data, \
     EnemyData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
@@ -17,7 +17,7 @@ SPEECH_DURATION = Millis(3000)
 COLOR_SPEECH = (200, 100, 70)
 
 
-class EnemyMind(AbstractEnemyMind):
+class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
         self._attack_interval = 1000
@@ -131,7 +131,7 @@ def register_dark_reaper_enemy():
     movement_speed = 0.04
     health = 80
     register_enemy_data(npc_type, EnemyData(sprite, size, health, 0, movement_speed, 40))
-    register_enemy_behavior(npc_type, EnemyMind)
+    register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet.png")
     original_sprite_size = (32, 32)
     scaled_sprite_size = (50, 50)
