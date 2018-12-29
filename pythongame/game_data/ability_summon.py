@@ -2,10 +2,11 @@ import random
 
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.common import get_position_from_center_position, Sprite, AbilityType, Millis, \
-    sum_of_vectors, NpcType, get_perpendicular_directions
+    sum_of_vectors, NpcType, get_perpendicular_directions, Direction
 from pythongame.core.damage_interactions import deal_npc_damage_to_npc
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
-    NON_PLAYER_CHARACTERS, register_npc_data, NpcData
+    NON_PLAYER_CHARACTERS, register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
+    register_ui_icon_sprite_path
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.npc_creation import create_npc
@@ -77,7 +78,7 @@ class NpcMind(AbstractNpcMind):
             self._time_since_attack = 0
             nearby_enemies = game_state.get_enemies_within_x_y_distance_of(100, summon_entity.get_position())
             if nearby_enemies:
-                damage_amount = 1
+                damage_amount = 2
                 target = nearby_enemies[0]
                 deal_npc_damage_to_npc(game_state, target, damage_amount)
                 game_state.visual_effects.append(
@@ -95,9 +96,25 @@ def _move_in_dir(enemy_entity, direction):
 def register_summon_ability():
     ability_type = AbilityType.SUMMON
     register_ability_effect(ability_type, _apply_ability)
-    ui_icon_sprite = UiIconSprite.ITEM_STAFF_OF_FIRE
-    register_ability_data(ability_type, AbilityData("Summon", ui_icon_sprite, 3, Millis(300), "Summon TODO"))
+    ui_icon_sprite = UiIconSprite.ABILITY_SUMMON
+    register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_ability_summon.png")
+    description = "Follows you and attacks nearby enemies"
+    register_ability_data(ability_type, AbilityData("Summon Dragonwhelp", ui_icon_sprite, 3, Millis(1000), description))
 
     summoned_npc_type = NpcType.PLAYER_SUMMON
-    register_npc_data(summoned_npc_type, NpcData(Sprite.ENEMY_MUMMY, (42, 42), 10, 0, 0.05, 0, False))
+    summon_sprite = Sprite.PLAYER_SUMMON
+
+    register_npc_data(summoned_npc_type, NpcData(summon_sprite, (48, 48), 15, 1, 0.1, 0, False))
     register_npc_behavior(summoned_npc_type, NpcMind)
+
+    summon_sprite_sheet = SpriteSheet("resources/graphics/monsters_spritesheet.png")
+    summon_original_size = (32, 32)
+    summon_scaled_sprite_size = (48, 48)
+    summon_indices_by_dir = {
+        Direction.DOWN: [(x, 0) for x in range(9, 12)],
+        Direction.LEFT: [(x, 1) for x in range(9, 12)],
+        Direction.RIGHT: [(x, 2) for x in range(9, 12)],
+        Direction.UP: [(x, 3) for x in range(9, 12)]
+    }
+    register_entity_sprite_map(summon_sprite, summon_sprite_sheet, summon_original_size,
+                               summon_scaled_sprite_size, summon_indices_by_dir, (0, 0))

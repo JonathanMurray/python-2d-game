@@ -1,34 +1,6 @@
 {
   "enemies": [
     {
-      "enemy_type": "DARK_REAPER",
-      "position": [
-        150,
-        375
-      ]
-    },
-    {
-      "enemy_type": "RAT_1",
-      "position": [
-        250,
-        375
-      ]
-    },
-    {
-      "enemy_type": "RAT_2",
-      "position": [
-        300,
-        350
-      ]
-    },
-    {
-      "enemy_type": "GOBLIN_WARLOCK",
-      "position": [
-        375,
-        350
-      ]
-    },
-    {
       "enemy_type": "MUMMY",
       "position": [
         425,
