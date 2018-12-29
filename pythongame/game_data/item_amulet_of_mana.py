@@ -6,7 +6,7 @@ from pythongame.core.item_effects import register_item_effect, AbstractItemEffec
 
 ITEM_TYPE = ItemType.AMULET_OF_MANA
 
-MANA_REGEN_BOOST = 1.5
+MANA_REGEN_BOOST = 1
 
 
 class ItemEffect(AbstractItemEffect):
