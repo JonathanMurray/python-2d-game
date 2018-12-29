@@ -5,7 +5,7 @@ from pythongame.core.common import AbilityType, Millis, \
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, SpriteSheet, register_entity_sprite_map
-from pythongame.core.game_state import GameState, WorldEntity, Enemy
+from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
 from pythongame.core.visual_effects import VisualCircle, VisualSprite, VisualRect
 
 EFFECT_SPRITE_SIZE = (230, 230)
@@ -32,10 +32,10 @@ class ReducedMovementSpeed(AbstractBuffEffect):
         self._time_since_graphics = 0
         self._slow_amount = 0.75
 
-    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
+    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         buffed_entity.add_to_speed_multiplier(-self._slow_amount)
 
-    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy,
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         self._time_since_graphics += time_passed
         if self._time_since_graphics > 800:
@@ -43,7 +43,7 @@ class ReducedMovementSpeed(AbstractBuffEffect):
                 VisualRect((0, 100, 200), buffed_entity.get_center_position(), 50, 50, Millis(400), 1, buffed_entity))
             self._time_since_graphics = 0
 
-    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
+    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         buffed_entity.add_to_speed_multiplier(self._slow_amount)
 
     def get_buff_type(self):

@@ -130,7 +130,7 @@ class PotionType(Enum):
     INVISIBILITY = 22
 
 
-class EnemyType(Enum):
+class NpcType(Enum):
     NECROMANCER = 3
     RAT_1 = 5
     RAT_2 = 6

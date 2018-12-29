@@ -1,9 +1,9 @@
 from typing import Tuple
 
-from pythongame.core.common import EnemyType, Direction
+from pythongame.core.common import NpcType, Direction
 from pythongame.core.enemy_behaviors import create_enemy_mind
 from pythongame.core.game_data import ENEMIES
-from pythongame.core.game_state import WorldEntity, Enemy
+from pythongame.core.game_state import WorldEntity, NonPlayerCharacter
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
 # TODO handle this (global path finder) in a better way!
@@ -16,8 +16,8 @@ def set_global_path_finder(_global_path_finder: GlobalPathFinder):
     global_path_finder = _global_path_finder
 
 
-def create_enemy(enemy_type: EnemyType, pos: Tuple[int, int]) -> Enemy:
-    data = ENEMIES[enemy_type]
+def create_enemy(npc_type: NpcType, pos: Tuple[int, int]) -> NonPlayerCharacter:
+    data = ENEMIES[npc_type]
     entity = WorldEntity(pos, data.size, data.sprite, Direction.LEFT, data.speed)
-    enemy_mind = create_enemy_mind(enemy_type, global_path_finder)
-    return Enemy(enemy_type, entity, data.max_health, data.max_health, data.health_regen, enemy_mind)
+    enemy_mind = create_enemy_mind(npc_type, global_path_finder)
+    return NonPlayerCharacter(npc_type, entity, data.max_health, data.max_health, data.health_regen, enemy_mind)

@@ -1,17 +1,17 @@
 import random
 
-from pythongame.core.common import Millis, random_direction, EnemyType, Sprite, \
+from pythongame.core.common import Millis, random_direction, NpcType, Sprite, \
     is_x_and_y_within_distance, Direction, sum_of_vectors, get_position_from_center_position
 from pythongame.core.enemy_behaviors import register_enemy_behavior, AbstractEnemyMind
 from pythongame.core.enemy_creation import create_enemy
 from pythongame.core.game_data import register_enemy_data, \
     EnemyData, SpriteSheet, register_entity_sprite_map, ENEMIES
-from pythongame.core.game_state import GameState, Enemy, WorldEntity
+from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.visual_effects import VisualLine, VisualCircle
 
 SPRITE = Sprite.ENEMY_NECROMANCER
-ENEMY_TYPE = EnemyType.NECROMANCER
+ENEMY_TYPE = NpcType.NECROMANCER
 
 
 class EnemyMind(AbstractEnemyMind):
@@ -25,18 +25,18 @@ class EnemyMind(AbstractEnemyMind):
         self._time_since_healing = 0
         self._healing_cooldown = 5000
 
-    def control_enemy(self, game_state: GameState, enemy: Enemy, _player_entity: WorldEntity,
+    def control_enemy(self, game_state: GameState, npc: NonPlayerCharacter, _player_entity: WorldEntity,
                       _is_player_invisible: bool, time_passed: Millis):
         self._time_since_decision += time_passed
         self._time_since_summoning += time_passed
         self._time_since_healing += time_passed
         if self._time_since_summoning > self._summoning_cooldown:
-            necro_center_pos = enemy.world_entity.get_center_position()
+            necro_center_pos = npc.world_entity.get_center_position()
             self._time_since_summoning = 0
             relative_pos_from_summoner = (random.randint(-150, 150), random.randint(-150, 150))
             mummy_center_pos = sum_of_vectors(necro_center_pos, relative_pos_from_summoner)
-            mummy_pos = get_position_from_center_position(mummy_center_pos, ENEMIES[EnemyType.MUMMY].size)
-            mummy_enemy = create_enemy(EnemyType.MUMMY, mummy_pos)
+            mummy_pos = get_position_from_center_position(mummy_center_pos, ENEMIES[NpcType.MUMMY].size)
+            mummy_enemy = create_enemy(NpcType.MUMMY, mummy_pos)
             if not game_state.would_entity_collide_if_new_pos(mummy_enemy.world_entity, mummy_pos):
                 self._summoning_cooldown = self._max_summoning_cooldown
                 game_state.enemies.append(mummy_enemy)
@@ -48,11 +48,11 @@ class EnemyMind(AbstractEnemyMind):
 
         if self._time_since_healing > self._healing_cooldown:
             self._time_since_healing = 0
-            necro_center_pos = enemy.world_entity.get_center_position()
+            necro_center_pos = npc.world_entity.get_center_position()
             nearby_hurt_enemies = [e for e in game_state.enemies
                                    if is_x_and_y_within_distance(necro_center_pos, e.world_entity.get_center_position(),
                                                                  200)
-                                   and e != enemy and e.health < e.max_health]
+                                   and e != npc and e.health < e.max_health]
             if nearby_hurt_enemies:
                 healing_target = nearby_hurt_enemies[0]
                 healing_target.gain_health(5)
@@ -64,9 +64,9 @@ class EnemyMind(AbstractEnemyMind):
             self._time_since_decision = 0
             if random.random() < 0.2:
                 direction = random_direction()
-                enemy.world_entity.set_moving_in_dir(direction)
+                npc.world_entity.set_moving_in_dir(direction)
             else:
-                enemy.world_entity.set_not_moving()
+                npc.world_entity.set_not_moving()
 
 
 def register_necromancer_enemy():

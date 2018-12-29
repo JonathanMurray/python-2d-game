@@ -2,12 +2,12 @@ import random
 
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.common import get_position_from_center_position, Sprite, AbilityType, Millis, \
-    sum_of_vectors, EnemyType, get_perpendicular_directions
+    sum_of_vectors, NpcType, get_perpendicular_directions
 from pythongame.core.enemy_behaviors import register_enemy_behavior, AbstractEnemyMind
 from pythongame.core.enemy_creation import create_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     ENEMIES, register_enemy_data, EnemyData
-from pythongame.core.game_state import GameState, WorldEntity, Enemy
+from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
 from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
@@ -18,8 +18,8 @@ def _apply_ability(game_state: GameState):
     # TODO don't depend on ENEMIES (summon != enemy)
     relative_pos = (random.randint(-80, 80), random.randint(-80, 80))
     summon_center_pos = sum_of_vectors(player_entity.get_center_position(), relative_pos)
-    summon_pos = get_position_from_center_position(summon_center_pos, ENEMIES[EnemyType.MUMMY].size)
-    summon = create_enemy(EnemyType.PLAYER_SUMMON, summon_pos)
+    summon_pos = get_position_from_center_position(summon_center_pos, ENEMIES[NpcType.MUMMY].size)
+    summon = create_enemy(NpcType.PLAYER_SUMMON, summon_pos)
     if not game_state.would_entity_collide_if_new_pos(summon.world_entity, summon_pos):
         game_state.enemies.append(summon)
 
@@ -34,12 +34,12 @@ class EnemyMind(AbstractEnemyMind):
         self._reevaluate_next_waypoint_direction_interval = 1000
         self._time_since_reevaluated = self._reevaluate_next_waypoint_direction_interval
 
-    def control_enemy(self, game_state: GameState, enemy: Enemy, player_entity: WorldEntity, is_player_invisible: bool,
+    def control_enemy(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity, is_player_invisible: bool,
                       time_passed: Millis):
         self._time_since_updated_path += time_passed
         self._time_since_reevaluated += time_passed
 
-        enemy_entity = enemy.world_entity
+        enemy_entity = npc.world_entity
 
         if self._time_since_updated_path > self._update_path_interval:
             self._time_since_updated_path = 0
@@ -77,6 +77,6 @@ def register_summon_ability():
     ui_icon_sprite = UiIconSprite.ITEM_STAFF_OF_FIRE
     register_ability_data(ability_type, AbilityData("Summon", ui_icon_sprite, 3, Millis(300), "Summon TODO"))
 
-    summoned_enemy_type = EnemyType.PLAYER_SUMMON
-    register_enemy_data(summoned_enemy_type, EnemyData(Sprite.ENEMY_MUMMY, (42, 42), 10, 0, 0.05, 0))
-    register_enemy_behavior(summoned_enemy_type, EnemyMind)
+    summoned_npc_type = NpcType.PLAYER_SUMMON
+    register_enemy_data(summoned_npc_type, EnemyData(Sprite.ENEMY_MUMMY, (42, 42), 10, 0, 0.05, 0))
+    register_enemy_behavior(summoned_npc_type, EnemyMind)

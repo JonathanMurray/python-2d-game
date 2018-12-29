@@ -4,10 +4,10 @@ from typing import Tuple, Optional, List, Dict
 
 import pygame
 
-from pythongame.core.common import Direction, Sprite, sum_of_vectors, WallType, EnemyType, PotionType, ItemType
+from pythongame.core.common import Direction, Sprite, sum_of_vectors, WallType, NpcType, PotionType, ItemType
 from pythongame.core.game_data import ENEMIES, POTIONS, ITEMS, ITEM_ENTITY_SIZE, WALLS
 from pythongame.core.game_data import POTION_ENTITY_SIZE
-from pythongame.core.game_state import WorldEntity, Enemy, PotionOnGround, ItemOnGround, DecorationEntity, GameState, \
+from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, PotionOnGround, ItemOnGround, DecorationEntity, GameState, \
     Wall
 from pythongame.core.view import View
 from pythongame.game_data.player_data import INTIAL_PLAYER_STATE, PLAYER_ENTITY_SIZE, PLAYER_ENTITY_SPEED
@@ -38,12 +38,12 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.wall(WallType.WALL_CHAIR),
     MapEditorWorldEntity.wall(WallType.ALTAR),
 
-    MapEditorWorldEntity.enemy(EnemyType.DARK_REAPER),
-    MapEditorWorldEntity.enemy(EnemyType.RAT_1),
-    MapEditorWorldEntity.enemy(EnemyType.RAT_2),
-    MapEditorWorldEntity.enemy(EnemyType.GOBLIN_WARLOCK),
-    MapEditorWorldEntity.enemy(EnemyType.MUMMY),
-    MapEditorWorldEntity.enemy(EnemyType.NECROMANCER),
+    MapEditorWorldEntity.enemy(NpcType.DARK_REAPER),
+    MapEditorWorldEntity.enemy(NpcType.RAT_1),
+    MapEditorWorldEntity.enemy(NpcType.RAT_2),
+    MapEditorWorldEntity.enemy(NpcType.GOBLIN_WARLOCK),
+    MapEditorWorldEntity.enemy(NpcType.MUMMY),
+    MapEditorWorldEntity.enemy(NpcType.NECROMANCER),
 
     MapEditorWorldEntity.potion(PotionType.HEALTH_LESSER),
     MapEditorWorldEntity.potion(PotionType.HEALTH),
@@ -194,12 +194,12 @@ def main(args: List[str]):
                     if is_snapped_mouse_within_world and not is_snapped_mouse_over_ui:
                         if entity_being_placed.is_player:
                             game_state.player_entity.set_position(snapped_mouse_world_position)
-                        elif entity_being_placed.enemy_type:
-                            enemy_type = entity_being_placed.enemy_type
-                            data = ENEMIES[enemy_type]
+                        elif entity_being_placed.npc_type:
+                            npc_type = entity_being_placed.npc_type
+                            data = ENEMIES[npc_type]
                             entity = WorldEntity(snapped_mouse_world_position, data.size, data.sprite, Direction.DOWN,
                                                  data.speed)
-                            enemy = Enemy(enemy_type, entity, data.max_health, data.max_health, data.health_regen, None)
+                            enemy = NonPlayerCharacter(npc_type, entity, data.max_health, data.max_health, data.health_regen, None)
                             game_state.enemies.append(enemy)
                         elif entity_being_placed.wall_type:
                             _add_wall_to_position(game_state, snapped_mouse_world_position,
@@ -266,8 +266,8 @@ def main(args: List[str]):
             view.render_map_editor_mouse_rect((250, 50, 0), snapped_mouse_rect)
         elif user_state.placing_entity:
             entity_being_placed = user_state.placing_entity
-            if entity_being_placed.enemy_type:
-                data = ENEMIES[entity_being_placed.enemy_type]
+            if entity_being_placed.npc_type:
+                data = ENEMIES[entity_being_placed.npc_type]
                 entity = WorldEntity((0, 0), data.size, data.sprite, Direction.DOWN, data.speed)
                 view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
             elif entity_being_placed.is_player:

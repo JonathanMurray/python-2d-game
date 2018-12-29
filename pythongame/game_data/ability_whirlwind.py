@@ -7,7 +7,7 @@ from pythongame.core.common import AbilityType, translate_in_direction, get_posi
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, register_entity_sprite_map, SpriteSheet
-from pythongame.core.game_state import GameState, WorldEntity, Projectile, Enemy
+from pythongame.core.game_state import GameState, WorldEntity, Projectile, NonPlayerCharacter
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
 from pythongame.core.visual_effects import VisualRect
@@ -79,18 +79,18 @@ class Stunned(AbstractBuffEffect):
     def __init__(self):
         pass
 
-    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
-        buffed_enemy.add_stun()
+    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
+        buffed_npc.add_stun()
         effect_position = buffed_entity.get_center_position()
         game_state.visual_effects.append(
             VisualRect((250, 250, 50), effect_position, 30, 40, Millis(100), 1, buffed_entity))
 
-    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy,
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         pass
 
-    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
-        buffed_enemy.remove_stun()
+    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
+        buffed_npc.remove_stun()
 
     def get_buff_type(self):
         return BUFF_TYPE

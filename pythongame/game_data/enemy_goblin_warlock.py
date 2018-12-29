@@ -1,14 +1,14 @@
 import random
 
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
-from pythongame.core.common import Millis, EnemyType, Sprite, \
+from pythongame.core.common import Millis, NpcType, Sprite, \
     get_position_from_center_position, ProjectileType, BuffType, Direction, get_perpendicular_directions, \
     translate_in_direction
 from pythongame.core.damage_interactions import deal_damage_to_player
 from pythongame.core.enemy_behaviors import register_enemy_behavior, AbstractEnemyMind
 from pythongame.core.game_data import register_enemy_data, \
     EnemyData, register_buff_text, SpriteSheet, register_entity_sprite_map
-from pythongame.core.game_state import GameState, Enemy, WorldEntity, Projectile
+from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
 from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
@@ -36,14 +36,14 @@ class EnemyMind(AbstractEnemyMind):
         self._update_speech_interval()
         self._time_since_speech = 0
 
-    def control_enemy(self, game_state: GameState, enemy: Enemy, player_entity: WorldEntity, is_player_invisible: bool,
+    def control_enemy(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity, is_player_invisible: bool,
                       time_passed: Millis):
         self._time_since_attack += time_passed
         self._time_since_updated_path += time_passed
         self._time_since_reevaluated += time_passed
         self._time_since_speech += time_passed
 
-        enemy_entity = enemy.world_entity
+        enemy_entity = npc.world_entity
 
         if self._time_since_updated_path > self._update_path_interval:
             self._time_since_updated_path = 0
@@ -70,15 +70,15 @@ class EnemyMind(AbstractEnemyMind):
         if self._time_since_attack > self._attack_interval:
             self._time_since_attack = 0
             self._update_attack_interval()
-            enemy.world_entity.set_not_moving()
-            center_position = enemy.world_entity.get_center_position()
+            npc.world_entity.set_not_moving()
+            center_position = npc.world_entity.get_center_position()
             distance_from_enemy = 35
             projectile_pos = translate_in_direction(
                 get_position_from_center_position(center_position, PROJECTILE_SIZE),
-                enemy.world_entity.direction, distance_from_enemy)
+                npc.world_entity.direction, distance_from_enemy)
             projectile_speed = 0.07
             projectile_entity = WorldEntity(projectile_pos, PROJECTILE_SIZE, PROJECTILE_SPRITE,
-                                            enemy.world_entity.direction, projectile_speed)
+                                            npc.world_entity.direction, projectile_speed)
             projectile = Projectile(projectile_entity, create_projectile_controller(PROJECTILE_TYPE))
             game_state.projectile_entities.append(projectile)
 
@@ -121,7 +121,7 @@ class Burnt(AbstractBuffEffect):
     def __init__(self):
         self._time_since_graphics = 0
 
-    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy,
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         self._time_since_graphics += time_passed
         if self._time_since_graphics > 500:
@@ -137,11 +137,11 @@ class Burnt(AbstractBuffEffect):
 def register_goblin_warlock_enemy():
     enemy_size = (42, 42)
     enemy_sprite = Sprite.ENEMY_GOBLIN_WARLOCK
-    enemy_type = EnemyType.GOBLIN_WARLOCK
+    npc_type = NpcType.GOBLIN_WARLOCK
 
     health = 21
-    register_enemy_data(enemy_type, EnemyData(enemy_sprite, enemy_size, health, 0, 0.032, 12))
-    register_enemy_behavior(enemy_type, EnemyMind)
+    register_enemy_data(npc_type, EnemyData(enemy_sprite, enemy_size, health, 0, 0.032, 12))
+    register_enemy_behavior(npc_type, EnemyMind)
 
     enemy_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")
     enemy_original_sprite_size = (32, 32)

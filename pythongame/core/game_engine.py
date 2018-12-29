@@ -79,7 +79,7 @@ class GameEngine:
     # Returns True if player died
     def run_one_frame(self, time_passed: Millis):
         for e in self.game_state.enemies:
-            # Enemy AI shouldn't run if enemy is too far out of sight
+            # NonPlayerCharacter AI shouldn't run if enemy is too far out of sight
             if self._is_enemy_close_to_camera(e):
                 e.enemy_mind.control_enemy(self.game_state, e, self.game_state.player_entity,
                                            self.game_state.player_state.is_invisible, time_passed)
@@ -99,7 +99,7 @@ class GameEngine:
         enemies_that_died = self.game_state.remove_dead_enemies()
 
         if enemies_that_died:
-            exp_gained = sum([ENEMIES[e.enemy_type].exp_reward for e in enemies_that_died])
+            exp_gained = sum([ENEMIES[e.npc_type].exp_reward for e in enemies_that_died])
             self.game_state.visual_effects.append(create_visual_exp_text(self.game_state.player_entity, exp_gained))
             did_player_level_up = self.game_state.player_state.gain_exp(exp_gained)
             if did_player_level_up:

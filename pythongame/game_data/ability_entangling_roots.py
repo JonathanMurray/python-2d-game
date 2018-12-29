@@ -6,7 +6,7 @@ from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, SpriteSheet, \
     register_entity_sprite_map
-from pythongame.core.game_state import GameState, WorldEntity, Projectile, Enemy
+from pythongame.core.game_state import GameState, WorldEntity, Projectile, NonPlayerCharacter
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
 from pythongame.core.visual_effects import VisualCircle, VisualSprite
@@ -24,14 +24,14 @@ class ProjectileController(AbstractProjectileController):
     def __init__(self):
         super().__init__(1500)
 
-    def apply_enemy_collision(self, enemy: Enemy, game_state: GameState):
-        damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, 1)
+    def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState):
+        damage_was_dealt = deal_player_damage_to_enemy(game_state, npc, 1)
         if not damage_was_dealt:
             return False
         debuff_duration = Millis(5000)
-        enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE), debuff_duration)
+        npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), debuff_duration)
         debuff_visual_effect = VisualSprite(Sprite.DECORATION_ENTANGLING_ROOTS_EFFECT,
-                                            enemy.world_entity.get_position(), debuff_duration, enemy.world_entity)
+                                            npc.world_entity.get_position(), debuff_duration, npc.world_entity)
         game_state.visual_effects.append(debuff_visual_effect)
         return True
 
@@ -61,23 +61,23 @@ class Rooted(AbstractBuffEffect):
         self._time_since_damage = self._damage_interval
         self._time_since_graphics = self._graphics_interval
 
-    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
-        buffed_enemy.add_stun()
+    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
+        buffed_npc.add_stun()
 
-    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy,
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         self._time_since_damage += time_passed
         self._time_since_graphics += time_passed
         if self._time_since_damage > self._damage_interval:
             self._time_since_damage = 0
-            deal_player_damage_to_enemy(game_state, buffed_enemy, 1)
+            deal_player_damage_to_enemy(game_state, buffed_npc, 1)
         if self._time_since_graphics > self._graphics_interval:
             self._time_since_graphics = 0
             game_state.visual_effects.append(
                 VisualCircle((0, 150, 0), buffed_entity.get_center_position(), 30, 55, Millis(150), 2, buffed_entity))
 
-    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
-        buffed_enemy.remove_stun()
+    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
+        buffed_npc.remove_stun()
 
     def get_buff_type(self):
         return BUFF_TYPE

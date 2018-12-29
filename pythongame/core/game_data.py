@@ -131,7 +131,7 @@ class WallData:
         self.size = size
 
 
-ENEMIES: Dict[EnemyType, EnemyData] = {}
+ENEMIES: Dict[NpcType, EnemyData] = {}
 
 ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Animation]] = {}
 
@@ -150,8 +150,8 @@ USER_ABILITY_KEYS: Dict[AbilityType, UserAbilityKey] = {}
 BUFF_TEXTS: Dict[BuffType, str] = {}
 
 
-def register_enemy_data(enemy_type: EnemyType, enemy_data: EnemyData):
-    ENEMIES[enemy_type] = enemy_data
+def register_enemy_data(npc_type: NpcType, enemy_data: EnemyData):
+    ENEMIES[npc_type] = enemy_data
 
 
 def register_wall_data(wall_type: WallType, wall_data: WallData):

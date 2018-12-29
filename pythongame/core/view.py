@@ -352,8 +352,8 @@ class View:
         self._rect_filled((40, 40, 40), (x, y, w, h))
 
         if entity:
-            if entity.enemy_type:
-                enemy_data = ENEMIES[entity.enemy_type]
+            if entity.npc_type:
+                enemy_data = ENEMIES[entity.npc_type]
                 image = self.images_by_sprite[enemy_data.sprite][Direction.DOWN][0].image
             elif entity.potion_type:
                 ui_icon_sprite = POTIONS[entity.potion_type].icon_sprite

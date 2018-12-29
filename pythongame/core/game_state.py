@@ -143,10 +143,10 @@ class Projectile:
         self.projectile_controller = projectile_controller
 
 
-class Enemy:
-    def __init__(self, enemy_type: EnemyType, world_entity: WorldEntity, health: int, max_health: int,
+class NonPlayerCharacter:
+    def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health: int, max_health: int,
                  health_regen: float, enemy_mind):
-        self.enemy_type = enemy_type
+        self.npc_type = npc_type
         self.world_entity = world_entity
         self._health_float = health
         self.health = health
@@ -364,7 +364,7 @@ class DecorationEntity:
 
 class GameState:
     def __init__(self, player_entity: WorldEntity, potions_on_ground: List[PotionOnGround],
-                 items_on_ground: List[ItemOnGround], enemies: List[Enemy],
+                 items_on_ground: List[ItemOnGround], enemies: List[NonPlayerCharacter],
                  walls: List[Wall], camera_size: Tuple[int, int], game_world_size: Tuple[int, int],
                  player_state: PlayerState, decoration_entities: List[DecorationEntity]):
         self.camera_size = camera_size
@@ -373,7 +373,7 @@ class GameState:
         self.projectile_entities: List[Projectile] = []
         self.potions_on_ground = potions_on_ground
         self.items_on_ground: List[ItemOnGround] = items_on_ground
-        self.enemies: List[Enemy] = enemies
+        self.enemies: List[NonPlayerCharacter] = enemies
         self.walls: List[Wall] = walls
         self._wall_buckets = self._put_walls_in_buckets(game_world_size, [w.world_entity for w in walls])
         self.visual_effects = []
@@ -429,7 +429,7 @@ class GameState:
     def get_projectiles_intersecting_with(self, entity) -> List[Projectile]:
         return [p for p in self.projectile_entities if boxes_intersect(entity, p.world_entity)]
 
-    def get_enemies_intersecting_with(self, entity) -> List[Enemy]:
+    def get_enemies_intersecting_with(self, entity) -> List[NonPlayerCharacter]:
         return [e for e in self.enemies if boxes_intersect(e.world_entity, entity)]
 
     def get_enemies_within_x_y_distance_of(self, distance: int, position: Tuple[int, int]):
