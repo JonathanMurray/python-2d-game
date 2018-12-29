@@ -1,6 +1,6 @@
 from pythongame.core.ability_effects import apply_ability_effect
 from pythongame.core.common import *
-from pythongame.core.game_data import POTIONS, ITEMS, ITEM_ENTITY_SIZE, ENEMIES
+from pythongame.core.game_data import POTIONS, ITEMS, ITEM_ENTITY_SIZE, NON_PLAYER_CHARACTERS
 from pythongame.core.game_data import POTION_ENTITY_SIZE
 from pythongame.core.game_state import GameState, handle_buffs, WorldEntity, ItemOnGround, PotionOnGround
 from pythongame.core.item_effects import get_item_effect
@@ -82,7 +82,7 @@ class GameEngine:
             # NonPlayerCharacter AI shouldn't run if enemy is too far out of sight
             if self._is_enemy_close_to_camera(e):
                 e.npc_mind.control_enemy(self.game_state, e, self.game_state.player_entity,
-                                           self.game_state.player_state.is_invisible, time_passed)
+                                         self.game_state.player_state.is_invisible, time_passed)
 
         self.view_state.notify_player_entity_center_position(self.game_state.player_entity.get_center_position())
 
@@ -99,7 +99,7 @@ class GameEngine:
         npcs_that_died = self.game_state.remove_dead_npcs()
 
         if npcs_that_died:
-            exp_gained = sum([ENEMIES[e.npc_type].exp_reward for e in npcs_that_died])
+            exp_gained = sum([NON_PLAYER_CHARACTERS[e.npc_type].exp_reward for e in npcs_that_died])
             self.game_state.visual_effects.append(create_visual_exp_text(self.game_state.player_entity, exp_gained))
             did_player_level_up = self.game_state.player_state.gain_exp(exp_gained)
             if did_player_level_up:
@@ -152,7 +152,8 @@ class GameEngine:
         for visual_effect in self.game_state.visual_effects:
             visual_effect.update_position_if_attached_to_entity()
             if visual_effect.attached_to_entity \
-                    and not visual_effect.attached_to_entity in [e.world_entity for e in self.game_state.non_player_characters] \
+                    and not visual_effect.attached_to_entity in [e.world_entity for e in
+                                                                 self.game_state.non_player_characters] \
                     and visual_effect.attached_to_entity != self.game_state.player_entity:
                 visual_effect.has_expired = True
 

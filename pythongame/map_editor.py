@@ -5,10 +5,10 @@ from typing import Tuple, Optional, List, Dict
 import pygame
 
 from pythongame.core.common import Direction, Sprite, sum_of_vectors, WallType, NpcType, PotionType, ItemType
-from pythongame.core.game_data import ENEMIES, POTIONS, ITEMS, ITEM_ENTITY_SIZE, WALLS
+from pythongame.core.game_data import NON_PLAYER_CHARACTERS, POTIONS, ITEMS, ITEM_ENTITY_SIZE, WALLS
 from pythongame.core.game_data import POTION_ENTITY_SIZE
-from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, PotionOnGround, ItemOnGround, DecorationEntity, GameState, \
-    Wall
+from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, PotionOnGround, ItemOnGround, DecorationEntity, \
+    GameState, Wall
 from pythongame.core.view import View
 from pythongame.game_data.player_data import INTIAL_PLAYER_STATE, PLAYER_ENTITY_SIZE, PLAYER_ENTITY_SPEED
 from pythongame.game_world_init import save_game_state_to_json_file, create_game_state_from_json_file
@@ -196,10 +196,11 @@ def main(args: List[str]):
                             game_state.player_entity.set_position(snapped_mouse_world_position)
                         elif entity_being_placed.npc_type:
                             npc_type = entity_being_placed.npc_type
-                            data = ENEMIES[npc_type]
+                            data = NON_PLAYER_CHARACTERS[npc_type]
                             entity = WorldEntity(snapped_mouse_world_position, data.size, data.sprite, Direction.DOWN,
                                                  data.speed)
-                            enemy = NonPlayerCharacter(npc_type, entity, data.max_health, data.max_health, data.health_regen, None)
+                            enemy = NonPlayerCharacter(npc_type, entity, data.max_health, data.max_health,
+                                                       data.health_regen, None, True)
                             game_state.non_player_characters.append(enemy)
                         elif entity_being_placed.wall_type:
                             _add_wall_to_position(game_state, snapped_mouse_world_position,
@@ -267,7 +268,7 @@ def main(args: List[str]):
         elif user_state.placing_entity:
             entity_being_placed = user_state.placing_entity
             if entity_being_placed.npc_type:
-                data = ENEMIES[entity_being_placed.npc_type]
+                data = NON_PLAYER_CHARACTERS[entity_being_placed.npc_type]
                 entity = WorldEntity((0, 0), data.size, data.sprite, Direction.DOWN, data.speed)
                 view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
             elif entity_being_placed.is_player:

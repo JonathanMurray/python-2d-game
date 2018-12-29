@@ -4,7 +4,7 @@ import pygame
 
 from pythongame.core.common import Direction, Sprite, PotionType, sum_of_vectors, ItemType, is_point_in_rect
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
-    ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, ENEMIES, POTIONS, ITEMS, UiIconSprite, WALLS
+    ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, NON_PLAYER_CHARACTERS, POTIONS, ITEMS, UiIconSprite, WALLS
 from pythongame.core.game_state import WorldEntity, DecorationEntity
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
@@ -353,7 +353,7 @@ class View:
 
         if entity:
             if entity.npc_type:
-                enemy_data = ENEMIES[entity.npc_type]
+                enemy_data = NON_PLAYER_CHARACTERS[entity.npc_type]
                 image = self.images_by_sprite[enemy_data.sprite][Direction.DOWN][0].image
             elif entity.potion_type:
                 ui_icon_sprite = POTIONS[entity.potion_type].icon_sprite

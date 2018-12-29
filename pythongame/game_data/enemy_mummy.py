@@ -3,10 +3,9 @@ import random
 from pythongame.core.common import Millis, is_x_and_y_within_distance, NpcType, Sprite, Direction, \
     get_perpendicular_directions
 from pythongame.core.damage_interactions import deal_damage_to_player
-from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
-from pythongame.core.game_data import register_enemy_data, \
-    EnemyData, SpriteSheet, register_entity_sprite_map
+from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.enemy_pathfinding import EnemyPathfinder
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.visual_effects import VisualLine
@@ -24,8 +23,8 @@ class NpcMind(AbstractNpcMind):
         self._reevaluate_next_waypoint_direction_interval = 1000
         self._time_since_reevaluated = self._reevaluate_next_waypoint_direction_interval
 
-    def control_enemy(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity, is_player_invisible: bool,
-                      time_passed: Millis):
+    def control_enemy(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
+                      is_player_invisible: bool, time_passed: Millis):
         self._time_since_attack += time_passed
         self._time_since_updated_path += time_passed
         self._time_since_reevaluated += time_passed
@@ -79,7 +78,7 @@ def register_mummy_enemy():
     movement_speed = 0.06
     health = 12
     health_regen = 1
-    register_enemy_data(npc_type, EnemyData(sprite, size, health, health_regen, movement_speed, 10))
+    register_npc_data(npc_type, NpcData(sprite, size, health, health_regen, movement_speed, 10, True))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")
     original_sprite_size = (32, 32)

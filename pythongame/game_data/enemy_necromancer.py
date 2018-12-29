@@ -2,11 +2,11 @@ import random
 
 from pythongame.core.common import Millis, random_direction, NpcType, Sprite, \
     is_x_and_y_within_distance, Direction, sum_of_vectors, get_position_from_center_position
+from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
+    NON_PLAYER_CHARACTERS
+from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.npc_creation import create_npc
-from pythongame.core.game_data import register_enemy_data, \
-    EnemyData, SpriteSheet, register_entity_sprite_map, ENEMIES
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.visual_effects import VisualLine, VisualCircle
 
@@ -35,7 +35,7 @@ class NpcMind(AbstractNpcMind):
             self._time_since_summoning = 0
             relative_pos_from_summoner = (random.randint(-150, 150), random.randint(-150, 150))
             mummy_center_pos = sum_of_vectors(necro_center_pos, relative_pos_from_summoner)
-            mummy_pos = get_position_from_center_position(mummy_center_pos, ENEMIES[NpcType.MUMMY].size)
+            mummy_pos = get_position_from_center_position(mummy_center_pos, NON_PLAYER_CHARACTERS[NpcType.MUMMY].size)
             mummy_enemy = create_npc(NpcType.MUMMY, mummy_pos)
             if not game_state.would_entity_collide_if_new_pos(mummy_enemy.world_entity, mummy_pos):
                 self._summoning_cooldown = self._max_summoning_cooldown
@@ -72,7 +72,7 @@ class NpcMind(AbstractNpcMind):
 def register_necromancer_enemy():
     size = (50, 60)
     health = 25
-    register_enemy_data(ENEMY_TYPE, EnemyData(SPRITE, size, health, 0, 0.02, 15))
+    register_npc_data(ENEMY_TYPE, NpcData(SPRITE, size, health, 0, 0.02, 15, True))
     register_npc_behavior(ENEMY_TYPE, NpcMind)
 
     enemy_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")

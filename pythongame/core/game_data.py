@@ -98,15 +98,16 @@ class UserAbilityKey:
         self.pygame_key = pygame_key
 
 
-class EnemyData:
+class NpcData:
     def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
-                 exp_reward: int):
+                 exp_reward: int, is_enemy: bool):
         self.sprite = sprite
         self.size = size
         self.max_health = max_health
         self.health_regen = health_regen
         self.speed = speed
         self.exp_reward = exp_reward
+        self.is_enemy = is_enemy
 
 
 class PotionData:
@@ -131,7 +132,7 @@ class WallData:
         self.size = size
 
 
-ENEMIES: Dict[NpcType, EnemyData] = {}
+NON_PLAYER_CHARACTERS: Dict[NpcType, NpcData] = {}
 
 ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Animation]] = {}
 
@@ -150,8 +151,8 @@ USER_ABILITY_KEYS: Dict[AbilityType, UserAbilityKey] = {}
 BUFF_TEXTS: Dict[BuffType, str] = {}
 
 
-def register_enemy_data(npc_type: NpcType, enemy_data: EnemyData):
-    ENEMIES[npc_type] = enemy_data
+def register_npc_data(npc_type: NpcType, enemy_data: NpcData):
+    NON_PLAYER_CHARACTERS[npc_type] = enemy_data
 
 
 def register_wall_data(wall_type: WallType, wall_data: WallData):
