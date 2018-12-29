@@ -145,14 +145,14 @@ class Projectile:
 
 class NonPlayerCharacter:
     def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health: int, max_health: int,
-                 health_regen: float, enemy_mind):
+                 health_regen: float, npc_mind):
         self.npc_type = npc_type
         self.world_entity = world_entity
         self._health_float = health
         self.health = health
         self.max_health = max_health
         self.health_regen = health_regen
-        self.enemy_mind = enemy_mind
+        self.npc_mind = npc_mind
         self.active_buffs: List[BuffWithDuration] = []
         self.invulnerable: bool = False
         self._number_of_active_stuns = 0
