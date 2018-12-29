@@ -1,0 +1,274 @@
+{
+  "enemies": [
+    {
+      "enemy_type": "DARK_REAPER",
+      "position": [
+        150,
+        375
+      ]
+    },
+    {
+      "enemy_type": "RAT_1",
+      "position": [
+        250,
+        375
+      ]
+    },
+    {
+      "enemy_type": "RAT_2",
+      "position": [
+        300,
+        350
+      ]
+    },
+    {
+      "enemy_type": "GOBLIN_WARLOCK",
+      "position": [
+        375,
+        350
+      ]
+    },
+    {
+      "enemy_type": "MUMMY",
+      "position": [
+        425,
+        275
+      ]
+    },
+    {
+      "enemy_type": "NECROMANCER",
+      "position": [
+        350,
+        225
+      ]
+    }
+  ],
+  "player": {
+    "position": [
+      250,
+      250
+    ]
+  },
+  "walls": [
+    {
+      "wall_type": "WALL",
+      "position": [
+        250,
+        150
+      ]
+    },
+    {
+      "wall_type": "STATUE",
+      "position": [
+        300,
+        150
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        375,
+        175
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_NE",
+      "position": [
+        450,
+        175
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_E",
+      "position": [
+        475,
+        225
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_SE",
+      "position": [
+        500,
+        275
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_S",
+      "position": [
+        475,
+        350
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_SW",
+      "position": [
+        425,
+        425
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        375,
+        425
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_NW",
+      "position": [
+        375,
+        450
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_POINTY_NE",
+      "position": [
+        300,
+        475
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_POINTY_SE",
+      "position": [
+        250,
+        475
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_POINTY_SW",
+      "position": [
+        175,
+        475
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_POINTY_NW",
+      "position": [
+        100,
+        450
+      ]
+    },
+    {
+      "wall_type": "WALL_CHAIR",
+      "position": [
+        50,
+        350
+      ]
+    },
+    {
+      "wall_type": "ALTAR",
+      "position": [
+        50,
+        300
+      ]
+    }
+  ],
+  "potions_on_ground": [
+    {
+      "potion_type": "HEALTH_LESSER",
+      "position": [
+        425,
+        75
+      ]
+    },
+    {
+      "potion_type": "HEALTH",
+      "position": [
+        375,
+        75
+      ]
+    },
+    {
+      "potion_type": "MANA_LESSER",
+      "position": [
+        300,
+        50
+      ]
+    },
+    {
+      "potion_type": "MANA",
+      "position": [
+        250,
+        50
+      ]
+    }
+  ],
+  "items_on_ground": [
+    {
+      "item_type": "WINGED_BOOTS",
+      "position": [
+        175,
+        75
+      ]
+    },
+    {
+      "item_type": "SWORD_OF_LEECHING",
+      "position": [
+        150,
+        125
+      ]
+    },
+    {
+      "item_type": "ROD_OF_LIGHTNING",
+      "position": [
+        150,
+        175
+      ]
+    },
+    {
+      "item_type": "AMULET_OF_MANA",
+      "position": [
+        100,
+        175
+      ]
+    },
+    {
+      "item_type": "SOLDIERS_HELMET",
+      "position": [
+        175,
+        275
+      ]
+    },
+    {
+      "item_type": "BLESSED_SHIELD",
+      "position": [
+        325,
+        425
+      ]
+    },
+    {
+      "item_type": "STAFF_OF_FIRE",
+      "position": [
+        250,
+        425
+      ]
+    },
+    {
+      "item_type": "AMULET_OF_MANA",
+      "position": [
+        425,
+        375
+      ]
+    }
+  ],
+  "decorations": [
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        225,
+        300
+      ]
+    },
+    {
+      "sprite": "DECORATION_PLANT",
+      "position": [
+        275,
+        275
+      ]
+    }
+  ],
+  "game_world_size": [
+    500,
+    500
+  ]
+}
