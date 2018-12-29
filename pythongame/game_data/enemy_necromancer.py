@@ -25,7 +25,7 @@ class NpcMind(AbstractNpcMind):
         self._time_since_healing = 0
         self._healing_cooldown = 5000
 
-    def control_enemy(self, game_state: GameState, npc: NonPlayerCharacter, _player_entity: WorldEntity,
+    def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, _player_entity: WorldEntity,
                       _is_player_invisible: bool, time_passed: Millis):
         self._time_since_decision += time_passed
         self._time_since_summoning += time_passed

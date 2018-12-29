@@ -39,7 +39,7 @@ class NpcMind(AbstractNpcMind):
         self._reevaluate_next_waypoint_direction_interval = 1000
         self._time_since_reevaluated = self._reevaluate_next_waypoint_direction_interval
 
-    def control_enemy(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
+    def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
                       is_player_invisible: bool,
                       time_passed: Millis):
         self._time_since_updated_path += time_passed

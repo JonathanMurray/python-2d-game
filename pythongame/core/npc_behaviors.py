@@ -10,7 +10,7 @@ class AbstractNpcMind:
     def __init__(self, _global_path_finder: GlobalPathFinder):
         pass
 
-    def control_enemy(self,
+    def control_npc(self,
                       game_state: GameState,
                       npc: NonPlayerCharacter,
                       player_entity: WorldEntity,

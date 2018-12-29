@@ -81,7 +81,7 @@ class GameEngine:
         for e in self.game_state.non_player_characters:
             # NonPlayerCharacter AI shouldn't run if enemy is too far out of sight
             if self._is_enemy_close_to_camera(e):
-                e.npc_mind.control_enemy(self.game_state, e, self.game_state.player_entity,
+                e.npc_mind.control_npc(self.game_state, e, self.game_state.player_entity,
                                          self.game_state.player_state.is_invisible, time_passed)
 
         self.view_state.notify_player_entity_center_position(self.game_state.player_entity.get_center_position())
