@@ -1,3 +1,4 @@
+from pythongame.core.enemy_target_selection import EnemyTarget
 from pythongame.core.game_state import NonPlayerCharacter, GameState
 from pythongame.core.visual_effects import create_visual_damage_text
 
@@ -23,7 +24,14 @@ def deal_damage_to_player(game_state: GameState, amount: float):
 
 
 def deal_npc_damage_to_npc(game_state: GameState, target: NonPlayerCharacter, amount: float):
-   target.lose_health(amount)
-   rounded_amount = round(amount)
-   if rounded_amount > 0:
-       game_state.visual_effects.append(create_visual_damage_text(target.world_entity, rounded_amount))
+    target.lose_health(amount)
+    rounded_amount = round(amount)
+    if rounded_amount > 0:
+        game_state.visual_effects.append(create_visual_damage_text(target.world_entity, rounded_amount))
+
+
+def deal_npc_damage(damage_amount: float, game_state: GameState, target: EnemyTarget):
+    if target.non_enemy_npc:
+        deal_npc_damage_to_npc(game_state, target.non_enemy_npc, damage_amount)
+    else:
+        deal_damage_to_player(game_state, damage_amount)

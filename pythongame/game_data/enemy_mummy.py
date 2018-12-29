@@ -2,7 +2,8 @@ import random
 
 from pythongame.core.common import Millis, is_x_and_y_within_distance, NpcType, Sprite, Direction, \
     get_perpendicular_directions
-from pythongame.core.damage_interactions import deal_damage_to_player, deal_npc_damage_to_npc
+from pythongame.core.damage_interactions import deal_npc_damage
+from pythongame.core.enemy_target_selection import get_target, EnemyTarget
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
@@ -30,11 +31,11 @@ class NpcMind(AbstractNpcMind):
         self._time_since_reevaluated += time_passed
 
         enemy_entity = npc.world_entity
+        target: EnemyTarget = get_target(game_state)
 
         if self._time_since_updated_path > self._update_path_interval:
             self._time_since_updated_path = 0
-            target_entity = _get_target_entity(game_state)
-            self.pathfinder.update_path_towards_target(enemy_entity, game_state, target_entity)
+            self.pathfinder.update_path_towards_target(enemy_entity, game_state, target.entity)
 
         new_next_waypoint = self.pathfinder.get_next_waypoint_along_path(enemy_entity)
 
@@ -58,24 +59,12 @@ class NpcMind(AbstractNpcMind):
             self._time_since_attack = 0
             if not is_player_invisible:
                 enemy_position = enemy_entity.get_center_position()
-                target_entity = _get_target_entity(game_state)
-                target_center_pos = target_entity.get_center_position()
+                target_center_pos = target.entity.get_center_position()
                 if is_x_and_y_within_distance(enemy_position, target_center_pos, 100):
                     damage_amount = 3
-                    if target_entity is game_state.player_entity:
-                        deal_damage_to_player(game_state, damage_amount)
-                    else:
-                        deal_npc_damage_to_npc(game_state, game_state.non_enemy_npcs[0], damage_amount)
+                    deal_npc_damage(damage_amount, game_state, target)
                     game_state.visual_effects.append(
                         VisualLine((220, 0, 0), enemy_position, target_center_pos, Millis(100), 3))
-
-
-def _get_target_entity(game_state: GameState) -> WorldEntity:
-    if game_state.non_enemy_npcs:
-        target_entity = game_state.non_enemy_npcs[0].world_entity
-    else:
-        target_entity = game_state.player_entity
-    return target_entity
 
 
 def _move_in_dir(enemy_entity, direction):
