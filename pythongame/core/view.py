@@ -5,7 +5,7 @@ import pygame
 from pythongame.core.common import Direction, Sprite, PotionType, sum_of_vectors, ItemType, is_point_in_rect
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, NON_PLAYER_CHARACTERS, POTIONS, ITEMS, UiIconSprite, WALLS
-from pythongame.core.game_state import WorldEntity, DecorationEntity
+from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 
@@ -353,8 +353,8 @@ class View:
 
         if entity:
             if entity.npc_type:
-                enemy_data = NON_PLAYER_CHARACTERS[entity.npc_type]
-                image = self.images_by_sprite[enemy_data.sprite][Direction.DOWN][0].image
+                npc_data = NON_PLAYER_CHARACTERS[entity.npc_type]
+                image = self.images_by_sprite[npc_data.sprite][Direction.DOWN][0].image
             elif entity.potion_type:
                 ui_icon_sprite = POTIONS[entity.potion_type].icon_sprite
                 image = self.images_by_ui_sprite[ui_icon_sprite]
@@ -416,7 +416,7 @@ class View:
             self._text(self.font_tooltip_details, detail, (x_tooltip + 20, y_tooltip + 50 + i * 20), COLOR_WHITE)
 
     def render_world(self, all_entities_to_render: List[WorldEntity], decorations_to_render: List[DecorationEntity],
-                     camera_world_area, enemies, is_player_invisible, player_entity,
+                     camera_world_area, non_player_characters: List[NonPlayerCharacter], is_player_invisible, player_entity,
                      visual_effects, render_hit_and_collision_boxes, player_health, player_max_health, game_world_size):
         self.camera_world_area = camera_world_area
 
@@ -443,8 +443,9 @@ class View:
                 # collision box
                 self._world_rect((50, 250, 0), entity.collision_rect(), 2)
 
-        for enemy in enemies:
-            self._stat_bar_for_world_entity(enemy.world_entity, 5, -10, enemy.health, enemy.max_health, COLOR_RED)
+        for npc in non_player_characters:
+            color = COLOR_RED if npc.is_enemy else (250, 250, 0)
+            self._stat_bar_for_world_entity(npc.world_entity, 5, -10, npc.health, npc.max_health, color)
         for visual_effect in visual_effects:
             self._visual_effect(visual_effect)
 

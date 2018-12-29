@@ -103,7 +103,7 @@ def main(args: List[str]):
             player_entity=game_state.player_entity,
             is_player_invisible=game_state.player_state.is_invisible,
             camera_world_area=game_state.camera_world_area,
-            enemies=game_state.non_player_characters,
+            non_player_characters=game_state.non_player_characters,
             visual_effects=game_state.visual_effects,
             render_hit_and_collision_boxes=render_hit_and_collision_boxes,
             player_health=game_state.player_state.health,
