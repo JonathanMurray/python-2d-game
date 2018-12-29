@@ -450,10 +450,10 @@ class View:
 
     def render_ui(self, fps_string, is_paused, is_game_over, abilities, ability_cooldowns_remaining,
                   highlighted_ability_action, highlighted_potion_action, message, player_active_buffs,
-                  player_health, player_mana, player_max_health, player_max_mana,
-                  player_minimap_relative_position, potion_slots, item_slots: Dict[int, ItemType], player_level: int,
-                  mouse_screen_position: Tuple[int, int], player_exp: int, player_max_exp_in_this_level: int) \
-            -> MouseHoverEvent:
+                  player_health, player_mana, player_max_health, player_max_mana, player_health_regen: float,
+                  player_mana_regen: float, player_minimap_relative_position, potion_slots,
+                  item_slots: Dict[int, ItemType], player_level: int, mouse_screen_position: Tuple[int, int],
+                  player_exp: int, player_max_exp_in_this_level: int) -> MouseHoverEvent:
 
         hovered_item_slot_number = None
         hovered_potion_slot_number = None
@@ -483,13 +483,24 @@ class View:
 
         x_0 = 20
         self._text_in_ui(self.font_ui_headers, "HEALTH", x_0, y_1)
-        self._stat_bar_in_ui((x_0, y_2 + 2), 100, 28, player_health, player_max_health,
-                             COLOR_RED)
+        rect_healthbar = (x_0, y_2 + 2, 100, 28)
+        self._stat_bar_in_ui((rect_healthbar[0], rect_healthbar[1]), rect_healthbar[2], rect_healthbar[3],
+                             player_health, player_max_health, COLOR_RED)
+        if is_point_in_rect(mouse_ui_position, rect_healthbar):
+            tooltip_title = "Health"
+            tooltip_details = ["regeneration: " + str(player_health_regen) + "/s"]
+            tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_healthbar[0], rect_healthbar[1]))
         health_text = str(player_health) + "/" + str(player_max_health)
         self._text_in_ui(self.font_ui_stat_bar_numbers, health_text, x_0 + 20, y_2 + 10)
 
         self._text_in_ui(self.font_ui_headers, "MANA", x_0, y_3)
-        self._stat_bar_in_ui((x_0, y_4 + 2), 100, 28, player_mana, player_max_mana, COLOR_BLUE)
+        rect_manabar = (x_0, y_4 + 2, 100, 28)
+        self._stat_bar_in_ui((rect_manabar[0], rect_manabar[1]), rect_manabar[2], rect_manabar[3], player_mana,
+                             player_max_mana, COLOR_BLUE)
+        if is_point_in_rect(mouse_ui_position, rect_manabar):
+            tooltip_title = "Mana"
+            tooltip_details = ["regeneration: " + str(player_mana_regen) + "/s"]
+            tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_manabar[0], rect_manabar[1]))
         mana_text = str(player_mana) + "/" + str(player_max_mana)
         self._text_in_ui(self.font_ui_stat_bar_numbers, mana_text, x_0 + 20, y_4 + 10)
 

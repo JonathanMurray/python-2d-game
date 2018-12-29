@@ -115,6 +115,8 @@ def main(args: List[str]):
             player_max_health=game_state.player_state.max_health,
             player_mana=game_state.player_state.mana,
             player_max_mana=game_state.player_state.max_mana,
+            player_health_regen=game_state.player_state.health_regen,
+            player_mana_regen=game_state.player_state.mana_regen,
             potion_slots=game_state.player_state.potion_slots,
             player_active_buffs=game_state.player_state.active_buffs,
             fps_string=str(int(clock.get_fps())),
