@@ -429,10 +429,10 @@ class GameState:
     def get_projectiles_intersecting_with(self, entity) -> List[Projectile]:
         return [p for p in self.projectile_entities if boxes_intersect(entity, p.world_entity)]
 
-    def get_enemies_intersecting_with(self, entity) -> List[NonPlayerCharacter]:
+    def get_npc_intersecting_with(self, entity) -> List[NonPlayerCharacter]:
         return [e for e in self.non_player_characters if boxes_intersect(e.world_entity, entity)]
 
-    def get_enemies_within_x_y_distance_of(self, distance: int, position: Tuple[int, int]):
+    def get_npcs_within_x_y_distance_of(self, distance: int, position: Tuple[int, int]):
         return [e for e in self.non_player_characters
                 if is_x_and_y_within_distance(e.world_entity.get_center_position(), position, distance)]
 
@@ -465,10 +465,10 @@ class GameState:
     def remove_expired_projectiles(self):
         self.projectile_entities = [p for p in self.projectile_entities if not p.has_expired]
 
-    def remove_dead_enemies(self):
-        enemies_that_died = [e for e in self.non_player_characters if e.health <= 0]
+    def remove_dead_npcs(self):
+        npcs_that_died = [e for e in self.non_player_characters if e.health <= 0]
         self.non_player_characters = [e for e in self.non_player_characters if e.health > 0]
-        return enemies_that_died
+        return npcs_that_died
 
     def remove_expired_visual_effects(self):
         self.visual_effects = [v for v in self.visual_effects if not v.has_expired]

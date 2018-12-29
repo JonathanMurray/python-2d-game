@@ -96,10 +96,10 @@ class GameEngine:
         for visual_effect in self.game_state.visual_effects:
             visual_effect.notify_time_passed(time_passed)
 
-        enemies_that_died = self.game_state.remove_dead_enemies()
+        npcs_that_died = self.game_state.remove_dead_npcs()
 
-        if enemies_that_died:
-            exp_gained = sum([ENEMIES[e.npc_type].exp_reward for e in enemies_that_died])
+        if npcs_that_died:
+            exp_gained = sum([ENEMIES[e.npc_type].exp_reward for e in npcs_that_died])
             self.game_state.visual_effects.append(create_visual_exp_text(self.game_state.player_entity, exp_gained))
             did_player_level_up = self.game_state.player_state.gain_exp(exp_gained)
             if did_player_level_up:
