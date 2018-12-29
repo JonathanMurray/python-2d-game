@@ -96,7 +96,7 @@ class EnemyMind(AbstractEnemyMind):
             game_state.visual_effects.append(
                 VisualCircle((0, 0, 150), enemy_center_pos, 60, 20, Millis(self._shield_duration), 2, enemy_entity)
             )
-            enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE_INVULN), Millis(self._shield_duration))
+            npc.gain_buff_effect(get_buff_effect(BUFF_TYPE_INVULN), Millis(self._shield_duration))
 
         if self._time_since_speech > self._speech_interval and self._time_since_shield > SPEECH_DURATION:
             self._time_since_speech = 0

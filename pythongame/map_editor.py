@@ -200,7 +200,7 @@ def main(args: List[str]):
                             entity = WorldEntity(snapped_mouse_world_position, data.size, data.sprite, Direction.DOWN,
                                                  data.speed)
                             enemy = NonPlayerCharacter(npc_type, entity, data.max_health, data.max_health, data.health_regen, None)
-                            game_state.enemies.append(enemy)
+                            game_state.non_player_characters.append(enemy)
                         elif entity_being_placed.wall_type:
                             _add_wall_to_position(game_state, snapped_mouse_world_position,
                                                   entity_being_placed.wall_type)
@@ -235,7 +235,7 @@ def main(args: List[str]):
             player_entity=game_state.player_entity,
             is_player_invisible=game_state.player_state.is_invisible,
             camera_world_area=game_state.camera_world_area,
-            enemies=game_state.enemies,
+            enemies=game_state.non_player_characters,
             visual_effects=game_state.visual_effects,
             render_hit_and_collision_boxes=True,
             player_health=game_state.player_state.health,
@@ -248,7 +248,7 @@ def main(args: List[str]):
             placing_entity=user_state.placing_entity,
             deleting_entities=user_state.deleting_entities,
             deleting_decorations=user_state.deleting_decorations,
-            num_enemies=len(game_state.enemies),
+            num_enemies=len(game_state.non_player_characters),
             num_walls=len(game_state.walls),
             num_decorations=len(game_state.decoration_entities),
             grid_cell_size=grid_cell_size,
@@ -319,12 +319,12 @@ def _add_wall_to_position(game_state, snapped_mouse_world_position: Tuple[int, i
         game_state.add_wall(Wall(wall_type, WorldEntity(snapped_mouse_world_position, data.size, data.sprite)))
 
 
-def _delete_map_entities_from_position(game_state, snapped_mouse_world_position: Tuple[int, int]):
+def _delete_map_entities_from_position(game_state: GameState, snapped_mouse_world_position: Tuple[int, int]):
     for wall in [w for w in game_state.walls if w.world_entity.get_position() == snapped_mouse_world_position]:
         game_state.remove_wall(wall)
-    for enemy in [e for e in game_state.enemies if
+    for enemy in [e for e in game_state.non_player_characters if
                   e.world_entity.get_position() == snapped_mouse_world_position]:
-        game_state.enemies.remove(enemy)
+        game_state.non_player_characters.remove(enemy)
     for potion in [p for p in game_state.potions_on_ground
                    if p.world_entity.get_position() == snapped_mouse_world_position]:
         game_state.potions_on_ground.remove(potion)

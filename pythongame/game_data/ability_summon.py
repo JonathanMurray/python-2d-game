@@ -21,7 +21,7 @@ def _apply_ability(game_state: GameState):
     summon_pos = get_position_from_center_position(summon_center_pos, ENEMIES[NpcType.MUMMY].size)
     summon = create_enemy(NpcType.PLAYER_SUMMON, summon_pos)
     if not game_state.would_entity_collide_if_new_pos(summon.world_entity, summon_pos):
-        game_state.enemies.append(summon)
+        game_state.non_player_characters.append(summon)
 
 
 class EnemyMind(AbstractEnemyMind):

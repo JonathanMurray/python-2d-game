@@ -364,7 +364,7 @@ class DecorationEntity:
 
 class GameState:
     def __init__(self, player_entity: WorldEntity, potions_on_ground: List[PotionOnGround],
-                 items_on_ground: List[ItemOnGround], enemies: List[NonPlayerCharacter],
+                 items_on_ground: List[ItemOnGround], non_player_characters: List[NonPlayerCharacter],
                  walls: List[Wall], camera_size: Tuple[int, int], game_world_size: Tuple[int, int],
                  player_state: PlayerState, decoration_entities: List[DecorationEntity]):
         self.camera_size = camera_size
@@ -373,7 +373,7 @@ class GameState:
         self.projectile_entities: List[Projectile] = []
         self.potions_on_ground = potions_on_ground
         self.items_on_ground: List[ItemOnGround] = items_on_ground
-        self.enemies: List[NonPlayerCharacter] = enemies
+        self.non_player_characters: List[NonPlayerCharacter] = non_player_characters
         self.walls: List[Wall] = walls
         self._wall_buckets = self._put_walls_in_buckets(game_world_size, [w.world_entity for w in walls])
         self.visual_effects = []
@@ -404,13 +404,13 @@ class GameState:
         self.projectile_entities = [p for p in self.projectile_entities if p not in entities_to_remove]
         self.potions_on_ground = [p for p in self.potions_on_ground if p not in entities_to_remove]
         self.items_on_ground = [i for i in self.items_on_ground if i not in entities_to_remove]
-        self.enemies = [e for e in self.enemies if e not in entities_to_remove]
+        self.non_player_characters = [e for e in self.non_player_characters if e not in entities_to_remove]
 
     def get_all_entities_to_render(self) -> List[WorldEntity]:
         walls = self._get_walls_from_buckets_in_camera()
         return [self.player_entity] + [p.world_entity for p in self.potions_on_ground] + \
                [i.world_entity for i in self.items_on_ground] + \
-               [e.world_entity for e in self.enemies] + walls + [p.world_entity for p in self.projectile_entities]
+               [e.world_entity for e in self.non_player_characters] + walls + [p.world_entity for p in self.projectile_entities]
 
     def get_decorations_to_render(self) -> List[DecorationEntity]:
         return self.decoration_entities
@@ -430,10 +430,10 @@ class GameState:
         return [p for p in self.projectile_entities if boxes_intersect(entity, p.world_entity)]
 
     def get_enemies_intersecting_with(self, entity) -> List[NonPlayerCharacter]:
-        return [e for e in self.enemies if boxes_intersect(e.world_entity, entity)]
+        return [e for e in self.non_player_characters if boxes_intersect(e.world_entity, entity)]
 
     def get_enemies_within_x_y_distance_of(self, distance: int, position: Tuple[int, int]):
-        return [e for e in self.enemies
+        return [e for e in self.non_player_characters
                 if is_x_and_y_within_distance(e.world_entity.get_center_position(), position, distance)]
 
     # NOTE: Very naive brute-force collision checking
@@ -449,7 +449,7 @@ class GameState:
         old_pos = entity.x, entity.y
         entity.set_position(new_pos_within_world)
         walls = self._get_walls_from_buckets_adjacent_to_entity(entity)
-        other_entities = [e.world_entity for e in self.enemies] + [self.player_entity] + walls
+        other_entities = [e.world_entity for e in self.non_player_characters] + [self.player_entity] + walls
         collision = any([other for other in other_entities if self._entities_collide(entity, other)
                          and entity is not other])
         entity.set_position(old_pos)
@@ -466,8 +466,8 @@ class GameState:
         self.projectile_entities = [p for p in self.projectile_entities if not p.has_expired]
 
     def remove_dead_enemies(self):
-        enemies_that_died = [e for e in self.enemies if e.health <= 0]
-        self.enemies = [e for e in self.enemies if e.health > 0]
+        enemies_that_died = [e for e in self.non_player_characters if e.health <= 0]
+        self.non_player_characters = [e for e in self.non_player_characters if e.health > 0]
         return enemies_that_died
 
     def remove_expired_visual_effects(self):

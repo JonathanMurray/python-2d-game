@@ -39,7 +39,7 @@ class EnemyMind(AbstractEnemyMind):
             mummy_enemy = create_enemy(NpcType.MUMMY, mummy_pos)
             if not game_state.would_entity_collide_if_new_pos(mummy_enemy.world_entity, mummy_pos):
                 self._summoning_cooldown = self._max_summoning_cooldown
-                game_state.enemies.append(mummy_enemy)
+                game_state.non_player_characters.append(mummy_enemy)
                 game_state.visual_effects.append(VisualCircle((80, 150, 100), necro_center_pos, 40, 70, Millis(120), 3))
                 game_state.visual_effects.append(VisualCircle((80, 150, 100), mummy_center_pos, 40, 70, Millis(120), 3))
             else:
@@ -49,7 +49,7 @@ class EnemyMind(AbstractEnemyMind):
         if self._time_since_healing > self._healing_cooldown:
             self._time_since_healing = 0
             necro_center_pos = npc.world_entity.get_center_position()
-            nearby_hurt_enemies = [e for e in game_state.enemies
+            nearby_hurt_enemies = [e for e in game_state.non_player_characters
                                    if is_x_and_y_within_distance(necro_center_pos, e.world_entity.get_center_position(),
                                                                  200)
                                    and e != npc and e.health < e.max_health]

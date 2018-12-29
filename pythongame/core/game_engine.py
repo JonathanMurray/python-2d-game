@@ -78,7 +78,7 @@ class GameEngine:
 
     # Returns True if player died
     def run_one_frame(self, time_passed: Millis):
-        for e in self.game_state.enemies:
+        for e in self.game_state.non_player_characters:
             # NonPlayerCharacter AI shouldn't run if enemy is too far out of sight
             if self._is_enemy_close_to_camera(e):
                 e.enemy_mind.control_enemy(self.game_state, e, self.game_state.player_entity,
@@ -116,7 +116,7 @@ class GameEngine:
         for buff_effect in player_buffs_update.buffs_that_ended:
             buff_effect.apply_end_effect(self.game_state, self.game_state.player_entity, None)
 
-        for enemy in self.game_state.enemies:
+        for enemy in self.game_state.non_player_characters:
             enemy.regenerate_health(time_passed)
             buffs_update = handle_buffs(enemy.active_buffs, time_passed)
             for buff_effect in buffs_update.buffs_that_started:
@@ -134,12 +134,12 @@ class GameEngine:
         self.game_state.player_state.recharge_ability_cooldowns(time_passed)
 
         self.game_state.player_entity.update_movement_animation(time_passed)
-        for e in self.game_state.enemies:
+        for e in self.game_state.non_player_characters:
             e.world_entity.update_movement_animation(time_passed)
         for projectile in self.game_state.projectile_entities:
             projectile.world_entity.update_movement_animation(time_passed)
 
-        for e in self.game_state.enemies:
+        for e in self.game_state.non_player_characters:
             # Enemies shouldn't move towards player when they are out of sight
             if self._is_enemy_close_to_camera(e) and not e.is_stunned():
                 self.game_state.update_world_entity_position_within_game_world(e.world_entity, time_passed)
@@ -152,7 +152,7 @@ class GameEngine:
         for visual_effect in self.game_state.visual_effects:
             visual_effect.update_position_if_attached_to_entity()
             if visual_effect.attached_to_entity \
-                    and not visual_effect.attached_to_entity in [e.world_entity for e in self.game_state.enemies] \
+                    and not visual_effect.attached_to_entity in [e.world_entity for e in self.game_state.non_player_characters] \
                     and visual_effect.attached_to_entity != self.game_state.player_entity:
                 visual_effect.has_expired = True
 
@@ -178,7 +178,7 @@ class GameEngine:
                     self.view_state.set_message("You picked up " + ITEMS[item.item_type].name)
                     entities_to_remove.append(item)
 
-        for enemy in self.game_state.enemies:
+        for enemy in self.game_state.non_player_characters:
             for projectile in self.game_state.get_projectiles_intersecting_with(enemy.world_entity):
                 should_remove_projectile = projectile.projectile_controller.apply_enemy_collision(
                     enemy, self.game_state)
