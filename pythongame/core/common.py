@@ -137,6 +137,7 @@ class EnemyType(Enum):
     DARK_REAPER = 7
     GOBLIN_WARLOCK = 8
     MUMMY = 9
+    PLAYER_SUMMON = 10
 
 
 class WallType(Enum):
@@ -157,6 +158,7 @@ class WallType(Enum):
     WALL_CHAIR = 30
     ALTAR = 31
 
+
 class AbilityType(Enum):
     HEAL = 1
     FIREBALL = 2
@@ -165,6 +167,7 @@ class AbilityType(Enum):
     FROST_NOVA = 6
     WHIRLWIND = 7
     ENTANGLING_ROOTS = 8
+    SUMMON = 9
 
 
 class Sprite(Enum):

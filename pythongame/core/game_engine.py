@@ -1,13 +1,13 @@
 from pythongame.core.ability_effects import apply_ability_effect
 from pythongame.core.common import *
 from pythongame.core.game_data import POTIONS, ITEMS, ITEM_ENTITY_SIZE, ENEMIES
+from pythongame.core.game_data import POTION_ENTITY_SIZE
 from pythongame.core.game_state import GameState, handle_buffs, WorldEntity, ItemOnGround, PotionOnGround
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.player_controls import TryUseAbilityResult, PlayerControls
 from pythongame.core.potion_effects import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
 from pythongame.core.view_state import ViewState
 from pythongame.core.visual_effects import create_visual_exp_text
-from pythongame.core.game_data import POTION_ENTITY_SIZE
 
 
 class GameEngine:
