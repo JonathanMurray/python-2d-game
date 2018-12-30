@@ -186,7 +186,7 @@ class GameEngine:
                 if should_remove_projectile:
                     entities_to_remove.append(projectile)
 
-        for non_enemy_npc in self.game_state.non_player_characters:
+        for non_enemy_npc in self.game_state.non_enemy_npcs:
             for projectile in self.game_state.get_projectiles_intersecting_with(non_enemy_npc.world_entity):
                 should_remove_projectile = projectile.projectile_controller.apply_non_enemy_npc_collision(
                     non_enemy_npc, self.game_state)
