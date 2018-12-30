@@ -2,7 +2,8 @@ import random
 
 from pythongame.core.common import Millis, is_x_and_y_within_distance, NpcType, Sprite, Direction, \
     get_perpendicular_directions
-from pythongame.core.damage_interactions import deal_damage_to_player
+from pythongame.core.damage_interactions import deal_damage_to_player, deal_npc_damage
+from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
@@ -30,10 +31,11 @@ class NpcMind(AbstractNpcMind):
         self._time_since_reevaluated += time_passed
 
         enemy_entity = npc.world_entity
+        target: EnemyTarget = get_target(game_state)
 
         if self._time_since_updated_path > self._update_path_interval:
             self._time_since_updated_path = 0
-            self.pathfinder.update_path_towards_target(enemy_entity, game_state, game_state.player_entity)
+            self.pathfinder.update_path_towards_target(enemy_entity, game_state, target.entity)
 
         new_next_waypoint = self.pathfinder.get_next_waypoint_along_path(enemy_entity)
 
@@ -57,11 +59,11 @@ class NpcMind(AbstractNpcMind):
             self._time_since_attack = 0
             if not is_player_invisible:
                 enemy_position = enemy_entity.get_center_position()
-                player_center_pos = game_state.player_entity.get_center_position()
-                if is_x_and_y_within_distance(enemy_position, player_center_pos, 80):
-                    deal_damage_to_player(game_state, 1)
+                target_center_pos = target.entity.get_center_position()
+                if is_x_and_y_within_distance(enemy_position, target_center_pos, 80):
+                    deal_npc_damage(1, game_state, target)
                     game_state.visual_effects.append(
-                        VisualLine((220, 0, 0), enemy_position, player_center_pos, Millis(100), 3))
+                        VisualLine((220, 0, 0), enemy_position, target_center_pos, Millis(100), 3))
 
 
 def _move_in_dir(enemy_entity, direction):
