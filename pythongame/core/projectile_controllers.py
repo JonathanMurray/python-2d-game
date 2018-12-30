@@ -17,6 +17,9 @@ class AbstractProjectileController:
     def apply_enemy_collision(self, _npc: NonPlayerCharacter, _game_state: GameState):
         return False
 
+    def apply_non_enemy_npc_collision(self, _npc: NonPlayerCharacter, _game_state: GameState):
+        return False
+
     def apply_player_collision(self, _game_state: GameState):
         return False
 

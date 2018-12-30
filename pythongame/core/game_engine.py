@@ -82,7 +82,7 @@ class GameEngine:
             # NonPlayerCharacter AI shouldn't run if enemy is too far out of sight
             if self._is_enemy_close_to_camera(e):
                 e.npc_mind.control_npc(self.game_state, e, self.game_state.player_entity,
-                                         self.game_state.player_state.is_invisible, time_passed)
+                                       self.game_state.player_state.is_invisible, time_passed)
 
         self.view_state.notify_player_entity_center_position(self.game_state.player_entity.get_center_position())
 
@@ -183,6 +183,13 @@ class GameEngine:
             for projectile in self.game_state.get_projectiles_intersecting_with(enemy.world_entity):
                 should_remove_projectile = projectile.projectile_controller.apply_enemy_collision(
                     enemy, self.game_state)
+                if should_remove_projectile:
+                    entities_to_remove.append(projectile)
+
+        for non_enemy_npc in self.game_state.non_player_characters:
+            for projectile in self.game_state.get_projectiles_intersecting_with(non_enemy_npc.world_entity):
+                should_remove_projectile = projectile.projectile_controller.apply_non_enemy_npc_collision(
+                    non_enemy_npc, self.game_state)
                 if should_remove_projectile:
                     entities_to_remove.append(projectile)
 

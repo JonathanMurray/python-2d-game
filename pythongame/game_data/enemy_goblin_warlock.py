@@ -4,7 +4,8 @@ from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, re
 from pythongame.core.common import Millis, NpcType, Sprite, \
     get_position_from_center_position, ProjectileType, BuffType, Direction, get_perpendicular_directions, \
     translate_in_direction
-from pythongame.core.damage_interactions import deal_damage_to_player
+from pythongame.core.damage_interactions import deal_damage_to_player, deal_npc_damage_to_npc
+from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import register_npc_data, NpcData, register_buff_text, SpriteSheet, \
     register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
@@ -44,10 +45,11 @@ class NpcMind(AbstractNpcMind):
         self._time_since_speech += time_passed
 
         enemy_entity = npc.world_entity
+        target: EnemyTarget = get_target(game_state)
 
         if self._time_since_updated_path > self._update_path_interval:
             self._time_since_updated_path = 0
-            self.pathfinder.update_path_towards_target(enemy_entity, game_state, game_state.player_entity)
+            self.pathfinder.update_path_towards_target(enemy_entity, game_state, target.entity)
 
         new_next_waypoint = self.pathfinder.get_next_waypoint_along_path(enemy_entity)
 
@@ -116,6 +118,13 @@ class ProjectileController(AbstractProjectileController):
                                                       25, 50, Millis(100), 0))
         return True
 
+    def apply_non_enemy_npc_collision(self, npc: NonPlayerCharacter, game_state: GameState):
+        deal_npc_damage_to_npc(game_state, npc, 1)
+        npc.gain_buff_effect(get_buff_effect(BuffType.ENEMY_GOBLIN_WARLOCK_BURNT), Millis(5000))
+        game_state.visual_effects.append(
+            VisualCircle((180, 50, 50), npc.world_entity.get_center_position(), 25, 50, Millis(100), 0))
+        return True
+
 
 class Burnt(AbstractBuffEffect):
     def __init__(self):
@@ -126,9 +135,16 @@ class Burnt(AbstractBuffEffect):
         self._time_since_graphics += time_passed
         if self._time_since_graphics > 500:
             self._time_since_graphics = 0
-            deal_damage_to_player(game_state, 2)
-            game_state.visual_effects.append(VisualCircle((180, 50, 50), game_state.player_entity.get_center_position(),
-                                                          10, 20, Millis(50), 0, game_state.player_entity))
+            if buffed_npc:
+                deal_npc_damage_to_npc(game_state, buffed_npc, 2)
+                game_state.visual_effects.append(
+                    VisualCircle((180, 50, 50), buffed_npc.world_entity.get_center_position(), 10, 20, Millis(50), 0,
+                                 buffed_entity))
+            else:
+                deal_damage_to_player(game_state, 2)
+                game_state.visual_effects.append(
+                    VisualCircle((180, 50, 50), game_state.player_entity.get_center_position(), 10, 20, Millis(50), 0,
+                                 buffed_entity))
 
     def get_buff_type(self):
         return BUFF_TYPE
