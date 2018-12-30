@@ -1,4 +1,3 @@
-from pythongame.core.ability_effects import apply_ability_effect
 from pythongame.core.common import *
 from pythongame.core.game_data import POTIONS, ITEMS, ITEM_ENTITY_SIZE, NON_PLAYER_CHARACTERS
 from pythongame.core.game_data import POTION_ENTITY_SIZE
@@ -26,10 +25,8 @@ class GameEngine:
     def try_use_ability(self, ability_type: AbilityType):
         if not self.game_state.player_state.is_stunned:
             self.view_state.notify_ability_was_clicked(ability_type)
-            result = self.player_controls.try_use_ability(self.game_state.player_state, ability_type)
-            if result == TryUseAbilityResult.SUCCESS:
-                apply_ability_effect(self.game_state, ability_type)
-            elif result == TryUseAbilityResult.NOT_ENOUGH_MANA:
+            result = self.player_controls.try_use_ability(ability_type, self.game_state)
+            if result == TryUseAbilityResult.NOT_ENOUGH_MANA:
                 self.view_state.set_message("Not enough mana!")
 
     def try_use_potion(self, slot_number: int):
