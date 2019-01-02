@@ -12,7 +12,7 @@ from pythongame.core.visual_effects import VisualLine
 class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
-        self._attack_interval = 1500
+        self._attack_interval = 1000
         self._time_since_attack = self._attack_interval
         self._update_path_interval = 600
         self._time_since_updated_path = self._update_path_interval
@@ -73,9 +73,10 @@ def register_warrior_enemy():
     size = (32, 32)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.ENEMY_WARRIOR
     npc_type = NpcType.WARRIOR
-    movement_speed = 0.10
-    health = 25
-    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, True))
+    movement_speed = 0.12
+    health = 32
+    exp_reward = 20
+    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, exp_reward, True))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/human_spritesheet.png")
     original_sprite_size = (32, 32)
