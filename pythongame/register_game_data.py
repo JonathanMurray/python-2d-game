@@ -13,6 +13,7 @@ from pythongame.game_data.enemy_mummy import register_mummy_enemy
 from pythongame.game_data.enemy_necromancer import register_necromancer_enemy
 from pythongame.game_data.enemy_rat_1 import register_rat_1_enemy
 from pythongame.game_data.enemy_rat_2 import register_rat_2_enemy
+from pythongame.game_data.enemy_warrior import register_warrior_enemy
 from pythongame.game_data.item_amulet_of_mana import register_amulet_of_mana_item
 from pythongame.game_data.item_blessed_shield import register_blessed_shield_item
 from pythongame.game_data.item_rod_of_lightning import register_rod_of_lightning_item
@@ -53,6 +54,7 @@ def register_all_game_data():
     register_whirlwind_ability()
     register_goblin_warlock_enemy()
     register_mummy_enemy()
+    register_warrior_enemy()
 
     register_winged_boots_item()
     register_amulet_of_mana_item()

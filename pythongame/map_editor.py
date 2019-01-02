@@ -44,6 +44,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.enemy(NpcType.GOBLIN_WARLOCK),
     MapEditorWorldEntity.enemy(NpcType.MUMMY),
     MapEditorWorldEntity.enemy(NpcType.NECROMANCER),
+    MapEditorWorldEntity.enemy(NpcType.WARRIOR),
 
     MapEditorWorldEntity.potion(PotionType.HEALTH_LESSER),
     MapEditorWorldEntity.potion(PotionType.HEALTH),

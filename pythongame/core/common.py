@@ -136,6 +136,7 @@ class PotionType(Enum):
 
 class NpcType(Enum):
     NECROMANCER = 3
+    WARRIOR = 4
     RAT_1 = 5
     RAT_2 = 6
     DARK_REAPER = 7
@@ -192,6 +193,7 @@ class Sprite(Enum):
     ENEMY_DARK_REAPER = 204
     ENEMY_GOBLIN_WARLOCK = 205
     ENEMY_MUMMY = 206
+    ENEMY_WARRIOR = 207
     PLAYER_SUMMON = 250
     ITEM_AMULET_OF_MANA = 301
     ITEM_WINGED_BOOTS = 302
