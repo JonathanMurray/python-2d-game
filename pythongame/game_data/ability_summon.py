@@ -1,8 +1,7 @@
 import random
 
 from pythongame.core.ability_effects import register_ability_effect
-from pythongame.core.common import Sprite, AbilityType, Millis, \
-    sum_of_vectors, NpcType, get_perpendicular_directions, Direction
+from pythongame.core.common import Sprite, AbilityType, Millis, sum_of_vectors, NpcType, Direction
 from pythongame.core.damage_interactions import deal_npc_damage_to_npc
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     NON_PLAYER_CHARACTERS, register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
@@ -63,7 +62,7 @@ class NpcMind(AbstractNpcMind):
 
         if self._time_since_updated_path > self._update_path_interval:
             self._time_since_updated_path = 0
-            nearby_enemies = game_state.get_enemies_within_x_y_distance_of(250, npc.world_entity.get_position())
+            nearby_enemies = game_state.get_enemies_within_x_y_distance_of(300, npc.world_entity.get_position())
             if nearby_enemies:
                 target_entity = nearby_enemies[0].world_entity
             else:
@@ -82,8 +81,6 @@ class NpcMind(AbstractNpcMind):
             if self.next_waypoint:
                 direction = self.pathfinder.get_dir_towards_considering_collisions(
                     game_state, summon_entity, self.next_waypoint)
-                if random.random() < 0.1 and direction:
-                    direction = random.choice(get_perpendicular_directions(direction))
                 _move_in_dir(summon_entity, direction)
             else:
                 summon_entity.set_not_moving()
@@ -112,17 +109,23 @@ def register_summon_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_SUMMON
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_ability_summon.png")
     description = "Follows you and attacks nearby enemies"
-    register_ability_data(ability_type, AbilityData("Summon Dragonwhelp", ui_icon_sprite, 3, Millis(1000), description))
+    cooldown = Millis(8000)
+    mana_cost = 10
+    register_ability_data(ability_type,
+                          AbilityData("Summon Dragonwhelp", ui_icon_sprite, mana_cost, cooldown, description))
 
     summoned_npc_type = NpcType.PLAYER_SUMMON
     summon_sprite = Sprite.PLAYER_SUMMON
 
-    register_npc_data(summoned_npc_type, NpcData(summon_sprite, (48, 48), 15, 1, 0.1, 0, False))
+    health_regen = 0.3
+    move_speed = 0.14
+    health = 26
+    register_npc_data(summoned_npc_type, NpcData(summon_sprite, (32, 32), health, health_regen, move_speed, 0, False))
     register_npc_behavior(summoned_npc_type, NpcMind)
 
     summon_sprite_sheet = SpriteSheet("resources/graphics/monsters_spritesheet.png")
     summon_original_size = (32, 32)
-    summon_scaled_sprite_size = (48, 48)
+    summon_scaled_sprite_size = (52, 52)
     summon_indices_by_dir = {
         Direction.DOWN: [(x, 0) for x in range(9, 12)],
         Direction.LEFT: [(x, 1) for x in range(9, 12)],
@@ -130,4 +133,4 @@ def register_summon_ability():
         Direction.UP: [(x, 3) for x in range(9, 12)]
     }
     register_entity_sprite_map(summon_sprite, summon_sprite_sheet, summon_original_size,
-                               summon_scaled_sprite_size, summon_indices_by_dir, (0, 0))
+                               summon_scaled_sprite_size, summon_indices_by_dir, (-10, -20))
