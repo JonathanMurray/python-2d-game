@@ -406,6 +406,10 @@ class GameState:
         if not npc.is_enemy:
             self.non_enemy_npcs.append(npc)
 
+    def remove_all_non_enemy_npcs(self):
+        self.non_player_characters = [npc for npc in self.non_player_characters if npc not in self.non_enemy_npcs]
+        self.non_enemy_npcs = []
+
     # TODO clarify how this method should be used.
     # entities_to_remove aren't necessarily of the class WorldEntity
     def remove_entities(self, entities_to_remove: List):

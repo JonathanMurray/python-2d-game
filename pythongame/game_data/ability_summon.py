@@ -25,6 +25,7 @@ def _apply_ability(game_state: GameState) -> bool:
         get_position_from_center_position(summon_center_pos, summon_size), summon_size)
     summon = create_npc(NpcType.PLAYER_SUMMON, summon_pos)
     if not game_state.would_entity_collide_if_new_pos(summon.world_entity, summon_pos):
+        game_state.remove_all_non_enemy_npcs()
         game_state.add_non_player_character(summon)
         return True
     return False
