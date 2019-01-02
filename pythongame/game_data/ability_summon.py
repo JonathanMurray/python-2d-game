@@ -1,7 +1,7 @@
 import random
 
 from pythongame.core.ability_effects import register_ability_effect
-from pythongame.core.common import get_position_from_center_position, Sprite, AbilityType, Millis, \
+from pythongame.core.common import Sprite, AbilityType, Millis, \
     sum_of_vectors, NpcType, get_perpendicular_directions, Direction
 from pythongame.core.damage_interactions import deal_npc_damage_to_npc
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
@@ -18,16 +18,26 @@ from pythongame.core.visual_effects import VisualLine
 def _apply_ability(game_state: GameState) -> bool:
     player_entity = game_state.player_entity
 
-    relative_pos = (random.randint(-80, 80), random.randint(-80, 80))
-    summon_center_pos = sum_of_vectors(player_entity.get_center_position(), relative_pos)
     summon_size = NON_PLAYER_CHARACTERS[NpcType.PLAYER_SUMMON].size
-    summon_pos = game_state.get_within_world(
-        get_position_from_center_position(summon_center_pos, summon_size), summon_size)
-    summon = create_npc(NpcType.PLAYER_SUMMON, summon_pos)
-    if not game_state.would_entity_collide_if_new_pos(summon.world_entity, summon_pos):
-        game_state.remove_all_non_enemy_npcs()
-        game_state.add_non_player_character(summon)
-        return True
+    player_size = game_state.player_entity.w, game_state.player_entity.h
+    candidate_relative_positions = [
+        (0, - summon_size[1]),  # top
+        (player_size[0], - summon_size[1]),  # top right
+        (player_size[0], 0),  # right
+        (player_size[0], player_size[1]),  # down right
+        (0, player_size[1]),  # down
+        (-summon_size[0], player_size[1]),  # down left
+        (-summon_size[0], 0),  # left
+        (-summon_size[0], -summon_size[1])  # top left
+    ]
+    for relative_pos in candidate_relative_positions:
+        summon_pos = sum_of_vectors(player_entity.get_position(), relative_pos)
+        summon = create_npc(NpcType.PLAYER_SUMMON, summon_pos)
+        is_valid_pos = not game_state.would_entity_collide_if_new_pos(summon.world_entity, summon_pos)
+        if is_valid_pos:
+            game_state.remove_all_non_enemy_npcs()
+            game_state.add_non_player_character(summon)
+            return True
     return False
 
 
