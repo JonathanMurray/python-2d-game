@@ -45,7 +45,7 @@ class NpcMind(AbstractNpcMind):
         self._time_since_speech += time_passed
 
         enemy_entity = npc.world_entity
-        target: EnemyTarget = get_target(game_state)
+        target: EnemyTarget = get_target(enemy_entity, game_state)
 
         if self._time_since_updated_path > self._update_path_interval:
             self._time_since_updated_path = 0

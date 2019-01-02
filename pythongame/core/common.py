@@ -116,6 +116,10 @@ def is_x_and_y_within_distance(a: Tuple[int, int], b: Tuple[int, int], distance:
     return abs(a[0] - b[0]) < distance and abs(a[1] - b[1]) < distance
 
 
+def get_manhattan_distance(a: Tuple[int, int], b: Tuple[int, int]) -> int:
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+
 def get_rect_with_increased_size_in_all_directions(rect, increased_amount):
     return (rect[0] - increased_amount, rect[1] - increased_amount, rect[2] + increased_amount * 2,
             rect[3] + increased_amount * 2)
