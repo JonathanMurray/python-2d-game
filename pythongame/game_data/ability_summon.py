@@ -43,7 +43,7 @@ def _apply_ability(game_state: GameState) -> bool:
 class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
-        self._attack_interval = 2000
+        self._attack_interval = 1000
         self._time_since_attack = self._attack_interval
         self._update_path_interval = 900
         self._time_since_updated_path = random.randint(0, self._update_path_interval)
@@ -88,7 +88,7 @@ class NpcMind(AbstractNpcMind):
             self._time_since_attack = 0
             nearby_enemies = game_state.get_enemies_within_x_y_distance_of(100, summon_entity.get_position())
             if nearby_enemies:
-                damage_amount = 2
+                damage_amount = 3
                 target = nearby_enemies[0]
                 deal_npc_damage_to_npc(game_state, target, damage_amount)
                 game_state.visual_effects.append(
@@ -110,14 +110,14 @@ def register_summon_ability():
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_ability_summon.png")
     description = "Follows you and attacks nearby enemies"
     cooldown = Millis(8000)
-    mana_cost = 10
+    mana_cost = 22
     register_ability_data(ability_type,
                           AbilityData("Summon Dragonwhelp", ui_icon_sprite, mana_cost, cooldown, description))
 
     summoned_npc_type = NpcType.PLAYER_SUMMON
     summon_sprite = Sprite.PLAYER_SUMMON
 
-    health_regen = 0.3
+    health_regen = 0.4
     move_speed = 0.14
     health = 26
     register_npc_data(summoned_npc_type, NpcData(summon_sprite, (32, 32), health, health_regen, move_speed, 0, False))
