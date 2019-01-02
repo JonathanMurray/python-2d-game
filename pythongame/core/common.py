@@ -116,6 +116,10 @@ def is_x_and_y_within_distance(a: Tuple[int, int], b: Tuple[int, int], distance:
     return abs(a[0] - b[0]) < distance and abs(a[1] - b[1]) < distance
 
 
+def get_manhattan_distance(a: Tuple[int, int], b: Tuple[int, int]) -> int:
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+
 def get_rect_with_increased_size_in_all_directions(rect, increased_amount):
     return (rect[0] - increased_amount, rect[1] - increased_amount, rect[2] + increased_amount * 2,
             rect[3] + increased_amount * 2)
@@ -130,13 +134,15 @@ class PotionType(Enum):
     INVISIBILITY = 22
 
 
-class EnemyType(Enum):
+class NpcType(Enum):
     NECROMANCER = 3
+    WARRIOR = 4
     RAT_1 = 5
     RAT_2 = 6
     DARK_REAPER = 7
     GOBLIN_WARLOCK = 8
     MUMMY = 9
+    PLAYER_SUMMON = 10
 
 
 class WallType(Enum):
@@ -157,6 +163,7 @@ class WallType(Enum):
     WALL_CHAIR = 30
     ALTAR = 31
 
+
 class AbilityType(Enum):
     HEAL = 1
     FIREBALL = 2
@@ -165,6 +172,7 @@ class AbilityType(Enum):
     FROST_NOVA = 6
     WHIRLWIND = 7
     ENTANGLING_ROOTS = 8
+    SUMMON = 9
 
 
 class Sprite(Enum):
@@ -185,6 +193,8 @@ class Sprite(Enum):
     ENEMY_DARK_REAPER = 204
     ENEMY_GOBLIN_WARLOCK = 205
     ENEMY_MUMMY = 206
+    ENEMY_WARRIOR = 207
+    PLAYER_SUMMON = 250
     ITEM_AMULET_OF_MANA = 301
     ITEM_WINGED_BOOTS = 302
     ITEM_ROD_OF_LIGHTNING = 303

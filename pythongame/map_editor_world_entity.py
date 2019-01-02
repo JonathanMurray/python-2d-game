@@ -1,12 +1,12 @@
 from typing import Optional
 
-from pythongame.core.common import Sprite, WallType, EnemyType, PotionType, ItemType
+from pythongame.core.common import Sprite, WallType, NpcType, PotionType, ItemType
 
 
 class MapEditorWorldEntity:
-    def __init__(self, enemy_type: Optional[EnemyType], is_player: bool, wall_type: Optional[WallType],
+    def __init__(self, npc_type: Optional[NpcType], is_player: bool, wall_type: Optional[WallType],
                  potion_type: Optional[PotionType], item_type: Optional[ItemType], decoration_sprite: Optional[Sprite]):
-        self.enemy_type = enemy_type
+        self.npc_type = npc_type
         self.is_player = is_player
         self.wall_type = wall_type
         self.potion_type = potion_type
@@ -28,8 +28,8 @@ class MapEditorWorldEntity:
         return MapEditorWorldEntity(None, True, None, None, None, None)
 
     @staticmethod
-    def enemy(enemy_type: EnemyType):
-        return MapEditorWorldEntity(enemy_type, False, None, None, None, None)
+    def enemy(npc_type: NpcType):
+        return MapEditorWorldEntity(npc_type, False, None, None, None, None)
 
     @staticmethod
     def wall(wall_type: WallType):

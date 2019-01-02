@@ -1,13 +1,12 @@
-from pythongame.core.ability_effects import apply_ability_effect
 from pythongame.core.common import *
-from pythongame.core.game_data import POTIONS, ITEMS, ITEM_ENTITY_SIZE, ENEMIES
+from pythongame.core.game_data import POTIONS, ITEMS, ITEM_ENTITY_SIZE, NON_PLAYER_CHARACTERS
+from pythongame.core.game_data import POTION_ENTITY_SIZE
 from pythongame.core.game_state import GameState, handle_buffs, WorldEntity, ItemOnGround, PotionOnGround
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.player_controls import TryUseAbilityResult, PlayerControls
 from pythongame.core.potion_effects import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
 from pythongame.core.view_state import ViewState
 from pythongame.core.visual_effects import create_visual_exp_text
-from pythongame.core.game_data import POTION_ENTITY_SIZE
 
 
 class GameEngine:
@@ -26,11 +25,11 @@ class GameEngine:
     def try_use_ability(self, ability_type: AbilityType):
         if not self.game_state.player_state.is_stunned:
             self.view_state.notify_ability_was_clicked(ability_type)
-            result = self.player_controls.try_use_ability(self.game_state.player_state, ability_type)
-            if result == TryUseAbilityResult.SUCCESS:
-                apply_ability_effect(self.game_state, ability_type)
-            elif result == TryUseAbilityResult.NOT_ENOUGH_MANA:
+            result = self.player_controls.try_use_ability(ability_type, self.game_state)
+            if result == TryUseAbilityResult.NOT_ENOUGH_MANA:
                 self.view_state.set_message("Not enough mana!")
+            elif result == TryUseAbilityResult.FAILED_TO_EXECUTE:
+                self.view_state.set_message("Failed to execute ability!")
 
     def try_use_potion(self, slot_number: int):
         if not self.game_state.player_state.is_stunned:
@@ -78,11 +77,11 @@ class GameEngine:
 
     # Returns True if player died
     def run_one_frame(self, time_passed: Millis):
-        for e in self.game_state.enemies:
-            # Enemy AI shouldn't run if enemy is too far out of sight
+        for e in self.game_state.non_player_characters:
+            # NonPlayerCharacter AI shouldn't run if enemy is too far out of sight
             if self._is_enemy_close_to_camera(e):
-                e.enemy_mind.control_enemy(self.game_state, e, self.game_state.player_entity,
-                                           self.game_state.player_state.is_invisible, time_passed)
+                e.npc_mind.control_npc(self.game_state, e, self.game_state.player_entity,
+                                       self.game_state.player_state.is_invisible, time_passed)
 
         self.view_state.notify_player_entity_center_position(self.game_state.player_entity.get_center_position())
 
@@ -96,10 +95,10 @@ class GameEngine:
         for visual_effect in self.game_state.visual_effects:
             visual_effect.notify_time_passed(time_passed)
 
-        enemies_that_died = self.game_state.remove_dead_enemies()
-
+        npcs_that_died = self.game_state.remove_dead_npcs()
+        enemies_that_died = [e for e in npcs_that_died if e.is_enemy]
         if enemies_that_died:
-            exp_gained = sum([ENEMIES[e.enemy_type].exp_reward for e in enemies_that_died])
+            exp_gained = sum([NON_PLAYER_CHARACTERS[e.npc_type].exp_reward for e in enemies_that_died])
             self.game_state.visual_effects.append(create_visual_exp_text(self.game_state.player_entity, exp_gained))
             did_player_level_up = self.game_state.player_state.gain_exp(exp_gained)
             if did_player_level_up:
@@ -116,7 +115,7 @@ class GameEngine:
         for buff_effect in player_buffs_update.buffs_that_ended:
             buff_effect.apply_end_effect(self.game_state, self.game_state.player_entity, None)
 
-        for enemy in self.game_state.enemies:
+        for enemy in self.game_state.non_player_characters:
             enemy.regenerate_health(time_passed)
             buffs_update = handle_buffs(enemy.active_buffs, time_passed)
             for buff_effect in buffs_update.buffs_that_started:
@@ -134,12 +133,12 @@ class GameEngine:
         self.game_state.player_state.recharge_ability_cooldowns(time_passed)
 
         self.game_state.player_entity.update_movement_animation(time_passed)
-        for e in self.game_state.enemies:
+        for e in self.game_state.non_player_characters:
             e.world_entity.update_movement_animation(time_passed)
         for projectile in self.game_state.projectile_entities:
             projectile.world_entity.update_movement_animation(time_passed)
 
-        for e in self.game_state.enemies:
+        for e in self.game_state.non_player_characters:
             # Enemies shouldn't move towards player when they are out of sight
             if self._is_enemy_close_to_camera(e) and not e.is_stunned():
                 self.game_state.update_world_entity_position_within_game_world(e.world_entity, time_passed)
@@ -152,7 +151,8 @@ class GameEngine:
         for visual_effect in self.game_state.visual_effects:
             visual_effect.update_position_if_attached_to_entity()
             if visual_effect.attached_to_entity \
-                    and not visual_effect.attached_to_entity in [e.world_entity for e in self.game_state.enemies] \
+                    and not visual_effect.attached_to_entity in [e.world_entity for e in
+                                                                 self.game_state.non_player_characters] \
                     and visual_effect.attached_to_entity != self.game_state.player_entity:
                 visual_effect.has_expired = True
 
@@ -178,10 +178,17 @@ class GameEngine:
                     self.view_state.set_message("You picked up " + ITEMS[item.item_type].name)
                     entities_to_remove.append(item)
 
-        for enemy in self.game_state.enemies:
+        for enemy in [e for e in self.game_state.non_player_characters if e.is_enemy]:
             for projectile in self.game_state.get_projectiles_intersecting_with(enemy.world_entity):
                 should_remove_projectile = projectile.projectile_controller.apply_enemy_collision(
                     enemy, self.game_state)
+                if should_remove_projectile:
+                    entities_to_remove.append(projectile)
+
+        for non_enemy_npc in self.game_state.non_enemy_npcs:
+            for projectile in self.game_state.get_projectiles_intersecting_with(non_enemy_npc.world_entity):
+                should_remove_projectile = projectile.projectile_controller.apply_non_enemy_npc_collision(
+                    non_enemy_npc, self.game_state)
                 if should_remove_projectile:
                     entities_to_remove.append(projectile)
 

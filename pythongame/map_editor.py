@@ -4,11 +4,11 @@ from typing import Tuple, Optional, List, Dict
 
 import pygame
 
-from pythongame.core.common import Direction, Sprite, sum_of_vectors, WallType, EnemyType, PotionType, ItemType
-from pythongame.core.game_data import ENEMIES, POTIONS, ITEMS, ITEM_ENTITY_SIZE, WALLS
+from pythongame.core.common import Direction, Sprite, sum_of_vectors, WallType, NpcType, PotionType, ItemType
+from pythongame.core.game_data import NON_PLAYER_CHARACTERS, POTIONS, ITEMS, ITEM_ENTITY_SIZE, WALLS
 from pythongame.core.game_data import POTION_ENTITY_SIZE
-from pythongame.core.game_state import WorldEntity, Enemy, PotionOnGround, ItemOnGround, DecorationEntity, GameState, \
-    Wall
+from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, PotionOnGround, ItemOnGround, DecorationEntity, \
+    GameState, Wall
 from pythongame.core.view import View
 from pythongame.game_data.player_data import INTIAL_PLAYER_STATE, PLAYER_ENTITY_SIZE, PLAYER_ENTITY_SPEED
 from pythongame.game_world_init import save_game_state_to_json_file, create_game_state_from_json_file
@@ -38,12 +38,13 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.wall(WallType.WALL_CHAIR),
     MapEditorWorldEntity.wall(WallType.ALTAR),
 
-    MapEditorWorldEntity.enemy(EnemyType.DARK_REAPER),
-    MapEditorWorldEntity.enemy(EnemyType.RAT_1),
-    MapEditorWorldEntity.enemy(EnemyType.RAT_2),
-    MapEditorWorldEntity.enemy(EnemyType.GOBLIN_WARLOCK),
-    MapEditorWorldEntity.enemy(EnemyType.MUMMY),
-    MapEditorWorldEntity.enemy(EnemyType.NECROMANCER),
+    MapEditorWorldEntity.enemy(NpcType.DARK_REAPER),
+    MapEditorWorldEntity.enemy(NpcType.RAT_1),
+    MapEditorWorldEntity.enemy(NpcType.RAT_2),
+    MapEditorWorldEntity.enemy(NpcType.GOBLIN_WARLOCK),
+    MapEditorWorldEntity.enemy(NpcType.MUMMY),
+    MapEditorWorldEntity.enemy(NpcType.NECROMANCER),
+    MapEditorWorldEntity.enemy(NpcType.WARRIOR),
 
     MapEditorWorldEntity.potion(PotionType.HEALTH_LESSER),
     MapEditorWorldEntity.potion(PotionType.HEALTH),
@@ -194,13 +195,14 @@ def main(args: List[str]):
                     if is_snapped_mouse_within_world and not is_snapped_mouse_over_ui:
                         if entity_being_placed.is_player:
                             game_state.player_entity.set_position(snapped_mouse_world_position)
-                        elif entity_being_placed.enemy_type:
-                            enemy_type = entity_being_placed.enemy_type
-                            data = ENEMIES[enemy_type]
+                        elif entity_being_placed.npc_type:
+                            npc_type = entity_being_placed.npc_type
+                            data = NON_PLAYER_CHARACTERS[npc_type]
                             entity = WorldEntity(snapped_mouse_world_position, data.size, data.sprite, Direction.DOWN,
                                                  data.speed)
-                            enemy = Enemy(enemy_type, entity, data.max_health, data.max_health, data.health_regen, None)
-                            game_state.enemies.append(enemy)
+                            enemy = NonPlayerCharacter(npc_type, entity, data.max_health, data.max_health,
+                                                       data.health_regen, None, True)
+                            game_state.add_non_player_character(enemy)
                         elif entity_being_placed.wall_type:
                             _add_wall_to_position(game_state, snapped_mouse_world_position,
                                                   entity_being_placed.wall_type)
@@ -235,7 +237,7 @@ def main(args: List[str]):
             player_entity=game_state.player_entity,
             is_player_invisible=game_state.player_state.is_invisible,
             camera_world_area=game_state.camera_world_area,
-            enemies=game_state.enemies,
+            non_player_characters=game_state.non_player_characters,
             visual_effects=game_state.visual_effects,
             render_hit_and_collision_boxes=True,
             player_health=game_state.player_state.health,
@@ -248,7 +250,7 @@ def main(args: List[str]):
             placing_entity=user_state.placing_entity,
             deleting_entities=user_state.deleting_entities,
             deleting_decorations=user_state.deleting_decorations,
-            num_enemies=len(game_state.enemies),
+            num_enemies=len(game_state.non_player_characters),
             num_walls=len(game_state.walls),
             num_decorations=len(game_state.decoration_entities),
             grid_cell_size=grid_cell_size,
@@ -266,8 +268,8 @@ def main(args: List[str]):
             view.render_map_editor_mouse_rect((250, 50, 0), snapped_mouse_rect)
         elif user_state.placing_entity:
             entity_being_placed = user_state.placing_entity
-            if entity_being_placed.enemy_type:
-                data = ENEMIES[entity_being_placed.enemy_type]
+            if entity_being_placed.npc_type:
+                data = NON_PLAYER_CHARACTERS[entity_being_placed.npc_type]
                 entity = WorldEntity((0, 0), data.size, data.sprite, Direction.DOWN, data.speed)
                 view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
             elif entity_being_placed.is_player:
@@ -319,12 +321,12 @@ def _add_wall_to_position(game_state, snapped_mouse_world_position: Tuple[int, i
         game_state.add_wall(Wall(wall_type, WorldEntity(snapped_mouse_world_position, data.size, data.sprite)))
 
 
-def _delete_map_entities_from_position(game_state, snapped_mouse_world_position: Tuple[int, int]):
+def _delete_map_entities_from_position(game_state: GameState, snapped_mouse_world_position: Tuple[int, int]):
     for wall in [w for w in game_state.walls if w.world_entity.get_position() == snapped_mouse_world_position]:
         game_state.remove_wall(wall)
-    for enemy in [e for e in game_state.enemies if
+    for enemy in [e for e in game_state.non_player_characters if
                   e.world_entity.get_position() == snapped_mouse_world_position]:
-        game_state.enemies.remove(enemy)
+        game_state.non_player_characters.remove(enemy)
     for potion in [p for p in game_state.potions_on_ground
                    if p.world_entity.get_position() == snapped_mouse_world_position]:
         game_state.potions_on_ground.remove(potion)

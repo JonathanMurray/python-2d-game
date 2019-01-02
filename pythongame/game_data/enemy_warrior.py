@@ -1,8 +1,5 @@
-import random
-
-from pythongame.core.common import Millis, is_x_and_y_within_distance, NpcType, Sprite, Direction, \
-    get_perpendicular_directions
-from pythongame.core.damage_interactions import deal_damage_to_player, deal_npc_damage
+from pythongame.core.common import Millis, is_x_and_y_within_distance, NpcType, Sprite, Direction
+from pythongame.core.damage_interactions import deal_npc_damage
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
@@ -15,9 +12,9 @@ from pythongame.core.visual_effects import VisualLine
 class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
-        self._attack_interval = 1500
+        self._attack_interval = 1000
         self._time_since_attack = self._attack_interval
-        self._update_path_interval = 900
+        self._update_path_interval = 600
         self._time_since_updated_path = self._update_path_interval
         self.pathfinder = NpcPathfinder(global_path_finder)
         self.next_waypoint = None
@@ -49,8 +46,6 @@ class NpcMind(AbstractNpcMind):
             if self.next_waypoint:
                 direction = self.pathfinder.get_dir_towards_considering_collisions(
                     game_state, enemy_entity, self.next_waypoint)
-                if random.random() < 0.2 and direction:
-                    direction = random.choice(get_perpendicular_directions(direction))
                 _move_in_dir(enemy_entity, direction)
             else:
                 enemy_entity.set_not_moving()
@@ -61,7 +56,8 @@ class NpcMind(AbstractNpcMind):
                 enemy_position = enemy_entity.get_center_position()
                 target_center_pos = target.entity.get_center_position()
                 if is_x_and_y_within_distance(enemy_position, target_center_pos, 80):
-                    deal_npc_damage(1, game_state, target)
+                    damage_amount = 6
+                    deal_npc_damage(damage_amount, game_state, target)
                     game_state.visual_effects.append(
                         VisualLine((220, 0, 0), enemy_position, target_center_pos, Millis(100), 3))
 
@@ -73,22 +69,25 @@ def _move_in_dir(enemy_entity, direction):
         enemy_entity.set_not_moving()
 
 
-def register_rat_1_enemy():
-    size = (30, 30)  # Must not align perfectly with grid cell size (pathfinding issues)
-    sprite = Sprite.ENEMY_RAT_1
-    npc_type = NpcType.RAT_1
-    movement_speed = 0.05
-    health = 6
-    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, True))
+def register_warrior_enemy():
+    size = (32, 32)  # Must not align perfectly with grid cell size (pathfinding issues)
+    sprite = Sprite.ENEMY_WARRIOR
+    npc_type = NpcType.WARRIOR
+    movement_speed = 0.12
+    health = 32
+    exp_reward = 20
+    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, exp_reward, True))
     register_npc_behavior(npc_type, NpcMind)
-    sprite_sheet = SpriteSheet("resources/graphics/brown_rat.png")
+    sprite_sheet = SpriteSheet("resources/graphics/human_spritesheet.png")
     original_sprite_size = (32, 32)
-    scaled_sprite_size = (44, 44)
+    scaled_sprite_size = (48, 48)
+
+    sheet_x = 6
     indices_by_dir = {
-        Direction.DOWN: [(0, 0), (1, 0), (2, 0)],
-        Direction.LEFT: [(0, 1), (1, 1), (2, 1)],
-        Direction.RIGHT: [(0, 2), (1, 2), (2, 2)],
-        Direction.UP: [(0, 3), (1, 3), (2, 3)]
+        Direction.DOWN: [(sheet_x, 0), (sheet_x + 1, 0), (sheet_x + 2, 0), (sheet_x + 1, 0)],
+        Direction.LEFT: [(sheet_x, 1), (sheet_x + 1, 1), (sheet_x + 2, 1), (sheet_x + 1, 1)],
+        Direction.RIGHT: [(sheet_x, 2), (sheet_x + 1, 2), (sheet_x + 2, 2), (sheet_x + 1, 2)],
+        Direction.UP: [(sheet_x, 3), (sheet_x + 1, 3), (sheet_x + 2, 3), (sheet_x + 1, 3)]
     }
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir,
-                               (-7, -7))
+                               (-8, -16))

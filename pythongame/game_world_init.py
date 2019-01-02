@@ -1,7 +1,7 @@
 import json
 
 from pythongame.core.common import *
-from pythongame.core.enemy_creation import create_enemy, set_global_path_finder
+from pythongame.core.npc_creation import create_npc, set_global_path_finder
 from pythongame.core.game_data import POTIONS, ITEM_ENTITY_SIZE, ITEMS, WALLS
 from pythongame.core.game_data import POTION_ENTITY_SIZE
 from pythongame.core.game_state import WorldEntity, GameState, PotionOnGround, ItemOnGround, DecorationEntity, Wall
@@ -27,7 +27,7 @@ def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str
 
         path_finder = GlobalPathFinder()
         set_global_path_finder(path_finder)
-        enemies = [create_enemy(EnemyType[e["enemy_type"]], e["position"]) for e in json_data["enemies"]]
+        enemies = [create_npc(NpcType[e["enemy_type"]], e["position"]) for e in json_data["enemies"]]
 
         walls = [_create_wall_at_position(WallType[w["wall_type"]], w["position"]) for w in json_data["walls"]]
 
@@ -44,8 +44,8 @@ def save_game_state_to_json_file(game_state: GameState, map_file: str):
     json_data = {}
 
     json_data["enemies"] = []
-    for e in game_state.enemies:
-        json_data["enemies"].append({"enemy_type": e.enemy_type.name, "position": e.world_entity.get_position()})
+    for e in game_state.non_player_characters:
+        json_data["enemies"].append({"enemy_type": e.npc_type.name, "position": e.world_entity.get_position()})
 
     json_data["player"] = {"position": game_state.player_entity.get_position()}
 

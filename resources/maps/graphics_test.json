@@ -930,12 +930,75 @@
         3550,
         2475
       ]
+    },
+    {
+      "enemy_type": "WARRIOR",
+      "position": [
+        75,
+        1850
+      ]
+    },
+    {
+      "enemy_type": "WARRIOR",
+      "position": [
+        2125,
+        1850
+      ]
+    },
+    {
+      "enemy_type": "WARRIOR",
+      "position": [
+        2650,
+        2875
+      ]
+    },
+    {
+      "enemy_type": "WARRIOR",
+      "position": [
+        2750,
+        2400
+      ]
+    },
+    {
+      "enemy_type": "WARRIOR",
+      "position": [
+        3200,
+        3300
+      ]
+    },
+    {
+      "enemy_type": "WARRIOR",
+      "position": [
+        3675,
+        2650
+      ]
+    },
+    {
+      "enemy_type": "WARRIOR",
+      "position": [
+        3875,
+        2850
+      ]
+    },
+    {
+      "enemy_type": "WARRIOR",
+      "position": [
+        3825,
+        3050
+      ]
+    },
+    {
+      "enemy_type": "WARRIOR",
+      "position": [
+        3525,
+        3000
+      ]
     }
   ],
   "player": {
     "position": [
       300,
-      150
+      275
     ]
   },
   "walls": [

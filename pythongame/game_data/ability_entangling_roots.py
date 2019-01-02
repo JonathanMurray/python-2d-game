@@ -6,7 +6,7 @@ from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, SpriteSheet, \
     register_entity_sprite_map
-from pythongame.core.game_state import GameState, WorldEntity, Projectile, Enemy
+from pythongame.core.game_state import GameState, WorldEntity, Projectile, NonPlayerCharacter
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
 from pythongame.core.visual_effects import VisualCircle, VisualSprite
@@ -18,25 +18,29 @@ PROJECTILE_TYPE = ProjectileType.PLAYER_ENTANGLING_ROOTS
 ICON_SPRITE = UiIconSprite.ABILITY_ENTANGLING_ROOTS
 ABILITY_TYPE = AbilityType.ENTANGLING_ROOTS
 PROJECTILE_SIZE = (55, 55)
+ENTANGLING_ROOTS_SIZE = (50, 50)
 
 
 class ProjectileController(AbstractProjectileController):
     def __init__(self):
         super().__init__(1500)
 
-    def apply_enemy_collision(self, enemy: Enemy, game_state: GameState):
-        damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, 1)
+    def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState):
+        damage_was_dealt = deal_player_damage_to_enemy(game_state, npc, 1)
         if not damage_was_dealt:
             return False
         debuff_duration = Millis(5000)
-        enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE), debuff_duration)
-        debuff_visual_effect = VisualSprite(Sprite.DECORATION_ENTANGLING_ROOTS_EFFECT,
-                                            enemy.world_entity.get_position(), debuff_duration, enemy.world_entity)
+        npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), debuff_duration)
+        victim_center_pos = npc.world_entity.get_center_position()
+        visual_effect_pos = (victim_center_pos[0] - ENTANGLING_ROOTS_SIZE[0] // 2,
+                             victim_center_pos[1] - ENTANGLING_ROOTS_SIZE[1] // 2)
+        debuff_visual_effect = VisualSprite(Sprite.DECORATION_ENTANGLING_ROOTS_EFFECT, visual_effect_pos,
+                                            debuff_duration, npc.world_entity)
         game_state.visual_effects.append(debuff_visual_effect)
         return True
 
 
-def _apply_ability(game_state: GameState):
+def _apply_ability(game_state: GameState) -> bool:
     player_entity = game_state.player_entity
     distance_from_player = 35
     projectile_pos = translate_in_direction(
@@ -51,6 +55,7 @@ def _apply_ability(game_state: GameState):
     effect_position = (projectile_pos[0] + PROJECTILE_SIZE[0] // 2,
                        projectile_pos[1] + PROJECTILE_SIZE[1] // 2)
     game_state.visual_effects.append(VisualCircle((250, 150, 50), effect_position, 9, 18, Millis(80), 0))
+    return True
 
 
 class Rooted(AbstractBuffEffect):
@@ -61,23 +66,23 @@ class Rooted(AbstractBuffEffect):
         self._time_since_damage = self._damage_interval
         self._time_since_graphics = self._graphics_interval
 
-    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
-        buffed_enemy.add_stun()
+    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
+        buffed_npc.add_stun()
 
-    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy,
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         self._time_since_damage += time_passed
         self._time_since_graphics += time_passed
         if self._time_since_damage > self._damage_interval:
             self._time_since_damage = 0
-            deal_player_damage_to_enemy(game_state, buffed_enemy, 1)
+            deal_player_damage_to_enemy(game_state, buffed_npc, 1)
         if self._time_since_graphics > self._graphics_interval:
             self._time_since_graphics = 0
             game_state.visual_effects.append(
                 VisualCircle((0, 150, 0), buffed_entity.get_center_position(), 30, 55, Millis(150), 2, buffed_entity))
 
-    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
-        buffed_enemy.remove_stun()
+    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
+        buffed_npc.remove_stun()
 
     def get_buff_type(self):
         return BUFF_TYPE
@@ -99,3 +104,12 @@ def register_entangling_roots_ability():
     register_entity_sprite_map(PROJECTILE_SPRITE, sprite_sheet, original_sprite_size, PROJECTILE_SIZE, indices_by_dir,
                                (0, 0))
     register_buff_effect(BUFF_TYPE, Rooted)
+    _register_engangling_roots_effect_decoration()
+
+
+def _register_engangling_roots_effect_decoration():
+    sprite_sheet = SpriteSheet("resources/graphics/entangling_roots.png")
+    original_sprite_size = (130, 114)
+    indices_by_dir = {Direction.DOWN: [(0, 0)]}
+    register_entity_sprite_map(Sprite.DECORATION_ENTANGLING_ROOTS_EFFECT, sprite_sheet, original_sprite_size,
+                               ENTANGLING_ROOTS_SIZE, indices_by_dir, (0, 0))
