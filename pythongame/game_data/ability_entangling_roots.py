@@ -18,6 +18,7 @@ PROJECTILE_TYPE = ProjectileType.PLAYER_ENTANGLING_ROOTS
 ICON_SPRITE = UiIconSprite.ABILITY_ENTANGLING_ROOTS
 ABILITY_TYPE = AbilityType.ENTANGLING_ROOTS
 PROJECTILE_SIZE = (55, 55)
+ENTANGLING_ROOTS_SIZE = (50, 50)
 
 
 class ProjectileController(AbstractProjectileController):
@@ -30,8 +31,11 @@ class ProjectileController(AbstractProjectileController):
             return False
         debuff_duration = Millis(5000)
         npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), debuff_duration)
-        debuff_visual_effect = VisualSprite(Sprite.DECORATION_ENTANGLING_ROOTS_EFFECT,
-                                            npc.world_entity.get_position(), debuff_duration, npc.world_entity)
+        victim_center_pos = npc.world_entity.get_center_position()
+        visual_effect_pos = (victim_center_pos[0] - ENTANGLING_ROOTS_SIZE[0] // 2,
+                             victim_center_pos[1] - ENTANGLING_ROOTS_SIZE[1] // 2)
+        debuff_visual_effect = VisualSprite(Sprite.DECORATION_ENTANGLING_ROOTS_EFFECT, visual_effect_pos,
+                                            debuff_duration, npc.world_entity)
         game_state.visual_effects.append(debuff_visual_effect)
         return True
 
@@ -100,3 +104,12 @@ def register_entangling_roots_ability():
     register_entity_sprite_map(PROJECTILE_SPRITE, sprite_sheet, original_sprite_size, PROJECTILE_SIZE, indices_by_dir,
                                (0, 0))
     register_buff_effect(BUFF_TYPE, Rooted)
+    _register_engangling_roots_effect_decoration()
+
+
+def _register_engangling_roots_effect_decoration():
+    sprite_sheet = SpriteSheet("resources/graphics/entangling_roots.png")
+    original_sprite_size = (130, 114)
+    indices_by_dir = {Direction.DOWN: [(0, 0)]}
+    register_entity_sprite_map(Sprite.DECORATION_ENTANGLING_ROOTS_EFFECT, sprite_sheet, original_sprite_size,
+                               ENTANGLING_ROOTS_SIZE, indices_by_dir, (0, 0))
