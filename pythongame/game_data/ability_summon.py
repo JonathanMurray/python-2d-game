@@ -11,7 +11,7 @@ from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.npc_creation import create_npc
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
-from pythongame.core.visual_effects import VisualLine
+from pythongame.core.visual_effects import VisualLine, VisualCircle
 
 
 def _apply_ability(game_state: GameState) -> bool:
@@ -36,6 +36,9 @@ def _apply_ability(game_state: GameState) -> bool:
         if is_valid_pos:
             game_state.remove_all_non_enemy_npcs()
             game_state.add_non_player_character(summon)
+            game_state.visual_effects.append(
+                VisualCircle((200, 200, 30), player_entity.get_position(), 40, 70, Millis(140), 3))
+            game_state.visual_effects.append(VisualCircle((200, 200, 30), summon_pos, 40, 70, Millis(140), 3))
             return True
     return False
 
@@ -117,7 +120,7 @@ def register_summon_ability():
     summoned_npc_type = NpcType.PLAYER_SUMMON
     summon_sprite = Sprite.PLAYER_SUMMON
 
-    health_regen = 0.4
+    health_regen = 0.6
     move_speed = 0.14
     health = 26
     register_npc_data(summoned_npc_type, NpcData(summon_sprite, (32, 32), health, health_regen, move_speed, 0, False))
