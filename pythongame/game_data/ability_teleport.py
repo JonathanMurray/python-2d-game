@@ -5,7 +5,7 @@ from pythongame.core.game_state import GameState
 from pythongame.core.visual_effects import VisualCircle, VisualRect, VisualLine
 
 
-def _apply_teleport(game_state: GameState):
+def _apply_teleport(game_state: GameState) -> bool:
     player_entity = game_state.player_entity
     previous_position = player_entity.get_center_position()
     new_position = translate_in_direction((player_entity.x, player_entity.y), player_entity.direction, 140)
@@ -17,6 +17,7 @@ def _apply_teleport(game_state: GameState):
     game_state.visual_effects.append(VisualRect(color, previous_position, 37, 50, Millis(150), 1))
     game_state.visual_effects.append(VisualLine(color, previous_position, new_center_position, Millis(200), 1))
     game_state.visual_effects.append(VisualCircle(color, new_center_position, 25, 50, Millis(300), 2, player_entity))
+    return True
 
 
 def register_teleport_ability():

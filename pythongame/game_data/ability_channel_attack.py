@@ -13,8 +13,9 @@ from pythongame.core.visual_effects import VisualCircle, VisualRect
 PROJECTILE_SIZE = (30, 30)
 
 
-def _apply_channel_attack(game_state: GameState):
+def _apply_channel_attack(game_state: GameState) -> bool:
     game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.CHANNELING_MAGIC_MISSILES), Millis(1000))
+    return True
 
 
 class ChannelingMagicMissiles(AbstractBuffEffect):

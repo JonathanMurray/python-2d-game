@@ -18,7 +18,7 @@ PROJECTILE_TYPE = ProjectileType.PLAYER_WHIRLWIND
 PROJECTILE_SIZE = (120, 90)
 
 
-def _apply_ability(game_state: GameState):
+def _apply_ability(game_state: GameState) -> bool:
     player_entity = game_state.player_entity
     aoe_center_pos = translate_in_direction(player_entity.get_center_position(), player_entity.direction, 60)
     aoe_pos = get_position_from_center_position(aoe_center_pos, PROJECTILE_SIZE)
@@ -26,6 +26,7 @@ def _apply_ability(game_state: GameState):
     entity = WorldEntity(aoe_pos, PROJECTILE_SIZE, PROJECTILE_SPRITE, player_entity.direction, projectile_speed)
     projectile = Projectile(entity, create_projectile_controller(PROJECTILE_TYPE))
     game_state.projectile_entities.append(projectile)
+    return True
 
 
 class ProjectileController(AbstractProjectileController):

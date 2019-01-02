@@ -11,7 +11,7 @@ from pythongame.core.visual_effects import VisualCircle, VisualSprite, VisualRec
 EFFECT_SPRITE_SIZE = (230, 230)
 
 
-def _apply_ability(game_state: GameState):
+def _apply_ability(game_state: GameState) -> bool:
     player_entity = game_state.player_entity
 
     player_center_pos = player_entity.get_center_position()
@@ -25,6 +25,7 @@ def _apply_ability(game_state: GameState):
         damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, 5)
         if damage_was_dealt:
             enemy.gain_buff_effect(get_buff_effect(BuffType.REDUCED_MOVEMENT_SPEED), Millis(4000))
+    return True
 
 
 class ReducedMovementSpeed(AbstractBuffEffect):

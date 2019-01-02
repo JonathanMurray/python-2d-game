@@ -36,7 +36,7 @@ class ProjectileController(AbstractProjectileController):
         return True
 
 
-def _apply_ability(game_state: GameState):
+def _apply_ability(game_state: GameState) -> bool:
     player_entity = game_state.player_entity
     distance_from_player = 35
     projectile_pos = translate_in_direction(
@@ -51,6 +51,7 @@ def _apply_ability(game_state: GameState):
     effect_position = (projectile_pos[0] + PROJECTILE_SIZE[0] // 2,
                        projectile_pos[1] + PROJECTILE_SIZE[1] // 2)
     game_state.visual_effects.append(VisualCircle((250, 150, 50), effect_position, 9, 18, Millis(80), 0))
+    return True
 
 
 class Rooted(AbstractBuffEffect):

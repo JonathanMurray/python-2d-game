@@ -28,6 +28,8 @@ class GameEngine:
             result = self.player_controls.try_use_ability(ability_type, self.game_state)
             if result == TryUseAbilityResult.NOT_ENOUGH_MANA:
                 self.view_state.set_message("Not enough mana!")
+            elif result == TryUseAbilityResult.FAILED_TO_EXECUTE:
+                self.view_state.set_message("Failed to execute ability!")
 
     def try_use_potion(self, slot_number: int):
         if not self.game_state.player_state.is_stunned:

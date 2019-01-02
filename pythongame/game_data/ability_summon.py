@@ -15,7 +15,7 @@ from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.visual_effects import VisualLine
 
 
-def _apply_ability(game_state: GameState):
+def _apply_ability(game_state: GameState) -> bool:
     player_entity = game_state.player_entity
 
     relative_pos = (random.randint(-80, 80), random.randint(-80, 80))
@@ -26,6 +26,8 @@ def _apply_ability(game_state: GameState):
     summon = create_npc(NpcType.PLAYER_SUMMON, summon_pos)
     if not game_state.would_entity_collide_if_new_pos(summon.world_entity, summon_pos):
         game_state.add_non_player_character(summon)
+        return True
+    return False
 
 
 class NpcMind(AbstractNpcMind):

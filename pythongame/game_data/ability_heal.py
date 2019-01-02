@@ -7,8 +7,9 @@ from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacte
 from pythongame.core.visual_effects import create_visual_healing_text, VisualCircle
 
 
-def _apply_heal(game_state: GameState):
+def _apply_heal(game_state: GameState) -> bool:
     game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.HEALING_OVER_TIME), Millis(3500))
+    return True
 
 
 class HealingOverTime(AbstractBuffEffect):
