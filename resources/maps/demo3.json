@@ -6614,121 +6614,121 @@
       400
     ]
   ],
-  "potions_on_ground": [
+  "consumables_on_ground": [
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         1825,
         650
       ]
     },
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         1900,
         650
       ]
     },
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         1900,
         975
       ]
     },
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         50,
         1550
       ]
     },
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         100,
         1550
       ]
     },
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         150,
         1550
       ]
     },
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         200,
         1550
       ]
     },
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         2950,
         1975
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         1600,
         650
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         1650,
         650
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         1700,
         650
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         2775,
         925
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         2775,
         975
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         100,
         1900
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         150,
         1900
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         200,
         1900
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         2900,
         1975

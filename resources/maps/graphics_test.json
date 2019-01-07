@@ -12595,93 +12595,93 @@
       ]
     }
   ],
-  "potions_on_ground": [
+  "consumables_on_ground": [
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         3875,
         3100
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         3975,
         3100
       ]
     },
     {
-      "potion_type": "HEALTH_LESSER",
+      "consumable_type": "HEALTH_LESSER",
       "position": [
         300,
         1725
       ]
     },
     {
-      "potion_type": "HEALTH_LESSER",
+      "consumable_type": "HEALTH_LESSER",
       "position": [
         2400,
         425
       ]
     },
     {
-      "potion_type": "HEALTH_LESSER",
+      "consumable_type": "HEALTH_LESSER",
       "position": [
         2325,
         1500
       ]
     },
     {
-      "potion_type": "MANA_LESSER",
+      "consumable_type": "MANA_LESSER",
       "position": [
         2375,
         1500
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         1000,
         3300
       ]
     },
     {
-      "potion_type": "HEALTH_LESSER",
+      "consumable_type": "HEALTH_LESSER",
       "position": [
         3825,
         3100
       ]
     },
     {
-      "potion_type": "MANA_LESSER",
+      "consumable_type": "MANA_LESSER",
       "position": [
         3925,
         3100
       ]
     },
     {
-      "potion_type": "MANA_LESSER",
+      "consumable_type": "MANA_LESSER",
       "position": [
         2050,
         3325
       ]
     },
     {
-      "potion_type": "MANA_LESSER",
+      "consumable_type": "MANA_LESSER",
       "position": [
         375,
         225
       ]
     },
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         450,
         3100
       ]
     },
     {
-      "potion_type": "SCROLL_ABILITY_SUMMON",
+      "consumable_type": "SCROLL_ABILITY_SUMMON",
       "position": [
         250,
         275

@@ -135,30 +135,30 @@
       ]
     }
   ],
-  "potions_on_ground": [
+  "consumables_on_ground": [
     {
-      "potion_type": "HEALTH_LESSER",
+      "consumable_type": "HEALTH_LESSER",
       "position": [
         425,
         75
       ]
     },
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         375,
         75
       ]
     },
     {
-      "potion_type": "MANA_LESSER",
+      "consumable_type": "MANA_LESSER",
       "position": [
         300,
         50
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         250,
         50

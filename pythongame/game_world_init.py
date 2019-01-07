@@ -20,8 +20,8 @@ def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str
         player_pos = json_data["player"]["position"]
         player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
 
-        consumables = [_create_consumable_at_position(ConsumableType[p["potion_type"]], p["position"]) for p in
-                       json_data["potions_on_ground"]]
+        consumables = [_create_consumable_at_position(ConsumableType[p["consumable_type"]], p["position"]) for p in
+                       json_data["consumables_on_ground"]]
         items = [_create_item_at_position(ItemType[i["item_type"]], i["position"]) for i in
                  json_data["items_on_ground"]]
 
@@ -53,10 +53,10 @@ def save_game_state_to_json_file(game_state: GameState, map_file: str):
     for w in game_state.walls:
         json_data["walls"].append({"wall_type": w.wall_type.name, "position": w.world_entity.get_position()})
 
-    json_data["potions_on_ground"] = []
+    json_data["consumables_on_ground"] = []
     for p in game_state.consumables_on_ground:
-        json_data["potions_on_ground"].append(
-            {"potion_type": p.consumable_type.name, "position": p.world_entity.get_position()})
+        json_data["consumables_on_ground"].append(
+            {"consumable_type": p.consumable_type.name, "position": p.world_entity.get_position()})
 
     json_data["items_on_ground"] = []
     for i in game_state.items_on_ground:
