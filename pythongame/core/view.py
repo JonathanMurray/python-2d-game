@@ -440,8 +440,6 @@ class View:
             for entity in all_entities_to_render:
                 # hit box
                 self._world_rect((250, 250, 250), entity.rect(), 1)
-                # collision box
-                self._world_rect((50, 250, 0), entity.collision_rect(), 2)
 
         for npc in non_player_characters:
             color = COLOR_RED if npc.is_enemy else (250, 250, 0)

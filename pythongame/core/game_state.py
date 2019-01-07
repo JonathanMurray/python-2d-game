@@ -38,16 +38,13 @@ class WorldEntity:
         self.y = pos[1]
         self.w = size[0]
         self.h = size[1]
-        # TODO: Rethink how collision boxes should be handled. Disabled for now.
-        self.collision_w = self.w
-        self.collision_h = self.h
         self.sprite = sprite
         self.direction = direction
         self._speed = speed
         self._speed_multiplier = 1
         self._effective_speed = speed
         self._is_moving = True
-        self.pygame_collision_rect = Rect(self.collision_rect())
+        self.pygame_collision_rect = Rect(self.rect())
         self.movement_animation_progress: float = 0  # goes from 0 to 1 repeatedly
 
     def set_moving_in_dir(self, direction: Direction):
@@ -98,12 +95,7 @@ class WorldEntity:
     def set_position(self, new_position):
         self.x = new_position[0]
         self.y = new_position[1]
-        self.pygame_collision_rect = Rect(self.collision_rect())
-
-    def collision_rect(self):
-        collision_x = self.get_center_position()[0] - self.collision_w / 2
-        collision_y = self.get_center_position()[1] - self.collision_h / 2
-        return collision_x, collision_y, self.collision_w, self.collision_h
+        self.pygame_collision_rect = Rect(self.rect())
 
     def rotate_right(self):
         dirs = {
@@ -355,10 +347,6 @@ class DecorationEntity:
         # Used by view module in map_editor
         return self.x, self.y, 0, 0
 
-    def collision_rect(self):
-        # Used by view module in map_editor
-        return self.x, self.y, 0, 0
-
     def get_position(self):
         return self.x, self.y
 
@@ -491,9 +479,9 @@ class GameState:
         self.visual_effects = [v for v in self.visual_effects if not v.has_expired]
 
     @staticmethod
-    def _entities_collide(r1, r2):
+    def _entities_collide(a: WorldEntity, b: WorldEntity):
         # Optimization: collision checking done with C-code from Pygame
-        return r1.pygame_collision_rect.colliderect(r2.pygame_collision_rect)
+        return a.pygame_collision_rect.colliderect(b.pygame_collision_rect)
 
     # Wall buckets:
     # Optimization for only checking collision with walls that are known beforehand (through use of buckets) to be
