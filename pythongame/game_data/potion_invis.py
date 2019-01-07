@@ -1,20 +1,20 @@
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
-from pythongame.core.common import PotionType, BuffType, Millis
-from pythongame.core.game_data import register_ui_icon_sprite_path, UiIconSprite, register_buff_text, PotionData, \
-    register_potion_data
+from pythongame.core.common import ConsumableType, BuffType, Millis
+from pythongame.core.consumable_effects import create_potion_visual_effect_at_player, ConsumableWasConsumed, \
+    register_consumable_effect
+from pythongame.core.game_data import register_ui_icon_sprite_path, UiIconSprite, register_buff_text, ConsumableData, \
+    register_consumable_data
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
-from pythongame.core.potion_effects import create_potion_visual_effect_at_player, PotionWasConsumed, \
-    register_potion_effect
 from pythongame.core.visual_effects import VisualRect
 
 BUFF_TYPE = BuffType.INVISIBILITY
-POTION_TYPE = PotionType.INVISIBILITY
+POTION_TYPE = ConsumableType.INVISIBILITY
 
 
 def _apply_invis(game_state: GameState):
     create_potion_visual_effect_at_player(game_state)
     game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.INVISIBILITY), Millis(5000))
-    return PotionWasConsumed()
+    return ConsumableWasConsumed()
 
 
 class Invisibility(AbstractBuffEffect):
@@ -41,10 +41,10 @@ class Invisibility(AbstractBuffEffect):
 
 
 def register_invis_potion():
-    register_potion_effect(POTION_TYPE, _apply_invis)
+    register_consumable_effect(POTION_TYPE, _apply_invis)
     register_buff_effect(BUFF_TYPE, Invisibility)
     register_buff_text(BUFF_TYPE, "Invisibility")
     register_ui_icon_sprite_path(UiIconSprite.POTION_INVISIBILITY, "resources/graphics/invis_potion.png")
-    register_potion_data(
+    register_consumable_data(
         POTION_TYPE,
-        PotionData(UiIconSprite.POTION_INVISIBILITY, None, "Invisibility potion", "Grants temporary invisibility"))
+        ConsumableData(UiIconSprite.POTION_INVISIBILITY, None, "Invisibility potion", "Grants temporary invisibility"))

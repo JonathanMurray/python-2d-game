@@ -1,10 +1,11 @@
 from pythongame.core.common import *
-from pythongame.core.game_data import POTIONS, ITEMS, ITEM_ENTITY_SIZE, NON_PLAYER_CHARACTERS
+from pythongame.core.consumable_effects import try_consume_consumable, ConsumableWasConsumed, \
+    ConsumableFailedToBeConsumed
+from pythongame.core.game_data import CONSUMABLES, ITEMS, ITEM_ENTITY_SIZE, NON_PLAYER_CHARACTERS
 from pythongame.core.game_data import POTION_ENTITY_SIZE
-from pythongame.core.game_state import GameState, handle_buffs, WorldEntity, ItemOnGround, PotionOnGround
+from pythongame.core.game_state import GameState, handle_buffs, WorldEntity, ItemOnGround, ConsumableOnGround
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.player_controls import TryUseAbilityResult, PlayerControls
-from pythongame.core.potion_effects import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
 from pythongame.core.view_state import ViewState
 from pythongame.core.visual_effects import create_visual_exp_text
 
@@ -31,20 +32,20 @@ class GameEngine:
             elif result == TryUseAbilityResult.FAILED_TO_EXECUTE:
                 self.view_state.set_message("Failed to execute ability!")
 
-    def try_use_potion(self, slot_number: int):
+    def try_use_consumable(self, slot_number: int):
         if not self.game_state.player_state.is_stunned:
-            self.view_state.notify_potion_was_clicked(slot_number)
-            potion_type_in_this_slot = self.game_state.player_state.potion_slots[slot_number]
-            if potion_type_in_this_slot:
-                result = try_consume_potion(potion_type_in_this_slot, self.game_state)
-                if isinstance(result, PotionWasConsumed):
-                    self.game_state.player_state.potion_slots[slot_number] = None
+            self.view_state.notify_consumable_was_clicked(slot_number)
+            consumable_type_in_this_slot = self.game_state.player_state.consumable_slots[slot_number]
+            if consumable_type_in_this_slot:
+                result = try_consume_consumable(consumable_type_in_this_slot, self.game_state)
+                if isinstance(result, ConsumableWasConsumed):
+                    self.game_state.player_state.consumable_slots[slot_number] = None
                     if result.message:
                         self.view_state.set_message(result.message)
-                elif isinstance(result, PotionFailedToBeConsumed):
+                elif isinstance(result, ConsumableFailedToBeConsumed):
                     self.view_state.set_message(result.reason)
             else:
-                self.view_state.set_message("No potion to use!")
+                self.view_state.set_message("Nothing to use!")
 
     def move_in_direction(self, direction: Direction):
         if not self.game_state.player_state.is_stunned:
@@ -56,8 +57,8 @@ class GameEngine:
     def switch_inventory_items(self, slot_1: int, slot_2: int):
         self.game_state.player_state.switch_item_slots(slot_1, slot_2)
 
-    def switch_potion_slots(self, slot_1: int, slot_2):
-        self.game_state.player_state.switch_potion_slots(slot_1, slot_2)
+    def switch_consumable_slots(self, slot_1: int, slot_2):
+        self.game_state.player_state.switch_consumable_slots(slot_1, slot_2)
 
     def drop_inventory_item_on_ground(self, item_slot: int, game_world_position: Tuple[int, int]):
         item_type = self.game_state.player_state.item_slots[item_slot]
@@ -66,11 +67,11 @@ class GameEngine:
         get_item_effect(item_type).apply_end_effect(self.game_state)
         self.game_state.player_state.item_slots[item_slot] = None
 
-    def drop_potion_on_ground(self, potion_slot: int, game_world_position: Tuple[int, int]):
-        potion_type = self.game_state.player_state.potion_slots[potion_slot]
-        potion_entity = WorldEntity(game_world_position, POTION_ENTITY_SIZE, POTIONS[potion_type].entity_sprite)
-        self.game_state.potions_on_ground.append(PotionOnGround(potion_entity, potion_type))
-        self.game_state.player_state.potion_slots[potion_slot] = None
+    def drop_consumable_on_ground(self, consumable_slot: int, game_world_position: Tuple[int, int]):
+        consumable_type = self.game_state.player_state.consumable_slots[consumable_slot]
+        entity = WorldEntity(game_world_position, POTION_ENTITY_SIZE, CONSUMABLES[consumable_type].entity_sprite)
+        self.game_state.consumables_on_ground.append(ConsumableOnGround(entity, consumable_type))
+        self.game_state.player_state.consumable_slots[consumable_slot] = None
 
     def _is_enemy_close_to_camera(self, enemy):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(
@@ -163,13 +164,13 @@ class GameEngine:
         # ------------------------------------
 
         entities_to_remove = []
-        for potion in self.game_state.potions_on_ground:
-            if boxes_intersect(self.game_state.player_entity, potion.world_entity):
-                empty_potion_slot = self.game_state.player_state.find_first_empty_potion_slot()
-                if empty_potion_slot:
-                    self.game_state.player_state.potion_slots[empty_potion_slot] = potion.potion_type
-                    self.view_state.set_message("You picked up " + POTIONS[potion.potion_type].name)
-                    entities_to_remove.append(potion)
+        for consumable in self.game_state.consumables_on_ground:
+            if boxes_intersect(self.game_state.player_entity, consumable.world_entity):
+                empty_consumable_slots = self.game_state.player_state.find_first_empty_consumable_slot()
+                if empty_consumable_slots:
+                    self.game_state.player_state.consumable_slots[empty_consumable_slots] = consumable.consumable_type
+                    self.view_state.set_message("You picked up " + CONSUMABLES[consumable.consumable_type].name)
+                    entities_to_remove.append(consumable)
         for item in self.game_state.items_on_ground:
             if boxes_intersect(self.game_state.player_entity, item.world_entity):
                 empty_item_slot = self.game_state.player_state.find_first_empty_item_slot()

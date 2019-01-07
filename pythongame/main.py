@@ -42,7 +42,7 @@ def main(args: List[str]):
     game_engine.initialize()
 
     item_slot_being_dragged: Optional[int] = None
-    potion_slot_being_dragged: Optional[int] = None
+    consumable_slot_being_dragged: Optional[int] = None
 
     while True:
 
@@ -67,7 +67,7 @@ def main(args: List[str]):
                 if isinstance(action, ActionTryUseAbility):
                     game_engine.try_use_ability(action.ability_type)
                 elif isinstance(action, ActionTryUsePotion):
-                    game_engine.try_use_potion(action.slot_number)
+                    game_engine.try_use_consumable(action.slot_number)
                 elif isinstance(action, ActionMoveInDirection):
                     game_engine.move_in_direction(action.direction)
                 elif isinstance(action, ActionStopMoving):
@@ -117,13 +117,13 @@ def main(args: List[str]):
             player_max_mana=game_state.player_state.max_mana,
             player_health_regen=game_state.player_state.health_regen,
             player_mana_regen=game_state.player_state.mana_regen,
-            potion_slots=game_state.player_state.potion_slots,
+            consumable_slots=game_state.player_state.consumable_slots,
             player_active_buffs=game_state.player_state.active_buffs,
             fps_string=str(int(clock.get_fps())),
             player_minimap_relative_position=view_state.player_minimap_relative_position,
             abilities=game_state.player_state.abilities,
             message=view_state.message,
-            highlighted_potion_action=view_state.highlighted_potion_action,
+            highlighted_consumable_action=view_state.highlighted_consumable_action,
             highlighted_ability_action=view_state.highlighted_ability_action,
             is_paused=is_paused,
             is_game_over=is_game_over,
@@ -137,7 +137,7 @@ def main(args: List[str]):
         # TODO There is a lot of details here about UI state (dragging items). Move that elsewhere.
 
         hovered_item_slot_number = mouse_hover_event.item_slot_number
-        hovered_potion_slot_number = mouse_hover_event.potion_slot_number
+        hovered_consumable_slot_number = mouse_hover_event.consumable_slot_number
 
         if mouse_was_just_clicked and hovered_item_slot_number:
             if game_state.player_state.item_slots[hovered_item_slot_number]:
@@ -155,19 +155,19 @@ def main(args: List[str]):
                                                           mouse_hover_event.game_world_position)
             item_slot_being_dragged = False
 
-        if mouse_was_just_clicked and hovered_potion_slot_number:
-            if game_state.player_state.potion_slots[hovered_potion_slot_number]:
-                potion_slot_being_dragged = hovered_potion_slot_number
+        if mouse_was_just_clicked and hovered_consumable_slot_number:
+            if game_state.player_state.consumable_slots[hovered_consumable_slot_number]:
+                consumable_slot_being_dragged = hovered_consumable_slot_number
 
-        if potion_slot_being_dragged:
-            potion_type = game_state.player_state.potion_slots[potion_slot_being_dragged]
-            view.render_potion_being_dragged(potion_type, mouse_screen_position)
+        if consumable_slot_being_dragged:
+            consumable_type = game_state.player_state.consumable_slots[consumable_slot_being_dragged]
+            view.render_consumable_being_dragged(consumable_type, mouse_screen_position)
 
-        if mouse_was_just_released and potion_slot_being_dragged:
-            if hovered_potion_slot_number and potion_slot_being_dragged != hovered_potion_slot_number:
-                game_engine.switch_potion_slots(potion_slot_being_dragged, hovered_potion_slot_number)
+        if mouse_was_just_released and consumable_slot_being_dragged:
+            if hovered_consumable_slot_number and consumable_slot_being_dragged != hovered_consumable_slot_number:
+                game_engine.switch_consumable_slots(consumable_slot_being_dragged, hovered_consumable_slot_number)
             if mouse_hover_event.game_world_position:
-                game_engine.drop_potion_on_ground(potion_slot_being_dragged, mouse_hover_event.game_world_position)
-            potion_slot_being_dragged = False
+                game_engine.drop_consumable_on_ground(consumable_slot_being_dragged, mouse_hover_event.game_world_position)
+            consumable_slot_being_dragged = False
 
         view.update_display()

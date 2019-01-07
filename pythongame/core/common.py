@@ -125,7 +125,7 @@ def get_rect_with_increased_size_in_all_directions(rect, increased_amount):
             rect[3] + increased_amount * 2)
 
 
-class PotionType(Enum):
+class ConsumableType(Enum):
     HEALTH_LESSER = 1
     HEALTH = 2
     MANA_LESSER = 11

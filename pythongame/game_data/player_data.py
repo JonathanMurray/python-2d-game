@@ -2,16 +2,16 @@ from typing import Dict
 
 from pythongame.core.ability_learning import USER_ABILITY_KEYS
 from pythongame.core.common import ItemType
-from pythongame.core.game_data import Sprite, Direction, PotionType, AbilityType, SpriteSheet, \
+from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_user_ability_key
 from pythongame.core.game_state import PlayerState
 
 PLAYER_ENTITY_SIZE = (30, 30)
 PLAYER_ENTITY_SPEED = 0.105
 
-_player_potion_slots = {
-    1: PotionType.HEALTH_LESSER,
-    2: PotionType.MANA_LESSER,
+_player_consumable_slots = {
+    1: ConsumableType.HEALTH_LESSER,
+    2: ConsumableType.MANA_LESSER,
     3: None,
     4: None,
     5: None
@@ -33,7 +33,7 @@ _items: Dict[int, ItemType] = {
     2: None,
     3: None
 }
-INTIAL_PLAYER_STATE = PlayerState(health, health, mana, max_mana, mana_regen, _player_potion_slots, _abilities, _items)
+INTIAL_PLAYER_STATE = PlayerState(health, health, mana, max_mana, mana_regen, _player_consumable_slots, _abilities, _items)
 
 
 def register_player_data():

@@ -2,9 +2,9 @@ from typing import Dict, Any, List, Tuple, Optional, Union
 
 import pygame
 
-from pythongame.core.common import Direction, Sprite, PotionType, sum_of_vectors, ItemType, is_point_in_rect
+from pythongame.core.common import Direction, Sprite, ConsumableType, sum_of_vectors, ItemType, is_point_in_rect
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
-    ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, NON_PLAYER_CHARACTERS, POTIONS, ITEMS, UiIconSprite, WALLS
+    ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, NON_PLAYER_CHARACTERS, CONSUMABLES, ITEMS, UiIconSprite, WALLS
 from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
@@ -24,10 +24,10 @@ RENDER_WORLD_COORDINATES = False
 
 
 class MouseHoverEvent:
-    def __init__(self, item_slot_number: Optional[int], potion_slot_number: Optional[int],
+    def __init__(self, item_slot_number: Optional[int], consumable_slot_number: Optional[int],
                  game_world_position: Optional[Tuple[int, int]]):
         self.item_slot_number = item_slot_number
-        self.potion_slot_number = potion_slot_number
+        self.consumable_slot_number = consumable_slot_number
         self.game_world_position = game_world_position
 
 
@@ -299,19 +299,19 @@ class View:
         x, y = self._translate_ui_position_to_screen(position_in_ui)
         self._stat_bar(x, y, w, h, stat, max_stat, color, True)
 
-    def _potion_icon_in_ui(self, x_in_ui, y_in_ui, size, potion_number, potion_type: PotionType,
-                           highlighted_potion_action):
+    def _consumable_icon_in_ui(self, x_in_ui, y_in_ui, size, consumable_number, consumable_type: ConsumableType,
+                               highlighted_consumable_action):
         w = size[0]
         h = size[1]
         x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
         self._rect_filled((40, 40, 40), (x, y, w, h))
-        if potion_type:
-            icon_sprite = POTIONS[potion_type].icon_sprite
+        if consumable_type:
+            icon_sprite = CONSUMABLES[consumable_type].icon_sprite
             self._image(self.images_by_ui_sprite[icon_sprite], (x, y))
         self._rect(COLOR_WHITE, (x, y, w, h), 2)
-        if highlighted_potion_action == potion_number:
+        if highlighted_consumable_action == consumable_number:
             self._rect(COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
-        self._text(self.font_ui_icon_keys, str(potion_number), (x + 8, y + h + 4))
+        self._text(self.font_ui_icon_keys, str(consumable_number), (x + 8, y + h + 4))
 
     def _ability_icon_in_ui(self, x_in_ui, y_in_ui, size, ability_type, highlighted_ability_action,
                             ability_cooldowns_remaining):
@@ -355,8 +355,8 @@ class View:
             if entity.npc_type:
                 npc_data = NON_PLAYER_CHARACTERS[entity.npc_type]
                 image = self.images_by_sprite[npc_data.sprite][Direction.DOWN][0].image
-            elif entity.potion_type:
-                ui_icon_sprite = POTIONS[entity.potion_type].icon_sprite
+            elif entity.consumable_type:
+                ui_icon_sprite = CONSUMABLES[entity.consumable_type].icon_sprite
                 image = self.images_by_ui_sprite[ui_icon_sprite]
             elif entity.is_player:
                 image = self.images_by_sprite[Sprite.PLAYER][Direction.DOWN][0].image
@@ -448,14 +448,14 @@ class View:
             self._visual_effect(visual_effect)
 
     def render_ui(self, fps_string, is_paused, is_game_over, abilities, ability_cooldowns_remaining,
-                  highlighted_ability_action, highlighted_potion_action, message, player_active_buffs,
+                  highlighted_ability_action, highlighted_consumable_action, message, player_active_buffs,
                   player_health, player_mana, player_max_health, player_max_mana, player_health_regen: float,
-                  player_mana_regen: float, player_minimap_relative_position, potion_slots,
+                  player_mana_regen: float, player_minimap_relative_position, consumable_slots,
                   item_slots: Dict[int, ItemType], player_level: int, mouse_screen_position: Tuple[int, int],
                   player_exp: int, player_max_exp_in_this_level: int) -> MouseHoverEvent:
 
         hovered_item_slot_number = None
-        hovered_potion_slot_number = None
+        hovered_consumable_slot_number = None
         is_mouse_hovering_ui = is_point_in_rect(
             mouse_screen_position,
             (self.ui_screen_area.x, self.ui_screen_area.y, self.ui_screen_area.w, self.ui_screen_area.h))
@@ -506,18 +506,18 @@ class View:
         x_1 = 140
         icon_space = 5
         self._text_in_ui(self.font_ui_headers, "POTIONS", x_1, y_1)
-        for i, slot_number in enumerate(potion_slots):
+        for i, slot_number in enumerate(consumable_slots):
             x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_2
-            potion_type = potion_slots[slot_number]
+            consumable_type = consumable_slots[slot_number]
             if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
-                hovered_potion_slot_number = slot_number
-                if potion_type:
-                    tooltip_title = POTIONS[potion_type].name
-                    tooltip_details = [POTIONS[potion_type].description]
+                hovered_consumable_slot_number = slot_number
+                if consumable_type:
+                    tooltip_title = CONSUMABLES[consumable_type].name
+                    tooltip_details = [CONSUMABLES[consumable_type].description]
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
-            self._potion_icon_in_ui(x, y, UI_ICON_SIZE, slot_number,
-                                    potion_type, highlighted_potion_action)
+            self._consumable_icon_in_ui(x, y, UI_ICON_SIZE, slot_number,
+                                        consumable_type, highlighted_consumable_action)
 
         self._text_in_ui(self.font_ui_headers, "SPELLS", x_1, y_3)
         for i, ability_type in enumerate(abilities):
@@ -581,15 +581,15 @@ class View:
         mouse_game_world_position = None
         if not is_mouse_hovering_ui:
             mouse_game_world_position = self._translate_screen_position_to_world(mouse_screen_position)
-        return MouseHoverEvent(hovered_item_slot_number, hovered_potion_slot_number, mouse_game_world_position)
+        return MouseHoverEvent(hovered_item_slot_number, hovered_consumable_slot_number, mouse_game_world_position)
 
     def render_item_being_dragged(self, item_type: ItemType, mouse_screen_position: Tuple[int, int]):
         ui_icon_sprite = ITEMS[item_type].icon_sprite
         position = (mouse_screen_position[0] - UI_ICON_SIZE[0] / 2, mouse_screen_position[1] - UI_ICON_SIZE[1] / 2)
         self._image(self.images_by_ui_sprite[ui_icon_sprite], position)
 
-    def render_potion_being_dragged(self, potion_type: PotionType, mouse_screen_position: Tuple[int, int]):
-        ui_icon_sprite = POTIONS[potion_type].icon_sprite
+    def render_consumable_being_dragged(self, consumable_type: ConsumableType, mouse_screen_position: Tuple[int, int]):
+        ui_icon_sprite = CONSUMABLES[consumable_type].icon_sprite
         position = (mouse_screen_position[0] - UI_ICON_SIZE[0] / 2, mouse_screen_position[1] - UI_ICON_SIZE[1] / 2)
         self._image(self.images_by_ui_sprite[ui_icon_sprite], position)
 

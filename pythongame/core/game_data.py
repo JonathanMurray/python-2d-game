@@ -112,7 +112,7 @@ class NpcData:
         self.is_enemy = is_enemy
 
 
-class PotionData:
+class ConsumableData:
     def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Optional[Sprite], name: str, description: str):
         self.icon_sprite = icon_sprite
         self.entity_sprite = entity_sprite
@@ -140,7 +140,7 @@ ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Animation]] = {}
 
 UI_ICON_SPRITE_PATHS: Dict[UiIconSprite, str] = {}
 
-POTIONS: Dict[PotionType, PotionData] = {}
+CONSUMABLES: Dict[ConsumableType, ConsumableData] = {}
 
 WALLS: Dict[WallType, WallData] = {}
 
@@ -202,8 +202,8 @@ def register_buff_text(buff_type: BuffType, text: str):
     BUFF_TEXTS[buff_type] = text
 
 
-def register_potion_data(potion_type: PotionType, potion_data: PotionData):
-    POTIONS[potion_type] = potion_data
+def register_consumable_data(consumable_type: ConsumableType, data: ConsumableData):
+    CONSUMABLES[consumable_type] = data
 
 
 def register_item_data(item_type: ItemType, item_data: ItemData):

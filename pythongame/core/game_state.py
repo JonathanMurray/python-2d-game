@@ -116,10 +116,10 @@ class WorldEntity:
         self.direction = dirs[self.direction]
 
 
-class PotionOnGround:
-    def __init__(self, world_entity: WorldEntity, potion_type: PotionType):
+class ConsumableOnGround:
+    def __init__(self, world_entity: WorldEntity, consumable_type: ConsumableType):
         self.world_entity = world_entity
-        self.potion_type = potion_type
+        self.consumable_type = consumable_type
 
 
 class ItemOnGround:
@@ -204,7 +204,7 @@ class AgentBuffsUpdate:
 
 class PlayerState:
     def __init__(self, health: int, max_health: int, mana: int, max_mana: int, mana_regen: float,
-                 potion_slots: Dict[int, PotionType], abilities: List[AbilityType], item_slots: Dict[int, ItemType]):
+                 consumable_slots: Dict[int, ConsumableType], abilities: List[AbilityType], item_slots: Dict[int, ItemType]):
         self.health = health
         self._health_float = health
         self.max_health = max_health
@@ -213,7 +213,7 @@ class PlayerState:
         self._mana_float = mana
         self.max_mana = max_mana
         self.mana_regen: float = mana_regen
-        self.potion_slots = potion_slots
+        self.consumable_slots = consumable_slots
         self.abilities: List[AbilityType] = abilities
         self.ability_cooldowns_remaining = {ability_type: 0 for ability_type in abilities}
         self.active_buffs: List[BuffWithDuration] = []
@@ -259,8 +259,8 @@ class PlayerState:
             self._health_float = self.max_health
             self.health = int(math.floor(self._health_float))
 
-    def find_first_empty_potion_slot(self) -> Optional[int]:
-        empty_slots = [slot for slot in self.potion_slots if not self.potion_slots[slot]]
+    def find_first_empty_consumable_slot(self) -> Optional[int]:
+        empty_slots = [slot for slot in self.consumable_slots if not self.consumable_slots[slot]]
         if empty_slots:
             return empty_slots[0]
         return None
@@ -293,10 +293,10 @@ class PlayerState:
         self.item_slots[slot_1] = self.item_slots[slot_2]
         self.item_slots[slot_2] = item_type_1
 
-    def switch_potion_slots(self, slot_1, slot_2):
-        potion_type_1 = self.potion_slots[slot_1]
-        self.potion_slots[slot_1] = self.potion_slots[slot_2]
-        self.potion_slots[slot_2] = potion_type_1
+    def switch_consumable_slots(self, slot_1, slot_2):
+        consumable_type_1 = self.consumable_slots[slot_1]
+        self.consumable_slots[slot_1] = self.consumable_slots[slot_2]
+        self.consumable_slots[slot_2] = consumable_type_1
 
     # returns True if player leveled up
     def gain_exp(self, amount):
@@ -356,7 +356,7 @@ class DecorationEntity:
 
 
 class GameState:
-    def __init__(self, player_entity: WorldEntity, potions_on_ground: List[PotionOnGround],
+    def __init__(self, player_entity: WorldEntity, consumables_on_ground: List[ConsumableOnGround],
                  items_on_ground: List[ItemOnGround], non_player_characters: List[NonPlayerCharacter],
                  walls: List[Wall], camera_size: Tuple[int, int], game_world_size: Tuple[int, int],
                  player_state: PlayerState, decoration_entities: List[DecorationEntity]):
@@ -364,7 +364,7 @@ class GameState:
         self.camera_world_area = WorldArea((0, 0), self.camera_size)
         self.player_entity = player_entity
         self.projectile_entities: List[Projectile] = []
-        self.potions_on_ground = potions_on_ground
+        self.consumables_on_ground = consumables_on_ground
         self.items_on_ground: List[ItemOnGround] = items_on_ground
         self.non_player_characters: List[NonPlayerCharacter] = non_player_characters
         self.non_enemy_npcs: List[NonPlayerCharacter] = []  # overlaps with non_player_characters
@@ -406,13 +406,13 @@ class GameState:
     # entities_to_remove aren't necessarily of the class WorldEntity
     def remove_entities(self, entities_to_remove: List):
         self.projectile_entities = [p for p in self.projectile_entities if p not in entities_to_remove]
-        self.potions_on_ground = [p for p in self.potions_on_ground if p not in entities_to_remove]
+        self.consumables_on_ground = [p for p in self.consumables_on_ground if p not in entities_to_remove]
         self.items_on_ground = [i for i in self.items_on_ground if i not in entities_to_remove]
         self.non_player_characters = [e for e in self.non_player_characters if e not in entities_to_remove]
 
     def get_all_entities_to_render(self) -> List[WorldEntity]:
         walls = self._get_walls_from_buckets_in_camera()
-        return [self.player_entity] + [p.world_entity for p in self.potions_on_ground] + \
+        return [self.player_entity] + [p.world_entity for p in self.consumables_on_ground] + \
                [i.world_entity for i in self.items_on_ground] + \
                [e.world_entity for e in self.non_player_characters] + walls + [p.world_entity for p in
                                                                                self.projectile_entities]

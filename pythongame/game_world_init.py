@@ -2,9 +2,9 @@ import json
 
 from pythongame.core.common import *
 from pythongame.core.npc_creation import create_npc, set_global_path_finder
-from pythongame.core.game_data import POTIONS, ITEM_ENTITY_SIZE, ITEMS, WALLS
+from pythongame.core.game_data import CONSUMABLES, ITEM_ENTITY_SIZE, ITEMS, WALLS
 from pythongame.core.game_data import POTION_ENTITY_SIZE
-from pythongame.core.game_state import WorldEntity, GameState, PotionOnGround, ItemOnGround, DecorationEntity, Wall
+from pythongame.core.game_state import WorldEntity, GameState, ConsumableOnGround, ItemOnGround, DecorationEntity, Wall
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE, INTIAL_PLAYER_STATE, PLAYER_ENTITY_SPEED
 
@@ -20,8 +20,8 @@ def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str
         player_pos = json_data["player"]["position"]
         player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
 
-        potions = [_create_potion_at_position(PotionType[p["potion_type"]], p["position"]) for p in
-                   json_data["potions_on_ground"]]
+        consumables = [_create_consumable_at_position(ConsumableType[p["potion_type"]], p["position"]) for p in
+                       json_data["potions_on_ground"]]
         items = [_create_item_at_position(ItemType[i["item_type"]], i["position"]) for i in
                  json_data["items_on_ground"]]
 
@@ -34,7 +34,7 @@ def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str
         game_world_size = json_data["game_world_size"]
 
         decoration_entities = [DecorationEntity(d["position"], Sprite[d["sprite"]]) for d in json_data["decorations"]]
-        game_state = GameState(player_entity, potions, items, enemies, walls, camera_size, game_world_size,
+        game_state = GameState(player_entity, consumables, items, enemies, walls, camera_size, game_world_size,
                                INTIAL_PLAYER_STATE, decoration_entities)
         path_finder.set_grid(game_state.grid)
         return game_state
@@ -54,9 +54,9 @@ def save_game_state_to_json_file(game_state: GameState, map_file: str):
         json_data["walls"].append({"wall_type": w.wall_type.name, "position": w.world_entity.get_position()})
 
     json_data["potions_on_ground"] = []
-    for p in game_state.potions_on_ground:
+    for p in game_state.consumables_on_ground:
         json_data["potions_on_ground"].append(
-            {"potion_type": p.potion_type.name, "position": p.world_entity.get_position()})
+            {"potion_type": p.consumable_type.name, "position": p.world_entity.get_position()})
 
     json_data["items_on_ground"] = []
     for i in game_state.items_on_ground:
@@ -72,9 +72,9 @@ def save_game_state_to_json_file(game_state: GameState, map_file: str):
         map_file.write(json.dumps(json_data, indent=2))
 
 
-def _create_potion_at_position(potion_type: PotionType, pos: Tuple[int, int]):
-    entity = WorldEntity(pos, POTION_ENTITY_SIZE, POTIONS[potion_type].entity_sprite)
-    return PotionOnGround(entity, potion_type)
+def _create_consumable_at_position(consumable_type: ConsumableType, pos: Tuple[int, int]):
+    entity = WorldEntity(pos, POTION_ENTITY_SIZE, CONSUMABLES[consumable_type].entity_sprite)
+    return ConsumableOnGround(entity, consumable_type)
 
 
 def _create_item_at_position(item_type: ItemType, pos: Tuple[int, int]):
