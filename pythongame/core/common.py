@@ -132,6 +132,7 @@ class PotionType(Enum):
     MANA = 12
     SPEED = 21
     INVISIBILITY = 22
+    SCROLL_ABILITY_SUMMON = 101
 
 
 class NpcType(Enum):
@@ -187,6 +188,7 @@ class Sprite(Enum):
     POTION_HEALTH_LESSER = 102
     POTION_MANA = 103
     POTION_MANA_LESSER = 104
+    POTION_SCROLL_ABILITY_SUMMON = 105
     ENEMY_NECROMANCER = 201
     ENEMY_RAT_1 = 202
     ENEMY_RAT_2 = 203

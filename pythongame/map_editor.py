@@ -50,6 +50,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.potion(PotionType.HEALTH),
     MapEditorWorldEntity.potion(PotionType.MANA_LESSER),
     MapEditorWorldEntity.potion(PotionType.MANA),
+    MapEditorWorldEntity.potion(PotionType.SCROLL_ABILITY_SUMMON),
 
     MapEditorWorldEntity.item(ItemType.WINGED_BOOTS),
     MapEditorWorldEntity.item(ItemType.SWORD_OF_LEECHING),

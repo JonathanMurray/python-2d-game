@@ -12679,6 +12679,13 @@
         450,
         3100
       ]
+    },
+    {
+      "potion_type": "SCROLL_ABILITY_SUMMON",
+      "position": [
+        250,
+        275
+      ]
     }
   ],
   "items_on_ground": [

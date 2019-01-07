@@ -214,7 +214,7 @@ class PlayerState:
         self.max_mana = max_mana
         self.mana_regen: float = mana_regen
         self.potion_slots = potion_slots
-        self.abilities = abilities
+        self.abilities: List[AbilityType] = abilities
         self.ability_cooldowns_remaining = {ability_type: 0 for ability_type in abilities}
         self.active_buffs: List[BuffWithDuration] = []
         self.is_invisible = False
@@ -315,6 +315,10 @@ class PlayerState:
         self.gain_full_health()
         self.gain_full_mana()
         self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.3)
+
+    def gain_ability(self, ability_type: AbilityType):
+        self.ability_cooldowns_remaining[ability_type] = 0
+        self.abilities.append(ability_type)
 
 
 def handle_buffs(active_buffs: List[BuffWithDuration], time_passed: Millis):

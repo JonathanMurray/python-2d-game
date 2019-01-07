@@ -28,6 +28,7 @@ from pythongame.game_data.potion_invis import register_invis_potion
 from pythongame.game_data.potion_lesser_health import register_lesser_health_potion
 from pythongame.game_data.potion_lesser_mana import register_lesser_mana_potion
 from pythongame.game_data.potion_mana import register_mana_potion
+from pythongame.game_data.potion_scroll_ability_summon import register_summon_scroll
 from pythongame.game_data.potion_speed import register_speed_potion
 from pythongame.game_data.walls import register_walls
 
@@ -45,6 +46,7 @@ def register_all_game_data():
     register_mana_potion()
     register_invis_potion()
     register_speed_potion()
+    register_summon_scroll()
 
     register_necromancer_enemy()
     register_player_data()

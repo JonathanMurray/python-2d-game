@@ -1,10 +1,9 @@
 from typing import Dict
 
-import pygame
-
+from pythongame.core.ability_learning import USER_ABILITY_KEYS
 from pythongame.core.common import ItemType
 from pythongame.core.game_data import Sprite, Direction, PotionType, AbilityType, SpriteSheet, \
-    register_entity_sprite_map, register_user_ability_key, UserAbilityKey
+    register_entity_sprite_map, register_user_ability_key
 from pythongame.core.game_state import PlayerState
 
 PLAYER_ENTITY_SIZE = (30, 30)
@@ -18,11 +17,13 @@ _player_potion_slots = {
     5: None
 }
 
-_abilities = [AbilityType.FIREBALL, AbilityType.SUMMON, AbilityType.WHIRLWIND, AbilityType.ENTANGLING_ROOTS]
-register_user_ability_key(AbilityType.FIREBALL, UserAbilityKey("Q", pygame.K_q))
-register_user_ability_key(AbilityType.SUMMON, UserAbilityKey("W", pygame.K_w))
-register_user_ability_key(AbilityType.WHIRLWIND, UserAbilityKey("E", pygame.K_e))
-register_user_ability_key(AbilityType.ENTANGLING_ROOTS, UserAbilityKey("R", pygame.K_r))
+_abilities = [AbilityType.FIREBALL,
+              AbilityType.WHIRLWIND,
+              AbilityType.ENTANGLING_ROOTS]
+
+for ability_type, user_ability_key in zip(_abilities, USER_ABILITY_KEYS):
+    register_user_ability_key(ability_type, user_ability_key)
+
 health = 50
 mana = 100
 max_mana = 150
