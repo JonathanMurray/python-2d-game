@@ -23,5 +23,5 @@ def register_summon_scroll():
     image_path = "resources/graphics/icon_scroll_ability_summon.png"
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_path, POTION_ENTITY_SIZE))
     register_ui_icon_sprite_path(ui_icon_sprite, image_path)
-    description = "Learns a new ability"
-    register_consumable_data(consumable_type, ConsumableData(ui_icon_sprite, sprite, "Scroll", description))
+    description = "It seems to contain powerful knowledge..."
+    register_consumable_data(consumable_type, ConsumableData(ui_icon_sprite, sprite, "Dragon's scroll", description))
