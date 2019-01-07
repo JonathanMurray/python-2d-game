@@ -16369,13 +16369,6 @@
     {
       "sprite": "DECORATION_GROUND_STONE",
       "position": [
-        800,
-        3200
-      ]
-    },
-    {
-      "sprite": "DECORATION_GROUND_STONE",
-      "position": [
         850,
         1350
       ]
