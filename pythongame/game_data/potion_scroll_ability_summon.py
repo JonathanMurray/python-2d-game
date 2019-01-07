@@ -1,15 +1,17 @@
 from pythongame.core.ability_learning import player_learn_new_ability
 from pythongame.core.common import PotionType, Sprite, AbilityType
 from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer, \
-    register_ui_icon_sprite_path, UiIconSprite, register_potion_data, PotionData, POTION_ENTITY_SIZE
+    register_ui_icon_sprite_path, UiIconSprite, register_potion_data, PotionData, POTION_ENTITY_SIZE, ABILITIES
 from pythongame.core.game_state import GameState
 from pythongame.core.potion_effects import PotionWasConsumed, \
     register_potion_effect
 
 
 def _apply(game_state: GameState):
-    player_learn_new_ability(game_state.player_state, AbilityType.SUMMON)
-    return PotionWasConsumed()
+    ability_type = AbilityType.SUMMON
+    player_learn_new_ability(game_state.player_state, ability_type)
+    ability_name = ABILITIES[ability_type].name
+    return PotionWasConsumed("New ability: " + ability_name)
 
 
 def register_summon_scroll():

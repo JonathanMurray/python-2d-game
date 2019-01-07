@@ -39,6 +39,8 @@ class GameEngine:
                 result = try_consume_potion(potion_type_in_this_slot, self.game_state)
                 if isinstance(result, PotionWasConsumed):
                     self.game_state.player_state.potion_slots[slot_number] = None
+                    if result.message:
+                        self.view_state.set_message(result.message)
                 elif isinstance(result, PotionFailedToBeConsumed):
                     self.view_state.set_message(result.reason)
             else:
