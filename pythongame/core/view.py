@@ -163,11 +163,11 @@ class View:
     def _circle(self, color, position, radius, line_width):
         pygame.draw.circle(self.screen, color, position, radius, line_width)
 
-    def _stat_bar(self, x, y, w, h, stat, max_stat, color, border):
+    def _stat_bar(self, x, y, w, h, ratio_filled: float, color, border: bool):
         self._rect_filled((0, 0, 0), (x - 1, y - 1, w + 2, h + 2))
         if border:
             self._rect((250, 250, 250), (x - 2, y - 2, w + 4, h + 4), 2)
-        self._rect_filled(color, (x, y, max(w * stat / max_stat, 0), h))
+        self._rect_filled(color, (x, y, max(w * ratio_filled, 0), h))
 
     def _text(self, font, text, screen_pos, color=COLOR_WHITE):
         self.screen.blit(font.render(text, True, color), screen_pos)
@@ -289,15 +289,15 @@ class View:
     def _stat_bar_for_world_entity(self, world_entity, h, relative_y, stat, max_stat, color):
         position_on_screen = self._translate_world_position_to_screen((world_entity.x, world_entity.y))
         self._stat_bar(position_on_screen[0] + 1, position_on_screen[1] + relative_y,
-                       world_entity.w - 2, h, stat, max_stat, color, False)
+                       world_entity.w - 2, h, stat / max_stat, color, False)
 
     # ------------------------------------
     #           DRAWING THE UI
     # ------------------------------------
 
-    def _stat_bar_in_ui(self, position_in_ui, w, h, stat, max_stat, color):
+    def _stat_bar_in_ui(self, position_in_ui, w, h, ratio_filled: float, color, border: bool):
         x, y = self._translate_ui_position_to_screen(position_in_ui)
-        self._stat_bar(x, y, w, h, stat, max_stat, color, True)
+        self._stat_bar(x, y, w, h, ratio_filled, color, border)
 
     def _consumable_icon_in_ui(self, x_in_ui, y_in_ui, size, consumable_number, consumable_type: ConsumableType,
                                highlighted_consumable_action):
@@ -416,7 +416,8 @@ class View:
             self._text(self.font_tooltip_details, detail, (x_tooltip + 20, y_tooltip + 50 + i * 20), COLOR_WHITE)
 
     def render_world(self, all_entities_to_render: List[WorldEntity], decorations_to_render: List[DecorationEntity],
-                     camera_world_area, non_player_characters: List[NonPlayerCharacter], is_player_invisible, player_entity,
+                     camera_world_area, non_player_characters: List[NonPlayerCharacter], is_player_invisible,
+                     player_entity,
                      visual_effects, render_hit_and_collision_boxes, player_health, player_max_health, game_world_size):
         self.camera_world_area = camera_world_area
 
@@ -478,13 +479,14 @@ class View:
 
         x_exp_bar = 20
         self._text_in_ui(self.font_level, "Level " + str(player_level), x_exp_bar, y_0)
-        self._stat_bar_in_ui((x_exp_bar, y_0 + 18), 200, 4, player_exp, player_max_exp_in_this_level, COLOR_WHITE)
+        self._stat_bar_in_ui((x_exp_bar, y_0 + 18), 200, 4, player_exp / player_max_exp_in_this_level, COLOR_WHITE,
+                             True)
 
         x_0 = 20
         self._text_in_ui(self.font_ui_headers, "HEALTH", x_0, y_1)
         rect_healthbar = (x_0, y_2 + 2, 100, 28)
         self._stat_bar_in_ui((rect_healthbar[0], rect_healthbar[1]), rect_healthbar[2], rect_healthbar[3],
-                             player_health, player_max_health, COLOR_RED)
+                             player_health / player_max_health, COLOR_RED, True)
         if is_point_in_rect(mouse_ui_position, rect_healthbar):
             tooltip_title = "Health"
             tooltip_details = ["regeneration: " + str(player_health_regen) + "/s"]
@@ -494,8 +496,8 @@ class View:
 
         self._text_in_ui(self.font_ui_headers, "MANA", x_0, y_3)
         rect_manabar = (x_0, y_4 + 2, 100, 28)
-        self._stat_bar_in_ui((rect_manabar[0], rect_manabar[1]), rect_manabar[2], rect_manabar[3], player_mana,
-                             player_max_mana, COLOR_BLUE)
+        self._stat_bar_in_ui((rect_manabar[0], rect_manabar[1]), rect_manabar[2], rect_manabar[3],
+                             player_mana / player_max_mana, COLOR_BLUE, True)
         if is_point_in_rect(mouse_ui_position, rect_manabar):
             tooltip_title = "Mana"
             tooltip_details = ["regeneration: " + str(player_mana_regen) + "/s"]
@@ -554,13 +556,17 @@ class View:
 
         x_4 = 602
         buff_texts = []
+        buff_duration_ratios_remaining = []
         for active_buff in player_active_buffs:
             buff_type = active_buff.buff_effect.get_buff_type()
             if buff_type in BUFF_TEXTS:
-                buff_texts.append(
-                    BUFF_TEXTS[buff_type] + " (" + str(int(active_buff.time_until_expiration / 1000)) + ")")
+                ratio_duration_remaining = active_buff.time_until_expiration / active_buff.total_duration
+                buff_texts.append(BUFF_TEXTS[buff_type])
+                buff_duration_ratios_remaining.append(ratio_duration_remaining)
+
         for i, text in enumerate(buff_texts):
             self._text_in_ui(self.font_buff_texts, text, x_4, 15 + i * 25)
+            self._stat_bar_in_ui((x_4, 35 + i * 25), 90, 3, buff_duration_ratios_remaining[i], (250, 250, 0), False)
 
         self._rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
 

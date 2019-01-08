@@ -188,9 +188,10 @@ class Wall:
 
 
 class BuffWithDuration:
-    def __init__(self, buff_effect: Any, time_until_expiration: Millis):
+    def __init__(self, buff_effect: Any, duration: Millis):
         self.buff_effect = buff_effect
-        self.time_until_expiration = time_until_expiration
+        self.time_until_expiration = duration
+        self.total_duration = duration
         self.has_applied_start_effect = False
 
 
