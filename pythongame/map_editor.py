@@ -37,6 +37,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_NW),
     MapEditorWorldEntity.wall(WallType.WALL_CHAIR),
     MapEditorWorldEntity.wall(WallType.ALTAR),
+    MapEditorWorldEntity.wall(WallType.CHEST),
 
     MapEditorWorldEntity.enemy(NpcType.DARK_REAPER),
     MapEditorWorldEntity.enemy(NpcType.RAT_1),

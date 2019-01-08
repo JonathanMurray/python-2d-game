@@ -11503,48 +11503,6 @@
       ]
     },
     {
-      "wall_type": "WALL_DIRECTIONAL_SW",
-      "position": [
-        600,
-        725
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_NW",
-      "position": [
-        600,
-        600
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        600,
-        625
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        600,
-        650
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        600,
-        675
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        600,
-        700
-      ]
-    },
-    {
       "wall_type": "WALL_DIRECTIONAL_POINTY_NW",
       "position": [
         825,
@@ -12593,6 +12551,83 @@
         3550,
         1950
       ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        600,
+        600
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        575,
+        600
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_NW",
+      "position": [
+        550,
+        600
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        550,
+        625
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        550,
+        650
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        550,
+        675
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        550,
+        700
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_SW",
+      "position": [
+        550,
+        725
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_S",
+      "position": [
+        575,
+        725
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_S",
+      "position": [
+        600,
+        725
+      ]
+    },
+    {
+      "wall_type": "CHEST",
+      "position": [
+        600,
+        650
+      ]
     }
   ],
   "consumables_on_ground": [
@@ -12690,13 +12725,6 @@
   ],
   "items_on_ground": [
     {
-      "item_type": "WINGED_BOOTS",
-      "position": [
-        650,
-        650
-      ]
-    },
-    {
       "item_type": "AMULET_OF_MANA",
       "position": [
         1950,
@@ -12736,6 +12764,13 @@
       "position": [
         3575,
         2000
+      ]
+    },
+    {
+      "item_type": "WINGED_BOOTS",
+      "position": [
+        650,
+        650
       ]
     }
   ],
@@ -24806,6 +24841,27 @@
       "position": [
         1000,
         3300
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        550,
+        700
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        550,
+        650
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        550,
+        600
       ]
     }
   ],

@@ -149,6 +149,7 @@ class NpcType(Enum):
 class WallType(Enum):
     WALL = 1
     STATUE = 2
+    CHEST = 3
     WALL_DIRECTIONAL_N = 11
     WALL_DIRECTIONAL_NE = 12
     WALL_DIRECTIONAL_E = 13
@@ -210,6 +211,7 @@ class Sprite(Enum):
     WALL = 501
     WALL_STATUE = 502
     WALL_ALTAR = 503
+    WALL_CHEST = 504
     WALL_DIRECTIONAL_N = 511
     WALL_DIRECTIONAL_NE = 512
     WALL_DIRECTIONAL_E = 513
