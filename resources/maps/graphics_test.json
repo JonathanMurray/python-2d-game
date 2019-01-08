@@ -3782,34 +3782,6 @@
       ]
     },
     {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        1825,
-        150
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        1825,
-        175
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        1825,
-        200
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        1825,
-        225
-      ]
-    },
-    {
       "wall_type": "WALL_DIRECTIONAL_S",
       "position": [
         1850,
@@ -3821,20 +3793,6 @@
       "position": [
         1875,
         250
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_SW",
-      "position": [
-        1825,
-        250
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_NW",
-      "position": [
-        1825,
-        125
       ]
     },
     {
@@ -4017,13 +3975,6 @@
       "position": [
         100,
         100
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        1875,
-        175
       ]
     },
     {
@@ -12628,6 +12579,83 @@
         600,
         650
       ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_S",
+      "position": [
+        1825,
+        250
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_S",
+      "position": [
+        1800,
+        250
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_SW",
+      "position": [
+        1775,
+        250
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        1775,
+        225
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        1775,
+        200
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        1775,
+        175
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        1775,
+        150
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_NW",
+      "position": [
+        1775,
+        125
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        1800,
+        125
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        1825,
+        125
+      ]
+    },
+    {
+      "wall_type": "CHEST",
+      "position": [
+        1825,
+        175
+      ]
     }
   ],
   "consumables_on_ground": [
@@ -12725,13 +12753,6 @@
   ],
   "items_on_ground": [
     {
-      "item_type": "AMULET_OF_MANA",
-      "position": [
-        1950,
-        175
-      ]
-    },
-    {
       "item_type": "SOLDIERS_HELMET",
       "position": [
         275,
@@ -12753,13 +12774,6 @@
       ]
     },
     {
-      "item_type": "ROD_OF_LIGHTNING",
-      "position": [
-        1025,
-        3075
-      ]
-    },
-    {
       "item_type": "SWORD_OF_LEECHING",
       "position": [
         3575,
@@ -12771,6 +12785,20 @@
       "position": [
         650,
         650
+      ]
+    },
+    {
+      "item_type": "ROD_OF_LIGHTNING",
+      "position": [
+        1075,
+        3050
+      ]
+    },
+    {
+      "item_type": "AMULET_OF_MANA",
+      "position": [
+        1875,
+        175
       ]
     }
   ],
@@ -24862,6 +24890,20 @@
       "position": [
         550,
         600
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1800,
+        150
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1800,
+        200
       ]
     }
   ],
