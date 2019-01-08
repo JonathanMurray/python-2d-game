@@ -167,19 +167,25 @@ class GameEngine:
         for consumable in self.game_state.consumables_on_ground:
             if boxes_intersect(self.game_state.player_entity, consumable.world_entity):
                 empty_consumable_slots = self.game_state.player_state.find_first_empty_consumable_slot()
+                consumable_name = CONSUMABLES[consumable.consumable_type].name
                 if empty_consumable_slots:
                     self.game_state.player_state.consumable_slots[empty_consumable_slots] = consumable.consumable_type
-                    self.view_state.set_message("You picked up " + CONSUMABLES[consumable.consumable_type].name)
+                    self.view_state.set_message("You picked up " + consumable_name)
                     entities_to_remove.append(consumable)
+                else:
+                    self.view_state.set_message("No space for " + consumable_name)
         for item in self.game_state.items_on_ground:
             if boxes_intersect(self.game_state.player_entity, item.world_entity):
                 empty_item_slot = self.game_state.player_state.find_first_empty_item_slot()
+                item_name = ITEMS[item.item_type].name
                 if empty_item_slot:
                     self.game_state.player_state.item_slots[empty_item_slot] = item.item_type
                     item_effect = get_item_effect(item.item_type)
                     item_effect.apply_start_effect(self.game_state)
-                    self.view_state.set_message("You picked up " + ITEMS[item.item_type].name)
+                    self.view_state.set_message("You picked up " + item_name)
                     entities_to_remove.append(item)
+                else:
+                    self.view_state.set_message("No space for " + item_name)
 
         for enemy in [e for e in self.game_state.non_player_characters if e.is_enemy]:
             for projectile in self.game_state.get_projectiles_intersecting_with(enemy.world_entity):
