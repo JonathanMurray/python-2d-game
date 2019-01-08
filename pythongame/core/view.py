@@ -512,7 +512,7 @@ class View:
 
         x_1 = 140
         icon_space = 5
-        self._text_in_ui(self.font_ui_headers, "POTIONS", x_1, y_1)
+        self._text_in_ui(self.font_ui_headers, "ITEMS", x_1, y_1)
         for i, slot_number in enumerate(consumable_slots):
             x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_2
@@ -542,7 +542,7 @@ class View:
                                      highlighted_ability_action, ability_cooldowns_remaining)
 
         x_2 = 338
-        self._text_in_ui(self.font_ui_headers, "INVENTORY", x_2, y_1)
+        self._text_in_ui(self.font_ui_headers, "ARTIFACTS", x_2, y_1)
         for i, item_slot_number in enumerate(item_slots.keys()):
             x = x_2 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_2
