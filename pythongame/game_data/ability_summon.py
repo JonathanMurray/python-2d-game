@@ -1,7 +1,8 @@
 import random
 
 from pythongame.core.ability_effects import register_ability_effect
-from pythongame.core.common import Sprite, AbilityType, Millis, sum_of_vectors, NpcType, Direction
+from pythongame.core.buff_effects import get_buff_effect, register_buff_effect, AbstractBuffEffect
+from pythongame.core.common import Sprite, AbilityType, Millis, sum_of_vectors, NpcType, Direction, BuffType
 from pythongame.core.damage_interactions import deal_npc_damage_to_npc
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     NON_PLAYER_CHARACTERS, register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
@@ -36,6 +37,7 @@ def _apply_ability(game_state: GameState) -> bool:
         if is_valid_pos:
             game_state.remove_all_non_enemy_npcs()
             game_state.add_non_player_character(summon)
+            summon.gain_buff_effect(get_buff_effect(BuffType.SUMMON_DIE_AFTER_DURATION), Millis(50000))
             game_state.visual_effects.append(
                 VisualCircle((200, 200, 30), player_entity.get_position(), 40, 70, Millis(140), 3))
             game_state.visual_effects.append(VisualCircle((200, 200, 30), summon_pos, 40, 70, Millis(140), 3))
@@ -106,6 +108,15 @@ def _move_in_dir(enemy_entity, direction):
         enemy_entity.set_not_moving()
 
 
+class DieAfterDuration(AbstractBuffEffect):
+
+    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
+        buffed_npc.lose_all_health()
+
+    def get_buff_type(self):
+        return BuffType.SUMMON_DIE_AFTER_DURATION
+
+
 def register_summon_ability():
     ability_type = AbilityType.SUMMON
     register_ability_effect(ability_type, _apply_ability)
@@ -137,3 +148,4 @@ def register_summon_ability():
     }
     register_entity_sprite_map(summon_sprite, summon_sprite_sheet, summon_original_size,
                                summon_scaled_sprite_size, summon_indices_by_dir, (-10, -20))
+    register_buff_effect(BuffType.SUMMON_DIE_AFTER_DURATION, DieAfterDuration)

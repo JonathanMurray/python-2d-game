@@ -445,6 +445,11 @@ class View:
         for npc in non_player_characters:
             color = COLOR_RED if npc.is_enemy else (250, 250, 0)
             self._stat_bar_for_world_entity(npc.world_entity, 5, -10, npc.health, npc.max_health, color)
+            if npc.active_buffs:
+                buff = npc.active_buffs[0]
+                if buff.total_duration > 1000:
+                    self._stat_bar_for_world_entity(npc.world_entity, 2, -14, buff.time_until_expiration,
+                                                    buff.total_duration, (250, 250, 250))
         for visual_effect in visual_effects:
             self._visual_effect(visual_effect)
 

@@ -154,6 +154,10 @@ class NonPlayerCharacter:
         self._health_float = min(self._health_float - amount, self.max_health)
         self.health = int(math.floor(self._health_float))
 
+    def lose_all_health(self):
+        self._health_float = 0
+        self.health = 0
+
     def gain_health(self, amount):
         self._health_float = min(self._health_float + amount, self.max_health)
         self.health = int(math.floor(self._health_float))
