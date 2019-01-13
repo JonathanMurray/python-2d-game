@@ -998,7 +998,7 @@
   "player": {
     "position": [
       300,
-      275
+      225
     ]
   },
   "walls": [
@@ -12746,33 +12746,12 @@
     {
       "consumable_type": "SCROLL_ABILITY_SUMMON",
       "position": [
-        250,
-        275
+        1425,
+        1300
       ]
     }
   ],
   "items_on_ground": [
-    {
-      "item_type": "SOLDIERS_HELMET",
-      "position": [
-        275,
-        225
-      ]
-    },
-    {
-      "item_type": "BLESSED_SHIELD",
-      "position": [
-        325,
-        225
-      ]
-    },
-    {
-      "item_type": "STAFF_OF_FIRE",
-      "position": [
-        225,
-        225
-      ]
-    },
     {
       "item_type": "SWORD_OF_LEECHING",
       "position": [
@@ -12799,6 +12778,27 @@
       "position": [
         1875,
         175
+      ]
+    },
+    {
+      "item_type": "STAFF_OF_FIRE",
+      "position": [
+        50,
+        1900
+      ]
+    },
+    {
+      "item_type": "BLESSED_SHIELD",
+      "position": [
+        2375,
+        1575
+      ]
+    },
+    {
+      "item_type": "SOLDIERS_HELMET",
+      "position": [
+        2200,
+        3425
       ]
     }
   ],

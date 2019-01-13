@@ -124,7 +124,7 @@ def register_summon_ability():
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_ability_summon.png")
     description = "Follows you and attacks nearby enemies"
     cooldown = Millis(30000)
-    mana_cost = 22
+    mana_cost = 25
     register_ability_data(ability_type,
                           AbilityData("Summon Dragonwhelp", ui_icon_sprite, mana_cost, cooldown, description))
 

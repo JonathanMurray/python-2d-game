@@ -49,7 +49,7 @@ def register_fireball_ability():
     register_ability_effect(AbilityType.FIREBALL, _apply_ability)
     register_ability_data(
         AbilityType.FIREBALL,
-        AbilityData("Fireball", UiIconSprite.ABILITY_FIREBALL, 3, Millis(300), "Damages the first enemy that it hits"))
+        AbilityData("Fireball", UiIconSprite.ABILITY_FIREBALL, 4, Millis(300), "Damages the first enemy that it hits"))
     register_ui_icon_sprite_path(UiIconSprite.ABILITY_FIREBALL, "resources/graphics/icon_fireball.png")
     register_projectile_controller(ProjectileType.PLAYER_FIREBALL, ProjectileController)
 

@@ -26,8 +26,8 @@ for ability_type, user_ability_key in zip(_abilities, USER_ABILITY_KEYS):
 
 health = 50
 mana = 100
-max_mana = 150
-mana_regen = 2.8
+max_mana = 120
+mana_regen = 4
 _items: Dict[int, ItemType] = {
     1: None,
     2: None,
