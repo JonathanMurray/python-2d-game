@@ -169,7 +169,7 @@ class View:
     def _stat_bar(self, x, y, w, h, ratio_filled: float, color, border: bool):
         self._rect_filled((0, 0, 0), (x - 1, y - 1, w + 2, h + 2))
         if border:
-            self._rect((250, 250, 250), (x - 2, y - 2, w + 4, h + 4), 2)
+            self._rect((250, 250, 250), (x - 2, y - 2, w + 4, h + 4), 1)
         self._rect_filled(color, (x, y, max(w * ratio_filled, 0), h))
 
     def _text(self, font, text, screen_pos, color=COLOR_WHITE):
@@ -311,7 +311,7 @@ class View:
         if consumable_type:
             icon_sprite = CONSUMABLES[consumable_type].icon_sprite
             self._image(self.images_by_ui_sprite[icon_sprite], (x, y))
-        self._rect(COLOR_WHITE, (x, y, w, h), 2)
+        self._rect(COLOR_WHITE, (x, y, w, h), 1)
         if highlighted_consumable_action == consumable_number:
             self._rect(COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
         self._text(self.font_ui_icon_keys, str(consumable_number), (x + 8, y + h + 4))
@@ -326,7 +326,7 @@ class View:
         icon_sprite = ability.icon_sprite
         self._rect_filled((40, 40, 40), (x, y, w, h))
         self._image(self.images_by_ui_sprite[icon_sprite], (x, y))
-        self._rect(COLOR_WHITE, (x, y, w, h), 2)
+        self._rect(COLOR_WHITE, (x, y, w, h), 1)
         if highlighted_ability_action == ability_type:
             self._rect(COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
         self._text(self.font_ui_icon_keys, ability_key.key_string, (x + 8, y + h + 4))
@@ -344,7 +344,7 @@ class View:
         if item_type:
             ui_icon_sprite = ITEMS[item_type].icon_sprite
             self._image(self.images_by_ui_sprite[ui_icon_sprite], (x, y))
-        self._rect(COLOR_WHITE, (x, y, w, h), 2)
+        self._rect(COLOR_WHITE, (x, y, w, h), 1)
 
     def _map_editor_icon_in_ui(self, x_in_ui, y_in_ui, size, highlighted: bool, user_input_key: str,
                                entity: Optional[MapEditorWorldEntity], non_entity_icon: Optional[UiIconSprite]):
@@ -392,7 +392,7 @@ class View:
         pos_in_screen = self._translate_ui_position_to_screen(position_in_ui)
         rect_in_screen = (pos_in_screen[0], pos_in_screen[1], size[0], size[1])
         self._rect_filled((100, 100, 100), rect_in_screen)
-        self._rect(COLOR_WHITE, rect_in_screen, 2)
+        self._rect(COLOR_WHITE, rect_in_screen, 1)
         dot_x = rect_in_screen[0] + player_relative_position[0] * size[0]
         dot_y = rect_in_screen[1] + player_relative_position[1] * size[1]
         dot_w = 4
