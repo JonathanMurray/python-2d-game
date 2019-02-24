@@ -1,3 +1,4 @@
+from pythongame.core.ability_learning import player_learn_new_ability
 from pythongame.core.common import *
 from pythongame.core.consumable_effects import try_consume_consumable, ConsumableWasConsumed, \
     ConsumableFailedToBeConsumed
@@ -106,6 +107,10 @@ class GameEngine:
             did_player_level_up = self.game_state.player_state.gain_exp(exp_gained)
             if did_player_level_up:
                 self.view_state.set_message("You reached level " + str(self.game_state.player_state.level))
+                self.game_state.player_state.update_stats_for_new_level()
+                if self.game_state.player_state.level in self.game_state.player_state.new_level_abilities:
+                    new_ability = self.game_state.player_state.new_level_abilities[self.game_state.player_state.level]
+                    player_learn_new_ability(self.game_state.player_state, new_ability)
 
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_effects()

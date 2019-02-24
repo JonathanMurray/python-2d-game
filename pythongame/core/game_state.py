@@ -209,7 +209,8 @@ class AgentBuffsUpdate:
 
 class PlayerState:
     def __init__(self, health: int, max_health: int, mana: int, max_mana: int, mana_regen: float,
-                 consumable_slots: Dict[int, ConsumableType], abilities: List[AbilityType], item_slots: Dict[int, ItemType]):
+                 consumable_slots: Dict[int, ConsumableType], abilities: List[AbilityType],
+                 item_slots: Dict[int, ItemType], new_level_abilities: Dict[int, AbilityType]):
         self.health = health
         self._health_float = health
         self.max_health = max_health
@@ -230,6 +231,7 @@ class PlayerState:
         self.level = 1
         self.max_exp_in_this_level = 60
         self.fireball_dmg_boost = 0
+        self.new_level_abilities: Dict[int, AbilityType] = new_level_abilities
 
     def gain_health(self, amount: float):
         self._health_float = min(self._health_float + amount, self.max_health)
@@ -310,11 +312,10 @@ class PlayerState:
             # TODO: handle case where you gain enough exp to gain 2 levels
             self.exp -= self.max_exp_in_this_level
             self.level += 1
-            self._on_level_up()
             return True
         return False
 
-    def _on_level_up(self):
+    def update_stats_for_new_level(self):
         self.max_health += 7
         self.max_mana += 5
         self.gain_full_health()

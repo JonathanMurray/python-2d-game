@@ -17,9 +17,7 @@ _player_consumable_slots = {
     5: None
 }
 
-_abilities = [AbilityType.FIREBALL,
-              AbilityType.WHIRLWIND,
-              AbilityType.ENTANGLING_ROOTS]
+_abilities = [AbilityType.FIREBALL]
 
 for ability_type, user_ability_key in zip(_abilities, USER_ABILITY_KEYS):
     register_user_ability_key(ability_type, user_ability_key)
@@ -33,7 +31,8 @@ _items: Dict[int, ItemType] = {
     2: None,
     3: None
 }
-INTIAL_PLAYER_STATE = PlayerState(health, health, mana, max_mana, mana_regen, _player_consumable_slots, _abilities, _items)
+INTIAL_PLAYER_STATE = PlayerState(health, health, mana, max_mana, mana_regen, _player_consumable_slots, _abilities,
+                                  _items, {2: AbilityType.WHIRLWIND, 3: AbilityType.ENTANGLING_ROOTS})
 
 
 def register_player_data():
