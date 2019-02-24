@@ -211,6 +211,12 @@ class GameEngine:
             if should_remove_projectile:
                 entities_to_remove.append(projectile)
 
+        for projectile in self.game_state.projectile_entities:
+            if self.game_state.does_entity_intersect_with_wall(projectile.world_entity):
+                should_remove_projectile = projectile.projectile_controller.apply_wall_collision(self.game_state)
+                if should_remove_projectile:
+                    entities_to_remove.append(projectile)
+
         self.game_state.remove_entities(entities_to_remove)
 
         # ------------------------------------

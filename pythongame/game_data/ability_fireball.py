@@ -26,6 +26,9 @@ class ProjectileController(AbstractProjectileController):
             VisualCircle((250, 100, 50), npc.world_entity.get_center_position(), 22, 45, Millis(100), 0))
         return True
 
+    def apply_wall_collision(self, _game_state: GameState):
+        return True
+
 
 def _apply_ability(game_state: GameState) -> bool:
     player_entity = game_state.player_entity

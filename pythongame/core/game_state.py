@@ -521,6 +521,10 @@ class GameState:
         y_bucket = int(wall.world_entity.y) // WALL_BUCKET_HEIGHT
         self._wall_buckets[x_bucket][y_bucket].remove(wall.world_entity)
 
+    def does_entity_intersect_with_wall(self, entity: WorldEntity):
+        nearby_walls = self._get_walls_from_buckets_adjacent_to_entity(entity)
+        return any([w for w in nearby_walls if boxes_intersect(w, entity)])
+
     def _get_walls_from_buckets_adjacent_to_entity(self, entity: WorldEntity):
         entity_x_bucket = int(entity.x) // WALL_BUCKET_WIDTH
         entity_y_bucket = int(entity.y) // WALL_BUCKET_HEIGHT

@@ -14,13 +14,21 @@ class AbstractProjectileController:
         if self._age > self._max_age:
             projectile.has_expired = True
 
+    # Collision callbacks return a boolean that indicates whether or not the projectile should be removed.
+
+    # Example: player's ability hits an enemy
     def apply_enemy_collision(self, _npc: NonPlayerCharacter, _game_state: GameState):
         return False
 
+    # Example: enemy's ability hits player's summon
     def apply_non_enemy_npc_collision(self, _npc: NonPlayerCharacter, _game_state: GameState):
         return False
 
+    # Example: enemy's ability hits player
     def apply_player_collision(self, _game_state: GameState):
+        return False
+
+    def apply_wall_collision(self, _game_state: GameState):
         return False
 
 
