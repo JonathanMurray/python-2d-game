@@ -590,6 +590,7 @@ class View:
         if is_game_over:
             self._splash_screen_text("You died!", self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50)
         elif is_paused:
+            self._rect_transparent((0, 0, self.screen_size[0], self.screen_size[1]), 140, COLOR_BLACK)
             self._splash_screen_text("PAUSED", self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50)
 
         mouse_game_world_position = None
