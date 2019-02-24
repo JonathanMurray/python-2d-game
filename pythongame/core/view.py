@@ -17,6 +17,7 @@ COLOR_BLACK = (0, 0, 0)
 COLOR_RED = (250, 0, 0)
 COLOR_BLUE = (0, 0, 250)
 COLOR_HIGHLIGHTED_ICON = (250, 250, 150)
+COLOR_BORDER = (139,69,19)
 UI_ICON_SIZE = (32, 32)
 MAP_EDITOR_UI_ICON_SIZE = (32, 32)
 
@@ -106,7 +107,7 @@ class View:
         self.font_debug_info = pygame.font.Font(None, 19)
         self.font_game_world_text = pygame.font.Font(DIR_FONTS + 'Arial Rounded Bold.ttf', 12)
         self.font_game_world_text = pygame.font.Font(None, 19)
-        self.font_ui_icon_keys = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 11)
+        self.font_ui_icon_keys = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 12)
         self.font_level = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 11)
 
         self.images_by_sprite: Dict[Sprite, Dict[Direction, List[ImageWithRelativePosition]]] = {
@@ -314,7 +315,7 @@ class View:
         self._rect(COLOR_WHITE, (x, y, w, h), 1)
         if highlighted_consumable_action == consumable_number:
             self._rect(COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
-        self._text(self.font_ui_icon_keys, str(consumable_number), (x + 8, y + h + 4))
+        self._text(self.font_ui_icon_keys, str(consumable_number), (x + 12, y + h + 4))
 
     def _ability_icon_in_ui(self, x_in_ui, y_in_ui, size, ability_type, highlighted_ability_action,
                             ability_cooldowns_remaining):
@@ -344,7 +345,7 @@ class View:
         if item_type:
             ui_icon_sprite = ITEMS[item_type].icon_sprite
             self._image(self.images_by_ui_sprite[ui_icon_sprite], (x, y))
-        self._rect(COLOR_WHITE, (x, y, w, h), 1)
+        self._rect((180, 180, 250), (x, y, w, h), 1)
 
     def _map_editor_icon_in_ui(self, x_in_ui, y_in_ui, size, highlighted: bool, user_input_key: str,
                                entity: Optional[MapEditorWorldEntity], non_entity_icon: Optional[UiIconSprite]):
@@ -474,24 +475,23 @@ class View:
         tooltip_details = []
         tooltip_bottom_left_position = (175, 450)
 
-        self._rect(COLOR_BLACK, (0, 0, self.camera_size[0], self.camera_size[1]), 3)
-        self._rect_filled(COLOR_BLACK, (0, self.camera_size[1], self.screen_size[0],
+        self._rect(COLOR_BORDER, (0, 0, self.camera_size[0], self.camera_size[1]), 1)
+        self._rect_filled((20, 10, 0), (0, self.camera_size[1], self.screen_size[0],
                                         self.screen_size[1] - self.camera_size[1]))
 
         y_0 = 5
 
-        y_1 = 40
+        y_1 = 30
         y_2 = y_1 + 22
-        y_3 = 123
+        y_3 = 90
         y_4 = y_3 + 22
 
-        x_exp_bar = 20
+        x_exp_bar = 50
         self._text_in_ui(self.font_level, "Level " + str(player_level), x_exp_bar, y_0)
-        self._stat_bar_in_ui((x_exp_bar, y_0 + 18), 200, 4, player_exp / player_max_exp_in_this_level, COLOR_WHITE,
+        self._stat_bar_in_ui((x_exp_bar, y_0 + 18), 600, 2, player_exp / player_max_exp_in_this_level, COLOR_WHITE,
                              True)
 
         x_0 = 20
-        self._text_in_ui(self.font_ui_headers, "HEALTH", x_0, y_1)
         rect_healthbar = (x_0, y_2 + 2, 100, 28)
         self._stat_bar_in_ui((rect_healthbar[0], rect_healthbar[1]), rect_healthbar[2], rect_healthbar[3],
                              player_health / player_max_health, COLOR_RED, True)
@@ -502,7 +502,6 @@ class View:
         health_text = str(player_health) + "/" + str(player_max_health)
         self._text_in_ui(self.font_ui_stat_bar_numbers, health_text, x_0 + 20, y_2 + 10)
 
-        self._text_in_ui(self.font_ui_headers, "MANA", x_0, y_3)
         rect_manabar = (x_0, y_4 + 2, 100, 28)
         self._stat_bar_in_ui((rect_manabar[0], rect_manabar[1]), rect_manabar[2], rect_manabar[3],
                              player_mana / player_max_mana, COLOR_BLUE, True)
@@ -515,7 +514,6 @@ class View:
 
         x_1 = 140
         icon_space = 5
-        self._text_in_ui(self.font_ui_headers, "ITEMS", x_1, y_1)
         for i, slot_number in enumerate(consumable_slots):
             x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_2
@@ -529,7 +527,6 @@ class View:
             self._consumable_icon_in_ui(x, y, UI_ICON_SIZE, slot_number,
                                         consumable_type, highlighted_consumable_action)
 
-        self._text_in_ui(self.font_ui_headers, "SPELLS", x_1, y_3)
         for i, ability_type in enumerate(abilities):
             x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_4
@@ -545,7 +542,6 @@ class View:
                                      highlighted_ability_action, ability_cooldowns_remaining)
 
         x_2 = 338
-        self._text_in_ui(self.font_ui_headers, "ARTIFACTS", x_2, y_1)
         for i, item_slot_number in enumerate(item_slots.keys()):
             x = x_2 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_2
@@ -559,8 +555,7 @@ class View:
             self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type)
 
         x_3 = 465
-        self._text_in_ui(self.font_ui_headers, "MAP", x_3, y_1)
-        self._minimap_in_ui((x_3, y_2), (115, 115), player_minimap_relative_position)
+        self._minimap_in_ui((x_3, y_2), (100, 100), player_minimap_relative_position)
 
         x_4 = 602
         buff_texts = []
@@ -576,7 +571,7 @@ class View:
             self._text_in_ui(self.font_buff_texts, text, x_4, 15 + i * 25)
             self._stat_bar_in_ui((x_4, 35 + i * 25), 90, 3, buff_duration_ratios_remaining[i], (250, 250, 0), False)
 
-        self._rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
+        self._rect(COLOR_BORDER, self.ui_screen_area.rect(), 1)
 
         self._rect_transparent((0, 0, 50, 20), 100, COLOR_BLACK)
         self._text(self.font_debug_info, fps_string + " fps", (5, 3))
