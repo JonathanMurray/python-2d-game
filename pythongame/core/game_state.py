@@ -228,7 +228,7 @@ class PlayerState:
         self.life_steal_ratio = 0
         self.exp = 0
         self.level = 1
-        self.max_exp_in_this_level = 130
+        self.max_exp_in_this_level = 60
         self.fireball_dmg_boost = 0
 
     def gain_health(self, amount: float):
@@ -319,7 +319,7 @@ class PlayerState:
         self.max_mana += 5
         self.gain_full_health()
         self.gain_full_mana()
-        self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.3)
+        self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.4)
 
     def gain_ability(self, ability_type: AbilityType):
         self.ability_cooldowns_remaining[ability_type] = 0
