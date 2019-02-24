@@ -7,7 +7,7 @@ from pythongame.core.common import AbilityType, translate_in_direction, get_posi
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, register_entity_sprite_map, SpriteSheet
-from pythongame.core.game_state import GameState, WorldEntity, Projectile, Enemy
+from pythongame.core.game_state import GameState, WorldEntity, Projectile, NonPlayerCharacter
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
 from pythongame.core.visual_effects import VisualRect
@@ -18,7 +18,7 @@ PROJECTILE_TYPE = ProjectileType.PLAYER_WHIRLWIND
 PROJECTILE_SIZE = (120, 90)
 
 
-def _apply_ability(game_state: GameState):
+def _apply_ability(game_state: GameState) -> bool:
     player_entity = game_state.player_entity
     aoe_center_pos = translate_in_direction(player_entity.get_center_position(), player_entity.direction, 60)
     aoe_pos = get_position_from_center_position(aoe_center_pos, PROJECTILE_SIZE)
@@ -26,6 +26,7 @@ def _apply_ability(game_state: GameState):
     entity = WorldEntity(aoe_pos, PROJECTILE_SIZE, PROJECTILE_SPRITE, player_entity.direction, projectile_speed)
     projectile = Projectile(entity, create_projectile_controller(PROJECTILE_TYPE))
     game_state.projectile_entities.append(projectile)
+    return True
 
 
 class ProjectileController(AbstractProjectileController):
@@ -47,7 +48,7 @@ class ProjectileController(AbstractProjectileController):
         projectile_entity = projectile.world_entity
         if self._time_since_dmg > self._dmg_cooldown:
             self._time_since_dmg = 0
-            for enemy in game_state.get_enemies_intersecting_with(projectile_entity):
+            for enemy in game_state.get_enemy_intersecting_with(projectile_entity):
                 damage_amount = 1
                 damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, damage_amount)
                 if damage_was_dealt:
@@ -79,18 +80,18 @@ class Stunned(AbstractBuffEffect):
     def __init__(self):
         pass
 
-    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
-        buffed_enemy.add_stun()
+    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
+        buffed_npc.add_stun()
         effect_position = buffed_entity.get_center_position()
         game_state.visual_effects.append(
             VisualRect((250, 250, 50), effect_position, 30, 40, Millis(100), 1, buffed_entity))
 
-    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy,
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         pass
 
-    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
-        buffed_enemy.remove_stun()
+    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
+        buffed_npc.remove_stun()
 
     def get_buff_type(self):
         return BUFF_TYPE
@@ -99,7 +100,7 @@ class Stunned(AbstractBuffEffect):
 def register_whirlwind_ability():
     ability_type = AbilityType.WHIRLWIND
     ui_icon_sprite = UiIconSprite.ABILITY_WHIRLWIND
-    mana_cost = 8
+    mana_cost = 14
     cooldown = Millis(750)
 
     register_ability_effect(ability_type, _apply_ability)

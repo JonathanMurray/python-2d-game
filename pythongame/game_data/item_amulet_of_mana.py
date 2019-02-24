@@ -6,7 +6,7 @@ from pythongame.core.item_effects import register_item_effect, AbstractItemEffec
 
 ITEM_TYPE = ItemType.AMULET_OF_MANA
 
-MANA_REGEN_BOOST = 0.0015
+MANA_REGEN_BOOST = 1
 
 
 class ItemEffect(AbstractItemEffect):
@@ -29,4 +29,4 @@ def register_amulet_of_mana_item():
         sprite, SpriteInitializer("resources/graphics/item_amulet.png", ITEM_ENTITY_SIZE))
     register_item_data(
         ITEM_TYPE,
-        ItemData(ui_icon_sprite, sprite, "Amulet of Mana", "Grants increased mana regeneration"))
+        ItemData(ui_icon_sprite, sprite, "Amulet of Mana", "Grants +" + str(MANA_REGEN_BOOST) + " mana regeneration"))

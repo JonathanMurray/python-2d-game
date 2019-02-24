@@ -35,9 +35,21 @@ class ActionToggleRenderDebugging:
     pass
 
 
+# Used for determining when user hovers over something in UI.
+# TODO: Handle the dependency between user input and the visual interface in a better way
 class ActionMouseMovement:
     def __init__(self, mouse_screen_position: Tuple[int, int]):
         self.mouse_screen_position = mouse_screen_position
+
+
+# Used for dragging items in UI
+class ActionMouseClicked:
+    pass
+
+
+# Used for dragging items in UI
+class ActionMouseReleased:
+    pass
 
 
 PYGAME_MOVEMENT_KEYS = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
@@ -88,6 +100,12 @@ def get_user_actions():
 
         if event.type == pygame.MOUSEMOTION:
             actions.append(ActionMouseMovement(event.pos))
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            actions.append(ActionMouseClicked())
+
+        if event.type == pygame.MOUSEBUTTONUP:
+            actions.append(ActionMouseReleased())
 
         if movement_keys_down:
             last_pressed_movement_key = movement_keys_down[-1]

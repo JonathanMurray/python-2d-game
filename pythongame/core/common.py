@@ -116,25 +116,54 @@ def is_x_and_y_within_distance(a: Tuple[int, int], b: Tuple[int, int], distance:
     return abs(a[0] - b[0]) < distance and abs(a[1] - b[1]) < distance
 
 
+def get_manhattan_distance(a: Tuple[int, int], b: Tuple[int, int]) -> int:
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+
 def get_rect_with_increased_size_in_all_directions(rect, increased_amount):
     return (rect[0] - increased_amount, rect[1] - increased_amount, rect[2] + increased_amount * 2,
             rect[3] + increased_amount * 2)
 
 
-class PotionType(Enum):
-    HEALTH = 1
-    MANA = 2
-    SPEED = 3
-    INVISIBILITY = 4
+class ConsumableType(Enum):
+    HEALTH_LESSER = 1
+    HEALTH = 2
+    MANA_LESSER = 11
+    MANA = 12
+    SPEED = 21
+    INVISIBILITY = 22
+    SCROLL_ABILITY_SUMMON = 101
 
 
-class EnemyType(Enum):
+class NpcType(Enum):
     NECROMANCER = 3
+    WARRIOR = 4
     RAT_1 = 5
     RAT_2 = 6
     DARK_REAPER = 7
     GOBLIN_WARLOCK = 8
     MUMMY = 9
+    PLAYER_SUMMON = 10
+
+
+class WallType(Enum):
+    WALL = 1
+    STATUE = 2
+    CHEST = 3
+    WALL_DIRECTIONAL_N = 11
+    WALL_DIRECTIONAL_NE = 12
+    WALL_DIRECTIONAL_E = 13
+    WALL_DIRECTIONAL_SE = 14
+    WALL_DIRECTIONAL_S = 15
+    WALL_DIRECTIONAL_SW = 16
+    WALL_DIRECTIONAL_W = 17
+    WALL_DIRECTIONAL_NW = 18
+    WALL_DIRECTIONAL_POINTY_NE = 19
+    WALL_DIRECTIONAL_POINTY_SE = 20
+    WALL_DIRECTIONAL_POINTY_SW = 21
+    WALL_DIRECTIONAL_POINTY_NW = 22
+    WALL_CHAIR = 30
+    ALTAR = 31
 
 
 class AbilityType(Enum):
@@ -145,11 +174,11 @@ class AbilityType(Enum):
     FROST_NOVA = 6
     WHIRLWIND = 7
     ENTANGLING_ROOTS = 8
+    SUMMON = 9
 
 
 class Sprite(Enum):
     PLAYER = 1
-    WALL = 2
     EFFECT_ABILITY_FROST_NOVA = 3
     PROJECTILE_PLAYER_FIREBALL = 11
     PROJECTILE_PLAYER_MAGIC_MISSILE = 12
@@ -157,17 +186,45 @@ class Sprite(Enum):
     PROJECTILE_ENEMY_GOBLIN_WARLOCK = 14
     PROJECTILE_PLAYER_ENTANGLING_ROOTS = 15
     POTION_HEALTH = 101
-    POTION_MANA = 102
+    POTION_HEALTH_LESSER = 102
+    POTION_MANA = 103
+    POTION_MANA_LESSER = 104
+    POTION_SCROLL_ABILITY_SUMMON = 105
     ENEMY_NECROMANCER = 201
     ENEMY_RAT_1 = 202
     ENEMY_RAT_2 = 203
     ENEMY_DARK_REAPER = 204
     ENEMY_GOBLIN_WARLOCK = 205
     ENEMY_MUMMY = 206
+    ENEMY_WARRIOR = 207
+    PLAYER_SUMMON = 250
     ITEM_AMULET_OF_MANA = 301
     ITEM_WINGED_BOOTS = 302
     ITEM_ROD_OF_LIGHTNING = 303
     ITEM_SWORD_OF_LEECHING = 304
+    ITEM_SOLDIERS_HELMET = 305
+    ITEM_BLESSED_SHIELD = 306
+    ITEM_STAFF_OF_FIRE = 307
+    DECORATION_GROUND_STONE = 401
+    DECORATION_PLANT = 403
+    DECORATION_ENTANGLING_ROOTS_EFFECT = 404
+    WALL = 501
+    WALL_STATUE = 502
+    WALL_ALTAR = 503
+    WALL_CHEST = 504
+    WALL_DIRECTIONAL_N = 511
+    WALL_DIRECTIONAL_NE = 512
+    WALL_DIRECTIONAL_E = 513
+    WALL_DIRECTIONAL_SE = 514
+    WALL_DIRECTIONAL_S = 515
+    WALL_DIRECTIONAL_SW = 516
+    WALL_DIRECTIONAL_W = 517
+    WALL_DIRECTIONAL_NW = 518
+    WALL_DIRECTIONAL_POINTY_NE = 519
+    WALL_DIRECTIONAL_POINTY_SE = 520
+    WALL_DIRECTIONAL_POINTY_SW = 521
+    WALL_DIRECTIONAL_POINTY_NW = 522
+    WALL_CHAIR = 530
 
 
 class BuffType(Enum):
@@ -180,6 +237,7 @@ class BuffType(Enum):
     STUNNED_BY_WHIRLWIND = 8
     ENEMY_GOBLIN_WARLOCK_BURNT = 9
     ROOTED_BY_ENTANGLING_ROOTS = 10
+    SUMMON_DIE_AFTER_DURATION = 11
 
 
 class ItemType(Enum):
@@ -187,6 +245,9 @@ class ItemType(Enum):
     AMULET_OF_MANA = 2
     SWORD_OF_LEECHING = 3
     ROD_OF_LIGHTNING = 4
+    SOLDIERS_HELMET = 5
+    BLESSED_SHIELD = 6
+    STAFF_OF_FIRE = 7
 
 
 class ProjectileType(Enum):

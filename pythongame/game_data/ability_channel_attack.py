@@ -5,7 +5,7 @@ from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, Projec
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path, \
     register_entity_sprite_initializer, SpriteInitializer, register_buff_text
-from pythongame.core.game_state import GameState, Enemy, WorldEntity, Projectile
+from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
 from pythongame.core.projectile_controllers import AbstractProjectileController, register_projectile_controller, \
     create_projectile_controller
 from pythongame.core.visual_effects import VisualCircle, VisualRect
@@ -13,19 +13,20 @@ from pythongame.core.visual_effects import VisualCircle, VisualRect
 PROJECTILE_SIZE = (30, 30)
 
 
-def _apply_channel_attack(game_state: GameState):
+def _apply_channel_attack(game_state: GameState) -> bool:
     game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.CHANNELING_MAGIC_MISSILES), Millis(1000))
+    return True
 
 
 class ChannelingMagicMissiles(AbstractBuffEffect):
     def __init__(self):
         self._time_since_firing = 0
 
-    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
+    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.is_stunned = True
         game_state.player_entity.set_not_moving()
 
-    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy,
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         self._time_since_firing += time_passed
         if self._time_since_firing > 150:
@@ -38,7 +39,7 @@ class ChannelingMagicMissiles(AbstractBuffEffect):
             game_state.projectile_entities.append(projectile)
             game_state.visual_effects.append(VisualRect((250, 0, 250), player_center_position, 45, 60, Millis(250), 1))
 
-    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_enemy: Enemy):
+    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.is_stunned = False
 
     def get_buff_type(self):
@@ -50,12 +51,12 @@ class PlayerMagicMissileProjectileController(AbstractProjectileController):
         super().__init__(400)
         self._enemies_hit = []
 
-    def apply_enemy_collision(self, enemy: Enemy, game_state: GameState):
-        if enemy not in self._enemies_hit:
-            deal_player_damage_to_enemy(game_state, enemy, 1)
+    def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState):
+        if npc not in self._enemies_hit:
+            deal_player_damage_to_enemy(game_state, npc, 1)
             game_state.visual_effects.append(
-                VisualCircle((250, 100, 250), enemy.world_entity.get_center_position(), 15, 25, Millis(100), 0))
-            self._enemies_hit.append(enemy)
+                VisualCircle((250, 100, 250), npc.world_entity.get_center_position(), 15, 25, Millis(100), 0))
+            self._enemies_hit.append(npc)
         return False
 
 

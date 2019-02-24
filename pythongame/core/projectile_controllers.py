@@ -1,7 +1,7 @@
 from typing import Dict, Type
 
 from pythongame.core.common import *
-from pythongame.core.game_state import Projectile, Enemy, GameState
+from pythongame.core.game_state import Projectile, NonPlayerCharacter, GameState
 
 
 class AbstractProjectileController:
@@ -14,7 +14,10 @@ class AbstractProjectileController:
         if self._age > self._max_age:
             projectile.has_expired = True
 
-    def apply_enemy_collision(self, _enemy: Enemy, _game_state: GameState):
+    def apply_enemy_collision(self, _npc: NonPlayerCharacter, _game_state: GameState):
+        return False
+
+    def apply_non_enemy_npc_collision(self, _npc: NonPlayerCharacter, _game_state: GameState):
         return False
 
     def apply_player_collision(self, _game_state: GameState):

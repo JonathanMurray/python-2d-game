@@ -5,7 +5,7 @@ from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, SpriteSheet, \
     register_entity_sprite_map
-from pythongame.core.game_state import GameState, WorldEntity, Projectile, Enemy
+from pythongame.core.game_state import GameState, WorldEntity, Projectile, NonPlayerCharacter
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
 from pythongame.core.visual_effects import VisualCircle
@@ -17,16 +17,17 @@ class ProjectileController(AbstractProjectileController):
     def __init__(self):
         super().__init__(1500)
 
-    def apply_enemy_collision(self, enemy: Enemy, game_state: GameState):
-        damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, 3)
+    def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState):
+        damage_amount = 3 + game_state.player_state.fireball_dmg_boost
+        damage_was_dealt = deal_player_damage_to_enemy(game_state, npc, damage_amount)
         if not damage_was_dealt:
             return False
         game_state.visual_effects.append(
-            VisualCircle((250, 100, 50), enemy.world_entity.get_center_position(), 22, 45, Millis(100), 0))
+            VisualCircle((250, 100, 50), npc.world_entity.get_center_position(), 22, 45, Millis(100), 0))
         return True
 
 
-def _apply_ability(game_state: GameState):
+def _apply_ability(game_state: GameState) -> bool:
     player_entity = game_state.player_entity
     distance_from_player = 35
     projectile_pos = translate_in_direction(
@@ -41,13 +42,14 @@ def _apply_ability(game_state: GameState):
     effect_position = (projectile_pos[0] + PROJECTILE_SIZE[0] // 2,
                        projectile_pos[1] + PROJECTILE_SIZE[1] // 2)
     game_state.visual_effects.append(VisualCircle((250, 150, 50), effect_position, 9, 18, Millis(80), 0))
+    return True
 
 
 def register_fireball_ability():
     register_ability_effect(AbilityType.FIREBALL, _apply_ability)
     register_ability_data(
         AbilityType.FIREBALL,
-        AbilityData("Fireball", UiIconSprite.ABILITY_FIREBALL, 3, Millis(300), "Damages the first enemy that it hits"))
+        AbilityData("Fireball", UiIconSprite.ABILITY_FIREBALL, 4, Millis(300), "Damages the first enemy that it hits"))
     register_ui_icon_sprite_path(UiIconSprite.ABILITY_FIREBALL, "resources/graphics/icon_fireball.png")
     register_projectile_controller(ProjectileType.PLAYER_FIREBALL, ProjectileController)
 

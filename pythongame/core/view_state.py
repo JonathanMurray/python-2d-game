@@ -4,7 +4,7 @@ from pythongame.core.common import AbilityType, Millis
 
 MINIMAP_UPDATE_INTERVAL = 1000
 MESSAGE_DURATION = 2500
-HIGHLIGHT_POTION_ACTION_DURATION = 120
+HIGHLIGHT_consumable_ACTION_DURATION = 120
 HIGHLIGHT_ABILITY_ACTION_DURATION = 120
 
 
@@ -17,21 +17,21 @@ class ViewState:
         self._player_entity_center_position = (0, 0)
         self._ticks_since_minimap_updated = MINIMAP_UPDATE_INTERVAL
         self._ticks_since_message_updated = 0
-        self._ticks_since_last_potion_action = 0
+        self._ticks_since_last_consumable_action = 0
         self._ticks_since_last_ability_action = 0
 
         self.player_minimap_relative_position: Tuple[float, float] = (0, 0)
         self.message = ""
-        self.highlighted_potion_action: Optional[int] = None
+        self.highlighted_consumable_action: Optional[int] = None
         self.highlighted_ability_action: Optional[AbilityType] = None
 
     def notify_ability_was_clicked(self, ability_type: AbilityType):
         self.highlighted_ability_action = ability_type
         self._ticks_since_last_ability_action = 0
 
-    def notify_potion_was_clicked(self, slot_number: int):
-        self.highlighted_potion_action = slot_number
-        self._ticks_since_last_potion_action = 0
+    def notify_consumable_was_clicked(self, slot_number: int):
+        self.highlighted_consumable_action = slot_number
+        self._ticks_since_last_consumable_action = 0
 
     def notify_player_entity_center_position(self, player_entity_center_position: Tuple[int, int]):
         self._player_entity_center_position = player_entity_center_position
@@ -51,9 +51,9 @@ class ViewState:
         if self._ticks_since_message_updated > MESSAGE_DURATION:
             self.message = ""
 
-        self._ticks_since_last_potion_action += time_passed
-        if self._ticks_since_last_potion_action > HIGHLIGHT_POTION_ACTION_DURATION:
-            self.highlighted_potion_action = None
+        self._ticks_since_last_consumable_action += time_passed
+        if self._ticks_since_last_consumable_action > HIGHLIGHT_consumable_ACTION_DURATION:
+            self.highlighted_consumable_action = None
 
         self._ticks_since_last_ability_action += time_passed
         if self._ticks_since_last_ability_action > HIGHLIGHT_ABILITY_ACTION_DURATION:

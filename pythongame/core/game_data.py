@@ -5,9 +5,8 @@ import pygame
 
 from pythongame.core.common import *
 
-WALL_SIZE = (25, 25)
-
 ITEM_ENTITY_SIZE = (30, 30)
+POTION_ENTITY_SIZE = (30, 30)
 
 
 class SpriteInitializer:
@@ -60,10 +59,13 @@ class Animation:
 
 # TODO Ideally this shouldn't need to be defined here
 class UiIconSprite(Enum):
-    POTION_HEALTH = 1
-    POTION_MANA = 2
-    POTION_SPEED = 3
-    POTION_INVISIBILITY = 4
+    POTION_HEALTH_LESSER = 1
+    POTION_HEALTH = 2
+    POTION_MANA_LESSER = 3
+    POTION_MANA = 4
+    POTION_SPEED = 11
+    POTION_INVISIBILITY = 12
+    POTION_SCROLL_ABILITY_SUMMON = 13
     ABILITY_FIREBALL = 101
     ABILITY_HEAL = 102
     ABILITY_MAGIC_MISSILE = 103
@@ -71,10 +73,16 @@ class UiIconSprite(Enum):
     ABILITY_FROST_NOVA = 105
     ABILITY_WHIRLWIND = 106
     ABILITY_ENTANGLING_ROOTS = 107
+    ABILITY_SUMMON = 108
     ITEM_WINGED_BOOTS = 201
     ITEM_AMULET_OF_MANA = 202
     ITEM_SWORD_OF_LEECHING = 203
     ITEM_ROD_OF_LIGHTNING = 204
+    ITEM_SOLDIERS_HELMET = 205
+    ITEM_BLESSED_SHIELD = 206
+    ITEM_STAFF_OF_FIRE = 207
+    MAP_EDITOR_TRASHCAN = 301
+    MAP_EDITOR_RECYCLING = 302
 
 
 class AbilityData:
@@ -92,16 +100,19 @@ class UserAbilityKey:
         self.pygame_key = pygame_key
 
 
-class EnemyData:
-    def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float):
+class NpcData:
+    def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
+                 exp_reward: int, is_enemy: bool):
         self.sprite = sprite
         self.size = size
         self.max_health = max_health
         self.health_regen = health_regen
         self.speed = speed
+        self.exp_reward = exp_reward
+        self.is_enemy = is_enemy
 
 
-class PotionData:
+class ConsumableData:
     def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Optional[Sprite], name: str, description: str):
         self.icon_sprite = icon_sprite
         self.entity_sprite = entity_sprite
@@ -117,19 +128,21 @@ class ItemData:
         self.description = description
 
 
-ENEMIES: Dict[EnemyType, EnemyData] = {}
+class WallData:
+    def __init__(self, sprite: Sprite, size: Tuple[int, int]):
+        self.sprite = sprite
+        self.size = size
 
-_stone_tile_file_name = "resources/graphics/stone_tile.png"
-ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Animation]] = {
-    Sprite.WALL: {
-        Direction.DOWN: Animation(
-            [SpriteInitializer(_stone_tile_file_name, (WALL_SIZE[0] - 2, WALL_SIZE[1] - 2))], None, (1, 1))
-    }
-}
+
+NON_PLAYER_CHARACTERS: Dict[NpcType, NpcData] = {}
+
+ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Animation]] = {}
 
 UI_ICON_SPRITE_PATHS: Dict[UiIconSprite, str] = {}
 
-POTIONS: Dict[PotionType, PotionData] = {}
+CONSUMABLES: Dict[ConsumableType, ConsumableData] = {}
+
+WALLS: Dict[WallType, WallData] = {}
 
 ITEMS: Dict[ItemType, ItemData] = {}
 
@@ -140,8 +153,12 @@ USER_ABILITY_KEYS: Dict[AbilityType, UserAbilityKey] = {}
 BUFF_TEXTS: Dict[BuffType, str] = {}
 
 
-def register_enemy_data(enemy_type: EnemyType, enemy_data: EnemyData):
-    ENEMIES[enemy_type] = enemy_data
+def register_npc_data(npc_type: NpcType, enemy_data: NpcData):
+    NON_PLAYER_CHARACTERS[npc_type] = enemy_data
+
+
+def register_wall_data(wall_type: WallType, wall_data: WallData):
+    WALLS[wall_type] = wall_data
 
 
 def register_ability_data(ability_type: AbilityType, ability_data: AbilityData):
@@ -185,8 +202,8 @@ def register_buff_text(buff_type: BuffType, text: str):
     BUFF_TEXTS[buff_type] = text
 
 
-def register_potion_data(potion_type: PotionType, potion_data: PotionData):
-    POTIONS[potion_type] = potion_data
+def register_consumable_data(consumable_type: ConsumableType, data: ConsumableData):
+    CONSUMABLES[consumable_type] = data
 
 
 def register_item_data(item_type: ItemType, item_data: ItemData):

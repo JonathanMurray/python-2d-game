@@ -6,7 +6,7 @@ from pythongame.core.item_effects import register_item_effect, AbstractItemEffec
 
 ITEM_TYPE = ItemType.WINGED_BOOTS
 
-SPEED_MULTIPLIER = 0.3
+SPEED_MULTIPLIER = 0.2
 
 
 class ItemEffect(AbstractItemEffect):

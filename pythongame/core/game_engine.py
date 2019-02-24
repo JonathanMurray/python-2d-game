@@ -1,11 +1,13 @@
-from pythongame.core.ability_effects import apply_ability_effect
 from pythongame.core.common import *
-from pythongame.core.game_data import POTIONS, ITEMS
-from pythongame.core.game_state import GameState, handle_buffs
+from pythongame.core.consumable_effects import try_consume_consumable, ConsumableWasConsumed, \
+    ConsumableFailedToBeConsumed
+from pythongame.core.game_data import CONSUMABLES, ITEMS, ITEM_ENTITY_SIZE, NON_PLAYER_CHARACTERS
+from pythongame.core.game_data import POTION_ENTITY_SIZE
+from pythongame.core.game_state import GameState, handle_buffs, WorldEntity, ItemOnGround, ConsumableOnGround
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.player_controls import TryUseAbilityResult, PlayerControls
-from pythongame.core.potion_effects import try_consume_potion, PotionWasConsumed, PotionFailedToBeConsumed
 from pythongame.core.view_state import ViewState
+from pythongame.core.visual_effects import create_visual_exp_text
 
 
 class GameEngine:
@@ -24,24 +26,26 @@ class GameEngine:
     def try_use_ability(self, ability_type: AbilityType):
         if not self.game_state.player_state.is_stunned:
             self.view_state.notify_ability_was_clicked(ability_type)
-            result = self.player_controls.try_use_ability(self.game_state.player_state, ability_type)
-            if result == TryUseAbilityResult.SUCCESS:
-                apply_ability_effect(self.game_state, ability_type)
-            elif result == TryUseAbilityResult.NOT_ENOUGH_MANA:
+            result = self.player_controls.try_use_ability(ability_type, self.game_state)
+            if result == TryUseAbilityResult.NOT_ENOUGH_MANA:
                 self.view_state.set_message("Not enough mana!")
+            elif result == TryUseAbilityResult.FAILED_TO_EXECUTE:
+                self.view_state.set_message("Failed to execute ability!")
 
-    def try_use_potion(self, slot_number: int):
+    def try_use_consumable(self, slot_number: int):
         if not self.game_state.player_state.is_stunned:
-            self.view_state.notify_potion_was_clicked(slot_number)
-            potion_type_in_this_slot = self.game_state.player_state.potion_slots[slot_number]
-            if potion_type_in_this_slot:
-                result = try_consume_potion(potion_type_in_this_slot, self.game_state)
-                if isinstance(result, PotionWasConsumed):
-                    self.game_state.player_state.potion_slots[slot_number] = None
-                elif isinstance(result, PotionFailedToBeConsumed):
+            self.view_state.notify_consumable_was_clicked(slot_number)
+            consumable_type_in_this_slot = self.game_state.player_state.consumable_slots[slot_number]
+            if consumable_type_in_this_slot:
+                result = try_consume_consumable(consumable_type_in_this_slot, self.game_state)
+                if isinstance(result, ConsumableWasConsumed):
+                    self.game_state.player_state.consumable_slots[slot_number] = None
+                    if result.message:
+                        self.view_state.set_message(result.message)
+                elif isinstance(result, ConsumableFailedToBeConsumed):
                     self.view_state.set_message(result.reason)
             else:
-                self.view_state.set_message("No potion to use!")
+                self.view_state.set_message("Nothing to use!")
 
     def move_in_direction(self, direction: Direction):
         if not self.game_state.player_state.is_stunned:
@@ -50,18 +54,37 @@ class GameEngine:
     def stop_moving(self):
         self.game_state.player_entity.set_not_moving()
 
+    def switch_inventory_items(self, slot_1: int, slot_2: int):
+        self.game_state.player_state.switch_item_slots(slot_1, slot_2)
+
+    def switch_consumable_slots(self, slot_1: int, slot_2):
+        self.game_state.player_state.switch_consumable_slots(slot_1, slot_2)
+
+    def drop_inventory_item_on_ground(self, item_slot: int, game_world_position: Tuple[int, int]):
+        item_type = self.game_state.player_state.item_slots[item_slot]
+        item_entity = WorldEntity(game_world_position, ITEM_ENTITY_SIZE, ITEMS[item_type].entity_sprite)
+        self.game_state.items_on_ground.append(ItemOnGround(item_entity, item_type))
+        get_item_effect(item_type).apply_end_effect(self.game_state)
+        self.game_state.player_state.item_slots[item_slot] = None
+
+    def drop_consumable_on_ground(self, consumable_slot: int, game_world_position: Tuple[int, int]):
+        consumable_type = self.game_state.player_state.consumable_slots[consumable_slot]
+        entity = WorldEntity(game_world_position, POTION_ENTITY_SIZE, CONSUMABLES[consumable_type].entity_sprite)
+        self.game_state.consumables_on_ground.append(ConsumableOnGround(entity, consumable_type))
+        self.game_state.player_state.consumable_slots[consumable_slot] = None
+
     def _is_enemy_close_to_camera(self, enemy):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(
-            self.game_state.camera_world_area.rect(), 250)
+            self.game_state.camera_world_area.rect(), 100)
         return rects_intersect(enemy.world_entity.rect(), camera_rect_with_margin)
 
     # Returns True if player died
     def run_one_frame(self, time_passed: Millis):
-        for e in self.game_state.enemies:
-            # Enemy AI shouldn't run if enemy is too far out of sight
+        for e in self.game_state.non_player_characters:
+            # NonPlayerCharacter AI shouldn't run if enemy is too far out of sight
             if self._is_enemy_close_to_camera(e):
-                e.enemy_mind.control_enemy(self.game_state, e, self.game_state.player_entity,
-                                           self.game_state.player_state.is_invisible, time_passed)
+                e.npc_mind.control_npc(self.game_state, e, self.game_state.player_entity,
+                                       self.game_state.player_state.is_invisible, time_passed)
 
         self.view_state.notify_player_entity_center_position(self.game_state.player_entity.get_center_position())
 
@@ -75,7 +98,15 @@ class GameEngine:
         for visual_effect in self.game_state.visual_effects:
             visual_effect.notify_time_passed(time_passed)
 
-        self.game_state.remove_dead_enemies()
+        npcs_that_died = self.game_state.remove_dead_npcs()
+        enemies_that_died = [e for e in npcs_that_died if e.is_enemy]
+        if enemies_that_died:
+            exp_gained = sum([NON_PLAYER_CHARACTERS[e.npc_type].exp_reward for e in enemies_that_died])
+            self.game_state.visual_effects.append(create_visual_exp_text(self.game_state.player_entity, exp_gained))
+            did_player_level_up = self.game_state.player_state.gain_exp(exp_gained)
+            if did_player_level_up:
+                self.view_state.set_message("You reached level " + str(self.game_state.player_state.level))
+
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_effects()
 
@@ -87,7 +118,7 @@ class GameEngine:
         for buff_effect in player_buffs_update.buffs_that_ended:
             buff_effect.apply_end_effect(self.game_state, self.game_state.player_entity, None)
 
-        for enemy in self.game_state.enemies:
+        for enemy in self.game_state.non_player_characters:
             enemy.regenerate_health(time_passed)
             buffs_update = handle_buffs(enemy.active_buffs, time_passed)
             for buff_effect in buffs_update.buffs_that_started:
@@ -101,16 +132,16 @@ class GameEngine:
             if item_type:
                 get_item_effect(item_type).apply_middle_effect(self.game_state, time_passed)
 
-        self.game_state.player_state.regenerate_mana(time_passed)
+        self.game_state.player_state.regenerate_health_and_mana(time_passed)
         self.game_state.player_state.recharge_ability_cooldowns(time_passed)
 
         self.game_state.player_entity.update_movement_animation(time_passed)
-        for e in self.game_state.enemies:
+        for e in self.game_state.non_player_characters:
             e.world_entity.update_movement_animation(time_passed)
         for projectile in self.game_state.projectile_entities:
             projectile.world_entity.update_movement_animation(time_passed)
 
-        for e in self.game_state.enemies:
+        for e in self.game_state.non_player_characters:
             # Enemies shouldn't move towards player when they are out of sight
             if self._is_enemy_close_to_camera(e) and not e.is_stunned():
                 self.game_state.update_world_entity_position_within_game_world(e.world_entity, time_passed)
@@ -122,33 +153,51 @@ class GameEngine:
 
         for visual_effect in self.game_state.visual_effects:
             visual_effect.update_position_if_attached_to_entity()
+            if visual_effect.attached_to_entity \
+                    and not visual_effect.attached_to_entity in [e.world_entity for e in
+                                                                 self.game_state.non_player_characters] \
+                    and visual_effect.attached_to_entity != self.game_state.player_entity:
+                visual_effect.has_expired = True
 
         # ------------------------------------
         #          HANDLE COLLISIONS
         # ------------------------------------
 
         entities_to_remove = []
-        for potion in self.game_state.potions_on_ground:
-            if boxes_intersect(self.game_state.player_entity, potion.world_entity):
-                empty_potion_slot = self.game_state.player_state.find_first_empty_potion_slot()
-                if empty_potion_slot:
-                    self.game_state.player_state.potion_slots[empty_potion_slot] = potion.potion_type
-                    self.view_state.set_message("You picked up " + POTIONS[potion.potion_type].name)
-                    entities_to_remove.append(potion)
+        for consumable in self.game_state.consumables_on_ground:
+            if boxes_intersect(self.game_state.player_entity, consumable.world_entity):
+                empty_consumable_slots = self.game_state.player_state.find_first_empty_consumable_slot()
+                consumable_name = CONSUMABLES[consumable.consumable_type].name
+                if empty_consumable_slots:
+                    self.game_state.player_state.consumable_slots[empty_consumable_slots] = consumable.consumable_type
+                    self.view_state.set_message("You picked up " + consumable_name)
+                    entities_to_remove.append(consumable)
+                else:
+                    self.view_state.set_message("No space for " + consumable_name)
         for item in self.game_state.items_on_ground:
             if boxes_intersect(self.game_state.player_entity, item.world_entity):
                 empty_item_slot = self.game_state.player_state.find_first_empty_item_slot()
+                item_name = ITEMS[item.item_type].name
                 if empty_item_slot:
                     self.game_state.player_state.item_slots[empty_item_slot] = item.item_type
                     item_effect = get_item_effect(item.item_type)
                     item_effect.apply_start_effect(self.game_state)
-                    self.view_state.set_message("You picked up " + ITEMS[item.item_type].name)
+                    self.view_state.set_message("You picked up " + item_name)
                     entities_to_remove.append(item)
+                else:
+                    self.view_state.set_message("No space for " + item_name)
 
-        for enemy in self.game_state.enemies:
+        for enemy in [e for e in self.game_state.non_player_characters if e.is_enemy]:
             for projectile in self.game_state.get_projectiles_intersecting_with(enemy.world_entity):
                 should_remove_projectile = projectile.projectile_controller.apply_enemy_collision(
                     enemy, self.game_state)
+                if should_remove_projectile:
+                    entities_to_remove.append(projectile)
+
+        for non_enemy_npc in self.game_state.non_enemy_npcs:
+            for projectile in self.game_state.get_projectiles_intersecting_with(non_enemy_npc.world_entity):
+                should_remove_projectile = projectile.projectile_controller.apply_non_enemy_npc_collision(
+                    non_enemy_npc, self.game_state)
                 if should_remove_projectile:
                     entities_to_remove.append(projectile)
 

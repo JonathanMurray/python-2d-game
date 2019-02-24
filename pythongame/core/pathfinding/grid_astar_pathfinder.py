@@ -90,12 +90,15 @@ class GlobalPathFinder:
                                      start_cell[1] + path_max_distance_from_start)
         result = astar.astar(start_cell, goal_cell)
 
+        # TODO: Handle this in a better way
+        # HACK:
         if result is None:
-            # TODO: Handle this in a better way
-            # HACK:
             # print("Couldn't find path. Trying with position right above player instead.")
             goal_cell_2 = (goal_cell[0], goal_cell[1] - 1)
             result = astar.astar(start_cell, goal_cell_2)
+            if result is None:
+                goal_cell_3 = (goal_cell[0] - 1, goal_cell[1])
+                result = astar.astar(start_cell, goal_cell_3)
 
         if result is None:
             return None

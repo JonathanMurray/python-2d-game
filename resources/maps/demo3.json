@@ -31,13 +31,6 @@
     {
       "enemy_type": "RAT_1",
       "position": [
-        2525,
-        450
-      ]
-    },
-    {
-      "enemy_type": "RAT_1",
-      "position": [
         2650,
         625
       ]
@@ -741,12 +734,26 @@
         2950,
         1900
       ]
+    },
+    {
+      "enemy_type": "RAT_1",
+      "position": [
+        2575,
+        450
+      ]
+    },
+    {
+      "enemy_type": "RAT_1",
+      "position": [
+        2150,
+        450
+      ]
     }
   ],
   "player": {
     "position": [
-      1525,
-      450
+      1700,
+      475
     ]
   },
   "wall_positions": [
@@ -1555,10 +1562,6 @@
       400
     ],
     [
-      1450,
-      400
-    ],
-    [
       2650,
       400
     ],
@@ -1587,10 +1590,6 @@
       425
     ],
     [
-      1450,
-      425
-    ],
-    [
       3000,
       425
     ],
@@ -1615,10 +1614,6 @@
       450
     ],
     [
-      1450,
-      450
-    ],
-    [
       3000,
       450
     ],
@@ -1640,10 +1635,6 @@
     ],
     [
       900,
-      475
-    ],
-    [
-      1450,
       475
     ],
     [
@@ -1671,10 +1662,6 @@
       500
     ],
     [
-      1450,
-      500
-    ],
-    [
       3000,
       500
     ],
@@ -1696,10 +1683,6 @@
     ],
     [
       900,
-      525
-    ],
-    [
-      1450,
       525
     ],
     [
@@ -6565,123 +6548,187 @@
     [
       3625,
       2650
+    ],
+    [
+      1425,
+      550
+    ],
+    [
+      1400,
+      550
+    ],
+    [
+      1400,
+      375
+    ],
+    [
+      1425,
+      375
+    ],
+    [
+      1525,
+      525
+    ],
+    [
+      1525,
+      500
+    ],
+    [
+      1525,
+      475
+    ],
+    [
+      1525,
+      450
+    ],
+    [
+      1525,
+      425
+    ],
+    [
+      1525,
+      400
+    ],
+    [
+      1400,
+      525
+    ],
+    [
+      1400,
+      500
+    ],
+    [
+      1400,
+      475
+    ],
+    [
+      1400,
+      450
+    ],
+    [
+      1400,
+      425
+    ],
+    [
+      1400,
+      400
     ]
   ],
-  "potions_on_ground": [
+  "consumables_on_ground": [
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         1825,
         650
       ]
     },
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         1900,
         650
       ]
     },
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         1900,
         975
       ]
     },
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         50,
         1550
       ]
     },
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         100,
         1550
       ]
     },
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         150,
         1550
       ]
     },
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         200,
         1550
       ]
     },
     {
-      "potion_type": "HEALTH",
+      "consumable_type": "HEALTH",
       "position": [
         2950,
         1975
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         1600,
         650
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         1650,
         650
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         1700,
         650
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         2775,
         925
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         2775,
         975
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         100,
         1900
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         150,
         1900
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         200,
         1900
       ]
     },
     {
-      "potion_type": "MANA",
+      "consumable_type": "MANA",
       "position": [
         2900,
         1975
@@ -6722,6 +6769,883 @@
       "position": [
         3125,
         475
+      ]
+    }
+  ],
+  "decorations": [
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1600.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1650.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1700.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1700.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1650.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1600.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1550.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1450.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1450.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1450.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1550.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1550.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1500.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1450.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1600.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1650.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1700.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1550.0,
+        350.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1550.0,
+        300.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1550.0,
+        250.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1600.0,
+        250.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1600.0,
+        300.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1600.0,
+        350.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1650.0,
+        350.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1650.0,
+        300.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1650.0,
+        250.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1700.0,
+        250.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1700.0,
+        300.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1700.0,
+        350.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1700.0,
+        350.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1550.0,
+        550.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1550.0,
+        600.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1550.0,
+        650.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1600.0,
+        650.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1600.0,
+        600.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1600.0,
+        550.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1650.0,
+        550.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1650.0,
+        600.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1650.0,
+        650.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1700.0,
+        650.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1700.0,
+        600.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1700.0,
+        550.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1750.0,
+        250.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1750.0,
+        300.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1750.0,
+        350.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1750.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1750.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1750.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1750.0,
+        550.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1750.0,
+        600.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1750.0,
+        650.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1800.0,
+        650.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1800.0,
+        600.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1850.0,
+        600.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1850.0,
+        650.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1900.0,
+        650.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1900.0,
+        600.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1950.0,
+        600.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1950.0,
+        650.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1950.0,
+        550.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1900.0,
+        550.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1850.0,
+        550.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1800.0,
+        550.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1800.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1850.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1900.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1950.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1800.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1850.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1900.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1950.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1950.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1900.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1850.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1800.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1800.0,
+        350.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1800.0,
+        300.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1800.0,
+        250.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1850.0,
+        250.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1900.0,
+        250.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1850.0,
+        300.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1850.0,
+        350.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1900.0,
+        350.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1900.0,
+        300.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1950.0,
+        250.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1950.0,
+        300.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1950.0,
+        350.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2000.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2050.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2100.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2100.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2050.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2000.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2000.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2050.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2100.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2150.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2200.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2250.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2300.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2350.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2350.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2350.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2300.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2250.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2200.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2150.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2150.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2200.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2250.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2300.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2400.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2400.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2400.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2450.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2450.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        2450.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1400.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1400.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1400.0,
+        400.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1500.0,
+        450.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        1500.0,
+        500.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_STATUE",
+      "position": [
+        1450.0,
+        425.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_PLANT",
+      "position": [
+        1900.0,
+        375.0
+      ]
+    },
+    {
+      "sprite": "DECORATION_PLANT",
+      "position": [
+        2225.0,
+        400.0
       ]
     }
   ],
