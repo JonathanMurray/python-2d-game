@@ -17,7 +17,7 @@ COLOR_BLACK = (0, 0, 0)
 COLOR_RED = (250, 0, 0)
 COLOR_BLUE = (0, 0, 250)
 COLOR_HIGHLIGHTED_ICON = (250, 250, 150)
-COLOR_BORDER = (139,69,19)
+COLOR_BORDER = (139, 69, 19)
 UI_ICON_SIZE = (32, 32)
 MAP_EDITOR_UI_ICON_SIZE = (32, 32)
 
@@ -120,6 +120,10 @@ class View:
 
         # This is updated every time the view is called
         self.camera_world_area = None
+
+        # TODO: Make player portrait dynamic
+        player_portrait_img = pygame.image.load('./resources/graphics/player_portrait.gif').convert_alpha()
+        self.scaled_player_portrait = pygame.transform.scale(player_portrait_img, (100, 70))
 
     # ------------------------------------
     #         TRANSLATING COORDINATES
@@ -308,11 +312,11 @@ class View:
         w = size[0]
         h = size[1]
         x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
-        self._rect_filled((40, 40, 40), (x, y, w, h))
+        self._rect_filled((40, 40, 50), (x, y, w, h))
         if consumable_type:
             icon_sprite = CONSUMABLES[consumable_type].icon_sprite
             self._image(self.images_by_ui_sprite[icon_sprite], (x, y))
-        self._rect(COLOR_WHITE, (x, y, w, h), 1)
+        self._rect((150, 150, 190), (x, y, w, h), 1)
         if highlighted_consumable_action == consumable_number:
             self._rect(COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
         self._text(self.font_ui_icon_keys, str(consumable_number), (x + 12, y + h + 4))
@@ -325,12 +329,12 @@ class View:
         ability = ABILITIES[ability_type]
         ability_key = USER_ABILITY_KEYS[ability_type]
         icon_sprite = ability.icon_sprite
-        self._rect_filled((40, 40, 40), (x, y, w, h))
+        self._rect_filled((40, 40, 50), (x, y, w, h))
         self._image(self.images_by_ui_sprite[icon_sprite], (x, y))
-        self._rect(COLOR_WHITE, (x, y, w, h), 1)
+        self._rect((150, 150, 190), (x, y, w, h), 1)
         if highlighted_ability_action == ability_type:
             self._rect(COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
-        self._text(self.font_ui_icon_keys, ability_key.key_string, (x + 8, y + h + 4))
+        self._text(self.font_ui_icon_keys, ability_key.key_string, (x + 12, y + h + 4))
 
         if ability_cooldowns_remaining[ability_type] > 0:
             ratio_remaining = ability_cooldowns_remaining[ability_type] / ability.cooldown
@@ -341,11 +345,11 @@ class View:
         w = size[0]
         h = size[1]
         x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
-        self._rect_filled((40, 40, 40), (x, y, w, h))
+        self._rect_filled((40, 40, 50), (x, y, w, h))
         if item_type:
             ui_icon_sprite = ITEMS[item_type].icon_sprite
             self._image(self.images_by_ui_sprite[ui_icon_sprite], (x, y))
-        self._rect((180, 180, 250), (x, y, w, h), 1)
+        self._rect((150, 150, 190), (x, y, w, h), 1)
 
     def _map_editor_icon_in_ui(self, x_in_ui, y_in_ui, size, highlighted: bool, user_input_key: str,
                                entity: Optional[MapEditorWorldEntity], non_entity_icon: Optional[UiIconSprite]):
@@ -392,12 +396,12 @@ class View:
     def _minimap_in_ui(self, position_in_ui, size, player_relative_position):
         pos_in_screen = self._translate_ui_position_to_screen(position_in_ui)
         rect_in_screen = (pos_in_screen[0], pos_in_screen[1], size[0], size[1])
-        self._rect_filled((100, 100, 100), rect_in_screen)
-        self._rect(COLOR_WHITE, rect_in_screen, 1)
+        self._rect_filled((40, 40, 50), rect_in_screen)
+        self._rect((150, 150, 190), rect_in_screen, 1)
         dot_x = rect_in_screen[0] + player_relative_position[0] * size[0]
         dot_y = rect_in_screen[1] + player_relative_position[1] * size[1]
         dot_w = 4
-        self._rect_filled((0, 200, 0), (dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
+        self._rect_filled((100, 160, 100), (dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
     def _message(self, message):
         x_message = self.ui_screen_area.w / 2 - 140
@@ -486,34 +490,48 @@ class View:
         y_3 = 90
         y_4 = y_3 + 22
 
-        x_exp_bar = 50
+        x_1 = 140
+
+        x_exp_bar = x_1
         self._text_in_ui(self.font_level, "Level " + str(player_level), x_exp_bar, y_0)
-        self._stat_bar_in_ui((x_exp_bar, y_0 + 18), 600, 2, player_exp / player_max_exp_in_this_level, COLOR_WHITE,
+        self._stat_bar_in_ui((x_exp_bar, y_0 + 18), 500, 2, player_exp / player_max_exp_in_this_level, (200,200,200),
                              True)
 
         x_0 = 20
-        rect_healthbar = (x_0, y_2 + 2, 100, 28)
+
+        rect_portrait_pos = self._translate_ui_position_to_screen((x_0, y_0 + 13))
+        self._image(self.scaled_player_portrait, rect_portrait_pos)
+        self._rect((160, 160, 180), (rect_portrait_pos[0], rect_portrait_pos[1], 100, 70), 2)
+
+        rect_healthbar = (x_0, y_4 - 1, 100, 14)
         self._stat_bar_in_ui((rect_healthbar[0], rect_healthbar[1]), rect_healthbar[2], rect_healthbar[3],
-                             player_health / player_max_health, COLOR_RED, True)
+                             player_health / player_max_health, (200, 0, 50), True)
         if is_point_in_rect(mouse_ui_position, rect_healthbar):
             tooltip_title = "Health"
             tooltip_details = ["regeneration: " + str(player_health_regen) + "/s"]
             tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_healthbar[0], rect_healthbar[1]))
         health_text = str(player_health) + "/" + str(player_max_health)
-        self._text_in_ui(self.font_ui_stat_bar_numbers, health_text, x_0 + 20, y_2 + 10)
+        self._text_in_ui(self.font_ui_stat_bar_numbers, health_text, x_0 + 20, y_4 - 1)
 
-        rect_manabar = (x_0, y_4 + 2, 100, 28)
+        rect_manabar = (x_0, y_4 + 20, 100, 14)
         self._stat_bar_in_ui((rect_manabar[0], rect_manabar[1]), rect_manabar[2], rect_manabar[3],
-                             player_mana / player_max_mana, COLOR_BLUE, True)
+                             player_mana / player_max_mana, (50, 0, 200), True)
         if is_point_in_rect(mouse_ui_position, rect_manabar):
             tooltip_title = "Mana"
             tooltip_details = ["regeneration: " + str(player_mana_regen) + "/s"]
             tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_manabar[0], rect_manabar[1]))
         mana_text = str(player_mana) + "/" + str(player_max_mana)
-        self._text_in_ui(self.font_ui_stat_bar_numbers, mana_text, x_0 + 20, y_4 + 10)
+        self._text_in_ui(self.font_ui_stat_bar_numbers, mana_text, x_0 + 20, y_4 + 20)
 
-        x_1 = 140
-        icon_space = 5
+        # CONSUMABLES
+        icon_space = 2
+        icon_rect_padding = 2
+        consumables_rect_pos = self._translate_ui_position_to_screen((x_1 - icon_rect_padding, y_2 - icon_rect_padding))
+        consumables_rect = (
+            consumables_rect_pos[0], consumables_rect_pos[1],
+            (UI_ICON_SIZE[0] + icon_space) * len(consumable_slots) - icon_space + icon_rect_padding * 2,
+            UI_ICON_SIZE[1] + icon_rect_padding * 2)
+        self._rect_filled((60, 60, 80), consumables_rect)
         for i, slot_number in enumerate(consumable_slots):
             x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_2
@@ -527,6 +545,14 @@ class View:
             self._consumable_icon_in_ui(x, y, UI_ICON_SIZE, slot_number,
                                         consumable_type, highlighted_consumable_action)
 
+        # ABILITIES
+        abilities_rect_pos = self._translate_ui_position_to_screen((x_1 - icon_rect_padding, y_4 - icon_rect_padding))
+        max_num_abilities = 5
+        abilities_rect = (
+            abilities_rect_pos[0], abilities_rect_pos[1],
+            (UI_ICON_SIZE[0] + icon_space) * max_num_abilities - icon_space + icon_rect_padding * 2,
+            UI_ICON_SIZE[1] + icon_rect_padding * 2)
+        self._rect_filled((60, 60, 80), abilities_rect)
         for i, ability_type in enumerate(abilities):
             x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_4
@@ -541,7 +567,14 @@ class View:
             self._ability_icon_in_ui(x, y, UI_ICON_SIZE, ability_type,
                                      highlighted_ability_action, ability_cooldowns_remaining)
 
+        # ITEMS
         x_2 = 338
+        items_rect_pos = self._translate_ui_position_to_screen((x_2 - icon_rect_padding, y_2 - icon_rect_padding))
+        items_rect = (
+            items_rect_pos[0], items_rect_pos[1],
+            (UI_ICON_SIZE[0] + icon_space) * len(item_slots) - icon_space + icon_rect_padding * 2,
+            UI_ICON_SIZE[1] + icon_rect_padding * 2)
+        self._rect_filled((60, 60, 80), items_rect)
         for i, item_slot_number in enumerate(item_slots.keys()):
             x = x_2 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_2
@@ -555,6 +588,10 @@ class View:
             self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type)
 
         x_3 = 465
+        minimap_padding_rect_pos = self._translate_ui_position_to_screen((x_3 - 2, y_2 - 2))
+        minimap_padding_rect = (minimap_padding_rect_pos[0], minimap_padding_rect_pos[1], 100 + 4, 100 + 4)
+        self._rect_filled((60, 60, 80), minimap_padding_rect)
+        #self._rect((200, 30, 50), minimap_padding_rect, 1)
         self._minimap_in_ui((x_3, y_2), (100, 100), player_minimap_relative_position)
 
         x_4 = 602
