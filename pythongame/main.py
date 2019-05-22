@@ -24,7 +24,7 @@ def main(args: List[str]):
     if len(args) == 1:
         map_file = args[0]
     else:
-        map_file = "resources/maps/demo3.json"
+        map_file = "resources/maps/graphics_test.json"
     game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file)
     pygame.init()
 
