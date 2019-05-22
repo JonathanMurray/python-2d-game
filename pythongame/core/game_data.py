@@ -84,6 +84,11 @@ class UiIconSprite(Enum):
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
 
+# Portraits that are shown in UI (player portrait and dialog portraits)
+class PortraitIconSprite(Enum):
+    PLAYER = 1
+    VIKING = 2
+
 
 class AbilityData:
     def __init__(self, name: str, icon_sprite: UiIconSprite, mana_cost: int, cooldown: Millis, description: str):
@@ -140,6 +145,8 @@ ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Animation]] = {}
 
 UI_ICON_SPRITE_PATHS: Dict[UiIconSprite, str] = {}
 
+PORTRAIT_ICON_SPRITE_PATHS: Dict[PortraitIconSprite, str] = {}
+
 CONSUMABLES: Dict[ConsumableType, ConsumableData] = {}
 
 WALLS: Dict[WallType, WallData] = {}
@@ -171,6 +178,10 @@ def register_user_ability_key(ability_type: AbilityType, user_ability_key: UserA
 
 def register_ui_icon_sprite_path(sprite: UiIconSprite, file_path: str):
     UI_ICON_SPRITE_PATHS[sprite] = file_path
+
+
+def register_portrait_icon_sprite_path(sprite: PortraitIconSprite, file_path: str):
+    PORTRAIT_ICON_SPRITE_PATHS[sprite] = file_path
 
 
 # Deprecated

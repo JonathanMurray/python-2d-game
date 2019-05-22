@@ -4,7 +4,8 @@ import pygame
 
 from pythongame.core.common import Direction, Sprite, ConsumableType, sum_of_vectors, ItemType, is_point_in_rect
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
-    ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, NON_PLAYER_CHARACTERS, CONSUMABLES, ITEMS, UiIconSprite, WALLS
+    ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, NON_PLAYER_CHARACTERS, CONSUMABLES, ITEMS, UiIconSprite, WALLS, \
+    PORTRAIT_ICON_SPRITE_PATHS, PortraitIconSprite
 from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
@@ -19,6 +20,7 @@ COLOR_BLUE = (0, 0, 250)
 COLOR_HIGHLIGHTED_ICON = (250, 250, 150)
 COLOR_BORDER = (139, 69, 19)
 UI_ICON_SIZE = (32, 32)
+PORTRAIT_ICON_SIZE = (100, 70)
 MAP_EDITOR_UI_ICON_SIZE = (32, 32)
 
 RENDER_WORLD_COORDINATES = False
@@ -49,6 +51,12 @@ class ImageWithRelativePosition:
     def __init__(self, image: Any, position_relative_to_entity: Tuple[int, int]):
         self.image = image
         self.position_relative_to_entity = position_relative_to_entity
+
+
+class Dialog:
+    def __init__(self, portrait_icon_sprite: PortraitIconSprite, text: str):
+        self.portrait_icon_sprite = portrait_icon_sprite
+        self.text = text
 
 
 def load_and_scale_sprite(sprite_initializer: SpriteInitializer):
@@ -109,6 +117,7 @@ class View:
         self.font_game_world_text = pygame.font.Font(None, 19)
         self.font_ui_icon_keys = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 12)
         self.font_level = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 11)
+        self.font_dialog = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 32)
 
         self.images_by_sprite: Dict[Sprite, Dict[Direction, List[ImageWithRelativePosition]]] = {
             sprite: load_and_scale_directional_sprites(ENTITY_SPRITE_INITIALIZERS[sprite])
@@ -116,14 +125,17 @@ class View:
         }
         self.images_by_ui_sprite = {sprite: load_and_scale_sprite(
             SpriteInitializer(UI_ICON_SPRITE_PATHS[sprite], UI_ICON_SIZE))
-            for sprite in UI_ICON_SPRITE_PATHS}
+            for sprite in UI_ICON_SPRITE_PATHS
+        }
+        self.images_by_portrait_sprite = {sprite: load_and_scale_sprite(
+            SpriteInitializer(PORTRAIT_ICON_SPRITE_PATHS[sprite], PORTRAIT_ICON_SIZE))
+            for sprite in PORTRAIT_ICON_SPRITE_PATHS
+        }
 
         # This is updated every time the view is called
         self.camera_world_area = None
 
-        # TODO: Make player portrait dynamic
-        player_portrait_img = pygame.image.load('./resources/graphics/player_portrait.gif').convert_alpha()
-        self.scaled_player_portrait = pygame.transform.scale(player_portrait_img, (100, 70))
+        self.scaled_player_portrait = self.images_by_portrait_sprite[PortraitIconSprite.PLAYER]
 
     # ------------------------------------
     #         TRANSLATING COORDINATES
@@ -144,6 +156,12 @@ class View:
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
+
+    def _translate_ui_x_to_screen(self, ui_x):
+        return ui_x + self.ui_screen_area.x
+
+    def _translate_ui_y_to_screen(self, ui_y):
+        return ui_y + self.ui_screen_area.y
 
     def _translate_screen_position_to_ui(self, position: Tuple[int, int]):
         return position[0] - self.ui_screen_area.x, position[1] - self.ui_screen_area.y
@@ -389,9 +407,17 @@ class View:
             self._rect(COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
         self._text(self.font_ui_icon_keys, user_input_key, (x + 12, y + h + 4))
 
-    def _text_in_ui(self, font, text, x, y):
-        screen_pos = self._translate_ui_position_to_screen((x, y))
-        self._text(font, text, screen_pos)
+    def _rect_in_ui(self, color, rect, line_width):
+        translated_rect = (self._translate_ui_x_to_screen(rect[0]), self._translate_ui_y_to_screen(rect[1]),
+                           rect[2], rect[3])
+        self._rect(color, translated_rect, line_width)
+
+    def _image_in_ui(self, image, position):
+        self._image(image, self._translate_ui_position_to_screen(position))
+
+    def _text_in_ui(self, font, text, ui_pos, color=COLOR_WHITE):
+        screen_pos = self._translate_ui_position_to_screen((ui_pos))
+        self._text(font, text, screen_pos, color)
 
     def _minimap_in_ui(self, position_in_ui, size, player_relative_position):
         pos_in_screen = self._translate_ui_position_to_screen(position_in_ui)
@@ -466,7 +492,7 @@ class View:
                   player_health, player_mana, player_max_health, player_max_mana, player_health_regen: float,
                   player_mana_regen: float, player_minimap_relative_position, consumable_slots,
                   item_slots: Dict[int, ItemType], player_level: int, mouse_screen_position: Tuple[int, int],
-                  player_exp: int, player_max_exp_in_this_level: int) -> MouseHoverEvent:
+                  player_exp: int, player_max_exp_in_this_level: int, dialog: Optional[Dialog]) -> MouseHoverEvent:
 
         hovered_item_slot_number = None
         hovered_consumable_slot_number = None
@@ -493,12 +519,13 @@ class View:
         x_1 = 140
 
         x_exp_bar = x_1
-        self._text_in_ui(self.font_level, "Level " + str(player_level), x_exp_bar, y_0)
-        self._stat_bar_in_ui((x_exp_bar, y_0 + 18), 500, 2, player_exp / player_max_exp_in_this_level, (200,200,200),
+        self._text_in_ui(self.font_level, "Level " + str(player_level), (x_exp_bar, y_0))
+        self._stat_bar_in_ui((x_exp_bar, y_0 + 18), 380, 2, player_exp / player_max_exp_in_this_level, (200, 200, 200),
                              True)
 
         x_0 = 20
 
+        # TODO: Extract this code
         rect_portrait_pos = self._translate_ui_position_to_screen((x_0, y_0 + 13))
         self._image(self.scaled_player_portrait, rect_portrait_pos)
         self._rect((160, 160, 180), (rect_portrait_pos[0], rect_portrait_pos[1], 100, 70), 2)
@@ -511,7 +538,7 @@ class View:
             tooltip_details = ["regeneration: " + str(player_health_regen) + "/s"]
             tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_healthbar[0], rect_healthbar[1]))
         health_text = str(player_health) + "/" + str(player_max_health)
-        self._text_in_ui(self.font_ui_stat_bar_numbers, health_text, x_0 + 20, y_4 - 1)
+        self._text_in_ui(self.font_ui_stat_bar_numbers, health_text, (x_0 + 20, y_4 - 1))
 
         rect_manabar = (x_0, y_4 + 20, 100, 14)
         self._stat_bar_in_ui((rect_manabar[0], rect_manabar[1]), rect_manabar[2], rect_manabar[3],
@@ -521,7 +548,7 @@ class View:
             tooltip_details = ["regeneration: " + str(player_mana_regen) + "/s"]
             tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_manabar[0], rect_manabar[1]))
         mana_text = str(player_mana) + "/" + str(player_max_mana)
-        self._text_in_ui(self.font_ui_stat_bar_numbers, mana_text, x_0 + 20, y_4 + 20)
+        self._text_in_ui(self.font_ui_stat_bar_numbers, mana_text, (x_0 + 20, y_4 + 20))
 
         # CONSUMABLES
         icon_space = 2
@@ -568,7 +595,7 @@ class View:
                                      highlighted_ability_action, ability_cooldowns_remaining)
 
         # ITEMS
-        x_2 = 338
+        x_2 = 326
         items_rect_pos = self._translate_ui_position_to_screen((x_2 - icon_rect_padding, y_2 - icon_rect_padding))
         items_rect = (
             items_rect_pos[0], items_rect_pos[1],
@@ -587,14 +614,18 @@ class View:
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
             self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type)
 
-        x_3 = 465
+        # MINIMAP
+        x_3 = 440
         minimap_padding_rect_pos = self._translate_ui_position_to_screen((x_3 - 2, y_2 - 2))
-        minimap_padding_rect = (minimap_padding_rect_pos[0], minimap_padding_rect_pos[1], 100 + 4, 100 + 4)
+        minimap_padding_rect = (minimap_padding_rect_pos[0], minimap_padding_rect_pos[1], 80 + 4, 80 + 4)
         self._rect_filled((60, 60, 80), minimap_padding_rect)
-        #self._rect((200, 30, 50), minimap_padding_rect, 1)
-        self._minimap_in_ui((x_3, y_2), (100, 100), player_minimap_relative_position)
+        self._minimap_in_ui((x_3, y_2), (80, 80), player_minimap_relative_position)
 
-        x_4 = 602
+        if dialog:
+            self._dialog(dialog)
+
+        # BUFFS
+        x_buffs = 22
         buff_texts = []
         buff_duration_ratios_remaining = []
         for active_buff in player_active_buffs:
@@ -603,10 +634,10 @@ class View:
                 ratio_duration_remaining = active_buff.time_until_expiration / active_buff.total_duration
                 buff_texts.append(BUFF_TEXTS[buff_type])
                 buff_duration_ratios_remaining.append(ratio_duration_remaining)
-
         for i, text in enumerate(buff_texts):
-            self._text_in_ui(self.font_buff_texts, text, x_4, 15 + i * 25)
-            self._stat_bar_in_ui((x_4, 35 + i * 25), 90, 3, buff_duration_ratios_remaining[i], (250, 250, 0), False)
+            self._text_in_ui(self.font_buff_texts, text, (x_buffs, -40 + i * 25))
+            self._stat_bar_in_ui((x_buffs, -20 + i * 25), 60, 2, buff_duration_ratios_remaining[i], (250, 250, 0),
+                                 False)
 
         self._rect(COLOR_BORDER, self.ui_screen_area.rect(), 1)
 
@@ -629,6 +660,38 @@ class View:
         if not is_mouse_hovering_ui:
             mouse_game_world_position = self._translate_screen_position_to_world(mouse_screen_position)
         return MouseHoverEvent(hovered_item_slot_number, hovered_consumable_slot_number, mouse_game_world_position)
+
+    def _dialog(self, dialog: Dialog):
+        rect_dialog_container = (100, 75, 500, 250)
+        self._rect((210, 180, 60), rect_dialog_container, 5)
+        self._rect_transparent(rect_dialog_container, 200, COLOR_BLACK)
+        dialog_container_portrait_padding = 10
+        rect_portrait_pos = (rect_dialog_container[0] + dialog_container_portrait_padding,
+                             rect_dialog_container[1] + dialog_container_portrait_padding)
+        dialog_image = self.images_by_portrait_sprite[dialog.portrait_icon_sprite]
+        self._image(dialog_image, rect_portrait_pos)
+        self._rect((160, 160, 180), (rect_portrait_pos[0], rect_portrait_pos[1], 100, 70), 2)
+        dialog_pos = (rect_dialog_container[0] + 120, rect_dialog_container[1] + 10)
+        dialog_lines = self._split_text_into_lines(dialog.text, 33)
+        for i, dialog_text_line in enumerate(dialog_lines):
+            if i == 8:
+                break
+            self._text(self.font_dialog, dialog_text_line, (dialog_pos[0] + 5, dialog_pos[1] + 5 + 32 * i),
+                       COLOR_WHITE)
+
+    @staticmethod
+    def _split_text_into_lines(full_text: str, max_line_length: int):
+        tokens = full_text.split()
+        lines = []
+        line = tokens[0]
+        for token in tokens[1:]:
+            if len(line + ' ' + token) <= max_line_length:
+                line = line + ' ' + token
+            else:
+                lines.append(line)
+                line = token
+        lines.append(line)
+        return lines
 
     def render_item_being_dragged(self, item_type: ItemType, mouse_screen_position: Tuple[int, int]):
         ui_icon_sprite = ITEMS[item_type].icon_sprite
@@ -671,7 +734,7 @@ class View:
                                     deleting_decorations, 'Z', None, UiIconSprite.MAP_EDITOR_RECYCLING)
 
         x_1 = 155
-        self._text_in_ui(self.font_ui_headers, "ENTITIES", x_1, y_1)
+        self._text_in_ui(self.font_ui_headers, "ENTITIES", (x_1, y_1))
         num_icons_per_row = 27
         for i, entity in enumerate(entities):
             if entity in chars_by_entities:

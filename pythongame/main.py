@@ -5,11 +5,12 @@ import pygame
 
 import pythongame.core.pathfinding.npc_pathfinding
 from pythongame.core.common import Millis
+from pythongame.core.game_data import PortraitIconSprite
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased
-from pythongame.core.view import View, MouseHoverEvent
+from pythongame.core.view import View, MouseHoverEvent, Dialog
 from pythongame.core.view_state import ViewState
 from pythongame.game_world_init import create_game_state_from_json_file
 from pythongame.register_game_data import register_all_game_data
@@ -110,6 +111,15 @@ def main(args: List[str]):
             player_max_health=game_state.player_state.max_health,
             game_world_size=game_state.game_world_size)
 
+        # TODO
+        # A hacky way to show-case dialog feature. Remove when a proper use of dialog has been added!
+        player_position = game_state.player_entity.get_position()
+        if 250 < player_position[0] < 350 and 175 < player_position[1] < 275:
+            hacky_dialog = Dialog(PortraitIconSprite.VIKING,
+                                  "[Hack] Why are you still here? Go somewhere! Do something!")
+        else:
+            hacky_dialog = None
+
         mouse_hover_event: MouseHoverEvent = view.render_ui(
             player_health=game_state.player_state.health,
             player_max_health=game_state.player_state.max_health,
@@ -132,7 +142,8 @@ def main(args: List[str]):
             player_level=game_state.player_state.level,
             mouse_screen_position=mouse_screen_position,
             player_exp=game_state.player_state.exp,
-            player_max_exp_in_this_level=game_state.player_state.max_exp_in_this_level)
+            player_max_exp_in_this_level=game_state.player_state.max_exp_in_this_level,
+            dialog=hacky_dialog)
 
         # TODO There is a lot of details here about UI state (dragging items). Move that elsewhere.
 
@@ -167,7 +178,8 @@ def main(args: List[str]):
             if hovered_consumable_slot_number and consumable_slot_being_dragged != hovered_consumable_slot_number:
                 game_engine.switch_consumable_slots(consumable_slot_being_dragged, hovered_consumable_slot_number)
             if mouse_hover_event.game_world_position:
-                game_engine.drop_consumable_on_ground(consumable_slot_being_dragged, mouse_hover_event.game_world_position)
+                game_engine.drop_consumable_on_ground(consumable_slot_being_dragged,
+                                                      mouse_hover_event.game_world_position)
             consumable_slot_being_dragged = False
 
         view.update_display()
