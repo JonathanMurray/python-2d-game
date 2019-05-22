@@ -5,6 +5,8 @@ different monsters, using potions and abilities to your advantage.
 
 It is very much a work in progress.
 
+![in-game screenshot](https://github.com/JonathanMurray/python-2d-game/blob/master/ingame_screenshot.jpg)
+
 Look [here](todo.md) for future changes!
 
 ## Installation
