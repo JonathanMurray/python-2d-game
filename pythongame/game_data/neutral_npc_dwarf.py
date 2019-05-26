@@ -31,16 +31,18 @@ def register_dwarf_npc():
     npc_type = NpcType.NEUTRAL_DWARF
     movement_speed = 0.03
     health = 6
-    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, False, True))
+    dialog = "Greetings, stranger. It seems that we are stuck in this together. You seem like you are capable of taking " \
+             "care of yourself. Why don't you go down that corridor over there and see if there is a way out!"
+    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, False, True, dialog))
     register_npc_behavior(npc_type, NpcMind)
-    sprite_sheet = SpriteSheet("resources/graphics/skeleton_sprite_map.png")
-    original_sprite_size = (32, 48)
-    scaled_sprite_size = (48, 72)
+    sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet.png")
+    original_sprite_size = (32, 32)
+    scaled_sprite_size = (48, 48)
     indices_by_dir = {
-        Direction.DOWN: [(0, 0), (1, 0), (2, 0)],
-        Direction.LEFT: [(0, 1), (1, 1), (2, 1)],
-        Direction.RIGHT: [(0, 2), (1, 2), (2, 2)],
-        Direction.UP: [(0, 3), (1, 3), (2, 3)]
+        Direction.DOWN: [(0, 4), (1, 4), (2, 4)],
+        Direction.LEFT: [(0, 5), (1, 5), (2, 5)],
+        Direction.RIGHT: [(0, 6), (1, 6), (2, 6)],
+        Direction.UP: [(0, 7), (1, 7), (2, 7)]
     }
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir,
-                               (-8, -42))
+                               (-8, -16))

@@ -21,4 +21,4 @@ def create_npc(npc_type: NpcType, pos: Tuple[int, int]) -> NonPlayerCharacter:
     entity = WorldEntity(pos, data.size, data.sprite, Direction.LEFT, data.speed)
     npc_mind = create_npc_mind(npc_type, global_path_finder)
     return NonPlayerCharacter(npc_type, entity, data.max_health, data.max_health, data.health_regen, npc_mind,
-                              data.is_enemy, data.is_neutral)
+                              data.is_enemy, data.is_neutral, data.dialog)

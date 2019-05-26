@@ -4,7 +4,7 @@ from typing import List, Optional
 import pygame
 
 import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis
+from pythongame.core.common import Millis, is_x_and_y_within_distance
 from pythongame.core.game_data import PortraitIconSprite
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
@@ -114,11 +114,10 @@ def main(args: List[str]):
         # TODO
         # A hacky way to show-case dialog feature. Remove when a proper use of dialog has been added!
         player_position = game_state.player_entity.get_position()
-        if 250 < player_position[0] < 350 and 175 < player_position[1] < 275:
-            hacky_dialog = Dialog(PortraitIconSprite.VIKING,
-                                  "[Hack] Why are you still here? Go somewhere! Do something!")
-        else:
-            hacky_dialog = None
+        hacky_dialog = None
+        for npc_with_dialog in [npc for npc in game_state.non_player_characters if npc.dialog]:
+            if is_x_and_y_within_distance(player_position, npc_with_dialog.world_entity.get_position(), 50):
+                hacky_dialog = Dialog(PortraitIconSprite.VIKING, npc_with_dialog.dialog)
 
         mouse_hover_event: MouseHoverEvent = view.render_ui(
             player_health=game_state.player_state.health,

@@ -26,7 +26,7 @@ class NpcMind(AbstractNpcMind):
         self._healing_cooldown = 5000
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, _player_entity: WorldEntity,
-                      _is_player_invisible: bool, time_passed: Millis):
+                    _is_player_invisible: bool, time_passed: Millis):
         self._time_since_decision += time_passed
         self._time_since_summoning += time_passed
         self._time_since_healing += time_passed
@@ -76,7 +76,7 @@ class NpcMind(AbstractNpcMind):
 def register_necromancer_enemy():
     size = (50, 60)
     health = 25
-    register_npc_data(ENEMY_TYPE, NpcData(SPRITE, size, health, 0, 0.02, 15, True, False))
+    register_npc_data(ENEMY_TYPE, NpcData(SPRITE, size, health, 0, 0.02, 15, True, False, None))
     register_npc_behavior(ENEMY_TYPE, NpcMind)
 
     enemy_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")

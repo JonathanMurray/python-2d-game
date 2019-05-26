@@ -108,7 +108,7 @@ class UserAbilityKey:
 
 class NpcData:
     def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
-                 exp_reward: int, is_enemy: bool, is_neutral: bool):
+                 exp_reward: int, is_enemy: bool, is_neutral: bool, dialog: Optional[str]):
         self.sprite = sprite
         self.size = size
         self.max_health = max_health
@@ -117,6 +117,7 @@ class NpcData:
         self.exp_reward = exp_reward
         self.is_enemy = is_enemy
         self.is_neutral = is_neutral  # a neutral NPC can't take damage from enemies or player. It may have dialog.
+        self.dialog: Optional[str] = dialog
 
 
 class ConsumableData:
@@ -162,8 +163,8 @@ USER_ABILITY_KEYS: Dict[AbilityType, UserAbilityKey] = {}
 BUFF_TEXTS: Dict[BuffType, str] = {}
 
 
-def register_npc_data(npc_type: NpcType, enemy_data: NpcData):
-    NON_PLAYER_CHARACTERS[npc_type] = enemy_data
+def register_npc_data(npc_type: NpcType, npc_data: NpcData):
+    NON_PLAYER_CHARACTERS[npc_type] = npc_data
 
 
 def register_wall_data(wall_type: WallType, wall_data: WallData):
