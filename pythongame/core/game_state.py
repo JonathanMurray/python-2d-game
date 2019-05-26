@@ -374,7 +374,8 @@ class GameState:
         self.consumables_on_ground = consumables_on_ground
         self.items_on_ground: List[ItemOnGround] = items_on_ground
         self.non_player_characters: List[NonPlayerCharacter] = non_player_characters
-        self.non_enemy_npcs: List[NonPlayerCharacter] = []  # overlaps with non_player_characters
+        # overlaps with non_player_characters
+        self.non_enemy_npcs: List[NonPlayerCharacter] = [npc for npc in non_player_characters if not npc.is_enemy]
         self.walls: List[Wall] = walls
         self._wall_buckets = self._put_walls_in_buckets(game_world_size, [w.world_entity for w in walls])
         self.visual_effects = []

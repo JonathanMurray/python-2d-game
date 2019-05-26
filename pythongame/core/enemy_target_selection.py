@@ -15,11 +15,14 @@ class EnemyTarget:
 
 
 def get_target(agent_entity: WorldEntity, game_state: GameState) -> EnemyTarget:
-    if game_state.non_enemy_npcs:
-        npc_target = game_state.non_enemy_npcs[0]
+    # neutral NPCs (like quest givers) should not be attacked by enemies!
+    potential_npc_targets = [npc for npc in game_state.non_enemy_npcs if not npc.is_neutral]
+    if potential_npc_targets:
+        arbitrary_npc_target = potential_npc_targets[0]
         agent_position = agent_entity.get_position()
-        distance_to_npc = get_manhattan_distance(npc_target.world_entity.get_position(), agent_position)
+        distance_to_npc_target = get_manhattan_distance(arbitrary_npc_target.world_entity.get_position(),
+                                                        agent_position)
         distance_to_player = get_manhattan_distance(game_state.player_entity.get_position(), agent_position)
-        if distance_to_npc < distance_to_player:
-            return EnemyTarget(npc_target.world_entity, npc_target)
+        if distance_to_npc_target < distance_to_player:
+            return EnemyTarget(arbitrary_npc_target.world_entity, arbitrary_npc_target)
     return EnemyTarget(game_state.player_entity, None)
