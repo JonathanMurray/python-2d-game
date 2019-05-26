@@ -84,6 +84,7 @@ class UiIconSprite(Enum):
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
 
+
 # Portraits that are shown in UI (player portrait and dialog portraits)
 class PortraitIconSprite(Enum):
     PLAYER = 1
@@ -107,7 +108,7 @@ class UserAbilityKey:
 
 class NpcData:
     def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
-                 exp_reward: int, is_enemy: bool):
+                 exp_reward: int, is_enemy: bool, is_neutral: bool):
         self.sprite = sprite
         self.size = size
         self.max_health = max_health
@@ -115,6 +116,7 @@ class NpcData:
         self.speed = speed
         self.exp_reward = exp_reward
         self.is_enemy = is_enemy
+        self.is_neutral = is_neutral  # a neutral NPC can't take damage from enemies or player. It may have dialog.
 
 
 class ConsumableData:

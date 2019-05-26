@@ -1,6 +1,6 @@
-import math
 from typing import List, Optional, Dict, Any
 
+import math
 from pygame.rect import Rect
 
 from pythongame.core.common import *
@@ -137,7 +137,7 @@ class Projectile:
 
 class NonPlayerCharacter:
     def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health: int, max_health: int,
-                 health_regen: float, npc_mind, is_enemy: bool):
+                 health_regen: float, npc_mind, is_enemy: bool, is_neutral: bool):
         self.npc_type = npc_type
         self.world_entity = world_entity
         self._health_float = health
@@ -149,6 +149,7 @@ class NonPlayerCharacter:
         self.invulnerable: bool = False
         self._number_of_active_stuns = 0
         self.is_enemy = is_enemy
+        self.is_neutral = is_neutral
 
     def lose_health(self, amount):
         self._health_float = min(self._health_float - amount, self.max_health)

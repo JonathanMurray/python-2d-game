@@ -478,7 +478,8 @@ class View:
 
         for npc in non_player_characters:
             color = COLOR_RED if npc.is_enemy else (250, 250, 0)
-            self._stat_bar_for_world_entity(npc.world_entity, 5, -10, npc.health, npc.max_health, color)
+            if not npc.is_neutral:
+                self._stat_bar_for_world_entity(npc.world_entity, 5, -10, npc.health, npc.max_health, color)
             if npc.active_buffs:
                 buff = npc.active_buffs[0]
                 if buff.total_duration > 1000:
@@ -664,7 +665,7 @@ class View:
     def _dialog(self, dialog: Dialog):
         rect_dialog_container = (100, 75, 500, 250)
         self._rect((210, 180, 60), rect_dialog_container, 5)
-        self._rect_transparent(rect_dialog_container, 200, COLOR_BLACK)
+        self._rect_transparent(rect_dialog_container, 150, COLOR_BLACK)
         dialog_container_portrait_padding = 10
         rect_portrait_pos = (rect_dialog_container[0] + dialog_container_portrait_padding,
                              rect_dialog_container[1] + dialog_container_portrait_padding)

@@ -993,6 +993,13 @@
         3525,
         3000
       ]
+    },
+    {
+      "enemy_type": "NEUTRAL_DWARF",
+      "position": [
+        300,
+        150
+      ]
     }
   ],
   "player": {

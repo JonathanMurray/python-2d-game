@@ -81,7 +81,7 @@ def register_mummy_enemy():
     movement_speed = 0.06
     health = 12
     health_regen = 1
-    register_npc_data(npc_type, NpcData(sprite, size, health, health_regen, movement_speed, 10, True))
+    register_npc_data(npc_type, NpcData(sprite, size, health, health_regen, movement_speed, 10, True, False))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")
     original_sprite_size = (32, 32)

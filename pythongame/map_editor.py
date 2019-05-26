@@ -7,8 +7,8 @@ import pygame
 from pythongame.core.common import Direction, Sprite, sum_of_vectors, WallType, NpcType, ConsumableType, ItemType
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, CONSUMABLES, ITEMS, ITEM_ENTITY_SIZE, WALLS
 from pythongame.core.game_data import POTION_ENTITY_SIZE
-from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, ConsumableOnGround, ItemOnGround, DecorationEntity, \
-    GameState, Wall
+from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, ConsumableOnGround, ItemOnGround, \
+    DecorationEntity, GameState, Wall
 from pythongame.core.view import View
 from pythongame.game_data.player_data import INTIAL_PLAYER_STATE, PLAYER_ENTITY_SIZE, PLAYER_ENTITY_SPEED
 from pythongame.game_world_init import save_game_state_to_json_file, create_game_state_from_json_file
@@ -39,13 +39,15 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.wall(WallType.ALTAR),
     MapEditorWorldEntity.wall(WallType.CHEST),
 
-    MapEditorWorldEntity.enemy(NpcType.DARK_REAPER),
-    MapEditorWorldEntity.enemy(NpcType.RAT_1),
-    MapEditorWorldEntity.enemy(NpcType.RAT_2),
-    MapEditorWorldEntity.enemy(NpcType.GOBLIN_WARLOCK),
-    MapEditorWorldEntity.enemy(NpcType.MUMMY),
-    MapEditorWorldEntity.enemy(NpcType.NECROMANCER),
-    MapEditorWorldEntity.enemy(NpcType.WARRIOR),
+    MapEditorWorldEntity.npc(NpcType.DARK_REAPER),
+    MapEditorWorldEntity.npc(NpcType.RAT_1),
+    MapEditorWorldEntity.npc(NpcType.RAT_2),
+    MapEditorWorldEntity.npc(NpcType.GOBLIN_WARLOCK),
+    MapEditorWorldEntity.npc(NpcType.MUMMY),
+    MapEditorWorldEntity.npc(NpcType.NECROMANCER),
+    MapEditorWorldEntity.npc(NpcType.WARRIOR),
+
+    MapEditorWorldEntity.npc(NpcType.NEUTRAL_DWARF),
 
     MapEditorWorldEntity.consumable(ConsumableType.HEALTH_LESSER),
     MapEditorWorldEntity.consumable(ConsumableType.HEALTH),
@@ -202,9 +204,9 @@ def main(args: List[str]):
                             data = NON_PLAYER_CHARACTERS[npc_type]
                             entity = WorldEntity(snapped_mouse_world_position, data.size, data.sprite, Direction.DOWN,
                                                  data.speed)
-                            enemy = NonPlayerCharacter(npc_type, entity, data.max_health, data.max_health,
-                                                       data.health_regen, None, True)
-                            game_state.add_non_player_character(enemy)
+                            npc = NonPlayerCharacter(npc_type, entity, data.max_health, data.max_health,
+                                                     data.health_regen, None, data.is_enemy, data.is_neutral)
+                            game_state.add_non_player_character(npc)
                         elif entity_being_placed.wall_type:
                             _add_wall_to_position(game_state, snapped_mouse_world_position,
                                                   entity_being_placed.wall_type)
@@ -330,7 +332,7 @@ def _delete_map_entities_from_position(game_state: GameState, snapped_mouse_worl
                   e.world_entity.get_position() == snapped_mouse_world_position]:
         game_state.non_player_characters.remove(enemy)
     for consumable in [p for p in game_state.consumables_on_ground
-                   if p.world_entity.get_position() == snapped_mouse_world_position]:
+                       if p.world_entity.get_position() == snapped_mouse_world_position]:
         game_state.consumables_on_ground.remove(consumable)
     for item in [i for i in game_state.items_on_ground
                  if i.world_entity.get_position() == snapped_mouse_world_position]:

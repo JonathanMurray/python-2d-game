@@ -28,7 +28,7 @@ class MapEditorWorldEntity:
         return MapEditorWorldEntity(None, True, None, None, None, None)
 
     @staticmethod
-    def enemy(npc_type: NpcType):
+    def npc(npc_type: NpcType):
         return MapEditorWorldEntity(npc_type, False, None, None, None, None)
 
     @staticmethod
