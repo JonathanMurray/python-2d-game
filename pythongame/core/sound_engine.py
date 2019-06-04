@@ -7,15 +7,16 @@ class SoundEngine:
 
     def __init__(self):
         self.sounds = {
-            SoundId.ABILITY_FIREBALL: pygame.mixer.Sound('./resources/sound/Shot01.ogg'),
-            SoundId.ABILITY_WHIRLWIND: pygame.mixer.Sound('./resources/sound/Fire03.ogg'),
-            SoundId.ABILITY_TELEPORT: pygame.mixer.Sound('./resources/sound/SciFi06.ogg'),
-            SoundId.ABILITY_ENTANGLING_ROOTS: pygame.mixer.Sound('./resources/sound/SciFi03.ogg'),
-            SoundId.POTION: pygame.mixer.Sound('./resources/sound/PowerUp04.ogg'),
-            SoundId.EVENT_PLAYER_LEVELED_UP: pygame.mixer.Sound('./resources/sound/PowerUp02.ogg'),
-            SoundId.EVENT_PICKED_UP: pygame.mixer.Sound('./resources/sound/UI01.ogg'),
-            SoundId.EVENT_PLAYER_DIED: pygame.mixer.Sound('./resources/sound/Death01.ogg'),
-            SoundId.WARNING: pygame.mixer.Sound('./resources/sound/UI06.ogg')
+            SoundId.ABILITY_FIREBALL: load_sound_file('Shot01.ogg'),
+            SoundId.ABILITY_WHIRLWIND: load_sound_file('Fire03.ogg'),
+            SoundId.ABILITY_TELEPORT: load_sound_file('SciFi06.ogg'),
+            SoundId.ABILITY_ENTANGLING_ROOTS: load_sound_file('SciFi03.ogg'),
+            SoundId.POTION: load_sound_file('PowerUp04.ogg'),
+            SoundId.EVENT_PLAYER_LEVELED_UP: load_sound_file('PowerUp02.ogg'),
+            SoundId.EVENT_PICKED_UP: load_sound_file('UI01.ogg'),
+            SoundId.EVENT_PLAYER_DIED: load_sound_file('Death01.ogg'),
+            SoundId.EVENT_ENEMY_DIED: load_sound_file('Damage02.ogg'),
+            SoundId.WARNING: load_sound_file('UI06.ogg')
         }
 
     def play_sound(self, sound_id: SoundId):
@@ -23,3 +24,7 @@ class SoundEngine:
             self.sounds[sound_id].play()
         else:
             raise Exception("No sound defined for: " + str(sound_id))
+
+
+def load_sound_file(filename: str):
+    return pygame.mixer.Sound('./resources/sound/' + filename)
