@@ -27,4 +27,6 @@ class SoundEngine:
 
 
 def load_sound_file(filename: str):
-    return pygame.mixer.Sound('./resources/sound/' + filename)
+    sound = pygame.mixer.Sound('./resources/sound/' + filename)
+    sound.set_volume(0.1)
+    return sound
