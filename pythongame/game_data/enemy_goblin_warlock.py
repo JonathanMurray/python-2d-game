@@ -3,7 +3,7 @@ import random
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
 from pythongame.core.common import Millis, NpcType, Sprite, \
     get_position_from_center_position, ProjectileType, BuffType, Direction, get_perpendicular_directions, \
-    translate_in_direction
+    translate_in_direction, SoundId
 from pythongame.core.damage_interactions import deal_damage_to_player, deal_npc_damage_to_npc
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import register_npc_data, NpcData, register_buff_text, SpriteSheet, \
@@ -14,6 +14,7 @@ from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
+from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import VisualCircle, VisualText
 
 BUFF_TYPE = BuffType.ENEMY_GOBLIN_WARLOCK_BURNT
@@ -83,6 +84,7 @@ class NpcMind(AbstractNpcMind):
                                             npc.world_entity.direction, projectile_speed)
             projectile = Projectile(projectile_entity, create_projectile_controller(PROJECTILE_TYPE))
             game_state.projectile_entities.append(projectile)
+            play_sound(SoundId.ENEMY_ATTACK_GOBLIN_WARLOCK)
 
         if self._time_since_speech > self._speech_interval:
             self._time_since_speech = 0
