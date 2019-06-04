@@ -1,7 +1,7 @@
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import register_buff_effect, AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import get_position_from_center_position, Sprite, ProjectileType, AbilityType, Millis, \
-    Direction, translate_in_direction, BuffType
+    Direction, translate_in_direction, BuffType, SoundId
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, SpriteSheet, \
@@ -88,7 +88,7 @@ def register_entangling_roots_ability():
     register_ability_data(
         ABILITY_TYPE,
         AbilityData("Entangling roots", ICON_SPRITE, 16, Millis(8000), "Roots an enemy and deals damage over time",
-                    None))
+                    SoundId.ABILITY_ENTANGLING_ROOTS))
     register_ui_icon_sprite_path(ICON_SPRITE, "resources/graphics/ability_icon_entangling_roots.png")
     register_projectile_controller(PROJECTILE_TYPE, ProjectileController)
 

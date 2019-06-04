@@ -30,6 +30,7 @@ class PlayerControls:
         mana_cost = ability_data.mana_cost
 
         if player_state.mana < mana_cost:
+            sound_engine.play_sound(SoundId.WARNING)
             view_state.set_message("Not enough mana!")
             return
 
