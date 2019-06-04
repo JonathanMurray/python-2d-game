@@ -923,6 +923,13 @@
         2400,
         275
       ]
+    },
+    {
+      "enemy_type": "NEUTRAL_NOMAD",
+      "position": [
+        225,
+        325
+      ]
     }
   ],
   "player": {

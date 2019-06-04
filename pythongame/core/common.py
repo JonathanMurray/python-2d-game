@@ -145,6 +145,7 @@ class NpcType(Enum):
     MUMMY = 9
     PLAYER_SUMMON = 10
     NEUTRAL_DWARF = 20
+    NEUTRAL_NOMAD = 21
 
 
 class WallType(Enum):
@@ -200,6 +201,7 @@ class Sprite(Enum):
     ENEMY_WARRIOR = 207
     PLAYER_SUMMON = 250
     NEUTRAL_NPC_DWARF = 260
+    NEUTRAL_NPC_NOMAD = 261
     ITEM_AMULET_OF_MANA = 301
     ITEM_WINGED_BOOTS = 302
     ITEM_ROD_OF_LIGHTNING = 303

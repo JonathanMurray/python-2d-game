@@ -76,7 +76,7 @@ def register_warrior_enemy():
     movement_speed = 0.12
     health = 32
     exp_reward = 20
-    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, exp_reward, True, False, None))
+    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, exp_reward, True, False, None, None))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/human_spritesheet.png")
     original_sprite_size = (32, 32)

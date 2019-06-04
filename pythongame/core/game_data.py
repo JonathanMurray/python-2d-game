@@ -89,6 +89,7 @@ class UiIconSprite(Enum):
 class PortraitIconSprite(Enum):
     PLAYER = 1
     VIKING = 2
+    NOMAD = 3
 
 
 class AbilityData:
@@ -110,7 +111,8 @@ class UserAbilityKey:
 
 class NpcData:
     def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
-                 exp_reward: int, is_enemy: bool, is_neutral: bool, dialog: Optional[str]):
+                 exp_reward: int, is_enemy: bool, is_neutral: bool, dialog: Optional[str],
+                 portrait_icon_sprite: Optional[PortraitIconSprite]):
         self.sprite = sprite
         self.size = size
         self.max_health = max_health
@@ -120,6 +122,7 @@ class NpcData:
         self.is_enemy = is_enemy
         self.is_neutral = is_neutral  # a neutral NPC can't take damage from enemies or player. It may have dialog.
         self.dialog: Optional[str] = dialog
+        self.portrait_icon_sprite: Optional[PortraitIconSprite] = portrait_icon_sprite
 
 
 class ConsumableData:

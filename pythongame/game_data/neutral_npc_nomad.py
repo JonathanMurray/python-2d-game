@@ -26,25 +26,24 @@ class NpcMind(AbstractNpcMind):
                 npc.world_entity.set_moving_in_dir(direction)
 
 
-def register_dwarf_npc():
+def register_nomad_npc():
     size = (30, 30)  # Must not align perfectly with grid cell size (pathfinding issues)
-    sprite = Sprite.NEUTRAL_NPC_DWARF
-    npc_type = NpcType.NEUTRAL_DWARF
+    sprite = Sprite.NEUTRAL_NPC_NOMAD
+    npc_type = NpcType.NEUTRAL_NOMAD
     movement_speed = 0.03
     health = 6
-    dialog = "Greetings, stranger. It seems that we are stuck in this together. You seem like you are capable of taking " \
-             "care of yourself. Why don't you go down that corridor over there and see if there is a way out!"
+    dialog = "Hey there. I am the nomad."
     register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, False, True, dialog,
-                                        PortraitIconSprite.VIKING))
+                                        PortraitIconSprite.NOMAD))
     register_npc_behavior(npc_type, NpcMind)
-    sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet.png")
+    sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")
     original_sprite_size = (32, 32)
     scaled_sprite_size = (48, 48)
     indices_by_dir = {
-        Direction.DOWN: [(0, 4), (1, 4), (2, 4)],
-        Direction.LEFT: [(0, 5), (1, 5), (2, 5)],
-        Direction.RIGHT: [(0, 6), (1, 6), (2, 6)],
-        Direction.UP: [(0, 7), (1, 7), (2, 7)]
+        Direction.DOWN: [(3, 0), (4, 0), (5, 0)],
+        Direction.LEFT: [(3, 1), (4, 1), (5, 1)],
+        Direction.RIGHT: [(3, 2), (4, 2), (5, 2)],
+        Direction.UP: [(3, 3), (4, 3), (5, 3)]
     }
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir,
                                (-8, -16))

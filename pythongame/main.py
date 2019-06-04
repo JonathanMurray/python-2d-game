@@ -5,7 +5,6 @@ import pygame
 
 import pythongame.core.pathfinding.npc_pathfinding
 from pythongame.core.common import Millis, is_x_and_y_within_distance, SoundId
-from pythongame.core.game_data import PortraitIconSprite
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.sound_player import play_sound, init_sound_player
 from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
@@ -121,7 +120,7 @@ def main(args: List[str]):
         hacky_dialog = None
         for npc_with_dialog in [npc for npc in game_state.non_player_characters if npc.dialog]:
             if is_x_and_y_within_distance(player_position, npc_with_dialog.world_entity.get_position(), 50):
-                hacky_dialog = Dialog(PortraitIconSprite.VIKING, npc_with_dialog.dialog)
+                hacky_dialog = Dialog(npc_with_dialog.portrait_icon_sprite, npc_with_dialog.dialog)
 
         mouse_hover_event: MouseHoverEvent = view.render_ui(
             player_health=game_state.player_state.health,
