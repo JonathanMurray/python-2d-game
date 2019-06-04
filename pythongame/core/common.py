@@ -263,3 +263,4 @@ class ProjectileType(Enum):
 class SoundId(Enum):
     ABILITY_FIREBALL = 1
     ABILITY_WHIRLWIND = 2
+    POTION = 50

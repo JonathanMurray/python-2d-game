@@ -1,7 +1,5 @@
 from pythongame.core.ability_learning import player_learn_new_ability
 from pythongame.core.common import *
-from pythongame.core.consumable_effects import try_consume_consumable, ConsumableWasConsumed, \
-    ConsumableFailedToBeConsumed
 from pythongame.core.game_data import CONSUMABLES, ITEMS, ITEM_ENTITY_SIZE, NON_PLAYER_CHARACTERS
 from pythongame.core.game_data import POTION_ENTITY_SIZE
 from pythongame.core.game_state import GameState, handle_buffs, WorldEntity, ItemOnGround, ConsumableOnGround
@@ -36,19 +34,7 @@ class GameEngine:
                 self.view_state.set_message("Failed to execute ability!")
 
     def try_use_consumable(self, slot_number: int):
-        if not self.game_state.player_state.is_stunned:
-            self.view_state.notify_consumable_was_clicked(slot_number)
-            consumable_type_in_this_slot = self.game_state.player_state.consumable_slots[slot_number]
-            if consumable_type_in_this_slot:
-                result = try_consume_consumable(consumable_type_in_this_slot, self.game_state)
-                if isinstance(result, ConsumableWasConsumed):
-                    self.game_state.player_state.consumable_slots[slot_number] = None
-                    if result.message:
-                        self.view_state.set_message(result.message)
-                elif isinstance(result, ConsumableFailedToBeConsumed):
-                    self.view_state.set_message(result.reason)
-            else:
-                self.view_state.set_message("Nothing to use!")
+        self.player_controls.try_use_consumable(slot_number, self.game_state, self.view_state, self.sound_engine)
 
     def move_in_direction(self, direction: Direction):
         if not self.game_state.player_state.is_stunned:
