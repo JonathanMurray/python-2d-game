@@ -159,6 +159,7 @@ class GameEngine:
                 if empty_consumable_slots:
                     self.game_state.player_state.consumable_slots[empty_consumable_slots] = consumable.consumable_type
                     self.view_state.set_message("You picked up " + consumable_name)
+                    self.sound_engine.play_sound(SoundId.EVENT_PICKED_UP)
                     entities_to_remove.append(consumable)
                 else:
                     self.view_state.set_message("No space for " + consumable_name)
@@ -171,6 +172,7 @@ class GameEngine:
                     item_effect = get_item_effect(item.item_type)
                     item_effect.apply_start_effect(self.game_state)
                     self.view_state.set_message("You picked up " + item_name)
+                    self.sound_engine.play_sound(SoundId.EVENT_PICKED_UP)
                     entities_to_remove.append(item)
                 else:
                     self.view_state.set_message("No space for " + item_name)
