@@ -4,7 +4,7 @@ from pythongame.core.game_data import CONSUMABLES, ITEMS, ITEM_ENTITY_SIZE, NON_
 from pythongame.core.game_data import POTION_ENTITY_SIZE
 from pythongame.core.game_state import GameState, handle_buffs, WorldEntity, ItemOnGround, ConsumableOnGround
 from pythongame.core.item_effects import get_item_effect
-from pythongame.core.player_controls import TryUseAbilityResult, PlayerControls
+from pythongame.core.player_controls import PlayerControls
 from pythongame.core.sound_engine import SoundEngine
 from pythongame.core.view_state import ViewState
 from pythongame.core.visual_effects import create_visual_exp_text
@@ -25,13 +25,7 @@ class GameEngine:
                 item_effect.apply_start_effect(self.game_state)
 
     def try_use_ability(self, ability_type: AbilityType):
-        if not self.game_state.player_state.is_stunned:
-            self.view_state.notify_ability_was_clicked(ability_type)
-            result = self.player_controls.try_use_ability(ability_type, self.game_state, self.sound_engine)
-            if result == TryUseAbilityResult.NOT_ENOUGH_MANA:
-                self.view_state.set_message("Not enough mana!")
-            elif result == TryUseAbilityResult.FAILED_TO_EXECUTE:
-                self.view_state.set_message("Failed to execute ability!")
+        self.player_controls.try_use_ability(ability_type, self.game_state, self.sound_engine, self.view_state)
 
     def try_use_consumable(self, slot_number: int):
         self.player_controls.try_use_consumable(slot_number, self.game_state, self.view_state, self.sound_engine)
