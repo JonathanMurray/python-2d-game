@@ -7,6 +7,7 @@ import pythongame.core.pathfinding.npc_pathfinding
 from pythongame.core.common import Millis, is_x_and_y_within_distance
 from pythongame.core.game_data import PortraitIconSprite
 from pythongame.core.game_engine import GameEngine
+from pythongame.core.sound_engine import SoundEngine
 from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased
@@ -33,7 +34,8 @@ def main(args: List[str]):
     view_state = ViewState(game_state.game_world_size)
     clock = pygame.time.Clock()
 
-    game_engine = GameEngine(game_state, view_state)
+    sound_engine = SoundEngine()
+    game_engine = GameEngine(game_state, view_state, sound_engine)
 
     is_paused = False
     is_game_over = False

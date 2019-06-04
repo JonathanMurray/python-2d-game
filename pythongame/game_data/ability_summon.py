@@ -126,7 +126,7 @@ def register_summon_ability():
     cooldown = Millis(30000)
     mana_cost = 25
     register_ability_data(ability_type,
-                          AbilityData("Summon Dragonwhelp", ui_icon_sprite, mana_cost, cooldown, description))
+                          AbilityData("Summon Dragonwhelp", ui_icon_sprite, mana_cost, cooldown, description, None))
 
     summoned_npc_type = NpcType.PLAYER_SUMMON
     summon_sprite = Sprite.PLAYER_SUMMON

@@ -7,16 +7,18 @@ from pythongame.core.game_data import POTION_ENTITY_SIZE
 from pythongame.core.game_state import GameState, handle_buffs, WorldEntity, ItemOnGround, ConsumableOnGround
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.player_controls import TryUseAbilityResult, PlayerControls
+from pythongame.core.sound_engine import SoundEngine
 from pythongame.core.view_state import ViewState
 from pythongame.core.visual_effects import create_visual_exp_text
 
 
 class GameEngine:
 
-    def __init__(self, game_state: GameState, view_state: ViewState):
+    def __init__(self, game_state: GameState, view_state: ViewState, sound_engine: SoundEngine):
         self.game_state = game_state
         self.player_controls = PlayerControls()
         self.view_state = view_state
+        self.sound_engine = sound_engine
 
     def initialize(self):
         for item_type in self.game_state.player_state.item_slots.values():
@@ -27,7 +29,7 @@ class GameEngine:
     def try_use_ability(self, ability_type: AbilityType):
         if not self.game_state.player_state.is_stunned:
             self.view_state.notify_ability_was_clicked(ability_type)
-            result = self.player_controls.try_use_ability(ability_type, self.game_state)
+            result = self.player_controls.try_use_ability(ability_type, self.game_state, self.sound_engine)
             if result == TryUseAbilityResult.NOT_ENOUGH_MANA:
                 self.view_state.set_message("Not enough mana!")
             elif result == TryUseAbilityResult.FAILED_TO_EXECUTE:

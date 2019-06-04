@@ -57,7 +57,7 @@ def register_frost_nova_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_FROST_NOVA
     register_ability_data(
         ability_type,
-        AbilityData("Frost nova", ui_icon_sprite, 17, Millis(8000), "Damages and slows all nearby enemies"))
+        AbilityData("Frost nova", ui_icon_sprite, 17, Millis(8000), "Damages and slows all nearby enemies", None))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/ui_icon_ability_frost_nova.png")
 
     sprite_sheet = SpriteSheet("resources/graphics/effect_frost_explosion.png")

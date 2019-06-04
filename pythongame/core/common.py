@@ -258,3 +258,8 @@ class ProjectileType(Enum):
     PLAYER_WHIRLWIND = 3
     PLAYER_ENTANGLING_ROOTS = 4
     ENEMY_GOBLIN_WARLOCK = 101
+
+
+class SoundId(Enum):
+    ABILITY_FIREBALL = 1
+    ABILITY_WHIRLWIND = 2

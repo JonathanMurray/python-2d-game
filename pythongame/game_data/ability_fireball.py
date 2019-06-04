@@ -1,6 +1,6 @@
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.common import get_position_from_center_position, Sprite, ProjectileType, AbilityType, Millis, \
-    Direction, translate_in_direction
+    Direction, translate_in_direction, SoundId
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, SpriteSheet, \
@@ -52,7 +52,8 @@ def register_fireball_ability():
     register_ability_effect(AbilityType.FIREBALL, _apply_ability)
     register_ability_data(
         AbilityType.FIREBALL,
-        AbilityData("Fireball", UiIconSprite.ABILITY_FIREBALL, 4, Millis(300), "Damages the first enemy that it hits"))
+        AbilityData("Fireball", UiIconSprite.ABILITY_FIREBALL, 4, Millis(300), "Damages the first enemy that it hits",
+                    SoundId.ABILITY_FIREBALL))
     register_ui_icon_sprite_path(UiIconSprite.ABILITY_FIREBALL, "resources/graphics/icon_fireball.png")
     register_projectile_controller(ProjectileType.PLAYER_FIREBALL, ProjectileController)
 

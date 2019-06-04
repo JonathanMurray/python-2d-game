@@ -92,12 +92,14 @@ class PortraitIconSprite(Enum):
 
 
 class AbilityData:
-    def __init__(self, name: str, icon_sprite: UiIconSprite, mana_cost: int, cooldown: Millis, description: str):
+    def __init__(self, name: str, icon_sprite: UiIconSprite, mana_cost: int, cooldown: Millis, description: str,
+                 sound_id: Optional[SoundId]):
         self.name = name
         self.icon_sprite = icon_sprite
         self.mana_cost = mana_cost
         self.cooldown = cooldown
         self.description = description
+        self.sound_id = sound_id
 
 
 class UserAbilityKey:
