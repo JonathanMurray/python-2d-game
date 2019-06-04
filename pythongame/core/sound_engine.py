@@ -9,7 +9,8 @@ class SoundEngine:
         self.sounds = {
             SoundId.ABILITY_FIREBALL: pygame.mixer.Sound('./resources/sound/Shot01.ogg'),
             SoundId.ABILITY_WHIRLWIND: pygame.mixer.Sound('./resources/sound/Fire03.ogg'),
-            SoundId.POTION: pygame.mixer.Sound('./resources/sound/PowerUp04.ogg')
+            SoundId.POTION: pygame.mixer.Sound('./resources/sound/PowerUp04.ogg'),
+            SoundId.EVENT_PLAYER_LEVELED_UP: pygame.mixer.Sound('./resources/sound/PowerUp02.ogg')
         }
 
     def play_sound(self, sound_id: SoundId):
