@@ -4,7 +4,7 @@ from pythongame.core.consumable_effects import try_consume_consumable, Consumabl
     ConsumableFailedToBeConsumed
 from pythongame.core.game_data import ABILITIES
 from pythongame.core.game_state import GameState
-from pythongame.core.sound_engine import SoundEngine
+from pythongame.core.sound_player import play_sound
 from pythongame.core.view_state import ViewState
 
 # global cooldown.
@@ -16,8 +16,7 @@ class PlayerControls:
     def __init__(self):
         self.ticks_since_ability_used = ABILITY_COOLDOWN
 
-    def try_use_ability(self, ability_type: AbilityType, game_state: GameState, sound_engine: SoundEngine,
-                        view_state: ViewState):
+    def try_use_ability(self, ability_type: AbilityType, game_state: GameState, view_state: ViewState):
         if game_state.player_state.is_stunned:
             return
         view_state.notify_ability_was_clicked(ability_type)
@@ -30,7 +29,7 @@ class PlayerControls:
         mana_cost = ability_data.mana_cost
 
         if player_state.mana < mana_cost:
-            sound_engine.play_sound(SoundId.WARNING)
+            play_sound(SoundId.WARNING)
             view_state.set_message("Not enough mana!")
             return
 
@@ -40,7 +39,7 @@ class PlayerControls:
         did_execute = apply_ability_effect(game_state, ability_type)
         if did_execute:
             if ability_data.sound_id:
-                sound_engine.play_sound(ability_data.sound_id)
+                play_sound(ability_data.sound_id)
             else:
                 print("WARN: No sound defined for ability: " + str(ability_type))
             player_state.lose_mana(mana_cost)
@@ -52,8 +51,7 @@ class PlayerControls:
     def notify_time_passed(self, time_passed: Millis):
         self.ticks_since_ability_used += time_passed
 
-    def try_use_consumable(self, slot_number: int, game_state: GameState, view_state: ViewState,
-                           sound_engine: SoundEngine):
+    def try_use_consumable(self, slot_number: int, game_state: GameState, view_state: ViewState):
 
         if not game_state.player_state.is_stunned:
             view_state.notify_consumable_was_clicked(slot_number)
@@ -64,7 +62,7 @@ class PlayerControls:
                     game_state.player_state.consumable_slots[slot_number] = None
                     if result.message:
                         view_state.set_message(result.message)
-                    sound_engine.play_sound(SoundId.POTION)
+                    play_sound(SoundId.POTION)
                 elif isinstance(result, ConsumableFailedToBeConsumed):
                     view_state.set_message(result.reason)
             else:

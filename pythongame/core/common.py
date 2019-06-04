@@ -271,3 +271,4 @@ class SoundId(Enum):
     EVENT_PLAYER_DIED = 102
     EVENT_ENEMY_DIED = 103
     WARNING = 200
+    PLAYER_PAIN = 300

@@ -7,7 +7,7 @@ import pythongame.core.pathfinding.npc_pathfinding
 from pythongame.core.common import Millis, is_x_and_y_within_distance, SoundId
 from pythongame.core.game_data import PortraitIconSprite
 from pythongame.core.game_engine import GameEngine
-from pythongame.core.sound_engine import SoundEngine
+from pythongame.core.sound_player import play_sound, init_sound_player
 from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased
@@ -34,8 +34,9 @@ def main(args: List[str]):
     view_state = ViewState(game_state.game_world_size)
     clock = pygame.time.Clock()
 
-    sound_engine = SoundEngine()
-    game_engine = GameEngine(game_state, view_state, sound_engine)
+    init_sound_player()
+
+    game_engine = GameEngine(game_state, view_state)
 
     is_paused = False
     is_game_over = False
@@ -94,7 +95,7 @@ def main(args: List[str]):
         if not is_paused and not is_game_over:
             player_died = game_engine.run_one_frame(time_passed)
             if player_died:
-                sound_engine.play_sound(SoundId.EVENT_PLAYER_DIED)
+                play_sound(SoundId.EVENT_PLAYER_DIED)
                 is_game_over = True
 
         # ------------------------------------

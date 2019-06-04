@@ -5,18 +5,17 @@ from pythongame.core.game_data import POTION_ENTITY_SIZE
 from pythongame.core.game_state import GameState, handle_buffs, WorldEntity, ItemOnGround, ConsumableOnGround
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.player_controls import PlayerControls
-from pythongame.core.sound_engine import SoundEngine
+from pythongame.core.sound_player import play_sound
 from pythongame.core.view_state import ViewState
 from pythongame.core.visual_effects import create_visual_exp_text
 
 
 class GameEngine:
 
-    def __init__(self, game_state: GameState, view_state: ViewState, sound_engine: SoundEngine):
+    def __init__(self, game_state: GameState, view_state: ViewState):
         self.game_state = game_state
         self.player_controls = PlayerControls()
         self.view_state = view_state
-        self.sound_engine = sound_engine
 
     def initialize(self):
         for item_type in self.game_state.player_state.item_slots.values():
@@ -25,10 +24,10 @@ class GameEngine:
                 item_effect.apply_start_effect(self.game_state)
 
     def try_use_ability(self, ability_type: AbilityType):
-        self.player_controls.try_use_ability(ability_type, self.game_state, self.sound_engine, self.view_state)
+        self.player_controls.try_use_ability(ability_type, self.game_state, self.view_state)
 
     def try_use_consumable(self, slot_number: int):
-        self.player_controls.try_use_consumable(slot_number, self.game_state, self.view_state, self.sound_engine)
+        self.player_controls.try_use_consumable(slot_number, self.game_state, self.view_state)
 
     def move_in_direction(self, direction: Direction):
         if not self.game_state.player_state.is_stunned:
@@ -84,12 +83,12 @@ class GameEngine:
         npcs_that_died = self.game_state.remove_dead_npcs()
         enemies_that_died = [e for e in npcs_that_died if e.is_enemy]
         if enemies_that_died:
-            self.sound_engine.play_sound(SoundId.EVENT_ENEMY_DIED)
+            play_sound(SoundId.EVENT_ENEMY_DIED)
             exp_gained = sum([NON_PLAYER_CHARACTERS[e.npc_type].exp_reward for e in enemies_that_died])
             self.game_state.visual_effects.append(create_visual_exp_text(self.game_state.player_entity, exp_gained))
             did_player_level_up = self.game_state.player_state.gain_exp(exp_gained)
             if did_player_level_up:
-                self.sound_engine.play_sound(SoundId.EVENT_PLAYER_LEVELED_UP)
+                play_sound(SoundId.EVENT_PLAYER_LEVELED_UP)
                 self.view_state.set_message("You reached level " + str(self.game_state.player_state.level))
                 self.game_state.player_state.update_stats_for_new_level()
                 if self.game_state.player_state.level in self.game_state.player_state.new_level_abilities:
@@ -160,7 +159,7 @@ class GameEngine:
                 if empty_consumable_slots:
                     self.game_state.player_state.consumable_slots[empty_consumable_slots] = consumable.consumable_type
                     self.view_state.set_message("You picked up " + consumable_name)
-                    self.sound_engine.play_sound(SoundId.EVENT_PICKED_UP)
+                    play_sound(SoundId.EVENT_PICKED_UP)
                     entities_to_remove.append(consumable)
                 else:
                     self.view_state.set_message("No space for " + consumable_name)
@@ -173,7 +172,7 @@ class GameEngine:
                     item_effect = get_item_effect(item.item_type)
                     item_effect.apply_start_effect(self.game_state)
                     self.view_state.set_message("You picked up " + item_name)
-                    self.sound_engine.play_sound(SoundId.EVENT_PICKED_UP)
+                    play_sound(SoundId.EVENT_PICKED_UP)
                     entities_to_remove.append(item)
                 else:
                     self.view_state.set_message("No space for " + item_name)
