@@ -11,7 +11,8 @@ class SoundEngine:
             SoundId.ABILITY_WHIRLWIND: pygame.mixer.Sound('./resources/sound/Fire03.ogg'),
             SoundId.POTION: pygame.mixer.Sound('./resources/sound/PowerUp04.ogg'),
             SoundId.EVENT_PLAYER_LEVELED_UP: pygame.mixer.Sound('./resources/sound/PowerUp02.ogg'),
-            SoundId.EVENT_PICKED_UP: pygame.mixer.Sound('./resources/sound/UI01.ogg')
+            SoundId.EVENT_PICKED_UP: pygame.mixer.Sound('./resources/sound/UI01.ogg'),
+            SoundId.EVENT_PLAYER_DIED: pygame.mixer.Sound('./resources/sound/Death01.ogg')
         }
 
     def play_sound(self, sound_id: SoundId):
