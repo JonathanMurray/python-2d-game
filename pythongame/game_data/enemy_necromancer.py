@@ -81,7 +81,11 @@ def register_necromancer_enemy():
         LootGroup.single(LootEntry.money(1), 0.9),
         LootGroup.single(LootEntry.money(1), 0.5),
         LootGroup.single(LootEntry.money(1), 0.3),
-        LootGroup(1, [LootEntry.item(ItemType.BLESSED_SHIELD), LootEntry.item(ItemType.SOLDIERS_HELMET)], 1)
+        LootGroup(
+            1,
+            [LootEntry.item(ItemType.BLESSED_SHIELD_2),
+             LootEntry.item(ItemType.SOLDIERS_HELMET_2)],
+            0.3)
     ])
     register_npc_data(ENEMY_TYPE, NpcData(SPRITE, size, health, 0, 0.02, 15, True, False, None, None, loot))
     register_npc_behavior(ENEMY_TYPE, NpcMind)

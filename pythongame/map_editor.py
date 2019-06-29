@@ -59,9 +59,9 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.WINGED_BOOTS),
     MapEditorWorldEntity.item(ItemType.SWORD_OF_LEECHING),
     MapEditorWorldEntity.item(ItemType.ROD_OF_LIGHTNING),
-    MapEditorWorldEntity.item(ItemType.AMULET_OF_MANA),
-    MapEditorWorldEntity.item(ItemType.SOLDIERS_HELMET),
-    MapEditorWorldEntity.item(ItemType.BLESSED_SHIELD),
+    MapEditorWorldEntity.item(ItemType.AMULET_OF_MANA_1),
+    MapEditorWorldEntity.item(ItemType.SOLDIERS_HELMET_1),
+    MapEditorWorldEntity.item(ItemType.BLESSED_SHIELD_1),
     MapEditorWorldEntity.item(ItemType.STAFF_OF_FIRE),
 
     MapEditorWorldEntity.money(1),
