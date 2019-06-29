@@ -12877,13 +12877,6 @@
       ]
     },
     {
-      "consumable_type": "MANA_LESSER",
-      "position": [
-        375,
-        225
-      ]
-    },
-    {
       "consumable_type": "HEALTH",
       "position": [
         450,
@@ -12949,15 +12942,7 @@
       ]
     }
   ],
-  "money_piles_on_ground": [
-    {
-      "amount": 1,
-      "position": [
-        475,
-        250
-      ]
-    }
-  ],
+  "money_piles_on_ground": [],
   "decorations": [
     {
       "sprite": "DECORATION_GROUND_STONE",
