@@ -136,6 +136,7 @@ class ConsumableType(Enum):
 
 
 class NpcType(Enum):
+    CHEST = 1
     NECROMANCER = 3
     WARRIOR = 4
     RAT_1 = 5
@@ -151,7 +152,6 @@ class NpcType(Enum):
 class WallType(Enum):
     WALL = 1
     STATUE = 2
-    CHEST = 3
     WALL_DIRECTIONAL_N = 11
     WALL_DIRECTIONAL_NE = 12
     WALL_DIRECTIONAL_E = 13
@@ -199,6 +199,7 @@ class Sprite(Enum):
     ENEMY_GOBLIN_WARLOCK = 205
     ENEMY_MUMMY = 206
     ENEMY_WARRIOR = 207
+    ENEMY_CHEST = 208
     PLAYER_SUMMON = 250
     NEUTRAL_NPC_DWARF = 260
     NEUTRAL_NPC_NOMAD = 261
@@ -216,7 +217,6 @@ class Sprite(Enum):
     WALL = 501
     WALL_STATUE = 502
     WALL_ALTAR = 503
-    WALL_CHEST = 504
     WALL_DIRECTIONAL_N = 511
     WALL_DIRECTIONAL_NE = 512
     WALL_DIRECTIONAL_E = 513

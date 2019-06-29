@@ -930,6 +930,27 @@
         225,
         325
       ]
+    },
+    {
+      "enemy_type": "CHEST",
+      "position": [
+        600,
+        650
+      ]
+    },
+    {
+      "enemy_type": "CHEST",
+      "position": [
+        1825,
+        175
+      ]
+    },
+    {
+      "enemy_type": "CHEST",
+      "position": [
+        50,
+        1875
+      ]
     }
   ],
   "player": {
@@ -12427,13 +12448,6 @@
       ]
     },
     {
-      "wall_type": "CHEST",
-      "position": [
-        600,
-        650
-      ]
-    },
-    {
       "wall_type": "WALL_DIRECTIONAL_S",
       "position": [
         1825,
@@ -12501,13 +12515,6 @@
       "position": [
         1825,
         125
-      ]
-    },
-    {
-      "wall_type": "CHEST",
-      "position": [
-        1825,
-        175
       ]
     },
     {
@@ -12882,13 +12889,6 @@
         450,
         3100
       ]
-    },
-    {
-      "consumable_type": "SCROLL_ABILITY_SUMMON",
-      "position": [
-        1425,
-        1300
-      ]
     }
   ],
   "items_on_ground": [
@@ -12900,45 +12900,10 @@
       ]
     },
     {
-      "item_type": "WINGED_BOOTS",
-      "position": [
-        650,
-        650
-      ]
-    },
-    {
       "item_type": "ROD_OF_LIGHTNING",
       "position": [
         1075,
         3050
-      ]
-    },
-    {
-      "item_type": "AMULET_OF_MANA",
-      "position": [
-        1875,
-        175
-      ]
-    },
-    {
-      "item_type": "STAFF_OF_FIRE",
-      "position": [
-        50,
-        1900
-      ]
-    },
-    {
-      "item_type": "BLESSED_SHIELD",
-      "position": [
-        2375,
-        1575
-      ]
-    },
-    {
-      "item_type": "SOLDIERS_HELMET",
-      "position": [
-        2200,
-        3425
       ]
     }
   ],

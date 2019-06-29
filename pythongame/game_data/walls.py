@@ -5,7 +5,6 @@ from pythongame.core.game_data import register_wall_data, WallData, register_ent
 def register_walls():
     _register_wall()
     _register_statue()
-    _register_chest()
     _register_directional_walls()
     _register_chair()
     _register_altar()
@@ -68,16 +67,6 @@ def _register_statue():
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size,
                                indices_by_dir, (-4, -54))
     register_wall_data(WallType.STATUE, WallData(sprite, (42, 46)))
-
-def _register_chest():
-    sprite = Sprite.WALL_CHEST
-    sprite_sheet = SpriteSheet("resources/graphics/human_tileset.png")
-    original_sprite_size = (32, 64)
-    scaled_sprite_size = (50, 75)
-    indices_by_dir = {Direction.DOWN: [(9, 3)]}
-    register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size,
-                               indices_by_dir, (-6, -33))
-    register_wall_data(WallType.CHEST, WallData(sprite, (38, 38)))
 
 
 def _register_altar():
