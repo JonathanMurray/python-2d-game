@@ -1,10 +1,10 @@
 import json
 
 from pythongame.core.common import *
-from pythongame.core.game_data import CONSUMABLES, ITEM_ENTITY_SIZE, ITEMS, WALLS
-from pythongame.core.game_data import POTION_ENTITY_SIZE
-from pythongame.core.game_state import WorldEntity, GameState, ConsumableOnGround, ItemOnGround, DecorationEntity, Wall
-from pythongame.core.entity_creation import create_npc, set_global_path_finder, create_money_pile_on_ground
+from pythongame.core.entity_creation import create_npc, set_global_path_finder, create_money_pile_on_ground, \
+    create_item_on_ground, create_consumable_on_ground
+from pythongame.core.game_data import WALLS
+from pythongame.core.game_state import WorldEntity, GameState, DecorationEntity, Wall
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE, INTIAL_PLAYER_STATE, PLAYER_ENTITY_SPEED
 
@@ -20,9 +20,9 @@ def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str
         player_pos = json_data["player"]["position"]
         player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
 
-        consumables = [_create_consumable_at_position(ConsumableType[p["consumable_type"]], p["position"]) for p in
+        consumables = [create_consumable_on_ground(ConsumableType[p["consumable_type"]], p["position"]) for p in
                        json_data["consumables_on_ground"]]
-        items = [_create_item_at_position(ItemType[i["item_type"]], i["position"]) for i in
+        items = [create_item_on_ground(ItemType[i["item_type"]], i["position"]) for i in
                  json_data["items_on_ground"]]
 
         json_money_piles_on_ground = json_data.get("money_piles_on_ground", [])
@@ -77,16 +77,6 @@ def save_game_state_to_json_file(game_state: GameState, map_file: str):
 
     with open(map_file, 'w') as map_file:
         map_file.write(json.dumps(json_data, indent=2))
-
-
-def _create_consumable_at_position(consumable_type: ConsumableType, pos: Tuple[int, int]):
-    entity = WorldEntity(pos, POTION_ENTITY_SIZE, CONSUMABLES[consumable_type].entity_sprite)
-    return ConsumableOnGround(entity, consumable_type)
-
-
-def _create_item_at_position(item_type: ItemType, pos: Tuple[int, int]):
-    entity = WorldEntity(pos, ITEM_ENTITY_SIZE, ITEMS[item_type].entity_sprite)
-    return ItemOnGround(entity, item_type)
 
 
 def _create_wall_at_position(wall_type: WallType, pos: Tuple[int, int]) -> Wall:

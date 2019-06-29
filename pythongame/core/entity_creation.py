@@ -1,8 +1,9 @@
 from typing import Tuple
 
-from pythongame.core.common import NpcType, Direction, Sprite
-from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE
-from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround
+from pythongame.core.common import NpcType, Direction, Sprite, ItemType, ConsumableType
+from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, ITEMS, CONSUMABLES, POTION_ENTITY_SIZE
+from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
+    ConsumableOnGround
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
@@ -27,3 +28,13 @@ def create_npc(npc_type: NpcType, pos: Tuple[int, int]) -> NonPlayerCharacter:
 
 def create_money_pile_on_ground(amount: int, pos: Tuple[int, int]) -> MoneyPileOnGround:
     return MoneyPileOnGround(WorldEntity(pos, ITEM_ENTITY_SIZE, Sprite.COIN), amount)
+
+
+def create_item_on_ground(item_type: ItemType, pos: Tuple[int, int]) -> ItemOnGround:
+    entity = WorldEntity(pos, ITEM_ENTITY_SIZE, ITEMS[item_type].entity_sprite)
+    return ItemOnGround(entity, item_type)
+
+
+def create_consumable_on_ground(consumable_type: ConsumableType, pos: Tuple[int, int]):
+    entity = WorldEntity(pos, POTION_ENTITY_SIZE, CONSUMABLES[consumable_type].entity_sprite)
+    return ConsumableOnGround(entity, consumable_type)

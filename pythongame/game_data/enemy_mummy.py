@@ -1,10 +1,11 @@
 import random
 
 from pythongame.core.common import Millis, is_x_and_y_within_distance, NpcType, Sprite, Direction, \
-    get_perpendicular_directions
+    get_perpendicular_directions, ConsumableType
 from pythongame.core.damage_interactions import deal_npc_damage
 from pythongame.core.enemy_target_selection import get_target, EnemyTarget
-from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
+from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
+    EnemyLootEntry
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, EnemyLootPicker
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
@@ -81,9 +82,9 @@ def register_mummy_enemy():
     movement_speed = 0.06
     health = 12
     health_regen = 1
+    loot = EnemyLootPicker([EnemyLootEntry.money(1, 0.8), EnemyLootEntry.consumable(ConsumableType.HEALTH_LESSER, 0.2)])
     register_npc_data(npc_type,
-                      NpcData(sprite, size, health, health_regen, movement_speed, 10, True, False, None, None,
-                              EnemyLootPicker(0.8)))
+                      NpcData(sprite, size, health, health_regen, movement_speed, 10, True, False, None, None, loot))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")
     original_sprite_size = (32, 32)

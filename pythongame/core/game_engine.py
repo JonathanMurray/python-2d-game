@@ -1,10 +1,10 @@
 from pythongame.core.ability_learning import player_learn_new_ability
 from pythongame.core.common import *
-from pythongame.core.game_data import CONSUMABLES, ITEMS, ITEM_ENTITY_SIZE, NON_PLAYER_CHARACTERS
-from pythongame.core.game_data import POTION_ENTITY_SIZE
-from pythongame.core.game_state import GameState, handle_buffs, WorldEntity, ItemOnGround, ConsumableOnGround
+from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
+    create_consumable_on_ground
+from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS
+from pythongame.core.game_state import GameState, handle_buffs
 from pythongame.core.item_effects import get_item_effect
-from pythongame.core.entity_creation import create_money_pile_on_ground
 from pythongame.core.player_controls import PlayerControls
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view_state import ViewState
@@ -45,15 +45,15 @@ class GameEngine:
 
     def drop_inventory_item_on_ground(self, item_slot: int, game_world_position: Tuple[int, int]):
         item_type = self.game_state.player_state.item_slots[item_slot]
-        item_entity = WorldEntity(game_world_position, ITEM_ENTITY_SIZE, ITEMS[item_type].entity_sprite)
-        self.game_state.items_on_ground.append(ItemOnGround(item_entity, item_type))
+        item = create_item_on_ground(item_type, game_world_position)
+        self.game_state.items_on_ground.append(item)
         get_item_effect(item_type).apply_end_effect(self.game_state)
         self.game_state.player_state.item_slots[item_slot] = None
 
     def drop_consumable_on_ground(self, consumable_slot: int, game_world_position: Tuple[int, int]):
         consumable_type = self.game_state.player_state.consumable_slots[consumable_slot]
-        entity = WorldEntity(game_world_position, POTION_ENTITY_SIZE, CONSUMABLES[consumable_type].entity_sprite)
-        self.game_state.consumables_on_ground.append(ConsumableOnGround(entity, consumable_type))
+        consumable = create_consumable_on_ground(consumable_type, game_world_position)
+        self.game_state.consumables_on_ground.append(consumable)
         self.game_state.player_state.consumable_slots[consumable_slot] = None
 
     def _is_enemy_close_to_camera(self, enemy):
@@ -96,9 +96,21 @@ class GameEngine:
                     new_ability = self.game_state.player_state.new_level_abilities[self.game_state.player_state.level]
                     player_learn_new_ability(self.game_state.player_state, new_ability)
             for enemy_that_died in enemies_that_died:
-                if random.random() < enemy_that_died.enemy_loot_picker.chance_to_drop_money:
-                    self.game_state.money_piles_on_ground.append(
-                        create_money_pile_on_ground(1, enemy_that_died.world_entity.get_position()))
+                for loot_entry in enemy_that_died.enemy_loot_picker.loot_entries:
+                    if random.random() < loot_entry.chance_to_drop:
+                        loot_pos_offset = (random.randint(-20, 20), random.randint(-20, 20))
+                        loot_position = sum_of_vectors(enemy_that_died.world_entity.get_position(), loot_pos_offset)
+
+                        if loot_entry.money_amount:
+                            money_pile_on_ground = create_money_pile_on_ground(1, loot_position)
+                            self.game_state.money_piles_on_ground.append(money_pile_on_ground)
+                        elif loot_entry.item_type:
+                            item_on_ground = create_item_on_ground(loot_entry.item_type, loot_position)
+                            self.game_state.items_on_ground.append(item_on_ground)
+                        elif loot_entry.consumable_type:
+                            consumable_on_ground = create_consumable_on_ground(loot_entry.consumable_type,
+                                                                               loot_position)
+                            self.game_state.consumables_on_ground.append(consumable_on_ground)
 
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_effects()

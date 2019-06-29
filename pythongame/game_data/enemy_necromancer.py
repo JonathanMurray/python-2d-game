@@ -3,7 +3,7 @@ import random
 from pythongame.core.common import Millis, random_direction, NpcType, Sprite, \
     is_x_and_y_within_distance, Direction, sum_of_vectors, get_position_from_center_position
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
-    NON_PLAYER_CHARACTERS
+    NON_PLAYER_CHARACTERS, EnemyLootEntry
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, EnemyLootPicker
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.entity_creation import create_npc
@@ -77,7 +77,7 @@ def register_necromancer_enemy():
     size = (50, 60)
     health = 25
     register_npc_data(ENEMY_TYPE, NpcData(SPRITE, size, health, 0, 0.02, 15, True, False, None, None,
-                                          EnemyLootPicker(0.3)))
+                                          EnemyLootPicker([EnemyLootEntry.money(1, 0.3)])))
     register_npc_behavior(ENEMY_TYPE, NpcMind)
 
     enemy_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")

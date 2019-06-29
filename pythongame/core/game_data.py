@@ -57,9 +57,30 @@ class Animation:
         self.position_relative_to_entity = position_relative_to_entity
 
 
+class EnemyLootEntry:
+    def __init__(self, money_amount: Optional[int], item_type: Optional[ItemType],
+                 consumable_type: Optional[ConsumableType], chance_to_drop: float):
+        self.money_amount = money_amount
+        self.item_type = item_type
+        self.consumable_type = consumable_type
+        self.chance_to_drop = chance_to_drop
+
+    @staticmethod
+    def money(amount: int, chance_to_drop: float):
+        return EnemyLootEntry(amount, None, None, chance_to_drop)
+
+    @staticmethod
+    def item(item_type: ItemType, chance_to_drop: float):
+        return EnemyLootEntry(None, item_type, None, chance_to_drop)
+
+    @staticmethod
+    def consumable(consumable_type: ConsumableType, chance_to_drop: float):
+        return EnemyLootEntry(None, None, consumable_type, chance_to_drop)
+
+
 class EnemyLootPicker:
-    def __init__(self, chance_to_drop_money: float):
-        self.chance_to_drop_money = chance_to_drop_money
+    def __init__(self, loot_entries: List[EnemyLootEntry]):
+        self.loot_entries = loot_entries
 
 
 # TODO Ideally this shouldn't need to be defined here
