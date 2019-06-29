@@ -176,6 +176,12 @@ class GameEngine:
                     entities_to_remove.append(item)
                 else:
                     self.view_state.set_message("No space for " + item_name)
+        for money_pile in self.game_state.money_piles_on_ground:
+            if boxes_intersect(self.game_state.player_entity, money_pile.world_entity):
+                self.view_state.set_message("Money gained: " + str(money_pile.amount))
+                play_sound(SoundId.EVENT_PICKED_UP)
+                entities_to_remove.append(money_pile)
+                self.game_state.player_state.money += money_pile.amount
 
         for enemy in [e for e in self.game_state.non_player_characters if e.is_enemy]:
             for projectile in self.game_state.get_projectiles_intersecting_with(enemy.world_entity):

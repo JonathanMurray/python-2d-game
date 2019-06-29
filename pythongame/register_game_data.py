@@ -6,6 +6,7 @@ from pythongame.game_data.ability_heal import register_heal_ability
 from pythongame.game_data.ability_summon import register_summon_ability
 from pythongame.game_data.ability_teleport import register_teleport_ability
 from pythongame.game_data.ability_whirlwind import register_whirlwind_ability
+from pythongame.game_data.coin import register_coin
 from pythongame.game_data.decorations import register_decorations
 from pythongame.game_data.enemy_dark_reaper import register_dark_reaper_enemy
 from pythongame.game_data.enemy_goblin_warlock import register_goblin_warlock_enemy
@@ -79,3 +80,5 @@ def register_all_game_data():
     register_walls()
 
     register_portrait_icons()
+
+    register_coin()

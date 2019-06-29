@@ -12949,6 +12949,15 @@
       ]
     }
   ],
+  "money_piles_on_ground": [
+    {
+      "amount": 1,
+      "position": [
+        475,
+        250
+      ]
+    }
+  ],
   "decorations": [
     {
       "sprite": "DECORATION_GROUND_STONE",

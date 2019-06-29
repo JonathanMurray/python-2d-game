@@ -145,7 +145,8 @@ def main(args: List[str]):
             mouse_screen_position=mouse_screen_position,
             player_exp=game_state.player_state.exp,
             player_max_exp_in_this_level=game_state.player_state.max_exp_in_this_level,
-            dialog=hacky_dialog)
+            dialog=hacky_dialog,
+            player_money=game_state.player_state.money)
 
         # TODO There is a lot of details here about UI state (dragging items). Move that elsewhere.
 

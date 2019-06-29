@@ -129,6 +129,12 @@ class ItemOnGround:
         self.item_type = item_type
 
 
+class MoneyPileOnGround:
+    def __init__(self, world_entity: WorldEntity, amount):
+        self.world_entity = world_entity
+        self.amount = amount
+
+
 class Projectile:
     def __init__(self, world_entity: WorldEntity, projectile_controller):
         self.world_entity = world_entity
@@ -237,6 +243,7 @@ class PlayerState:
         self.max_exp_in_this_level = 60
         self.fireball_dmg_boost = 0
         self.new_level_abilities: Dict[int, AbilityType] = new_level_abilities
+        self.money = 0
 
     def gain_health(self, amount: float):
         self._health_float = min(self._health_float + amount, self.max_health)
@@ -368,15 +375,19 @@ class DecorationEntity:
 
 class GameState:
     def __init__(self, player_entity: WorldEntity, consumables_on_ground: List[ConsumableOnGround],
-                 items_on_ground: List[ItemOnGround], non_player_characters: List[NonPlayerCharacter],
+                 items_on_ground: List[ItemOnGround], money_piles_on_ground: List[MoneyPileOnGround],
+                 non_player_characters: List[NonPlayerCharacter],
                  walls: List[Wall], camera_size: Tuple[int, int], game_world_size: Tuple[int, int],
                  player_state: PlayerState, decoration_entities: List[DecorationEntity]):
         self.camera_size = camera_size
         self.camera_world_area = WorldArea((0, 0), self.camera_size)
         self.player_entity = player_entity
         self.projectile_entities: List[Projectile] = []
-        self.consumables_on_ground = consumables_on_ground
+        # TODO: unify code for picking up stuff from the ground. The way they are rendered and picked up are similar,
+        # and only the effect of picking them up is different.
+        self.consumables_on_ground: List[ConsumableOnGround] = consumables_on_ground
         self.items_on_ground: List[ItemOnGround] = items_on_ground
+        self.money_piles_on_ground: List[MoneyPileOnGround] = money_piles_on_ground
         self.non_player_characters: List[NonPlayerCharacter] = non_player_characters
         # overlaps with non_player_characters
         self.non_enemy_npcs: List[NonPlayerCharacter] = [npc for npc in non_player_characters if not npc.is_enemy]
@@ -420,12 +431,14 @@ class GameState:
         self.projectile_entities = [p for p in self.projectile_entities if p not in entities_to_remove]
         self.consumables_on_ground = [p for p in self.consumables_on_ground if p not in entities_to_remove]
         self.items_on_ground = [i for i in self.items_on_ground if i not in entities_to_remove]
+        self.money_piles_on_ground = [m for m in self.money_piles_on_ground if m not in entities_to_remove]
         self.non_player_characters = [e for e in self.non_player_characters if e not in entities_to_remove]
 
     def get_all_entities_to_render(self) -> List[WorldEntity]:
         walls = self._get_walls_from_buckets_in_camera()
         return [self.player_entity] + [p.world_entity for p in self.consumables_on_ground] + \
                [i.world_entity for i in self.items_on_ground] + \
+               [m.world_entity for m in self.money_piles_on_ground] + \
                [e.world_entity for e in self.non_player_characters] + walls + [p.world_entity for p in
                                                                                self.projectile_entities]
 

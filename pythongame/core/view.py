@@ -107,6 +107,7 @@ class View:
         self.font_splash_screen = pygame.font.Font(DIR_FONTS + 'Arial Rounded Bold.ttf', 64)
 
         self.font_ui_stat_bar_numbers = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
+        self.font_ui_money = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_ui_headers = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 18)
         self.font_tooltip_header = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 16)
         self.font_tooltip_details = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
@@ -394,6 +395,8 @@ class View:
                 image = self.images_by_ui_sprite[ui_icon_sprite]
             elif entity.decoration_sprite:
                 image = self.images_by_sprite[entity.decoration_sprite][Direction.DOWN][0].image
+            elif entity.money_amount:
+                image = self.images_by_sprite[Sprite.COIN][Direction.DOWN][0].image
             else:
                 raise Exception("Unknown entity: " + str(entity))
         else:
@@ -493,7 +496,8 @@ class View:
                   player_health, player_mana, player_max_health, player_max_mana, player_health_regen: float,
                   player_mana_regen: float, player_minimap_relative_position, consumable_slots,
                   item_slots: Dict[int, ItemType], player_level: int, mouse_screen_position: Tuple[int, int],
-                  player_exp: int, player_max_exp_in_this_level: int, dialog: Optional[Dialog]) -> MouseHoverEvent:
+                  player_exp: int, player_max_exp_in_this_level: int, dialog: Optional[Dialog],
+                  player_money: int) -> MouseHoverEvent:
 
         hovered_item_slot_number = None
         hovered_consumable_slot_number = None
@@ -550,6 +554,8 @@ class View:
             tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_manabar[0], rect_manabar[1]))
         mana_text = str(player_mana) + "/" + str(player_max_mana)
         self._text_in_ui(self.font_ui_stat_bar_numbers, mana_text, (x_0 + 20, y_4 + 20))
+
+        self._text_in_ui(self.font_ui_money, "Money: " + str(player_money), (x_0 + 4, y_4 + 38))
 
         # CONSUMABLES
         icon_space = 2
