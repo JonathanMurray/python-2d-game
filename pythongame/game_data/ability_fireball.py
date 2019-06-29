@@ -1,3 +1,5 @@
+import random
+
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.common import get_position_from_center_position, Sprite, ProjectileType, AbilityType, Millis, \
     Direction, translate_in_direction, SoundId
@@ -11,6 +13,8 @@ from pythongame.core.projectile_controllers import create_projectile_controller,
 from pythongame.core.visual_effects import VisualCircle
 
 PROJECTILE_SIZE = (30, 30)
+MIN_DMG = 2
+MAX_DMG = 4
 
 
 class ProjectileController(AbstractProjectileController):
@@ -18,7 +22,8 @@ class ProjectileController(AbstractProjectileController):
         super().__init__(1500)
 
     def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState):
-        damage_amount = 3 + game_state.player_state.fireball_dmg_boost
+        base_damage = MIN_DMG + random.randint(0, MAX_DMG - MIN_DMG)
+        damage_amount = base_damage + game_state.player_state.fireball_dmg_boost
         damage_was_dealt = deal_player_damage_to_enemy(game_state, npc, damage_amount)
         if not damage_was_dealt:
             return False
@@ -50,10 +55,10 @@ def _apply_ability(game_state: GameState) -> bool:
 
 def register_fireball_ability():
     register_ability_effect(AbilityType.FIREBALL, _apply_ability)
+    description = "Damages first enemy that is hit (" + str(MIN_DMG) + "-" + str(MAX_DMG) + ")"
     register_ability_data(
         AbilityType.FIREBALL,
-        AbilityData("Fireball", UiIconSprite.ABILITY_FIREBALL, 4, Millis(300), "Damages the first enemy that it hits",
-                    SoundId.ABILITY_FIREBALL))
+        AbilityData("Fireball", UiIconSprite.ABILITY_FIREBALL, 4, Millis(300), description, SoundId.ABILITY_FIREBALL))
     register_ui_icon_sprite_path(UiIconSprite.ABILITY_FIREBALL, "resources/graphics/icon_fireball.png")
     register_projectile_controller(ProjectileType.PLAYER_FIREBALL, ProjectileController)
 
