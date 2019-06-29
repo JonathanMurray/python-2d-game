@@ -22,7 +22,7 @@ def _apply_ability(game_state: GameState) -> bool:
     player_entity = game_state.player_entity
     aoe_center_pos = translate_in_direction(player_entity.get_center_position(), player_entity.direction, 60)
     aoe_pos = get_position_from_center_position(aoe_center_pos, PROJECTILE_SIZE)
-    projectile_speed = 0.08
+    projectile_speed = 0.1
     entity = WorldEntity(aoe_pos, PROJECTILE_SIZE, PROJECTILE_SPRITE, player_entity.direction, projectile_speed)
     projectile = Projectile(entity, create_projectile_controller(PROJECTILE_TYPE))
     game_state.projectile_entities.append(projectile)
@@ -37,7 +37,7 @@ class ProjectileController(AbstractProjectileController):
         self._direction_change_cooldown = 250
         self._time_since_direction_change = self._direction_change_cooldown
         self._relative_direction = 0
-        self._stun_duration = 300
+        self._stun_duration = 500
 
         self._rotation_motion = random.choice([-1, 1])
 
@@ -52,7 +52,8 @@ class ProjectileController(AbstractProjectileController):
                 damage_amount = 1
                 damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, damage_amount)
                 if damage_was_dealt:
-                    enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(self._stun_duration))
+                    if random.random() < 0.25:
+                        enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(self._stun_duration))
 
         if self._time_since_direction_change > self._direction_change_cooldown:
             self._time_since_direction_change = 0
