@@ -246,7 +246,8 @@ class PlayerState:
         self.fireball_dmg_boost = 0
         self.new_level_abilities: Dict[int, AbilityType] = new_level_abilities
         self.money = 0
-        self.damage_modifier = 1
+        self.base_damage_modifier: float = 1  # only affected by level. Changes multiplicatively
+        self.damage_modifier_bonus: float = 0  # affected by items. Only allowed to change additively
 
     def gain_health(self, amount: float):
         self._health_float = min(self._health_float + amount, self.max_health)
@@ -345,7 +346,7 @@ class PlayerState:
         self.gain_full_health()
         self.gain_full_mana()
         self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.4)
-        self.damage_modifier *= 1.1
+        self.base_damage_modifier *= 1.1
 
     def gain_ability(self, ability_type: AbilityType):
         self.ability_cooldowns_remaining[ability_type] = 0

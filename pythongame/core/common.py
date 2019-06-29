@@ -211,6 +211,7 @@ class Sprite(Enum):
     ITEM_BLESSED_SHIELD = 306
     ITEM_STAFF_OF_FIRE = 307
     ITEM_BLUE_ROBE = 308
+    ITEM_ORB_OF_THE_MAGI = 309
     COIN = 350
     DECORATION_GROUND_STONE = 401
     DECORATION_PLANT = 403
@@ -263,6 +264,9 @@ class ItemType(Enum):
     BLUE_ROBE_1 = 40
     BLUE_ROBE_2 = 41
     BLUE_ROBE_3 = 42
+    ORB_OF_THE_MAGI_1 = 50
+    ORB_OF_THE_MAGI_2 = 51
+    ORB_OF_THE_MAGI_3 = 52
 
 
 class ProjectileType(Enum):

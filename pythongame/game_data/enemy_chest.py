@@ -35,6 +35,9 @@ def register_chest_enemy():
         LootEntry.item(ItemType.BLUE_ROBE_1),
         LootEntry.item(ItemType.BLUE_ROBE_2),
         LootEntry.item(ItemType.BLUE_ROBE_3),
+        LootEntry.item(ItemType.ORB_OF_THE_MAGI_1),
+        LootEntry.item(ItemType.ORB_OF_THE_MAGI_2),
+        LootEntry.item(ItemType.ORB_OF_THE_MAGI_3),
         LootEntry.consumable(ConsumableType.SCROLL_ABILITY_SUMMON)
     ]
     loot = LootTable([LootGroup(1, possible_drops, 1)])

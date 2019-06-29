@@ -9,13 +9,15 @@ from pythongame.core.visual_effects import create_visual_damage_text
 # True if damage was dealt.
 # False if enemy was invulnerable.
 def deal_player_damage_to_enemy(game_state: GameState, npc: NonPlayerCharacter, base_amount: float):
-    amount: float = base_amount * game_state.player_state.damage_modifier
+    player_state = game_state.player_state
+    damage_modifier: float = player_state.base_damage_modifier + player_state.damage_modifier_bonus
+    amount: float = base_amount * damage_modifier
     if npc.invulnerable:
         return False
     npc.lose_health(amount)
     game_state.visual_effects.append(create_visual_damage_text(npc.world_entity, int(round(amount))))
-    health_from_life_steal = game_state.player_state.life_steal_ratio * amount
-    game_state.player_state.gain_health(health_from_life_steal)
+    health_from_life_steal = player_state.life_steal_ratio * amount
+    player_state.gain_health(health_from_life_steal)
     return True
 
 

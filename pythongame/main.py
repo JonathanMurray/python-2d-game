@@ -147,7 +147,7 @@ def main(args: List[str]):
             player_max_exp_in_this_level=game_state.player_state.max_exp_in_this_level,
             dialog=hacky_dialog,
             player_money=game_state.player_state.money,
-            player_damage_modifier=game_state.player_state.damage_modifier)
+            player_damage_modifier=game_state.player_state.base_damage_modifier + game_state.player_state.damage_modifier_bonus)
 
         # TODO There is a lot of details here about UI state (dragging items). Move that elsewhere.
 

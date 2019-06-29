@@ -64,6 +64,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.BLESSED_SHIELD_1),
     MapEditorWorldEntity.item(ItemType.STAFF_OF_FIRE),
     MapEditorWorldEntity.item(ItemType.BLUE_ROBE_1),
+    MapEditorWorldEntity.item(ItemType.ORB_OF_THE_MAGI_1),
 
     MapEditorWorldEntity.money(1),
 
