@@ -96,21 +96,20 @@ class GameEngine:
                     new_ability = self.game_state.player_state.new_level_abilities[self.game_state.player_state.level]
                     player_learn_new_ability(self.game_state.player_state, new_ability)
             for enemy_that_died in enemies_that_died:
-                for loot_entry in enemy_that_died.enemy_loot_picker.loot_entries:
-                    if random.random() < loot_entry.chance_to_drop:
-                        loot_pos_offset = (random.randint(-20, 20), random.randint(-20, 20))
-                        loot_position = sum_of_vectors(enemy_that_died.world_entity.get_position(), loot_pos_offset)
+                for loot_entry in enemy_that_died.enemy_loot_table.generate_loot():
+                    loot_pos_offset = (random.randint(-20, 20), random.randint(-20, 20))
+                    loot_position = sum_of_vectors(enemy_that_died.world_entity.get_position(), loot_pos_offset)
 
-                        if loot_entry.money_amount:
-                            money_pile_on_ground = create_money_pile_on_ground(1, loot_position)
-                            self.game_state.money_piles_on_ground.append(money_pile_on_ground)
-                        elif loot_entry.item_type:
-                            item_on_ground = create_item_on_ground(loot_entry.item_type, loot_position)
-                            self.game_state.items_on_ground.append(item_on_ground)
-                        elif loot_entry.consumable_type:
-                            consumable_on_ground = create_consumable_on_ground(loot_entry.consumable_type,
-                                                                               loot_position)
-                            self.game_state.consumables_on_ground.append(consumable_on_ground)
+                    if loot_entry.money_amount:
+                        money_pile_on_ground = create_money_pile_on_ground(1, loot_position)
+                        self.game_state.money_piles_on_ground.append(money_pile_on_ground)
+                    elif loot_entry.item_type:
+                        item_on_ground = create_item_on_ground(loot_entry.item_type, loot_position)
+                        self.game_state.items_on_ground.append(item_on_ground)
+                    elif loot_entry.consumable_type:
+                        consumable_on_ground = create_consumable_on_ground(loot_entry.consumable_type,
+                                                                           loot_position)
+                        self.game_state.consumables_on_ground.append(consumable_on_ground)
 
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_effects()

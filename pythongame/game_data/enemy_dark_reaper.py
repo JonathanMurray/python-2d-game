@@ -4,9 +4,9 @@ from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effec
 from pythongame.core.common import Millis, is_x_and_y_within_distance, NpcType, Sprite, Direction, \
     get_perpendicular_directions, BuffType
 from pythongame.core.damage_interactions import deal_damage_to_player
-from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
-    EnemyLootEntry
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, EnemyLootPicker
+from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
+from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.loot import LootTable, LootEntry
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
@@ -130,8 +130,8 @@ def register_dark_reaper_enemy():
     npc_type = NpcType.DARK_REAPER
     movement_speed = 0.04
     health = 80
-    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 40, True, False, None, None,
-                                        EnemyLootPicker([EnemyLootEntry.money(1, 0.8)])))
+    loot = LootTable.single(LootEntry.money(1), 0.2)
+    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 40, True, False, None, None, loot))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet.png")
     original_sprite_size = (32, 32)

@@ -4,7 +4,8 @@ from typing import List, Optional, Dict, Any
 from pygame.rect import Rect
 
 from pythongame.core.common import *
-from pythongame.core.game_data import PortraitIconSprite, EnemyLootPicker
+from pythongame.core.game_data import PortraitIconSprite
+from pythongame.core.loot import LootTable
 
 GRID_CELL_WIDTH = 25
 
@@ -145,7 +146,7 @@ class Projectile:
 class NonPlayerCharacter:
     def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health: int, max_health: int,
                  health_regen: float, npc_mind, is_enemy: bool, is_neutral: bool, dialog: Optional[str],
-                 portrait_icon_sprite: Optional[PortraitIconSprite], enemy_loot_picker: Optional[EnemyLootPicker]):
+                 portrait_icon_sprite: Optional[PortraitIconSprite], enemy_loot_table: Optional[LootTable]):
         self.npc_type = npc_type
         self.world_entity = world_entity
         self._health_float = health
@@ -160,7 +161,7 @@ class NonPlayerCharacter:
         self.is_neutral = is_neutral
         self.dialog: Optional[str] = dialog
         self.portrait_icon_sprite: Optional[PortraitIconSprite] = portrait_icon_sprite
-        self.enemy_loot_picker = enemy_loot_picker
+        self.enemy_loot_table = enemy_loot_table
 
     def lose_health(self, amount):
         self._health_float = min(self._health_float - amount, self.max_health)

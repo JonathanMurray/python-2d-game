@@ -23,7 +23,7 @@ def create_npc(npc_type: NpcType, pos: Tuple[int, int]) -> NonPlayerCharacter:
     npc_mind = create_npc_mind(npc_type, global_path_finder)
     return NonPlayerCharacter(npc_type, entity, data.max_health, data.max_health, data.health_regen, npc_mind,
                               data.is_enemy, data.is_neutral, data.dialog, data.portrait_icon_sprite,
-                              data.enemy_loot_picker)
+                              data.enemy_loot_table)
 
 
 def create_money_pile_on_ground(amount: int, pos: Tuple[int, int]) -> MoneyPileOnGround:

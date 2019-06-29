@@ -4,6 +4,7 @@ from typing import Dict, List, Optional
 import pygame
 
 from pythongame.core.common import *
+from pythongame.core.loot import LootTable
 
 ITEM_ENTITY_SIZE = (30, 30)
 POTION_ENTITY_SIZE = (30, 30)
@@ -55,32 +56,6 @@ class Animation:
         self.sprite_initializers = sprite_initializers
         self.sprite_map_initializers = sprite_map_initializers
         self.position_relative_to_entity = position_relative_to_entity
-
-
-class EnemyLootEntry:
-    def __init__(self, money_amount: Optional[int], item_type: Optional[ItemType],
-                 consumable_type: Optional[ConsumableType], chance_to_drop: float):
-        self.money_amount = money_amount
-        self.item_type = item_type
-        self.consumable_type = consumable_type
-        self.chance_to_drop = chance_to_drop
-
-    @staticmethod
-    def money(amount: int, chance_to_drop: float):
-        return EnemyLootEntry(amount, None, None, chance_to_drop)
-
-    @staticmethod
-    def item(item_type: ItemType, chance_to_drop: float):
-        return EnemyLootEntry(None, item_type, None, chance_to_drop)
-
-    @staticmethod
-    def consumable(consumable_type: ConsumableType, chance_to_drop: float):
-        return EnemyLootEntry(None, None, consumable_type, chance_to_drop)
-
-
-class EnemyLootPicker:
-    def __init__(self, loot_entries: List[EnemyLootEntry]):
-        self.loot_entries = loot_entries
 
 
 # TODO Ideally this shouldn't need to be defined here
@@ -138,7 +113,7 @@ class UserAbilityKey:
 class NpcData:
     def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
                  exp_reward: int, is_enemy: bool, is_neutral: bool, dialog: Optional[str],
-                 portrait_icon_sprite: Optional[PortraitIconSprite], enemy_loot_picker: Optional[EnemyLootPicker]):
+                 portrait_icon_sprite: Optional[PortraitIconSprite], enemy_loot_table: Optional[LootTable]):
         self.sprite = sprite
         self.size = size
         self.max_health = max_health
@@ -149,7 +124,7 @@ class NpcData:
         self.is_neutral = is_neutral  # a neutral NPC can't take damage from enemies or player. It may have dialog.
         self.dialog: Optional[str] = dialog
         self.portrait_icon_sprite: Optional[PortraitIconSprite] = portrait_icon_sprite
-        self.enemy_loot_picker = enemy_loot_picker
+        self.enemy_loot_table: LootTable = enemy_loot_table
 
 
 class ConsumableData:
