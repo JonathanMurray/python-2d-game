@@ -210,6 +210,7 @@ class Sprite(Enum):
     ITEM_SOLDIERS_HELMET = 305
     ITEM_BLESSED_SHIELD = 306
     ITEM_STAFF_OF_FIRE = 307
+    ITEM_BLUE_ROBE = 308
     COIN = 350
     DECORATION_GROUND_STONE = 401
     DECORATION_PLANT = 403
@@ -259,6 +260,9 @@ class ItemType(Enum):
     SOLDIERS_HELMET_1 = 30
     SOLDIERS_HELMET_2 = 31
     SOLDIERS_HELMET_3 = 32
+    BLUE_ROBE_1 = 40
+    BLUE_ROBE_2 = 41
+    BLUE_ROBE_3 = 42
 
 
 class ProjectileType(Enum):

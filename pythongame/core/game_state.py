@@ -271,6 +271,15 @@ class PlayerState:
         self._mana_float = self.max_mana
         self.mana = self.max_mana
 
+    def gain_max_mana(self, amount: int):
+        self.max_mana += amount
+
+    def lose_max_mana(self, amount: int):
+        self.max_mana -= amount
+        if self.mana > self.max_mana:
+            self._mana_float = self.max_mana
+            self.mana = int(math.floor(self._mana_float))
+
     def gain_max_health(self, amount: int):
         self.max_health += amount
 

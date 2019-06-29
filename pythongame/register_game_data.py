@@ -18,6 +18,7 @@ from pythongame.game_data.enemy_rat_2 import register_rat_2_enemy
 from pythongame.game_data.enemy_warrior import register_warrior_enemy
 from pythongame.game_data.item_amulet_of_mana import register_amulet_of_mana_item
 from pythongame.game_data.item_blessed_shield import register_blessed_shield_item
+from pythongame.game_data.item_blue_robe import register_blue_robe_item
 from pythongame.game_data.item_rod_of_lightning import register_rod_of_lightning_item
 from pythongame.game_data.item_soldiers_helmet import register_soldiers_helmet_item
 from pythongame.game_data.item_staff_of_fire import register_staff_of_fire_item
@@ -74,6 +75,7 @@ def register_all_game_data():
     register_soldiers_helmet_item()
     register_blessed_shield_item()
     register_staff_of_fire_item()
+    register_blue_robe_item()
 
     register_entangling_roots_ability()
     register_summon_ability()

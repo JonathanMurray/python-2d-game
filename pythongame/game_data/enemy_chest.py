@@ -32,6 +32,9 @@ def register_chest_enemy():
         LootEntry.item(ItemType.SOLDIERS_HELMET_1),
         LootEntry.item(ItemType.SOLDIERS_HELMET_2),
         LootEntry.item(ItemType.SOLDIERS_HELMET_3),
+        LootEntry.item(ItemType.BLUE_ROBE_1),
+        LootEntry.item(ItemType.BLUE_ROBE_2),
+        LootEntry.item(ItemType.BLUE_ROBE_3),
         LootEntry.consumable(ConsumableType.SCROLL_ABILITY_SUMMON)
     ]
     loot = LootTable([LootGroup(1, possible_drops, 1)])
