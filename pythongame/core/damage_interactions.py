@@ -1,5 +1,7 @@
+from pythongame.core.common import SoundId
 from pythongame.core.enemy_target_selection import EnemyTarget
 from pythongame.core.game_state import NonPlayerCharacter, GameState
+from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import create_visual_damage_text
 
 
@@ -21,6 +23,7 @@ def deal_damage_to_player(game_state: GameState, amount: float):
     rounded_amount = round(amount)
     if rounded_amount > 0:
         game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, rounded_amount))
+        play_sound(SoundId.PLAYER_PAIN)
 
 
 def deal_npc_damage_to_npc(game_state: GameState, target: NonPlayerCharacter, amount: float):

@@ -4,6 +4,7 @@ from typing import Dict, List, Optional
 import pygame
 
 from pythongame.core.common import *
+from pythongame.core.loot import LootTable
 
 ITEM_ENTITY_SIZE = (30, 30)
 POTION_ENTITY_SIZE = (30, 30)
@@ -81,17 +82,27 @@ class UiIconSprite(Enum):
     ITEM_SOLDIERS_HELMET = 205
     ITEM_BLESSED_SHIELD = 206
     ITEM_STAFF_OF_FIRE = 207
+    ITEM_BLUE_ROBE = 208
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
 
 
+# Portraits that are shown in UI (player portrait and dialog portraits)
+class PortraitIconSprite(Enum):
+    PLAYER = 1
+    VIKING = 2
+    NOMAD = 3
+
+
 class AbilityData:
-    def __init__(self, name: str, icon_sprite: UiIconSprite, mana_cost: int, cooldown: Millis, description: str):
+    def __init__(self, name: str, icon_sprite: UiIconSprite, mana_cost: int, cooldown: Millis, description: str,
+                 sound_id: Optional[SoundId]):
         self.name = name
         self.icon_sprite = icon_sprite
         self.mana_cost = mana_cost
         self.cooldown = cooldown
         self.description = description
+        self.sound_id = sound_id
 
 
 class UserAbilityKey:
@@ -102,7 +113,8 @@ class UserAbilityKey:
 
 class NpcData:
     def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
-                 exp_reward: int, is_enemy: bool):
+                 exp_reward: int, is_enemy: bool, is_neutral: bool, dialog: Optional[str],
+                 portrait_icon_sprite: Optional[PortraitIconSprite], enemy_loot_table: Optional[LootTable]):
         self.sprite = sprite
         self.size = size
         self.max_health = max_health
@@ -110,6 +122,10 @@ class NpcData:
         self.speed = speed
         self.exp_reward = exp_reward
         self.is_enemy = is_enemy
+        self.is_neutral = is_neutral  # a neutral NPC can't take damage from enemies or player. It may have dialog.
+        self.dialog: Optional[str] = dialog
+        self.portrait_icon_sprite: Optional[PortraitIconSprite] = portrait_icon_sprite
+        self.enemy_loot_table: LootTable = enemy_loot_table
 
 
 class ConsumableData:
@@ -140,6 +156,8 @@ ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Animation]] = {}
 
 UI_ICON_SPRITE_PATHS: Dict[UiIconSprite, str] = {}
 
+PORTRAIT_ICON_SPRITE_PATHS: Dict[PortraitIconSprite, str] = {}
+
 CONSUMABLES: Dict[ConsumableType, ConsumableData] = {}
 
 WALLS: Dict[WallType, WallData] = {}
@@ -153,8 +171,8 @@ USER_ABILITY_KEYS: Dict[AbilityType, UserAbilityKey] = {}
 BUFF_TEXTS: Dict[BuffType, str] = {}
 
 
-def register_npc_data(npc_type: NpcType, enemy_data: NpcData):
-    NON_PLAYER_CHARACTERS[npc_type] = enemy_data
+def register_npc_data(npc_type: NpcType, npc_data: NpcData):
+    NON_PLAYER_CHARACTERS[npc_type] = npc_data
 
 
 def register_wall_data(wall_type: WallType, wall_data: WallData):
@@ -171,6 +189,10 @@ def register_user_ability_key(ability_type: AbilityType, user_ability_key: UserA
 
 def register_ui_icon_sprite_path(sprite: UiIconSprite, file_path: str):
     UI_ICON_SPRITE_PATHS[sprite] = file_path
+
+
+def register_portrait_icon_sprite_path(sprite: PortraitIconSprite, file_path: str):
+    PORTRAIT_ICON_SPRITE_PATHS[sprite] = file_path
 
 
 # Deprecated

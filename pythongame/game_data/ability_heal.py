@@ -38,7 +38,7 @@ def register_heal_ability():
     register_ability_effect(AbilityType.HEAL, _apply_heal)
     register_ability_data(
         AbilityType.HEAL,
-        AbilityData("Heal", UiIconSprite.ABILITY_HEAL, 10, Millis(15000), "TODO"))
+        AbilityData("Heal", UiIconSprite.ABILITY_HEAL, 10, Millis(15000), "TODO", None))
     register_ui_icon_sprite_path(UiIconSprite.ABILITY_HEAL, "resources/graphics/heal_ability.png")
     register_buff_effect(BuffType.HEALING_OVER_TIME, HealingOverTime)
     register_buff_text(BuffType.HEALING_OVER_TIME, "Healing")

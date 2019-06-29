@@ -7,8 +7,8 @@ import pygame
 from pythongame.core.common import Direction, Sprite, sum_of_vectors, WallType, NpcType, ConsumableType, ItemType
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, CONSUMABLES, ITEMS, ITEM_ENTITY_SIZE, WALLS
 from pythongame.core.game_data import POTION_ENTITY_SIZE
-from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, ConsumableOnGround, ItemOnGround, DecorationEntity, \
-    GameState, Wall
+from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, ConsumableOnGround, ItemOnGround, \
+    DecorationEntity, GameState, Wall, MoneyPileOnGround
 from pythongame.core.view import View
 from pythongame.game_data.player_data import INTIAL_PLAYER_STATE, PLAYER_ENTITY_SIZE, PLAYER_ENTITY_SPEED
 from pythongame.game_world_init import save_game_state_to_json_file, create_game_state_from_json_file
@@ -37,15 +37,18 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_NW),
     MapEditorWorldEntity.wall(WallType.WALL_CHAIR),
     MapEditorWorldEntity.wall(WallType.ALTAR),
-    MapEditorWorldEntity.wall(WallType.CHEST),
 
-    MapEditorWorldEntity.enemy(NpcType.DARK_REAPER),
-    MapEditorWorldEntity.enemy(NpcType.RAT_1),
-    MapEditorWorldEntity.enemy(NpcType.RAT_2),
-    MapEditorWorldEntity.enemy(NpcType.GOBLIN_WARLOCK),
-    MapEditorWorldEntity.enemy(NpcType.MUMMY),
-    MapEditorWorldEntity.enemy(NpcType.NECROMANCER),
-    MapEditorWorldEntity.enemy(NpcType.WARRIOR),
+    MapEditorWorldEntity.npc(NpcType.DARK_REAPER),
+    MapEditorWorldEntity.npc(NpcType.RAT_1),
+    MapEditorWorldEntity.npc(NpcType.RAT_2),
+    MapEditorWorldEntity.npc(NpcType.GOBLIN_WARLOCK),
+    MapEditorWorldEntity.npc(NpcType.MUMMY),
+    MapEditorWorldEntity.npc(NpcType.NECROMANCER),
+    MapEditorWorldEntity.npc(NpcType.WARRIOR),
+    MapEditorWorldEntity.npc(NpcType.CHEST),
+
+    MapEditorWorldEntity.npc(NpcType.NEUTRAL_DWARF),
+    MapEditorWorldEntity.npc(NpcType.NEUTRAL_NOMAD),
 
     MapEditorWorldEntity.consumable(ConsumableType.HEALTH_LESSER),
     MapEditorWorldEntity.consumable(ConsumableType.HEALTH),
@@ -56,10 +59,13 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.WINGED_BOOTS),
     MapEditorWorldEntity.item(ItemType.SWORD_OF_LEECHING),
     MapEditorWorldEntity.item(ItemType.ROD_OF_LIGHTNING),
-    MapEditorWorldEntity.item(ItemType.AMULET_OF_MANA),
-    MapEditorWorldEntity.item(ItemType.SOLDIERS_HELMET),
-    MapEditorWorldEntity.item(ItemType.BLESSED_SHIELD),
+    MapEditorWorldEntity.item(ItemType.AMULET_OF_MANA_1),
+    MapEditorWorldEntity.item(ItemType.SOLDIERS_HELMET_1),
+    MapEditorWorldEntity.item(ItemType.BLESSED_SHIELD_1),
     MapEditorWorldEntity.item(ItemType.STAFF_OF_FIRE),
+    MapEditorWorldEntity.item(ItemType.BLUE_ROBE_1),
+
+    MapEditorWorldEntity.money(1),
 
     MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE),
     MapEditorWorldEntity.decoration(Sprite.DECORATION_PLANT)
@@ -108,13 +114,13 @@ def main(args: List[str]):
     if len(args) == 1:
         map_file = args[0]
     else:
-        map_file = "resources/maps/demo3.json"
+        map_file = "resources/maps/graphics_test.json"
 
     if Path(map_file).exists():
         game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file)
     else:
         player_entity = WorldEntity((250, 250), PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
-        game_state = GameState(player_entity, [], [], [], [], CAMERA_SIZE, (500, 500), INTIAL_PLAYER_STATE, [])
+        game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, (500, 500), INTIAL_PLAYER_STATE, [])
 
     pygame.init()
 
@@ -202,9 +208,10 @@ def main(args: List[str]):
                             data = NON_PLAYER_CHARACTERS[npc_type]
                             entity = WorldEntity(snapped_mouse_world_position, data.size, data.sprite, Direction.DOWN,
                                                  data.speed)
-                            enemy = NonPlayerCharacter(npc_type, entity, data.max_health, data.max_health,
-                                                       data.health_regen, None, True)
-                            game_state.add_non_player_character(enemy)
+                            npc = NonPlayerCharacter(npc_type, entity, data.max_health, data.max_health,
+                                                     data.health_regen, None, data.is_enemy, data.is_neutral, None,
+                                                     None, None)
+                            game_state.add_non_player_character(npc)
                         elif entity_being_placed.wall_type:
                             _add_wall_to_position(game_state, snapped_mouse_world_position,
                                                   entity_being_placed.wall_type)
@@ -221,6 +228,10 @@ def main(args: List[str]):
                         elif entity_being_placed.decoration_sprite:
                             _add_decoration_to_position(entity_being_placed.decoration_sprite, game_state,
                                                         snapped_mouse_world_position)
+                        elif entity_being_placed.money_amount:
+                            # TODO Allow other amounts of money?
+                            entity = WorldEntity(snapped_mouse_world_position, ITEM_ENTITY_SIZE, Sprite.COIN)
+                            game_state.money_piles_on_ground.append(MoneyPileOnGround(entity, 1))
                         else:
                             raise Exception("Unknown entity: " + str(entity_being_placed))
                 elif user_state.deleting_entities:
@@ -291,6 +302,9 @@ def main(args: List[str]):
             elif entity_being_placed.decoration_sprite:
                 entity = WorldEntity((0, 0), (0, 0), entity_being_placed.decoration_sprite)
                 view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
+            elif entity_being_placed.money_amount:
+                entity = WorldEntity((0, 0), (0, 0), Sprite.COIN)
+                view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
             else:
                 raise Exception("Unknown entity: " + str(entity_being_placed))
         elif user_state.deleting_entities:
@@ -330,11 +344,14 @@ def _delete_map_entities_from_position(game_state: GameState, snapped_mouse_worl
                   e.world_entity.get_position() == snapped_mouse_world_position]:
         game_state.non_player_characters.remove(enemy)
     for consumable in [p for p in game_state.consumables_on_ground
-                   if p.world_entity.get_position() == snapped_mouse_world_position]:
+                       if p.world_entity.get_position() == snapped_mouse_world_position]:
         game_state.consumables_on_ground.remove(consumable)
     for item in [i for i in game_state.items_on_ground
                  if i.world_entity.get_position() == snapped_mouse_world_position]:
         game_state.items_on_ground.remove(item)
+    for money_pile in [m for m in game_state.money_piles_on_ground
+                       if m.world_entity.get_position() == snapped_mouse_world_position]:
+        game_state.money_piles_on_ground.remove(money_pile)
 
 
 def _delete_map_decorations_from_position(game_state, snapped_mouse_world_position: Tuple[int, int]):

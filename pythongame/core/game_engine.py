@@ -1,12 +1,12 @@
 from pythongame.core.ability_learning import player_learn_new_ability
 from pythongame.core.common import *
-from pythongame.core.consumable_effects import try_consume_consumable, ConsumableWasConsumed, \
-    ConsumableFailedToBeConsumed
-from pythongame.core.game_data import CONSUMABLES, ITEMS, ITEM_ENTITY_SIZE, NON_PLAYER_CHARACTERS
-from pythongame.core.game_data import POTION_ENTITY_SIZE
-from pythongame.core.game_state import GameState, handle_buffs, WorldEntity, ItemOnGround, ConsumableOnGround
+from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
+    create_consumable_on_ground
+from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS
+from pythongame.core.game_state import GameState, handle_buffs
 from pythongame.core.item_effects import get_item_effect
-from pythongame.core.player_controls import TryUseAbilityResult, PlayerControls
+from pythongame.core.player_controls import PlayerControls
+from pythongame.core.sound_player import play_sound
 from pythongame.core.view_state import ViewState
 from pythongame.core.visual_effects import create_visual_exp_text
 
@@ -25,28 +25,10 @@ class GameEngine:
                 item_effect.apply_start_effect(self.game_state)
 
     def try_use_ability(self, ability_type: AbilityType):
-        if not self.game_state.player_state.is_stunned:
-            self.view_state.notify_ability_was_clicked(ability_type)
-            result = self.player_controls.try_use_ability(ability_type, self.game_state)
-            if result == TryUseAbilityResult.NOT_ENOUGH_MANA:
-                self.view_state.set_message("Not enough mana!")
-            elif result == TryUseAbilityResult.FAILED_TO_EXECUTE:
-                self.view_state.set_message("Failed to execute ability!")
+        self.player_controls.try_use_ability(ability_type, self.game_state, self.view_state)
 
     def try_use_consumable(self, slot_number: int):
-        if not self.game_state.player_state.is_stunned:
-            self.view_state.notify_consumable_was_clicked(slot_number)
-            consumable_type_in_this_slot = self.game_state.player_state.consumable_slots[slot_number]
-            if consumable_type_in_this_slot:
-                result = try_consume_consumable(consumable_type_in_this_slot, self.game_state)
-                if isinstance(result, ConsumableWasConsumed):
-                    self.game_state.player_state.consumable_slots[slot_number] = None
-                    if result.message:
-                        self.view_state.set_message(result.message)
-                elif isinstance(result, ConsumableFailedToBeConsumed):
-                    self.view_state.set_message(result.reason)
-            else:
-                self.view_state.set_message("Nothing to use!")
+        self.player_controls.try_use_consumable(slot_number, self.game_state, self.view_state)
 
     def move_in_direction(self, direction: Direction):
         if not self.game_state.player_state.is_stunned:
@@ -63,15 +45,15 @@ class GameEngine:
 
     def drop_inventory_item_on_ground(self, item_slot: int, game_world_position: Tuple[int, int]):
         item_type = self.game_state.player_state.item_slots[item_slot]
-        item_entity = WorldEntity(game_world_position, ITEM_ENTITY_SIZE, ITEMS[item_type].entity_sprite)
-        self.game_state.items_on_ground.append(ItemOnGround(item_entity, item_type))
+        item = create_item_on_ground(item_type, game_world_position)
+        self.game_state.items_on_ground.append(item)
         get_item_effect(item_type).apply_end_effect(self.game_state)
         self.game_state.player_state.item_slots[item_slot] = None
 
     def drop_consumable_on_ground(self, consumable_slot: int, game_world_position: Tuple[int, int]):
         consumable_type = self.game_state.player_state.consumable_slots[consumable_slot]
-        entity = WorldEntity(game_world_position, POTION_ENTITY_SIZE, CONSUMABLES[consumable_type].entity_sprite)
-        self.game_state.consumables_on_ground.append(ConsumableOnGround(entity, consumable_type))
+        consumable = create_consumable_on_ground(consumable_type, game_world_position)
+        self.game_state.consumables_on_ground.append(consumable)
         self.game_state.player_state.consumable_slots[consumable_slot] = None
 
     def _is_enemy_close_to_camera(self, enemy):
@@ -102,15 +84,36 @@ class GameEngine:
         npcs_that_died = self.game_state.remove_dead_npcs()
         enemies_that_died = [e for e in npcs_that_died if e.is_enemy]
         if enemies_that_died:
+            play_sound(SoundId.EVENT_ENEMY_DIED)
             exp_gained = sum([NON_PLAYER_CHARACTERS[e.npc_type].exp_reward for e in enemies_that_died])
             self.game_state.visual_effects.append(create_visual_exp_text(self.game_state.player_entity, exp_gained))
             did_player_level_up = self.game_state.player_state.gain_exp(exp_gained)
             if did_player_level_up:
+                play_sound(SoundId.EVENT_PLAYER_LEVELED_UP)
                 self.view_state.set_message("You reached level " + str(self.game_state.player_state.level))
                 self.game_state.player_state.update_stats_for_new_level()
                 if self.game_state.player_state.level in self.game_state.player_state.new_level_abilities:
                     new_ability = self.game_state.player_state.new_level_abilities[self.game_state.player_state.level]
                     player_learn_new_ability(self.game_state.player_state, new_ability)
+            for enemy_that_died in enemies_that_died:
+                loot = enemy_that_died.enemy_loot_table.generate_loot()
+                for loot_entry in loot:
+                    if len(loot) > 1:
+                        position_offset = (random.randint(-20, 20), random.randint(-20, 20))
+                    else:
+                        position_offset = (0, 0)
+                    loot_position = sum_of_vectors(enemy_that_died.world_entity.get_position(), position_offset)
+
+                    if loot_entry.money_amount:
+                        money_pile_on_ground = create_money_pile_on_ground(1, loot_position)
+                        self.game_state.money_piles_on_ground.append(money_pile_on_ground)
+                    elif loot_entry.item_type:
+                        item_on_ground = create_item_on_ground(loot_entry.item_type, loot_position)
+                        self.game_state.items_on_ground.append(item_on_ground)
+                    elif loot_entry.consumable_type:
+                        consumable_on_ground = create_consumable_on_ground(loot_entry.consumable_type,
+                                                                           loot_position)
+                        self.game_state.consumables_on_ground.append(consumable_on_ground)
 
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_effects()
@@ -176,6 +179,7 @@ class GameEngine:
                 if empty_consumable_slots:
                     self.game_state.player_state.consumable_slots[empty_consumable_slots] = consumable.consumable_type
                     self.view_state.set_message("You picked up " + consumable_name)
+                    play_sound(SoundId.EVENT_PICKED_UP)
                     entities_to_remove.append(consumable)
                 else:
                     self.view_state.set_message("No space for " + consumable_name)
@@ -188,9 +192,15 @@ class GameEngine:
                     item_effect = get_item_effect(item.item_type)
                     item_effect.apply_start_effect(self.game_state)
                     self.view_state.set_message("You picked up " + item_name)
+                    play_sound(SoundId.EVENT_PICKED_UP)
                     entities_to_remove.append(item)
                 else:
                     self.view_state.set_message("No space for " + item_name)
+        for money_pile in self.game_state.money_piles_on_ground:
+            if boxes_intersect(self.game_state.player_entity, money_pile.world_entity):
+                play_sound(SoundId.EVENT_PICKED_UP)
+                entities_to_remove.append(money_pile)
+                self.game_state.player_state.money += money_pile.amount
 
         for enemy in [e for e in self.game_state.non_player_characters if e.is_enemy]:
             for projectile in self.game_state.get_projectiles_intersecting_with(enemy.world_entity):

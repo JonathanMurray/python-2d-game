@@ -4,12 +4,13 @@ from typing import List, Optional
 import pygame
 
 import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis
+from pythongame.core.common import Millis, is_x_and_y_within_distance, SoundId
 from pythongame.core.game_engine import GameEngine
+from pythongame.core.sound_player import play_sound, init_sound_player
 from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased
-from pythongame.core.view import View, MouseHoverEvent
+from pythongame.core.view import View, MouseHoverEvent, Dialog
 from pythongame.core.view_state import ViewState
 from pythongame.game_world_init import create_game_state_from_json_file
 from pythongame.register_game_data import register_all_game_data
@@ -31,6 +32,8 @@ def main(args: List[str]):
     view = View(CAMERA_SIZE, SCREEN_SIZE)
     view_state = ViewState(game_state.game_world_size)
     clock = pygame.time.Clock()
+
+    init_sound_player()
 
     game_engine = GameEngine(game_state, view_state)
 
@@ -91,6 +94,7 @@ def main(args: List[str]):
         if not is_paused and not is_game_over:
             player_died = game_engine.run_one_frame(time_passed)
             if player_died:
+                play_sound(SoundId.EVENT_PLAYER_DIED)
                 is_game_over = True
 
         # ------------------------------------
@@ -109,6 +113,14 @@ def main(args: List[str]):
             player_health=game_state.player_state.health,
             player_max_health=game_state.player_state.max_health,
             game_world_size=game_state.game_world_size)
+
+        # TODO
+        # A hacky way to show-case dialog feature. Remove when a proper use of dialog has been added!
+        player_position = game_state.player_entity.get_position()
+        hacky_dialog = None
+        for npc_with_dialog in [npc for npc in game_state.non_player_characters if npc.dialog]:
+            if is_x_and_y_within_distance(player_position, npc_with_dialog.world_entity.get_position(), 50):
+                hacky_dialog = Dialog(npc_with_dialog.portrait_icon_sprite, npc_with_dialog.dialog)
 
         mouse_hover_event: MouseHoverEvent = view.render_ui(
             player_health=game_state.player_state.health,
@@ -132,7 +144,9 @@ def main(args: List[str]):
             player_level=game_state.player_state.level,
             mouse_screen_position=mouse_screen_position,
             player_exp=game_state.player_state.exp,
-            player_max_exp_in_this_level=game_state.player_state.max_exp_in_this_level)
+            player_max_exp_in_this_level=game_state.player_state.max_exp_in_this_level,
+            dialog=hacky_dialog,
+            player_money=game_state.player_state.money)
 
         # TODO There is a lot of details here about UI state (dragging items). Move that elsewhere.
 
@@ -167,7 +181,8 @@ def main(args: List[str]):
             if hovered_consumable_slot_number and consumable_slot_being_dragged != hovered_consumable_slot_number:
                 game_engine.switch_consumable_slots(consumable_slot_being_dragged, hovered_consumable_slot_number)
             if mouse_hover_event.game_world_position:
-                game_engine.drop_consumable_on_ground(consumable_slot_being_dragged, mouse_hover_event.game_world_position)
+                game_engine.drop_consumable_on_ground(consumable_slot_being_dragged,
+                                                      mouse_hover_event.game_world_position)
             consumable_slot_being_dragged = False
 
         view.update_display()

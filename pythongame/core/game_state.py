@@ -4,6 +4,8 @@ from typing import List, Optional, Dict, Any
 from pygame.rect import Rect
 
 from pythongame.core.common import *
+from pythongame.core.game_data import PortraitIconSprite
+from pythongame.core.loot import LootTable
 
 GRID_CELL_WIDTH = 25
 
@@ -128,6 +130,12 @@ class ItemOnGround:
         self.item_type = item_type
 
 
+class MoneyPileOnGround:
+    def __init__(self, world_entity: WorldEntity, amount):
+        self.world_entity = world_entity
+        self.amount = amount
+
+
 class Projectile:
     def __init__(self, world_entity: WorldEntity, projectile_controller):
         self.world_entity = world_entity
@@ -137,7 +145,8 @@ class Projectile:
 
 class NonPlayerCharacter:
     def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health: int, max_health: int,
-                 health_regen: float, npc_mind, is_enemy: bool):
+                 health_regen: float, npc_mind, is_enemy: bool, is_neutral: bool, dialog: Optional[str],
+                 portrait_icon_sprite: Optional[PortraitIconSprite], enemy_loot_table: Optional[LootTable]):
         self.npc_type = npc_type
         self.world_entity = world_entity
         self._health_float = health
@@ -149,6 +158,10 @@ class NonPlayerCharacter:
         self.invulnerable: bool = False
         self._number_of_active_stuns = 0
         self.is_enemy = is_enemy
+        self.is_neutral = is_neutral
+        self.dialog: Optional[str] = dialog
+        self.portrait_icon_sprite: Optional[PortraitIconSprite] = portrait_icon_sprite
+        self.enemy_loot_table = enemy_loot_table
 
     def lose_health(self, amount):
         self._health_float = min(self._health_float - amount, self.max_health)
@@ -232,6 +245,7 @@ class PlayerState:
         self.max_exp_in_this_level = 60
         self.fireball_dmg_boost = 0
         self.new_level_abilities: Dict[int, AbilityType] = new_level_abilities
+        self.money = 0
 
     def gain_health(self, amount: float):
         self._health_float = min(self._health_float + amount, self.max_health)
@@ -256,6 +270,15 @@ class PlayerState:
     def gain_full_mana(self):
         self._mana_float = self.max_mana
         self.mana = self.max_mana
+
+    def gain_max_mana(self, amount: int):
+        self.max_mana += amount
+
+    def lose_max_mana(self, amount: int):
+        self.max_mana -= amount
+        if self.mana > self.max_mana:
+            self._mana_float = self.max_mana
+            self.mana = int(math.floor(self._mana_float))
 
     def gain_max_health(self, amount: int):
         self.max_health += amount
@@ -363,17 +386,22 @@ class DecorationEntity:
 
 class GameState:
     def __init__(self, player_entity: WorldEntity, consumables_on_ground: List[ConsumableOnGround],
-                 items_on_ground: List[ItemOnGround], non_player_characters: List[NonPlayerCharacter],
+                 items_on_ground: List[ItemOnGround], money_piles_on_ground: List[MoneyPileOnGround],
+                 non_player_characters: List[NonPlayerCharacter],
                  walls: List[Wall], camera_size: Tuple[int, int], game_world_size: Tuple[int, int],
                  player_state: PlayerState, decoration_entities: List[DecorationEntity]):
         self.camera_size = camera_size
         self.camera_world_area = WorldArea((0, 0), self.camera_size)
         self.player_entity = player_entity
         self.projectile_entities: List[Projectile] = []
-        self.consumables_on_ground = consumables_on_ground
+        # TODO: unify code for picking up stuff from the ground. The way they are rendered and picked up are similar,
+        # and only the effect of picking them up is different.
+        self.consumables_on_ground: List[ConsumableOnGround] = consumables_on_ground
         self.items_on_ground: List[ItemOnGround] = items_on_ground
+        self.money_piles_on_ground: List[MoneyPileOnGround] = money_piles_on_ground
         self.non_player_characters: List[NonPlayerCharacter] = non_player_characters
-        self.non_enemy_npcs: List[NonPlayerCharacter] = []  # overlaps with non_player_characters
+        # overlaps with non_player_characters
+        self.non_enemy_npcs: List[NonPlayerCharacter] = [npc for npc in non_player_characters if not npc.is_enemy]
         self.walls: List[Wall] = walls
         self._wall_buckets = self._put_walls_in_buckets(game_world_size, [w.world_entity for w in walls])
         self.visual_effects = []
@@ -414,12 +442,14 @@ class GameState:
         self.projectile_entities = [p for p in self.projectile_entities if p not in entities_to_remove]
         self.consumables_on_ground = [p for p in self.consumables_on_ground if p not in entities_to_remove]
         self.items_on_ground = [i for i in self.items_on_ground if i not in entities_to_remove]
+        self.money_piles_on_ground = [m for m in self.money_piles_on_ground if m not in entities_to_remove]
         self.non_player_characters = [e for e in self.non_player_characters if e not in entities_to_remove]
 
     def get_all_entities_to_render(self) -> List[WorldEntity]:
         walls = self._get_walls_from_buckets_in_camera()
         return [self.player_entity] + [p.world_entity for p in self.consumables_on_ground] + \
                [i.world_entity for i in self.items_on_ground] + \
+               [m.world_entity for m in self.money_piles_on_ground] + \
                [e.world_entity for e in self.non_player_characters] + walls + [p.world_entity for p in
                                                                                self.projectile_entities]
 
@@ -479,7 +509,7 @@ class GameState:
     def remove_expired_projectiles(self):
         self.projectile_entities = [p for p in self.projectile_entities if not p.has_expired]
 
-    def remove_dead_npcs(self):
+    def remove_dead_npcs(self) -> List[NonPlayerCharacter]:
         npcs_that_died = [e for e in self.non_player_characters if e.health <= 0]
         self.non_enemy_npcs = [npc for npc in self.non_enemy_npcs if npc.health > 0]
         self.non_player_characters = [e for e in self.non_player_characters if e.health > 0]

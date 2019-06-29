@@ -64,7 +64,7 @@ def register_channel_attack_ability():
     register_ability_effect(AbilityType.CHANNEL_ATTACK, _apply_channel_attack)
     register_ability_data(
         AbilityType.CHANNEL_ATTACK,
-        AbilityData("TODO", UiIconSprite.ABILITY_MAGIC_MISSILE, 12, Millis(8000), "TODO"))
+        AbilityData("TODO", UiIconSprite.ABILITY_MAGIC_MISSILE, 12, Millis(8000), "TODO", None))
 
     register_ui_icon_sprite_path(UiIconSprite.ABILITY_MAGIC_MISSILE, "resources/graphics/magic_missile.png")
     register_buff_effect(BuffType.CHANNELING_MAGIC_MISSILES, ChannelingMagicMissiles)
