@@ -1,8 +1,8 @@
 from typing import Tuple
 
-from pythongame.core.common import NpcType, Direction
-from pythongame.core.game_data import NON_PLAYER_CHARACTERS
-from pythongame.core.game_state import WorldEntity, NonPlayerCharacter
+from pythongame.core.common import NpcType, Direction, Sprite
+from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE
+from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
@@ -21,4 +21,9 @@ def create_npc(npc_type: NpcType, pos: Tuple[int, int]) -> NonPlayerCharacter:
     entity = WorldEntity(pos, data.size, data.sprite, Direction.LEFT, data.speed)
     npc_mind = create_npc_mind(npc_type, global_path_finder)
     return NonPlayerCharacter(npc_type, entity, data.max_health, data.max_health, data.health_regen, npc_mind,
-                              data.is_enemy, data.is_neutral, data.dialog, data.portrait_icon_sprite)
+                              data.is_enemy, data.is_neutral, data.dialog, data.portrait_icon_sprite,
+                              data.enemy_loot_picker)
+
+
+def create_money_pile_on_ground(amount: int, pos: Tuple[int, int]) -> MoneyPileOnGround:
+    return MoneyPileOnGround(WorldEntity(pos, ITEM_ENTITY_SIZE, Sprite.COIN), amount)

@@ -4,6 +4,7 @@ from pythongame.core.game_data import CONSUMABLES, ITEMS, ITEM_ENTITY_SIZE, NON_
 from pythongame.core.game_data import POTION_ENTITY_SIZE
 from pythongame.core.game_state import GameState, handle_buffs, WorldEntity, ItemOnGround, ConsumableOnGround
 from pythongame.core.item_effects import get_item_effect
+from pythongame.core.entity_creation import create_money_pile_on_ground
 from pythongame.core.player_controls import PlayerControls
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view_state import ViewState
@@ -94,6 +95,10 @@ class GameEngine:
                 if self.game_state.player_state.level in self.game_state.player_state.new_level_abilities:
                     new_ability = self.game_state.player_state.new_level_abilities[self.game_state.player_state.level]
                     player_learn_new_ability(self.game_state.player_state, new_ability)
+            for enemy_that_died in enemies_that_died:
+                if random.random() < enemy_that_died.enemy_loot_picker.chance_to_drop_money:
+                    self.game_state.money_piles_on_ground.append(
+                        create_money_pile_on_ground(1, enemy_that_died.world_entity.get_position()))
 
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_effects()
@@ -178,7 +183,6 @@ class GameEngine:
                     self.view_state.set_message("No space for " + item_name)
         for money_pile in self.game_state.money_piles_on_ground:
             if boxes_intersect(self.game_state.player_entity, money_pile.world_entity):
-                self.view_state.set_message("Money gained: " + str(money_pile.amount))
                 play_sound(SoundId.EVENT_PICKED_UP)
                 entities_to_remove.append(money_pile)
                 self.game_state.player_state.money += money_pile.amount

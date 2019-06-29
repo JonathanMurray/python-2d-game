@@ -4,7 +4,7 @@ from typing import List, Optional, Dict, Any
 from pygame.rect import Rect
 
 from pythongame.core.common import *
-from pythongame.core.game_data import PortraitIconSprite
+from pythongame.core.game_data import PortraitIconSprite, EnemyLootPicker
 
 GRID_CELL_WIDTH = 25
 
@@ -145,7 +145,7 @@ class Projectile:
 class NonPlayerCharacter:
     def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health: int, max_health: int,
                  health_regen: float, npc_mind, is_enemy: bool, is_neutral: bool, dialog: Optional[str],
-                 portrait_icon_sprite: Optional[PortraitIconSprite]):
+                 portrait_icon_sprite: Optional[PortraitIconSprite], enemy_loot_picker: Optional[EnemyLootPicker]):
         self.npc_type = npc_type
         self.world_entity = world_entity
         self._health_float = health
@@ -160,6 +160,7 @@ class NonPlayerCharacter:
         self.is_neutral = is_neutral
         self.dialog: Optional[str] = dialog
         self.portrait_icon_sprite: Optional[PortraitIconSprite] = portrait_icon_sprite
+        self.enemy_loot_picker = enemy_loot_picker
 
     def lose_health(self, amount):
         self._health_float = min(self._health_float - amount, self.max_health)
@@ -498,7 +499,7 @@ class GameState:
     def remove_expired_projectiles(self):
         self.projectile_entities = [p for p in self.projectile_entities if not p.has_expired]
 
-    def remove_dead_npcs(self):
+    def remove_dead_npcs(self) -> List[NonPlayerCharacter]:
         npcs_that_died = [e for e in self.non_player_characters if e.health <= 0]
         self.non_enemy_npcs = [npc for npc in self.non_enemy_npcs if npc.health > 0]
         self.non_player_characters = [e for e in self.non_player_characters if e.health > 0]

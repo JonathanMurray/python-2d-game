@@ -9,7 +9,7 @@ from pythongame.core.game_data import register_ability_data, AbilityData, UiIcon
     register_ui_icon_sprite_path
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
-from pythongame.core.npc_creation import create_npc
+from pythongame.core.entity_creation import create_npc
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.visual_effects import VisualLine, VisualCircle
@@ -135,7 +135,8 @@ def register_summon_ability():
     move_speed = 0.14
     health = 28
     register_npc_data(summoned_npc_type,
-                      NpcData(summon_sprite, (32, 32), health, health_regen, move_speed, 0, False, False, None, None))
+                      NpcData(summon_sprite, (32, 32), health, health_regen, move_speed, 0, False, False, None, None,
+                              None))
     register_npc_behavior(summoned_npc_type, NpcMind)
 
     summon_sprite_sheet = SpriteSheet("resources/graphics/monsters_spritesheet.png")

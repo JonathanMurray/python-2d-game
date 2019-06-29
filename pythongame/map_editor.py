@@ -209,7 +209,7 @@ def main(args: List[str]):
                                                  data.speed)
                             npc = NonPlayerCharacter(npc_type, entity, data.max_health, data.max_health,
                                                      data.health_regen, None, data.is_enemy, data.is_neutral, None,
-                                                     None)
+                                                     None, None)
                             game_state.add_non_player_character(npc)
                         elif entity_being_placed.wall_type:
                             _add_wall_to_position(game_state, snapped_mouse_world_position,

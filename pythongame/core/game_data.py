@@ -57,6 +57,11 @@ class Animation:
         self.position_relative_to_entity = position_relative_to_entity
 
 
+class EnemyLootPicker:
+    def __init__(self, chance_to_drop_money: float):
+        self.chance_to_drop_money = chance_to_drop_money
+
+
 # TODO Ideally this shouldn't need to be defined here
 class UiIconSprite(Enum):
     POTION_HEALTH_LESSER = 1
@@ -112,7 +117,7 @@ class UserAbilityKey:
 class NpcData:
     def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
                  exp_reward: int, is_enemy: bool, is_neutral: bool, dialog: Optional[str],
-                 portrait_icon_sprite: Optional[PortraitIconSprite]):
+                 portrait_icon_sprite: Optional[PortraitIconSprite], enemy_loot_picker: Optional[EnemyLootPicker]):
         self.sprite = sprite
         self.size = size
         self.max_health = max_health
@@ -123,6 +128,7 @@ class NpcData:
         self.is_neutral = is_neutral  # a neutral NPC can't take damage from enemies or player. It may have dialog.
         self.dialog: Optional[str] = dialog
         self.portrait_icon_sprite: Optional[PortraitIconSprite] = portrait_icon_sprite
+        self.enemy_loot_picker = enemy_loot_picker
 
 
 class ConsumableData:

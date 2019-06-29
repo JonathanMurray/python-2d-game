@@ -35,7 +35,7 @@ def register_dwarf_npc():
     dialog = "Greetings, stranger. It seems that we are stuck in this together. You seem like you are capable of taking " \
              "care of yourself. Why don't you go down that corridor over there and see if there is a way out!"
     register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, False, True, dialog,
-                                        PortraitIconSprite.VIKING))
+                                        PortraitIconSprite.VIKING, None))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet.png")
     original_sprite_size = (32, 32)

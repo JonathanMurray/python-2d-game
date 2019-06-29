@@ -34,7 +34,7 @@ def register_nomad_npc():
     health = 6
     dialog = "Hey there. I am the nomad."
     register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, False, True, dialog,
-                                        PortraitIconSprite.NOMAD))
+                                        PortraitIconSprite.NOMAD, None))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")
     original_sprite_size = (32, 32)

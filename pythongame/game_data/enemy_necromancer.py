@@ -4,9 +4,9 @@ from pythongame.core.common import Millis, random_direction, NpcType, Sprite, \
     is_x_and_y_within_distance, Direction, sum_of_vectors, get_position_from_center_position
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
     NON_PLAYER_CHARACTERS
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, EnemyLootPicker
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
-from pythongame.core.npc_creation import create_npc
+from pythongame.core.entity_creation import create_npc
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.visual_effects import VisualLine, VisualCircle
 
@@ -76,7 +76,8 @@ class NpcMind(AbstractNpcMind):
 def register_necromancer_enemy():
     size = (50, 60)
     health = 25
-    register_npc_data(ENEMY_TYPE, NpcData(SPRITE, size, health, 0, 0.02, 15, True, False, None, None))
+    register_npc_data(ENEMY_TYPE, NpcData(SPRITE, size, health, 0, 0.02, 15, True, False, None, None,
+                                          EnemyLootPicker(0.3)))
     register_npc_behavior(ENEMY_TYPE, NpcMind)
 
     enemy_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")

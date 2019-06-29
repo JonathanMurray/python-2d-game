@@ -3,9 +3,8 @@ import json
 from pythongame.core.common import *
 from pythongame.core.game_data import CONSUMABLES, ITEM_ENTITY_SIZE, ITEMS, WALLS
 from pythongame.core.game_data import POTION_ENTITY_SIZE
-from pythongame.core.game_state import WorldEntity, GameState, ConsumableOnGround, ItemOnGround, DecorationEntity, Wall, \
-    MoneyPileOnGround
-from pythongame.core.npc_creation import create_npc, set_global_path_finder
+from pythongame.core.game_state import WorldEntity, GameState, ConsumableOnGround, ItemOnGround, DecorationEntity, Wall
+from pythongame.core.entity_creation import create_npc, set_global_path_finder, create_money_pile_on_ground
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE, INTIAL_PLAYER_STATE, PLAYER_ENTITY_SPEED
 
@@ -27,7 +26,7 @@ def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str
                  json_data["items_on_ground"]]
 
         json_money_piles_on_ground = json_data.get("money_piles_on_ground", [])
-        money_piles = [_create_money_pile_at_position(p["amount"], p["position"]) for p in json_money_piles_on_ground]
+        money_piles = [create_money_pile_on_ground(p["amount"], p["position"]) for p in json_money_piles_on_ground]
 
         path_finder = GlobalPathFinder()
         set_global_path_finder(path_finder)
@@ -88,11 +87,6 @@ def _create_consumable_at_position(consumable_type: ConsumableType, pos: Tuple[i
 def _create_item_at_position(item_type: ItemType, pos: Tuple[int, int]):
     entity = WorldEntity(pos, ITEM_ENTITY_SIZE, ITEMS[item_type].entity_sprite)
     return ItemOnGround(entity, item_type)
-
-
-def _create_money_pile_at_position(amount: int, pos: Tuple[int, int]):
-    entity = WorldEntity(pos, ITEM_ENTITY_SIZE, Sprite.COIN)
-    return MoneyPileOnGround(entity, amount)
 
 
 def _create_wall_at_position(wall_type: WallType, pos: Tuple[int, int]) -> Wall:
