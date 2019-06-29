@@ -163,7 +163,7 @@ class NonPlayerCharacter:
         self.portrait_icon_sprite: Optional[PortraitIconSprite] = portrait_icon_sprite
         self.enemy_loot_table = enemy_loot_table
 
-    def lose_health(self, amount):
+    def lose_health(self, amount: float):
         self._health_float = min(self._health_float - amount, self.max_health)
         self.health = int(math.floor(self._health_float))
 
@@ -246,6 +246,7 @@ class PlayerState:
         self.fireball_dmg_boost = 0
         self.new_level_abilities: Dict[int, AbilityType] = new_level_abilities
         self.money = 0
+        self.damage_modifier = 1
 
     def gain_health(self, amount: float):
         self._health_float = min(self._health_float + amount, self.max_health)
@@ -344,6 +345,7 @@ class PlayerState:
         self.gain_full_health()
         self.gain_full_mana()
         self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.4)
+        self.damage_modifier *= 1.1
 
     def gain_ability(self, ability_type: AbilityType):
         self.ability_cooldowns_remaining[ability_type] = 0

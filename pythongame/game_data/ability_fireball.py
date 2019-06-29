@@ -22,7 +22,7 @@ class ProjectileController(AbstractProjectileController):
         super().__init__(1500)
 
     def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState):
-        base_damage = MIN_DMG + random.randint(0, MAX_DMG - MIN_DMG)
+        base_damage: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
         damage_amount = base_damage + game_state.player_state.fireball_dmg_boost
         damage_was_dealt = deal_player_damage_to_enemy(game_state, npc, damage_amount)
         if not damage_was_dealt:

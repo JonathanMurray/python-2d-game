@@ -497,7 +497,7 @@ class View:
                   player_mana_regen: float, player_minimap_relative_position, consumable_slots,
                   item_slots: Dict[int, ItemType], player_level: int, mouse_screen_position: Tuple[int, int],
                   player_exp: int, player_max_exp_in_this_level: int, dialog: Optional[Dialog],
-                  player_money: int) -> MouseHoverEvent:
+                  player_money: int, player_damage_modifier: float) -> MouseHoverEvent:
 
         hovered_item_slot_number = None
         hovered_consumable_slot_number = None
@@ -541,6 +541,7 @@ class View:
         if is_point_in_rect(mouse_ui_position, rect_healthbar):
             tooltip_title = "Health"
             tooltip_details = ["regeneration: " + str(player_health_regen) + "/s"]
+            tooltip_details += ["damage bonus: +" + str(int(round((player_damage_modifier - 1) * 100))) + "%"]
             tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_healthbar[0], rect_healthbar[1]))
         health_text = str(player_health) + "/" + str(player_max_health)
         self._text_in_ui(self.font_ui_stat_bar_numbers, health_text, (x_0 + 20, y_4 - 1))
