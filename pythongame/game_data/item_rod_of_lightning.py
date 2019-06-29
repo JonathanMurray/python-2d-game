@@ -1,3 +1,5 @@
+import random
+
 from pythongame.core.common import ItemType, Millis, Sprite
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
@@ -7,6 +9,8 @@ from pythongame.core.item_effects import register_item_effect, AbstractItemEffec
 from pythongame.core.visual_effects import VisualCircle, VisualLine
 
 ITEM_TYPE = ItemType.ROD_OF_LIGHTNING
+MIN_DMG = 1
+MAX_DMG = 8
 
 
 class ItemEffect(AbstractItemEffect):
@@ -22,7 +26,8 @@ class ItemEffect(AbstractItemEffect):
             player_center_position = player_entity.get_center_position()
             close_enemies = game_state.get_enemies_within_x_y_distance_of(140, player_center_position)
             if close_enemies:
-                deal_player_damage_to_enemy(game_state, close_enemies[0], 5)
+                damage_amount: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
+                deal_player_damage_to_enemy(game_state, close_enemies[0], damage_amount)
                 enemy_center_position = close_enemies[0].world_entity.get_center_position()
                 game_state.visual_effects.append(
                     VisualCircle((250, 250, 0), player_center_position, 50, 140, Millis(100), 1, player_entity))
@@ -40,6 +45,5 @@ def register_rod_of_lightning_item():
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/item_rod_of_lightning.png")
     register_entity_sprite_initializer(
         sprite, SpriteInitializer("resources/graphics/item_rod_of_lightning.png", ITEM_ENTITY_SIZE))
-    register_item_data(
-        ITEM_TYPE,
-        ItemData(ui_icon_sprite, sprite, "Rod of Lightning", "Periodically damages nearby enemies"))
+    description = "Periodically damages nearby enemies (" + str(MIN_DMG) + "-" + str(MAX_DMG) + ")"
+    register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, sprite, "Rod of Lightning", description))
