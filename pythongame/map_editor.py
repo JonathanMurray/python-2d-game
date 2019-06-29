@@ -348,6 +348,9 @@ def _delete_map_entities_from_position(game_state: GameState, snapped_mouse_worl
     for item in [i for i in game_state.items_on_ground
                  if i.world_entity.get_position() == snapped_mouse_world_position]:
         game_state.items_on_ground.remove(item)
+    for money_pile in [m for m in game_state.money_piles_on_ground
+                       if m.world_entity.get_position() == snapped_mouse_world_position]:
+        game_state.money_piles_on_ground.remove(money_pile)
 
 
 def _delete_map_decorations_from_position(game_state, snapped_mouse_world_position: Tuple[int, int]):
