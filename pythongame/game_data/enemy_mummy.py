@@ -82,8 +82,11 @@ def register_mummy_enemy():
     movement_speed = 0.06
     health = 12
     health_regen = 1
-    loot = LootTable([LootGroup.single(LootEntry.money(1), 0.8),
-                      LootGroup.single(LootEntry.consumable(ConsumableType.HEALTH_LESSER), 0.2)])
+    loot = LootTable([
+        LootGroup(1, [LootEntry.money(1), LootEntry.money(2)], 0.8),
+        LootGroup(1, [LootEntry.consumable(ConsumableType.HEALTH_LESSER),
+                      LootEntry.consumable(ConsumableType.MANA_LESSER)], 0.2)
+    ])
     register_npc_data(npc_type,
                       NpcData(sprite, size, health, health_regen, movement_speed, 10, True, False, None, None, loot))
     register_npc_behavior(npc_type, NpcMind)

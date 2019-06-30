@@ -159,8 +159,10 @@ def register_goblin_warlock_enemy():
     npc_type = NpcType.GOBLIN_WARLOCK
 
     health = 21
-    loot = LootTable([LootGroup.single(LootEntry.money(1), 0.2),
-                      LootGroup.single(LootEntry.consumable(ConsumableType.MANA_LESSER), 0.2)])
+    loot = LootTable([
+        LootGroup(1, [LootEntry.money(1), LootEntry.money(2)], 0.2),
+        LootGroup.single(LootEntry.consumable(ConsumableType.MANA_LESSER), 0.2)
+    ])
     register_npc_data(npc_type, NpcData(enemy_sprite, enemy_size, health, 0, 0.032, 12, True, False, None, None, loot))
     register_npc_behavior(npc_type, NpcMind)
 

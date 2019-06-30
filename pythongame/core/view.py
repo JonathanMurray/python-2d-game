@@ -396,7 +396,8 @@ class View:
             elif entity.decoration_sprite:
                 image = self.images_by_sprite[entity.decoration_sprite][Direction.DOWN][0].image
             elif entity.money_amount:
-                image = self.images_by_sprite[Sprite.COIN][Direction.DOWN][0].image
+                # TODO handle other amounts of money
+                image = self.images_by_sprite[Sprite.COINS_5][Direction.DOWN][0].image
             else:
                 raise Exception("Unknown entity: " + str(entity))
         else:

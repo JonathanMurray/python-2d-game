@@ -231,8 +231,8 @@ def main(args: List[str]):
                                                         snapped_mouse_world_position)
                         elif entity_being_placed.money_amount:
                             # TODO Allow other amounts of money?
-                            entity = WorldEntity(snapped_mouse_world_position, ITEM_ENTITY_SIZE, Sprite.COIN)
-                            game_state.money_piles_on_ground.append(MoneyPileOnGround(entity, 1))
+                            entity = WorldEntity(snapped_mouse_world_position, ITEM_ENTITY_SIZE, Sprite.COINS_5)
+                            game_state.money_piles_on_ground.append(MoneyPileOnGround(entity, 5))
                         else:
                             raise Exception("Unknown entity: " + str(entity_being_placed))
                 elif user_state.deleting_entities:
@@ -304,7 +304,7 @@ def main(args: List[str]):
                 entity = WorldEntity((0, 0), (0, 0), entity_being_placed.decoration_sprite)
                 view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
             elif entity_being_placed.money_amount:
-                entity = WorldEntity((0, 0), (0, 0), Sprite.COIN)
+                entity = WorldEntity((0, 0), (0, 0), Sprite.COINS_5)
                 view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
             else:
                 raise Exception("Unknown entity: " + str(entity_being_placed))

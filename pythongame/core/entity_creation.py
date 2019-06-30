@@ -27,7 +27,13 @@ def create_npc(npc_type: NpcType, pos: Tuple[int, int]) -> NonPlayerCharacter:
 
 
 def create_money_pile_on_ground(amount: int, pos: Tuple[int, int]) -> MoneyPileOnGround:
-    return MoneyPileOnGround(WorldEntity(pos, ITEM_ENTITY_SIZE, Sprite.COIN), amount)
+    if amount == 1:
+        sprite = Sprite.COINS_1
+    elif amount == 2:
+        sprite = Sprite.COINS_2
+    else:
+        sprite = Sprite.COINS_5
+    return MoneyPileOnGround(WorldEntity(pos, ITEM_ENTITY_SIZE, sprite), amount)
 
 
 def create_item_on_ground(item_type: ItemType, pos: Tuple[int, int]) -> ItemOnGround:

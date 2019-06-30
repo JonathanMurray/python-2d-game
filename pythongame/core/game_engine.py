@@ -105,7 +105,7 @@ class GameEngine:
                     loot_position = sum_of_vectors(enemy_that_died.world_entity.get_position(), position_offset)
 
                     if loot_entry.money_amount:
-                        money_pile_on_ground = create_money_pile_on_ground(1, loot_position)
+                        money_pile_on_ground = create_money_pile_on_ground(loot_entry.money_amount, loot_position)
                         self.game_state.money_piles_on_ground.append(money_pile_on_ground)
                     elif loot_entry.item_type:
                         item_on_ground = create_item_on_ground(loot_entry.item_type, loot_position)
