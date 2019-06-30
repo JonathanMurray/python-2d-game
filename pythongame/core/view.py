@@ -541,7 +541,7 @@ class View:
                              player_health / player_max_health, (200, 0, 50), True)
         if is_point_in_rect(mouse_ui_position, rect_healthbar):
             tooltip_title = "Health"
-            tooltip_details = ["regeneration: " + str(player_health_regen) + "/s"]
+            tooltip_details = ["regeneration: " + "{:.1f}".format(player_health_regen) + "/s"]
             tooltip_details += ["damage bonus: +" + str(int(round((player_damage_modifier - 1) * 100))) + "%"]
             tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_healthbar[0], rect_healthbar[1]))
         health_text = str(player_health) + "/" + str(player_max_health)
@@ -552,7 +552,7 @@ class View:
                              player_mana / player_max_mana, (50, 0, 200), True)
         if is_point_in_rect(mouse_ui_position, rect_manabar):
             tooltip_title = "Mana"
-            tooltip_details = ["regeneration: " + str(player_mana_regen) + "/s"]
+            tooltip_details = ["regeneration: " + "{:.1f}".format(player_mana_regen) + "/s"]
             tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_manabar[0], rect_manabar[1]))
         mana_text = str(player_mana) + "/" + str(player_max_mana)
         self._text_in_ui(self.font_ui_stat_bar_numbers, mana_text, (x_0 + 20, y_4 + 20))
