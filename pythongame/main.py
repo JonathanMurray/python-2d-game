@@ -4,13 +4,14 @@ from typing import List, Optional
 import pygame
 
 import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis, is_x_and_y_within_distance, SoundId
+from pythongame.core.common import Millis, SoundId
+from pythongame.core.dialog import DialogState
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.sound_player import play_sound, init_sound_player
 from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
-    ActionMouseClicked, ActionMouseReleased
-from pythongame.core.view import View, MouseHoverEvent, Dialog
+    ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey
+from pythongame.core.view import View, MouseHoverEvent
 from pythongame.core.view_state import ViewState
 from pythongame.game_world_init import create_game_state_from_json_file
 from pythongame.register_game_data import register_all_game_data
@@ -47,7 +48,12 @@ def main(args: List[str]):
     item_slot_being_dragged: Optional[int] = None
     consumable_slot_being_dragged: Optional[int] = None
 
+    dialog_state = DialogState()
+
     while True:
+
+        dialog_state.check_if_npcs_are_close_enough_for_dialog(
+            game_state.player_entity.get_position(), [npc for npc in game_state.non_player_characters if npc.dialog])
 
         mouse_was_just_clicked = False
         mouse_was_just_released = False
@@ -73,6 +79,7 @@ def main(args: List[str]):
                     game_engine.try_use_consumable(action.slot_number)
                 elif isinstance(action, ActionMoveInDirection):
                     game_engine.move_in_direction(action.direction)
+                    dialog_state.handle_player_moved()
                 elif isinstance(action, ActionStopMoving):
                     game_engine.stop_moving()
             if isinstance(action, ActionPauseGame):
@@ -83,6 +90,8 @@ def main(args: List[str]):
                 mouse_was_just_clicked = True
             if isinstance(action, ActionMouseReleased):
                 mouse_was_just_released = True
+            if isinstance(action, ActionPressSpaceKey):
+                dialog_state.handle_user_clicked_space()
 
         # ------------------------------------
         #     UPDATE STATE BASED ON CLOCK
@@ -101,6 +110,8 @@ def main(args: List[str]):
         #          RENDER EVERYTHING
         # ------------------------------------
 
+        npc_action_text = dialog_state.get_action_text()
+
         view.render_world(
             all_entities_to_render=game_state.get_all_entities_to_render(),
             decorations_to_render=game_state.get_decorations_to_render(),
@@ -112,15 +123,10 @@ def main(args: List[str]):
             render_hit_and_collision_boxes=render_hit_and_collision_boxes,
             player_health=game_state.player_state.health,
             player_max_health=game_state.player_state.max_health,
-            game_world_size=game_state.game_world_size)
+            game_world_size=game_state.game_world_size,
+            npc_action_text=npc_action_text)
 
-        # TODO
-        # A hacky way to show-case dialog feature. Remove when a proper use of dialog has been added!
-        player_position = game_state.player_entity.get_position()
-        hacky_dialog = None
-        for npc_with_dialog in [npc for npc in game_state.non_player_characters if npc.dialog]:
-            if is_x_and_y_within_distance(player_position, npc_with_dialog.world_entity.get_position(), 50):
-                hacky_dialog = Dialog(npc_with_dialog.portrait_icon_sprite, npc_with_dialog.dialog)
+        dialog = dialog_state.get_dialog()
 
         mouse_hover_event: MouseHoverEvent = view.render_ui(
             player_health=game_state.player_state.health,
@@ -145,7 +151,7 @@ def main(args: List[str]):
             mouse_screen_position=mouse_screen_position,
             player_exp=game_state.player_state.exp,
             player_max_exp_in_this_level=game_state.player_state.max_exp_in_this_level,
-            dialog=hacky_dialog,
+            dialog=dialog,
             player_money=game_state.player_state.money,
             player_damage_modifier=game_state.player_state.base_damage_modifier + game_state.player_state.damage_modifier_bonus)
 

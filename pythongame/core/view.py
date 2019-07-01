@@ -53,9 +53,17 @@ class ImageWithRelativePosition:
         self.position_relative_to_entity = position_relative_to_entity
 
 
+# Used to display dialog from an npc along with the NPC's portrait
 class Dialog:
     def __init__(self, portrait_icon_sprite: PortraitIconSprite, text: str):
         self.portrait_icon_sprite = portrait_icon_sprite
+        self.text = text
+
+
+# Used to display some text above an NPC like "[Space] talk"
+class NpcActionText:
+    def __init__(self, npc: NonPlayerCharacter, text: str):
+        self.npc = npc
         self.text = text
 
 
@@ -108,6 +116,7 @@ class View:
 
         self.font_ui_stat_bar_numbers = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_ui_money = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
+        self.font_npc_action = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 14)
         self.font_ui_headers = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 18)
         self.font_tooltip_header = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 16)
         self.font_tooltip_details = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
@@ -453,10 +462,19 @@ class View:
         for i, detail in enumerate(details):
             self._text(self.font_tooltip_details, detail, (x_tooltip + 20, y_tooltip + 50 + i * 20), COLOR_WHITE)
 
+    def _npc_action_text(self, npc_action_text: NpcActionText):
+        npc_center_pos = self._translate_world_position_to_screen(
+            npc_action_text.npc.world_entity.get_center_position())
+        rect_width = 120
+        rect_height = 27
+        rect_pos = (npc_center_pos[0] - rect_width / 2, npc_center_pos[1] - 60)
+        self._rect_transparent((rect_pos[0], rect_pos[1], rect_width, rect_height), 150, (0, 0, 0))
+        self._text(self.font_npc_action, npc_action_text.text, (rect_pos[0] + 10, rect_pos[1] + 4))
+
     def render_world(self, all_entities_to_render: List[WorldEntity], decorations_to_render: List[DecorationEntity],
                      camera_world_area, non_player_characters: List[NonPlayerCharacter], is_player_invisible,
-                     player_entity,
-                     visual_effects, render_hit_and_collision_boxes, player_health, player_max_health, game_world_size):
+                     player_entity, visual_effects, render_hit_and_collision_boxes, player_health, player_max_health,
+                     game_world_size, npc_action_text: NpcActionText):
         self.camera_world_area = camera_world_area
 
         self.screen.fill(COLOR_BACKGROUND)
@@ -492,8 +510,11 @@ class View:
         for visual_effect in visual_effects:
             self._visual_effect(visual_effect)
 
+        if npc_action_text:
+            self._npc_action_text(npc_action_text)
+
     def render_ui(self, fps_string, is_paused, is_game_over, abilities, ability_cooldowns_remaining,
-                  highlighted_ability_action, highlighted_consumable_action, message, player_active_buffs,
+                  highlighted_ability_action, highlighted_consumable_action, message: str, player_active_buffs,
                   player_health, player_mana, player_max_health, player_max_mana, player_health_regen: float,
                   player_mana_regen: float, player_minimap_relative_position, consumable_slots,
                   item_slots: Dict[int, ItemType], player_level: int, mouse_screen_position: Tuple[int, int],
