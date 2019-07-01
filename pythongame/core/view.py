@@ -474,7 +474,7 @@ class View:
     def render_world(self, all_entities_to_render: List[WorldEntity], decorations_to_render: List[DecorationEntity],
                      camera_world_area, non_player_characters: List[NonPlayerCharacter], is_player_invisible,
                      player_entity, visual_effects, render_hit_and_collision_boxes, player_health, player_max_health,
-                     game_world_size, npc_action_text: NpcActionText):
+                     game_world_size, npc_action_text: Optional[NpcActionText]):
         self.camera_world_area = camera_world_area
 
         self.screen.fill(COLOR_BACKGROUND)

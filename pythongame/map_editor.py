@@ -256,7 +256,8 @@ def main(args: List[str]):
             render_hit_and_collision_boxes=True,
             player_health=game_state.player_state.health,
             player_max_health=game_state.player_state.max_health,
-            game_world_size=game_state.game_world_size)
+            game_world_size=game_state.game_world_size,
+            npc_action_text=None)
 
         entity_icon_hovered_by_mouse = view.render_map_editor_ui(
             chars_by_entities=CHARS_BY_ENTITY,
