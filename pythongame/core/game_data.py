@@ -112,9 +112,15 @@ class UserAbilityKey:
         self.pygame_key = pygame_key
 
 
+class NpcDialog:
+    def __init__(self, body: str, action: str):
+        self.body = body
+        self.action = action
+
+
 class NpcData:
     def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
-                 exp_reward: int, is_enemy: bool, is_neutral: bool, dialog: Optional[str],
+                 exp_reward: int, is_enemy: bool, is_neutral: bool, dialog: Optional[NpcDialog],
                  portrait_icon_sprite: Optional[PortraitIconSprite], enemy_loot_table: Optional[LootTable]):
         self.sprite = sprite
         self.size = size

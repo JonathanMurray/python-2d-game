@@ -5,7 +5,7 @@ import pygame
 from pythongame.core.common import Direction, Sprite, ConsumableType, sum_of_vectors, ItemType, is_point_in_rect
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, NON_PLAYER_CHARACTERS, CONSUMABLES, ITEMS, UiIconSprite, WALLS, \
-    PORTRAIT_ICON_SPRITE_PATHS, PortraitIconSprite
+    PORTRAIT_ICON_SPRITE_PATHS, PortraitIconSprite, NpcDialog
 from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
@@ -54,10 +54,10 @@ class ImageWithRelativePosition:
 
 
 # Used to display dialog from an npc along with the NPC's portrait
-class Dialog:
-    def __init__(self, portrait_icon_sprite: PortraitIconSprite, text: str):
+class DialogGraphics:
+    def __init__(self, portrait_icon_sprite: PortraitIconSprite, npc_dialog: NpcDialog):
         self.portrait_icon_sprite = portrait_icon_sprite
-        self.text = text
+        self.npc_dialog = npc_dialog
 
 
 # Used to display some text above an NPC like "[Space] talk"
@@ -518,7 +518,7 @@ class View:
                   player_health, player_mana, player_max_health, player_max_mana, player_health_regen: float,
                   player_mana_regen: float, player_minimap_relative_position, consumable_slots,
                   item_slots: Dict[int, ItemType], player_level: int, mouse_screen_position: Tuple[int, int],
-                  player_exp: int, player_max_exp_in_this_level: int, dialog: Optional[Dialog],
+                  player_exp: int, player_max_exp_in_this_level: int, dialog: Optional[DialogGraphics],
                   player_money: int, player_damage_modifier: float) -> MouseHoverEvent:
 
         hovered_item_slot_number = None
@@ -691,23 +691,29 @@ class View:
             mouse_game_world_position = self._translate_screen_position_to_world(mouse_screen_position)
         return MouseHoverEvent(hovered_item_slot_number, hovered_consumable_slot_number, mouse_game_world_position)
 
-    def _dialog(self, dialog: Dialog):
+    def _dialog(self, dialog_graphics: DialogGraphics):
         rect_dialog_container = (100, 75, 500, 250)
         self._rect((210, 180, 60), rect_dialog_container, 5)
-        self._rect_transparent(rect_dialog_container, 150, COLOR_BLACK)
+        self._rect_transparent(rect_dialog_container, 180, COLOR_BLACK)
+        lower_boundary_y = 280
+        self._line((170, 140, 20), (100, lower_boundary_y), (600, lower_boundary_y), 2)
         dialog_container_portrait_padding = 10
         rect_portrait_pos = (rect_dialog_container[0] + dialog_container_portrait_padding,
                              rect_dialog_container[1] + dialog_container_portrait_padding)
-        dialog_image = self.images_by_portrait_sprite[dialog.portrait_icon_sprite]
+        dialog_image = self.images_by_portrait_sprite[dialog_graphics.portrait_icon_sprite]
         self._image(dialog_image, rect_portrait_pos)
         self._rect((160, 160, 180), (rect_portrait_pos[0], rect_portrait_pos[1], 100, 70), 2)
-        dialog_pos = (rect_dialog_container[0] + 120, rect_dialog_container[1] + 10)
-        dialog_lines = self._split_text_into_lines(dialog.text, 33)
+        dialog_pos = (rect_dialog_container[0] + 120, rect_dialog_container[1] + 15)
+        dialog_lines = self._split_text_into_lines(dialog_graphics.npc_dialog.body, 33)
         for i, dialog_text_line in enumerate(dialog_lines):
-            if i == 8:
+            if i == 6:
+                print("WARN: too long dialog for NPC!")
                 break
-            self._text(self.font_dialog, dialog_text_line, (dialog_pos[0] + 5, dialog_pos[1] + 5 + 32 * i),
+            self._text(self.font_dialog, dialog_text_line, (dialog_pos[0] + 5, dialog_pos[1] + 32 * i),
                        COLOR_WHITE)
+        self._text(self.font_dialog, "[Space] " + dialog_graphics.npc_dialog.action,
+                   (rect_dialog_container[0] + 65, dialog_pos[1] + 202),
+                   COLOR_WHITE)
 
     @staticmethod
     def _split_text_into_lines(full_text: str, max_line_length: int):

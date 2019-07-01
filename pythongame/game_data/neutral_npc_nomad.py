@@ -2,10 +2,11 @@ import random
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
-    PortraitIconSprite
+    PortraitIconSprite, NpcDialog
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
-from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
+from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, register_npc_action
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.visual_effects import create_visual_healing_text
 
 
 class NpcMind(AbstractNpcMind):
@@ -26,16 +27,26 @@ class NpcMind(AbstractNpcMind):
                 npc.world_entity.set_moving_in_dir(direction)
 
 
+class NpcAction(AbstractNpcAction):
+
+    def act(self, game_state: GameState):
+        missing_health = game_state.player_state.max_health - game_state.player_state.health
+        if missing_health > 0:
+            game_state.visual_effects.append(create_visual_healing_text(game_state.player_entity, missing_health))
+        game_state.player_state.gain_full_health()
+
+
 def register_nomad_npc():
     size = (30, 30)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.NEUTRAL_NPC_NOMAD
     npc_type = NpcType.NEUTRAL_NOMAD
     movement_speed = 0.03
     health = 6
-    dialog = "Hey there. I am the nomad."
+    dialog = NpcDialog("Blessings to you fellow traveler.", "Receive the nomad's blessing")
     register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, False, True, dialog,
                                         PortraitIconSprite.NOMAD, None))
     register_npc_behavior(npc_type, NpcMind)
+    register_npc_action(npc_type, NpcAction())
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")
     original_sprite_size = (32, 32)
     scaled_sprite_size = (48, 48)

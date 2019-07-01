@@ -90,8 +90,8 @@ def main(args: List[str]):
                 mouse_was_just_clicked = True
             if isinstance(action, ActionMouseReleased):
                 mouse_was_just_released = True
-            if isinstance(action, ActionPressSpaceKey):
-                dialog_state.handle_user_clicked_space()
+            if isinstance(action, ActionPressSpaceKey) and not is_game_over:
+                dialog_state.handle_user_clicked_space(game_state)
 
         # ------------------------------------
         #     UPDATE STATE BASED ON CLOCK

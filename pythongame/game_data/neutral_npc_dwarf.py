@@ -1,10 +1,11 @@
 import random
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions
+from pythongame.core.damage_interactions import deal_damage_to_player
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
-    PortraitIconSprite
+    PortraitIconSprite, NpcDialog
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
-from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
+from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, register_npc_action
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
 
@@ -26,17 +27,25 @@ class NpcMind(AbstractNpcMind):
                 npc.world_entity.set_moving_in_dir(direction)
 
 
+class NpcAction(AbstractNpcAction):
+
+    def act(self, game_state: GameState):
+        deal_damage_to_player(game_state, 10)
+
+
 def register_dwarf_npc():
     size = (30, 30)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.NEUTRAL_NPC_DWARF
     npc_type = NpcType.NEUTRAL_DWARF
     movement_speed = 0.03
     health = 6
-    dialog = "Greetings, stranger. It seems that we are stuck in this together. You seem like you are capable of taking " \
-             "care of yourself. Why don't you go down that corridor over there and see if there is a way out!"
+    dialog = NpcDialog(
+        "Hey there! You want a piece of me!? ",
+        "Start a fight")
     register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, False, True, dialog,
                                         PortraitIconSprite.VIKING, None))
     register_npc_behavior(npc_type, NpcMind)
+    register_npc_action(npc_type, NpcAction())
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet.png")
     original_sprite_size = (32, 32)
     scaled_sprite_size = (48, 48)
