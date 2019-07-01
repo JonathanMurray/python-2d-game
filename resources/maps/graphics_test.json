@@ -12837,41 +12837,6 @@
     {
       "consumable_type": "HEALTH_LESSER",
       "position": [
-        300,
-        1725
-      ]
-    },
-    {
-      "consumable_type": "HEALTH_LESSER",
-      "position": [
-        2400,
-        425
-      ]
-    },
-    {
-      "consumable_type": "HEALTH_LESSER",
-      "position": [
-        2325,
-        1500
-      ]
-    },
-    {
-      "consumable_type": "MANA_LESSER",
-      "position": [
-        2375,
-        1500
-      ]
-    },
-    {
-      "consumable_type": "MANA",
-      "position": [
-        1000,
-        3300
-      ]
-    },
-    {
-      "consumable_type": "HEALTH_LESSER",
-      "position": [
         3825,
         3100
       ]
@@ -12880,20 +12845,6 @@
       "consumable_type": "MANA_LESSER",
       "position": [
         3925,
-        3100
-      ]
-    },
-    {
-      "consumable_type": "MANA_LESSER",
-      "position": [
-        2050,
-        3325
-      ]
-    },
-    {
-      "consumable_type": "HEALTH",
-      "position": [
-        450,
         3100
       ]
     }
