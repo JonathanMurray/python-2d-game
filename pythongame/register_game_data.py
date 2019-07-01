@@ -27,6 +27,7 @@ from pythongame.game_data.item_sword_of_leeching import register_sword_of_leechi
 from pythongame.game_data.item_winged_boots import register_winged_boots_item
 from pythongame.game_data.map_editor_icons import register_map_editor_icons
 from pythongame.game_data.neutral_npc_dwarf import register_dwarf_npc
+from pythongame.game_data.neutral_npc_ninja import register_ninja_npc
 from pythongame.game_data.neutral_npc_nomad import register_nomad_npc
 from pythongame.game_data.player_data import register_player_data
 from pythongame.game_data.portrait_icons import register_portrait_icons
@@ -68,6 +69,7 @@ def register_all_game_data():
 
     register_dwarf_npc()
     register_nomad_npc()
+    register_ninja_npc()
 
     register_winged_boots_item()
     register_amulet_of_mana_item()

@@ -49,6 +49,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
 
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_DWARF),
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_NOMAD),
+    MapEditorWorldEntity.npc(NpcType.NEUTRAL_NINJA),
 
     MapEditorWorldEntity.consumable(ConsumableType.HEALTH_LESSER),
     MapEditorWorldEntity.consumable(ConsumableType.HEALTH),

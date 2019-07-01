@@ -93,6 +93,7 @@ class PortraitIconSprite(Enum):
     PLAYER = 1
     VIKING = 2
     NOMAD = 3
+    NINJA = 4
 
 
 class AbilityData:

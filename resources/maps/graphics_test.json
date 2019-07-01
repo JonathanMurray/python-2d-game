@@ -951,6 +951,13 @@
         50,
         1875
       ]
+    },
+    {
+      "enemy_type": "NEUTRAL_NINJA",
+      "position": [
+        200,
+        250
+      ]
     }
   ],
   "player": {
