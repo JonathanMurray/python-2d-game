@@ -1,3 +1,5 @@
+from typing import List
+
 from pythongame.core.ability_learning import player_learn_new_ability
 from pythongame.core.common import *
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
@@ -5,6 +7,7 @@ from pythongame.core.entity_creation import create_money_pile_on_ground, create_
 from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS
 from pythongame.core.game_state import GameState, handle_buffs
 from pythongame.core.item_effects import get_item_effect
+from pythongame.core.loot import LootEntry
 from pythongame.core.player_controls import PlayerControls
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view_state import ViewState
@@ -56,11 +59,6 @@ class GameEngine:
         self.game_state.consumables_on_ground.append(consumable)
         self.game_state.player_state.consumable_slots[consumable_slot] = None
 
-    def _is_enemy_close_to_camera(self, enemy):
-        camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(
-            self.game_state.camera_world_area.rect(), 100)
-        return rects_intersect(enemy.world_entity.rect(), camera_rect_with_margin)
-
     # Returns True if player died
     def run_one_frame(self, time_passed: Millis):
         for e in self.game_state.non_player_characters:
@@ -88,6 +86,7 @@ class GameEngine:
             exp_gained = sum([NON_PLAYER_CHARACTERS[e.npc_type].exp_reward for e in enemies_that_died])
             self.game_state.visual_effects.append(create_visual_exp_text(self.game_state.player_entity, exp_gained))
             did_player_level_up = self.game_state.player_state.gain_exp(exp_gained)
+            # TODO: Handle some of this levelup logic in PlayerState. Don't allow it to have inconsistent state
             if did_player_level_up:
                 play_sound(SoundId.EVENT_PLAYER_LEVELED_UP)
                 self.view_state.set_message("You reached level " + str(self.game_state.player_state.level))
@@ -97,23 +96,8 @@ class GameEngine:
                     player_learn_new_ability(self.game_state.player_state, new_ability)
             for enemy_that_died in enemies_that_died:
                 loot = enemy_that_died.enemy_loot_table.generate_loot()
-                for loot_entry in loot:
-                    if len(loot) > 1:
-                        position_offset = (random.randint(-20, 20), random.randint(-20, 20))
-                    else:
-                        position_offset = (0, 0)
-                    loot_position = sum_of_vectors(enemy_that_died.world_entity.get_position(), position_offset)
-
-                    if loot_entry.money_amount:
-                        money_pile_on_ground = create_money_pile_on_ground(loot_entry.money_amount, loot_position)
-                        self.game_state.money_piles_on_ground.append(money_pile_on_ground)
-                    elif loot_entry.item_type:
-                        item_on_ground = create_item_on_ground(loot_entry.item_type, loot_position)
-                        self.game_state.items_on_ground.append(item_on_ground)
-                    elif loot_entry.consumable_type:
-                        consumable_on_ground = create_consumable_on_ground(loot_entry.consumable_type,
-                                                                           loot_position)
-                        self.game_state.consumables_on_ground.append(consumable_on_ground)
+                enemy_death_position = enemy_that_died.world_entity.get_position()
+                self._put_loot_on_ground(enemy_death_position, loot)
 
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_effects()
@@ -237,3 +221,26 @@ class GameEngine:
 
         if self.game_state.player_state.health <= 0:
             return True  # Game over
+
+    def _is_enemy_close_to_camera(self, enemy):
+        camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(
+            self.game_state.camera_world_area.rect(), 100)
+        return rects_intersect(enemy.world_entity.rect(), camera_rect_with_margin)
+
+    def _put_loot_on_ground(self, enemy_death_position: Tuple[int, int], loot: List[LootEntry]):
+        for loot_entry in loot:
+            if len(loot) > 1:
+                position_offset = (random.randint(-20, 20), random.randint(-20, 20))
+            else:
+                position_offset = (0, 0)
+            loot_position = sum_of_vectors(enemy_death_position, position_offset)
+
+            if loot_entry.money_amount:
+                money_pile_on_ground = create_money_pile_on_ground(loot_entry.money_amount, loot_position)
+                self.game_state.money_piles_on_ground.append(money_pile_on_ground)
+            elif loot_entry.item_type:
+                item_on_ground = create_item_on_ground(loot_entry.item_type, loot_position)
+                self.game_state.items_on_ground.append(item_on_ground)
+            elif loot_entry.consumable_type:
+                consumable_on_ground = create_consumable_on_ground(loot_entry.consumable_type, loot_position)
+                self.game_state.consumables_on_ground.append(consumable_on_ground)
