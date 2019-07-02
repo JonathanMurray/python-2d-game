@@ -10,6 +10,12 @@
 * Use pygame C code for vector math
 
 #### Features:
+* Different hero with different abilities
+* Town portal to go back to start location 
+    * consumable item?
+    * item with ability (new concept)?
+    * regular ability with long cooldown?
+    * long cast-time, interrupted by dmg?
 * Save functionality
     * save the current game_state into a JSON file and load it on startup
 * More advanced abilities:
@@ -22,9 +28,7 @@
     * buff that bounces damage back to enemies
 * More advanced items
     * Unlocks a new ability
-* Have coins on map that you can pick up or some other way of measuring progress
 * Render enemy locations on minimap?
-* Some significant entity at start of map (that you can teleport back to?)
 * more varied enemy AI
     * some enemies shouldn't aggro until very close
     * all enemies should at least wander around randomly when in sight
