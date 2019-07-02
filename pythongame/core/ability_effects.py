@@ -6,6 +6,7 @@ from pythongame.core.game_state import GameState
 _ability_effects: Dict[AbilityType, Callable[[GameState], bool]] = {}
 
 
+# Effect function should return True if ability was used successfully
 def register_ability_effect(ability_type: AbilityType, effect_function: Callable[[GameState], bool]):
     _ability_effects[ability_type] = effect_function
 
