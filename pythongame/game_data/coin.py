@@ -1,5 +1,5 @@
 from pythongame.core.common import Sprite
-from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
+from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer
 
 
 def register_coin():

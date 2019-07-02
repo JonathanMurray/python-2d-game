@@ -4,12 +4,12 @@ from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import get_buff_effect, register_buff_effect, AbstractBuffEffect
 from pythongame.core.common import Sprite, AbilityType, Millis, sum_of_vectors, NpcType, Direction, BuffType
 from pythongame.core.damage_interactions import deal_npc_damage_to_npc
+from pythongame.core.entity_creation import create_npc
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     NON_PLAYER_CHARACTERS, register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
     register_ui_icon_sprite_path
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
-from pythongame.core.entity_creation import create_npc
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.visual_effects import VisualLine, VisualCircle

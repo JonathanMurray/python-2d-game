@@ -53,4 +53,3 @@ class LootTable:
     @staticmethod
     def single(single_entry: LootEntry, chance_to_get_entry: float):
         return LootTable([LootGroup.single(single_entry, chance_to_get_entry)])
-

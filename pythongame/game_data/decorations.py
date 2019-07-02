@@ -17,7 +17,6 @@ def _register_ground_decoration():
                                indices_by_dir, (0, 0))
 
 
-
 def _register_plant_decoration():
     sprite_sheet = SpriteSheet("resources/graphics/human_tileset.png")
     original_sprite_size = (32, 32)
