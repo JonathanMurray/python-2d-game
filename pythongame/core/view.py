@@ -4,7 +4,7 @@ import pygame
 
 from pythongame.core.common import Direction, Sprite, ConsumableType, sum_of_vectors, ItemType, is_point_in_rect
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
-    ABILITIES, BUFF_TEXTS, Animation, USER_ABILITY_KEYS, NON_PLAYER_CHARACTERS, CONSUMABLES, ITEMS, UiIconSprite, WALLS, \
+    ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, NON_PLAYER_CHARACTERS, CONSUMABLES, ITEMS, UiIconSprite, WALLS, \
     PORTRAIT_ICON_SPRITE_PATHS, PortraitIconSprite, NpcDialog
 from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
@@ -355,7 +355,7 @@ class View:
         h = size[1]
         x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
         ability = ABILITIES[ability_type]
-        ability_key = USER_ABILITY_KEYS[ability_type]
+        ability_key = KEYS_BY_ABILITY_TYPE[ability_type]
         icon_sprite = ability.icon_sprite
         self._rect_filled((40, 40, 50), (x, y, w, h))
         self._image(self.images_by_ui_sprite[icon_sprite], (x, y))

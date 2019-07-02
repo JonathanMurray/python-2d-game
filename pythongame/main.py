@@ -6,6 +6,7 @@ import pygame
 import pythongame.core.pathfinding.npc_pathfinding
 from pythongame.core.common import Millis, SoundId
 from pythongame.core.dialog import DialogState
+from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.sound_player import play_sound, init_sound_player
 from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
@@ -28,6 +29,7 @@ def main(args: List[str]):
     else:
         map_file = "resources/maps/graphics_test.json"
     game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file)
+    allocate_input_keys_for_abilities(game_state.player_state.abilities)
     pygame.init()
 
     view = View(CAMERA_SIZE, SCREEN_SIZE)

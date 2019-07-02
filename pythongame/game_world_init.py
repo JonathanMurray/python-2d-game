@@ -6,7 +6,7 @@ from pythongame.core.entity_creation import create_npc, set_global_path_finder, 
 from pythongame.core.game_data import WALLS
 from pythongame.core.game_state import WorldEntity, GameState, DecorationEntity, Wall
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
-from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE, INTIAL_PLAYER_STATE, PLAYER_ENTITY_SPEED
+from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE, PLAYER_ENTITY_SPEED, get_initial_player_state
 
 # TODO Avoid depending on pythongame.game_data from here
 
@@ -37,8 +37,10 @@ def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str
         game_world_size = json_data["game_world_size"]
 
         decoration_entities = [DecorationEntity(d["position"], Sprite[d["sprite"]]) for d in json_data["decorations"]]
+        player_state = get_initial_player_state()
         game_state = GameState(player_entity, consumables, items, money_piles, enemies, walls, camera_size,
-                               game_world_size, INTIAL_PLAYER_STATE, decoration_entities)
+                               game_world_size, player_state, decoration_entities)
+
         path_finder.set_grid(game_state.grid)
         return game_state
 

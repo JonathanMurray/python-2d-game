@@ -10,7 +10,7 @@ from pythongame.core.game_data import POTION_ENTITY_SIZE
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, ConsumableOnGround, ItemOnGround, \
     DecorationEntity, GameState, Wall, MoneyPileOnGround
 from pythongame.core.view import View
-from pythongame.game_data.player_data import INTIAL_PLAYER_STATE, PLAYER_ENTITY_SIZE, PLAYER_ENTITY_SPEED
+from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE, PLAYER_ENTITY_SPEED, get_initial_player_state
 from pythongame.game_world_init import save_game_state_to_json_file, create_game_state_from_json_file
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 from pythongame.register_game_data import register_all_game_data
@@ -122,7 +122,8 @@ def main(args: List[str]):
         game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file)
     else:
         player_entity = WorldEntity((250, 250), PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
-        game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, (500, 500), INTIAL_PLAYER_STATE, [])
+        player_state = get_initial_player_state()
+        game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, (500, 500), player_state, [])
 
     pygame.init()
 

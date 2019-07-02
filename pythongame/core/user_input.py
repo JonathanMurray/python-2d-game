@@ -1,7 +1,7 @@
 import pygame
 
 from pythongame.core.common import *
-from pythongame.core.game_data import USER_ABILITY_KEYS
+from pythongame.core.game_data import KEYS_BY_ABILITY_TYPE
 
 
 class ActionExitGame:
@@ -95,8 +95,8 @@ def get_user_actions():
             elif event.key == pygame.K_SPACE:
                 actions.append(ActionPressSpaceKey())
             else:
-                for ability_type in USER_ABILITY_KEYS:
-                    if event.key == USER_ABILITY_KEYS[ability_type].pygame_key:
+                for ability_type in KEYS_BY_ABILITY_TYPE:
+                    if event.key == KEYS_BY_ABILITY_TYPE[ability_type].pygame_key:
                         actions.append(ActionTryUseAbility(ability_type))
 
         if event.type == pygame.KEYUP:

@@ -1,38 +1,33 @@
 from typing import Dict
 
-from pythongame.core.ability_learning import USER_ABILITY_KEYS
 from pythongame.core.common import ItemType
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
-    register_entity_sprite_map, register_user_ability_key
+    register_entity_sprite_map
 from pythongame.core.game_state import PlayerState
 
 PLAYER_ENTITY_SIZE = (30, 30)
 PLAYER_ENTITY_SPEED = 0.105
 
-_player_consumable_slots = {
-    1: ConsumableType.HEALTH_LESSER,
-    2: ConsumableType.MANA_LESSER,
-    3: None,
-    4: None,
-    5: None
-}
 
-_abilities = [AbilityType.FIREBALL]
-
-for ability_type, user_ability_key in zip(_abilities, USER_ABILITY_KEYS):
-    register_user_ability_key(ability_type, user_ability_key)
-
-health = 50
-mana = 100
-max_mana = 120
-mana_regen = 4
-_items: Dict[int, ItemType] = {
-    1: None,
-    2: None,
-    3: None
-}
-INTIAL_PLAYER_STATE = PlayerState(health, health, mana, max_mana, mana_regen, _player_consumable_slots, _abilities,
-                                  _items, {2: AbilityType.WHIRLWIND, 3: AbilityType.ENTANGLING_ROOTS})
+def get_initial_player_state() -> PlayerState:
+    health = 50
+    mana = 120
+    mana_regen = 4
+    consumable_slots = {
+        1: ConsumableType.HEALTH_LESSER,
+        2: ConsumableType.MANA_LESSER,
+        3: None,
+        4: None,
+        5: None
+    }
+    abilities = [AbilityType.FIREBALL]
+    items: Dict[int, ItemType] = {
+        1: None,
+        2: None,
+        3: None
+    }
+    new_level_abilities = {2: AbilityType.WHIRLWIND, 3: AbilityType.ENTANGLING_ROOTS}
+    return PlayerState(health, health, mana, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities)
 
 
 def register_player_data():

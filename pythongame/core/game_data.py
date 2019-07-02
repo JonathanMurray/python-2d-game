@@ -113,6 +113,12 @@ class UserAbilityKey:
         self.pygame_key = pygame_key
 
 
+user_ability_keys = [UserAbilityKey("Q", pygame.K_q),
+                     UserAbilityKey("W", pygame.K_w),
+                     UserAbilityKey("E", pygame.K_e),
+                     UserAbilityKey("R", pygame.K_r)]
+
+
 class NpcDialog:
     def __init__(self, body: str, action: str):
         self.body = body
@@ -174,7 +180,7 @@ ITEMS: Dict[ItemType, ItemData] = {}
 
 ABILITIES: Dict[AbilityType, AbilityData] = {}
 
-USER_ABILITY_KEYS: Dict[AbilityType, UserAbilityKey] = {}
+KEYS_BY_ABILITY_TYPE: Dict[AbilityType, UserAbilityKey] = {}
 
 BUFF_TEXTS: Dict[BuffType, str] = {}
 
@@ -191,8 +197,9 @@ def register_ability_data(ability_type: AbilityType, ability_data: AbilityData):
     ABILITIES[ability_type] = ability_data
 
 
-def register_user_ability_key(ability_type: AbilityType, user_ability_key: UserAbilityKey):
-    USER_ABILITY_KEYS[ability_type] = user_ability_key
+def allocate_input_keys_for_abilities(abilities: List[AbilityType]):
+    for i, ability in enumerate(abilities):
+        KEYS_BY_ABILITY_TYPE[ability] = user_ability_keys[i]
 
 
 def register_ui_icon_sprite_path(sprite: UiIconSprite, file_path: str):
