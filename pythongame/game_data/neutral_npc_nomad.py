@@ -12,7 +12,7 @@ from pythongame.core.visual_effects import create_visual_healing_text
 class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
-        self._update_path_interval = 1200
+        self._update_path_interval = 900
         self._time_since_updated_path = self._update_path_interval
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
@@ -20,7 +20,7 @@ class NpcMind(AbstractNpcMind):
         self._time_since_updated_path += time_passed
         if self._time_since_updated_path > self._update_path_interval:
             self._time_since_updated_path = 0
-            if random.random() > 0.5:
+            if random.random() < 0.8:
                 npc.world_entity.set_not_moving()
             else:
                 direction = random.choice(get_all_directions())

@@ -904,13 +904,6 @@
       ]
     },
     {
-      "enemy_type": "NEUTRAL_DWARF",
-      "position": [
-        300,
-        150
-      ]
-    },
-    {
       "enemy_type": "RAT_1",
       "position": [
         1425,
@@ -925,13 +918,6 @@
       ]
     },
     {
-      "enemy_type": "NEUTRAL_NOMAD",
-      "position": [
-        225,
-        325
-      ]
-    },
-    {
       "enemy_type": "CHEST",
       "position": [
         600,
@@ -953,9 +939,23 @@
       ]
     },
     {
+      "enemy_type": "NEUTRAL_NOMAD",
+      "position": [
+        75,
+        325
+      ]
+    },
+    {
+      "enemy_type": "NEUTRAL_DWARF",
+      "position": [
+        1600,
+        1850
+      ]
+    },
+    {
       "enemy_type": "NEUTRAL_NINJA",
       "position": [
-        200,
+        75,
         250
       ]
     }
@@ -963,74 +963,11 @@
   "player": {
     "position": [
       300,
-      225
+      175
     ]
   },
   "walls": [
     {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        100,
-        350
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        100,
-        325
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        100,
-        300
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        100,
-        275
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        100,
-        250
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        100,
-        225
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        100,
-        200
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        100,
-        175
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        100,
-        125
-      ]
-    },
-    {
       "wall_type": "WALL_DIRECTIONAL_N",
       "position": [
         125,
@@ -1061,55 +998,6 @@
     {
       "wall_type": "WALL_DIRECTIONAL_N",
       "position": [
-        225,
-        100
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
-        250,
-        100
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
-        275,
-        100
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
-        300,
-        100
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
-        325,
-        100
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
-        350,
-        100
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
-        375,
-        100
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
         425,
         100
       ]
@@ -1125,13 +1013,6 @@
       "wall_type": "WALL_DIRECTIONAL_N",
       "position": [
         475,
-        100
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
-        400,
         100
       ]
     },
@@ -1279,13 +1160,6 @@
       "wall_type": "WALL_DIRECTIONAL_S",
       "position": [
         125,
-        375
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_SW",
-      "position": [
-        100,
         375
       ]
     },
@@ -1783,13 +1657,6 @@
       "wall_type": "WALL_DIRECTIONAL_E",
       "position": [
         950,
-        1100
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_E",
-      "position": [
-        950,
         1125
       ]
     },
@@ -2113,13 +1980,6 @@
       "position": [
         1050,
         550
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        150,
-        150
       ]
     },
     {
@@ -3842,20 +3702,6 @@
       "position": [
         2100,
         1325
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        100,
-        150
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_NW",
-      "position": [
-        100,
-        100
       ]
     },
     {
@@ -12816,6 +12662,251 @@
       "position": [
         1475,
         725
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_POINTY_NW",
+      "position": [
+        225,
+        100
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        225,
+        75
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        225,
+        50
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_NW",
+      "position": [
+        225,
+        25
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        250,
+        25
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        275,
+        25
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        300,
+        25
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        325,
+        25
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        350,
+        25
+      ]
+    },
+    {
+      "wall_type": "ALTAR",
+      "position": [
+        275,
+        50
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        375,
+        25
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_NE",
+      "position": [
+        400,
+        25
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_E",
+      "position": [
+        400,
+        50
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_E",
+      "position": [
+        400,
+        75
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_POINTY_NE",
+      "position": [
+        400,
+        100
+      ]
+    },
+    {
+      "wall_type": "STATUE",
+      "position": [
+        175,
+        150
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        25,
+        125
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        25,
+        150
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        25,
+        175
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        25,
+        200
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        25,
+        225
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        25,
+        250
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        25,
+        275
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        25,
+        300
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        25,
+        325
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        25,
+        350
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_NW",
+      "position": [
+        25,
+        100
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        50,
+        100
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        75,
+        100
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        100,
+        100
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_SW",
+      "position": [
+        25,
+        375
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_S",
+      "position": [
+        50,
+        375
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_S",
+      "position": [
+        75,
+        375
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_S",
+      "position": [
+        100,
+        375
+      ]
+    },
+    {
+      "wall_type": "STATUE",
+      "position": [
+        75,
+        150
       ]
     }
   ],
@@ -12877,20 +12968,6 @@
     {
       "sprite": "DECORATION_GROUND_STONE",
       "position": [
-        250,
-        200
-      ]
-    },
-    {
-      "sprite": "DECORATION_GROUND_STONE",
-      "position": [
-        300,
-        200
-      ]
-    },
-    {
-      "sprite": "DECORATION_GROUND_STONE",
-      "position": [
         300,
         250
       ]
@@ -12947,22 +13024,8 @@
     {
       "sprite": "DECORATION_GROUND_STONE",
       "position": [
-        350,
-        200
-      ]
-    },
-    {
-      "sprite": "DECORATION_GROUND_STONE",
-      "position": [
         400,
         200
-      ]
-    },
-    {
-      "sprite": "DECORATION_GROUND_STONE",
-      "position": [
-        400,
-        250
       ]
     },
     {
@@ -12970,27 +13033,6 @@
       "position": [
         400,
         300
-      ]
-    },
-    {
-      "sprite": "DECORATION_PLANT",
-      "position": [
-        300,
-        200
-      ]
-    },
-    {
-      "sprite": "DECORATION_PLANT",
-      "position": [
-        325,
-        300
-      ]
-    },
-    {
-      "sprite": "DECORATION_PLANT",
-      "position": [
-        400,
-        250
       ]
     },
     {
@@ -13025,27 +13067,6 @@
       "sprite": "DECORATION_GROUND_STONE",
       "position": [
         400,
-        150
-      ]
-    },
-    {
-      "sprite": "DECORATION_GROUND_STONE",
-      "position": [
-        350,
-        150
-      ]
-    },
-    {
-      "sprite": "DECORATION_GROUND_STONE",
-      "position": [
-        300,
-        150
-      ]
-    },
-    {
-      "sprite": "DECORATION_GROUND_STONE",
-      "position": [
-        250,
         150
       ]
     },
@@ -13066,27 +13087,6 @@
     {
       "sprite": "DECORATION_GROUND_STONE",
       "position": [
-        250,
-        100
-      ]
-    },
-    {
-      "sprite": "DECORATION_GROUND_STONE",
-      "position": [
-        300,
-        100
-      ]
-    },
-    {
-      "sprite": "DECORATION_GROUND_STONE",
-      "position": [
-        350,
-        100
-      ]
-    },
-    {
-      "sprite": "DECORATION_GROUND_STONE",
-      "position": [
         400,
         100
       ]
@@ -13117,20 +13117,6 @@
       "position": [
         150,
         250
-      ]
-    },
-    {
-      "sprite": "DECORATION_GROUND_STONE",
-      "position": [
-        150,
-        300
-      ]
-    },
-    {
-      "sprite": "DECORATION_PLANT",
-      "position": [
-        150,
-        300
       ]
     },
     {
@@ -16196,13 +16182,6 @@
       "sprite": "DECORATION_GROUND_STONE",
       "position": [
         750,
-        700
-      ]
-    },
-    {
-      "sprite": "DECORATION_GROUND_STONE",
-      "position": [
-        750,
         650
       ]
     },
@@ -16225,13 +16204,6 @@
       "position": [
         800,
         600
-      ]
-    },
-    {
-      "sprite": "DECORATION_GROUND_STONE",
-      "position": [
-        800,
-        700
       ]
     },
     {
@@ -25164,6 +25136,195 @@
       "position": [
         1375,
         1225
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        250,
+        50
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        300,
+        50
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        350,
+        50
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        50,
+        325
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        50,
+        275
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        50,
+        225
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        50,
+        175
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        50,
+        125
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        150,
+        300
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        400,
+        250
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        250,
+        100
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        300,
+        100
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        350,
+        100
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        350,
+        150
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        300,
+        150
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        250,
+        150
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        250,
+        200
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        300,
+        200
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        350,
+        200
+      ]
+    },
+    {
+      "sprite": "DECORATION_PLANT",
+      "position": [
+        225,
+        150
+      ]
+    },
+    {
+      "sprite": "DECORATION_PLANT",
+      "position": [
+        275,
+        100
+      ]
+    },
+    {
+      "sprite": "DECORATION_PLANT",
+      "position": [
+        275,
+        200
+      ]
+    },
+    {
+      "sprite": "DECORATION_PLANT",
+      "position": [
+        375,
+        150
+      ]
+    },
+    {
+      "sprite": "DECORATION_PLANT",
+      "position": [
+        325,
+        200
+      ]
+    },
+    {
+      "sprite": "DECORATION_PLANT",
+      "position": [
+        325,
+        100
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        750,
+        700
+      ]
+    },
+    {
+      "sprite": "DECORATION_GROUND_STONE",
+      "position": [
+        800,
+        700
       ]
     }
   ],
