@@ -1,4 +1,5 @@
 import random
+from typing import Optional
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions
 from pythongame.core.damage_interactions import deal_damage_to_player
@@ -29,8 +30,9 @@ class NpcMind(AbstractNpcMind):
 
 class NpcAction(AbstractNpcAction):
 
-    def act(self, game_state: GameState):
+    def act(self, game_state: GameState) -> Optional[str]:
         deal_damage_to_player(game_state, 10)
+        return "You take a beating!"
 
 
 def register_dwarf_npc():

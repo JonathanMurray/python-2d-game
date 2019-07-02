@@ -1,4 +1,4 @@
-from typing import Dict, Type
+from typing import Dict, Type, Optional
 
 from pythongame.core.common import *
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
@@ -21,7 +21,8 @@ class AbstractNpcMind:
 
 class AbstractNpcAction:
 
-    def act(self, game_state: GameState):
+    # perform action, and optionally return a message to be displayed
+    def act(self, game_state: GameState) -> Optional[str]:
         pass
 
 
@@ -43,5 +44,6 @@ def register_npc_action(npc_type: NpcType, action: AbstractNpcAction):
     _npc_actions[npc_type] = action
 
 
-def invoke_npc_action(npc_type: NpcType, game_state: GameState):
-    _npc_actions[npc_type].act(game_state)
+def invoke_npc_action(npc_type: NpcType, game_state: GameState) -> Optional[str]:
+    optional_message = _npc_actions[npc_type].act(game_state)
+    return optional_message

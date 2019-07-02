@@ -33,9 +33,13 @@ class NpcAction(AbstractNpcAction):
         player_state = game_state.player_state
         can_afford = player_state.money >= cost
         empty_consumable_slot = player_state.find_first_empty_consumable_slot()
-        if can_afford and empty_consumable_slot:
-            player_state.money -= cost
-            player_state.consumable_slots[empty_consumable_slot] = ConsumableType.MANA_LESSER
+        if not can_afford:
+            return "Not enough gold!"
+        if not empty_consumable_slot:
+            return "Not enough space!"
+        player_state.money -= cost
+        player_state.consumable_slots[empty_consumable_slot] = ConsumableType.MANA_LESSER
+        return "Bought mana potion!"
 
 
 def register_ninja_npc():

@@ -4,10 +4,12 @@ from pythongame.core.common import is_x_and_y_within_distance
 from pythongame.core.game_state import NonPlayerCharacter, GameState
 from pythongame.core.npc_behaviors import invoke_npc_action
 from pythongame.core.view import NpcActionText, DialogGraphics
+from pythongame.core.view_state import ViewState
 
 
 class DialogState:
-    def __init__(self):
+    def __init__(self, view_state: ViewState):
+        self.view_state = view_state
         self.npc_active_in_dialog: NonPlayerCharacter = None
         self.npc_ready_for_dialog: NonPlayerCharacter = None
 
@@ -25,7 +27,9 @@ class DialogState:
             self.npc_active_in_dialog = self.npc_ready_for_dialog
             self.npc_ready_for_dialog = None
         elif self.npc_active_in_dialog:
-            invoke_npc_action(self.npc_active_in_dialog.npc_type, game_state)
+            message = invoke_npc_action(self.npc_active_in_dialog.npc_type, game_state)
+            if message:
+                self.view_state.set_message(message)
             self.npc_active_in_dialog = False
 
     def handle_player_moved(self):

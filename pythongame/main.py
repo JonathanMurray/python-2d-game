@@ -48,7 +48,7 @@ def main(args: List[str]):
     item_slot_being_dragged: Optional[int] = None
     consumable_slot_being_dragged: Optional[int] = None
 
-    dialog_state = DialogState()
+    dialog_state = DialogState(view_state)
 
     while True:
 

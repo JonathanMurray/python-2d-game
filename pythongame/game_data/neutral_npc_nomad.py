@@ -1,4 +1,5 @@
 import random
+from typing import Optional
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
@@ -29,11 +30,13 @@ class NpcMind(AbstractNpcMind):
 
 class NpcAction(AbstractNpcAction):
 
-    def act(self, game_state: GameState):
+    def act(self, game_state: GameState) -> Optional[str]:
         missing_health = game_state.player_state.max_health - game_state.player_state.health
         if missing_health > 0:
             game_state.visual_effects.append(create_visual_healing_text(game_state.player_entity, missing_health))
+            return "You feel healthy again!"
         game_state.player_state.gain_full_health()
+        return "Nice..."
 
 
 def register_nomad_npc():
