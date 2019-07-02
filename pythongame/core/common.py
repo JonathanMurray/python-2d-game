@@ -95,7 +95,7 @@ def get_position_from_center_position(center_position: Tuple[int, int], size: Tu
     return center_position[0] - size[0] / 2, center_position[1] - size[1] / 2
 
 
-def translate_in_direction(position: Tuple[int, int], direction: Direction, amount: int):
+def translate_in_direction(position: Tuple[int, int], direction: Direction, amount: int) -> Tuple[int, int]:
     if direction == Direction.RIGHT:
         return position[0] + amount, position[1]
     elif direction == Direction.DOWN:

@@ -20,14 +20,14 @@ class WorldArea:
         self.w = size[0]
         self.h = size[1]
 
-    def get_position(self):
+    def get_position(self) -> Tuple[int, int]:
         return self.x, self.y
 
     def set_position(self, new_position):
         self.x = new_position[0]
         self.y = new_position[1]
 
-    def rect(self):
+    def rect(self) -> Tuple[int, int, int, int]:
         return self.x, self.y, self.w, self.h
 
     def contains_position(self, position: Tuple[int, int]) -> bool:
@@ -36,12 +36,12 @@ class WorldArea:
 
 class WorldEntity:
     def __init__(self, pos: Tuple[int, int], size: Tuple[int, int], sprite: Sprite, direction=Direction.LEFT, speed=0):
-        self.x = pos[0]
-        self.y = pos[1]
-        self.w = size[0]
-        self.h = size[1]
-        self.sprite = sprite
-        self.direction = direction
+        self.x: int = pos[0]
+        self.y: int = pos[1]
+        self.w: int = size[0]
+        self.h: int = size[1]
+        self.sprite: Sprite = sprite
+        self.direction: Direction = direction
         self._speed = speed
         self._speed_multiplier = 1
         self._effective_speed = speed
@@ -58,7 +58,7 @@ class WorldEntity:
     def set_not_moving(self):
         self._is_moving = False
 
-    def get_new_position_according_to_dir_and_speed(self, time_passed: Millis) -> Optional:
+    def get_new_position_according_to_dir_and_speed(self, time_passed: Millis) -> Optional[Tuple[int, int]]:
         distance = self._effective_speed * time_passed
         if self._is_moving:
             return translate_in_direction((self.x, self.y), self.direction, distance)
@@ -70,14 +70,15 @@ class WorldEntity:
         else:
             self.movement_animation_progress = 0
 
-    def get_new_position_according_to_other_dir_and_speed(self, direction: Direction, time_passed: Millis) -> Optional:
+    def get_new_position_according_to_other_dir_and_speed(self, direction: Direction, time_passed: Millis) \
+            -> Optional[Tuple[int, int]]:
         distance = self._effective_speed * time_passed
         return translate_in_direction((self.x, self.y), direction, distance)
 
-    def get_center_position(self):
+    def get_center_position(self) -> Tuple[int, int]:
         return int(self.x + self.w / 2), int(self.y + self.h / 2)
 
-    def get_position(self):
+    def get_position(self) -> Tuple[int, int]:
         return int(self.x), int(self.y)
 
     def add_to_speed_multiplier(self, amount):
@@ -85,7 +86,7 @@ class WorldEntity:
         self._effective_speed = self._speed_multiplier * self._speed
 
     # TODO use more
-    def rect(self):
+    def rect(self) -> Tuple[int, int, int, int]:
         return self.x, self.y, self.w, self.h
 
     def translate_x(self, amount):
@@ -94,7 +95,7 @@ class WorldEntity:
     def translate_y(self, amount):
         self.set_position((self.x, self.y + amount))
 
-    def set_position(self, new_position):
+    def set_position(self, new_position: Tuple[int, int]):
         self.x = new_position[0]
         self.y = new_position[1]
         self.pygame_collision_rect = Rect(self.rect())
@@ -131,11 +132,12 @@ class ItemOnGround:
 
 
 class MoneyPileOnGround:
-    def __init__(self, world_entity: WorldEntity, amount):
+    def __init__(self, world_entity: WorldEntity, amount: int):
         self.world_entity = world_entity
         self.amount = amount
 
 
+# TODO There is a cyclic dependency here between game_state and projectile_controllers
 class Projectile:
     def __init__(self, world_entity: WorldEntity, projectile_controller):
         self.world_entity = world_entity
@@ -171,10 +173,11 @@ class NonPlayerCharacter:
         self._health_float = 0
         self.health = 0
 
-    def gain_health(self, amount):
+    def gain_health(self, amount: float):
         self._health_float = min(self._health_float + amount, self.max_health)
         self.health = int(math.floor(self._health_float))
 
+    # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):
         existing_buffs_with_this_type = [b for b in self.active_buffs
                                          if b.buff_effect.get_buff_type() == buff.get_buff_type()]
@@ -204,6 +207,7 @@ class Wall:
         self.world_entity = world_entity
 
 
+# TODO There is a cyclic dependancy here between game_state and buff_effects
 class BuffWithDuration:
     def __init__(self, buff_effect: Any, duration: Millis):
         self.buff_effect = buff_effect
@@ -212,6 +216,7 @@ class BuffWithDuration:
         self.has_applied_start_effect = False
 
 
+# TODO There is a cyclic dependancy here between game_state and buff_effects
 class AgentBuffsUpdate:
     def __init__(self, buffs_that_started: List[Any], buffs_that_were_active: List[Any],
                  buffs_that_ended: List[Any]):
@@ -303,6 +308,7 @@ class PlayerState:
             return empty_slots[0]
         return None
 
+    # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):
         existing_buffs_with_this_type = [b for b in self.active_buffs
                                          if b.buff_effect.get_buff_type() == buff.get_buff_type()]
@@ -320,18 +326,18 @@ class PlayerState:
             if self.ability_cooldowns_remaining[ability_type] > 0:
                 self.ability_cooldowns_remaining[ability_type] -= time_passed
 
-    def switch_item_slots(self, slot_1, slot_2):
+    def switch_item_slots(self, slot_1: int, slot_2: int):
         item_type_1 = self.item_slots[slot_1]
         self.item_slots[slot_1] = self.item_slots[slot_2]
         self.item_slots[slot_2] = item_type_1
 
-    def switch_consumable_slots(self, slot_1, slot_2):
+    def switch_consumable_slots(self, slot_1: int, slot_2: int):
         consumable_type_1 = self.consumable_slots[slot_1]
         self.consumable_slots[slot_1] = self.consumable_slots[slot_2]
         self.consumable_slots[slot_2] = consumable_type_1
 
     # returns True if player leveled up
-    def gain_exp(self, amount):
+    def gain_exp(self, amount: int):
         self.exp += amount
         if self.exp >= self.max_exp_in_this_level:
             # TODO: handle case where you gain enough exp to gain 2 levels
@@ -353,6 +359,7 @@ class PlayerState:
         self.abilities.append(ability_type)
 
 
+# TODO There is a cyclic dependancy here between game_state and buff_effects
 def handle_buffs(active_buffs: List[BuffWithDuration], time_passed: Millis):
     copied_buffs_list = list(active_buffs)
     buffs_that_started = []
