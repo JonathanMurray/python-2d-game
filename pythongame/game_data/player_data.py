@@ -2,7 +2,7 @@ from typing import Dict
 
 from pythongame.core.common import ItemType
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
-    register_entity_sprite_map
+    register_entity_sprite_map, register_portrait_icon_sprite_path, PortraitIconSprite
 from pythongame.core.game_state import PlayerState
 
 PLAYER_ENTITY_SIZE = (30, 30)
@@ -43,3 +43,4 @@ def register_player_data():
     }
     register_entity_sprite_map(Sprite.PLAYER, player_sprite_sheet, original_sprite_size,
                                scaled_sprite_size, indices_by_dir, sprite_position_relative_to_entity)
+    register_portrait_icon_sprite_path(PortraitIconSprite.PLAYER, 'resources/graphics/player_portrait.gif')

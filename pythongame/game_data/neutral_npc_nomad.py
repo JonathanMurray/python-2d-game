@@ -3,7 +3,7 @@ from typing import Optional
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
-    PortraitIconSprite, NpcDialog
+    PortraitIconSprite, NpcDialog, register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, register_npc_action
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
@@ -61,3 +61,4 @@ def register_nomad_npc():
     }
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir,
                                (-8, -16))
+    register_portrait_icon_sprite_path(PortraitIconSprite.NOMAD, 'resources/graphics/nomad_portrait.png')
