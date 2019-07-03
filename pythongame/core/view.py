@@ -4,8 +4,8 @@ import pygame
 
 from pythongame.core.common import Direction, Sprite, ConsumableType, sum_of_vectors, ItemType, is_point_in_rect
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
-    ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, NON_PLAYER_CHARACTERS, CONSUMABLES, ITEMS, UiIconSprite, WALLS, \
-    PORTRAIT_ICON_SPRITE_PATHS, PortraitIconSprite, NpcDialog
+    ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, NON_PLAYER_CHARACTERS, CONSUMABLES, ITEMS, UiIconSprite, \
+    WALLS, PORTRAIT_ICON_SPRITE_PATHS, PortraitIconSprite, NpcDialog
 from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
@@ -289,26 +289,26 @@ class View:
         else:
             raise Exception("Unhandled visual effect: " + str(visual_effect))
 
-    def _visual_line(self, line):
+    def _visual_line(self, line: VisualLine):
         start_position = self._translate_world_position_to_screen(line.start_position)
         end_position = self._translate_world_position_to_screen(line.end_position)
         self._line(line.color, start_position, end_position, line.line_width)
 
-    def _visual_circle(self, visual_circle):
+    def _visual_circle(self, visual_circle: VisualCircle):
         position = visual_circle.circle()[0]
         radius = visual_circle.circle()[1]
         translated_position = self._translate_world_position_to_screen(position)
         self._circle(visual_circle.color, translated_position, radius, visual_circle.line_width)
 
-    def _visual_rect(self, visual_rect):
+    def _visual_rect(self, visual_rect: VisualRect):
         self._world_rect(visual_rect.color, visual_rect.rect(), visual_rect.line_width)
 
-    def _visual_text(self, visual_effect):
-        position = visual_effect.position()
+    def _visual_text(self, visual_text: VisualText):
+        position = visual_text.position()
         translated_position = self._translate_world_position_to_screen(position)
-        self._text(self.font_game_world_text, visual_effect.text, translated_position, visual_effect.color)
+        self._text(self.font_game_world_text, visual_text.text, translated_position, visual_text.color)
 
-    def _visual_sprite(self, visual_sprite):
+    def _visual_sprite(self, visual_sprite: VisualSprite):
         position = visual_sprite.position
         animation_progress = visual_sprite.animation_progress()
         sprite = visual_sprite.sprite
