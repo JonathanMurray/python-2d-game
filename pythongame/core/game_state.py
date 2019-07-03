@@ -43,7 +43,7 @@ class WorldEntity:
         self.sprite: Sprite = sprite
         self.direction: Direction = direction
         self._speed = speed
-        self._speed_multiplier = 1
+        self.speed_multiplier = 1
         self._effective_speed = speed
         self._is_moving = True
         self.pygame_collision_rect = Rect(self.rect())
@@ -82,8 +82,8 @@ class WorldEntity:
         return int(self.x), int(self.y)
 
     def add_to_speed_multiplier(self, amount):
-        self._speed_multiplier += amount
-        self._effective_speed = self._speed_multiplier * self._speed
+        self.speed_multiplier += amount
+        self._effective_speed = self.speed_multiplier * self._speed
 
     # TODO use more
     def rect(self) -> Tuple[int, int, int, int]:
@@ -244,7 +244,7 @@ class PlayerState:
         self.is_invisible = False
         self.is_stunned = False
         self.item_slots = item_slots
-        self.life_steal_ratio = 0
+        self.life_steal_ratio: float = 0
         self.exp = 0
         self.level = 1
         self.max_exp_in_this_level = 60

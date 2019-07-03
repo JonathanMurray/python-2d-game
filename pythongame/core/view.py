@@ -120,6 +120,7 @@ class View:
         self.font_ui_headers = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 18)
         self.font_tooltip_header = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 16)
         self.font_tooltip_details = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
+        self.font_stats = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 9)
         self.font_buff_texts = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_message = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 14)
         self.font_debug_info = pygame.font.Font(None, 19)
@@ -516,10 +517,11 @@ class View:
     def render_ui(self, fps_string, is_paused, is_game_over, abilities, ability_cooldowns_remaining,
                   highlighted_ability_action, highlighted_consumable_action, message: str, player_active_buffs,
                   player_health, player_mana, player_max_health, player_max_mana, player_health_regen: float,
-                  player_mana_regen: float, player_minimap_relative_position, consumable_slots,
-                  item_slots: Dict[int, ItemType], player_level: int, mouse_screen_position: Tuple[int, int],
-                  player_exp: int, player_max_exp_in_this_level: int, dialog: Optional[DialogGraphics],
-                  player_money: int, player_damage_modifier: float) -> MouseHoverEvent:
+                  player_mana_regen: float, player_speed_multiplier: float, player_life_steal: float,
+                  player_minimap_relative_position, consumable_slots, item_slots: Dict[int, ItemType],
+                  player_level: int, mouse_screen_position: Tuple[int, int], player_exp: int,
+                  player_max_exp_in_this_level: int, dialog: Optional[DialogGraphics], player_money: int,
+                  player_damage_modifier: float) -> MouseHoverEvent:
 
         hovered_item_slot_number = None
         hovered_consumable_slot_number = None
@@ -668,6 +670,24 @@ class View:
             self._text_in_ui(self.font_buff_texts, text, (x_buffs, -40 + i * 25))
             self._stat_bar_in_ui((x_buffs, -20 + i * 25), 60, 2, buff_duration_ratios_remaining[i], (250, 250, 0),
                                  False)
+
+        # STATS
+        x_stats = 555
+        health_regen_text = \
+            "health reg: " + "{:.1f}".format(player_health_regen) + "/s"
+        mana_regen_text = \
+            "  mana reg: " + "{:.1f}".format(player_mana_regen) + "/s"
+        damage_stat_text = \
+            "    damage: +" + str(int(round((player_damage_modifier - 1) * 100))) + "%"
+        speed_stat_text = \
+            "     speed: +" + str(int(round((player_speed_multiplier - 1) * 100))) + "%"
+        lifesteal_stat_text = \
+            "life steal: " + str(int(round(player_life_steal * 100))) + "%"
+        self._text_in_ui(self.font_stats, health_regen_text, (x_stats, y_1), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, mana_regen_text, (x_stats, y_1 + 20), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, damage_stat_text, (x_stats, y_1 + 40), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, speed_stat_text, (x_stats, y_1 + 60), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, lifesteal_stat_text, (x_stats, y_1 + 80), COLOR_WHITE)
 
         self._rect(COLOR_BORDER, self.ui_screen_area.rect(), 1)
 
