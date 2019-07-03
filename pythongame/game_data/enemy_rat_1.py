@@ -10,7 +10,6 @@ from pythongame.core.loot import LootEntry, LootTable
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
-from pythongame.core.visual_effects import VisualLine
 
 
 class NpcMind(AbstractNpcMind):
@@ -62,9 +61,7 @@ class NpcMind(AbstractNpcMind):
                 enemy_position = enemy_entity.get_center_position()
                 target_center_pos = target.entity.get_center_position()
                 if is_x_and_y_within_distance(enemy_position, target_center_pos, 80):
-                    deal_npc_damage(1, game_state, target)
-                    game_state.visual_effects.append(
-                        VisualLine((220, 0, 0), enemy_position, target_center_pos, Millis(100), 3))
+                    deal_npc_damage(1, game_state, enemy_entity, target)
 
 
 def _move_in_dir(enemy_entity, direction):
