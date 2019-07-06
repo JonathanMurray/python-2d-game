@@ -67,8 +67,6 @@ class WorldEntity:
     def update_movement_animation(self, time_passed: Millis):
         if self._is_moving:
             self.movement_animation_progress = (self.movement_animation_progress + float(time_passed) / 1000) % 1
-        else:
-            self.movement_animation_progress = 0
 
     def get_new_position_according_to_other_dir_and_speed(self, direction: Direction, time_passed: Millis) \
             -> Optional[Tuple[int, int]]:
