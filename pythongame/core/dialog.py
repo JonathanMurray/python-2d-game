@@ -1,28 +1,35 @@
-from typing import Tuple, List, Optional
+from typing import Optional
 
-from pythongame.core.common import is_x_and_y_within_distance
-from pythongame.core.game_state import NonPlayerCharacter, GameState
+from pythongame.core.common import is_x_and_y_within_distance, boxes_intersect
+from pythongame.core.game_engine import GameEngine
+from pythongame.core.game_state import NonPlayerCharacter, GameState, ItemOnGround, WorldEntity
 from pythongame.core.npc_behaviors import invoke_npc_action
-from pythongame.core.view import NpcActionText, DialogGraphics
+from pythongame.core.view import EntityActionText, DialogGraphics
 from pythongame.core.view_state import ViewState
 
-
+# TODO Find a more fitting name for this
 class DialogState:
     def __init__(self, view_state: ViewState):
         self.view_state = view_state
         self.npc_active_in_dialog: NonPlayerCharacter = None
         self.npc_ready_for_dialog: NonPlayerCharacter = None
+        self.item_ready_to_be_picked_up: ItemOnGround = None
 
-    def check_if_npcs_are_close_enough_for_dialog(self, player_position: Tuple[int, int],
-                                                  npcs_with_dialog: List[NonPlayerCharacter]):
+    def check_if_npcs_are_close_enough_for_dialog(self, player_entity: WorldEntity,
+                                                  game_state: GameState):
+        player_position = player_entity.get_position()
         self.npc_ready_for_dialog = None
-        for npc_with_dialog in npcs_with_dialog:
-            close_to_player = is_x_and_y_within_distance(
-                player_position, npc_with_dialog.world_entity.get_position(), 75)
-            if close_to_player and not self.npc_active_in_dialog:
-                self.npc_ready_for_dialog = npc_with_dialog
+        self.item_ready_to_be_picked_up = None
+        for npc in game_state.non_player_characters:
+            if npc.dialog:
+                close_to_player = is_x_and_y_within_distance(player_position, npc.world_entity.get_position(), 75)
+                if close_to_player and not self.npc_active_in_dialog:
+                    self.npc_ready_for_dialog = npc
+        for item in game_state.items_on_ground:
+            if boxes_intersect(player_entity, item.world_entity):
+                self.item_ready_to_be_picked_up = item
 
-    def handle_user_clicked_space(self, game_state: GameState):
+    def handle_user_clicked_space(self, game_state: GameState, game_engine: GameEngine):
         if self.npc_ready_for_dialog:
             self.npc_active_in_dialog = self.npc_ready_for_dialog
             self.npc_ready_for_dialog = None
@@ -30,15 +37,19 @@ class DialogState:
             message = invoke_npc_action(self.npc_active_in_dialog.npc_type, game_state)
             if message:
                 self.view_state.set_message(message)
-            self.npc_active_in_dialog = False
+            self.npc_active_in_dialog = None
+        elif self.item_ready_to_be_picked_up:
+            game_engine.try_pick_up_item_from_ground(self.item_ready_to_be_picked_up)
 
     def handle_player_moved(self):
         if self.npc_active_in_dialog:
             self.npc_active_in_dialog = None
 
-    def get_action_text(self) -> Optional[NpcActionText]:
+    def get_action_text(self) -> Optional[EntityActionText]:
         if self.npc_ready_for_dialog:
-            return NpcActionText(self.npc_ready_for_dialog, "[Space] Talk")
+            return EntityActionText(self.npc_ready_for_dialog.world_entity, "[Space] Talk")
+        elif self.item_ready_to_be_picked_up:
+            return EntityActionText(self.item_ready_to_be_picked_up.world_entity, "[Space] Loot")
 
     def get_dialog(self) -> Optional[DialogGraphics]:
         if self.npc_active_in_dialog:

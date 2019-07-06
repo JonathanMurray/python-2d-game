@@ -55,7 +55,7 @@ def main(args: List[str]):
     while True:
 
         dialog_state.check_if_npcs_are_close_enough_for_dialog(
-            game_state.player_entity.get_position(), [npc for npc in game_state.non_player_characters if npc.dialog])
+            game_state.player_entity, game_state)
 
         mouse_was_just_clicked = False
         mouse_was_just_released = False
@@ -93,7 +93,7 @@ def main(args: List[str]):
             if isinstance(action, ActionMouseReleased):
                 mouse_was_just_released = True
             if isinstance(action, ActionPressSpaceKey) and not is_game_over:
-                dialog_state.handle_user_clicked_space(game_state)
+                dialog_state.handle_user_clicked_space(game_state, game_engine)
 
         # ------------------------------------
         #     UPDATE STATE BASED ON CLOCK
@@ -112,7 +112,7 @@ def main(args: List[str]):
         #          RENDER EVERYTHING
         # ------------------------------------
 
-        npc_action_text = dialog_state.get_action_text()
+        entity_action_text = dialog_state.get_action_text()
 
         view.render_world(
             all_entities_to_render=game_state.get_all_entities_to_render(),
@@ -126,7 +126,7 @@ def main(args: List[str]):
             player_health=game_state.player_state.health,
             player_max_health=game_state.player_state.max_health,
             game_world_size=game_state.game_world_size,
-            npc_action_text=npc_action_text)
+            entity_action_text=entity_action_text)
 
         dialog = dialog_state.get_dialog()
 

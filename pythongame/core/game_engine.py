@@ -5,7 +5,7 @@ from pythongame.core.common import *
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
     create_consumable_on_ground
 from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS
-from pythongame.core.game_state import GameState, handle_buffs
+from pythongame.core.game_state import GameState, handle_buffs, ItemOnGround
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.loot import LootEntry
 from pythongame.core.player_controls import PlayerControls
@@ -58,6 +58,19 @@ class GameEngine:
         consumable = create_consumable_on_ground(consumable_type, game_world_position)
         self.game_state.consumables_on_ground.append(consumable)
         self.game_state.player_state.consumable_slots[consumable_slot] = None
+
+    def try_pick_up_item_from_ground(self, item: ItemOnGround) -> bool:
+        empty_item_slot = self.game_state.player_state.find_first_empty_item_slot()
+        item_name = ITEMS[item.item_type].name
+        if empty_item_slot:
+            self.game_state.player_state.item_slots[empty_item_slot] = item.item_type
+            item_effect = get_item_effect(item.item_type)
+            item_effect.apply_start_effect(self.game_state)
+            self.view_state.set_message("You picked up " + item_name)
+            play_sound(SoundId.EVENT_PICKED_UP)
+            self.game_state.remove_entities([item])
+        else:
+            self.view_state.set_message("No space for " + item_name)
 
     # Returns True if player died
     def run_one_frame(self, time_passed: Millis):
@@ -167,19 +180,6 @@ class GameEngine:
                     entities_to_remove.append(consumable)
                 else:
                     self.view_state.set_message("No space for " + consumable_name)
-        for item in self.game_state.items_on_ground:
-            if boxes_intersect(self.game_state.player_entity, item.world_entity):
-                empty_item_slot = self.game_state.player_state.find_first_empty_item_slot()
-                item_name = ITEMS[item.item_type].name
-                if empty_item_slot:
-                    self.game_state.player_state.item_slots[empty_item_slot] = item.item_type
-                    item_effect = get_item_effect(item.item_type)
-                    item_effect.apply_start_effect(self.game_state)
-                    self.view_state.set_message("You picked up " + item_name)
-                    play_sound(SoundId.EVENT_PICKED_UP)
-                    entities_to_remove.append(item)
-                else:
-                    self.view_state.set_message("No space for " + item_name)
         for money_pile in self.game_state.money_piles_on_ground:
             if boxes_intersect(self.game_state.player_entity, money_pile.world_entity):
                 play_sound(SoundId.EVENT_PICKED_UP)
