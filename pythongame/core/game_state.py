@@ -265,7 +265,7 @@ class PlayerState:
         return health_gained
 
     def lose_health(self, amount: float):
-        self._health_float = min(self._health_float - amount, self.max_health)
+        self._health_float = max(self._health_float - amount, 0)
         self.health = int(math.floor(self._health_float))
 
     def gain_mana(self, amount: float):
