@@ -18,11 +18,11 @@ BUFF_TYPE = BuffType.RECOVERING_AFTER_SWORD_SLASH
 
 def _apply_ability(game_state: GameState) -> bool:
     player_entity = game_state.player_entity
-    rect_w = 48
+    rect_w = 36
     slash_pos = translate_in_direction(
         player_entity.get_center_position(),
         player_entity.direction,
-        rect_w / 2 + PLAYER_ENTITY_SIZE[0] / 2)
+        rect_w / 2 + PLAYER_ENTITY_SIZE[0] * 0.25)
 
     slash_rect = (int(slash_pos[0] - rect_w / 2), int(slash_pos[1] - rect_w / 2), rect_w, rect_w)
     affected_enemies = game_state.get_enemy_intersecting_rect(slash_rect)
