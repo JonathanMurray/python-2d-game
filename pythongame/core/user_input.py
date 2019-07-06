@@ -1,3 +1,5 @@
+from typing import List
+
 import pygame
 
 from pythongame.core.common import *
@@ -64,6 +66,7 @@ DIRECTION_BY_PYGAME_MOVEMENT_KEY = {
     pygame.K_DOWN: Direction.DOWN
 }
 movement_keys_down = []
+ability_keys_down: List[AbilityType] = []
 
 
 def get_user_actions():
@@ -97,12 +100,16 @@ def get_user_actions():
             else:
                 for ability_type in KEYS_BY_ABILITY_TYPE:
                     if event.key == KEYS_BY_ABILITY_TYPE[ability_type].pygame_key:
-                        actions.append(ActionTryUseAbility(ability_type))
+                        ability_keys_down.append(ability_type)
 
         if event.type == pygame.KEYUP:
             if event.key in PYGAME_MOVEMENT_KEYS:
                 if event.key in movement_keys_down:
                     movement_keys_down.remove(event.key)
+            else:
+                for ability_type in KEYS_BY_ABILITY_TYPE:
+                    if event.key == KEYS_BY_ABILITY_TYPE[ability_type].pygame_key:
+                        ability_keys_down.remove(ability_type)
 
         if event.type == pygame.MOUSEMOTION:
             actions.append(ActionMouseMovement(event.pos))
@@ -119,5 +126,8 @@ def get_user_actions():
         actions.append(ActionMoveInDirection(direction))
     else:
         actions.append(ActionStopMoving())
+
+    for ability_type in ability_keys_down:
+        actions.append(ActionTryUseAbility(ability_type))
 
     return actions

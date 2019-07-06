@@ -103,8 +103,6 @@ class GameEngine:
 
         self.view_state.notify_player_entity_center_position(self.game_state.player_entity.get_center_position())
 
-        self.player_controls.notify_time_passed(time_passed)
-
         self.view_state.notify_time_passed(time_passed)
 
         for projectile in self.game_state.projectile_entities:
