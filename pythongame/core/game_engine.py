@@ -5,7 +5,7 @@ from pythongame.core.common import *
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
     create_consumable_on_ground
 from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS
-from pythongame.core.game_state import GameState, handle_buffs, ItemOnGround, ConsumableOnGround
+from pythongame.core.game_state import GameState, handle_buffs, ItemOnGround, ConsumableOnGround, LootableOnGround
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.loot import LootEntry
 from pythongame.core.player_controls import PlayerControls
@@ -59,7 +59,15 @@ class GameEngine:
         self.game_state.consumables_on_ground.append(consumable)
         self.game_state.player_state.consumable_slots[consumable_slot] = None
 
-    def try_pick_up_item_from_ground(self, item: ItemOnGround) -> bool:
+    def try_pick_up_loot_from_ground(self, loot: LootableOnGround):
+        if isinstance(loot, ConsumableOnGround):
+            self._try_pick_up_consumable_from_ground(loot)
+        elif isinstance(loot, ItemOnGround):
+            self._try_pick_up_item_from_ground(loot)
+        else:
+            raise Exception("Unhandled type of loot: " + str(loot))
+
+    def _try_pick_up_item_from_ground(self, item: ItemOnGround):
         empty_item_slot = self.game_state.player_state.find_first_empty_item_slot()
         item_name = ITEMS[item.item_type].name
         if empty_item_slot:
@@ -72,11 +80,11 @@ class GameEngine:
         else:
             self.view_state.set_message("No space for " + item_name)
 
-    def try_pick_up_consumable(self, consumable: ConsumableOnGround):
-        empty_consumable_slots = self.game_state.player_state.find_first_empty_consumable_slot()
+    def _try_pick_up_consumable_from_ground(self, consumable: ConsumableOnGround):
+        empty_consumable_slot = self.game_state.player_state.find_first_empty_consumable_slot()
         consumable_name = CONSUMABLES[consumable.consumable_type].name
-        if empty_consumable_slots:
-            self.game_state.player_state.consumable_slots[empty_consumable_slots] = consumable.consumable_type
+        if empty_consumable_slot:
+            self.game_state.player_state.consumable_slots[empty_consumable_slot] = consumable.consumable_type
             self.view_state.set_message("You picked up " + consumable_name)
             play_sound(SoundId.EVENT_PICKED_UP)
             self.game_state.remove_entities([consumable])

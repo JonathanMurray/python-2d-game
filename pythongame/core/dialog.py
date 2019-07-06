@@ -1,8 +1,8 @@
-from typing import Optional
+from typing import Optional, List
 
 from pythongame.core.common import is_x_and_y_within_distance, boxes_intersect
 from pythongame.core.game_engine import GameEngine
-from pythongame.core.game_state import NonPlayerCharacter, GameState, ItemOnGround, WorldEntity, ConsumableOnGround
+from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, LootableOnGround
 from pythongame.core.npc_behaviors import invoke_npc_action
 from pythongame.core.view import EntityActionText, DialogGraphics
 from pythongame.core.view_state import ViewState
@@ -14,26 +14,23 @@ class DialogState:
         self.view_state = view_state
         self.npc_active_in_dialog: NonPlayerCharacter = None
         self.npc_ready_for_dialog: NonPlayerCharacter = None
-        self.item_ready_to_be_picked_up: ItemOnGround = None
-        self.consumable_ready_to_be_picked_up: ConsumableOnGround = None
+        self.lootable_ready_to_be_picked_up: LootableOnGround = None
 
     def check_if_npcs_are_close_enough_for_dialog(self, player_entity: WorldEntity,
                                                   game_state: GameState):
         player_position = player_entity.get_position()
         self.npc_ready_for_dialog = None
-        self.item_ready_to_be_picked_up = None
-        self.consumable_ready_to_be_picked_up = None
+        self.lootable_ready_to_be_picked_up = None
         for npc in game_state.non_player_characters:
             if npc.dialog:
                 close_to_player = is_x_and_y_within_distance(player_position, npc.world_entity.get_position(), 75)
                 if close_to_player and not self.npc_active_in_dialog:
                     self.npc_ready_for_dialog = npc
-        for item in game_state.items_on_ground:
-            if boxes_intersect(player_entity, item.world_entity):
-                self.item_ready_to_be_picked_up = item
-        for consumable in game_state.consumables_on_ground:
-            if boxes_intersect(player_entity, consumable.world_entity):
-                self.consumable_ready_to_be_picked_up = consumable
+        lootables_on_ground: List[LootableOnGround] = \
+            game_state.items_on_ground + game_state.consumables_on_ground
+        for lootable in lootables_on_ground:
+            if boxes_intersect(player_entity, lootable.world_entity):
+                self.lootable_ready_to_be_picked_up = lootable
 
     def handle_user_clicked_space(self, game_state: GameState, game_engine: GameEngine):
         if self.npc_ready_for_dialog:
@@ -44,10 +41,8 @@ class DialogState:
             if message:
                 self.view_state.set_message(message)
             self.npc_active_in_dialog = None
-        elif self.item_ready_to_be_picked_up:
-            game_engine.try_pick_up_item_from_ground(self.item_ready_to_be_picked_up)
-        elif self.consumable_ready_to_be_picked_up:
-            game_engine.try_pick_up_consumable(self.consumable_ready_to_be_picked_up)
+        elif self.lootable_ready_to_be_picked_up:
+            game_engine.try_pick_up_loot_from_ground(self.lootable_ready_to_be_picked_up)
 
     def handle_player_moved(self):
         if self.npc_active_in_dialog:
@@ -56,10 +51,8 @@ class DialogState:
     def get_action_text(self) -> Optional[EntityActionText]:
         if self.npc_ready_for_dialog:
             return EntityActionText(self.npc_ready_for_dialog.world_entity, "[Space] Talk")
-        elif self.item_ready_to_be_picked_up:
-            return EntityActionText(self.item_ready_to_be_picked_up.world_entity, "[Space] Loot")
-        elif self.consumable_ready_to_be_picked_up:
-            return EntityActionText(self.consumable_ready_to_be_picked_up.world_entity, "[Space] Loot")
+        elif self.lootable_ready_to_be_picked_up:
+            return EntityActionText(self.lootable_ready_to_be_picked_up.world_entity, "[Space] Loot")
 
     def get_dialog(self) -> Optional[DialogGraphics]:
         if self.npc_active_in_dialog:

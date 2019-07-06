@@ -117,15 +117,20 @@ class WorldEntity:
         self.direction = dirs[self.direction]
 
 
-class ConsumableOnGround:
+class LootableOnGround:
+    def __init__(self, world_entity: WorldEntity):
+        self.world_entity: WorldEntity = world_entity
+
+
+class ConsumableOnGround(LootableOnGround):
     def __init__(self, world_entity: WorldEntity, consumable_type: ConsumableType):
-        self.world_entity = world_entity
+        super().__init__(world_entity)
         self.consumable_type = consumable_type
 
 
-class ItemOnGround:
+class ItemOnGround(LootableOnGround):
     def __init__(self, world_entity: WorldEntity, item_type: ItemType):
-        self.world_entity = world_entity
+        super().__init__(world_entity)
         self.item_type = item_type
 
 
@@ -484,7 +489,7 @@ class GameState:
     def get_enemy_intersecting_with(self, entity: WorldEntity) -> List[NonPlayerCharacter]:
         return [e for e in self.non_player_characters if e.is_enemy and boxes_intersect(e.world_entity, entity)]
 
-    def get_enemy_intersecting_rect(self, rect: Tuple[int,int,int,int]):
+    def get_enemy_intersecting_rect(self, rect: Tuple[int, int, int, int]):
         return [e for e in self.non_player_characters if e.is_enemy and rects_intersect(e.world_entity.rect(), rect)]
 
     def get_enemies_within_x_y_distance_of(self, distance: int, position: Tuple[int, int]):
