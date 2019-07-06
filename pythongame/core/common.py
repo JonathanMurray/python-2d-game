@@ -179,6 +179,7 @@ class AbilityType(Enum):
     ENTANGLING_ROOTS = 8
     SUMMON = 9
     SWORD_SLASH = 10
+    BLOOD_LUST = 11
 
 
 class Sprite(Enum):
@@ -251,6 +252,7 @@ class BuffType(Enum):
     ROOTED_BY_ENTANGLING_ROOTS = 10
     SUMMON_DIE_AFTER_DURATION = 11
     RECOVERING_AFTER_SWORD_SLASH = 12
+    BLOOD_LUST = 13
 
 
 class ItemType(Enum):

@@ -2,7 +2,7 @@ from pythongame.core.common import SoundId, Millis
 from pythongame.core.enemy_target_selection import EnemyTarget
 from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity
 from pythongame.core.sound_player import play_sound
-from pythongame.core.visual_effects import create_visual_damage_text, VisualRect
+from pythongame.core.visual_effects import create_visual_damage_text, VisualRect, create_visual_healing_text
 
 
 # Returns
@@ -17,7 +17,9 @@ def deal_player_damage_to_enemy(game_state: GameState, npc: NonPlayerCharacter, 
     npc.lose_health(amount)
     game_state.visual_effects.append(create_visual_damage_text(npc.world_entity, int(round(amount))))
     health_from_life_steal = player_state.life_steal_ratio * amount
-    player_state.gain_health(health_from_life_steal)
+    health_gained = player_state.gain_health(health_from_life_steal)
+    if health_gained > 0:
+        game_state.visual_effects.append(create_visual_healing_text(game_state.player_entity, health_gained))
     return True
 
 

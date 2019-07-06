@@ -253,8 +253,11 @@ class PlayerState:
         self.damage_modifier_bonus: float = 0  # affected by items. Only allowed to change additively
 
     def gain_health(self, amount: float):
+        health_before = self.health
         self._health_float = min(self._health_float + amount, self.max_health)
         self.health = int(math.floor(self._health_float))
+        health_gained = self.health - health_before
+        return health_gained
 
     def lose_health(self, amount: float):
         self._health_float = min(self._health_float - amount, self.max_health)
