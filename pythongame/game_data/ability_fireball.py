@@ -58,7 +58,7 @@ def register_fireball_ability():
     description = "Damages first enemy that is hit (" + str(MIN_DMG) + "-" + str(MAX_DMG) + ")"
     register_ability_data(
         AbilityType.FIREBALL,
-        AbilityData("Fireball", UiIconSprite.ABILITY_FIREBALL, 4, Millis(300), description, SoundId.ABILITY_FIREBALL))
+        AbilityData("Fireball", UiIconSprite.ABILITY_FIREBALL, 4, Millis(500), description, SoundId.ABILITY_FIREBALL))
     register_ui_icon_sprite_path(UiIconSprite.ABILITY_FIREBALL, "resources/graphics/icon_fireball.png")
     register_projectile_controller(ProjectileType.PLAYER_FIREBALL, ProjectileController)
 

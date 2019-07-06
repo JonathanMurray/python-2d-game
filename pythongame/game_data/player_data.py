@@ -27,7 +27,7 @@ def register_player_data():
 
 
 def _get_initial_player_state_1() -> PlayerState:
-    health = 50
+    health = 40
     mana = 120
     mana_regen = 4
     consumable_slots = {
