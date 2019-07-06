@@ -125,6 +125,10 @@ def get_rect_with_increased_size_in_all_directions(rect, increased_amount):
             rect[3] + increased_amount * 2)
 
 
+def get_middle_point(pos_1: Tuple[int, int], pos_2: Tuple[int, int]) -> Tuple[int, int]:
+    return int((pos_1[0] + pos_2[0]) / 2), int((pos_1[1] + pos_2[1]) / 2)
+
+
 class ConsumableType(Enum):
     HEALTH_LESSER = 1
     HEALTH = 2
@@ -180,6 +184,7 @@ class AbilityType(Enum):
     SUMMON = 9
     SWORD_SLASH = 10
     BLOOD_LUST = 11
+    CHARGE = 12
 
 
 class Sprite(Enum):
@@ -253,6 +258,8 @@ class BuffType(Enum):
     SUMMON_DIE_AFTER_DURATION = 11
     RECOVERING_AFTER_SWORD_SLASH = 12
     BLOOD_LUST = 13
+    CHARGING = 14
+    STUNNED_FROM_CHARGE_IMPACT = 15
 
 
 class ItemType(Enum):

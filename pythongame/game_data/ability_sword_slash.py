@@ -41,11 +41,11 @@ class RecoveringAfterSwordSlash(AbstractBuffEffect):
         self._time_since_firing = 0
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.is_stunned = True
+        game_state.player_state.add_stun()
         game_state.player_entity.set_not_moving()
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.is_stunned = False
+        game_state.player_state.remove_stun()
 
     def get_buff_type(self):
         return BUFF_TYPE

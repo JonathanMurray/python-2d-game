@@ -5,7 +5,7 @@ from pythongame.core.common import *
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
     create_consumable_on_ground
 from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS
-from pythongame.core.game_state import GameState, handle_buffs, ItemOnGround, ConsumableOnGround, LootableOnGround
+from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.loot import LootEntry
 from pythongame.core.player_controls import PlayerControls
@@ -34,11 +34,13 @@ class GameEngine:
         self.player_controls.try_use_consumable(slot_number, self.game_state, self.view_state)
 
     def move_in_direction(self, direction: Direction):
-        if not self.game_state.player_state.is_stunned:
+        if not self.game_state.player_state.is_stunned():
             self.game_state.player_entity.set_moving_in_dir(direction)
 
     def stop_moving(self):
-        self.game_state.player_entity.set_not_moving()
+        # Don't stop moving if stunned (could be charging)
+        if not self.game_state.player_state.is_stunned():
+            self.game_state.player_entity.set_not_moving()
 
     def switch_inventory_items(self, slot_1: int, slot_2: int):
         self.game_state.player_state.switch_item_slots(slot_1, slot_2)
@@ -135,22 +137,26 @@ class GameEngine:
         self.game_state.remove_expired_visual_effects()
 
         player_buffs_update = handle_buffs(self.game_state.player_state.active_buffs, time_passed)
-        for buff_effect in player_buffs_update.buffs_that_started:
-            buff_effect.apply_start_effect(self.game_state, self.game_state.player_entity, None)
-        for buff_effect in player_buffs_update.buffs_that_were_active:
-            buff_effect.apply_middle_effect(self.game_state, self.game_state.player_entity, None, time_passed)
-        for buff_effect in player_buffs_update.buffs_that_ended:
-            buff_effect.apply_end_effect(self.game_state, self.game_state.player_entity, None)
+        for buff in player_buffs_update.buffs_that_started:
+            buff.buff_effect.apply_start_effect(self.game_state, self.game_state.player_entity, None)
+        for buff in player_buffs_update.buffs_that_were_active:
+            buff_should_end = buff.buff_effect.apply_middle_effect(
+                self.game_state, self.game_state.player_entity, None, time_passed)
+            if buff_should_end:
+                buff.has_been_force_cancelled = True
+
+        for buff in player_buffs_update.buffs_that_ended:
+            buff.buff_effect.apply_end_effect(self.game_state, self.game_state.player_entity, None)
 
         for enemy in self.game_state.non_player_characters:
             enemy.regenerate_health(time_passed)
             buffs_update = handle_buffs(enemy.active_buffs, time_passed)
-            for buff_effect in buffs_update.buffs_that_started:
-                buff_effect.apply_start_effect(self.game_state, enemy.world_entity, enemy)
-            for buff_effect in buffs_update.buffs_that_were_active:
-                buff_effect.apply_middle_effect(self.game_state, enemy.world_entity, enemy, time_passed)
-            for buff_effect in buffs_update.buffs_that_ended:
-                buff_effect.apply_end_effect(self.game_state, enemy.world_entity, enemy)
+            for buff in buffs_update.buffs_that_started:
+                buff.buff_effect.apply_start_effect(self.game_state, enemy.world_entity, enemy)
+            for buff in buffs_update.buffs_that_were_active:
+                buff.buff_effect.apply_middle_effect(self.game_state, enemy.world_entity, enemy, time_passed)
+            for buff in buffs_update.buffs_that_ended:
+                buff.buff_effect.apply_end_effect(self.game_state, enemy.world_entity, enemy)
 
         for item_type in self.game_state.player_state.item_slots.values():
             if item_type:
@@ -169,8 +175,8 @@ class GameEngine:
             # Enemies shouldn't move towards player when they are out of sight
             if self._is_enemy_close_to_camera(e) and not e.is_stunned():
                 self.game_state.update_world_entity_position_within_game_world(e.world_entity, time_passed)
-        if not self.game_state.player_state.is_stunned:
-            self.game_state.update_world_entity_position_within_game_world(self.game_state.player_entity, time_passed)
+        # player can still move when stunned (could be charging)
+        self.game_state.update_world_entity_position_within_game_world(self.game_state.player_entity, time_passed)
         for projectile in self.game_state.projectile_entities:
             new_pos = projectile.world_entity.get_new_position_according_to_dir_and_speed(time_passed)
             projectile.world_entity.set_position(new_pos)
@@ -252,3 +258,29 @@ class GameEngine:
             elif loot_entry.consumable_type:
                 consumable_on_ground = create_consumable_on_ground(loot_entry.consumable_type, loot_position)
                 self.game_state.consumables_on_ground.append(consumable_on_ground)
+
+
+class AgentBuffsUpdate:
+    def __init__(self, buffs_that_started: List[BuffWithDuration], buffs_that_were_active: List[BuffWithDuration],
+                 buffs_that_ended: List[BuffWithDuration]):
+        self.buffs_that_started = buffs_that_started
+        self.buffs_that_were_active = buffs_that_were_active
+        self.buffs_that_ended = buffs_that_ended
+
+
+def handle_buffs(active_buffs: List[BuffWithDuration], time_passed: Millis) -> AgentBuffsUpdate:
+    copied_buffs_list = list(active_buffs)
+    buffs_that_started = []
+    buffs_that_ended = []
+    buffs_that_were_active = []
+    for buff in copied_buffs_list:
+        buff.time_until_expiration -= time_passed
+        if not buff.has_been_force_cancelled:
+            buffs_that_were_active.append(buff)
+        if not buff.has_applied_start_effect:
+            buffs_that_started.append(buff)
+            buff.has_applied_start_effect = True
+        elif buff.time_until_expiration <= 0:
+            active_buffs.remove(buff)
+            buffs_that_ended.append(buff)
+    return AgentBuffsUpdate(buffs_that_started, buffs_that_were_active, buffs_that_ended)

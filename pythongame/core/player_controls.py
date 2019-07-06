@@ -17,7 +17,7 @@ class PlayerControls:
         self.ticks_since_ability_used = ABILITY_COOLDOWN
 
     def try_use_ability(self, ability_type: AbilityType, game_state: GameState, view_state: ViewState):
-        if game_state.player_state.is_stunned:
+        if game_state.player_state.is_stunned():
             return
         view_state.notify_ability_was_clicked(ability_type)
         player_state = game_state.player_state
@@ -53,7 +53,7 @@ class PlayerControls:
 
     def try_use_consumable(self, slot_number: int, game_state: GameState, view_state: ViewState):
 
-        if not game_state.player_state.is_stunned:
+        if not game_state.player_state.is_stunned():
             view_state.notify_consumable_was_clicked(slot_number)
             consumable_type_in_this_slot = game_state.player_state.consumable_slots[slot_number]
             if consumable_type_in_this_slot:

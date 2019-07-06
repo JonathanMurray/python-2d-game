@@ -1,5 +1,6 @@
 from pythongame.game_data.ability_bloodlust import register_bloodlust_ability
 from pythongame.game_data.ability_channel_attack import register_channel_attack_ability
+from pythongame.game_data.ability_charge import register_charge_ability
 from pythongame.game_data.ability_entangling_roots import register_entangling_roots_ability
 from pythongame.game_data.ability_fireball import register_fireball_ability
 from pythongame.game_data.ability_frost_nova import register_frost_nova_ability
@@ -50,6 +51,7 @@ def register_all_game_data():
     register_teleport_ability()
     register_sword_slash_ability()
     register_bloodlust_ability()
+    register_charge_ability()
 
     register_lesser_health_potion()
     register_health_potion()

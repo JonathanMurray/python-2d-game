@@ -215,17 +215,9 @@ class BuffWithDuration:
     def __init__(self, buff_effect: Any, duration: Millis):
         self.buff_effect = buff_effect
         self.time_until_expiration = duration
+        self.has_been_force_cancelled = False
         self.total_duration = duration
         self.has_applied_start_effect = False
-
-
-# TODO There is a cyclic dependancy here between game_state and buff_effects
-class AgentBuffsUpdate:
-    def __init__(self, buffs_that_started: List[Any], buffs_that_were_active: List[Any],
-                 buffs_that_ended: List[Any]):
-        self.buffs_that_started = buffs_that_started
-        self.buffs_that_were_active = buffs_that_were_active
-        self.buffs_that_ended = buffs_that_ended
 
 
 class PlayerState:
@@ -245,7 +237,7 @@ class PlayerState:
         self.ability_cooldowns_remaining = {ability_type: 0 for ability_type in abilities}
         self.active_buffs: List[BuffWithDuration] = []
         self.is_invisible = False
-        self.is_stunned = False
+        self._number_of_active_stuns = 0
         self.item_slots = item_slots
         self.life_steal_ratio: float = 0
         self.exp = 0
@@ -364,22 +356,16 @@ class PlayerState:
         self.ability_cooldowns_remaining[ability_type] = 0
         self.abilities.append(ability_type)
 
+    def add_stun(self):
+        self._number_of_active_stuns += 1
 
-# TODO There is a cyclic dependancy here between game_state and buff_effects
-def handle_buffs(active_buffs: List[BuffWithDuration], time_passed: Millis):
-    copied_buffs_list = list(active_buffs)
-    buffs_that_started = []
-    buffs_that_were_active = [b.buff_effect for b in copied_buffs_list]
-    buffs_that_ended = []
-    for buff in copied_buffs_list:
-        buff.time_until_expiration -= time_passed
-        if not buff.has_applied_start_effect:
-            buffs_that_started.append(buff.buff_effect)
-            buff.has_applied_start_effect = True
-        elif buff.time_until_expiration <= 0:
-            active_buffs.remove(buff)
-            buffs_that_ended.append(buff.buff_effect)
-    return AgentBuffsUpdate(buffs_that_started, buffs_that_were_active, buffs_that_ended)
+    def remove_stun(self):
+        self._number_of_active_stuns -= 1
+        if self._number_of_active_stuns < 0:
+            raise Exception("Number of active stuns went below 0 down to " + str(self._number_of_active_stuns))
+
+    def is_stunned(self):
+        return self._number_of_active_stuns > 0
 
 
 # TODO Is there a way to handle this better in the view module? This class shouldn't need to masquerade as a WorldEntity
