@@ -113,11 +113,11 @@ def get_user_actions():
         if event.type == pygame.MOUSEBUTTONUP:
             actions.append(ActionMouseReleased())
 
-        if movement_keys_down:
-            last_pressed_movement_key = movement_keys_down[-1]
-            direction = DIRECTION_BY_PYGAME_MOVEMENT_KEY[last_pressed_movement_key]
-            actions.append(ActionMoveInDirection(direction))
-        else:
-            actions.append(ActionStopMoving())
+    if movement_keys_down:
+        last_pressed_movement_key = movement_keys_down[-1]
+        direction = DIRECTION_BY_PYGAME_MOVEMENT_KEY[last_pressed_movement_key]
+        actions.append(ActionMoveInDirection(direction))
+    else:
+        actions.append(ActionStopMoving())
 
     return actions
