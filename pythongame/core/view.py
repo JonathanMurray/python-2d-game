@@ -818,7 +818,7 @@ class View:
                                      map_editor_mouse_rect: Tuple[int, int, int, int]):
         self._rect(color, map_editor_mouse_rect, 3)
 
-    def render_world_entity_at_position(self, entity: WorldEntity, position: Tuple[int, int]):
+    def render_map_editor_world_entity_at_position(self, entity: WorldEntity, position: Tuple[int, int]):
         images: Dict[Direction, List[ImageWithRelativePosition]] = self.images_by_sprite[entity.sprite]
         image_with_relative_position = self._get_image_from_direction(images, Direction.DOWN, 0)
         sprite_position = sum_of_vectors(position, image_with_relative_position.position_relative_to_entity)

@@ -288,27 +288,27 @@ def main(args: List[str]):
             if entity_being_placed.npc_type:
                 data = NON_PLAYER_CHARACTERS[entity_being_placed.npc_type]
                 entity = WorldEntity((0, 0), data.size, data.sprite, Direction.DOWN, data.speed)
-                view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
+                view.render_map_editor_world_entity_at_position(entity, snapped_mouse_screen_position)
             elif entity_being_placed.is_player:
-                view.render_world_entity_at_position(game_state.player_entity, snapped_mouse_screen_position)
+                view.render_map_editor_world_entity_at_position(game_state.player_entity, snapped_mouse_screen_position)
             elif entity_being_placed.wall_type:
                 data = WALLS[entity_being_placed.wall_type]
                 entity = WorldEntity((0, 0), data.size, data.sprite)
-                view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
+                view.render_map_editor_world_entity_at_position(entity, snapped_mouse_screen_position)
             elif entity_being_placed.consumable_type:
                 sprite = CONSUMABLES[entity_being_placed.consumable_type].entity_sprite
                 entity = WorldEntity((0, 0), POTION_ENTITY_SIZE, sprite)
-                view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
+                view.render_map_editor_world_entity_at_position(entity, snapped_mouse_screen_position)
             elif entity_being_placed.item_type:
                 sprite = ITEMS[entity_being_placed.item_type].entity_sprite
                 entity = WorldEntity((0, 0), ITEM_ENTITY_SIZE, sprite)
-                view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
+                view.render_map_editor_world_entity_at_position(entity, snapped_mouse_screen_position)
             elif entity_being_placed.decoration_sprite:
                 entity = WorldEntity((0, 0), (0, 0), entity_being_placed.decoration_sprite)
-                view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
+                view.render_map_editor_world_entity_at_position(entity, snapped_mouse_screen_position)
             elif entity_being_placed.money_amount:
                 entity = WorldEntity((0, 0), (0, 0), Sprite.COINS_5)
-                view.render_world_entity_at_position(entity, snapped_mouse_screen_position)
+                view.render_map_editor_world_entity_at_position(entity, snapped_mouse_screen_position)
             else:
                 raise Exception("Unknown entity: " + str(entity_being_placed))
         elif user_state.deleting_entities:
