@@ -368,7 +368,7 @@ class View:
 
         if ability_cooldowns_remaining[ability_type] > 0:
             ratio_remaining = ability_cooldowns_remaining[ability_type] / ability.cooldown
-            cooldown_rect = (x + 2, y + 2 + (h - 4) * (1 - ratio_remaining), w - 4, (h - 4) * ratio_remaining + 2)
+            cooldown_rect = (x + 1, y + 1 + (h - 2) * (1 - ratio_remaining), w - 2, (h - 2) * ratio_remaining + 1)
             self._rect_filled((100, 30, 30), cooldown_rect)
             self._rect((180, 30, 30), icon_rect, 2)
 
