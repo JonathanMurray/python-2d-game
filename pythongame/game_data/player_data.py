@@ -58,7 +58,7 @@ def _get_initial_player_state_2() -> PlayerState:
         4: None,
         5: None
     }
-    abilities = [AbilityType.TELEPORT, AbilityType.CHANNEL_ATTACK, AbilityType.FROST_NOVA]
+    abilities = [AbilityType.SWORD_SLASH, AbilityType.CHANNEL_ATTACK, AbilityType.TELEPORT]
     items: Dict[int, ItemType] = {
         1: ItemType.WINGED_BOOTS,
         2: None,

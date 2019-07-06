@@ -4,6 +4,7 @@ from pythongame.game_data.ability_fireball import register_fireball_ability
 from pythongame.game_data.ability_frost_nova import register_frost_nova_ability
 from pythongame.game_data.ability_heal import register_heal_ability
 from pythongame.game_data.ability_summon import register_summon_ability
+from pythongame.game_data.ability_sword_slash import register_sword_slash_ability
 from pythongame.game_data.ability_teleport import register_teleport_ability
 from pythongame.game_data.ability_whirlwind import register_whirlwind_ability
 from pythongame.game_data.coin import register_coin
@@ -46,6 +47,7 @@ def register_all_game_data():
     register_heal_ability()
     register_channel_attack_ability()
     register_teleport_ability()
+    register_sword_slash_ability()
 
     register_lesser_health_potion()
     register_health_potion()

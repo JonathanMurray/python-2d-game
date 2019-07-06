@@ -662,6 +662,8 @@ class View:
         buff_duration_ratios_remaining = []
         for active_buff in player_active_buffs:
             buff_type = active_buff.buff_effect.get_buff_type()
+            # Buffs that don't have description texts shouldn't be displayed. (They are typically irrelevant to the
+            # player)
             if buff_type in BUFF_TEXTS:
                 ratio_duration_remaining = active_buff.time_until_expiration / active_buff.total_duration
                 buff_texts.append(BUFF_TEXTS[buff_type])

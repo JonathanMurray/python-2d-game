@@ -22,7 +22,7 @@ def boxes_intersect(r1, r2):
            and _ranges_overlap(r1.y, r1.y + r1.h, r2.y, r2.y + r2.h)
 
 
-def rects_intersect(r1, r2):
+def rects_intersect(r1: Tuple[int, int, int, int], r2: Tuple[int, int, int, int]):
     return _ranges_overlap(r1[0], r1[0] + r1[2], r2[0], r2[0] + r2[2]) \
            and _ranges_overlap(r1[1], r1[1] + r1[3], r2[1], r2[1] + r2[3])
 
@@ -178,6 +178,7 @@ class AbilityType(Enum):
     WHIRLWIND = 7
     ENTANGLING_ROOTS = 8
     SUMMON = 9
+    SWORD_SLASH = 10
 
 
 class Sprite(Enum):
@@ -249,6 +250,7 @@ class BuffType(Enum):
     ENEMY_GOBLIN_WARLOCK_BURNT = 9
     ROOTED_BY_ENTANGLING_ROOTS = 10
     SUMMON_DIE_AFTER_DURATION = 11
+    RECOVERING_AFTER_SWORD_SLASH = 12
 
 
 class ItemType(Enum):

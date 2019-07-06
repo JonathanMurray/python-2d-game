@@ -475,11 +475,14 @@ class GameState:
         new_camera_pos_within_world = self.get_within_world(new_camera_pos, (self.camera_size[0], self.camera_size[1]))
         self.camera_world_area.set_position(new_camera_pos_within_world)
 
-    def get_projectiles_intersecting_with(self, entity) -> List[Projectile]:
+    def get_projectiles_intersecting_with(self, entity: WorldEntity) -> List[Projectile]:
         return [p for p in self.projectile_entities if boxes_intersect(entity, p.world_entity)]
 
-    def get_enemy_intersecting_with(self, entity) -> List[NonPlayerCharacter]:
+    def get_enemy_intersecting_with(self, entity: WorldEntity) -> List[NonPlayerCharacter]:
         return [e for e in self.non_player_characters if e.is_enemy and boxes_intersect(e.world_entity, entity)]
+
+    def get_enemy_intersecting_rect(self, rect: Tuple[int,int,int,int]):
+        return [e for e in self.non_player_characters if e.is_enemy and rects_intersect(e.world_entity.rect(), rect)]
 
     def get_enemies_within_x_y_distance_of(self, distance: int, position: Tuple[int, int]):
         return [e for e in self.non_player_characters
