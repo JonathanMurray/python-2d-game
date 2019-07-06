@@ -95,7 +95,7 @@ class GameEngine:
     def run_one_frame(self, time_passed: Millis):
         for e in self.game_state.non_player_characters:
             # NonPlayerCharacter AI shouldn't run if enemy is too far out of sight
-            if self._is_enemy_close_to_camera(e):
+            if self._is_enemy_close_to_camera(e) and not e.is_stunned():
                 e.npc_mind.control_npc(self.game_state, e, self.game_state.player_entity,
                                        self.game_state.player_state.is_invisible, time_passed)
 
