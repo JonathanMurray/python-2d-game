@@ -358,9 +358,10 @@ class View:
         ability = ABILITIES[ability_type]
         ability_key = KEYS_BY_ABILITY_TYPE[ability_type]
         icon_sprite = ability.icon_sprite
-        self._rect_filled((40, 40, 50), (x, y, w, h))
+        icon_rect = (x, y, w, h)
+        self._rect_filled((40, 40, 50), icon_rect)
         self._image(self.images_by_ui_sprite[icon_sprite], (x, y))
-        self._rect((150, 150, 190), (x, y, w, h), 1)
+        self._rect((150, 150, 190), icon_rect, 1)
         if highlighted_ability_action == ability_type:
             self._rect(COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
         self._text(self.font_ui_icon_keys, ability_key.key_string, (x + 12, y + h + 4))
@@ -369,6 +370,7 @@ class View:
             ratio_remaining = ability_cooldowns_remaining[ability_type] / ability.cooldown
             cooldown_rect = (x + 2, y + 2 + (h - 4) * (1 - ratio_remaining), w - 4, (h - 4) * ratio_remaining + 2)
             self._rect_filled((100, 30, 30), cooldown_rect)
+            self._rect((180, 30, 30), icon_rect, 2)
 
     def _item_icon_in_ui(self, x_in_ui, y_in_ui, size, item_type: ItemType):
         w = size[0]
