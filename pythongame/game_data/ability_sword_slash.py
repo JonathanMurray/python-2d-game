@@ -59,6 +59,6 @@ def register_sword_slash_ability():
     description = "Damages enemies in front of you (" + str(MIN_DMG) + "-" + str(MAX_DMG) + ")"
     register_ability_data(
         ability_type,
-        AbilityData("Slash", ui_icon_sprite, 0, Millis(300), description, None))
+        AbilityData("Slash", ui_icon_sprite, 0, Millis(500), description, None))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_slash.png")
     register_buff_effect(BUFF_TYPE, RecoveringAfterSwordSlash)
