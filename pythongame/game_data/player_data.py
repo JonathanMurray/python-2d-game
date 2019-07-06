@@ -50,7 +50,7 @@ def _get_initial_player_state_1() -> PlayerState:
 def _get_initial_player_state_2() -> PlayerState:
     health = 50
     mana = 50
-    mana_regen = 10
+    mana_regen = 1
     consumable_slots = {
         1: ConsumableType.MANA_LESSER,
         2: ConsumableType.MANA_LESSER,

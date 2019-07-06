@@ -6,7 +6,7 @@ from pythongame.core.game_data import register_ability_data, AbilityData, UiIcon
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
 from pythongame.core.visual_effects import VisualCircle
 
-BUFF_DURATION = Millis(10000)
+BUFF_DURATION = Millis(5000)
 BUFF_TYPE = BuffType.BLOOD_LUST
 LIFE_STEAL_BONUS_RATIO = 0.5
 
@@ -46,7 +46,7 @@ def register_bloodlust_ability():
     description = "Grants +" + str(int(LIFE_STEAL_BONUS_RATIO * 100)) + "% lifesteal"
     register_ability_data(
         ability_type,
-        AbilityData("Bloodlust", ui_icon_sprite, 30, Millis(30000), description, None))
+        AbilityData("Bloodlust", ui_icon_sprite, 25, Millis(5000), description, None))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_bloodlust.png")
     register_buff_effect(BUFF_TYPE, BloodLust)
     register_buff_text(BUFF_TYPE, "Bloodlust")
