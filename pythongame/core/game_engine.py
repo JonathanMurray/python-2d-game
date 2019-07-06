@@ -5,7 +5,7 @@ from pythongame.core.common import *
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
     create_consumable_on_ground
 from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS
-from pythongame.core.game_state import GameState, handle_buffs, ItemOnGround
+from pythongame.core.game_state import GameState, handle_buffs, ItemOnGround, ConsumableOnGround
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.loot import LootEntry
 from pythongame.core.player_controls import PlayerControls
@@ -71,6 +71,17 @@ class GameEngine:
             self.game_state.remove_entities([item])
         else:
             self.view_state.set_message("No space for " + item_name)
+
+    def try_pick_up_consumable(self, consumable: ConsumableOnGround):
+        empty_consumable_slots = self.game_state.player_state.find_first_empty_consumable_slot()
+        consumable_name = CONSUMABLES[consumable.consumable_type].name
+        if empty_consumable_slots:
+            self.game_state.player_state.consumable_slots[empty_consumable_slots] = consumable.consumable_type
+            self.view_state.set_message("You picked up " + consumable_name)
+            play_sound(SoundId.EVENT_PICKED_UP)
+            self.game_state.remove_entities([consumable])
+        else:
+            self.view_state.set_message("No space for " + consumable_name)
 
     # Returns True if player died
     def run_one_frame(self, time_passed: Millis):
@@ -169,17 +180,6 @@ class GameEngine:
         # ------------------------------------
 
         entities_to_remove = []
-        for consumable in self.game_state.consumables_on_ground:
-            if boxes_intersect(self.game_state.player_entity, consumable.world_entity):
-                empty_consumable_slots = self.game_state.player_state.find_first_empty_consumable_slot()
-                consumable_name = CONSUMABLES[consumable.consumable_type].name
-                if empty_consumable_slots:
-                    self.game_state.player_state.consumable_slots[empty_consumable_slots] = consumable.consumable_type
-                    self.view_state.set_message("You picked up " + consumable_name)
-                    play_sound(SoundId.EVENT_PICKED_UP)
-                    entities_to_remove.append(consumable)
-                else:
-                    self.view_state.set_message("No space for " + consumable_name)
         for money_pile in self.game_state.money_piles_on_ground:
             if boxes_intersect(self.game_state.player_entity, money_pile.world_entity):
                 play_sound(SoundId.EVENT_PICKED_UP)
