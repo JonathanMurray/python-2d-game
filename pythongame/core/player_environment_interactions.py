@@ -8,16 +8,14 @@ from pythongame.core.view import EntityActionText, DialogGraphics
 from pythongame.core.view_state import ViewState
 
 
-# TODO Find a more fitting name for this
-class DialogState:
+class PlayerInteractionsState:
     def __init__(self, view_state: ViewState):
         self.view_state = view_state
         self.npc_active_in_dialog: NonPlayerCharacter = None
         self.npc_ready_for_dialog: NonPlayerCharacter = None
         self.lootable_ready_to_be_picked_up: LootableOnGround = None
 
-    def check_if_npcs_are_close_enough_for_dialog(self, player_entity: WorldEntity,
-                                                  game_state: GameState):
+    def handle_interactions(self, player_entity: WorldEntity, game_state: GameState):
         player_position = player_entity.get_position()
         self.npc_ready_for_dialog = None
         self.lootable_ready_to_be_picked_up = None

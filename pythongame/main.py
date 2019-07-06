@@ -5,9 +5,9 @@ import pygame
 
 import pythongame.core.pathfinding.npc_pathfinding
 from pythongame.core.common import Millis, SoundId
-from pythongame.core.dialog import DialogState
 from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_engine import GameEngine
+from pythongame.core.player_environment_interactions import PlayerInteractionsState
 from pythongame.core.sound_player import play_sound, init_sound_player
 from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
@@ -50,12 +50,11 @@ def main(args: List[str]):
     item_slot_being_dragged: Optional[int] = None
     consumable_slot_being_dragged: Optional[int] = None
 
-    dialog_state = DialogState(view_state)
+    player_interactions_state = PlayerInteractionsState(view_state)
 
     while True:
 
-        dialog_state.check_if_npcs_are_close_enough_for_dialog(
-            game_state.player_entity, game_state)
+        player_interactions_state.handle_interactions(game_state.player_entity, game_state)
 
         mouse_was_just_clicked = False
         mouse_was_just_released = False
@@ -81,7 +80,7 @@ def main(args: List[str]):
                     game_engine.try_use_consumable(action.slot_number)
                 elif isinstance(action, ActionMoveInDirection):
                     game_engine.move_in_direction(action.direction)
-                    dialog_state.handle_player_moved()
+                    player_interactions_state.handle_player_moved()
                 elif isinstance(action, ActionStopMoving):
                     game_engine.stop_moving()
             if isinstance(action, ActionPauseGame):
@@ -93,7 +92,7 @@ def main(args: List[str]):
             if isinstance(action, ActionMouseReleased):
                 mouse_was_just_released = True
             if isinstance(action, ActionPressSpaceKey) and not is_game_over:
-                dialog_state.handle_user_clicked_space(game_state, game_engine)
+                player_interactions_state.handle_user_clicked_space(game_state, game_engine)
 
         # ------------------------------------
         #     UPDATE STATE BASED ON CLOCK
@@ -112,7 +111,7 @@ def main(args: List[str]):
         #          RENDER EVERYTHING
         # ------------------------------------
 
-        entity_action_text = dialog_state.get_action_text()
+        entity_action_text = player_interactions_state.get_action_text()
 
         view.render_world(
             all_entities_to_render=game_state.get_all_entities_to_render(),
@@ -128,7 +127,7 @@ def main(args: List[str]):
             game_world_size=game_state.game_world_size,
             entity_action_text=entity_action_text)
 
-        dialog = dialog_state.get_dialog()
+        dialog = player_interactions_state.get_dialog()
 
         mouse_hover_event: MouseHoverEvent = view.render_ui(
             player_health=game_state.player_state.health,
