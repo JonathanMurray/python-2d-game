@@ -34,8 +34,8 @@ class NpcAction(AbstractNpcAction):
         missing_health = game_state.player_state.max_health - game_state.player_state.health
         if missing_health > 0:
             game_state.visual_effects.append(create_visual_healing_text(game_state.player_entity, missing_health))
+            game_state.player_state.gain_full_health()
             return "You feel healthy again!"
-        game_state.player_state.gain_full_health()
         return "Nice..."
 
 
