@@ -20,6 +20,7 @@ def init_sound_player():
         SoundId.POTION: load_sound_file('PowerUp04.ogg'),
         SoundId.EVENT_PLAYER_LEVELED_UP: load_sound_file('PowerUp02.ogg'),
         SoundId.EVENT_PICKED_UP: load_sound_file('UI01.ogg'),
+        SoundId.EVENT_PICKED_UP_MONEY: load_sound_file('Retro_8-Bit_Game-Pickup_Object_Item_Coin_08.wav'),
         SoundId.EVENT_PLAYER_DIED: load_sound_file('Death01.ogg'),
         SoundId.EVENT_ENEMY_DIED: load_sound_file('Damage02.ogg'),
         SoundId.WARNING: load_sound_file('UI06.ogg'),

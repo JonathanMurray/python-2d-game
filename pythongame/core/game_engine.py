@@ -194,7 +194,7 @@ class GameEngine:
         entities_to_remove = []
         for money_pile in self.game_state.money_piles_on_ground:
             if boxes_intersect(self.game_state.player_entity, money_pile.world_entity):
-                play_sound(SoundId.EVENT_PICKED_UP)
+                play_sound(SoundId.EVENT_PICKED_UP_MONEY)
                 entities_to_remove.append(money_pile)
                 self.game_state.player_state.money += money_pile.amount
 
