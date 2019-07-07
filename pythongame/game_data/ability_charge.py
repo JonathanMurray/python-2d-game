@@ -1,6 +1,6 @@
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
-from pythongame.core.common import BuffType, Millis, AbilityType, translate_in_direction, get_middle_point
+from pythongame.core.common import BuffType, Millis, AbilityType, translate_in_direction, get_middle_point, SoundId
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path, \
     register_buff_text
@@ -100,7 +100,7 @@ def register_charge_ability():
     description = "Charge forward, damaging enemy on impact"
     register_ability_data(
         ability_type,
-        AbilityData("Charge", ui_icon_sprite, 5, Millis(5000), description, None))
+        AbilityData("Charge", ui_icon_sprite, 5, Millis(5000), description, SoundId.ABILITY_CHARGE))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_charge.png")
     register_buff_effect(BUFF_TYPE_CHARGING, Charging)
     register_buff_text(BUFF_TYPE_CHARGING, "Charging")

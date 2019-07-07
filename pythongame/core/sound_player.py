@@ -17,6 +17,7 @@ def init_sound_player():
         SoundId.ABILITY_WHIRLWIND: load_sound_file('Fire03.ogg'),
         SoundId.ABILITY_TELEPORT: load_sound_file('SciFi06.ogg'),
         SoundId.ABILITY_ENTANGLING_ROOTS: load_sound_file('SciFi03.ogg'),
+        SoundId.ABILITY_CHARGE: load_sound_file('Retro_8-Bit_Game-Misc_Noise_12.wav'),
         SoundId.POTION: load_sound_file('PowerUp04.ogg'),
         SoundId.EVENT_PLAYER_LEVELED_UP: load_sound_file('PowerUp02.ogg'),
         SoundId.EVENT_PICKED_UP: load_sound_file('UI01.ogg'),
