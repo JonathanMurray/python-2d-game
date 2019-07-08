@@ -4,7 +4,7 @@ from pythongame.core.common import NpcType, Direction, Sprite, ItemType, Consuma
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, ITEMS, CONSUMABLES, POTION_ENTITY_SIZE, \
     WALLS
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
-    ConsumableOnGround, Portal, Wall
+    ConsumableOnGround, Portal, Wall, DecorationEntity
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE, PLAYER_ENTITY_SPEED
@@ -62,5 +62,9 @@ def create_wall(wall_type: WallType, pos: Tuple[int, int]) -> Wall:
     return Wall(wall_type, entity)
 
 
-def create_player_world_entity(player_pos) -> WorldEntity:
-    return WorldEntity(player_pos, PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
+def create_player_world_entity(pos: Tuple[int, int]) -> WorldEntity:
+    return WorldEntity(pos, PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
+
+
+def create_decoration_entity(pos: Tuple[int, int], sprite: Sprite) -> DecorationEntity:
+    return DecorationEntity(pos, sprite)

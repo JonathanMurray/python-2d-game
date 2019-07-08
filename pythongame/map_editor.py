@@ -5,11 +5,11 @@ from typing import Tuple, Optional, List, Dict
 import pygame
 
 from pythongame.core.common import Direction, Sprite, sum_of_vectors, WallType, NpcType, ConsumableType, ItemType
-from pythongame.core.entity_creation import create_portal, create_player_world_entity
+from pythongame.core.entity_creation import create_portal, create_player_world_entity, create_npc, create_wall, \
+    create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, CONSUMABLES, ITEMS, ITEM_ENTITY_SIZE, WALLS
 from pythongame.core.game_data import POTION_ENTITY_SIZE
-from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, ConsumableOnGround, ItemOnGround, \
-    DecorationEntity, GameState, Wall, MoneyPileOnGround
+from pythongame.core.game_state import WorldEntity, GameState
 from pythongame.core.view import View
 from pythongame.game_data.player_data import get_initial_player_state
 from pythongame.game_world_init import save_game_state_to_json_file, create_game_state_from_json_file
@@ -211,37 +211,26 @@ def main(args: List[str]):
                         if entity_being_placed.is_player:
                             game_state.player_entity.set_position(snapped_mouse_world_position)
                         elif entity_being_placed.npc_type:
-                            # TODO Create using entity_creation.py
-                            npc_type = entity_being_placed.npc_type
-                            data = NON_PLAYER_CHARACTERS[npc_type]
-                            entity = WorldEntity(snapped_mouse_world_position, data.size, data.sprite, Direction.DOWN,
-                                                 data.speed)
-                            npc = NonPlayerCharacter(npc_type, entity, data.max_health, data.max_health,
-                                                     data.health_regen, None, data.is_enemy, data.is_neutral, None,
-                                                     None, None)
+                            npc = create_npc(entity_being_placed.npc_type, snapped_mouse_world_position)
                             game_state.add_non_player_character(npc)
                         elif entity_being_placed.wall_type:
                             _add_wall_to_position(game_state, snapped_mouse_world_position,
                                                   entity_being_placed.wall_type)
                         elif entity_being_placed.consumable_type:
-                            sprite = CONSUMABLES[entity_being_placed.consumable_type].entity_sprite
-                            # TODO Create using entity_creation.py
-                            entity = WorldEntity(snapped_mouse_world_position, POTION_ENTITY_SIZE, sprite)
-                            game_state.consumables_on_ground.append(
-                                ConsumableOnGround(entity, entity_being_placed.consumable_type))
+                            consumable_on_ground = create_consumable_on_ground(
+                                entity_being_placed.consumable_type, snapped_mouse_world_position)
+                            game_state.consumables_on_ground.append(consumable_on_ground)
                         elif entity_being_placed.item_type:
-                            sprite = ITEMS[entity_being_placed.item_type].entity_sprite
-                            # TODO Create using entity_creation.py
-                            entity = WorldEntity(snapped_mouse_world_position, ITEM_ENTITY_SIZE, sprite)
-                            game_state.items_on_ground.append(
-                                ItemOnGround(entity, entity_being_placed.item_type))
+                            item_on_ground = create_item_on_ground(
+                                entity_being_placed.item_type, snapped_mouse_world_position)
+                            game_state.items_on_ground.append(item_on_ground)
                         elif entity_being_placed.decoration_sprite:
                             _add_decoration_to_position(entity_being_placed.decoration_sprite, game_state,
                                                         snapped_mouse_world_position)
                         elif entity_being_placed.money_amount:
-                            # TODO Allow other amounts of money?
-                            entity = WorldEntity(snapped_mouse_world_position, ITEM_ENTITY_SIZE, Sprite.COINS_5)
-                            game_state.money_piles_on_ground.append(MoneyPileOnGround(entity, 5))
+                            money_pile_on_ground = create_money_pile_on_ground(
+                                entity_being_placed.money_amount, snapped_mouse_world_position)
+                            game_state.money_piles_on_ground.append(money_pile_on_ground)
                         elif entity_being_placed.is_portal:
                             portal = create_portal(entity_being_placed.is_main_portal, snapped_mouse_world_position)
                             game_state.portals.append(portal)
@@ -341,20 +330,19 @@ def main(args: List[str]):
 
 
 def _add_decoration_to_position(decoration_sprite: Sprite, game_state, snapped_mouse_world_position):
-    decoration_entity = DecorationEntity(snapped_mouse_world_position, decoration_sprite)
     already_has_decoration = any([d for d in game_state.decoration_entities
                                   if d.get_position() == snapped_mouse_world_position])
     if not already_has_decoration:
+        decoration_entity = create_decoration_entity(snapped_mouse_world_position, decoration_sprite)
         game_state.decoration_entities.append(decoration_entity)
 
 
 def _add_wall_to_position(game_state, snapped_mouse_world_position: Tuple[int, int], wall_type: WallType):
-    # TODO Extract common code to entity_creation
-    data = WALLS[wall_type]
     already_has_wall = any([w for w in game_state.walls
                             if w.world_entity.get_position() == snapped_mouse_world_position])
     if not already_has_wall:
-        game_state.add_wall(Wall(wall_type, WorldEntity(snapped_mouse_world_position, data.size, data.sprite)))
+        wall = create_wall(wall_type, snapped_mouse_world_position)
+        game_state.add_wall(wall)
 
 
 def _delete_map_entities_from_position(game_state: GameState, snapped_mouse_world_position: Tuple[int, int]):

@@ -2,8 +2,9 @@ import json
 
 from pythongame.core.common import *
 from pythongame.core.entity_creation import create_npc, set_global_path_finder, create_money_pile_on_ground, \
-    create_item_on_ground, create_consumable_on_ground, create_portal, create_wall, create_player_world_entity
-from pythongame.core.game_state import GameState, DecorationEntity
+    create_item_on_ground, create_consumable_on_ground, create_portal, create_wall, create_player_world_entity, \
+    create_decoration_entity
+from pythongame.core.game_state import GameState
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.game_data.player_data import get_initial_player_state
 
@@ -38,7 +39,8 @@ def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str
 
         game_world_size = json_data["game_world_size"]
 
-        decoration_entities = [DecorationEntity(d["position"], Sprite[d["sprite"]]) for d in json_data["decorations"]]
+        decoration_entities = [create_decoration_entity(d["position"], Sprite[d["sprite"]]) for d in
+                               json_data["decorations"]]
         portals = [create_portal(p["is_main_portal"], p["position"]) for p in json_data["portals"]]
         player_state = get_initial_player_state()
         game_state = GameState(player_entity, consumables, items, money_piles, enemies, walls, camera_size,
