@@ -2,11 +2,10 @@ import json
 
 from pythongame.core.common import *
 from pythongame.core.entity_creation import create_npc, set_global_path_finder, create_money_pile_on_ground, \
-    create_item_on_ground, create_consumable_on_ground, create_portal_at_position
-from pythongame.core.game_data import WALLS
-from pythongame.core.game_state import WorldEntity, GameState, DecorationEntity, Wall
+    create_item_on_ground, create_consumable_on_ground, create_portal, create_wall, create_player_world_entity
+from pythongame.core.game_state import GameState, DecorationEntity
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
-from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE, PLAYER_ENTITY_SPEED, get_initial_player_state
+from pythongame.game_data.player_data import get_initial_player_state
 
 # TODO Avoid depending on pythongame.game_data from here
 
@@ -21,7 +20,7 @@ def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str
         json_data = json.loads(map_file.read())
 
         player_pos = json_data["player"]["position"]
-        player_entity = WorldEntity(player_pos, PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
+        player_entity = create_player_world_entity(player_pos)
 
         consumables = [create_consumable_on_ground(ConsumableType[p["consumable_type"]], p["position"]) for p in
                        json_data["consumables_on_ground"]]
@@ -35,12 +34,12 @@ def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str
         set_global_path_finder(path_finder)
         enemies = [create_npc(NpcType[e["enemy_type"]], e["position"]) for e in json_data["enemies"]]
 
-        walls = [_create_wall_at_position(WallType[w["wall_type"]], w["position"]) for w in json_data["walls"]]
+        walls = [create_wall(WallType[w["wall_type"]], w["position"]) for w in json_data["walls"]]
 
         game_world_size = json_data["game_world_size"]
 
         decoration_entities = [DecorationEntity(d["position"], Sprite[d["sprite"]]) for d in json_data["decorations"]]
-        portals = [create_portal_at_position(p["is_main_portal"], p["position"]) for p in json_data["portals"]]
+        portals = [create_portal(p["is_main_portal"], p["position"]) for p in json_data["portals"]]
         player_state = get_initial_player_state()
         game_state = GameState(player_entity, consumables, items, money_piles, enemies, walls, camera_size,
                                game_world_size, player_state, decoration_entities, portals)
@@ -87,8 +86,3 @@ def save_game_state_to_json_file(game_state: GameState, map_file: str):
 
     with open(map_file, 'w') as map_file:
         map_file.write(json.dumps(json_data, indent=2))
-
-
-def _create_wall_at_position(wall_type: WallType, pos: Tuple[int, int]) -> Wall:
-    # TODO Move to entity_creation
-    return Wall(wall_type, WorldEntity(pos, WALLS[wall_type].size, WALLS[wall_type].sprite))

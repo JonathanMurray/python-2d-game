@@ -5,13 +5,13 @@ from typing import Tuple, Optional, List, Dict
 import pygame
 
 from pythongame.core.common import Direction, Sprite, sum_of_vectors, WallType, NpcType, ConsumableType, ItemType
-from pythongame.core.entity_creation import create_portal_at_position
+from pythongame.core.entity_creation import create_portal, create_player_world_entity
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, CONSUMABLES, ITEMS, ITEM_ENTITY_SIZE, WALLS
 from pythongame.core.game_data import POTION_ENTITY_SIZE
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, ConsumableOnGround, ItemOnGround, \
     DecorationEntity, GameState, Wall, MoneyPileOnGround
 from pythongame.core.view import View
-from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE, PLAYER_ENTITY_SPEED, get_initial_player_state
+from pythongame.game_data.player_data import get_initial_player_state
 from pythongame.game_world_init import save_game_state_to_json_file, create_game_state_from_json_file
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 from pythongame.register_game_data import register_all_game_data
@@ -125,7 +125,7 @@ def main(args: List[str]):
     if Path(map_file).exists():
         game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file)
     else:
-        player_entity = WorldEntity((250, 250), PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
+        player_entity = create_player_world_entity((250, 250))
         player_state = get_initial_player_state()
         game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, (500, 500), player_state, [], [])
 
@@ -243,8 +243,7 @@ def main(args: List[str]):
                             entity = WorldEntity(snapped_mouse_world_position, ITEM_ENTITY_SIZE, Sprite.COINS_5)
                             game_state.money_piles_on_ground.append(MoneyPileOnGround(entity, 5))
                         elif entity_being_placed.is_portal:
-                            portal = create_portal_at_position(
-                                entity_being_placed.is_main_portal, snapped_mouse_world_position)
+                            portal = create_portal(entity_being_placed.is_main_portal, snapped_mouse_world_position)
                             game_state.portals.append(portal)
 
                         else:
