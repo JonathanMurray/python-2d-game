@@ -4,8 +4,8 @@ import pygame
 
 from pythongame.core.common import Direction, Sprite, ConsumableType, sum_of_vectors, ItemType, is_point_in_rect
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
-    ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, NON_PLAYER_CHARACTERS, CONSUMABLES, ITEMS, UiIconSprite, \
-    WALLS, PORTRAIT_ICON_SPRITE_PATHS, PortraitIconSprite, NpcDialog
+    ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, UiIconSprite, \
+    PORTRAIT_ICON_SPRITE_PATHS, PortraitIconSprite, NpcDialog
 from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
@@ -382,41 +382,20 @@ class View:
             self._image(self.images_by_ui_sprite[ui_icon_sprite], (x, y))
         self._rect((150, 150, 190), (x, y, w, h), 1)
 
-    def _map_editor_icon_in_ui(self, x_in_ui, y_in_ui, size, highlighted: bool, user_input_key: str,
-                               entity: Optional[MapEditorWorldEntity], non_entity_icon: Optional[UiIconSprite]):
+    def _map_editor_icon_in_ui(self, x_in_ui, y_in_ui, size: Tuple[int, int], highlighted: bool, user_input_key: str,
+                               sprite: Optional[Sprite], ui_icon_sprite: Optional[UiIconSprite]):
         w = size[0]
         h = size[1]
         x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
 
         self._rect_filled((40, 40, 40), (x, y, w, h))
 
-        # TODO: Reduce duplication. Pass in Sprite / UiIconSprite instead of Entity?
-        if entity:
-            if entity.npc_type:
-                npc_data = NON_PLAYER_CHARACTERS[entity.npc_type]
-                image = self.images_by_sprite[npc_data.sprite][Direction.DOWN][0].image
-            elif entity.consumable_type:
-                ui_icon_sprite = CONSUMABLES[entity.consumable_type].icon_sprite
-                image = self.images_by_ui_sprite[ui_icon_sprite]
-            elif entity.is_player:
-                image = self.images_by_sprite[Sprite.PLAYER][Direction.DOWN][0].image
-            elif entity.wall_type:
-                wall_data = WALLS[entity.wall_type]
-                image = self.images_by_sprite[wall_data.sprite][Direction.DOWN][0].image
-            elif entity.item_type:
-                ui_icon_sprite = ITEMS[entity.item_type].icon_sprite
-                image = self.images_by_ui_sprite[ui_icon_sprite]
-            elif entity.decoration_sprite:
-                image = self.images_by_sprite[entity.decoration_sprite][Direction.DOWN][0].image
-            elif entity.money_amount:
-                # TODO handle other amounts of money
-                image = self.images_by_sprite[Sprite.COINS_5][Direction.DOWN][0].image
-            elif entity.is_portal:
-                image = self.images_by_sprite[Sprite.PORTAL][Direction.DOWN][0].image
-            else:
-                raise Exception("Unknown entity: " + str(entity))
+        if sprite:
+            image = self.images_by_sprite[sprite][Direction.DOWN][0].image
+        elif ui_icon_sprite:
+            image = self.images_by_ui_sprite[ui_icon_sprite]
         else:
-            image = self.images_by_ui_sprite[non_entity_icon]
+            raise Exception("Nothing to render!")
 
         icon_scaled_image = pygame.transform.scale(image, size)
         self._image(icon_scaled_image, (x, y))
@@ -809,7 +788,8 @@ class View:
             y = y_2 if i < num_icons_per_row else y_3
             if is_point_in_rect(mouse_ui_position, (x, y, MAP_EDITOR_UI_ICON_SIZE[0], MAP_EDITOR_UI_ICON_SIZE[1])):
                 hovered_by_mouse = entity
-            self._map_editor_icon_in_ui(x, y, MAP_EDITOR_UI_ICON_SIZE, is_this_entity_being_placed, char, entity, None)
+            self._map_editor_icon_in_ui(
+                x, y, MAP_EDITOR_UI_ICON_SIZE, is_this_entity_being_placed, char, entity.sprite, None)
 
         self._rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
 

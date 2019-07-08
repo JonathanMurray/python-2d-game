@@ -85,5 +85,3 @@ class MapEditorWorldEntity:
         e.is_portal = True
         e.is_main_portal = is_main_portal
         return e
-
-# TODO Move large chunks of branching code from map_editor in here

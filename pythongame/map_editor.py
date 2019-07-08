@@ -231,7 +231,6 @@ def main(args: List[str]):
                         elif entity_being_placed.is_portal:
                             portal = create_portal(entity_being_placed.is_main_portal, snapped_mouse_world_position)
                             game_state.portals.append(portal)
-
                         else:
                             raise Exception("Unknown entity: " + str(entity_being_placed))
                 elif user_state.deleting_entities:
