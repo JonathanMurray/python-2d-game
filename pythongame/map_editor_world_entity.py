@@ -1,10 +1,14 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, ItemType
+from pythongame.core.entity_creation import create_portal, create_player_world_entity, create_npc, create_wall, \
+    create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground
 
 
 class MapEditorWorldEntity:
-    def __init__(self):
+    def __init__(self, sprite: Sprite, entity_size: Tuple[int, int]):
+        self.sprite = sprite
+        self.entity_size = entity_size
         self.npc_type: NpcType = None
         self.is_player: bool = False
         self.wall_type: Optional[WallType] = None
@@ -27,49 +31,57 @@ class MapEditorWorldEntity:
 
     @staticmethod
     def player():
-        e = MapEditorWorldEntity()
+        entity = create_player_world_entity((0, 0))
+        e = MapEditorWorldEntity(entity.sprite, (entity.w, entity.h))
         e.is_player = True
         return e
 
     @staticmethod
     def npc(npc_type: NpcType):
-        e = MapEditorWorldEntity()
+        entity = create_npc(npc_type, (0, 0)).world_entity
+        e = MapEditorWorldEntity(entity.sprite, (entity.w, entity.h))
         e.npc_type = npc_type
         return e
 
     @staticmethod
     def wall(wall_type: WallType):
-        e = MapEditorWorldEntity()
+        entity = create_wall(wall_type, (0, 0)).world_entity
+        e = MapEditorWorldEntity(entity.sprite, (entity.w, entity.h))
         e.wall_type = wall_type
         return e
 
     @staticmethod
     def consumable(consumable_type: ConsumableType):
-        e = MapEditorWorldEntity()
+        entity = create_consumable_on_ground(consumable_type, (0, 0)).world_entity
+        e = MapEditorWorldEntity(entity.sprite, (entity.w, entity.h))
         e.consumable_type = consumable_type
         return e
 
     @staticmethod
     def item(item_type: ItemType):
-        e = MapEditorWorldEntity()
+        entity = create_item_on_ground(item_type, (0, 0)).world_entity
+        e = MapEditorWorldEntity(entity.sprite, (entity.w, entity.h))
         e.item_type = item_type
         return e
 
     @staticmethod
     def decoration(sprite: Sprite):
-        e = MapEditorWorldEntity()
+        decoration_entity = create_decoration_entity((0, 0), sprite)
+        e = MapEditorWorldEntity(decoration_entity.sprite, (0, 0))
         e.decoration_sprite = sprite
         return e
 
     @staticmethod
     def money(amount: int):
-        e = MapEditorWorldEntity()
+        entity = create_money_pile_on_ground(amount, (0, 0)).world_entity
+        e = MapEditorWorldEntity(entity.sprite, (entity.w, entity.h))
         e.money_amount = amount
         return e
 
     @staticmethod
     def portal(is_main_portal: bool):
-        e = MapEditorWorldEntity()
+        entity = create_portal(is_main_portal, (0, 0)).world_entity
+        e = MapEditorWorldEntity(entity.sprite, (entity.w, entity.h))
         e.is_portal = True
         e.is_main_portal = is_main_portal
         return e

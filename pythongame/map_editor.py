@@ -4,12 +4,10 @@ from typing import Tuple, Optional, List, Dict
 
 import pygame
 
-from pythongame.core.common import Direction, Sprite, sum_of_vectors, WallType, NpcType, ConsumableType, ItemType
+from pythongame.core.common import Sprite, sum_of_vectors, WallType, NpcType, ConsumableType, ItemType
 from pythongame.core.entity_creation import create_portal, create_player_world_entity, create_npc, create_wall, \
     create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground
-from pythongame.core.game_data import NON_PLAYER_CHARACTERS, CONSUMABLES, ITEMS, ITEM_ENTITY_SIZE, WALLS
-from pythongame.core.game_data import POTION_ENTITY_SIZE
-from pythongame.core.game_state import WorldEntity, GameState
+from pythongame.core.game_state import GameState
 from pythongame.core.view import View
 from pythongame.game_data.player_data import get_initial_player_state
 from pythongame.game_world_init import save_game_state_to_json_file, create_game_state_from_json_file
@@ -18,6 +16,7 @@ from pythongame.register_game_data import register_all_game_data
 
 # TODO Avoid depending on pythongame.game_data from here
 
+register_all_game_data()
 
 MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.player(),
@@ -88,8 +87,6 @@ CHARS_BY_ENTITY: Dict[MapEditorWorldEntity, str] = {v: k for k, v in ENTITIES_BY
 
 SCREEN_SIZE = (1200, 750)
 CAMERA_SIZE = (1200, 600)
-
-register_all_game_data()
 
 if 'S' in ENTITIES_BY_CHAR:
     raise Exception("'S' key should be reserved for saving, but it's claimed by entity: "
@@ -285,36 +282,8 @@ def main(args: List[str]):
             view.render_map_editor_mouse_rect((250, 50, 0), snapped_mouse_rect)
         elif user_state.placing_entity:
             entity_being_placed = user_state.placing_entity
-            # TODO Extract common parts of this code. Store sprite in MapEditorWorldEntity?
-            if entity_being_placed.npc_type:
-                data = NON_PLAYER_CHARACTERS[entity_being_placed.npc_type]
-                entity = WorldEntity((0, 0), data.size, data.sprite, Direction.DOWN, data.speed)
-                view.render_map_editor_world_entity_at_position(entity, snapped_mouse_screen_position)
-            elif entity_being_placed.is_player:
-                view.render_map_editor_world_entity_at_position(game_state.player_entity, snapped_mouse_screen_position)
-            elif entity_being_placed.wall_type:
-                data = WALLS[entity_being_placed.wall_type]
-                entity = WorldEntity((0, 0), data.size, data.sprite)
-                view.render_map_editor_world_entity_at_position(entity, snapped_mouse_screen_position)
-            elif entity_being_placed.consumable_type:
-                sprite = CONSUMABLES[entity_being_placed.consumable_type].entity_sprite
-                entity = WorldEntity((0, 0), POTION_ENTITY_SIZE, sprite)
-                view.render_map_editor_world_entity_at_position(entity, snapped_mouse_screen_position)
-            elif entity_being_placed.item_type:
-                sprite = ITEMS[entity_being_placed.item_type].entity_sprite
-                entity = WorldEntity((0, 0), ITEM_ENTITY_SIZE, sprite)
-                view.render_map_editor_world_entity_at_position(entity, snapped_mouse_screen_position)
-            elif entity_being_placed.decoration_sprite:
-                entity = WorldEntity((0, 0), (0, 0), entity_being_placed.decoration_sprite)
-                view.render_map_editor_world_entity_at_position(entity, snapped_mouse_screen_position)
-            elif entity_being_placed.money_amount:
-                entity = WorldEntity((0, 0), (0, 0), Sprite.COINS_5)
-                view.render_map_editor_world_entity_at_position(entity, snapped_mouse_screen_position)
-            elif entity_being_placed.is_portal:
-                entity = WorldEntity((0, 0), (0, 0), Sprite.PORTAL)
-                view.render_map_editor_world_entity_at_position(entity, snapped_mouse_screen_position)
-            else:
-                raise Exception("Unknown entity: " + str(entity_being_placed))
+            view.render_map_editor_world_entity_at_position(
+                entity_being_placed.sprite, entity_being_placed.entity_size, snapped_mouse_screen_position)
         elif user_state.deleting_entities:
             snapped_mouse_rect = (snapped_mouse_screen_position[0], snapped_mouse_screen_position[1],
                                   grid_cell_size, grid_cell_size)

@@ -412,7 +412,6 @@ class View:
                 # TODO handle other amounts of money
                 image = self.images_by_sprite[Sprite.COINS_5][Direction.DOWN][0].image
             elif entity.is_portal:
-                # TODO Separate sprite for portal
                 image = self.images_by_sprite[Sprite.PORTAL][Direction.DOWN][0].image
             else:
                 raise Exception("Unknown entity: " + str(entity))
@@ -826,12 +825,13 @@ class View:
                                      map_editor_mouse_rect: Tuple[int, int, int, int]):
         self._rect(color, map_editor_mouse_rect, 3)
 
-    def render_map_editor_world_entity_at_position(self, entity: WorldEntity, position: Tuple[int, int]):
-        images: Dict[Direction, List[ImageWithRelativePosition]] = self.images_by_sprite[entity.sprite]
+    def render_map_editor_world_entity_at_position(self, sprite: Sprite, entity_size: Tuple[int, int],
+                                                   position: Tuple[int, int]):
+        images: Dict[Direction, List[ImageWithRelativePosition]] = self.images_by_sprite[sprite]
         image_with_relative_position = self._get_image_from_direction(images, Direction.DOWN, 0)
         sprite_position = sum_of_vectors(position, image_with_relative_position.position_relative_to_entity)
         self._image(image_with_relative_position.image, sprite_position)
-        self._rect((50, 250, 0), (position[0], position[1], entity.w, entity.h), 3)
+        self._rect((50, 250, 0), (position[0], position[1], entity_size[0], entity_size[1]), 3)
 
     @staticmethod
     def update_display():
