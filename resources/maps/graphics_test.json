@@ -1164,13 +1164,6 @@
       ]
     },
     {
-      "wall_type": "STATUE",
-      "position": [
-        425,
-        150
-      ]
-    },
-    {
       "wall_type": "WALL_DIRECTIONAL_N",
       "position": [
         975,
@@ -1973,13 +1966,6 @@
       "position": [
         1050,
         750
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        1050,
-        550
       ]
     },
     {
@@ -12907,6 +12893,13 @@
       "position": [
         75,
         150
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_E",
+      "position": [
+        950,
+        1100
       ]
     }
   ],
@@ -25325,6 +25318,22 @@
       "position": [
         800,
         700
+      ]
+    }
+  ],
+  "portals": [
+    {
+      "is_main_portal": false,
+      "position": [
+        1050,
+        550
+      ]
+    },
+    {
+      "is_main_portal": true,
+      "position": [
+        425,
+        150
       ]
     }
   ],

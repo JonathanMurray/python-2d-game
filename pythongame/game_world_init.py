@@ -2,7 +2,7 @@ import json
 
 from pythongame.core.common import *
 from pythongame.core.entity_creation import create_npc, set_global_path_finder, create_money_pile_on_ground, \
-    create_item_on_ground, create_consumable_on_ground
+    create_item_on_ground, create_consumable_on_ground, create_portal_at_position
 from pythongame.core.game_data import WALLS
 from pythongame.core.game_state import WorldEntity, GameState, DecorationEntity, Wall
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
@@ -11,6 +11,9 @@ from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE, PLAYER_ENTITY_S
 # TODO Avoid depending on pythongame.game_data from here
 
 GRID_CELL_SIZE = 25
+
+
+# TODO Clean up JSON handling. Add classes that take care of (de-)serializing a specific object?
 
 
 def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str):
@@ -37,9 +40,10 @@ def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str
         game_world_size = json_data["game_world_size"]
 
         decoration_entities = [DecorationEntity(d["position"], Sprite[d["sprite"]]) for d in json_data["decorations"]]
+        portals = [create_portal_at_position(p["is_main_portal"], p["position"]) for p in json_data["portals"]]
         player_state = get_initial_player_state()
         game_state = GameState(player_entity, consumables, items, money_piles, enemies, walls, camera_size,
-                               game_world_size, player_state, decoration_entities)
+                               game_world_size, player_state, decoration_entities, portals)
 
         path_finder.set_grid(game_state.grid)
         return game_state
@@ -75,6 +79,10 @@ def save_game_state_to_json_file(game_state: GameState, map_file: str):
     for d in game_state.decoration_entities:
         json_data["decorations"].append({"sprite": d.sprite.name, "position": d.get_position()})
 
+    json_data["portals"] = []
+    for p in game_state.portals:
+        json_data["portals"].append({"is_main_portal": p.is_main_portal, "position": p.world_entity.get_position()})
+
     json_data["game_world_size"] = game_state.game_world_size
 
     with open(map_file, 'w') as map_file:
@@ -82,4 +90,5 @@ def save_game_state_to_json_file(game_state: GameState, map_file: str):
 
 
 def _create_wall_at_position(wall_type: WallType, pos: Tuple[int, int]) -> Wall:
+    # TODO Move to entity_creation
     return Wall(wall_type, WorldEntity(pos, WALLS[wall_type].size, WALLS[wall_type].sprite))

@@ -386,12 +386,21 @@ class DecorationEntity:
         return self.x, self.y
 
 
+class Portal:
+    def __init__(self, world_entity: WorldEntity, index: int, is_main_portal: bool, is_enabled: bool, leads_to: int):
+        self.world_entity = world_entity
+        self.index = index
+        self.is_main_portal = is_main_portal
+        self.is_enabled = is_enabled
+        self.leads_to = leads_to
+
+
 class GameState:
     def __init__(self, player_entity: WorldEntity, consumables_on_ground: List[ConsumableOnGround],
                  items_on_ground: List[ItemOnGround], money_piles_on_ground: List[MoneyPileOnGround],
-                 non_player_characters: List[NonPlayerCharacter],
-                 walls: List[Wall], camera_size: Tuple[int, int], game_world_size: Tuple[int, int],
-                 player_state: PlayerState, decoration_entities: List[DecorationEntity]):
+                 non_player_characters: List[NonPlayerCharacter], walls: List[Wall], camera_size: Tuple[int, int],
+                 game_world_size: Tuple[int, int], player_state: PlayerState,
+                 decoration_entities: List[DecorationEntity], portals: List[Portal]):
         self.camera_size = camera_size
         self.camera_world_area = WorldArea((0, 0), self.camera_size)
         self.player_entity = player_entity
@@ -412,6 +421,7 @@ class GameState:
         self.entire_world_area = WorldArea((0, 0), self.game_world_size)
         self.grid = self._setup_grid(game_world_size, [w.world_entity for w in walls])
         self.decoration_entities = decoration_entities
+        self.portals: List[Portal] = portals
 
     @staticmethod
     def _setup_grid(game_world_size: Tuple[int, int], walls: List[WorldEntity]):
@@ -449,11 +459,14 @@ class GameState:
 
     def get_all_entities_to_render(self) -> List[WorldEntity]:
         walls = self._get_walls_from_buckets_in_camera()
-        return [self.player_entity] + [p.world_entity for p in self.consumables_on_ground] + \
+        return [self.player_entity] + \
+               [p.world_entity for p in self.consumables_on_ground] + \
                [i.world_entity for i in self.items_on_ground] + \
                [m.world_entity for m in self.money_piles_on_ground] + \
-               [e.world_entity for e in self.non_player_characters] + walls + [p.world_entity for p in
-                                                                               self.projectile_entities]
+               [e.world_entity for e in self.non_player_characters] + \
+               walls + \
+               [p.world_entity for p in self.projectile_entities] + \
+               [p.world_entity for p in self.portals]
 
     def get_decorations_to_render(self) -> List[DecorationEntity]:
         return self.decoration_entities
@@ -498,7 +511,8 @@ class GameState:
         old_pos = entity.x, entity.y
         entity.set_position(new_pos_within_world)
         walls = self._get_walls_from_buckets_adjacent_to_entity(entity)
-        other_entities = [e.world_entity for e in self.non_player_characters] + [self.player_entity] + walls
+        other_entities = [e.world_entity for e in self.non_player_characters] + \
+                         [self.player_entity] + walls + [p.world_entity for p in self.portals]
         collision = any([other for other in other_entities if self._entities_collide(entity, other)
                          and entity is not other])
         entity.set_position(old_pos)

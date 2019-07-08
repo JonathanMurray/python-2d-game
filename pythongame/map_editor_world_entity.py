@@ -4,16 +4,16 @@ from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, It
 
 
 class MapEditorWorldEntity:
-    def __init__(self, npc_type: Optional[NpcType], is_player: bool, wall_type: Optional[WallType],
-                 consumable_type: Optional[ConsumableType], item_type: Optional[ItemType],
-                 decoration_sprite: Optional[Sprite], money_amount: Optional[int]):
-        self.npc_type = npc_type
-        self.is_player = is_player
-        self.wall_type = wall_type
-        self.consumable_type = consumable_type
-        self.item_type = item_type
-        self.decoration_sprite = decoration_sprite
-        self.money_amount = money_amount
+    def __init__(self):
+        self.npc_type: NpcType = None
+        self.is_player: bool = False
+        self.wall_type: Optional[WallType] = None
+        self.consumable_type: Optional[ConsumableType] = None
+        self.item_type: Optional[ItemType] = None
+        self.decoration_sprite: Optional[Sprite] = None
+        self.money_amount: Optional[int] = None
+        self.is_portal = False
+        self.is_main_portal = False
 
     def __str__(self):
         return str(self.__dict__)
@@ -27,28 +27,51 @@ class MapEditorWorldEntity:
 
     @staticmethod
     def player():
-        return MapEditorWorldEntity(None, True, None, None, None, None, None)
+        e = MapEditorWorldEntity()
+        e.is_player = True
+        return e
 
     @staticmethod
     def npc(npc_type: NpcType):
-        return MapEditorWorldEntity(npc_type, False, None, None, None, None, None)
+        e = MapEditorWorldEntity()
+        e.npc_type = npc_type
+        return e
 
     @staticmethod
     def wall(wall_type: WallType):
-        return MapEditorWorldEntity(None, False, wall_type, None, None, None, None)
+        e = MapEditorWorldEntity()
+        e.wall_type = wall_type
+        return e
 
     @staticmethod
     def consumable(consumable_type: ConsumableType):
-        return MapEditorWorldEntity(None, False, None, consumable_type, None, None, None)
+        e = MapEditorWorldEntity()
+        e.consumable_type = consumable_type
+        return e
 
     @staticmethod
     def item(item_type: ItemType):
-        return MapEditorWorldEntity(None, False, None, None, item_type, None, None)
+        e = MapEditorWorldEntity()
+        e.item_type = item_type
+        return e
 
     @staticmethod
     def decoration(sprite: Sprite):
-        return MapEditorWorldEntity(None, False, None, None, None, sprite, None)
+        e = MapEditorWorldEntity()
+        e.decoration_sprite = sprite
+        return e
 
     @staticmethod
     def money(amount: int):
-        return MapEditorWorldEntity(None, False, None, None, None, None, amount)
+        e = MapEditorWorldEntity()
+        e.money_amount = amount
+        return e
+
+    @staticmethod
+    def portal(is_main_portal: bool):
+        e = MapEditorWorldEntity()
+        e.is_portal = True
+        e.is_main_portal = is_main_portal
+        return e
+
+# TODO Move large chunks of branching code from map_editor in here

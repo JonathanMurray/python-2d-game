@@ -33,6 +33,7 @@ from pythongame.game_data.neutral_npc_dwarf import register_dwarf_npc
 from pythongame.game_data.neutral_npc_ninja import register_ninja_npc
 from pythongame.game_data.neutral_npc_nomad import register_nomad_npc
 from pythongame.game_data.player_data import register_player_data
+from pythongame.game_data.portals import register_portal
 from pythongame.game_data.potion_health import register_health_potion
 from pythongame.game_data.potion_invis import register_invis_potion
 from pythongame.game_data.potion_lesser_health import register_lesser_health_potion
@@ -93,3 +94,5 @@ def register_all_game_data():
     register_walls()
 
     register_coin()
+
+    register_portal()

@@ -390,6 +390,7 @@ class View:
 
         self._rect_filled((40, 40, 40), (x, y, w, h))
 
+        # TODO: Reduce duplication. Pass in Sprite / UiIconSprite instead of Entity?
         if entity:
             if entity.npc_type:
                 npc_data = NON_PLAYER_CHARACTERS[entity.npc_type]
@@ -410,6 +411,9 @@ class View:
             elif entity.money_amount:
                 # TODO handle other amounts of money
                 image = self.images_by_sprite[Sprite.COINS_5][Direction.DOWN][0].image
+            elif entity.is_portal:
+                # TODO Separate sprite for portal
+                image = self.images_by_sprite[Sprite.PORTAL][Direction.DOWN][0].image
             else:
                 raise Exception("Unknown entity: " + str(entity))
         else:

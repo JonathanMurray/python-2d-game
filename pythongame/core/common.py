@@ -243,6 +243,7 @@ class Sprite(Enum):
     WALL_DIRECTIONAL_POINTY_SW = 521
     WALL_DIRECTIONAL_POINTY_NW = 522
     WALL_CHAIR = 530
+    PORTAL = 600
 
 
 class BuffType(Enum):

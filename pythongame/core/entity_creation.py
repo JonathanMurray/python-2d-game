@@ -3,9 +3,10 @@ from typing import Tuple
 from pythongame.core.common import NpcType, Direction, Sprite, ItemType, ConsumableType
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, ITEMS, CONSUMABLES, POTION_ENTITY_SIZE
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
-    ConsumableOnGround
+    ConsumableOnGround, Portal
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.game_data.portals import PORTAL_SIZE
 
 # TODO handle this (global path finder) in a better way!
 
@@ -44,3 +45,11 @@ def create_item_on_ground(item_type: ItemType, pos: Tuple[int, int]) -> ItemOnGr
 def create_consumable_on_ground(consumable_type: ConsumableType, pos: Tuple[int, int]):
     entity = WorldEntity(pos, POTION_ENTITY_SIZE, CONSUMABLES[consumable_type].entity_sprite)
     return ConsumableOnGround(entity, consumable_type)
+
+
+def create_portal_at_position(is_main_portal: bool, pos: Tuple[int, int]):
+    sprite = Sprite.PORTAL
+    if is_main_portal:
+        return Portal(WorldEntity(pos, PORTAL_SIZE, sprite), 0, True, False, 1)
+    else:
+        return Portal(WorldEntity(pos, PORTAL_SIZE, sprite), 1, False, True, 0)

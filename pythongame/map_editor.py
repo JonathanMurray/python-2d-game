@@ -5,6 +5,7 @@ from typing import Tuple, Optional, List, Dict
 import pygame
 
 from pythongame.core.common import Direction, Sprite, sum_of_vectors, WallType, NpcType, ConsumableType, ItemType
+from pythongame.core.entity_creation import create_portal_at_position
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, CONSUMABLES, ITEMS, ITEM_ENTITY_SIZE, WALLS
 from pythongame.core.game_data import POTION_ENTITY_SIZE
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, ConsumableOnGround, ItemOnGround, \
@@ -46,6 +47,9 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.npc(NpcType.NECROMANCER),
     MapEditorWorldEntity.npc(NpcType.WARRIOR),
     MapEditorWorldEntity.npc(NpcType.CHEST),
+
+    MapEditorWorldEntity.portal(True),
+    MapEditorWorldEntity.portal(False),
 
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_DWARF),
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_NOMAD),
@@ -123,7 +127,7 @@ def main(args: List[str]):
     else:
         player_entity = WorldEntity((250, 250), PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
         player_state = get_initial_player_state()
-        game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, (500, 500), player_state, [])
+        game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, (500, 500), player_state, [], [])
 
     pygame.init()
 
@@ -207,6 +211,7 @@ def main(args: List[str]):
                         if entity_being_placed.is_player:
                             game_state.player_entity.set_position(snapped_mouse_world_position)
                         elif entity_being_placed.npc_type:
+                            # TODO Create using entity_creation.py
                             npc_type = entity_being_placed.npc_type
                             data = NON_PLAYER_CHARACTERS[npc_type]
                             entity = WorldEntity(snapped_mouse_world_position, data.size, data.sprite, Direction.DOWN,
@@ -220,11 +225,13 @@ def main(args: List[str]):
                                                   entity_being_placed.wall_type)
                         elif entity_being_placed.consumable_type:
                             sprite = CONSUMABLES[entity_being_placed.consumable_type].entity_sprite
+                            # TODO Create using entity_creation.py
                             entity = WorldEntity(snapped_mouse_world_position, POTION_ENTITY_SIZE, sprite)
                             game_state.consumables_on_ground.append(
                                 ConsumableOnGround(entity, entity_being_placed.consumable_type))
                         elif entity_being_placed.item_type:
                             sprite = ITEMS[entity_being_placed.item_type].entity_sprite
+                            # TODO Create using entity_creation.py
                             entity = WorldEntity(snapped_mouse_world_position, ITEM_ENTITY_SIZE, sprite)
                             game_state.items_on_ground.append(
                                 ItemOnGround(entity, entity_being_placed.item_type))
@@ -235,6 +242,11 @@ def main(args: List[str]):
                             # TODO Allow other amounts of money?
                             entity = WorldEntity(snapped_mouse_world_position, ITEM_ENTITY_SIZE, Sprite.COINS_5)
                             game_state.money_piles_on_ground.append(MoneyPileOnGround(entity, 5))
+                        elif entity_being_placed.is_portal:
+                            portal = create_portal_at_position(
+                                entity_being_placed.is_main_portal, snapped_mouse_world_position)
+                            game_state.portals.append(portal)
+
                         else:
                             raise Exception("Unknown entity: " + str(entity_being_placed))
                 elif user_state.deleting_entities:
@@ -285,6 +297,7 @@ def main(args: List[str]):
             view.render_map_editor_mouse_rect((250, 50, 0), snapped_mouse_rect)
         elif user_state.placing_entity:
             entity_being_placed = user_state.placing_entity
+            # TODO Extract common parts of this code. Store sprite in MapEditorWorldEntity?
             if entity_being_placed.npc_type:
                 data = NON_PLAYER_CHARACTERS[entity_being_placed.npc_type]
                 entity = WorldEntity((0, 0), data.size, data.sprite, Direction.DOWN, data.speed)
@@ -308,6 +321,9 @@ def main(args: List[str]):
                 view.render_map_editor_world_entity_at_position(entity, snapped_mouse_screen_position)
             elif entity_being_placed.money_amount:
                 entity = WorldEntity((0, 0), (0, 0), Sprite.COINS_5)
+                view.render_map_editor_world_entity_at_position(entity, snapped_mouse_screen_position)
+            elif entity_being_placed.is_portal:
+                entity = WorldEntity((0, 0), (0, 0), Sprite.PORTAL)
                 view.render_map_editor_world_entity_at_position(entity, snapped_mouse_screen_position)
             else:
                 raise Exception("Unknown entity: " + str(entity_being_placed))
@@ -334,6 +350,7 @@ def _add_decoration_to_position(decoration_sprite: Sprite, game_state, snapped_m
 
 
 def _add_wall_to_position(game_state, snapped_mouse_world_position: Tuple[int, int], wall_type: WallType):
+    # TODO Extract common code to entity_creation
     data = WALLS[wall_type]
     already_has_wall = any([w for w in game_state.walls
                             if w.world_entity.get_position() == snapped_mouse_world_position])
@@ -356,6 +373,9 @@ def _delete_map_entities_from_position(game_state: GameState, snapped_mouse_worl
     for money_pile in [m for m in game_state.money_piles_on_ground
                        if m.world_entity.get_position() == snapped_mouse_world_position]:
         game_state.money_piles_on_ground.remove(money_pile)
+    for portal in [p for p in game_state.portals
+                   if p.world_entity.get_position() == snapped_mouse_world_position]:
+        game_state.portals.remove(portal)
 
 
 def _delete_map_decorations_from_position(game_state, snapped_mouse_world_position: Tuple[int, int]):
