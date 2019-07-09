@@ -188,21 +188,21 @@
       ]
     },
     {
-      "item_type": "AMULET_OF_MANA",
+      "item_type": "AMULET_OF_MANA_1",
       "position": [
         100,
         175
       ]
     },
     {
-      "item_type": "SOLDIERS_HELMET",
+      "item_type": "SOLDIERS_HELMET_1",
       "position": [
         175,
         275
       ]
     },
     {
-      "item_type": "BLESSED_SHIELD",
+      "item_type": "BLESSED_SHIELD_1",
       "position": [
         325,
         425
@@ -216,7 +216,7 @@
       ]
     },
     {
-      "item_type": "AMULET_OF_MANA",
+      "item_type": "AMULET_OF_MANA_1",
       "position": [
         425,
         375
