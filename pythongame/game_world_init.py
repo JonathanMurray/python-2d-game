@@ -2,89 +2,145 @@ import json
 
 from pythongame.core.common import *
 from pythongame.core.entity_creation import create_npc, set_global_path_finder, create_money_pile_on_ground, \
-    create_item_on_ground, create_consumable_on_ground, create_portal, create_wall, create_player_world_entity, \
-    create_decoration_entity
-from pythongame.core.game_state import GameState
+    create_consumable_on_ground, create_portal, create_wall, create_player_world_entity, \
+    create_decoration_entity, create_item_on_ground
+from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Wall, Portal, DecorationEntity, \
+    MoneyPileOnGround, ItemOnGround, ConsumableOnGround, PlayerState
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.game_data.player_data import get_initial_player_state
 
+
 # TODO Avoid depending on pythongame.game_data from here
-
-GRID_CELL_SIZE = 25
-
-
-# TODO Clean up JSON handling. Add classes that take care of (de-)serializing a specific object?
 
 
 def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str):
     with open(map_file) as map_file:
         json_data = json.loads(map_file.read())
 
-        player_pos = json_data["player"]["position"]
-        player_entity = create_player_world_entity(player_pos)
-
-        consumables = [create_consumable_on_ground(ConsumableType[p["consumable_type"]], p["position"]) for p in
-                       json_data["consumables_on_ground"]]
-        items = [create_item_on_ground(ItemType[i["item_type"]], i["position"]) for i in
-                 json_data["items_on_ground"]]
-
-        json_money_piles_on_ground = json_data.get("money_piles_on_ground", [])
-        money_piles = [create_money_pile_on_ground(p["amount"], p["position"]) for p in json_money_piles_on_ground]
-
         path_finder = GlobalPathFinder()
         set_global_path_finder(path_finder)
-        enemies = [create_npc(NpcType[e["enemy_type"]], e["position"]) for e in json_data["enemies"]]
 
-        walls = [create_wall(WallType[w["wall_type"]], w["position"]) for w in json_data["walls"]]
-
-        game_world_size = json_data["game_world_size"]
-
-        decoration_entities = [create_decoration_entity(d["position"], Sprite[d["sprite"]]) for d in
-                               json_data["decorations"]]
-        portals = [create_portal(p["is_main_portal"], p["position"]) for p in json_data["portals"]]
         player_state = get_initial_player_state()
-        game_state = GameState(player_entity, consumables, items, money_piles, enemies, walls, camera_size,
-                               game_world_size, player_state, decoration_entities, portals)
+        game_state = MapJson.deserialize(json_data, player_state, camera_size)
 
         path_finder.set_grid(game_state.grid)
         return game_state
 
 
 def save_game_state_to_json_file(game_state: GameState, map_file: str):
-    json_data = {}
-
-    json_data["enemies"] = []
-    for e in game_state.non_player_characters:
-        json_data["enemies"].append({"enemy_type": e.npc_type.name, "position": e.world_entity.get_position()})
-
-    json_data["player"] = {"position": game_state.player_entity.get_position()}
-
-    json_data["walls"] = []
-    for w in game_state.walls:
-        json_data["walls"].append({"wall_type": w.wall_type.name, "position": w.world_entity.get_position()})
-
-    json_data["consumables_on_ground"] = []
-    for p in game_state.consumables_on_ground:
-        json_data["consumables_on_ground"].append(
-            {"consumable_type": p.consumable_type.name, "position": p.world_entity.get_position()})
-
-    json_data["items_on_ground"] = []
-    for i in game_state.items_on_ground:
-        json_data["items_on_ground"].append({"item_type": i.item_type.name, "position": i.world_entity.get_position()})
-
-    json_data["money_piles_on_ground"] = []
-    for m in game_state.money_piles_on_ground:
-        json_data["money_piles_on_ground"].append({"amount": m.amount, "position": m.world_entity.get_position()})
-
-    json_data["decorations"] = []
-    for d in game_state.decoration_entities:
-        json_data["decorations"].append({"sprite": d.sprite.name, "position": d.get_position()})
-
-    json_data["portals"] = []
-    for p in game_state.portals:
-        json_data["portals"].append({"is_main_portal": p.is_main_portal, "position": p.world_entity.get_position()})
-
-    json_data["game_world_size"] = game_state.game_world_size
-
+    json_data = MapJson.serialize(game_state)
     with open(map_file, 'w') as map_file:
         map_file.write(json.dumps(json_data, indent=2))
+
+
+class MapJson:
+    @staticmethod
+    def serialize(game_state: GameState):
+        return {
+            "player": PlayerJson.serialize(game_state.player_entity),
+            "consumables_on_ground": [ConsumableJson.serialize(p) for p in game_state.consumables_on_ground],
+            "items_on_ground": [ItemJson.serialize(i) for i in game_state.items_on_ground],
+            "money_piles_on_ground": [MoneyJson.serialize(m) for m in game_state.money_piles_on_ground],
+            "enemies": [EnemyJson.serialize(npc) for npc in game_state.non_player_characters],
+            "walls": [WallJson.serialize(wall) for wall in game_state.walls],
+            "game_world_size": game_state.game_world_size,
+            "decorations": [DecorationJson.serialize(d) for d in game_state.decoration_entities],
+            "portals": [PortalJson.serialize(p) for p in game_state.portals]
+        }
+
+    @staticmethod
+    def deserialize(data, player_state: PlayerState, camera_size: Tuple[int, int]) -> GameState:
+        return GameState(
+            player_entity=(PlayerJson.deserialize(data["player"])),
+            consumables_on_ground=[ConsumableJson.deserialize(p) for p in data.get("consumables_on_ground", [])],
+            items_on_ground=[ItemJson.deserialize(i) for i in data.get("items_on_ground", [])],
+            money_piles_on_ground=[MoneyJson.deserialize(p) for p in data.get("money_piles_on_ground", [])],
+            non_player_characters=[EnemyJson.deserialize(e) for e in data.get("enemies", [])],
+            walls=[WallJson.deserialize(w) for w in data.get("walls", [])],
+            camera_size=camera_size,
+            game_world_size=(data["game_world_size"]),
+            player_state=player_state,
+            decoration_entities=[DecorationJson.deserialize(d) for d in data.get("decorations", [])],
+            portals=[PortalJson.deserialize(p) for p in data.get("portals", [])]
+        )
+
+
+class PlayerJson:
+    @staticmethod
+    def serialize(entity: WorldEntity):
+        return {"position": entity.get_position()}
+
+    @staticmethod
+    def deserialize(data) -> WorldEntity:
+        return create_player_world_entity(data["position"])
+
+
+# TODO This is more than enemies!
+class EnemyJson:
+    @staticmethod
+    def serialize(enemy: NonPlayerCharacter):
+        return {"enemy_type": enemy.npc_type.name, "position": enemy.world_entity.get_position()}
+
+    @staticmethod
+    def deserialize(data) -> NonPlayerCharacter:
+        return create_npc(NpcType[data["enemy_type"]], data["position"])
+
+
+class WallJson:
+    @staticmethod
+    def serialize(wall: Wall):
+        return {"wall_type": wall.wall_type.name, "position": wall.world_entity.get_position()}
+
+    @staticmethod
+    def deserialize(data) -> Wall:
+        return create_wall(WallType[data["wall_type"]], data["position"])
+
+
+class PortalJson:
+    @staticmethod
+    def serialize(portal: Portal):
+        return {"is_main_portal": portal.is_main_portal, "position": portal.world_entity.get_position()}
+
+    @staticmethod
+    def deserialize(data) -> Portal:
+        return create_portal(data["is_main_portal"], data["position"])
+
+
+class DecorationJson:
+    @staticmethod
+    def serialize(decoration: DecorationEntity):
+        return {"sprite": decoration.sprite.name, "position": decoration.get_position()}
+
+    @staticmethod
+    def deserialize(data) -> DecorationEntity:
+        return create_decoration_entity(data["position"], Sprite[data["sprite"]])
+
+
+class MoneyJson:
+    @staticmethod
+    def serialize(money: MoneyPileOnGround):
+        return {"amount": money.amount, "position": money.world_entity.get_position()}
+
+    @staticmethod
+    def deserialize(data) -> MoneyPileOnGround:
+        return create_money_pile_on_ground(data["amount"], data["position"])
+
+
+class ItemJson:
+    @staticmethod
+    def serialize(item: ItemOnGround):
+        return {"item_type": item.item_type.name, "position": item.world_entity.get_position()}
+
+    @staticmethod
+    def deserialize(data) -> ItemOnGround:
+        return create_item_on_ground(ItemType[data["item_type"]], data["position"])
+
+
+class ConsumableJson:
+    @staticmethod
+    def serialize(consumable: ConsumableOnGround):
+        return {"consumable_type": consumable.consumable_type.name, "position": consumable.world_entity.get_position()}
+
+    @staticmethod
+    def deserialize(data) -> ConsumableOnGround:
+        return create_consumable_on_ground(ConsumableType[data["consumable_type"]], data["position"])

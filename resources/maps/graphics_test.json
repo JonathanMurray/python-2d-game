@@ -1,4 +1,57 @@
 {
+  "player": {
+    "position": [
+      300,
+      175
+    ]
+  },
+  "consumables_on_ground": [
+    {
+      "consumable_type": "HEALTH",
+      "position": [
+        3875,
+        3100
+      ]
+    },
+    {
+      "consumable_type": "MANA",
+      "position": [
+        3975,
+        3100
+      ]
+    },
+    {
+      "consumable_type": "HEALTH_LESSER",
+      "position": [
+        3825,
+        3100
+      ]
+    },
+    {
+      "consumable_type": "MANA_LESSER",
+      "position": [
+        3925,
+        3100
+      ]
+    }
+  ],
+  "items_on_ground": [
+    {
+      "item_type": "SWORD_OF_LEECHING",
+      "position": [
+        3575,
+        2000
+      ]
+    },
+    {
+      "item_type": "ROD_OF_LIGHTNING",
+      "position": [
+        1075,
+        3050
+      ]
+    }
+  ],
+  "money_piles_on_ground": [],
   "enemies": [
     {
       "enemy_type": "RAT_1",
@@ -960,12 +1013,6 @@
       ]
     }
   ],
-  "player": {
-    "position": [
-      300,
-      175
-    ]
-  },
   "walls": [
     {
       "wall_type": "WALL_DIRECTIONAL_N",
@@ -12903,53 +12950,10 @@
       ]
     }
   ],
-  "consumables_on_ground": [
-    {
-      "consumable_type": "HEALTH",
-      "position": [
-        3875,
-        3100
-      ]
-    },
-    {
-      "consumable_type": "MANA",
-      "position": [
-        3975,
-        3100
-      ]
-    },
-    {
-      "consumable_type": "HEALTH_LESSER",
-      "position": [
-        3825,
-        3100
-      ]
-    },
-    {
-      "consumable_type": "MANA_LESSER",
-      "position": [
-        3925,
-        3100
-      ]
-    }
+  "game_world_size": [
+    6500,
+    3500
   ],
-  "items_on_ground": [
-    {
-      "item_type": "SWORD_OF_LEECHING",
-      "position": [
-        3575,
-        2000
-      ]
-    },
-    {
-      "item_type": "ROD_OF_LIGHTNING",
-      "position": [
-        1075,
-        3050
-      ]
-    }
-  ],
-  "money_piles_on_ground": [],
   "decorations": [
     {
       "sprite": "DECORATION_GROUND_STONE",
@@ -25336,9 +25340,5 @@
         150
       ]
     }
-  ],
-  "game_world_size": [
-    6500,
-    3500
   ]
 }
