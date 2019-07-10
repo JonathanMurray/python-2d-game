@@ -10,7 +10,8 @@ from pythongame.core.view_state import ViewState
 
 class PlayerControls:
 
-    def try_use_ability(self, ability_type: AbilityType, game_state: GameState, view_state: ViewState):
+    @staticmethod
+    def try_use_ability(ability_type: AbilityType, game_state: GameState, view_state: ViewState):
         if game_state.player_state.is_stunned():
             return
         view_state.notify_ability_was_clicked(ability_type)
@@ -39,7 +40,8 @@ class PlayerControls:
         else:
             view_state.set_message("Failed to execute ability!")
 
-    def try_use_consumable(self, slot_number: int, game_state: GameState, view_state: ViewState):
+    @staticmethod
+    def try_use_consumable(slot_number: int, game_state: GameState, view_state: ViewState):
 
         if not game_state.player_state.is_stunned():
             view_state.notify_consumable_was_clicked(slot_number)

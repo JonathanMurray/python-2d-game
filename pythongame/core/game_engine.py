@@ -21,7 +21,6 @@ class GameEngine:
 
     def __init__(self, game_state: GameState, view_state: ViewState):
         self.game_state = game_state
-        self.player_controls = PlayerControls()
         self.view_state = view_state
 
     def initialize(self):
@@ -31,10 +30,10 @@ class GameEngine:
                 item_effect.apply_start_effect(self.game_state)
 
     def try_use_ability(self, ability_type: AbilityType):
-        self.player_controls.try_use_ability(ability_type, self.game_state, self.view_state)
+        PlayerControls.try_use_ability(ability_type, self.game_state, self.view_state)
 
     def try_use_consumable(self, slot_number: int):
-        self.player_controls.try_use_consumable(slot_number, self.game_state, self.view_state)
+        PlayerControls.try_use_consumable(slot_number, self.game_state, self.view_state)
 
     def move_in_direction(self, direction: Direction):
         if not self.game_state.player_state.is_stunned():
