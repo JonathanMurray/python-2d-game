@@ -417,7 +417,7 @@ class View:
         self._image(image, self._translate_ui_position_to_screen(position))
 
     def _text_in_ui(self, font, text, ui_pos, color=COLOR_WHITE):
-        screen_pos = self._translate_ui_position_to_screen((ui_pos))
+        screen_pos = self._translate_ui_position_to_screen(ui_pos)
         self._text(font, text, screen_pos, color)
 
     def _minimap_in_ui(self, position_in_ui, size, player_relative_position):
