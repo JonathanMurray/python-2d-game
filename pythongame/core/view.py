@@ -656,9 +656,10 @@ class View:
                 buff_texts.append(BUFF_TEXTS[buff_type])
                 buff_duration_ratios_remaining.append(ratio_duration_remaining)
         for i, text in enumerate(buff_texts):
-            self._text_in_ui(self.font_buff_texts, text, (x_buffs, -40 + i * 25))
-            self._stat_bar_in_ui((x_buffs, -20 + i * 25), 60, 2, buff_duration_ratios_remaining[i], (250, 250, 0),
-                                 False)
+            y_offset_buff = -i * 25
+            self._text_in_ui(self.font_buff_texts, text, (x_buffs, -40 + y_offset_buff))
+            self._stat_bar_in_ui((x_buffs, -20 + y_offset_buff), 60, 2, buff_duration_ratios_remaining[i],
+                                 (250, 250, 0), False)
 
         # STATS
         x_stats = 555
