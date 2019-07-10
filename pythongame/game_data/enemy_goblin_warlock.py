@@ -2,14 +2,14 @@ import random
 
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
 from pythongame.core.common import Millis, NpcType, Sprite, \
-    get_position_from_center_position, ProjectileType, BuffType, Direction, get_perpendicular_directions, \
-    translate_in_direction, SoundId, ConsumableType
+    ProjectileType, BuffType, Direction, SoundId, ConsumableType
 from pythongame.core.damage_interactions import deal_damage_to_player, deal_npc_damage_to_npc
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import register_npc_data, NpcData, register_buff_text, SpriteSheet, \
     register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
 from pythongame.core.loot import LootTable, LootGroup, LootEntry
+from pythongame.core.math import get_perpendicular_directions, get_position_from_center_position, translate_in_direction
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder

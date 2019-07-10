@@ -2,11 +2,12 @@ from typing import Dict, Any, List, Tuple, Optional, Union
 
 import pygame
 
-from pythongame.core.common import Direction, Sprite, ConsumableType, sum_of_vectors, ItemType, is_point_in_rect
+from pythongame.core.common import Direction, Sprite, ConsumableType, ItemType
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, UiIconSprite, \
     PORTRAIT_ICON_SPRITE_PATHS, PortraitIconSprite, NpcDialog
 from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter
+from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 

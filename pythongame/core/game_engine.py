@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 from pythongame.core.ability_learning import player_learn_new_ability
 from pythongame.core.common import *
@@ -8,6 +8,8 @@ from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.loot import LootEntry
+from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vectors, \
+    get_rect_with_increased_size_in_all_directions
 from pythongame.core.player_controls import PlayerControls
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view_state import ViewState

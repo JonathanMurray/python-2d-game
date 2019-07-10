@@ -1,7 +1,7 @@
 from typing import Optional
 
-from pythongame.core.common import get_manhattan_distance
 from pythongame.core.game_state import WorldEntity, GameState, NonPlayerCharacter
+from pythongame.core.math import get_manhattan_distance
 
 
 # Represents a hostile target for an enemy.

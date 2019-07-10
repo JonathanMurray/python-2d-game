@@ -1,4 +1,5 @@
 import json
+from typing import Tuple
 
 from pythongame.core.common import *
 from pythongame.core.entity_creation import create_npc, set_global_path_finder, create_money_pile_on_ground, \

@@ -1,12 +1,12 @@
 import random
 
-from pythongame.core.common import Millis, is_x_and_y_within_distance, NpcType, Sprite, Direction, \
-    get_perpendicular_directions
+from pythongame.core.common import Millis, NpcType, Sprite, Direction
 from pythongame.core.damage_interactions import deal_npc_damage
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.loot import LootEntry, LootTable
+from pythongame.core.math import get_perpendicular_directions, is_x_and_y_within_distance
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder

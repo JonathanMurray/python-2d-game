@@ -1,11 +1,12 @@
 from pythongame.core.ability_effects import register_ability_effect, Sprite
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import AbilityType, Millis, \
-    Direction, get_position_from_center_position, BuffType
+    Direction, BuffType
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.math import get_position_from_center_position
 from pythongame.core.visual_effects import VisualCircle, VisualSprite, VisualRect
 
 EFFECT_SPRITE_SIZE = (230, 230)

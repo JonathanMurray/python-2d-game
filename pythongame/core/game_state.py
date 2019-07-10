@@ -1,11 +1,13 @@
 import math
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Tuple
 
 from pygame.rect import Rect
 
 from pythongame.core.common import *
 from pythongame.core.game_data import PortraitIconSprite, NpcDialog
 from pythongame.core.loot import LootTable
+from pythongame.core.math import boxes_intersect, rects_intersect, get_position_from_center_position, \
+    translate_in_direction, is_x_and_y_within_distance
 
 GRID_CELL_WIDTH = 25
 
@@ -48,7 +50,7 @@ class WorldEntity:
         self._is_moving = True
         self.pygame_collision_rect = Rect(self.rect())
         self.movement_animation_progress: float = 0  # goes from 0 to 1 repeatedly
-        self.visible = True # Should only be used to control rendering
+        self.visible = True  # Should only be used to control rendering
 
     def set_moving_in_dir(self, direction: Direction):
         if direction is None:
@@ -378,7 +380,7 @@ class DecorationEntity:
         # The fields below are needed for the view module to be able to handle this class the same as WorldEntity
         self.direction = Direction.DOWN  # The view module uses direction to determine which image to render
         self.movement_animation_progress: float = 0  # The view module uses this to determine which frame to render
-        self.visible = True # Should only be used to control rendering
+        self.visible = True  # Should only be used to control rendering
 
     def rect(self):
         # Used by view module in map_editor

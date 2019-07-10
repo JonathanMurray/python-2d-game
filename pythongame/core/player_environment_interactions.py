@@ -2,8 +2,9 @@ import sys
 from typing import Optional, List
 
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect
-from pythongame.core.common import is_x_and_y_within_distance, boxes_intersect, Millis, translate_in_direction, \
-    Direction, BuffType, get_manhattan_distance_between_rects
+from pythongame.core.common import Millis, Direction, BuffType
+from pythongame.core.math import boxes_intersect, translate_in_direction, is_x_and_y_within_distance, \
+    get_manhattan_distance_between_rects
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, LootableOnGround, Portal
 from pythongame.core.npc_behaviors import invoke_npc_action

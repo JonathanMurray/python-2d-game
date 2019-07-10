@@ -1,7 +1,7 @@
 from typing import Tuple, Any, Optional
 
-from pythongame.core.common import Millis, is_x_and_y_within_distance, get_directions_to_position, \
-    get_opposite_direction, Direction
+from pythongame.core.common import Millis, Direction
+from pythongame.core.math import get_directions_to_position, get_opposite_direction, is_x_and_y_within_distance
 from pythongame.core.game_state import GRID_CELL_WIDTH, GameState, WorldEntity
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.visual_effects import VisualLine, VisualRect

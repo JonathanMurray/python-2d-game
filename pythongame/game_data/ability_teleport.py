@@ -1,7 +1,8 @@
 from pythongame.core.ability_effects import register_ability_effect
-from pythongame.core.common import translate_in_direction, Millis, AbilityType, SoundId
+from pythongame.core.common import Millis, AbilityType, SoundId
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path
 from pythongame.core.game_state import GameState
+from pythongame.core.math import translate_in_direction
 from pythongame.core.visual_effects import VisualCircle, VisualRect, VisualLine
 
 

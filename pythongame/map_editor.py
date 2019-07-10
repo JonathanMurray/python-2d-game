@@ -4,7 +4,8 @@ from typing import Tuple, Optional, List, Dict
 
 import pygame
 
-from pythongame.core.common import Sprite, sum_of_vectors, WallType, NpcType, ConsumableType, ItemType, PortalId
+from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, ItemType, PortalId
+from pythongame.core.math import sum_of_vectors
 from pythongame.core.entity_creation import create_portal, create_player_world_entity, create_npc, create_wall, \
     create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground
 from pythongame.core.game_state import GameState

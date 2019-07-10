@@ -1,12 +1,13 @@
 import random
 
-from pythongame.core.common import Millis, random_direction, NpcType, Sprite, \
-    is_x_and_y_within_distance, Direction, sum_of_vectors, get_position_from_center_position, ItemType
+from pythongame.core.common import Millis, NpcType, Sprite, Direction, ItemType
 from pythongame.core.entity_creation import create_npc
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
     NON_PLAYER_CHARACTERS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.loot import LootTable, LootEntry, LootGroup
+from pythongame.core.math import random_direction, get_position_from_center_position, sum_of_vectors, \
+    is_x_and_y_within_distance
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.visual_effects import VisualLine, VisualCircle
