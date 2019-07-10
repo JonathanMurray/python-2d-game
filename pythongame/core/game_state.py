@@ -387,10 +387,9 @@ class DecorationEntity:
 
 
 class Portal:
-    def __init__(self, world_entity: WorldEntity, index: int, is_main_portal: bool, is_enabled: bool, leads_to: int):
+    def __init__(self, world_entity: WorldEntity, portal_id: PortalId, is_enabled: bool, leads_to: Optional[PortalId]):
         self.world_entity = world_entity
-        self.index = index
-        self.is_main_portal = is_main_portal
+        self.portal_id = portal_id
         self.is_enabled = is_enabled
         self.leads_to = leads_to
 

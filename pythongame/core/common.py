@@ -243,7 +243,11 @@ class Sprite(Enum):
     WALL_DIRECTIONAL_POINTY_SW = 521
     WALL_DIRECTIONAL_POINTY_NW = 522
     WALL_CHAIR = 530
-    PORTAL = 600
+    PORTAL_DISABLED = 600
+    PORTAL_BLUE = 601
+    PORTAL_GREEN = 602
+    PORTAL_RED = 603
+    PORTAL_DARK = 604
 
 
 class BuffType(Enum):
@@ -308,3 +312,12 @@ class SoundId(Enum):
     WARNING = 200
     PLAYER_PAIN = 300
     ENEMY_ATTACK_GOBLIN_WARLOCK = 400
+
+
+class PortalId(Enum):
+    A_BASE = 1
+    A_REMOTE = 2
+    B_BASE = 3
+    B_REMOTE = 4
+    C_BASE = 5
+    C_REMOTE = 6

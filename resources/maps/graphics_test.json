@@ -1008,8 +1008,8 @@
     {
       "enemy_type": "NEUTRAL_NINJA",
       "position": [
-        75,
-        250
+        425,
+        325
       ]
     }
   ],
@@ -6244,20 +6244,6 @@
       ]
     },
     {
-      "wall_type": "STATUE",
-      "position": [
-        625,
-        3025
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        725,
-        3025
-      ]
-    },
-    {
       "wall_type": "WALL_DIRECTIONAL_SE",
       "position": [
         950,
@@ -10495,13 +10481,6 @@
     {
       "wall_type": "STATUE",
       "position": [
-        3450,
-        2025
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
         3700,
         2025
       ]
@@ -12803,13 +12782,6 @@
       ]
     },
     {
-      "wall_type": "STATUE",
-      "position": [
-        175,
-        150
-      ]
-    },
-    {
       "wall_type": "WALL_DIRECTIONAL_W",
       "position": [
         25,
@@ -12936,17 +12908,24 @@
       ]
     },
     {
-      "wall_type": "STATUE",
-      "position": [
-        75,
-        150
-      ]
-    },
-    {
       "wall_type": "WALL_DIRECTIONAL_E",
       "position": [
         950,
         1100
+      ]
+    },
+    {
+      "wall_type": "STATUE",
+      "position": [
+        725,
+        3025
+      ]
+    },
+    {
+      "wall_type": "STATUE",
+      "position": [
+        1050,
+        550
       ]
     }
   ],
@@ -25327,17 +25306,45 @@
   ],
   "portals": [
     {
-      "is_main_portal": false,
+      "portal_id": "A_REMOTE",
       "position": [
-        1050,
-        550
+        625,
+        3025
       ]
     },
     {
-      "is_main_portal": true,
+      "portal_id": "B_REMOTE",
+      "position": [
+        2150,
+        50
+      ]
+    },
+    {
+      "portal_id": "A_BASE",
+      "position": [
+        75,
+        150
+      ]
+    },
+    {
+      "portal_id": "B_BASE",
+      "position": [
+        150,
+        150
+      ]
+    },
+    {
+      "portal_id": "C_BASE",
       "position": [
         425,
         150
+      ]
+    },
+    {
+      "portal_id": "C_REMOTE",
+      "position": [
+        3450,
+        2025
       ]
     }
   ]

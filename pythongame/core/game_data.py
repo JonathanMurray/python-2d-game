@@ -167,6 +167,13 @@ class WallData:
         self.size = size
 
 
+class PortalData:
+    def __init__(self, starts_enabled: bool, leads_to: Optional[PortalId], sprite: Sprite):
+        self.starts_enabled = starts_enabled
+        self.leads_to = leads_to
+        self.sprite = sprite
+
+
 NON_PLAYER_CHARACTERS: Dict[NpcType, NpcData] = {}
 
 ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Animation]] = {}
@@ -186,6 +193,8 @@ ABILITIES: Dict[AbilityType, AbilityData] = {}
 KEYS_BY_ABILITY_TYPE: Dict[AbilityType, UserAbilityKey] = {}
 
 BUFF_TEXTS: Dict[BuffType, str] = {}
+
+PORTALS: Dict[PortalId, PortalData] = {}
 
 
 def register_npc_data(npc_type: NpcType, npc_data: NpcData):
@@ -248,3 +257,7 @@ def register_consumable_data(consumable_type: ConsumableType, data: ConsumableDa
 
 def register_item_data(item_type: ItemType, item_data: ItemData):
     ITEMS[item_type] = item_data
+
+
+def register_portal_data(portal_id: PortalId, portal_data: PortalData):
+    PORTALS[portal_id] = portal_data

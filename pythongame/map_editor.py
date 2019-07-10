@@ -4,7 +4,7 @@ from typing import Tuple, Optional, List, Dict
 
 import pygame
 
-from pythongame.core.common import Sprite, sum_of_vectors, WallType, NpcType, ConsumableType, ItemType
+from pythongame.core.common import Sprite, sum_of_vectors, WallType, NpcType, ConsumableType, ItemType, PortalId
 from pythongame.core.entity_creation import create_portal, create_player_world_entity, create_npc, create_wall, \
     create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground
 from pythongame.core.game_state import GameState
@@ -47,8 +47,12 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.npc(NpcType.WARRIOR),
     MapEditorWorldEntity.npc(NpcType.CHEST),
 
-    MapEditorWorldEntity.portal(True),
-    MapEditorWorldEntity.portal(False),
+    MapEditorWorldEntity.portal(PortalId.A_BASE),
+    MapEditorWorldEntity.portal(PortalId.B_BASE),
+    MapEditorWorldEntity.portal(PortalId.C_BASE),
+    MapEditorWorldEntity.portal(PortalId.A_REMOTE),
+    MapEditorWorldEntity.portal(PortalId.B_REMOTE),
+    MapEditorWorldEntity.portal(PortalId.C_REMOTE),
 
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_DWARF),
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_NOMAD),
@@ -228,8 +232,8 @@ def main(args: List[str]):
                             money_pile_on_ground = create_money_pile_on_ground(
                                 entity_being_placed.money_amount, snapped_mouse_world_position)
                             game_state.money_piles_on_ground.append(money_pile_on_ground)
-                        elif entity_being_placed.is_portal:
-                            portal = create_portal(entity_being_placed.is_main_portal, snapped_mouse_world_position)
+                        elif entity_being_placed.portal_id:
+                            portal = create_portal(entity_being_placed.portal_id, snapped_mouse_world_position)
                             game_state.portals.append(portal)
                         else:
                             raise Exception("Unknown entity: " + str(entity_being_placed))

@@ -99,11 +99,11 @@ class WallJson:
 class PortalJson:
     @staticmethod
     def serialize(portal: Portal):
-        return {"is_main_portal": portal.is_main_portal, "position": portal.world_entity.get_position()}
+        return {"portal_id": portal.portal_id.name, "position": portal.world_entity.get_position()}
 
     @staticmethod
     def deserialize(data) -> Portal:
-        return create_portal(data["is_main_portal"], data["position"])
+        return create_portal(PortalId[data["portal_id"]], data["position"])
 
 
 class DecorationJson:

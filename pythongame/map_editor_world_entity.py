@@ -1,6 +1,6 @@
 from typing import Optional, Tuple
 
-from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, ItemType
+from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, ItemType, PortalId
 from pythongame.core.entity_creation import create_portal, create_player_world_entity, create_npc, create_wall, \
     create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground
 
@@ -16,8 +16,7 @@ class MapEditorWorldEntity:
         self.item_type: Optional[ItemType] = None
         self.decoration_sprite: Optional[Sprite] = None
         self.money_amount: Optional[int] = None
-        self.is_portal = False
-        self.is_main_portal = False
+        self.portal_id: Optional[PortalId] = None
 
     def __str__(self):
         return str(self.__dict__)
@@ -79,9 +78,8 @@ class MapEditorWorldEntity:
         return e
 
     @staticmethod
-    def portal(is_main_portal: bool):
-        entity = create_portal(is_main_portal, (0, 0)).world_entity
+    def portal(portal_id: PortalId):
+        entity = create_portal(portal_id, (0, 0)).world_entity
         e = MapEditorWorldEntity(entity.sprite, (entity.w, entity.h))
-        e.is_portal = True
-        e.is_main_portal = is_main_portal
+        e.portal_id = portal_id
         return e

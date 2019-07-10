@@ -1,8 +1,8 @@
 from typing import Tuple
 
-from pythongame.core.common import NpcType, Direction, Sprite, ItemType, ConsumableType, WallType
+from pythongame.core.common import NpcType, Direction, Sprite, ItemType, ConsumableType, WallType, PortalId
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, ITEMS, CONSUMABLES, POTION_ENTITY_SIZE, \
-    WALLS
+    WALLS, PORTALS
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
     ConsumableOnGround, Portal, Wall, DecorationEntity
 from pythongame.core.npc_behaviors import create_npc_mind
@@ -49,12 +49,9 @@ def create_consumable_on_ground(consumable_type: ConsumableType, pos: Tuple[int,
     return ConsumableOnGround(entity, consumable_type)
 
 
-def create_portal(is_main_portal: bool, pos: Tuple[int, int]) -> Portal:
-    entity = WorldEntity(pos, PORTAL_SIZE, Sprite.PORTAL)
-    if is_main_portal:
-        return Portal(entity, 0, True, False, 1)
-    else:
-        return Portal(entity, 1, False, True, 0)
+def create_portal(portal_id: PortalId, pos: Tuple[int, int]) -> Portal:
+    data = PORTALS[portal_id]
+    return Portal(WorldEntity(pos, PORTAL_SIZE, data.sprite), portal_id, data.starts_enabled, data.leads_to)
 
 
 def create_wall(wall_type: WallType, pos: Tuple[int, int]) -> Wall:

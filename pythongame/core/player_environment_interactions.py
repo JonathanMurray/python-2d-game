@@ -55,8 +55,10 @@ class PlayerInteractionsState:
     # TODO Delegate this logic to game_engine?
     def _try_use_portal(self, portal: Portal, game_state: GameState):
         if portal.is_enabled:
-            destination_portal = [p for p in game_state.portals if p.index == portal.leads_to][0]
+            destination_portal = [p for p in game_state.portals if p.portal_id == portal.leads_to][0]
             destination_portal.is_enabled = True
+            destination_portal.leads_to = portal.portal_id
+            destination_portal.world_entity.sprite = portal.world_entity.sprite
             destination = translate_in_direction(destination_portal.world_entity.get_position(), Direction.DOWN, 50)
             game_state.player_entity.set_position(destination)
             color = (140, 140, 230)
@@ -72,7 +74,7 @@ class PlayerInteractionsState:
 
     def get_action_text(self) -> Optional[EntityActionText]:
         if self.npc_ready_for_dialog:
-            return EntityActionText(self.npc_ready_for_dialog.world_entity, "[Space] Talk")
+            return EntityActionText(self.npc_ready_for_dialog.world_entity, "[Space] ...")
         elif self.lootable_ready_to_be_picked_up:
             return EntityActionText(self.lootable_ready_to_be_picked_up.world_entity, "[Space] Loot")
         elif self.portal_ready_for_interaction:
