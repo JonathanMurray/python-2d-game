@@ -1,7 +1,50 @@
-from pythongame.core.common import Direction, PortalId
+from typing import Tuple
+
+from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect
+from pythongame.core.common import Direction, PortalId, Millis, BuffType
 from pythongame.core.game_data import SpriteSheet, Sprite, register_entity_sprite_map, register_portal_data, PortalData
+from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.visual_effects import VisualRect, VisualCircle
 
 PORTAL_SIZE = (42, 46)
+BUFF_TYPE = BuffType.BEING_TELEPORTED
+PORTAL_DELAY = 600
+
+
+class BeingTeleported(AbstractBuffEffect):
+    def __init__(self, destination: Tuple[int, int]):
+        self.destination = destination
+        self.time_since_start = 0
+        self.has_teleport_happened = False
+
+    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
+        game_state.player_state.add_stun()
+        game_state.player_entity.set_not_moving()
+        effect_position = buffed_entity.get_center_position()
+        color = (140, 140, 230)
+        game_state.visual_effects.append(VisualCircle(color, effect_position, 17, 35, Millis(150), 1))
+        game_state.visual_effects.append(VisualRect(color, effect_position, 37, 50, Millis(150), 1))
+        game_state.visual_effects.append(VisualCircle(color, effect_position, 25, 50, Millis(300), 2))
+        game_state.player_entity.visible = False
+
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
+                            time_passed: Millis):
+        self.time_since_start += time_passed
+        if not self.has_teleport_happened and self.time_since_start > PORTAL_DELAY / 2:
+            self.has_teleport_happened = True
+            game_state.player_entity.set_position(self.destination)
+            effect_position = buffed_entity.get_center_position()
+            color = (140, 140, 230)
+            game_state.visual_effects.append(VisualCircle(color, effect_position, 17, 35, Millis(150), 1))
+            game_state.visual_effects.append(VisualRect(color, effect_position, 37, 50, Millis(150), 1))
+            game_state.visual_effects.append(VisualCircle(color, effect_position, 25, 50, Millis(300), 2))
+
+    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
+        game_state.player_state.remove_stun()
+        game_state.player_entity.visible = True
+
+    def get_buff_type(self):
+        return BUFF_TYPE
 
 
 def register_portal():
@@ -44,3 +87,5 @@ def register_portal():
     register_portal_data(PortalId.B_REMOTE, PortalData(True, PortalId.B_BASE, Sprite.PORTAL_RED))
     register_portal_data(PortalId.C_BASE, PortalData(False, PortalId.C_REMOTE, Sprite.PORTAL_DISABLED))
     register_portal_data(PortalId.C_REMOTE, PortalData(True, PortalId.C_BASE, Sprite.PORTAL_DARK))
+
+    register_buff_effect(BUFF_TYPE, BeingTeleported)

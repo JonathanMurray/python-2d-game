@@ -265,6 +265,7 @@ class BuffType(Enum):
     BLOOD_LUST = 13
     CHARGING = 14
     STUNNED_FROM_CHARGE_IMPACT = 15
+    BEING_TELEPORTED = 16
 
 
 class ItemType(Enum):

@@ -1,4 +1,4 @@
-from typing import Dict, Type
+from typing import Dict, Type, Optional, Any
 
 from pythongame.core.common import *
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
@@ -26,5 +26,10 @@ def register_buff_effect(buff_type: BuffType, effect: Type[AbstractBuffEffect]):
     _buff_effects[buff_type] = effect
 
 
-def get_buff_effect(buff_type: BuffType) -> AbstractBuffEffect:
-    return _buff_effects[buff_type]()
+def get_buff_effect(buff_type: BuffType, args: Optional[Any] = None) -> AbstractBuffEffect:
+    if args:
+        # args passed in, assume the buff takes args in constructor
+        return _buff_effects[buff_type](args)
+    else:
+        # no args passed in, assume the buff doesn't take any args in constructor
+        return _buff_effects[buff_type]()

@@ -253,6 +253,8 @@ class View:
         self._rect(color, (translated_pos[0], translated_pos[1], world_rect[2], world_rect[3]), line_width)
 
     def _world_entity(self, entity: Union[WorldEntity, DecorationEntity]):
+        if not entity.visible:
+            return
         if entity.sprite is None:
             raise Exception("Entity has no sprite: " + str(entity))
         elif entity.sprite in self.images_by_sprite:

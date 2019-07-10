@@ -48,6 +48,7 @@ class WorldEntity:
         self._is_moving = True
         self.pygame_collision_rect = Rect(self.rect())
         self.movement_animation_progress: float = 0  # goes from 0 to 1 repeatedly
+        self.visible = True # Should only be used to control rendering
 
     def set_moving_in_dir(self, direction: Direction):
         if direction is None:
@@ -377,6 +378,7 @@ class DecorationEntity:
         # The fields below are needed for the view module to be able to handle this class the same as WorldEntity
         self.direction = Direction.DOWN  # The view module uses direction to determine which image to render
         self.movement_animation_progress: float = 0  # The view module uses this to determine which frame to render
+        self.visible = True # Should only be used to control rendering
 
     def rect(self):
         # Used by view module in map_editor

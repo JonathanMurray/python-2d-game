@@ -1,13 +1,14 @@
 from typing import Optional, List
 
+from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect
 from pythongame.core.common import is_x_and_y_within_distance, boxes_intersect, Millis, translate_in_direction, \
-    Direction
+    Direction, BuffType
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, LootableOnGround, Portal
 from pythongame.core.npc_behaviors import invoke_npc_action
 from pythongame.core.view import EntityActionText, DialogGraphics
 from pythongame.core.view_state import ViewState
-from pythongame.core.visual_effects import VisualCircle
+from pythongame.game_data.portals import PORTAL_DELAY
 
 
 class PlayerInteractionsState:
@@ -60,11 +61,8 @@ class PlayerInteractionsState:
             destination_portal.leads_to = portal.portal_id
             destination_portal.world_entity.sprite = portal.world_entity.sprite
             destination = translate_in_direction(destination_portal.world_entity.get_position(), Direction.DOWN, 50)
-            game_state.player_entity.set_position(destination)
-            color = (140, 140, 230)
-            game_state.visual_effects.append(
-                VisualCircle(color, destination, 25, 50, Millis(300), 2,
-                             game_state.player_entity))
+            teleport_buff_effect: AbstractBuffEffect = get_buff_effect(BuffType.BEING_TELEPORTED, destination)
+            game_state.player_state.gain_buff_effect(teleport_buff_effect, Millis(PORTAL_DELAY))
         else:
             self.view_state.set_message("Hmm... Looks suspicious!")
 
