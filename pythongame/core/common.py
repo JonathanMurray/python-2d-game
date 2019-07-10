@@ -120,6 +120,30 @@ def get_manhattan_distance(a: Tuple[int, int], b: Tuple[int, int]) -> int:
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 
+def get_manhattan_distance_between_rects(a: Tuple[int, int, int, int], b: Tuple[int, int, int, int]) -> int:
+    a_left = a[0]
+    a_right = a[0] + a[2]
+    a_top = a[1]
+    a_bot = a[1] + a[3]
+    b_left = b[0]
+    b_right = b[0] + b[2]
+    b_top = b[1]
+    b_bot = b[1] + b[3]
+    if a_right < b_left:
+        hor_dinstance = b_left - a_right  # a is left of b
+    elif a_left < b_right:
+        hor_dinstance = 0  # a overlaps horizontally with b
+    else:
+        hor_dinstance = a_left - b_right  # a is right of b
+    if a_bot < b_top:
+        ver_distance = b_top - a_bot  # a is over b
+    elif a_top < b_bot:
+        ver_distance = 0  # a overlaps vertically with b
+    else:
+        ver_distance = a_top - b_bot  # a is under b
+    return hor_dinstance + ver_distance
+
+
 def get_rect_with_increased_size_in_all_directions(rect, increased_amount):
     return (rect[0] - increased_amount, rect[1] - increased_amount, rect[2] + increased_amount * 2,
             rect[3] + increased_amount * 2)
