@@ -1,3 +1,4 @@
+import random
 from typing import List, Tuple
 
 from pythongame.core.ability_learning import player_learn_new_ability
