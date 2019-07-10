@@ -26,11 +26,8 @@
     * builder
         * place turret on ground that shoots in all directions
         * send out mechanical minion that seeks out enemies and self detonates
-* Town portal to go back to start location 
-    * consumable item?
-    * item with ability (new concept)?
-    * regular ability with long cooldown?
-    * long cast-time, interrupted by dmg?
+* Respawn on death
+    * some fitting penalty
 * Save functionality
     * save the current game_state into a JSON file and load it on startup
 * More advanced abilities:
