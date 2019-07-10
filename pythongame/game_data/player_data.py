@@ -52,19 +52,19 @@ def _get_initial_player_state_2() -> PlayerState:
     mana = 50
     mana_regen = 1
     consumable_slots = {
-        1: ConsumableType.MANA_LESSER,
-        2: ConsumableType.MANA_LESSER,
+        1: ConsumableType.HEALTH_LESSER,
+        2: ConsumableType.HEALTH_LESSER,
         3: None,
         4: None,
         5: None
     }
-    abilities = [AbilityType.SWORD_SLASH, AbilityType.BLOOD_LUST, AbilityType.CHARGE]
+    abilities = [AbilityType.SWORD_SLASH]
     items: Dict[int, ItemType] = {
         1: ItemType.WINGED_BOOTS,
         2: None,
         3: None
     }
-    new_level_abilities = {}
+    new_level_abilities = {2: AbilityType.CHARGE, 3: AbilityType.BLOOD_LUST}
     return PlayerState(health, health, mana, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities)
 
 
