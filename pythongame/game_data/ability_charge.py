@@ -1,13 +1,12 @@
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
-from pythongame.core.common import BuffType, Millis, AbilityType, SoundId
+from pythongame.core.common import BuffType, Millis, AbilityType, SoundId, HeroId
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path, \
-    register_buff_text
+    register_buff_text, HEROES
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
 from pythongame.core.math import translate_in_direction, get_middle_point
 from pythongame.core.visual_effects import VisualRect, VisualCircle
-from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE
 
 CHARGE_DURATION = Millis(500)
 IMPACT_STUN_DURATION = Millis(200)
@@ -46,8 +45,10 @@ class Charging(AbstractBuffEffect):
                                                           2, None))
 
         rect_w = 32
+        # NOTE: We assume that this ability is used by this specific hero
+        hero_entity_size = HEROES[HeroId.WARRIOR].entity_size
         impact_pos = translate_in_direction(
-            charger_center_pos, buffed_entity.direction, rect_w / 2 + PLAYER_ENTITY_SIZE[0] / 2)
+            charger_center_pos, buffed_entity.direction, rect_w / 2 + hero_entity_size[0] / 2)
 
         impact_rect = (int(impact_pos[0] - rect_w / 2), int(impact_pos[1] - rect_w / 2), rect_w, rect_w)
         affected_enemies = game_state.get_enemy_intersecting_rect(impact_rect)

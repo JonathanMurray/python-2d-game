@@ -191,10 +191,12 @@ class InitialPlayerStateData:
 
 class HeroData:
     def __init__(self, sprite: Sprite, portrait_icon_sprite: PortraitIconSprite,
-                 initial_player_state: InitialPlayerStateData):
+                 initial_player_state: InitialPlayerStateData, entity_speed: float, entity_size: Tuple[int, int]):
         self.sprite = sprite
         self.portrait_icon_sprite = portrait_icon_sprite
         self.initial_player_state = initial_player_state
+        self.entity_speed = entity_speed
+        self.entity_size = entity_size
 
 
 NON_PLAYER_CHARACTERS: Dict[NpcType, NpcData] = {}

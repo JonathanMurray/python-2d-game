@@ -20,6 +20,8 @@ from pythongame.game_data.enemy_necromancer import register_necromancer_enemy
 from pythongame.game_data.enemy_rat_1 import register_rat_1_enemy
 from pythongame.game_data.enemy_rat_2 import register_rat_2_enemy
 from pythongame.game_data.enemy_warrior import register_warrior_enemy
+from pythongame.game_data.hero_mage import register_hero_mage
+from pythongame.game_data.hero_warrior import register_hero_warrior
 from pythongame.game_data.item_amulet_of_mana import register_amulet_of_mana_item
 from pythongame.game_data.item_blessed_shield import register_blessed_shield_item
 from pythongame.game_data.item_blue_robe import register_blue_robe_item
@@ -33,7 +35,6 @@ from pythongame.game_data.map_editor_icons import register_map_editor_icons
 from pythongame.game_data.neutral_npc_dwarf import register_dwarf_npc
 from pythongame.game_data.neutral_npc_ninja import register_ninja_npc
 from pythongame.game_data.neutral_npc_nomad import register_nomad_npc
-from pythongame.game_data.player_data import register_player_data
 from pythongame.game_data.portals import register_portal
 from pythongame.game_data.potion_health import register_health_potion
 from pythongame.game_data.potion_invis import register_invis_potion
@@ -67,7 +68,6 @@ def register_all_game_data():
 
     register_chest_enemy()
     register_necromancer_enemy()
-    register_player_data()
     register_rat_1_enemy()
     register_rat_2_enemy()
     register_dark_reaper_enemy()
@@ -75,6 +75,9 @@ def register_all_game_data():
     register_goblin_warlock_enemy()
     register_mummy_enemy()
     register_warrior_enemy()
+
+    register_hero_mage()
+    register_hero_warrior()
 
     register_dwarf_npc()
     register_nomad_npc()

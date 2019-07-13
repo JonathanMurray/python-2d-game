@@ -2,13 +2,13 @@ import random
 
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import get_buff_effect
-from pythongame.core.common import AbilityType, Millis, BuffType
+from pythongame.core.common import AbilityType, Millis, BuffType, HeroId
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
-from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path
+from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path, \
+    HEROES
 from pythongame.core.game_state import GameState
 from pythongame.core.math import translate_in_direction
 from pythongame.core.visual_effects import VisualRect
-from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE
 
 MIN_DMG = 2
 MAX_DMG = 4
@@ -17,10 +17,12 @@ MAX_DMG = 4
 def _apply_ability(game_state: GameState) -> bool:
     player_entity = game_state.player_entity
     rect_w = 36
+    # Note: We assume that this ability is used by this specific hero
+    hero_entity_size = HEROES[HeroId.WARRIOR].entity_size
     slash_pos = translate_in_direction(
         player_entity.get_center_position(),
         player_entity.direction,
-        rect_w / 2 + PLAYER_ENTITY_SIZE[0] * 0.25)
+        rect_w / 2 + hero_entity_size[0] * 0.25)
 
     slash_rect = (int(slash_pos[0] - rect_w / 2), int(slash_pos[1] - rect_w / 2), rect_w, rect_w)
     affected_enemies = game_state.get_enemy_intersecting_rect(slash_rect)
