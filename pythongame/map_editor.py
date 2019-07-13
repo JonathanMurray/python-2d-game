@@ -173,11 +173,10 @@ def main(map_file_name: Optional[str]):
                 if is_mouse_button_down and is_snapped_mouse_within_world and not is_snapped_mouse_over_ui:
                     if user_state.placing_entity:
                         if user_state.placing_entity.wall_type:
-                            _add_wall_to_position(game_state, snapped_mouse_world_position,
-                                                  user_state.placing_entity.wall_type)
+                            _add_wall(game_state, snapped_mouse_world_position, user_state.placing_entity.wall_type)
                         elif user_state.placing_entity.decoration:
-                            _add_decoration_to_position(user_state.placing_entity.decoration_sprite, game_state,
-                                                        snapped_mouse_world_position)
+                            _add_decoration(user_state.placing_entity.decoration_sprite, game_state,
+                                            snapped_mouse_world_position)
                     elif user_state.deleting_entities:
                         _delete_map_entities_from_position(game_state, snapped_mouse_world_position)
                     else:
@@ -214,29 +213,21 @@ def main(map_file_name: Optional[str]):
                         if entity_being_placed.is_player:
                             game_state.player_entity.set_position(snapped_mouse_world_position)
                         elif entity_being_placed.npc_type:
-                            npc = create_npc(entity_being_placed.npc_type, snapped_mouse_world_position)
-                            game_state.add_non_player_character(npc)
+                            _add_npc(entity_being_placed.npc_type, game_state, snapped_mouse_world_position)
                         elif entity_being_placed.wall_type:
-                            _add_wall_to_position(game_state, snapped_mouse_world_position,
-                                                  entity_being_placed.wall_type)
+                            _add_wall(game_state, snapped_mouse_world_position, entity_being_placed.wall_type)
                         elif entity_being_placed.consumable_type:
-                            consumable_on_ground = create_consumable_on_ground(
-                                entity_being_placed.consumable_type, snapped_mouse_world_position)
-                            game_state.consumables_on_ground.append(consumable_on_ground)
+                            _add_consumable(entity_being_placed.consumable_type, game_state,
+                                            snapped_mouse_world_position)
                         elif entity_being_placed.item_type:
-                            item_on_ground = create_item_on_ground(
-                                entity_being_placed.item_type, snapped_mouse_world_position)
-                            game_state.items_on_ground.append(item_on_ground)
+                            _add_item(entity_being_placed.item_type, game_state, snapped_mouse_world_position)
                         elif entity_being_placed.decoration_sprite:
-                            _add_decoration_to_position(entity_being_placed.decoration_sprite, game_state,
-                                                        snapped_mouse_world_position)
+                            _add_decoration(entity_being_placed.decoration_sprite, game_state,
+                                            snapped_mouse_world_position)
                         elif entity_being_placed.money_amount:
-                            money_pile_on_ground = create_money_pile_on_ground(
-                                entity_being_placed.money_amount, snapped_mouse_world_position)
-                            game_state.money_piles_on_ground.append(money_pile_on_ground)
+                            _add_money(entity_being_placed.money_amount, game_state, snapped_mouse_world_position)
                         elif entity_being_placed.portal_id:
-                            portal = create_portal(entity_being_placed.portal_id, snapped_mouse_world_position)
-                            game_state.portals.append(portal)
+                            _add_portal(entity_being_placed.portal_id, game_state, snapped_mouse_world_position)
                         else:
                             raise Exception("Unknown entity: " + str(entity_being_placed))
                 elif user_state.deleting_entities:
@@ -303,7 +294,47 @@ def main(map_file_name: Optional[str]):
         view.update_display()
 
 
-def _add_decoration_to_position(decoration_sprite: Sprite, game_state, snapped_mouse_world_position):
+def _add_money(amount: int, game_state, snapped_mouse_world_position):
+    already_has_money = any([x for x in game_state.money_piles_on_ground
+                             if x.world_entity.get_position() == snapped_mouse_world_position])
+    if not already_has_money:
+        money_pile_on_ground = create_money_pile_on_ground(amount, snapped_mouse_world_position)
+        game_state.money_piles_on_ground.append(money_pile_on_ground)
+
+
+def _add_portal(portal_id: PortalId, game_state, snapped_mouse_world_position):
+    already_has_portal = any([x for x in game_state.portals
+                              if x.world_entity.get_position() == snapped_mouse_world_position])
+    if not already_has_portal:
+        portal = create_portal(portal_id, snapped_mouse_world_position)
+        game_state.portals.append(portal)
+
+
+def _add_item(item_type: ItemType, game_state, snapped_mouse_world_position):
+    already_has_item = any([x for x in game_state.items_on_ground
+                            if x.world_entity.get_position() == snapped_mouse_world_position])
+    if not already_has_item:
+        item_on_ground = create_item_on_ground(item_type, snapped_mouse_world_position)
+        game_state.items_on_ground.append(item_on_ground)
+
+
+def _add_consumable(consumable_type: ConsumableType, game_state, snapped_mouse_world_position):
+    already_has_consumable = any([x for x in game_state.consumables_on_ground
+                                  if x.world_entity.get_position() == snapped_mouse_world_position])
+    if not already_has_consumable:
+        consumable_on_ground = create_consumable_on_ground(consumable_type, snapped_mouse_world_position)
+        game_state.consumables_on_ground.append(consumable_on_ground)
+
+
+def _add_npc(npc_type, game_state: GameState, snapped_mouse_world_position):
+    already_has_npc = any([x for x in game_state.non_player_characters
+                           if x.world_entity.get_position() == snapped_mouse_world_position])
+    if not already_has_npc:
+        npc = create_npc(npc_type, snapped_mouse_world_position)
+        game_state.add_non_player_character(npc)
+
+
+def _add_decoration(decoration_sprite: Sprite, game_state, snapped_mouse_world_position):
     already_has_decoration = any([d for d in game_state.decoration_entities
                                   if d.get_position() == snapped_mouse_world_position])
     if not already_has_decoration:
@@ -311,7 +342,7 @@ def _add_decoration_to_position(decoration_sprite: Sprite, game_state, snapped_m
         game_state.decoration_entities.append(decoration_entity)
 
 
-def _add_wall_to_position(game_state, snapped_mouse_world_position: Tuple[int, int], wall_type: WallType):
+def _add_wall(game_state, snapped_mouse_world_position: Tuple[int, int], wall_type: WallType):
     already_has_wall = any([w for w in game_state.walls
                             if w.world_entity.get_position() == snapped_mouse_world_position])
     if not already_has_wall:
