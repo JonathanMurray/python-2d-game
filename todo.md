@@ -30,7 +30,12 @@
     * some fitting penalty
 * Save functionality
     * save the current game_state into a JSON file and load it on startup
+* New "progress" functionality:
+    * choosing between different abilities on level-up
+    * gaining a more powerful version of an existing ability. Whirlwind could start without stun and then gain stun on upgrade
 * More advanced abilities:
+    * AoE effect that covers a large area and stays after being cast (like Diablo 2 sorc Blizzard ability)
+    * channeling locked in one target. drain life / slow / gain mana / gain damage bonus
     * effects that trigger if last-hitting an enemy (execute ability, if it kills enemy then get mana back)
     * debuffs that spread between enemies
     * effects that have a chance to trigger
