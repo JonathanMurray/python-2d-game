@@ -38,7 +38,7 @@ class MapJson:
             "consumables_on_ground": [ConsumableJson.serialize(p) for p in game_state.consumables_on_ground],
             "items_on_ground": [ItemJson.serialize(i) for i in game_state.items_on_ground],
             "money_piles_on_ground": [MoneyJson.serialize(m) for m in game_state.money_piles_on_ground],
-            "enemies": [EnemyJson.serialize(npc) for npc in game_state.non_player_characters],
+            "non_player_characters": [NpcJson.serialize(npc) for npc in game_state.non_player_characters],
             "walls": [WallJson.serialize(wall) for wall in game_state.walls],
             "game_world_size": game_state.game_world_size,
             "decorations": [DecorationJson.serialize(d) for d in game_state.decoration_entities],
@@ -52,7 +52,7 @@ class MapJson:
             consumables_on_ground=[ConsumableJson.deserialize(p) for p in data.get("consumables_on_ground", [])],
             items_on_ground=[ItemJson.deserialize(i) for i in data.get("items_on_ground", [])],
             money_piles_on_ground=[MoneyJson.deserialize(p) for p in data.get("money_piles_on_ground", [])],
-            non_player_characters=[EnemyJson.deserialize(e) for e in data.get("enemies", [])],
+            non_player_characters=[NpcJson.deserialize(e) for e in data.get("non_player_characters", [])],
             walls=[WallJson.deserialize(w) for w in data.get("walls", [])],
             camera_size=camera_size,
             game_world_size=(data["game_world_size"]),
@@ -72,15 +72,14 @@ class PlayerJson:
         return create_hero_world_entity(hero_id, data["position"])
 
 
-# TODO This is more than enemies!
-class EnemyJson:
+class NpcJson:
     @staticmethod
     def serialize(enemy: NonPlayerCharacter):
-        return {"enemy_type": enemy.npc_type.name, "position": enemy.world_entity.get_position()}
+        return {"npc_type": enemy.npc_type.name, "position": enemy.world_entity.get_position()}
 
     @staticmethod
     def deserialize(data) -> NonPlayerCharacter:
-        return create_npc(NpcType[data["enemy_type"]], data["position"])
+        return create_npc(NpcType[data["npc_type"]], data["position"])
 
 
 class WallJson:

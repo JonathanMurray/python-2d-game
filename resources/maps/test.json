@@ -94,16 +94,16 @@
     }
   ],
   "money_piles_on_ground": [],
-  "enemies": [
+  "non_player_characters": [
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         425,
         275
       ]
     },
     {
-      "enemy_type": "NECROMANCER",
+      "npc_type": "NECROMANCER",
       "position": [
         350,
         225

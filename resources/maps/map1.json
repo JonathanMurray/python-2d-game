@@ -52,961 +52,961 @@
     }
   ],
   "money_piles_on_ground": [],
-  "enemies": [
+  "non_player_characters": [
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         875,
         1075
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         1350,
         1300
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         1275,
         675
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         1750,
         675
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         1950,
         675
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         900,
         450
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         975,
         675
       ]
     },
     {
-      "enemy_type": "RAT_2",
+      "npc_type": "RAT_2",
       "position": [
         2000,
         300
       ]
     },
     {
-      "enemy_type": "RAT_2",
+      "npc_type": "RAT_2",
       "position": [
         2050,
         150
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         2200,
         150
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         2300,
         50
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         1950,
         50
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2450,
         50
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2500,
         100
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2450,
         100
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2400,
         100
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2500,
         150
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2450,
         150
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2400,
         150
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2500,
         300
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2150,
         1025
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2175,
         1075
       ]
     },
     {
-      "enemy_type": "RAT_2",
+      "npc_type": "RAT_2",
       "position": [
         2175,
         975
       ]
     },
     {
-      "enemy_type": "RAT_2",
+      "npc_type": "RAT_2",
       "position": [
         2150,
         1125
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         50,
         2025
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         50,
         1700
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         100,
         1925
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         200,
         1800
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         75,
         1800
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         275,
         1975
       ]
     },
     {
-      "enemy_type": "RAT_2",
+      "npc_type": "RAT_2",
       "position": [
         200,
         1900
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         800,
         1850
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         875,
         2000
       ]
     },
     {
-      "enemy_type": "RAT_2",
+      "npc_type": "RAT_2",
       "position": [
         1225,
         1850
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         625,
         1850
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         875,
         2150
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         1000,
         2725
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         1100,
         2700
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         1000,
         2550
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         1200,
         2550
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         875,
         2825
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         725,
         3400
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         875,
         3400
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2375,
         1625
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2325,
         1625
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2350,
         1575
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         2250,
         1150
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         1850,
         2575
       ]
     },
     {
-      "enemy_type": "RAT_2",
+      "npc_type": "RAT_2",
       "position": [
         1825,
         2525
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2150,
         2275
       ]
     },
     {
-      "enemy_type": "RAT_2",
+      "npc_type": "RAT_2",
       "position": [
         2200,
         2325
       ]
     },
     {
-      "enemy_type": "RAT_2",
+      "npc_type": "RAT_2",
       "position": [
         2150,
         2225
       ]
     },
     {
-      "enemy_type": "NECROMANCER",
+      "npc_type": "NECROMANCER",
       "position": [
         2300,
         2650
       ]
     },
     {
-      "enemy_type": "GOBLIN_WARLOCK",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
         2450,
         2400
       ]
     },
     {
-      "enemy_type": "GOBLIN_WARLOCK",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
         2650,
         2550
       ]
     },
     {
-      "enemy_type": "GOBLIN_WARLOCK",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
         2500,
         2900
       ]
     },
     {
-      "enemy_type": "GOBLIN_WARLOCK",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
         2000,
         2850
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2350,
         2950
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2700,
         3000
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2550,
         2750
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2100,
         2950
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2100,
         2600
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         1950,
         2350
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         2000,
         2350
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         1950,
         2400
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         2050,
         3400
       ]
     },
     {
-      "enemy_type": "RAT_2",
+      "npc_type": "RAT_2",
       "position": [
         2150,
         3400
       ]
     },
     {
-      "enemy_type": "RAT_2",
+      "npc_type": "RAT_2",
       "position": [
         2250,
         3300
       ]
     },
     {
-      "enemy_type": "RAT_2",
+      "npc_type": "RAT_2",
       "position": [
         2250,
         3400
       ]
     },
     {
-      "enemy_type": "NECROMANCER",
+      "npc_type": "NECROMANCER",
       "position": [
         3175,
         2475
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         3200,
         2875
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         3325,
         2900
       ]
     },
     {
-      "enemy_type": "RAT_2",
+      "npc_type": "RAT_2",
       "position": [
         3275,
         2825
       ]
     },
     {
-      "enemy_type": "GOBLIN_WARLOCK",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
         3100,
         2925
       ]
     },
     {
-      "enemy_type": "GOBLIN_WARLOCK",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
         2950,
         3325
       ]
     },
     {
-      "enemy_type": "GOBLIN_WARLOCK",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
         3275,
         3325
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2925,
         3250
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         3125,
         3325
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         3125,
         3325
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         3275,
         3175
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         2900,
         2050
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         2925,
         2125
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         3475,
         2475
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         3375,
         2375
       ]
     },
     {
-      "enemy_type": "GOBLIN_WARLOCK",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
         3575,
         2400
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         3675,
         2500
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         3575,
         2750
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         3200,
         2725
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2925,
         2750
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2900,
         2700
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2950,
         2675
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         3175,
         2675
       ]
     },
     {
-      "enemy_type": "RAT_2",
+      "npc_type": "RAT_2",
       "position": [
         2250,
         2800
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         2400,
         2800
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         2175,
         2700
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         2225,
         2550
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2250,
         2925
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2450,
         2650
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2375,
         2525
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2925,
         2450
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         2975,
         2425
       ]
     },
     {
-      "enemy_type": "GOBLIN_WARLOCK",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
         4175,
         2975
       ]
     },
     {
-      "enemy_type": "GOBLIN_WARLOCK",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
         4275,
         2900
       ]
     },
     {
-      "enemy_type": "GOBLIN_WARLOCK",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
         4100,
         2825
       ]
     },
     {
-      "enemy_type": "GOBLIN_WARLOCK",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
         4100,
         2900
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         4200,
         2875
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         4250,
         2825
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         4125,
         2975
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         4250,
         2975
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         800,
         3350
       ]
     },
     {
-      "enemy_type": "RAT_2",
+      "npc_type": "RAT_2",
       "position": [
         550,
         3300
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         550,
         3250
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         3925,
         2925
       ]
     },
     {
-      "enemy_type": "GOBLIN_WARLOCK",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
         550,
         3100
       ]
     },
     {
-      "enemy_type": "GOBLIN_WARLOCK",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
         625,
         3100
       ]
     },
     {
-      "enemy_type": "GOBLIN_WARLOCK",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
         875,
         2900
       ]
     },
     {
-      "enemy_type": "NECROMANCER",
+      "npc_type": "NECROMANCER",
       "position": [
         3400,
         2475
       ]
     },
     {
-      "enemy_type": "GOBLIN_WARLOCK",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
         3525,
         2050
       ]
     },
     {
-      "enemy_type": "GOBLIN_WARLOCK",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
         3575,
         2025
       ]
     },
     {
-      "enemy_type": "GOBLIN_WARLOCK",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
         3625,
         2050
       ]
     },
     {
-      "enemy_type": "NECROMANCER",
+      "npc_type": "NECROMANCER",
       "position": [
         3550,
         2475
       ]
     },
     {
-      "enemy_type": "WARRIOR",
+      "npc_type": "WARRIOR",
       "position": [
         2125,
         1850
       ]
     },
     {
-      "enemy_type": "WARRIOR",
+      "npc_type": "WARRIOR",
       "position": [
         2650,
         2875
       ]
     },
     {
-      "enemy_type": "WARRIOR",
+      "npc_type": "WARRIOR",
       "position": [
         2750,
         2400
       ]
     },
     {
-      "enemy_type": "WARRIOR",
+      "npc_type": "WARRIOR",
       "position": [
         3200,
         3300
       ]
     },
     {
-      "enemy_type": "WARRIOR",
+      "npc_type": "WARRIOR",
       "position": [
         3675,
         2650
       ]
     },
     {
-      "enemy_type": "WARRIOR",
+      "npc_type": "WARRIOR",
       "position": [
         3875,
         2850
       ]
     },
     {
-      "enemy_type": "WARRIOR",
+      "npc_type": "WARRIOR",
       "position": [
         3825,
         3050
       ]
     },
     {
-      "enemy_type": "WARRIOR",
+      "npc_type": "WARRIOR",
       "position": [
         3525,
         3000
       ]
     },
     {
-      "enemy_type": "RAT_1",
+      "npc_type": "RAT_1",
       "position": [
         1425,
         1000
       ]
     },
     {
-      "enemy_type": "MUMMY",
+      "npc_type": "MUMMY",
       "position": [
         2400,
         275
       ]
     },
     {
-      "enemy_type": "CHEST",
+      "npc_type": "CHEST",
       "position": [
         600,
         650
       ]
     },
     {
-      "enemy_type": "CHEST",
+      "npc_type": "CHEST",
       "position": [
         1825,
         175
       ]
     },
     {
-      "enemy_type": "CHEST",
+      "npc_type": "CHEST",
       "position": [
         50,
         1875
       ]
     },
     {
-      "enemy_type": "NEUTRAL_NOMAD",
+      "npc_type": "NEUTRAL_NOMAD",
       "position": [
         75,
         325
       ]
     },
     {
-      "enemy_type": "NEUTRAL_DWARF",
+      "npc_type": "NEUTRAL_DWARF",
       "position": [
         1600,
         1850
       ]
     },
     {
-      "enemy_type": "NEUTRAL_NINJA",
+      "npc_type": "NEUTRAL_NINJA",
       "position": [
         425,
         325
