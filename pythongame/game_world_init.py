@@ -10,11 +10,8 @@ from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacte
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
 
-# TODO Avoid depending on pythongame.game_data from here
-
-
-def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str, hero_id: HeroId):
-    with open(map_file) as map_file:
+def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file_path: str, hero_id: HeroId):
+    with open(map_file_path) as map_file:
         json_data = json.loads(map_file.read())
 
         path_finder = GlobalPathFinder()

@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 
-import sys
+import argparse
 
 from pythongame import main
 
-args = sys.argv[1:]
-main.main(args)
+parser = argparse.ArgumentParser()
+parser.add_argument('--map')
+parser.add_argument('--hero')
+args = parser.parse_args()
+
+main.main(args.map, args.hero)

@@ -1,5 +1,5 @@
 import sys
-from typing import List, Optional
+from typing import Optional
 
 import pygame
 
@@ -20,19 +20,13 @@ from pythongame.register_game_data import register_all_game_data
 SCREEN_SIZE = (700, 700)
 CAMERA_SIZE = (700, 530)
 
-# TODO make it configurable on run-time
-# Change this to play as a different hero
-HERO_ID = HeroId.MAGE
-
 register_all_game_data()
 
 
-def main(args: List[str]):
-    if len(args) == 1:
-        map_file = args[0]
-    else:
-        map_file = "resources/maps/graphics_test.json"
-    game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file, HERO_ID)
+def main(map_file_name: Optional[str], hero_id: Optional[str]):
+    map_file_name = map_file_name or "map1.json"
+    hero_id = HeroId[hero_id] if hero_id else HeroId.MAGE
+    game_state = create_game_state_from_json_file(CAMERA_SIZE, "resources/maps/" + map_file_name, hero_id)
     allocate_input_keys_for_abilities(game_state.player_state.abilities)
     pygame.init()
 

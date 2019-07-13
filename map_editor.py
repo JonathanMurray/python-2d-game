@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
-import sys
+import argparse
 
 from pythongame import map_editor
 
-args = sys.argv[1:]
-map_editor.main(args)
+parser = argparse.ArgumentParser()
+parser.add_argument('--map')
+args = parser.parse_args()
+
+map_editor.main(args.map)

@@ -17,6 +17,8 @@ from pythongame.register_game_data import register_all_game_data
 
 # TODO Avoid depending on pythongame.game_data from here
 
+MAP_DIR = "resources/maps/"
+
 register_all_game_data()
 
 MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
@@ -121,14 +123,11 @@ class UserState:
         return UserState(None, False, True)
 
 
-def main(args: List[str]):
-    if len(args) == 1:
-        map_file = args[0]
-    else:
-        map_file = "resources/maps/graphics_test.json"
+def main(map_file_name: Optional[str]):
+    map_file_path = MAP_DIR + (map_file_name or "map1.json")
 
-    if Path(map_file).exists():
-        game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file, HERO_ID)
+    if Path(map_file_path).exists():
+        game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file_path, HERO_ID)
     else:
 
         player_entity = create_hero_world_entity(HERO_ID, (250, 250))
@@ -190,7 +189,7 @@ def main(args: List[str]):
                 if event.unicode.upper() in ENTITIES_BY_CHAR:
                     user_state = UserState.placing_entity(ENTITIES_BY_CHAR[event.unicode.upper()])
                 elif event.key == pygame.K_s:
-                    save_file = map_file
+                    save_file = map_file_path
                     save_game_state_to_json_file(game_state, save_file)
                     print("Saved state to " + save_file)
                 elif event.key == pygame.K_RIGHT:
