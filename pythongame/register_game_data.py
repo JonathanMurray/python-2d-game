@@ -5,6 +5,7 @@ from pythongame.game_data.abilities.ability_entangling_roots import register_ent
 from pythongame.game_data.abilities.ability_fireball import register_fireball_ability
 from pythongame.game_data.abilities.ability_frost_nova import register_frost_nova_ability
 from pythongame.game_data.abilities.ability_heal import register_heal_ability
+from pythongame.game_data.abilities.ability_stomp import register_stomp_ability
 from pythongame.game_data.abilities.ability_summon import register_summon_ability
 from pythongame.game_data.abilities.ability_sword_slash import register_sword_slash_ability
 from pythongame.game_data.abilities.ability_teleport import register_teleport_ability
@@ -55,6 +56,10 @@ def register_all_game_data():
     register_sword_slash_ability()
     register_bloodlust_ability()
     register_charge_ability()
+    register_whirlwind_ability()
+    register_entangling_roots_ability()
+    register_summon_ability()
+    register_stomp_ability()
 
     register_recovering_after_ability_buff()
 
@@ -71,7 +76,6 @@ def register_all_game_data():
     register_rat_1_enemy()
     register_rat_2_enemy()
     register_dark_reaper_enemy()
-    register_whirlwind_ability()
     register_goblin_warlock_enemy()
     register_mummy_enemy()
     register_warrior_enemy()
@@ -93,8 +97,6 @@ def register_all_game_data():
     register_blue_robe_item()
     register_orb_of_the_magi_item()
 
-    register_entangling_roots_ability()
-    register_summon_ability()
     register_decorations()
     register_map_editor_icons()
     register_walls()

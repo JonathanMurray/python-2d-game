@@ -45,6 +45,10 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
         2: None,
         3: None
     }
-    new_level_abilities = {2: AbilityType.CHARGE, 3: AbilityType.BLOOD_LUST}
+    new_level_abilities = {
+        2: AbilityType.CHARGE,
+        3: AbilityType.BLOOD_LUST,
+        4: AbilityType.STOMP
+    }
     return InitialPlayerStateData(
         health, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities, HeroId.WARRIOR)

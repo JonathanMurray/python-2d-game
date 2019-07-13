@@ -72,6 +72,7 @@ class AbilityType(Enum):
     SWORD_SLASH = 10
     BLOOD_LUST = 11
     CHARGE = 12
+    STOMP = 13
 
 
 class Sprite(Enum):
@@ -154,6 +155,8 @@ class BuffType(Enum):
     STUNNED_FROM_CHARGE_IMPACT = 15
     BEING_TELEPORTED = 16
     RECOVERING_AFTER_ABILITY = 17
+    CHANNELING_STOMP = 18
+    STUNNED_BY_STOMP = 19
 
 
 class ItemType(Enum):
@@ -236,6 +239,7 @@ class UiIconSprite(Enum):
     ABILITY_SWORD_SLASH = 109
     ABILITY_BLOODLUST = 110
     ABILITY_CHARGE = 111
+    ABILITY_STOMP = 112
     ITEM_WINGED_BOOTS = 201
     ITEM_AMULET_OF_MANA = 202
     ITEM_SWORD_OF_LEECHING = 203
