@@ -45,6 +45,10 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
         2: None,
         3: None
     }
-    new_level_abilities = {2: AbilityType.WHIRLWIND, 3: AbilityType.ENTANGLING_ROOTS}
+    new_level_abilities = {
+        2: AbilityType.WHIRLWIND,
+        3: AbilityType.ENTANGLING_ROOTS,
+        4: AbilityType.CHANNEL_ATTACK
+    }
     return InitialPlayerStateData(
         health, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities, HeroId.MAGE)
