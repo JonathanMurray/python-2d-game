@@ -458,7 +458,7 @@ class View:
         self._text(self.font_npc_action, entity_action_text.text, (rect_pos[0] + 10, rect_pos[1] + 4))
 
     def render_world(self, all_entities_to_render: List[WorldEntity], decorations_to_render: List[DecorationEntity],
-                     camera_world_area, non_player_characters: List[NonPlayerCharacter], is_player_invisible,
+                     camera_world_area, non_player_characters: List[NonPlayerCharacter], is_player_invisible: bool,
                      player_entity, visual_effects, render_hit_and_collision_boxes, player_health, player_max_health,
                      game_world_size, entity_action_text: Optional[EntityActionText]):
         self.camera_world_area = camera_world_area
@@ -472,10 +472,9 @@ class View:
             self._world_entity(decoration_entity)
 
         for entity in all_entities_to_render:
+            self._world_entity(entity)
             if entity == player_entity and is_player_invisible:
-                self._world_rect((200, 100, 250), player_entity.rect(), 1)
-            else:
-                self._world_entity(entity)
+                self._world_rect((200, 100, 250), player_entity.rect(), 2)
 
         self._stat_bar_for_world_entity(player_entity, 5, -35, player_health, player_max_health, (100, 200, 0))
 

@@ -45,5 +45,5 @@ def register_shiv_ability():
     description = "Damages an enemy (" + str(MIN_DMG) + "-" + str(MAX_DMG) + ")"
     register_ability_data(
         ability_type,
-        AbilityData("Shiv", ui_icon_sprite, 1, Millis(300), description, None))
+        AbilityData("Shiv", ui_icon_sprite, 1, Millis(400), description, None))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/double_edged_dagger.png")

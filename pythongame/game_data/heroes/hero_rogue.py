@@ -42,9 +42,9 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
         4: None,
         5: None
     }
-    abilities = [AbilityType.SHIV]
+    abilities = [AbilityType.SHIV, AbilityType.SNEAK]
     items: Dict[int, ItemType] = {
-        1: ItemType.WINGED_BOOTS,
+        1: None,
         2: None,
         3: None
     }

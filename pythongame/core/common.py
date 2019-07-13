@@ -74,6 +74,7 @@ class AbilityType(Enum):
     CHARGE = 12
     STOMP = 13
     SHIV = 14
+    SNEAK = 15
 
 
 class Sprite(Enum):
@@ -159,6 +160,7 @@ class BuffType(Enum):
     RECOVERING_AFTER_ABILITY = 17
     CHANNELING_STOMP = 18
     STUNNED_BY_STOMP = 19
+    SNEAKING = 20
 
 
 class ItemType(Enum):
@@ -244,6 +246,7 @@ class UiIconSprite(Enum):
     ABILITY_CHARGE = 111
     ABILITY_STOMP = 112
     ABILITY_SHIV = 113
+    ABILITY_SNEAK = 114
     ITEM_WINGED_BOOTS = 201
     ITEM_AMULET_OF_MANA = 202
     ITEM_SWORD_OF_LEECHING = 203
