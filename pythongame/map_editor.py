@@ -15,8 +15,6 @@ from pythongame.game_world_init import save_game_state_to_json_file, create_game
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 from pythongame.register_game_data import register_all_game_data
 
-# TODO Avoid depending on pythongame.game_data from here
-
 MAP_DIR = "resources/maps/"
 
 register_all_game_data()
