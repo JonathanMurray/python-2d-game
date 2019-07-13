@@ -10,8 +10,8 @@ from pythongame.core.game_state import GameState
 from pythongame.core.math import translate_in_direction
 from pythongame.core.visual_effects import VisualRect
 
-MIN_DMG = 2
-MAX_DMG = 4
+MIN_DMG = 3
+MAX_DMG = 5
 
 
 def _apply_ability(game_state: GameState) -> bool:
@@ -31,8 +31,8 @@ def _apply_ability(game_state: GameState) -> bool:
         deal_player_damage_to_enemy(game_state, enemy, damage)
 
     game_state.visual_effects.append(
-        VisualRect((100, 0, 0), slash_pos, rect_w, int(rect_w * 0.7), Millis(150), 2, None))
-    game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(150))
+        VisualRect((100, 0, 0), slash_pos, rect_w, int(rect_w * 0.7), Millis(200), 2, None))
+    game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(300))
     return True
 
 
@@ -44,5 +44,5 @@ def register_sword_slash_ability():
     description = "Damages enemies in front of you (" + str(MIN_DMG) + "-" + str(MAX_DMG) + ")"
     register_ability_data(
         ability_type,
-        AbilityData("Slash", ui_icon_sprite, 0, Millis(500), description, None))
+        AbilityData("Slash", ui_icon_sprite, 0, Millis(600), description, None))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_slash.png")
