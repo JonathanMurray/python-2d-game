@@ -23,9 +23,10 @@ CAMERA_SIZE = (700, 530)
 register_all_game_data()
 
 
-def main(map_file_name: Optional[str], hero_id: Optional[str]):
+def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level: Optional[int]):
     map_file_name = map_file_name or "map1.json"
     hero_id = HeroId[hero_id] if hero_id else HeroId.MAGE
+    hero_start_level = int(hero_start_level) if hero_start_level else 1
     game_state = create_game_state_from_json_file(CAMERA_SIZE, "resources/maps/" + map_file_name, hero_id)
     allocate_input_keys_for_abilities(game_state.player_state.abilities)
     pygame.init()
@@ -49,6 +50,10 @@ def main(map_file_name: Optional[str], hero_id: Optional[str]):
     consumable_slot_being_dragged: Optional[int] = None
 
     player_interactions_state = PlayerInteractionsState(view_state)
+
+    if hero_start_level > 1:
+        game_state.player_state.gain_exp_worth_n_levels(hero_start_level - 1)
+        allocate_input_keys_for_abilities(game_state.player_state.abilities)
 
     while True:
 

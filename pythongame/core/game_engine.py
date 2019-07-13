@@ -1,11 +1,10 @@
 import random
 from typing import List, Tuple
 
-from pythongame.core.ability_learning import player_learn_new_ability
 from pythongame.core.common import *
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
     create_consumable_on_ground
-from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS
+from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.loot import LootEntry
@@ -120,14 +119,10 @@ class GameEngine:
             exp_gained = sum([NON_PLAYER_CHARACTERS[e.npc_type].exp_reward for e in enemies_that_died])
             self.game_state.visual_effects.append(create_visual_exp_text(self.game_state.player_entity, exp_gained))
             did_player_level_up = self.game_state.player_state.gain_exp(exp_gained)
-            # TODO: Handle some of this levelup logic in PlayerState. Don't allow it to have inconsistent state
             if did_player_level_up:
                 play_sound(SoundId.EVENT_PLAYER_LEVELED_UP)
                 self.view_state.set_message("You reached level " + str(self.game_state.player_state.level))
-                self.game_state.player_state.update_stats_for_new_level()
-                if self.game_state.player_state.level in self.game_state.player_state.new_level_abilities:
-                    new_ability = self.game_state.player_state.new_level_abilities[self.game_state.player_state.level]
-                    player_learn_new_ability(self.game_state.player_state, new_ability)
+                allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
             for enemy_that_died in enemies_that_died:
                 loot = enemy_that_died.enemy_loot_table.generate_loot()
                 enemy_death_position = enemy_that_died.world_entity.get_position()

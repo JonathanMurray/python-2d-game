@@ -342,12 +342,20 @@ class PlayerState:
     # returns True if player leveled up
     def gain_exp(self, amount: int):
         self.exp += amount
-        if self.exp >= self.max_exp_in_this_level:
-            # TODO: handle case where you gain enough exp to gain 2 levels
+        did_level_up = self.exp >= self.max_exp_in_this_level
+        while self.exp >= self.max_exp_in_this_level:
             self.exp -= self.max_exp_in_this_level
             self.level += 1
-            return True
-        return False
+            self.update_stats_for_new_level()
+            if self.level in self.new_level_abilities:
+                new_ability = self.new_level_abilities[self.level]
+                self.gain_ability(new_ability)
+        return did_level_up
+
+    def gain_exp_worth_n_levels(self, num_levels: int):
+        for i in range(num_levels):
+            amount = self.max_exp_in_this_level - self.exp
+            self.gain_exp(amount)
 
     def update_stats_for_new_level(self):
         self.max_health += 7
