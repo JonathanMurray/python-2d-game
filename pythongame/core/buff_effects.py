@@ -18,6 +18,11 @@ class AbstractBuffEffect:
     def get_buff_type(self):
         pass
 
+    # TODO Handle more events, and more possible outcomes
+    # Return Millis if buff should have prolonged duration as an outcome of the event
+    def notify_that_enemy_died(self) -> Optional[Millis]:
+        return None
+
 
 _buff_effects: Dict[BuffType, Type[AbstractBuffEffect]] = {}
 

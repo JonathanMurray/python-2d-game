@@ -127,6 +127,7 @@ class GameEngine:
                 loot = enemy_that_died.enemy_loot_table.generate_loot()
                 enemy_death_position = enemy_that_died.world_entity.get_position()
                 self._put_loot_on_ground(enemy_death_position, loot)
+                self.game_state.player_state.notify_buffs_of_enemy_death()
 
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_effects()

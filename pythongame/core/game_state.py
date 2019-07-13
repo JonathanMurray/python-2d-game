@@ -380,6 +380,12 @@ class PlayerState:
     def is_stunned(self):
         return self._number_of_active_stuns > 0
 
+    def notify_buffs_of_enemy_death(self):
+        for buff in self.active_buffs:
+            prolonged_duration: Optional[Millis] = buff.buff_effect.notify_that_enemy_died()
+            if prolonged_duration:
+                buff.time_until_expiration = min(buff.time_until_expiration + prolonged_duration, buff.total_duration)
+
 
 # TODO Is there a way to handle this better in the view module? This class shouldn't need to masquerade as a WorldEntity
 class DecorationEntity:
