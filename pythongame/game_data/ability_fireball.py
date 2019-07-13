@@ -1,8 +1,9 @@
 import random
 
 from pythongame.core.ability_effects import register_ability_effect
+from pythongame.core.buff_effects import get_buff_effect
 from pythongame.core.common import Sprite, ProjectileType, AbilityType, Millis, \
-    Direction, SoundId
+    Direction, SoundId, BuffType
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, SpriteSheet, \
@@ -50,7 +51,8 @@ def _apply_ability(game_state: GameState) -> bool:
     game_state.projectile_entities.append(projectile)
     effect_position = (projectile_pos[0] + PROJECTILE_SIZE[0] // 2,
                        projectile_pos[1] + PROJECTILE_SIZE[1] // 2)
-    game_state.visual_effects.append(VisualCircle((250, 150, 50), effect_position, 9, 18, Millis(80), 0))
+    game_state.visual_effects.append(VisualCircle((250, 150, 50), effect_position, 15, 5, Millis(300), 0))
+    game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(300))
     return True
 
 

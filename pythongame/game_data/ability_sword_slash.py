@@ -1,20 +1,17 @@
 import random
 
 from pythongame.core.ability_effects import register_ability_effect
-from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect, register_buff_effect
-from pythongame.core.common import AbilityType, Millis, \
-    BuffType
+from pythongame.core.buff_effects import get_buff_effect
+from pythongame.core.common import AbilityType, Millis, BuffType
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
-from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
-    register_ui_icon_sprite_path
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path
+from pythongame.core.game_state import GameState
 from pythongame.core.math import translate_in_direction
 from pythongame.core.visual_effects import VisualRect
 from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE
 
 MIN_DMG = 2
 MAX_DMG = 4
-BUFF_TYPE = BuffType.RECOVERING_AFTER_SWORD_SLASH
 
 
 def _apply_ability(game_state: GameState) -> bool:
@@ -33,23 +30,8 @@ def _apply_ability(game_state: GameState) -> bool:
 
     game_state.visual_effects.append(
         VisualRect((100, 0, 0), slash_pos, rect_w, int(rect_w * 0.7), Millis(150), 2, None))
-    game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(150))
+    game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(150))
     return True
-
-
-class RecoveringAfterSwordSlash(AbstractBuffEffect):
-    def __init__(self):
-        self._time_since_firing = 0
-
-    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.add_stun()
-        game_state.player_entity.set_not_moving()
-
-    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.remove_stun()
-
-    def get_buff_type(self):
-        return BUFF_TYPE
 
 
 def register_sword_slash_ability():
@@ -62,4 +44,3 @@ def register_sword_slash_ability():
         ability_type,
         AbilityData("Slash", ui_icon_sprite, 0, Millis(500), description, None))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_slash.png")
-    register_buff_effect(BUFF_TYPE, RecoveringAfterSwordSlash)

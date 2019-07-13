@@ -9,6 +9,7 @@ from pythongame.game_data.ability_summon import register_summon_ability
 from pythongame.game_data.ability_sword_slash import register_sword_slash_ability
 from pythongame.game_data.ability_teleport import register_teleport_ability
 from pythongame.game_data.ability_whirlwind import register_whirlwind_ability
+from pythongame.game_data.buff_recovering_after_ability import register_recovering_after_ability_buff
 from pythongame.game_data.coin import register_coin
 from pythongame.game_data.decorations import register_decorations
 from pythongame.game_data.enemy_chest import register_chest_enemy
@@ -53,6 +54,8 @@ def register_all_game_data():
     register_sword_slash_ability()
     register_bloodlust_ability()
     register_charge_ability()
+
+    register_recovering_after_ability_buff()
 
     register_lesser_health_potion()
     register_health_potion()
