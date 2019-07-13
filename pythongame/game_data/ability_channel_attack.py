@@ -1,8 +1,8 @@
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
-from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, ProjectileType
+from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, ProjectileType, UiIconSprite
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
-from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path, \
+from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_entity_sprite_initializer, SpriteInitializer, register_buff_text
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
 from pythongame.core.math import get_position_from_center_position

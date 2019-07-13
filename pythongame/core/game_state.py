@@ -4,7 +4,8 @@ from typing import List, Optional, Dict, Any, Tuple
 from pygame.rect import Rect
 
 from pythongame.core.common import *
-from pythongame.core.game_data import PortraitIconSprite, NpcDialog
+from pythongame.core.common import PortraitIconSprite
+from pythongame.core.game_data import NpcDialog
 from pythongame.core.loot import LootTable
 from pythongame.core.math import boxes_intersect, rects_intersect, get_position_from_center_position, \
     translate_in_direction, is_x_and_y_within_distance

@@ -1,8 +1,8 @@
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
-from pythongame.core.common import ConsumableType, BuffType, Millis
+from pythongame.core.common import ConsumableType, BuffType, Millis, UiIconSprite
 from pythongame.core.consumable_effects import create_potion_visual_effect_at_player, ConsumableWasConsumed, \
     register_consumable_effect
-from pythongame.core.game_data import register_ui_icon_sprite_path, UiIconSprite, register_buff_text, \
+from pythongame.core.game_data import register_ui_icon_sprite_path, register_buff_text, \
     register_consumable_data, ConsumableData
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
 from pythongame.core.visual_effects import VisualCircle

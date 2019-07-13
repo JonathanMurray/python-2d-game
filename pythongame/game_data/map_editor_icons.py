@@ -1,4 +1,5 @@
-from pythongame.core.game_data import register_ui_icon_sprite_path, UiIconSprite
+from pythongame.core.common import UiIconSprite
+from pythongame.core.game_data import register_ui_icon_sprite_path
 
 
 def register_map_editor_icons():

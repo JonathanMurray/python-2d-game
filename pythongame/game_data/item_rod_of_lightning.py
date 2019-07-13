@@ -1,8 +1,8 @@
 import random
 
-from pythongame.core.common import ItemType, Millis, Sprite
+from pythongame.core.common import ItemType, Millis, Sprite, UiIconSprite
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
-from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
+from pythongame.core.game_data import register_ui_icon_sprite_path, register_item_data, ItemData, \
     register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect

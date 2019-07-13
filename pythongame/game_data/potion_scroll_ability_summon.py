@@ -1,9 +1,9 @@
 from pythongame.core.ability_learning import player_learn_new_ability
-from pythongame.core.common import ConsumableType, Sprite, AbilityType
+from pythongame.core.common import ConsumableType, Sprite, AbilityType, UiIconSprite
 from pythongame.core.consumable_effects import ConsumableWasConsumed, \
     register_consumable_effect
 from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer, \
-    register_ui_icon_sprite_path, UiIconSprite, register_consumable_data, ConsumableData, POTION_ENTITY_SIZE, ABILITIES
+    register_ui_icon_sprite_path, register_consumable_data, ConsumableData, POTION_ENTITY_SIZE, ABILITIES
 from pythongame.core.game_state import GameState
 
 

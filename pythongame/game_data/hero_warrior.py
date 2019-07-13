@@ -1,8 +1,8 @@
 from typing import Dict
 
-from pythongame.core.common import ItemType, HeroId
+from pythongame.core.common import ItemType, HeroId, PortraitIconSprite
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
-    register_entity_sprite_map, register_portrait_icon_sprite_path, PortraitIconSprite, register_hero_data, HeroData, \
+    register_entity_sprite_map, register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
 
 

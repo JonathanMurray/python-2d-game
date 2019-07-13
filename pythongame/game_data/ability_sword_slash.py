@@ -2,9 +2,9 @@ import random
 
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import get_buff_effect
-from pythongame.core.common import AbilityType, Millis, BuffType, HeroId
+from pythongame.core.common import AbilityType, Millis, BuffType, HeroId, UiIconSprite
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
-from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, register_ui_icon_sprite_path, \
+from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     HEROES
 from pythongame.core.game_state import GameState
 from pythongame.core.math import translate_in_direction

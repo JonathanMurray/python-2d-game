@@ -1,9 +1,9 @@
-from pythongame.core.common import ConsumableType, Sprite
+from pythongame.core.common import ConsumableType, Sprite, UiIconSprite
 from pythongame.core.consumable_effects import create_potion_visual_effect_at_player, ConsumableWasConsumed, \
     ConsumableFailedToBeConsumed, \
     register_consumable_effect
 from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer, \
-    register_ui_icon_sprite_path, UiIconSprite, register_consumable_data, ConsumableData, POTION_ENTITY_SIZE
+    register_ui_icon_sprite_path, register_consumable_data, ConsumableData, POTION_ENTITY_SIZE
 from pythongame.core.game_state import GameState
 from pythongame.core.visual_effects import create_visual_healing_text
 

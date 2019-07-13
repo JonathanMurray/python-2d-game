@@ -1,5 +1,5 @@
-from pythongame.core.common import ItemType, Sprite
-from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
+from pythongame.core.common import ItemType, Sprite, UiIconSprite
+from pythongame.core.game_data import register_ui_icon_sprite_path, register_item_data, ItemData, \
     register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect

@@ -4,6 +4,7 @@ from typing import Dict, List, Optional, Tuple
 import pygame
 
 from pythongame.core.common import *
+from pythongame.core.common import UiIconSprite, PortraitIconSprite
 from pythongame.core.loot import LootTable
 
 ITEM_ENTITY_SIZE = (30, 30)
@@ -56,48 +57,6 @@ class Animation:
         self.sprite_initializers = sprite_initializers
         self.sprite_map_initializers = sprite_map_initializers
         self.position_relative_to_entity = position_relative_to_entity
-
-
-# TODO Ideally this shouldn't need to be defined here (move to common.py?)
-class UiIconSprite(Enum):
-    POTION_HEALTH_LESSER = 1
-    POTION_HEALTH = 2
-    POTION_MANA_LESSER = 3
-    POTION_MANA = 4
-    POTION_SPEED = 11
-    POTION_INVISIBILITY = 12
-    POTION_SCROLL_ABILITY_SUMMON = 13
-    ABILITY_FIREBALL = 101
-    ABILITY_HEAL = 102
-    ABILITY_MAGIC_MISSILE = 103
-    ABILITY_TELEPORT = 104
-    ABILITY_FROST_NOVA = 105
-    ABILITY_WHIRLWIND = 106
-    ABILITY_ENTANGLING_ROOTS = 107
-    ABILITY_SUMMON = 108
-    ABILITY_SWORD_SLASH = 109
-    ABILITY_BLOODLUST = 110
-    ABILITY_CHARGE = 111
-    ITEM_WINGED_BOOTS = 201
-    ITEM_AMULET_OF_MANA = 202
-    ITEM_SWORD_OF_LEECHING = 203
-    ITEM_ROD_OF_LIGHTNING = 204
-    ITEM_SOLDIERS_HELMET = 205
-    ITEM_BLESSED_SHIELD = 206
-    ITEM_STAFF_OF_FIRE = 207
-    ITEM_BLUE_ROBE = 208
-    ITEM_ORB_OF_THE_MAGI = 209
-    MAP_EDITOR_TRASHCAN = 301
-    MAP_EDITOR_RECYCLING = 302
-
-
-# Portraits that are shown in UI (player portrait and dialog portraits)
-class PortraitIconSprite(Enum):
-    VIKING = 2
-    NOMAD = 3
-    NINJA = 4
-    HERO_MAGE = 10
-    HERO_WARRIOR = 11
 
 
 class AbilityData:
