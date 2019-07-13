@@ -73,6 +73,7 @@ class AbilityType(Enum):
     BLOOD_LUST = 11
     CHARGE = 12
     STOMP = 13
+    SHIV = 14
 
 
 class Sprite(Enum):
@@ -137,6 +138,7 @@ class Sprite(Enum):
     PORTAL_DARK = 604
     HERO_MAGE = 700
     HERO_WARRIOR = 701
+    HERO_ROGUE = 702
 
 
 class BuffType(Enum):
@@ -218,6 +220,7 @@ class PortalId(Enum):
 class HeroId(Enum):
     MAGE = 1
     WARRIOR = 2
+    ROGUE = 3
 
 
 class UiIconSprite(Enum):
@@ -240,6 +243,7 @@ class UiIconSprite(Enum):
     ABILITY_BLOODLUST = 110
     ABILITY_CHARGE = 111
     ABILITY_STOMP = 112
+    ABILITY_SHIV = 113
     ITEM_WINGED_BOOTS = 201
     ITEM_AMULET_OF_MANA = 202
     ITEM_SWORD_OF_LEECHING = 203
@@ -260,3 +264,4 @@ class PortraitIconSprite(Enum):
     NINJA = 4
     HERO_MAGE = 10
     HERO_WARRIOR = 11
+    HERO_ROGUE = 12

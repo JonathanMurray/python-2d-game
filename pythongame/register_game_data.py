@@ -5,6 +5,7 @@ from pythongame.game_data.abilities.ability_entangling_roots import register_ent
 from pythongame.game_data.abilities.ability_fireball import register_fireball_ability
 from pythongame.game_data.abilities.ability_frost_nova import register_frost_nova_ability
 from pythongame.game_data.abilities.ability_heal import register_heal_ability
+from pythongame.game_data.abilities.ability_shiv import register_shiv_ability
 from pythongame.game_data.abilities.ability_stomp import register_stomp_ability
 from pythongame.game_data.abilities.ability_summon import register_summon_ability
 from pythongame.game_data.abilities.ability_sword_slash import register_sword_slash_ability
@@ -29,6 +30,7 @@ from pythongame.game_data.enemies.enemy_rat_1 import register_rat_1_enemy
 from pythongame.game_data.enemies.enemy_rat_2 import register_rat_2_enemy
 from pythongame.game_data.enemies.enemy_warrior import register_warrior_enemy
 from pythongame.game_data.heroes.hero_mage import register_hero_mage
+from pythongame.game_data.heroes.hero_rogue import register_hero_rogue
 from pythongame.game_data.heroes.hero_warrior import register_hero_warrior
 from pythongame.game_data.items.item_amulet_of_mana import register_amulet_of_mana_item
 from pythongame.game_data.items.item_blessed_shield import register_blessed_shield_item
@@ -60,6 +62,7 @@ def register_all_game_data():
     register_entangling_roots_ability()
     register_summon_ability()
     register_stomp_ability()
+    register_shiv_ability()
 
     register_recovering_after_ability_buff()
 
@@ -82,6 +85,7 @@ def register_all_game_data():
 
     register_hero_mage()
     register_hero_warrior()
+    register_hero_rogue()
 
     register_dwarf_npc()
     register_nomad_npc()
