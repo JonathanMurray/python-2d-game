@@ -75,7 +75,6 @@ class AbilityType(Enum):
 
 
 class Sprite(Enum):
-    PLAYER = 1
     EFFECT_ABILITY_FROST_NOVA = 3
     PROJECTILE_PLAYER_FIREBALL = 11
     PROJECTILE_PLAYER_MAGIC_MISSILE = 12
@@ -135,6 +134,8 @@ class Sprite(Enum):
     PORTAL_GREEN = 602
     PORTAL_RED = 603
     PORTAL_DARK = 604
+    HERO_MAGE = 700
+    HERO_WARRIOR = 701
 
 
 class BuffType(Enum):
@@ -209,3 +210,8 @@ class PortalId(Enum):
     B_REMOTE = 4
     C_BASE = 5
     C_REMOTE = 6
+
+
+class HeroId(Enum):
+    MAGE = 1
+    WARRIOR = 2

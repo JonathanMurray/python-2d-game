@@ -1,7 +1,7 @@
 from typing import Optional, Tuple
 
-from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, ItemType, PortalId
-from pythongame.core.entity_creation import create_portal, create_player_world_entity, create_npc, create_wall, \
+from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, ItemType, PortalId, HeroId
+from pythongame.core.entity_creation import create_portal, create_hero_world_entity, create_npc, create_wall, \
     create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground
 
 
@@ -30,7 +30,8 @@ class MapEditorWorldEntity:
 
     @staticmethod
     def player():
-        entity = create_player_world_entity((0, 0))
+        # The choice of hero shouldn't matter in the map editor, as we only store its position in the map file
+        entity = create_hero_world_entity(HeroId.MAGE, (0, 0))
         e = MapEditorWorldEntity(entity.sprite, (entity.w, entity.h))
         e.is_player = True
         return e

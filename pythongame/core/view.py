@@ -2,10 +2,10 @@ from typing import Dict, Any, List, Tuple, Optional, Union
 
 import pygame
 
-from pythongame.core.common import Direction, Sprite, ConsumableType, ItemType
+from pythongame.core.common import Direction, Sprite, ConsumableType, ItemType, HeroId
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, UiIconSprite, \
-    PORTRAIT_ICON_SPRITE_PATHS, PortraitIconSprite, NpcDialog
+    PORTRAIT_ICON_SPRITE_PATHS, PortraitIconSprite, NpcDialog, HEROES
 from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter
 from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
@@ -146,8 +146,6 @@ class View:
 
         # This is updated every time the view is called
         self.camera_world_area = None
-
-        self.scaled_player_portrait = self.images_by_portrait_sprite[PortraitIconSprite.PLAYER]
 
     # ------------------------------------
     #         TRANSLATING COORDINATES
@@ -508,7 +506,7 @@ class View:
                   player_minimap_relative_position, consumable_slots, item_slots: Dict[int, ItemType],
                   player_level: int, mouse_screen_position: Tuple[int, int], player_exp: int,
                   player_max_exp_in_this_level: int, dialog: Optional[DialogGraphics], player_money: int,
-                  player_damage_modifier: float) -> MouseHoverEvent:
+                  player_damage_modifier: float, hero_id: HeroId) -> MouseHoverEvent:
 
         hovered_item_slot_number = None
         hovered_consumable_slot_number = None
@@ -541,10 +539,7 @@ class View:
 
         x_0 = 20
 
-        # TODO: Extract this code
-        rect_portrait_pos = self._translate_ui_position_to_screen((x_0, y_0 + 13))
-        self._image(self.scaled_player_portrait, rect_portrait_pos)
-        self._rect((160, 160, 180), (rect_portrait_pos[0], rect_portrait_pos[1], 100, 70), 2)
+        self._player_portrait(hero_id, (x_0, y_0 + 13))
 
         rect_healthbar = (x_0, y_4 - 1, 100, 14)
         self._stat_bar_in_ui((rect_healthbar[0], rect_healthbar[1]), rect_healthbar[2], rect_healthbar[3],
@@ -700,6 +695,13 @@ class View:
         if not is_mouse_hovering_ui:
             mouse_game_world_position = self._translate_screen_position_to_world(mouse_screen_position)
         return MouseHoverEvent(hovered_item_slot_number, hovered_consumable_slot_number, mouse_game_world_position)
+
+    def _player_portrait(self, hero_id: HeroId, ui_position: Tuple[int, int]):
+        rect_portrait_pos = self._translate_ui_position_to_screen(ui_position)
+        portrait_sprite = HEROES[hero_id].portrait_icon_sprite
+        player_portrait_image = self.images_by_portrait_sprite[portrait_sprite]
+        self._image(player_portrait_image, rect_portrait_pos)
+        self._rect((160, 160, 180), (rect_portrait_pos[0], rect_portrait_pos[1], 100, 70), 2)
 
     def _dialog(self, dialog_graphics: DialogGraphics):
         rect_dialog_container = (100, 75, 500, 250)

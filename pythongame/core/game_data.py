@@ -58,7 +58,7 @@ class Animation:
         self.position_relative_to_entity = position_relative_to_entity
 
 
-# TODO Ideally this shouldn't need to be defined here
+# TODO Ideally this shouldn't need to be defined here (move to common.py?)
 class UiIconSprite(Enum):
     POTION_HEALTH_LESSER = 1
     POTION_HEALTH = 2
@@ -93,10 +93,11 @@ class UiIconSprite(Enum):
 
 # Portraits that are shown in UI (player portrait and dialog portraits)
 class PortraitIconSprite(Enum):
-    PLAYER = 1
     VIKING = 2
     NOMAD = 3
     NINJA = 4
+    HERO_MAGE = 10
+    HERO_WARRIOR = 11
 
 
 class AbilityData:
@@ -174,6 +175,28 @@ class PortalData:
         self.sprite = sprite
 
 
+class InitialPlayerStateData:
+    def __init__(self, health: int, mana: int, mana_regen: float,
+                 consumable_slots: Dict[int, ConsumableType], abilities: List[AbilityType],
+                 item_slots: Dict[int, ItemType], new_level_abilities: Dict[int, AbilityType], hero_id: HeroId):
+        self.health = health
+        self.mana = mana
+        self.mana_regen = mana_regen
+        self.consumable_slots = consumable_slots
+        self.abilities = abilities
+        self.item_slots = item_slots
+        self.new_level_abilities = new_level_abilities
+        self.hero_id = hero_id
+
+
+class HeroData:
+    def __init__(self, sprite: Sprite, portrait_icon_sprite: PortraitIconSprite,
+                 initial_player_state: InitialPlayerStateData):
+        self.sprite = sprite
+        self.portrait_icon_sprite = portrait_icon_sprite
+        self.initial_player_state = initial_player_state
+
+
 NON_PLAYER_CHARACTERS: Dict[NpcType, NpcData] = {}
 
 ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Animation]] = {}
@@ -195,6 +218,8 @@ KEYS_BY_ABILITY_TYPE: Dict[AbilityType, UserAbilityKey] = {}
 BUFF_TEXTS: Dict[BuffType, str] = {}
 
 PORTALS: Dict[PortalId, PortalData] = {}
+
+HEROES: Dict[HeroId, HeroData] = {}
 
 
 def register_npc_data(npc_type: NpcType, npc_data: NpcData):
@@ -261,3 +286,7 @@ def register_item_data(item_type: ItemType, item_data: ItemData):
 
 def register_portal_data(portal_id: PortalId, portal_data: PortalData):
     PORTALS[portal_id] = portal_data
+
+
+def register_hero_data(hero_id: HeroId, hero_data: HeroData):
+    HEROES[hero_id] = hero_data

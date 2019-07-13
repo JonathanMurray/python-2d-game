@@ -3,25 +3,24 @@ from typing import Tuple
 
 from pythongame.core.common import *
 from pythongame.core.entity_creation import create_npc, set_global_path_finder, create_money_pile_on_ground, \
-    create_consumable_on_ground, create_portal, create_wall, create_player_world_entity, \
-    create_decoration_entity, create_item_on_ground
+    create_consumable_on_ground, create_portal, create_wall, create_hero_world_entity, \
+    create_decoration_entity, create_item_on_ground, create_player_state
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Wall, Portal, DecorationEntity, \
     MoneyPileOnGround, ItemOnGround, ConsumableOnGround, PlayerState
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
-from pythongame.game_data.player_data import get_initial_player_state
 
 
 # TODO Avoid depending on pythongame.game_data from here
 
 
-def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str):
+def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file: str, hero_id: HeroId):
     with open(map_file) as map_file:
         json_data = json.loads(map_file.read())
 
         path_finder = GlobalPathFinder()
         set_global_path_finder(path_finder)
 
-        player_state = get_initial_player_state()
+        player_state = create_player_state(hero_id)
         game_state = MapJson.deserialize(json_data, player_state, camera_size)
 
         path_finder.set_grid(game_state.grid)
@@ -52,7 +51,7 @@ class MapJson:
     @staticmethod
     def deserialize(data, player_state: PlayerState, camera_size: Tuple[int, int]) -> GameState:
         return GameState(
-            player_entity=(PlayerJson.deserialize(data["player"])),
+            player_entity=PlayerJson.deserialize(player_state.hero_id, data["player"]),
             consumables_on_ground=[ConsumableJson.deserialize(p) for p in data.get("consumables_on_ground", [])],
             items_on_ground=[ItemJson.deserialize(i) for i in data.get("items_on_ground", [])],
             money_piles_on_ground=[MoneyJson.deserialize(p) for p in data.get("money_piles_on_ground", [])],
@@ -72,8 +71,8 @@ class PlayerJson:
         return {"position": entity.get_position()}
 
     @staticmethod
-    def deserialize(data) -> WorldEntity:
-        return create_player_world_entity(data["position"])
+    def deserialize(hero_id: HeroId, data) -> WorldEntity:
+        return create_hero_world_entity(hero_id, data["position"])
 
 
 # TODO This is more than enemies!

@@ -4,13 +4,13 @@ from typing import Tuple, Optional, List, Dict
 
 import pygame
 
-from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, ItemType, PortalId
-from pythongame.core.math import sum_of_vectors
-from pythongame.core.entity_creation import create_portal, create_player_world_entity, create_npc, create_wall, \
-    create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground
+from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, ItemType, PortalId, HeroId
+from pythongame.core.entity_creation import create_portal, create_hero_world_entity, create_npc, create_wall, \
+    create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground, \
+    create_player_state
 from pythongame.core.game_state import GameState
+from pythongame.core.math import sum_of_vectors
 from pythongame.core.view import View
-from pythongame.game_data.player_data import get_initial_player_state
 from pythongame.game_world_init import save_game_state_to_json_file, create_game_state_from_json_file
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 from pythongame.register_game_data import register_all_game_data
@@ -93,6 +93,9 @@ CHARS_BY_ENTITY: Dict[MapEditorWorldEntity, str] = {v: k for k, v in ENTITIES_BY
 SCREEN_SIZE = (1200, 750)
 CAMERA_SIZE = (1200, 600)
 
+# The choice of hero shouldn't matter in the map editor, as we only store its position in the map file
+HERO_ID = HeroId.MAGE
+
 if 'S' in ENTITIES_BY_CHAR:
     raise Exception("'S' key should be reserved for saving, but it's claimed by entity: "
                     + str(ENTITIES_BY_CHAR['S']))
@@ -125,10 +128,11 @@ def main(args: List[str]):
         map_file = "resources/maps/graphics_test.json"
 
     if Path(map_file).exists():
-        game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file)
+        game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file, HERO_ID)
     else:
-        player_entity = create_player_world_entity((250, 250))
-        player_state = get_initial_player_state()
+
+        player_entity = create_hero_world_entity(HERO_ID, (250, 250))
+        player_state = create_player_state(HERO_ID)
         game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, (500, 500), player_state, [], [])
 
     pygame.init()

@@ -4,7 +4,7 @@ from typing import List, Optional
 import pygame
 
 import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis, SoundId
+from pythongame.core.common import Millis, SoundId, HeroId
 from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.player_environment_interactions import PlayerInteractionsState
@@ -20,6 +20,10 @@ from pythongame.register_game_data import register_all_game_data
 SCREEN_SIZE = (700, 700)
 CAMERA_SIZE = (700, 530)
 
+# TODO make it configurable on run-time
+# Change this to play as a different hero
+HERO_ID = HeroId.MAGE
+
 register_all_game_data()
 
 
@@ -28,7 +32,7 @@ def main(args: List[str]):
         map_file = args[0]
     else:
         map_file = "resources/maps/graphics_test.json"
-    game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file)
+    game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file, HERO_ID)
     allocate_input_keys_for_abilities(game_state.player_state.abilities)
     pygame.init()
 
@@ -156,7 +160,8 @@ def main(args: List[str]):
             player_max_exp_in_this_level=game_state.player_state.max_exp_in_this_level,
             dialog=dialog,
             player_money=game_state.player_state.money,
-            player_damage_modifier=game_state.player_state.base_damage_modifier + game_state.player_state.damage_modifier_bonus)
+            player_damage_modifier=game_state.player_state.base_damage_modifier + game_state.player_state.damage_modifier_bonus,
+            hero_id=game_state.player_state.hero_id)
 
         # TODO There is a lot of details here about UI state (dragging items). Move that elsewhere.
 

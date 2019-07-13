@@ -1,10 +1,10 @@
 from typing import Tuple
 
-from pythongame.core.common import NpcType, Direction, Sprite, ItemType, ConsumableType, WallType, PortalId
+from pythongame.core.common import NpcType, Direction, Sprite, ItemType, ConsumableType, WallType, PortalId, HeroId
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, ITEMS, CONSUMABLES, POTION_ENTITY_SIZE, \
-    WALLS, PORTALS
+    WALLS, PORTALS, HEROES
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
-    ConsumableOnGround, Portal, Wall, DecorationEntity
+    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.game_data.player_data import PLAYER_ENTITY_SIZE, PLAYER_ENTITY_SPEED
@@ -59,9 +59,16 @@ def create_wall(wall_type: WallType, pos: Tuple[int, int]) -> Wall:
     return Wall(wall_type, entity)
 
 
-def create_player_world_entity(pos: Tuple[int, int]) -> WorldEntity:
-    return WorldEntity(pos, PLAYER_ENTITY_SIZE, Sprite.PLAYER, Direction.RIGHT, PLAYER_ENTITY_SPEED)
+def create_hero_world_entity(hero_id: HeroId, pos: Tuple[int, int]) -> WorldEntity:
+    return WorldEntity(pos, PLAYER_ENTITY_SIZE, HEROES[hero_id].sprite, Direction.RIGHT, PLAYER_ENTITY_SPEED)
 
 
 def create_decoration_entity(pos: Tuple[int, int], sprite: Sprite) -> DecorationEntity:
     return DecorationEntity(pos, sprite)
+
+
+def create_player_state(hero_id: HeroId) -> PlayerState:
+    data = HEROES[hero_id].initial_player_state
+    return PlayerState(
+        data.health, data.health, data.mana, data.mana, data.mana_regen, data.consumable_slots, data.abilities,
+        data.item_slots, data.new_level_abilities, data.hero_id)
