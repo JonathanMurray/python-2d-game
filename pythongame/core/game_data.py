@@ -169,10 +169,13 @@ class WallData:
 
 
 class PortalData:
-    def __init__(self, starts_enabled: bool, leads_to: Optional[PortalId], sprite: Sprite):
+    def __init__(self, starts_enabled: bool, leads_to: Optional[PortalId], sprite: Sprite,
+                 entity_size: Tuple[int, int], teleport_delay: Millis):
         self.starts_enabled = starts_enabled
         self.leads_to = leads_to
         self.sprite = sprite
+        self.entity_size = entity_size
+        self.teleport_delay = teleport_delay
 
 
 class InitialPlayerStateData:

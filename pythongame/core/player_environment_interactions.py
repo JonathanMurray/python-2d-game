@@ -2,15 +2,15 @@ import sys
 from typing import Optional, List
 
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect
-from pythongame.core.common import Millis, Direction, BuffType
-from pythongame.core.math import boxes_intersect, translate_in_direction, is_x_and_y_within_distance, \
-    get_manhattan_distance_between_rects
+from pythongame.core.common import Direction, BuffType
+from pythongame.core.game_data import PORTALS
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, LootableOnGround, Portal
+from pythongame.core.math import boxes_intersect, translate_in_direction, is_x_and_y_within_distance, \
+    get_manhattan_distance_between_rects
 from pythongame.core.npc_behaviors import invoke_npc_action
 from pythongame.core.view import EntityActionText, DialogGraphics
 from pythongame.core.view_state import ViewState
-from pythongame.game_data.portals import PORTAL_DELAY
 
 
 class PlayerInteractionsState:
@@ -73,7 +73,8 @@ class PlayerInteractionsState:
             destination_portal.world_entity.sprite = portal.world_entity.sprite
             destination = translate_in_direction(destination_portal.world_entity.get_position(), Direction.DOWN, 50)
             teleport_buff_effect: AbstractBuffEffect = get_buff_effect(BuffType.BEING_TELEPORTED, destination)
-            game_state.player_state.gain_buff_effect(teleport_buff_effect, Millis(PORTAL_DELAY))
+            delay = PORTALS[portal.portal_id].teleport_delay
+            game_state.player_state.gain_buff_effect(teleport_buff_effect, delay)
         else:
             self.view_state.set_message("Hmm... Looks suspicious!")
 

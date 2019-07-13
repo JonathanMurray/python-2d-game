@@ -7,7 +7,6 @@ from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPil
     ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
-from pythongame.game_data.portals import PORTAL_SIZE
 
 # TODO handle this (global path finder) in a better way!
 
@@ -50,7 +49,7 @@ def create_consumable_on_ground(consumable_type: ConsumableType, pos: Tuple[int,
 
 def create_portal(portal_id: PortalId, pos: Tuple[int, int]) -> Portal:
     data = PORTALS[portal_id]
-    return Portal(WorldEntity(pos, PORTAL_SIZE, data.sprite), portal_id, data.starts_enabled, data.leads_to)
+    return Portal(WorldEntity(pos, data.entity_size, data.sprite), portal_id, data.starts_enabled, data.leads_to)
 
 
 def create_wall(wall_type: WallType, pos: Tuple[int, int]) -> Wall:

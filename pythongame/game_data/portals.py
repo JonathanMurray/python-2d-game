@@ -8,7 +8,7 @@ from pythongame.core.visual_effects import VisualRect, VisualCircle
 
 PORTAL_SIZE = (42, 46)
 BUFF_TYPE = BuffType.BEING_TELEPORTED
-PORTAL_DELAY = 600
+PORTAL_DELAY = Millis(600)
 
 
 class BeingTeleported(AbstractBuffEffect):
@@ -81,11 +81,15 @@ def register_portal():
         indices_by_dir,
         sprite_position_relative_to_entity)
 
-    register_portal_data(PortalId.A_BASE, PortalData(False, PortalId.A_REMOTE, Sprite.PORTAL_DISABLED))
-    register_portal_data(PortalId.A_REMOTE, PortalData(True, PortalId.A_BASE, Sprite.PORTAL_BLUE))
-    register_portal_data(PortalId.B_BASE, PortalData(False, PortalId.B_REMOTE, Sprite.PORTAL_DISABLED))
-    register_portal_data(PortalId.B_REMOTE, PortalData(True, PortalId.B_BASE, Sprite.PORTAL_RED))
-    register_portal_data(PortalId.C_BASE, PortalData(False, PortalId.C_REMOTE, Sprite.PORTAL_DISABLED))
-    register_portal_data(PortalId.C_REMOTE, PortalData(True, PortalId.C_BASE, Sprite.PORTAL_DARK))
+    register_portal_data(PortalId.A_BASE, _data(False, PortalId.A_REMOTE, Sprite.PORTAL_DISABLED))
+    register_portal_data(PortalId.A_REMOTE, _data(True, PortalId.A_BASE, Sprite.PORTAL_BLUE))
+    register_portal_data(PortalId.B_BASE, _data(False, PortalId.B_REMOTE, Sprite.PORTAL_DISABLED))
+    register_portal_data(PortalId.B_REMOTE, _data(True, PortalId.B_BASE, Sprite.PORTAL_RED))
+    register_portal_data(PortalId.C_BASE, _data(False, PortalId.C_REMOTE, Sprite.PORTAL_DISABLED))
+    register_portal_data(PortalId.C_REMOTE, _data(True, PortalId.C_BASE, Sprite.PORTAL_DARK))
 
     register_buff_effect(BUFF_TYPE, BeingTeleported)
+
+
+def _data(starts_enabled: bool, portal_id: PortalId, sprite: Sprite):
+    return PortalData(starts_enabled, portal_id, sprite, PORTAL_SIZE, PORTAL_DELAY)
