@@ -39,7 +39,7 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
         4: None,
         5: None
     }
-    abilities = [AbilityType.SWORD_SLASH, AbilityType.CHARGE]
+    abilities = [AbilityType.SWORD_SLASH]
     items: Dict[int, ItemType] = {
         1: ItemType.WINGED_BOOTS,
         2: None,
