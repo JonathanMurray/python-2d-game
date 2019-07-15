@@ -47,8 +47,8 @@ def register_dwarf_npc():
     register_npc_behavior(npc_type, NpcMind)
     # TODO Use proper sprites for options
     dialog_options = [
-        DialogOptionData("\"You bet\"", "start a fight", NpcAction(), UiIconSprite.ABILITY_SWORD_SLASH),
-        DialogOptionData("\"I wouldn't dream of it\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
+        DialogOptionData("\"You bet!\"", "start a fight", NpcAction(), UiIconSprite.ABILITY_SWORD_SLASH),
+        DialogOptionData("\"No way!\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
     dialog_data = DialogData(PortraitIconSprite.VIKING, "Hey there! You want a piece of me!? ", dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet.png")

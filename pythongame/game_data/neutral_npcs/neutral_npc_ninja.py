@@ -1,13 +1,14 @@
 import random
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, ConsumableType, \
-    PortraitIconSprite, UiIconSprite
+    PortraitIconSprite, UiIconSprite, SoundId
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
     register_npc_dialog_data, DialogData, DialogOptionData
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.sound_player import play_sound
 
 
 class NpcMind(AbstractNpcMind):
@@ -28,7 +29,7 @@ class NpcMind(AbstractNpcMind):
                 npc.world_entity.set_moving_in_dir(direction)
 
 
-class NpcAction(AbstractNpcAction):
+class SellManaPotion(AbstractNpcAction):
 
     def act(self, game_state: GameState):
         cost = 5
@@ -36,12 +37,33 @@ class NpcAction(AbstractNpcAction):
         can_afford = player_state.money >= cost
         has_space = player_state.consumable_inventory.has_space_for_more()
         if not can_afford:
+            play_sound(SoundId.WARNING)
             return "Not enough gold!"
         if not has_space:
+            play_sound(SoundId.WARNING)
             return "Not enough space!"
         player_state.money -= cost
         player_state.consumable_inventory.add_consumable(ConsumableType.MANA_LESSER)
+        play_sound(SoundId.EVENT_PURCHASED_SOMETHING)
         return "Bought mana potion!"
+
+
+class SellHealthPotion(AbstractNpcAction):
+    def act(self, game_state: GameState):
+        cost = 5
+        player_state = game_state.player_state
+        can_afford = player_state.money >= cost
+        has_space = player_state.consumable_inventory.has_space_for_more()
+        if not can_afford:
+            play_sound(SoundId.WARNING)
+            return "Not enough gold!"
+        if not has_space:
+            play_sound(SoundId.WARNING)
+            return "Not enough space!"
+        player_state.money -= cost
+        player_state.consumable_inventory.add_consumable(ConsumableType.HEALTH_LESSER)
+        play_sound(SoundId.EVENT_PURCHASED_SOMETHING)
+        return "Bought health potion!"
 
 
 def register_ninja_npc():
@@ -55,10 +77,10 @@ def register_ninja_npc():
     register_npc_behavior(npc_type, NpcMind)
     # TODO Use proper icon for 'cancel' option
     dialog_options = [
-        DialogOptionData("Lesser mana potion [5 gold]", "buy", NpcAction(),
-                         UiIconSprite.POTION_MANA_LESSER),
+        DialogOptionData("Lesser mana potion [5 gold]", "buy", SellManaPotion(), UiIconSprite.POTION_MANA_LESSER),
+        DialogOptionData("Lesser health potion [5 gold]", "buy", SellHealthPotion(), UiIconSprite.POTION_HEALTH_LESSER),
         DialogOptionData("\"Good bye\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
-    dialog_text_body = "Ah.. You're new here, aren't you? Interested in my stock of mana potions?"
+    dialog_text_body = "Ah.. You're new here, aren't you? Interested in my stock of potions?"
     dialog_data = DialogData(portrait_icon_sprite, dialog_text_body, dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")

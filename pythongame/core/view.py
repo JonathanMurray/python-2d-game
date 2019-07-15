@@ -718,11 +718,15 @@ class View:
         self._rect((160, 160, 180), (rect_portrait_pos[0], rect_portrait_pos[1], 100, 70), 2)
 
     def _dialog(self, dialog_graphics: DialogGraphics):
-        rect_dialog_container = (100, 75, 500, 310)
+        options_margin = 10
+        option_padding = 4
+        h_dialog_container = 230 + len(dialog_graphics.options) * (UI_ICON_SIZE[1] + 2 * option_padding)
+        rect_dialog_container = (100, 75, 500, h_dialog_container)
+
         x_left = rect_dialog_container[0]
         x_right = rect_dialog_container[0] + rect_dialog_container[2]
         self._rect((210, 180, 60), rect_dialog_container, 5)
-        self._rect_transparent(rect_dialog_container, 180, COLOR_BLACK)
+        self._rect_transparent(rect_dialog_container, 200, COLOR_BLACK)
         color_separator = (170, 140, 20)
         dialog_container_portrait_padding = 10
         rect_portrait_pos = (x_left + dialog_container_portrait_padding,
@@ -742,8 +746,7 @@ class View:
 
         y_above_options = dialog_pos[1] + 150
         self._line(color_separator, (x_left, y_above_options), (x_right, y_above_options), 2)
-        options_margin = 10
-        option_padding = 4
+
         for i, option in enumerate(dialog_graphics.options):
             option_image = self.images_by_ui_sprite[option.ui_icon_sprite]
             x_option = x_left + 20
@@ -755,19 +758,20 @@ class View:
             color_highlight = COLOR_WHITE
 
             is_option_active = dialog_graphics.active_option_index == i
+            color_option_text = COLOR_WHITE if is_option_active else (160, 160, 160)
             if is_option_active:
                 rect_highlight_active_option = (
                     x_option, y_option, rect_dialog_container[2] - 40, UI_ICON_SIZE[1] + 2 * option_padding)
                 self._rect_transparent(rect_highlight_active_option, 120, COLOR_WHITE)
                 self._rect(color_highlight, rect_highlight_active_option, 1)
             self._image(option_image, (x_option_image, y_option_image))
-            self._text(self.font_dialog, option.text_header, (x_option_text, y_option_text), COLOR_WHITE)
+            self._text(self.font_dialog, option.text_header, (x_option_text, y_option_text), color_option_text)
         y_under_options = y_above_options + 2 * options_margin \
                           + len(dialog_graphics.options) * (UI_ICON_SIZE[1] + 2 * option_padding)
         self._line(color_separator, (x_left, y_under_options), (x_right, y_under_options), 2)
         y_action_text = y_under_options + 10
         action_text = dialog_graphics.options[dialog_graphics.active_option_index].text_detailed
-        self._text(self.font_dialog, "Click [Space] to " + action_text, (x_left + 20, y_action_text), COLOR_WHITE)
+        self._text(self.font_dialog, "[Space] : " + action_text, (x_left + 20, y_action_text), COLOR_WHITE)
 
     @staticmethod
     def _split_text_into_lines(full_text: str, max_line_length: int):
