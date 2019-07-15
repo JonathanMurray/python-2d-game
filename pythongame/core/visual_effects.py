@@ -1,6 +1,8 @@
+import random
 from typing import Tuple, Optional
 
 from pythongame.core.common import Millis, Sprite
+from pythongame.core.game_data import ENTITY_SPRITE_SIZES
 from pythongame.core.game_state import WorldEntity
 
 
@@ -97,24 +99,30 @@ class VisualSprite(VisualEffect):
 
 
 def create_visual_damage_text(entity: WorldEntity, damage_amount: int):
-    start_position = (entity.x + 15, entity.y - 10)
-    end_position = (entity.x + 15, entity.y - 40)
+    start_position, end_position = _get_entity_text_positions(entity)
     return VisualText(str(damage_amount), (220, 0, 0), start_position, end_position, Millis(800))
 
 
 def create_visual_healing_text(entity: WorldEntity, healing_amount: int):
-    start_position = (entity.x + 15, entity.y - 10)
-    end_position = (entity.x + 15, entity.y - 40)
+    start_position, end_position = _get_entity_text_positions(entity)
     return VisualText(str(healing_amount), (0, 140, 0), start_position, end_position, Millis(800))
 
 
 def create_visual_mana_text(entity: WorldEntity, healing_amount: int):
-    start_position = (entity.x + 15, entity.y - 10)
-    end_position = (entity.x + 15, entity.y - 40)
+    start_position, end_position = _get_entity_text_positions(entity)
     return VisualText(str(healing_amount), (0, 0, 140), start_position, end_position, Millis(800))
 
 
 def create_visual_exp_text(entity: WorldEntity, exp_amount: int):
-    start_position = (entity.x + 5, entity.y - 10)
-    end_position = (entity.x + 5, entity.y - 40)
+    start_position, end_position = _get_entity_text_positions(entity)
     return VisualText(str(exp_amount), (255, 255, 255), start_position, end_position, Millis(800))
+
+
+def _get_entity_text_positions(entity: WorldEntity) -> Tuple[Tuple[int, int], Tuple[int, int]]:
+    sprite_size = ENTITY_SPRITE_SIZES[entity.sprite]
+    y_start = entity.y + entity.h - sprite_size[1]
+    random_x_offset = random.randint(-10, 10)
+    x = entity.get_center_position()[0] - 5 + random_x_offset
+    start_position = (x, y_start)
+    end_position = (x, y_start - 40)
+    return start_position, end_position

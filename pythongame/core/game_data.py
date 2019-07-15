@@ -165,6 +165,8 @@ NON_PLAYER_CHARACTERS: Dict[NpcType, NpcData] = {}
 
 ENTITY_SPRITE_INITIALIZERS: Dict[Sprite, Dict[Direction, Animation]] = {}
 
+ENTITY_SPRITE_SIZES: Dict[Sprite, Tuple[int, int]] = {}
+
 UI_ICON_SPRITE_PATHS: Dict[UiIconSprite, str] = {}
 
 PORTRAIT_ICON_SPRITE_PATHS: Dict[PortraitIconSprite, str] = {}
@@ -214,6 +216,7 @@ def register_portrait_icon_sprite_path(sprite: PortraitIconSprite, file_path: st
 # Deprecated
 def register_entity_sprite_initializer(sprite: Sprite, initializer: SpriteInitializer):
     ENTITY_SPRITE_INITIALIZERS[sprite] = {Direction.DOWN: Animation([initializer], None, (0, 0))}
+    ENTITY_SPRITE_SIZES[sprite] = initializer.scaling_size
 
 
 def register_entity_sprite_map(
@@ -234,6 +237,7 @@ def register_entity_sprite_map(
             raise Exception("Invalid input: " + str(initializers))
         ENTITY_SPRITE_INITIALIZERS[sprite][direction] = Animation(
             None, initializers[direction], position_relative_to_entity)
+    ENTITY_SPRITE_SIZES[sprite] = scaled_sprite_size
 
 
 def register_buff_text(buff_type: BuffType, text: str):
