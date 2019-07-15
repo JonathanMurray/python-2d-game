@@ -24,20 +24,17 @@ def register_chest_enemy():
         LootEntry.item(ItemType.WINGED_BOOTS),
         LootEntry.item(ItemType.AMULET_OF_MANA_1),
         LootEntry.item(ItemType.AMULET_OF_MANA_2),
-        LootEntry.item(ItemType.AMULET_OF_MANA_3),
         LootEntry.item(ItemType.STAFF_OF_FIRE),
         LootEntry.item(ItemType.BLESSED_SHIELD_1),
         LootEntry.item(ItemType.BLESSED_SHIELD_2),
-        LootEntry.item(ItemType.BLESSED_SHIELD_3),
         LootEntry.item(ItemType.SOLDIERS_HELMET_1),
         LootEntry.item(ItemType.SOLDIERS_HELMET_2),
-        LootEntry.item(ItemType.SOLDIERS_HELMET_3),
         LootEntry.item(ItemType.BLUE_ROBE_1),
         LootEntry.item(ItemType.BLUE_ROBE_2),
-        LootEntry.item(ItemType.BLUE_ROBE_3),
         LootEntry.item(ItemType.ORB_OF_THE_MAGI_1),
         LootEntry.item(ItemType.ORB_OF_THE_MAGI_2),
-        LootEntry.item(ItemType.ORB_OF_THE_MAGI_3),
+        LootEntry.item(ItemType.WIZARDS_COWL),
+        LootEntry.item(ItemType.ZULS_AEGIS),
         LootEntry.consumable(ConsumableType.SCROLL_ABILITY_SUMMON)
     ]
     loot = LootTable([LootGroup(1, possible_drops, 1)])
