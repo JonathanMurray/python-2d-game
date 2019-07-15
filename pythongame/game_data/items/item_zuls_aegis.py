@@ -13,7 +13,7 @@ STUN_DURATION = Millis(1500)
 
 ITEM_TYPE = ItemType.ZULS_AEGIS
 BUFF_TYPE_STUNNED = BuffType.STUNNED_BY_AEGIS_ITEM
-PROC_CHANCE = 0.25
+PROC_CHANCE = 0.2
 
 
 class ItemEffect(AbstractItemEffect):

@@ -5,7 +5,7 @@ from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
 
 ITEM_TYPES = [ItemType.ORB_OF_THE_MAGI_1, ItemType.ORB_OF_THE_MAGI_2, ItemType.ORB_OF_THE_MAGI_3]
-MULTIPLIER_BONUSES = [0.1, 0.2, 0.3]
+MULTIPLIER_BONUSES = [0.1, 0.15, 0.2]
 
 
 class ItemEffect(AbstractItemEffect):

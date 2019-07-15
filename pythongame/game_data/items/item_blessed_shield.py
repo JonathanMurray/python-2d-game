@@ -5,7 +5,7 @@ from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
 
 ITEM_TYPES = [ItemType.BLESSED_SHIELD_1, ItemType.BLESSED_SHIELD_2, ItemType.BLESSED_SHIELD_3]
-HEALTH_REGEN_BOOSTS = [0.2, 0.4, 0.6]
+HEALTH_REGEN_BOOSTS = [0.2, 0.3, 0.4]
 
 
 class ItemEffect(AbstractItemEffect):

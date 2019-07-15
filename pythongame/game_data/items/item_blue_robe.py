@@ -5,7 +5,7 @@ from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
 
 ITEM_TYPES = [ItemType.BLUE_ROBE_1, ItemType.BLUE_ROBE_2, ItemType.BLUE_ROBE_3]
-MANA_AMOUNTS = [10, 20, 30]
+MANA_AMOUNTS = [10, 15, 20]
 
 
 class ItemEffect(AbstractItemEffect):

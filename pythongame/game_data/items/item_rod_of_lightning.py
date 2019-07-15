@@ -10,7 +10,7 @@ from pythongame.core.visual_effects import VisualCircle, VisualLine
 
 ITEM_TYPE = ItemType.ROD_OF_LIGHTNING
 MIN_DMG = 1
-MAX_DMG = 8
+MAX_DMG = 3
 
 
 class ItemEffect(AbstractItemEffect):
@@ -20,7 +20,7 @@ class ItemEffect(AbstractItemEffect):
 
     def apply_middle_effect(self, game_state: GameState, time_passed: Millis):
         self._time_since_lightning += time_passed
-        if self._time_since_lightning > 3000:
+        if self._time_since_lightning > 5000:
             self._time_since_lightning = 0
             player_entity = game_state.player_entity
             player_center_position = player_entity.get_center_position()

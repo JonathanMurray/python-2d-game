@@ -5,7 +5,7 @@ from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
 
 ITEM_TYPES = [ItemType.SOLDIERS_HELMET_1, ItemType.SOLDIERS_HELMET_2, ItemType.SOLDIERS_HELMET_3]
-HEALTH_AMOUNTS = [10, 20, 30]
+HEALTH_AMOUNTS = [10, 15, 20]
 
 
 class ItemEffect(AbstractItemEffect):
