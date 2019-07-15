@@ -1,7 +1,7 @@
 from pythongame.core.common import ItemType, Sprite
 from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
     register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
-from pythongame.core.game_state import Event, PlayerState
+from pythongame.core.game_state import Event, PlayerState, EnemyDiedEvent
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
 
 ITEM_TYPES = [ItemType.WIZARDS_COWL]
@@ -14,8 +14,8 @@ class ItemEffect(AbstractItemEffect):
         self.amount = amount
         self.item_type = item_type
 
-    def item_handle_event(self, notification: Event, player_state: PlayerState):
-        if notification.enemy_died:
+    def item_handle_event(self, event: Event, player_state: PlayerState):
+        if isinstance(event, EnemyDiedEvent):
             player_state.gain_mana(self.amount)
 
     def get_item_type(self):
