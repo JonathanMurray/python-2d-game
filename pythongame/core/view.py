@@ -6,7 +6,7 @@ from pythongame.core.common import Direction, Sprite, ConsumableType, ItemType, 
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, PORTRAIT_ICON_SPRITE_PATHS, NpcDialog, \
     HEROES
-from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter
+from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration
 from pythongame.core.item_effects import AbstractItemEffect
 from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
@@ -500,7 +500,8 @@ class View:
             self._entity_action_text(entity_action_text)
 
     def render_ui(self, fps_string, is_paused, is_game_over, abilities, ability_cooldowns_remaining,
-                  highlighted_ability_action, highlighted_consumable_action, message: str, player_active_buffs,
+                  highlighted_ability_action, highlighted_consumable_action, message: str, player_armor: int,
+                  player_active_buffs: List[BuffWithDuration],
                   player_health, player_mana, player_max_health, player_max_mana, player_health_regen: float,
                   player_mana_regen: float, player_speed_multiplier: float, player_life_steal: float,
                   player_minimap_relative_position, consumable_slots, item_slots: Dict[int, AbstractItemEffect],
@@ -668,11 +669,14 @@ class View:
             "     speed: +" + str(int(round((player_speed_multiplier - 1) * 100))) + "%"
         lifesteal_stat_text = \
             "life steal: " + str(int(round(player_life_steal * 100))) + "%"
+        armor_stat_text = \
+            "     armor: " + str(player_armor)
         self._text_in_ui(self.font_stats, health_regen_text, (x_stats, y_1), COLOR_WHITE)
         self._text_in_ui(self.font_stats, mana_regen_text, (x_stats, y_1 + 20), COLOR_WHITE)
         self._text_in_ui(self.font_stats, damage_stat_text, (x_stats, y_1 + 40), COLOR_WHITE)
         self._text_in_ui(self.font_stats, speed_stat_text, (x_stats, y_1 + 60), COLOR_WHITE)
         self._text_in_ui(self.font_stats, lifesteal_stat_text, (x_stats, y_1 + 80), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, armor_stat_text, (x_stats, y_1 + 100), COLOR_WHITE)
 
         self._rect(COLOR_BORDER, self.ui_screen_area.rect(), 1)
 

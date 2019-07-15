@@ -284,7 +284,7 @@ class BuffEventOutcome:
 class PlayerState:
     def __init__(self, health: int, max_health: int, mana: int, max_mana: int, mana_regen: float,
                  consumable_slots: Dict[int, ConsumableType], abilities: List[AbilityType],
-                 item_slots: Dict[int, Any], new_level_abilities: Dict[int, AbilityType], hero_id: HeroId):
+                 item_slots: Dict[int, Any], new_level_abilities: Dict[int, AbilityType], hero_id: HeroId, armor: int):
         self.health = health
         self._health_float = health
         self.max_health = max_health
@@ -310,6 +310,7 @@ class PlayerState:
         self.base_damage_modifier: float = 1  # only affected by level. Changes multiplicatively
         self.damage_modifier_bonus: float = 0  # affected by items. Only allowed to change additively
         self.hero_id: HeroId = hero_id
+        self.armor: int = armor
 
     def gain_health(self, amount: float) -> int:
         health_before = self.health

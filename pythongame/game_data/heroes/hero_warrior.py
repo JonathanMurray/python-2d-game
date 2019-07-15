@@ -51,4 +51,4 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
         7: AbilityType.STOMP
     }
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities, HeroId.WARRIOR)
+        health, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities, HeroId.WARRIOR, 2)

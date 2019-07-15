@@ -1,3 +1,4 @@
+import random
 from typing import Optional
 
 from pythongame.core.common import SoundId, Millis
@@ -25,12 +26,16 @@ def deal_player_damage_to_enemy(game_state: GameState, npc: NonPlayerCharacter, 
     return True
 
 
-def deal_damage_to_player(game_state: GameState, amount: float, npc_attacker: Optional[NonPlayerCharacter]):
-    health_lost = game_state.player_state.lose_health(amount)
+def deal_damage_to_player(game_state: GameState, base_amount: float, npc_attacker: Optional[NonPlayerCharacter]):
+    player_state = game_state.player_state
+    # Armor has a random element to it. Example: 5 armor absorbs 0-5 damage
+    reduction = random.randint(0, player_state.armor)
+    amount = max(0.0, base_amount - reduction)
+    health_lost = player_state.lose_health(amount)
     if health_lost > 0:
         game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, health_lost))
         play_sound(SoundId.PLAYER_PAIN)
-        game_state.player_state.notify_about_event(PlayerLostHealthEvent(health_lost, npc_attacker))
+        player_state.notify_about_event(PlayerLostHealthEvent(health_lost, npc_attacker))
 
 
 def deal_npc_damage_to_npc(game_state: GameState, target: NonPlayerCharacter, amount: float):
@@ -41,7 +46,7 @@ def deal_npc_damage_to_npc(game_state: GameState, target: NonPlayerCharacter, am
 
 
 def deal_npc_damage(damage_amount: float, game_state: GameState, attacker_entity: WorldEntity,
-                    attacker_npc: NonPlayerCharacter,target: EnemyTarget):
+                    attacker_npc: NonPlayerCharacter, target: EnemyTarget):
     attacker_position = attacker_entity.get_center_position()
     game_state.visual_effects.append(
         VisualRect((200, 0, 0), attacker_position, 50, 50, Millis(200), 3, attacker_entity))

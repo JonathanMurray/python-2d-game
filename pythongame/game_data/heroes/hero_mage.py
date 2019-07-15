@@ -51,4 +51,4 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
         7: AbilityType.CHANNEL_ATTACK
     }
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities, HeroId.MAGE)
+        health, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities, HeroId.MAGE, 0)

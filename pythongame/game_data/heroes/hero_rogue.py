@@ -50,4 +50,4 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
     }
     new_level_abilities = {}
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities, HERO_ID)
+        health, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities, HERO_ID, 1)

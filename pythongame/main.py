@@ -142,6 +142,7 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
             player_speed_multiplier=game_state.player_entity.speed_multiplier,
             player_life_steal=game_state.player_state.life_steal_ratio,
             consumable_slots=game_state.player_state.consumable_slots,
+            player_armor=game_state.player_state.armor,
             player_active_buffs=game_state.player_state.active_buffs,
             fps_string=str(int(clock.get_fps())),
             player_minimap_relative_position=view_state.player_minimap_relative_position,
