@@ -666,7 +666,8 @@ class View:
         damage_stat_text = \
             "    damage: +" + str(int(round((player_damage_modifier - 1) * 100))) + "%"
         speed_stat_text = \
-            "     speed: +" + str(int(round((player_speed_multiplier - 1) * 100))) + "%"
+            "     speed: " + ("+" if player_speed_multiplier >= 1 else "") \
+            + str(int(round((player_speed_multiplier - 1) * 100))) + "%"
         lifesteal_stat_text = \
             "life steal: " + str(int(round(player_life_steal * 100))) + "%"
         armor_stat_text = \
