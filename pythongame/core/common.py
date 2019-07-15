@@ -110,6 +110,7 @@ class Sprite(Enum):
     ITEM_STAFF_OF_FIRE = 307
     ITEM_BLUE_ROBE = 308
     ITEM_ORB_OF_THE_MAGI = 309
+    ITEM_WIZARDS_COWL = 310
     COINS_1 = 350
     COINS_2 = 351
     COINS_5 = 352
@@ -184,6 +185,7 @@ class ItemType(Enum):
     ORB_OF_THE_MAGI_1 = 50
     ORB_OF_THE_MAGI_2 = 51
     ORB_OF_THE_MAGI_3 = 52
+    WIZARDS_COWL = 60
 
 
 class ProjectileType(Enum):
@@ -257,6 +259,7 @@ class UiIconSprite(Enum):
     ITEM_STAFF_OF_FIRE = 207
     ITEM_BLUE_ROBE = 208
     ITEM_ORB_OF_THE_MAGI = 209
+    ITEM_WIZARDS_COWL = 210
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
 

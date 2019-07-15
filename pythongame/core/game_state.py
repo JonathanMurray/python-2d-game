@@ -450,7 +450,7 @@ class PlayerState:
                     buff.force_cancel()
         for item_effect in self.item_slots.values():
             if item_effect:
-                item_effect.item_handle_event(event)
+                item_effect.item_handle_event(event, self)
 
 
 # TODO Is there a way to handle this better in the view module? This class shouldn't need to masquerade as a WorldEntity

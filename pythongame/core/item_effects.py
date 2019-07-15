@@ -1,7 +1,7 @@
 from typing import Dict
 
 from pythongame.core.common import *
-from pythongame.core.game_state import GameState, Event
+from pythongame.core.game_state import GameState, Event, PlayerState
 
 
 class AbstractItemEffect:
@@ -17,7 +17,7 @@ class AbstractItemEffect:
     def get_item_type(self):
         pass
 
-    def item_handle_event(self, notification: Event):
+    def item_handle_event(self, notification: Event, player_state: PlayerState):
         pass
 
 
