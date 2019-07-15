@@ -7,9 +7,10 @@ from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
 class DialogOptionGraphics:
     # TODO handle option icons
-    def __init__(self, text_header: str, text_detailed: str):
+    def __init__(self, text_header: str, text_detailed: str, ui_icon_sprite: UiIconSprite):
         self.text_header = text_header
         self.text_detailed = text_detailed
+        self.ui_icon_sprite = ui_icon_sprite
 
 
 # Used to display dialog from an npc along with the NPC's portrait
@@ -44,10 +45,12 @@ class AbstractNpcAction:
 
 
 class DialogOptionData:
-    def __init__(self, text_header: str, text_detailed: str, action: Optional[AbstractNpcAction]):
+    def __init__(self, text_header: str, text_detailed: str, action: Optional[AbstractNpcAction],
+                 ui_icon_sprite: UiIconSprite):
         self.text_header = text_header
         self.text_detailed = text_detailed
         self.action = action
+        self.ui_icon_sprite = ui_icon_sprite
 
 
 class DialogData:
@@ -89,7 +92,7 @@ def has_npc_dialog(npc_type: NpcType) -> bool:
 
 def get_dialog_graphics(npc_type: NpcType, active_option_index: int) -> DialogGraphics:
     data = _npc_dialog_data[npc_type]
-    options_graphics = [DialogOptionGraphics(o.text_header, o.text_detailed) for o in data.options]
+    options_graphics = [DialogOptionGraphics(o.text_header, o.text_detailed, o.ui_icon_sprite) for o in data.options]
     return DialogGraphics(data.portrait_icon_sprite, data.text_body, options_graphics, active_option_index)
 
 

@@ -718,19 +718,20 @@ class View:
         self._rect((160, 160, 180), (rect_portrait_pos[0], rect_portrait_pos[1], 100, 70), 2)
 
     def _dialog(self, dialog_graphics: DialogGraphics):
-        # TODO render options
-        rect_dialog_container = (100, 75, 500, 250)
+        rect_dialog_container = (100, 75, 500, 310)
+        x_left = rect_dialog_container[0]
+        x_right = rect_dialog_container[0] + rect_dialog_container[2]
         self._rect((210, 180, 60), rect_dialog_container, 5)
         self._rect_transparent(rect_dialog_container, 180, COLOR_BLACK)
-        lower_boundary_y = 280
-        self._line((170, 140, 20), (100, lower_boundary_y), (600, lower_boundary_y), 2)
+        color_separator = (170, 140, 20)
         dialog_container_portrait_padding = 10
-        rect_portrait_pos = (rect_dialog_container[0] + dialog_container_portrait_padding,
+        rect_portrait_pos = (x_left + dialog_container_portrait_padding,
                              rect_dialog_container[1] + dialog_container_portrait_padding)
         dialog_image = self.images_by_portrait_sprite[dialog_graphics.portrait_icon_sprite]
         self._image(dialog_image, rect_portrait_pos)
         self._rect((160, 160, 180), (rect_portrait_pos[0], rect_portrait_pos[1], 100, 70), 2)
-        dialog_pos = (rect_dialog_container[0] + 120, rect_dialog_container[1] + 15)
+
+        dialog_pos = (x_left + 120, rect_dialog_container[1] + 15)
         dialog_lines = self._split_text_into_lines(dialog_graphics.text_body, 33)
         for i, dialog_text_line in enumerate(dialog_lines):
             if i == 6:
@@ -739,10 +740,34 @@ class View:
             self._text(self.font_dialog, dialog_text_line, (dialog_pos[0] + 5, dialog_pos[1] + 32 * i),
                        COLOR_WHITE)
 
+        y_above_options = dialog_pos[1] + 150
+        self._line(color_separator, (x_left, y_above_options), (x_right, y_above_options), 2)
+        options_margin = 10
+        option_padding = 4
         for i, option in enumerate(dialog_graphics.options):
-            color = COLOR_BLUE if i == dialog_graphics.active_option_index else COLOR_WHITE
-            self._text(self.font_dialog, "[Space] " + option.text_detailed,
-                       (rect_dialog_container[0] + 65, dialog_pos[1] + 202 + i * 20), color)
+            option_image = self.images_by_ui_sprite[option.ui_icon_sprite]
+            x_option = x_left + 20
+            y_option = y_above_options + options_margin + i * (UI_ICON_SIZE[1] + 2 * option_padding)
+            x_option_image = x_option + option_padding
+            y_option_image = y_option + option_padding
+            x_option_text = x_option_image + UI_ICON_SIZE[0] + 20
+            y_option_text = y_option_image + 4
+            color_highlight = COLOR_WHITE
+
+            is_option_active = dialog_graphics.active_option_index == i
+            if is_option_active:
+                rect_highlight_active_option = (
+                    x_option, y_option, rect_dialog_container[2] - 40, UI_ICON_SIZE[1] + 2 * option_padding)
+                self._rect_transparent(rect_highlight_active_option, 120, COLOR_WHITE)
+                self._rect(color_highlight, rect_highlight_active_option, 1)
+            self._image(option_image, (x_option_image, y_option_image))
+            self._text(self.font_dialog, option.text_header, (x_option_text, y_option_text), COLOR_WHITE)
+        y_under_options = y_above_options + 2 * options_margin \
+                          + len(dialog_graphics.options) * (UI_ICON_SIZE[1] + 2 * option_padding)
+        self._line(color_separator, (x_left, y_under_options), (x_right, y_under_options), 2)
+        y_action_text = y_under_options + 10
+        action_text = dialog_graphics.options[dialog_graphics.active_option_index].text_detailed
+        self._text(self.font_dialog, "Click [Space] to " + action_text, (x_left + 20, y_action_text), COLOR_WHITE)
 
     @staticmethod
     def _split_text_into_lines(full_text: str, max_line_length: int):

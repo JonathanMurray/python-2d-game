@@ -1,7 +1,8 @@
 import random
 from typing import Optional
 
-from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite
+from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
+    UiIconSprite
 from pythongame.core.damage_interactions import deal_damage_to_player
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
@@ -44,9 +45,11 @@ def register_dwarf_npc():
     health = 6
     register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, False, True, None))
     register_npc_behavior(npc_type, NpcMind)
-    dialog_data = DialogData(
-        PortraitIconSprite.VIKING, "Hey there! You want a piece of me!? ",
-        [DialogOptionData("Start a fight", "Start a fight", NpcAction())])
+    # TODO Use proper sprites for options
+    dialog_options = [
+        DialogOptionData("\"You bet\"", "start a fight", NpcAction(), UiIconSprite.ABILITY_SWORD_SLASH),
+        DialogOptionData("\"I wouldn't dream of it\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
+    dialog_data = DialogData(PortraitIconSprite.VIKING, "Hey there! You want a piece of me!? ", dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet.png")
     original_sprite_size = (32, 32)

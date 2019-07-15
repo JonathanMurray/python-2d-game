@@ -1,7 +1,8 @@
 import random
 from typing import Optional
 
-from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite
+from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
+    UiIconSprite
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
@@ -48,9 +49,11 @@ def register_nomad_npc():
     health = 6
     register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, False, True, None))
     register_npc_behavior(npc_type, NpcMind)
-    dialog_data = DialogData(
-        PortraitIconSprite.NOMAD, "Blessings to you fellow traveler.",
-        [DialogOptionData("Receive the nomad's blessing", "Receive the nomad's blessing", NpcAction())])
+    # TODO Use proper icon for 'cancel' option
+    dialog_options = [
+        DialogOptionData("Accept blessing", "gain full health", NpcAction(), UiIconSprite.POTION_HEALTH),
+        DialogOptionData("\"Good bye\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
+    dialog_data = DialogData(PortraitIconSprite.NOMAD, "Blessings to you fellow traveler.", dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")
     original_sprite_size = (32, 32)

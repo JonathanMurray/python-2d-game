@@ -54,6 +54,12 @@ class PlayerInteractionsState:
     def handle_user_clicked_space(self, game_state: GameState, game_engine: GameEngine):
         if self.npc_ready_for_dialog:
             self.npc_active_in_dialog = self.npc_ready_for_dialog
+            num_dialog_options = len(get_dialog_data(self.npc_active_in_dialog.npc_type).options)
+            if self.active_dialog_option_index >= num_dialog_options:
+                # If you talk to one NPC, and leave with option 2, then start talking to an NPC that has just one option
+                # we'd get an IndexError if we don't clear the index here. Still, it's useful to keep the index in the
+                # case that you want to talk to the same NPC rapidly over and over (to buy potions for example)
+                self.active_dialog_option_index = 0
             self.npc_ready_for_dialog = None
         elif self.npc_active_in_dialog:
             message = invoke_npc_action(self.npc_active_in_dialog.npc_type, self.active_dialog_option_index, game_state)

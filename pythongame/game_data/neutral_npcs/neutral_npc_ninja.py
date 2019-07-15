@@ -1,7 +1,7 @@
 import random
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, ConsumableType, \
-    PortraitIconSprite
+    PortraitIconSprite, UiIconSprite
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
@@ -53,9 +53,11 @@ def register_ninja_npc():
     health = 6
     register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, False, True, None))
     register_npc_behavior(npc_type, NpcMind)
+    # TODO Use proper icon for 'cancel' option
     dialog_options = [
-        DialogOptionData("Buy mana potion for 5 gold", "Buy mana potion for 5 gold", NpcAction()),
-        DialogOptionData("Cancel", "Cancel", None)]
+        DialogOptionData("Lesser mana potion [5 gold]", "buy", NpcAction(),
+                         UiIconSprite.POTION_MANA_LESSER),
+        DialogOptionData("\"Good bye\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
     dialog_text_body = "Ah.. You're new here, aren't you? Interested in my stock of mana potions?"
     dialog_data = DialogData(portrait_icon_sprite, dialog_text_body, dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)
