@@ -3,7 +3,8 @@ from typing import Optional
 
 from pythongame.core.common import SoundId, Millis
 from pythongame.core.enemy_target_selection import EnemyTarget
-from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, PlayerLostHealthEvent
+from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, PlayerLostHealthEvent, \
+    PlayerDamagedEnemy
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import create_visual_damage_text, VisualRect, create_visual_healing_text
 
@@ -11,13 +12,16 @@ from pythongame.core.visual_effects import create_visual_damage_text, VisualRect
 # Returns
 # True if damage was dealt.
 # False if enemy was invulnerable.
-def deal_player_damage_to_enemy(game_state: GameState, npc: NonPlayerCharacter, base_amount: float):
+# damage_source parameter can be used to prevent buffs from triggering themselves
+def deal_player_damage_to_enemy(game_state: GameState, npc: NonPlayerCharacter, base_amount: float,
+                                damage_source: Optional[str] = None):
     player_state = game_state.player_state
     damage_modifier: float = player_state.base_damage_modifier + player_state.damage_modifier_bonus
     amount: float = base_amount * damage_modifier
     if npc.invulnerable:
         return False
     npc.lose_health(amount)
+    game_state.player_state.notify_about_event(PlayerDamagedEnemy(npc, damage_source))
     game_state.visual_effects.append(create_visual_damage_text(npc.world_entity, int(round(amount))))
     health_from_life_steal = player_state.life_steal_ratio * amount
     health_gained = player_state.gain_health(health_from_life_steal)

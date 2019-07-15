@@ -267,6 +267,12 @@ class PlayerLostHealthEvent(Event):
         self.npc_attacker = npc_attacker
 
 
+class PlayerDamagedEnemy(Event):
+    def __init__(self, enemy_npc: NonPlayerCharacter, damage_source: Optional[str]):
+        self.enemy_npc = enemy_npc
+        self.damage_source = damage_source
+
+
 class BuffEventOutcome:
     def __init__(self, change_remaining_duration: Optional[Millis], cancel_effect: bool):
         self.change_remaining_duration = change_remaining_duration

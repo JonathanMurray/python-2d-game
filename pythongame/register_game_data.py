@@ -36,6 +36,7 @@ from pythongame.game_data.heroes.hero_warrior import register_hero_warrior
 from pythongame.game_data.items.item_amulet_of_mana import register_amulet_of_mana_item
 from pythongame.game_data.items.item_blessed_shield import register_blessed_shield_item
 from pythongame.game_data.items.item_blue_robe import register_blue_robe_item
+from pythongame.game_data.items.item_goats_ring import register_goats_ring
 from pythongame.game_data.items.item_knights_armor import register_knights_armor
 from pythongame.game_data.items.item_orb_of_the_magi import register_orb_of_the_magi_item
 from pythongame.game_data.items.item_rod_of_lightning import register_rod_of_lightning_item
@@ -108,6 +109,7 @@ def register_all_game_data():
     register_wizards_cowl()
     register_zuls_aegis()
     register_knights_armor()
+    register_goats_ring()
 
     register_decorations()
     register_map_editor_icons()

@@ -113,6 +113,7 @@ class Sprite(Enum):
     ITEM_WIZARDS_COWL = 310
     ITEM_ZULS_AEGIS = 311
     ITEM_KNIGHTS_ARMOR = 312
+    ITEM_GOATS_RING = 313
     COINS_1 = 350
     COINS_2 = 351
     COINS_5 = 352
@@ -166,6 +167,7 @@ class BuffType(Enum):
     SNEAKING = 20
     AFTER_SNEAKING = 21
     STUNNED_BY_AEGIS_ITEM = 22
+    DEBUFFED_BY_GOATS_RING = 23
 
 
 class ItemType(Enum):
@@ -191,6 +193,7 @@ class ItemType(Enum):
     WIZARDS_COWL = 60
     ZULS_AEGIS = 70
     KNIGHTS_ARMOR = 71
+    GOATS_RING = 72
 
 
 class ProjectileType(Enum):
@@ -267,6 +270,7 @@ class UiIconSprite(Enum):
     ITEM_WIZARDS_COWL = 210
     ITEM_ZULS_AEGIS = 211
     ITEM_KNIGHTS_ARMOR = 212
+    ITEM_GOATS_RING = 213
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
 
