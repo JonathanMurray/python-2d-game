@@ -249,22 +249,22 @@ class BuffWithDuration:
 # These are sent as messages to player. They let buffs and items react to events. One buff might have its
 # duration prolonged if an enemy dies for example, and an item might give mana on enemy kills.
 class Event:
-    def __init__(self, enemy_died: bool, player_used_ability: Optional[AbilityType], player_lost_health: Optional[int]):
-        self.enemy_died = enemy_died
-        self.player_used_ability = player_used_ability
-        self.player_lost_health = player_lost_health
+    pass
 
-    @staticmethod
-    def enemy_died():
-        return Event(True, None, None)
 
-    @staticmethod
-    def player_used_ability(ability: AbilityType):
-        return Event(False, ability, None)
+class EnemyDiedEvent(Event):
+    pass
 
-    @staticmethod
-    def player_lost_health(amount: int):
-        return Event(False, None, amount)
+
+class PlayerUsedAbilityEvent(Event):
+    def __init__(self, ability: AbilityType):
+        self.ability = ability
+
+
+class PlayerLostHealthEvent(Event):
+    def __init__(self, amount: int, npc_attacker: Optional[NonPlayerCharacter]):
+        self.amount = amount
+        self.npc_attacker = npc_attacker
 
 
 class BuffEventOutcome:

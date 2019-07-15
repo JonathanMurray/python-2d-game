@@ -31,7 +31,7 @@ class NpcMind(AbstractNpcMind):
 class NpcAction(AbstractNpcAction):
 
     def act(self, game_state: GameState) -> Optional[str]:
-        deal_damage_to_player(game_state, 10)
+        deal_damage_to_player(game_state, 10, None)
         return "You take a beating!"
 
 

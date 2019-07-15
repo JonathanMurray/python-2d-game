@@ -5,7 +5,8 @@ from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, re
 from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, BuffEventOutcome
+from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, BuffEventOutcome, \
+    PlayerUsedAbilityEvent, PlayerLostHealthEvent
 
 SNEAKING_DURATION = Millis(10000)
 DAMAGE_BONUS_DURATION = Millis(1500)
@@ -40,10 +41,9 @@ class Sneaking(AbstractBuffEffect):
     def get_buff_type(self):
         return SNEAKING_BUFF
 
-    def buff_handle_event(self, notification: Event) -> Optional[BuffEventOutcome]:
-        used_other_ability = notification.player_used_ability \
-                             and notification.player_used_ability != SNEAKING_ABILITY_TYPE
-        player_lost_health = notification.player_lost_health
+    def buff_handle_event(self, event: Event) -> Optional[BuffEventOutcome]:
+        used_other_ability = isinstance(event, PlayerUsedAbilityEvent) and event.ability != SNEAKING_ABILITY_TYPE
+        player_lost_health = isinstance(event, PlayerLostHealthEvent)
         if used_other_ability or player_lost_health:
             return BuffEventOutcome.cancel_effect()
 

@@ -75,6 +75,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.BLUE_ROBE_1),
     MapEditorWorldEntity.item(ItemType.ORB_OF_THE_MAGI_1),
     MapEditorWorldEntity.item(ItemType.WIZARDS_COWL),
+    MapEditorWorldEntity.item(ItemType.ZULS_AEGIS),
 
     MapEditorWorldEntity.money(1),
 

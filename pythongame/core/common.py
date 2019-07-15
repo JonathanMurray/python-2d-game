@@ -111,6 +111,7 @@ class Sprite(Enum):
     ITEM_BLUE_ROBE = 308
     ITEM_ORB_OF_THE_MAGI = 309
     ITEM_WIZARDS_COWL = 310
+    ITEM_ZULS_AEGIS = 311
     COINS_1 = 350
     COINS_2 = 351
     COINS_5 = 352
@@ -163,6 +164,7 @@ class BuffType(Enum):
     STUNNED_BY_STOMP = 19
     SNEAKING = 20
     AFTER_SNEAKING = 21
+    STUNNED_BY_AEGIS_ITEM = 22
 
 
 class ItemType(Enum):
@@ -186,6 +188,7 @@ class ItemType(Enum):
     ORB_OF_THE_MAGI_2 = 51
     ORB_OF_THE_MAGI_3 = 52
     WIZARDS_COWL = 60
+    ZULS_AEGIS = 70
 
 
 class ProjectileType(Enum):
@@ -260,6 +263,7 @@ class UiIconSprite(Enum):
     ITEM_BLUE_ROBE = 208
     ITEM_ORB_OF_THE_MAGI = 209
     ITEM_WIZARDS_COWL = 210
+    ITEM_ZULS_AEGIS = 211
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
 

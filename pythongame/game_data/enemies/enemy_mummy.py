@@ -63,7 +63,7 @@ class NpcMind(AbstractNpcMind):
                 target_center_pos = target.entity.get_center_position()
                 if is_x_and_y_within_distance(enemy_position, target_center_pos, 100):
                     damage_amount = 3
-                    deal_npc_damage(damage_amount, game_state, enemy_entity, target)
+                    deal_npc_damage(damage_amount, game_state, enemy_entity, npc, target)
 
 
 def _move_in_dir(enemy_entity, direction):

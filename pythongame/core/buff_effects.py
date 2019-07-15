@@ -18,7 +18,7 @@ class AbstractBuffEffect:
     def get_buff_type(self):
         pass
 
-    def buff_handle_event(self, notification: Event) -> Optional[BuffEventOutcome]:
+    def buff_handle_event(self, event: Event) -> Optional[BuffEventOutcome]:
         return None
 
 

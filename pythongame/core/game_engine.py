@@ -6,7 +6,7 @@ from pythongame.core.entity_creation import create_money_pile_on_ground, create_
     create_consumable_on_ground
 from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
-    Event
+    EnemyDiedEvent
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.loot import LootEntry
 from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vectors, \
@@ -127,7 +127,7 @@ class GameEngine:
                 loot = enemy_that_died.enemy_loot_table.generate_loot()
                 enemy_death_position = enemy_that_died.world_entity.get_position()
                 self._put_loot_on_ground(enemy_death_position, loot)
-                self.game_state.player_state.notify_about_event(Event.enemy_died())
+                self.game_state.player_state.notify_about_event(EnemyDiedEvent())
 
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_effects()
