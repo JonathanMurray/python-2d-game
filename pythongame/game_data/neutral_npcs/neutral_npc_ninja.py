@@ -33,13 +33,13 @@ class NpcAction(AbstractNpcAction):
         cost = 5
         player_state = game_state.player_state
         can_afford = player_state.money >= cost
-        empty_consumable_slot = player_state.find_first_empty_consumable_slot()
+        has_space = player_state.consumable_inventory.has_space_for_more_consumables()
         if not can_afford:
             return "Not enough gold!"
-        if not empty_consumable_slot:
+        if not has_space:
             return "Not enough space!"
         player_state.money -= cost
-        player_state.consumable_slots[empty_consumable_slot] = ConsumableType.MANA_LESSER
+        player_state.consumable_inventory.gain_consumable(ConsumableType.MANA_LESSER)
         return "Bought mana potion!"
 
 

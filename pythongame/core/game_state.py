@@ -287,9 +287,33 @@ class BuffEventOutcome:
         return BuffEventOutcome(None, True)
 
 
+class ConsumableInventory:
+    def __init__(self, slots: Dict[int, ConsumableType]):
+        self.slots = slots
+
+    def has_space_for_more(self) -> bool:
+        empty_slots = [slot_number for slot_number in self.slots if not self.slots[slot_number]]
+        return len(empty_slots) > 0
+
+    def gain_consumable(self, consumable_type: ConsumableType):
+        empty_slots = [slot_number for slot_number in self.slots if not self.slots[slot_number]]
+        empty_slot = empty_slots[0]
+        self.slots[empty_slot] = consumable_type
+
+    def switch_consumable_slots(self, slot_1: int, slot_2: int):
+        consumable_type_1 = self.slots[slot_1]
+        self.slots[slot_1] = self.slots[slot_2]
+        self.slots[slot_2] = consumable_type_1
+
+    def remove_consumable_from_slot(self, slot_number: int) -> ConsumableType:
+        consumable_type = self.slots[slot_number]
+        self.slots[slot_number] = None
+        return consumable_type
+
+
 class PlayerState:
     def __init__(self, health: int, max_health: int, mana: int, max_mana: int, mana_regen: float,
-                 consumable_slots: Dict[int, ConsumableType], abilities: List[AbilityType],
+                 consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
                  item_slots: Dict[int, Any], new_level_abilities: Dict[int, AbilityType], hero_id: HeroId, armor: int):
         self.health = health
         self._health_float = health
@@ -299,7 +323,7 @@ class PlayerState:
         self._mana_float = mana
         self.max_mana = max_mana
         self.mana_regen: float = mana_regen
-        self.consumable_slots = consumable_slots
+        self.consumable_inventory = consumable_inventory
         self.abilities: List[AbilityType] = abilities
         self.ability_cooldowns_remaining = {ability_type: 0 for ability_type in abilities}
         self.active_buffs: List[BuffWithDuration] = []
@@ -366,12 +390,6 @@ class PlayerState:
             self._health_float = self.max_health
             self.health = int(math.floor(self._health_float))
 
-    def find_first_empty_consumable_slot(self) -> Optional[int]:
-        empty_slots = [slot for slot in self.consumable_slots if not self.consumable_slots[slot]]
-        if empty_slots:
-            return empty_slots[0]
-        return None
-
     def find_first_empty_item_slot(self) -> Optional[int]:
         empty_slots = [slot for slot in self.item_slots if not self.item_slots[slot]]
         if empty_slots:
@@ -400,11 +418,6 @@ class PlayerState:
         item_type_1 = self.item_slots[slot_1]
         self.item_slots[slot_1] = self.item_slots[slot_2]
         self.item_slots[slot_2] = item_type_1
-
-    def switch_consumable_slots(self, slot_1: int, slot_2: int):
-        consumable_type_1 = self.consumable_slots[slot_1]
-        self.consumable_slots[slot_1] = self.consumable_slots[slot_2]
-        self.consumable_slots[slot_2] = consumable_type_1
 
     # returns True if player leveled up
     def gain_exp(self, amount: int):

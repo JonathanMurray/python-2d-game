@@ -47,7 +47,7 @@ class GameEngine:
         self.game_state.player_state.switch_item_slots(slot_1, slot_2)
 
     def switch_consumable_slots(self, slot_1: int, slot_2):
-        self.game_state.player_state.switch_consumable_slots(slot_1, slot_2)
+        self.game_state.player_state.consumable_inventory.switch_consumable_slots(slot_1, slot_2)
 
     def drop_inventory_item_on_ground(self, item_slot: int, game_world_position: Tuple[int, int]):
         item_type = self.game_state.player_state.item_slots[item_slot].get_item_type()
@@ -57,10 +57,9 @@ class GameEngine:
         self.game_state.player_state.item_slots[item_slot] = None
 
     def drop_consumable_on_ground(self, consumable_slot: int, game_world_position: Tuple[int, int]):
-        consumable_type = self.game_state.player_state.consumable_slots[consumable_slot]
+        consumable_type = self.game_state.player_state.consumable_inventory.remove_consumable_from_slot(consumable_slot)
         consumable = create_consumable_on_ground(consumable_type, game_world_position)
         self.game_state.consumables_on_ground.append(consumable)
-        self.game_state.player_state.consumable_slots[consumable_slot] = None
 
     def try_pick_up_loot_from_ground(self, loot: LootableOnGround):
         if isinstance(loot, ConsumableOnGround):
@@ -84,10 +83,10 @@ class GameEngine:
             self.view_state.set_message("No space for " + item_name)
 
     def _try_pick_up_consumable_from_ground(self, consumable: ConsumableOnGround):
-        empty_consumable_slot = self.game_state.player_state.find_first_empty_consumable_slot()
+        has_space = self.game_state.player_state.consumable_inventory.has_space_for_more()
         consumable_name = CONSUMABLES[consumable.consumable_type].name
-        if empty_consumable_slot:
-            self.game_state.player_state.consumable_slots[empty_consumable_slot] = consumable.consumable_type
+        if has_space:
+            self.game_state.player_state.consumable_inventory.gain_consumable(consumable.consumable_type)
             self.view_state.set_message("You picked up " + consumable_name)
             play_sound(SoundId.EVENT_PICKED_UP)
             self.game_state.remove_entities([consumable])

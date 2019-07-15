@@ -141,7 +141,7 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
             player_mana_regen=game_state.player_state.mana_regen,
             player_speed_multiplier=game_state.player_entity.speed_multiplier,
             player_life_steal=game_state.player_state.life_steal_ratio,
-            consumable_slots=game_state.player_state.consumable_slots,
+            consumable_slots=game_state.player_state.consumable_inventory.slots,
             player_armor=game_state.player_state.armor,
             player_active_buffs=game_state.player_state.active_buffs,
             fps_string=str(int(clock.get_fps())),
@@ -185,11 +185,11 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
             item_slot_being_dragged = False
 
         if mouse_was_just_clicked and hovered_consumable_slot_number:
-            if game_state.player_state.consumable_slots[hovered_consumable_slot_number]:
+            if game_state.player_state.consumable_inventory.slots[hovered_consumable_slot_number]:
                 consumable_slot_being_dragged = hovered_consumable_slot_number
 
         if consumable_slot_being_dragged:
-            consumable_type = game_state.player_state.consumable_slots[consumable_slot_being_dragged]
+            consumable_type = game_state.player_state.consumable_inventory.slots[consumable_slot_being_dragged]
             view.render_consumable_being_dragged(consumable_type, mouse_screen_position)
 
         if mouse_was_just_released and consumable_slot_being_dragged:

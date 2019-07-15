@@ -46,11 +46,11 @@ class PlayerControls:
 
         if not game_state.player_state.is_stunned():
             view_state.notify_consumable_was_clicked(slot_number)
-            consumable_type_in_this_slot = game_state.player_state.consumable_slots[slot_number]
+            consumable_type_in_this_slot = game_state.player_state.consumable_inventory.slots[slot_number]
             if consumable_type_in_this_slot:
                 result = try_consume_consumable(consumable_type_in_this_slot, game_state)
                 if isinstance(result, ConsumableWasConsumed):
-                    game_state.player_state.consumable_slots[slot_number] = None
+                    game_state.player_state.consumable_inventory.remove_consumable_from_slot(slot_number)
                     if result.message:
                         view_state.set_message(result.message)
                     play_sound(SoundId.POTION)
