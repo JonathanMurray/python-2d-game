@@ -47,14 +47,17 @@ class NpcAction(AbstractNpcAction):
 def register_ninja_npc():
     size = (30, 30)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.NEUTRAL_NPC_NINJA
+    portrait_icon_sprite = PortraitIconSprite.NINJA
     npc_type = NpcType.NEUTRAL_NINJA
     movement_speed = 0.03
     health = 6
     register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, False, True, None))
     register_npc_behavior(npc_type, NpcMind)
-    dialog_data = DialogData(
-        PortraitIconSprite.NINJA, "Ah.. You're new here, aren't you? Interested in my stock of mana potions?",
-        [DialogOptionData("Buy mana potion for 5 gold", "Buy mana potion for 5 gold", NpcAction())])
+    dialog_options = [
+        DialogOptionData("Buy mana potion for 5 gold", "Buy mana potion for 5 gold", NpcAction()),
+        DialogOptionData("Cancel", "Cancel", None)]
+    dialog_text_body = "Ah.. You're new here, aren't you? Interested in my stock of mana potions?"
+    dialog_data = DialogData(portrait_icon_sprite, dialog_text_body, dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")
     original_sprite_size = (32, 32)
@@ -68,4 +71,4 @@ def register_ninja_npc():
     }
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir,
                                (-8, -16))
-    register_portrait_icon_sprite_path(PortraitIconSprite.NINJA, 'resources/graphics/ninja_portrait.png')
+    register_portrait_icon_sprite_path(portrait_icon_sprite, 'resources/graphics/ninja_portrait.png')

@@ -738,9 +738,11 @@ class View:
                 break
             self._text(self.font_dialog, dialog_text_line, (dialog_pos[0] + 5, dialog_pos[1] + 32 * i),
                        COLOR_WHITE)
-        self._text(self.font_dialog, "[Space] " + dialog_graphics.text_action,
-                   (rect_dialog_container[0] + 65, dialog_pos[1] + 202),
-                   COLOR_WHITE)
+
+        for i, option in enumerate(dialog_graphics.options):
+            color = COLOR_BLUE if i == dialog_graphics.active_option_index else COLOR_WHITE
+            self._text(self.font_dialog, "[Space] " + option.text_detailed,
+                       (rect_dialog_container[0] + 65, dialog_pos[1] + 202 + i * 20), color)
 
     @staticmethod
     def _split_text_into_lines(full_text: str, max_line_length: int):

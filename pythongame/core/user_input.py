@@ -58,6 +58,11 @@ class ActionMouseReleased:
     pass
 
 
+class ActionChangeDialogOption:
+    def __init__(self, index_delta: int):
+        self.index_delta = index_delta
+
+
 PYGAME_MOVEMENT_KEYS = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
 DIRECTION_BY_PYGAME_MOVEMENT_KEY = {
     pygame.K_LEFT: Direction.LEFT,
@@ -69,7 +74,24 @@ movement_keys_down = []
 ability_keys_down: List[AbilityType] = []
 
 
-def get_user_actions():
+def get_dialog_user_inputs():
+    actions = []
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            actions.append(ActionExitGame())
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                actions.append(ActionExitGame())
+            elif event.key == pygame.K_LEFT or event.key == pygame.K_UP:
+                actions.append(ActionChangeDialogOption(-1))
+            elif event.key == pygame.K_RIGHT or event.key == pygame.K_DOWN:
+                actions.append(ActionChangeDialogOption(1))
+            elif event.key == pygame.K_SPACE:
+                actions.append(ActionPressSpaceKey())
+    return actions
+
+
+def get_main_user_inputs():
     actions = []
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

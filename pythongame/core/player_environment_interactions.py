@@ -8,7 +8,7 @@ from pythongame.core.game_engine import GameEngine
 from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, LootableOnGround, Portal
 from pythongame.core.math import boxes_intersect, translate_in_direction, is_x_and_y_within_distance, \
     get_manhattan_distance_between_rects
-from pythongame.core.npc_behaviors import invoke_npc_action, has_npc_dialog, get_dialog_graphics
+from pythongame.core.npc_behaviors import invoke_npc_action, has_npc_dialog, get_dialog_graphics, get_dialog_data
 from pythongame.core.view import EntityActionText, DialogGraphics
 from pythongame.core.view_state import ViewState
 
@@ -20,6 +20,7 @@ class PlayerInteractionsState:
         self.npc_ready_for_dialog: NonPlayerCharacter = None
         self.lootable_ready_to_be_picked_up: LootableOnGround = None
         self.portal_ready_for_interaction: Portal = None
+        self.active_dialog_option_index = 0
 
     def handle_interactions(self, player_entity: WorldEntity, game_state: GameState):
         player_position = player_entity.get_position()
@@ -55,8 +56,7 @@ class PlayerInteractionsState:
             self.npc_active_in_dialog = self.npc_ready_for_dialog
             self.npc_ready_for_dialog = None
         elif self.npc_active_in_dialog:
-            # TODO handle several options
-            message = invoke_npc_action(self.npc_active_in_dialog.npc_type, 0, game_state)
+            message = invoke_npc_action(self.npc_active_in_dialog.npc_type, self.active_dialog_option_index, game_state)
             if message:
                 self.view_state.set_message(message)
             self.npc_active_in_dialog = None
@@ -79,10 +79,6 @@ class PlayerInteractionsState:
         else:
             self.view_state.set_message("Hmm... Looks suspicious!")
 
-    def handle_player_moved(self):
-        if self.npc_active_in_dialog:
-            self.npc_active_in_dialog = None
-
     def get_action_text(self) -> Optional[EntityActionText]:
         if self.npc_ready_for_dialog:
             return EntityActionText(self.npc_ready_for_dialog.world_entity, "[Space] ...")
@@ -96,4 +92,11 @@ class PlayerInteractionsState:
 
     def get_dialog(self) -> Optional[DialogGraphics]:
         if self.npc_active_in_dialog:
-            return get_dialog_graphics(self.npc_active_in_dialog.npc_type)
+            return get_dialog_graphics(self.npc_active_in_dialog.npc_type, self.active_dialog_option_index)
+
+    def is_player_in_dialog(self) -> bool:
+        return self.npc_active_in_dialog is not None
+
+    def change_dialog_option(self, option_index_delta: int):
+        num_options = len(get_dialog_data(self.npc_active_in_dialog.npc_type).options)
+        self.active_dialog_option_index = (self.active_dialog_option_index + option_index_delta) % num_options

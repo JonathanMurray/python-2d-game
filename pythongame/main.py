@@ -9,9 +9,10 @@ from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.player_environment_interactions import PlayerInteractionsState
 from pythongame.core.sound_player import play_sound, init_sound_player
-from pythongame.core.user_input import get_user_actions, ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
+from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
-    ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey
+    ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_main_user_inputs, get_dialog_user_inputs, \
+    ActionChangeDialogOption
 from pythongame.core.view import View, MouseHoverEvent
 from pythongame.core.view_state import ViewState
 from pythongame.game_world_init import create_game_state_from_json_file
@@ -66,36 +67,47 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
         #         HANDLE USER INPUT
         # ------------------------------------
 
-        user_actions = get_user_actions()
-        for action in user_actions:
-            if isinstance(action, ActionExitGame):
-                pygame.quit()
-                sys.exit()
-            if isinstance(action, ActionToggleRenderDebugging):
-                render_hit_and_collision_boxes = not render_hit_and_collision_boxes
-                # TODO: Handle this better than accessing a global variable from here
-                pythongame.core.pathfinding.npc_pathfinding.DEBUG_RENDER_PATHFINDING = \
-                    not pythongame.core.pathfinding.npc_pathfinding.DEBUG_RENDER_PATHFINDING
-            if not is_paused and not is_game_over:
-                if isinstance(action, ActionTryUseAbility):
-                    game_engine.try_use_ability(action.ability_type)
-                elif isinstance(action, ActionTryUsePotion):
-                    game_engine.try_use_consumable(action.slot_number)
-                elif isinstance(action, ActionMoveInDirection):
-                    game_engine.move_in_direction(action.direction)
-                    player_interactions_state.handle_player_moved()
-                elif isinstance(action, ActionStopMoving):
-                    game_engine.stop_moving()
-            if isinstance(action, ActionPauseGame):
-                is_paused = not is_paused
-            if isinstance(action, ActionMouseMovement):
-                mouse_screen_position = action.mouse_screen_position
-            if isinstance(action, ActionMouseClicked):
-                mouse_was_just_clicked = True
-            if isinstance(action, ActionMouseReleased):
-                mouse_was_just_released = True
-            if isinstance(action, ActionPressSpaceKey) and not is_game_over:
-                player_interactions_state.handle_user_clicked_space(game_state, game_engine)
+        if player_interactions_state.is_player_in_dialog():
+            user_actions = get_dialog_user_inputs()
+            for action in user_actions:
+                print(action)
+                if isinstance(action, ActionExitGame):
+                    pygame.quit()
+                    sys.exit()
+                if isinstance(action, ActionChangeDialogOption):
+                    player_interactions_state.change_dialog_option(action.index_delta)
+                if isinstance(action, ActionPressSpaceKey) and not is_game_over:
+                    player_interactions_state.handle_user_clicked_space(game_state, game_engine)
+        else:
+            user_actions = get_main_user_inputs()
+            for action in user_actions:
+                if isinstance(action, ActionExitGame):
+                    pygame.quit()
+                    sys.exit()
+                if isinstance(action, ActionToggleRenderDebugging):
+                    render_hit_and_collision_boxes = not render_hit_and_collision_boxes
+                    # TODO: Handle this better than accessing a global variable from here
+                    pythongame.core.pathfinding.npc_pathfinding.DEBUG_RENDER_PATHFINDING = \
+                        not pythongame.core.pathfinding.npc_pathfinding.DEBUG_RENDER_PATHFINDING
+                if not is_paused and not is_game_over:
+                    if isinstance(action, ActionTryUseAbility):
+                        game_engine.try_use_ability(action.ability_type)
+                    elif isinstance(action, ActionTryUsePotion):
+                        game_engine.try_use_consumable(action.slot_number)
+                    elif isinstance(action, ActionMoveInDirection):
+                        game_engine.move_in_direction(action.direction)
+                    elif isinstance(action, ActionStopMoving):
+                        game_engine.stop_moving()
+                if isinstance(action, ActionPauseGame):
+                    is_paused = not is_paused
+                if isinstance(action, ActionMouseMovement):
+                    mouse_screen_position = action.mouse_screen_position
+                if isinstance(action, ActionMouseClicked):
+                    mouse_was_just_clicked = True
+                if isinstance(action, ActionMouseReleased):
+                    mouse_was_just_released = True
+                if isinstance(action, ActionPressSpaceKey) and not is_game_over:
+                    player_interactions_state.handle_user_clicked_space(game_state, game_engine)
 
         # ------------------------------------
         #     UPDATE STATE BASED ON CLOCK
