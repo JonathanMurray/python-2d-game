@@ -40,7 +40,7 @@ def register_chest_enemy():
         LootEntry.consumable(ConsumableType.SCROLL_ABILITY_SUMMON)
     ]
     loot = LootTable([LootGroup(1, possible_drops, 1)])
-    register_npc_data(npc_type, NpcData(sprite, size, health, 0, 0, 0, True, False, None, None, loot))
+    register_npc_data(npc_type, NpcData(sprite, size, health, 0, 0, 0, True, False, loot))
     register_npc_behavior(npc_type, NpcMind)
 
     sprite_sheet = SpriteSheet("resources/graphics/human_tileset.png")

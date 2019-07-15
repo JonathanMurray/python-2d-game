@@ -77,8 +77,8 @@ def register_warrior_enemy():
     health = 32
     exp_reward = 20
     loot = LootTable([LootGroup(1, [LootEntry.money(1), LootEntry.money(2)], 0.2)])
-    register_npc_data(npc_type,
-                      NpcData(sprite, size, health, 0, movement_speed, exp_reward, True, False, None, None, loot))
+    npc_data = NpcData(sprite, size, health, 0, movement_speed, exp_reward, True, False, loot)
+    register_npc_data(npc_type, npc_data)
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/human_spritesheet.png")
     original_sprite_size = (32, 32)

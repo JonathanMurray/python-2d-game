@@ -86,7 +86,7 @@ def register_necromancer_enemy():
             [LootEntry.item(ItemType.BLESSED_SHIELD_2), LootEntry.item(ItemType.SOLDIERS_HELMET_2)],
             0.3)
     ])
-    register_npc_data(ENEMY_TYPE, NpcData(SPRITE, size, health, 0, 0.02, 15, True, False, None, None, loot))
+    register_npc_data(ENEMY_TYPE, NpcData(SPRITE, size, health, 0, 0.02, 15, True, False, loot))
     register_npc_behavior(ENEMY_TYPE, NpcMind)
 
     enemy_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")

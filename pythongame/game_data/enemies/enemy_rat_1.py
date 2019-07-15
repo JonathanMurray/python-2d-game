@@ -79,7 +79,7 @@ def register_rat_1_enemy():
     movement_speed = 0.05
     health = 6
     loot = LootTable.single(LootEntry.money(1), 0.1)
-    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, True, False, None, None, loot))
+    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, True, False, loot))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/brown_rat.png")
     original_sprite_size = (32, 32)

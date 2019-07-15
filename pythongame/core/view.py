@@ -2,13 +2,14 @@ from typing import Dict, Any, List, Tuple, Optional, Union
 
 import pygame
 
-from pythongame.core.common import Direction, Sprite, ConsumableType, ItemType, HeroId, UiIconSprite, PortraitIconSprite
+from pythongame.core.common import Direction, Sprite, ConsumableType, ItemType, HeroId, UiIconSprite
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
-    ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, PORTRAIT_ICON_SPRITE_PATHS, NpcDialog, \
+    ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, PORTRAIT_ICON_SPRITE_PATHS, \
     HEROES, ConsumableCategory
 from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration
 from pythongame.core.item_effects import AbstractItemEffect
 from pythongame.core.math import is_point_in_rect, sum_of_vectors
+from pythongame.core.npc_behaviors import DialogGraphics
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 
@@ -53,13 +54,6 @@ class ImageWithRelativePosition:
     def __init__(self, image: Any, position_relative_to_entity: Tuple[int, int]):
         self.image = image
         self.position_relative_to_entity = position_relative_to_entity
-
-
-# Used to display dialog from an npc along with the NPC's portrait
-class DialogGraphics:
-    def __init__(self, portrait_icon_sprite: PortraitIconSprite, npc_dialog: NpcDialog):
-        self.portrait_icon_sprite = portrait_icon_sprite
-        self.npc_dialog = npc_dialog
 
 
 # Used to display some text above an NPC like "[Space] talk"
@@ -724,6 +718,7 @@ class View:
         self._rect((160, 160, 180), (rect_portrait_pos[0], rect_portrait_pos[1], 100, 70), 2)
 
     def _dialog(self, dialog_graphics: DialogGraphics):
+        # TODO render options
         rect_dialog_container = (100, 75, 500, 250)
         self._rect((210, 180, 60), rect_dialog_container, 5)
         self._rect_transparent(rect_dialog_container, 180, COLOR_BLACK)
@@ -736,14 +731,14 @@ class View:
         self._image(dialog_image, rect_portrait_pos)
         self._rect((160, 160, 180), (rect_portrait_pos[0], rect_portrait_pos[1], 100, 70), 2)
         dialog_pos = (rect_dialog_container[0] + 120, rect_dialog_container[1] + 15)
-        dialog_lines = self._split_text_into_lines(dialog_graphics.npc_dialog.body, 33)
+        dialog_lines = self._split_text_into_lines(dialog_graphics.text_body, 33)
         for i, dialog_text_line in enumerate(dialog_lines):
             if i == 6:
                 print("WARN: too long dialog for NPC!")
                 break
             self._text(self.font_dialog, dialog_text_line, (dialog_pos[0] + 5, dialog_pos[1] + 32 * i),
                        COLOR_WHITE)
-        self._text(self.font_dialog, "[Space] " + dialog_graphics.npc_dialog.action,
+        self._text(self.font_dialog, "[Space] " + dialog_graphics.text_action,
                    (rect_dialog_container[0] + 65, dialog_pos[1] + 202),
                    COLOR_WHITE)
 

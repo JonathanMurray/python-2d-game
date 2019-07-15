@@ -131,7 +131,7 @@ def register_dark_reaper_enemy():
     movement_speed = 0.04
     health = 80
     loot = LootTable.single(LootEntry.money(1), 0.2)
-    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 40, True, False, None, None, loot))
+    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 40, True, False, loot))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet.png")
     original_sprite_size = (32, 32)

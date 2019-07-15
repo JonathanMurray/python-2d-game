@@ -3,9 +3,10 @@ from typing import Optional
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
-    NpcDialog, register_portrait_icon_sprite_path
+    register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
-from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, register_npc_action
+from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
+    register_npc_dialog_data, DialogData, DialogOptionData
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.visual_effects import create_visual_healing_text
 
@@ -45,11 +46,12 @@ def register_nomad_npc():
     npc_type = NpcType.NEUTRAL_NOMAD
     movement_speed = 0.03
     health = 6
-    dialog = NpcDialog("Blessings to you fellow traveler.", "Receive the nomad's blessing")
-    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, False, True, dialog,
-                                        PortraitIconSprite.NOMAD, None))
+    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, False, True, None))
     register_npc_behavior(npc_type, NpcMind)
-    register_npc_action(npc_type, NpcAction())
+    dialog_data = DialogData(
+        PortraitIconSprite.NOMAD, "Blessings to you fellow traveler.",
+        [DialogOptionData("Receive the nomad's blessing", "Receive the nomad's blessing", NpcAction())])
+    register_npc_dialog_data(npc_type, dialog_data)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")
     original_sprite_size = (32, 32)
     scaled_sprite_size = (48, 48)

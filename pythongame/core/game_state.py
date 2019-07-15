@@ -4,9 +4,7 @@ from typing import List, Optional, Dict, Any, Tuple
 from pygame.rect import Rect
 
 from pythongame.core.common import *
-from pythongame.core.common import PortraitIconSprite
 from pythongame.core.consumable_inventory import ConsumableInventory
-from pythongame.core.game_data import NpcDialog
 from pythongame.core.loot import LootTable
 from pythongame.core.math import boxes_intersect, rects_intersect, get_position_from_center_position, \
     translate_in_direction, is_x_and_y_within_distance
@@ -155,8 +153,8 @@ class Projectile:
 
 class NonPlayerCharacter:
     def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health: int, max_health: int,
-                 health_regen: float, npc_mind, is_enemy: bool, is_neutral: bool, dialog: Optional[NpcDialog],
-                 portrait_icon_sprite: Optional[PortraitIconSprite], enemy_loot_table: Optional[LootTable]):
+                 health_regen: float, npc_mind, is_enemy: bool, is_neutral: bool,
+                 enemy_loot_table: Optional[LootTable]):
         self.npc_type = npc_type
         self.world_entity = world_entity
         self._health_float = health
@@ -169,8 +167,6 @@ class NonPlayerCharacter:
         self._number_of_active_stuns = 0
         self.is_enemy = is_enemy
         self.is_neutral = is_neutral
-        self.dialog: Optional[NpcDialog] = dialog
-        self.portrait_icon_sprite: Optional[PortraitIconSprite] = portrait_icon_sprite
         self.enemy_loot_table = enemy_loot_table
 
     def lose_health(self, amount: float):

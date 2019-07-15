@@ -86,7 +86,7 @@ def register_mummy_enemy():
                       LootEntry.consumable(ConsumableType.MANA_LESSER)], 0.2)
     ])
     register_npc_data(npc_type,
-                      NpcData(sprite, size, health, health_regen, movement_speed, 10, True, False, None, None, loot))
+                      NpcData(sprite, size, health, health_regen, movement_speed, 10, True, False, loot))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")
     original_sprite_size = (32, 32)

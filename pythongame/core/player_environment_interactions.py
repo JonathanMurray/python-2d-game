@@ -8,7 +8,7 @@ from pythongame.core.game_engine import GameEngine
 from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, LootableOnGround, Portal
 from pythongame.core.math import boxes_intersect, translate_in_direction, is_x_and_y_within_distance, \
     get_manhattan_distance_between_rects
-from pythongame.core.npc_behaviors import invoke_npc_action
+from pythongame.core.npc_behaviors import invoke_npc_action, has_npc_dialog, get_dialog_graphics
 from pythongame.core.view import EntityActionText, DialogGraphics
 from pythongame.core.view_state import ViewState
 
@@ -28,7 +28,7 @@ class PlayerInteractionsState:
         self.portal_ready_for_interaction = None
         closest_distance_to_player = sys.maxsize
         for npc in game_state.non_player_characters:
-            if npc.dialog:
+            if has_npc_dialog(npc.npc_type):
                 close_to_player = is_x_and_y_within_distance(player_position, npc.world_entity.get_position(), 75)
                 distance = get_manhattan_distance_between_rects(player_entity.rect(), npc.world_entity.rect())
                 if close_to_player and distance < closest_distance_to_player and not self.npc_active_in_dialog:
@@ -55,7 +55,8 @@ class PlayerInteractionsState:
             self.npc_active_in_dialog = self.npc_ready_for_dialog
             self.npc_ready_for_dialog = None
         elif self.npc_active_in_dialog:
-            message = invoke_npc_action(self.npc_active_in_dialog.npc_type, game_state)
+            # TODO handle several options
+            message = invoke_npc_action(self.npc_active_in_dialog.npc_type, 0, game_state)
             if message:
                 self.view_state.set_message(message)
             self.npc_active_in_dialog = None
@@ -95,4 +96,4 @@ class PlayerInteractionsState:
 
     def get_dialog(self) -> Optional[DialogGraphics]:
         if self.npc_active_in_dialog:
-            return DialogGraphics(self.npc_active_in_dialog.portrait_icon_sprite, self.npc_active_in_dialog.dialog)
+            return get_dialog_graphics(self.npc_active_in_dialog.npc_type)

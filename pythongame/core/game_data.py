@@ -83,16 +83,9 @@ user_ability_keys = [UserAbilityKey("Q", pygame.K_q),
                      UserAbilityKey("T", pygame.K_t)]
 
 
-class NpcDialog:
-    def __init__(self, body: str, action: str):
-        self.body = body
-        self.action = action
-
-
 class NpcData:
     def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
-                 exp_reward: int, is_enemy: bool, is_neutral: bool, dialog: Optional[NpcDialog],
-                 portrait_icon_sprite: Optional[PortraitIconSprite], enemy_loot_table: Optional[LootTable]):
+                 exp_reward: int, is_enemy: bool, is_neutral: bool, enemy_loot_table: Optional[LootTable]):
         self.sprite = sprite
         self.size = size
         self.max_health = max_health
@@ -101,8 +94,6 @@ class NpcData:
         self.exp_reward = exp_reward
         self.is_enemy = is_enemy
         self.is_neutral = is_neutral  # a neutral NPC can't take damage from enemies or player. It may have dialog.
-        self.dialog: Optional[str] = dialog
-        self.portrait_icon_sprite: Optional[PortraitIconSprite] = portrait_icon_sprite
         self.enemy_loot_table: LootTable = enemy_loot_table
 
 
