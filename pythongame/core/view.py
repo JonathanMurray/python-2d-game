@@ -324,10 +324,10 @@ class View:
         else:
             raise Exception("Unhandled sprite: " + str(sprite))
 
-    def _stat_bar_for_world_entity(self, world_entity, h, relative_y, stat, max_stat, color):
+    def _stat_bar_for_world_entity(self, world_entity, h, relative_y, ratio, color):
         position_on_screen = self._translate_world_position_to_screen((world_entity.x, world_entity.y))
         self._stat_bar(position_on_screen[0] + 1, position_on_screen[1] + relative_y,
-                       world_entity.w - 2, h, stat / max_stat, color, False)
+                       world_entity.w - 2, h, ratio, color, False)
 
     # ------------------------------------
     #           DRAWING THE UI
@@ -476,7 +476,7 @@ class View:
             if entity == player_entity and is_player_invisible:
                 self._world_rect((200, 100, 250), player_entity.rect(), 2)
 
-        self._stat_bar_for_world_entity(player_entity, 5, -35, player_health, player_max_health, (100, 200, 0))
+        self._stat_bar_for_world_entity(player_entity, 5, -35, player_health / player_max_health, (100, 200, 0))
 
         if render_hit_and_collision_boxes:
             for entity in all_entities_to_render:
@@ -486,12 +486,12 @@ class View:
         for npc in non_player_characters:
             color = COLOR_RED if npc.is_enemy else (250, 250, 0)
             if not npc.is_neutral:
-                self._stat_bar_for_world_entity(npc.world_entity, 5, -10, npc.health, npc.max_health, color)
+                self._stat_bar_for_world_entity(npc.world_entity, 5, -10, npc.health / npc.max_health, color)
             if npc.active_buffs:
                 buff = npc.active_buffs[0]
-                if buff.total_duration > 1000:
-                    self._stat_bar_for_world_entity(npc.world_entity, 2, -14, buff.time_until_expiration,
-                                                    buff.total_duration, (250, 250, 250))
+                if buff.should_duration_be_visualized_on_enemies():
+                    self._stat_bar_for_world_entity(npc.world_entity, 2, -14, buff.get_ratio_duration_remaining(),
+                                                    (250, 250, 250))
         for visual_effect in visual_effects:
             self._visual_effect(visual_effect)
 
@@ -646,9 +646,8 @@ class View:
             # Buffs that don't have description texts shouldn't be displayed. (They are typically irrelevant to the
             # player)
             if buff_type in BUFF_TEXTS:
-                ratio_duration_remaining = active_buff.time_until_expiration / active_buff.total_duration
                 buff_texts.append(BUFF_TEXTS[buff_type])
-                buff_duration_ratios_remaining.append(ratio_duration_remaining)
+                buff_duration_ratios_remaining.append(active_buff.get_ratio_duration_remaining())
         for i, text in enumerate(buff_texts):
             y_offset_buff = -i * 25
             self._text_in_ui(self.font_buff_texts, text, (x_buffs, -40 + y_offset_buff))

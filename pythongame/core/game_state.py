@@ -189,7 +189,7 @@ class NonPlayerCharacter:
         existing_buffs_with_this_type = [b for b in self.active_buffs
                                          if b.buff_effect.get_buff_type() == buff.get_buff_type()]
         if existing_buffs_with_this_type:
-            existing_buffs_with_this_type[0].time_until_expiration = duration
+            existing_buffs_with_this_type[0].set_remaining_duration(duration)
         else:
             self.active_buffs.append(BuffWithDuration(buff, duration))
 
@@ -216,16 +216,34 @@ class Wall:
 
 # TODO There is a cyclic dependancy here between game_state and buff_effects
 class BuffWithDuration:
-    def __init__(self, buff_effect: Any, duration: Millis):
+    def __init__(self, buff_effect: Any, duration: Optional[Millis]):
         self.buff_effect = buff_effect
-        self.time_until_expiration = duration
-        self.has_been_force_cancelled = False
-        self.total_duration = duration
-        self.has_applied_start_effect = False
+        self._time_until_expiration: Optional[Millis] = duration
+        self.has_been_force_cancelled: bool = False
+        self._total_duration: Optional[Millis] = duration
+        self.has_applied_start_effect: bool = False
 
     def force_cancel(self):
         self.has_been_force_cancelled = True
-        self.time_until_expiration = 0
+        self._time_until_expiration = 0
+
+    def notify_time_passed(self, time: Millis):
+        self._time_until_expiration -= time
+
+    def has_expired(self) -> bool:
+        return self._time_until_expiration <= 0
+
+    def get_ratio_duration_remaining(self) -> float:
+        return self._time_until_expiration / self._total_duration
+
+    def change_remaining_duration(self, delta: Millis):
+        self._time_until_expiration = min(self._time_until_expiration + delta, self._total_duration)
+
+    def set_remaining_duration(self, time: Millis):
+        self._time_until_expiration = time
+
+    def should_duration_be_visualized_on_enemies(self) -> bool:
+        return self._total_duration > 1000
 
 
 # These are sent as messages to active player buffs. They let the buffs react to events. One buff might have its
@@ -358,7 +376,7 @@ class PlayerState:
         existing_buffs_with_this_type = [b for b in self.active_buffs
                                          if b.buff_effect.get_buff_type() == buff.get_buff_type()]
         if existing_buffs_with_this_type:
-            existing_buffs_with_this_type[0].time_until_expiration = duration
+            existing_buffs_with_this_type[0].set_remaining_duration(duration)
         else:
             self.active_buffs.append(BuffWithDuration(buff, duration))
 
@@ -427,8 +445,7 @@ class PlayerState:
             outcome: Optional[BuffNotificationOutcome] = buff.buff_effect.handle_notification(notification)
             if outcome:
                 if outcome.change_remaining_duration:
-                    buff.time_until_expiration = min(buff.time_until_expiration + outcome.change_remaining_duration,
-                                                     buff.total_duration)
+                    buff.change_remaining_duration(outcome.change_remaining_duration)
                 if outcome.cancel_effect:
                     buff.force_cancel()
 

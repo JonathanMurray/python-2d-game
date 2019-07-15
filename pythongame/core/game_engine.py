@@ -271,13 +271,13 @@ def handle_buffs(active_buffs: List[BuffWithDuration], time_passed: Millis) -> A
     buffs_that_ended = []
     buffs_that_were_active = []
     for buff in copied_buffs_list:
-        buff.time_until_expiration -= time_passed
+        buff.notify_time_passed(time_passed)
         if not buff.has_been_force_cancelled:
             buffs_that_were_active.append(buff)
         if not buff.has_applied_start_effect:
             buffs_that_started.append(buff)
             buff.has_applied_start_effect = True
-        elif buff.time_until_expiration <= 0:
+        elif buff.has_expired():
             active_buffs.remove(buff)
             buffs_that_ended.append(buff)
     return AgentBuffsUpdate(buffs_that_started, buffs_that_were_active, buffs_that_ended)
