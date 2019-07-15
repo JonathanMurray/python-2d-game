@@ -112,6 +112,7 @@ class Sprite(Enum):
     ITEM_ORB_OF_THE_MAGI = 309
     ITEM_WIZARDS_COWL = 310
     ITEM_ZULS_AEGIS = 311
+    ITEM_KNIGHTS_ARMOR = 312
     COINS_1 = 350
     COINS_2 = 351
     COINS_5 = 352
@@ -189,6 +190,7 @@ class ItemType(Enum):
     ORB_OF_THE_MAGI_3 = 52
     WIZARDS_COWL = 60
     ZULS_AEGIS = 70
+    KNIGHTS_ARMOR = 71
 
 
 class ProjectileType(Enum):
@@ -264,6 +266,7 @@ class UiIconSprite(Enum):
     ITEM_ORB_OF_THE_MAGI = 209
     ITEM_WIZARDS_COWL = 210
     ITEM_ZULS_AEGIS = 211
+    ITEM_KNIGHTS_ARMOR = 212
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
 
