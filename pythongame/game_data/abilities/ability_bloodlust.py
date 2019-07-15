@@ -5,7 +5,8 @@ from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effec
 from pythongame.core.common import BuffType, Millis, AbilityType, UiIconSprite
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, BuffNotification, \
+    BuffNotificationOutcome
 from pythongame.core.visual_effects import VisualCircle
 
 COOLDOWN = Millis(25000)
@@ -42,9 +43,9 @@ class BloodLust(AbstractBuffEffect):
     def get_buff_type(self):
         return BUFF_TYPE
 
-    def notify_that_enemy_died(self) -> Optional[Millis]:
-        # prolong buff duration
-        return Millis(1000)
+    def handle_notification(self, notification: BuffNotification) -> Optional[BuffNotificationOutcome]:
+        if notification.enemy_died:
+            return BuffNotificationOutcome.change_remaining_duration(Millis(1000))
 
 
 def register_bloodlust_ability():

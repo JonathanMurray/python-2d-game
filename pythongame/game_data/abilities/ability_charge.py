@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, AbilityType, SoundId, HeroId, UiIconSprite
@@ -32,7 +34,7 @@ class Charging(AbstractBuffEffect):
         game_state.player_entity.set_moving_in_dir(game_state.player_entity.direction)
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
-                            time_passed: Millis) -> bool:
+                            time_passed: Millis) -> Optional[bool]:
 
         self.time_since_graphics += time_passed
         self.time_since_start += time_passed
@@ -64,7 +66,7 @@ class Charging(AbstractBuffEffect):
                 VisualRect((150, 0, 0), visual_impact_pos, 35, 20, IMPACT_STUN_DURATION, 2, None))
             game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_TYPE_STUNNED), IMPACT_STUN_DURATION)
             enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE_STUNNED), IMPACT_STUN_DURATION)
-
+            # The buff should end upon impact
             return True
         return False
 

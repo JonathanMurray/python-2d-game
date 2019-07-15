@@ -1,6 +1,6 @@
 from pythongame.core.common import SoundId, Millis
 from pythongame.core.enemy_target_selection import EnemyTarget
-from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity
+from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, BuffNotification
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import create_visual_damage_text, VisualRect, create_visual_healing_text
 
@@ -24,11 +24,11 @@ def deal_player_damage_to_enemy(game_state: GameState, npc: NonPlayerCharacter, 
 
 
 def deal_damage_to_player(game_state: GameState, amount: float):
-    game_state.player_state.lose_health(amount)
-    rounded_amount = round(amount)
-    if rounded_amount > 0:
-        game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, rounded_amount))
+    health_lost = game_state.player_state.lose_health(amount)
+    if health_lost > 0:
+        game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, health_lost))
         play_sound(SoundId.PLAYER_PAIN)
+        game_state.player_state.notify_buffs(BuffNotification.player_lost_health(health_lost))
 
 
 def deal_npc_damage_to_npc(game_state: GameState, target: NonPlayerCharacter, amount: float):

@@ -3,7 +3,7 @@ from pythongame.core.common import AbilityType, SoundId
 from pythongame.core.consumable_effects import try_consume_consumable, ConsumableWasConsumed, \
     ConsumableFailedToBeConsumed
 from pythongame.core.game_data import ABILITIES
-from pythongame.core.game_state import GameState
+from pythongame.core.game_state import GameState, BuffNotification
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view_state import ViewState
 
@@ -36,6 +36,7 @@ class PlayerControls:
                 print("WARN: No sound defined for ability: " + str(ability_type))
             player_state.lose_mana(mana_cost)
             player_state.ability_cooldowns_remaining[ability_type] = ability_data.cooldown
+            game_state.player_state.notify_buffs(BuffNotification.player_used_ability(ability_type))
             return
         else:
             view_state.set_message("Failed to execute ability!")

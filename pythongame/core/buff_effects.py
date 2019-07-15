@@ -1,7 +1,8 @@
 from typing import Dict, Type, Optional, Any
 
 from pythongame.core.common import *
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, BuffNotification, \
+    BuffNotificationOutcome
 
 
 class AbstractBuffEffect:
@@ -9,7 +10,7 @@ class AbstractBuffEffect:
         pass
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
-                            time_passed: Millis):
+                            time_passed: Millis) -> Optional[bool]:
         pass
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
@@ -18,9 +19,7 @@ class AbstractBuffEffect:
     def get_buff_type(self):
         pass
 
-    # TODO Handle more events, and more possible outcomes
-    # Return Millis if buff should have prolonged duration as an outcome of the event
-    def notify_that_enemy_died(self) -> Optional[Millis]:
+    def handle_notification(self, notification: BuffNotification) -> Optional[BuffNotificationOutcome]:
         return None
 
 

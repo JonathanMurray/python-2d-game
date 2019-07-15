@@ -5,7 +5,8 @@ from pythongame.core.common import *
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
     create_consumable_on_ground
 from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities
-from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration
+from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
+    BuffNotification
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.loot import LootEntry
 from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vectors, \
@@ -127,7 +128,7 @@ class GameEngine:
                 loot = enemy_that_died.enemy_loot_table.generate_loot()
                 enemy_death_position = enemy_that_died.world_entity.get_position()
                 self._put_loot_on_ground(enemy_death_position, loot)
-                self.game_state.player_state.notify_buffs_of_enemy_death()
+                self.game_state.player_state.notify_buffs(BuffNotification.enemy_died())
 
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_effects()
@@ -139,7 +140,7 @@ class GameEngine:
             buff_should_end = buff.buff_effect.apply_middle_effect(
                 self.game_state, self.game_state.player_entity, None, time_passed)
             if buff_should_end:
-                buff.has_been_force_cancelled = True
+                buff.force_cancel()
 
         for buff in player_buffs_update.buffs_that_ended:
             buff.buff_effect.apply_end_effect(self.game_state, self.game_state.player_entity, None)

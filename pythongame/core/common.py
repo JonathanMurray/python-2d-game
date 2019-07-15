@@ -161,6 +161,7 @@ class BuffType(Enum):
     CHANNELING_STOMP = 18
     STUNNED_BY_STOMP = 19
     SNEAKING = 20
+    AFTER_SNEAKING = 21
 
 
 class ItemType(Enum):

@@ -223,6 +223,45 @@ class BuffWithDuration:
         self.total_duration = duration
         self.has_applied_start_effect = False
 
+    def force_cancel(self):
+        self.has_been_force_cancelled = True
+        self.time_until_expiration = 0
+
+
+# These are sent as messages to active player buffs. They let the buffs react to events. One buff might have its
+# duration prolonged if an enemy dies for example.
+class BuffNotification:
+    def __init__(self, enemy_died: bool, player_used_ability: Optional[AbilityType], player_lost_health: Optional[int]):
+        self.enemy_died = enemy_died
+        self.player_used_ability = player_used_ability
+        self.player_lost_health = player_lost_health
+
+    @staticmethod
+    def enemy_died():
+        return BuffNotification(True, None, None)
+
+    @staticmethod
+    def player_used_ability(ability: AbilityType):
+        return BuffNotification(False, ability, None)
+
+    @staticmethod
+    def player_lost_health(amount: int):
+        return BuffNotification(False, None, amount)
+
+
+class BuffNotificationOutcome:
+    def __init__(self, change_remaining_duration: Optional[Millis], cancel_effect: bool):
+        self.change_remaining_duration = change_remaining_duration
+        self.cancel_effect = cancel_effect
+
+    @staticmethod
+    def change_remaining_duration(delta: Millis):
+        return BuffNotificationOutcome(delta, False)
+
+    @staticmethod
+    def cancel_effect():
+        return BuffNotificationOutcome(None, True)
+
 
 class PlayerState:
     def __init__(self, health: int, max_health: int, mana: int, max_mana: int, mana_regen: float,
@@ -254,16 +293,19 @@ class PlayerState:
         self.damage_modifier_bonus: float = 0  # affected by items. Only allowed to change additively
         self.hero_id: HeroId = hero_id
 
-    def gain_health(self, amount: float):
+    def gain_health(self, amount: float) -> int:
         health_before = self.health
         self._health_float = min(self._health_float + amount, self.max_health)
         self.health = int(math.floor(self._health_float))
         health_gained = self.health - health_before
         return health_gained
 
-    def lose_health(self, amount: float):
+    def lose_health(self, amount: float) -> int:
+        health_before = self.health
         self._health_float = max(self._health_float - amount, 0)
         self.health = int(math.floor(self._health_float))
+        health_lost = health_before - self.health
+        return health_lost
 
     def gain_mana(self, amount: float):
         self._mana_float = min(self._mana_float + amount, self.max_mana)
@@ -380,11 +422,15 @@ class PlayerState:
     def is_stunned(self):
         return self._number_of_active_stuns > 0
 
-    def notify_buffs_of_enemy_death(self):
+    def notify_buffs(self, notification: BuffNotification):
         for buff in self.active_buffs:
-            prolonged_duration: Optional[Millis] = buff.buff_effect.notify_that_enemy_died()
-            if prolonged_duration:
-                buff.time_until_expiration = min(buff.time_until_expiration + prolonged_duration, buff.total_duration)
+            outcome: Optional[BuffNotificationOutcome] = buff.buff_effect.handle_notification(notification)
+            if outcome:
+                if outcome.change_remaining_duration:
+                    buff.time_until_expiration = min(buff.time_until_expiration + outcome.change_remaining_duration,
+                                                     buff.total_duration)
+                if outcome.cancel_effect:
+                    buff.force_cancel()
 
 
 # TODO Is there a way to handle this better in the view module? This class shouldn't need to masquerade as a WorldEntity
