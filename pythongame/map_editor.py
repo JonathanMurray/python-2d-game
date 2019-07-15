@@ -178,7 +178,7 @@ def main(map_file_name: Optional[str]):
                     if user_state.placing_entity:
                         if user_state.placing_entity.wall_type:
                             _add_wall(game_state, snapped_mouse_world_position, user_state.placing_entity.wall_type)
-                        elif user_state.placing_entity.decoration:
+                        elif user_state.placing_entity.decoration_sprite:
                             _add_decoration(user_state.placing_entity.decoration_sprite, game_state,
                                             snapped_mouse_world_position)
                     elif user_state.deleting_entities:
