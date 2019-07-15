@@ -5,7 +5,7 @@ import pygame
 from pythongame.core.common import Direction, Sprite, ConsumableType, ItemType, HeroId, UiIconSprite, PortraitIconSprite
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, PORTRAIT_ICON_SPRITE_PATHS, NpcDialog, \
-    HEROES
+    HEROES, ConsumableCategory
 from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration
 from pythongame.core.item_effects import AbstractItemEffect
 from pythongame.core.math import is_point_in_rect, sum_of_vectors
@@ -338,16 +338,29 @@ class View:
         x, y = self._translate_ui_position_to_screen(position_in_ui)
         self._stat_bar(x, y, w, h, ratio_filled, color, border)
 
-    def _consumable_icon_in_ui(self, x_in_ui, y_in_ui, size, consumable_number, consumable_type: ConsumableType,
-                               highlighted_consumable_action):
+    def _consumable_icon_in_ui(self, x_in_ui, y_in_ui, size, consumable_number: int,
+                               consumable_types: List[ConsumableType], highlighted_consumable_action: int):
         w = size[0]
         h = size[1]
         x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
         self._rect_filled((40, 40, 50), (x, y, w, h))
-        if consumable_type:
-            icon_sprite = CONSUMABLES[consumable_type].icon_sprite
+        if consumable_types:
+            icon_sprite = CONSUMABLES[consumable_types[0]].icon_sprite
             self._image(self.images_by_ui_sprite[icon_sprite], (x, y))
         self._rect((150, 150, 190), (x, y, w, h), 1)
+        # Render any consumables that are deeper down in the inventory
+        sub_rect_h = 3
+        for i in range(len(consumable_types)):
+            sub_consumable_type = consumable_types[i]
+            consumable_category = CONSUMABLES[sub_consumable_type].category
+            if consumable_category == ConsumableCategory.HEALTH:
+                sub_rect_color = (160, 110, 110)
+            elif consumable_category == ConsumableCategory.MANA:
+                sub_rect_color = (110, 110, 200)
+            else:
+                sub_rect_color = (170, 170, 170)
+            self._rect_filled(sub_rect_color, (x, y - 2 - (sub_rect_h + 1) * (i + 1), w, sub_rect_h))
+
         if highlighted_consumable_action == consumable_number:
             self._rect(COLOR_HIGHLIGHTED_ICON, (x - 1, y - 1, w + 2, h + 2), 3)
         self._text(self.font_ui_icon_keys, str(consumable_number), (x + 12, y + h + 4))
@@ -504,7 +517,8 @@ class View:
                   player_active_buffs: List[BuffWithDuration],
                   player_health, player_mana, player_max_health, player_max_mana, player_health_regen: float,
                   player_mana_regen: float, player_speed_multiplier: float, player_life_steal: float,
-                  player_minimap_relative_position, consumable_slots, item_slots: Dict[int, AbstractItemEffect],
+                  player_minimap_relative_position, consumable_slots: Dict[int, List[ConsumableType]],
+                  item_slots: Dict[int, AbstractItemEffect],
                   player_level: int, mouse_screen_position: Tuple[int, int], player_exp: int,
                   player_max_exp_in_this_level: int, dialog: Optional[DialogGraphics], player_money: int,
                   player_damage_modifier: float, hero_id: HeroId) -> MouseHoverEvent:
@@ -577,15 +591,16 @@ class View:
         for i, slot_number in enumerate(consumable_slots):
             x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_2
-            consumable_type = consumable_slots[slot_number]
+            consumable_types = consumable_slots[slot_number]
+            consumable_type = consumable_types[0] if consumable_types else None
             if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
                 hovered_consumable_slot_number = slot_number
                 if consumable_type:
                     tooltip_title = CONSUMABLES[consumable_type].name
                     tooltip_details = [CONSUMABLES[consumable_type].description]
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
-            self._consumable_icon_in_ui(x, y, UI_ICON_SIZE, slot_number,
-                                        consumable_type, highlighted_consumable_action)
+            self._consumable_icon_in_ui(x, y, UI_ICON_SIZE, slot_number, consumable_types,
+                                        highlighted_consumable_action)
 
         # ABILITIES
         abilities_rect_pos = self._translate_ui_position_to_screen((x_1 - icon_rect_padding, y_4 - icon_rect_padding))

@@ -5,6 +5,7 @@ from pygame.rect import Rect
 
 from pythongame.core.common import *
 from pythongame.core.common import PortraitIconSprite
+from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import NpcDialog
 from pythongame.core.loot import LootTable
 from pythongame.core.math import boxes_intersect, rects_intersect, get_position_from_center_position, \
@@ -285,30 +286,6 @@ class BuffEventOutcome:
     @staticmethod
     def cancel_effect():
         return BuffEventOutcome(None, True)
-
-
-class ConsumableInventory:
-    def __init__(self, slots: Dict[int, ConsumableType]):
-        self.slots = slots
-
-    def has_space_for_more(self) -> bool:
-        empty_slots = [slot_number for slot_number in self.slots if not self.slots[slot_number]]
-        return len(empty_slots) > 0
-
-    def gain_consumable(self, consumable_type: ConsumableType):
-        empty_slots = [slot_number for slot_number in self.slots if not self.slots[slot_number]]
-        empty_slot = empty_slots[0]
-        self.slots[empty_slot] = consumable_type
-
-    def switch_consumable_slots(self, slot_1: int, slot_2: int):
-        consumable_type_1 = self.slots[slot_1]
-        self.slots[slot_1] = self.slots[slot_2]
-        self.slots[slot_2] = consumable_type_1
-
-    def remove_consumable_from_slot(self, slot_number: int) -> ConsumableType:
-        consumable_type = self.slots[slot_number]
-        self.slots[slot_number] = None
-        return consumable_type
 
 
 class PlayerState:

@@ -3,7 +3,7 @@ from pythongame.core.common import ConsumableType, BuffType, Millis, UiIconSprit
 from pythongame.core.consumable_effects import create_potion_visual_effect_at_player, ConsumableWasConsumed, \
     register_consumable_effect
 from pythongame.core.game_data import register_ui_icon_sprite_path, register_buff_text, \
-    register_consumable_data, ConsumableData
+    register_consumable_data, ConsumableData, ConsumableCategory
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
 from pythongame.core.visual_effects import VisualCircle
 
@@ -41,6 +41,6 @@ def register_speed_potion():
     register_buff_effect(BuffType.INCREASED_MOVE_SPEED, IncreasedMoveSpeed)
     register_buff_text(BuffType.INCREASED_MOVE_SPEED, "Speed")
     register_ui_icon_sprite_path(UiIconSprite.POTION_SPEED, "resources/graphics/white_potion.gif")
-    register_consumable_data(
-        ConsumableType.SPEED,
-        ConsumableData(UiIconSprite.POTION_SPEED, None, "Speed potion", "Grants temporarily increased movement speed"))
+    data = ConsumableData(UiIconSprite.POTION_SPEED, None, "Speed potion",
+                          "Grants temporarily increased movement speed", ConsumableCategory.OTHER)
+    register_consumable_data(ConsumableType.SPEED, data)

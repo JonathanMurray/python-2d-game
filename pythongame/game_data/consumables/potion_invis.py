@@ -3,7 +3,7 @@ from pythongame.core.common import ConsumableType, BuffType, Millis
 from pythongame.core.consumable_effects import create_potion_visual_effect_at_player, ConsumableWasConsumed, \
     register_consumable_effect
 from pythongame.core.game_data import register_ui_icon_sprite_path, UiIconSprite, register_buff_text, ConsumableData, \
-    register_consumable_data
+    register_consumable_data, ConsumableCategory
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
 from pythongame.core.visual_effects import VisualRect
 
@@ -45,6 +45,6 @@ def register_invis_potion():
     register_buff_effect(BUFF_TYPE, Invisibility)
     register_buff_text(BUFF_TYPE, "Invisibility")
     register_ui_icon_sprite_path(UiIconSprite.POTION_INVISIBILITY, "resources/graphics/invis_potion.png")
-    register_consumable_data(
-        POTION_TYPE,
-        ConsumableData(UiIconSprite.POTION_INVISIBILITY, None, "Invisibility potion", "Grants temporary invisibility"))
+    data = ConsumableData(UiIconSprite.POTION_INVISIBILITY, None, "Invisibility potion",
+                          "Grants temporary invisibility", ConsumableCategory.OTHER)
+    register_consumable_data(POTION_TYPE, data)

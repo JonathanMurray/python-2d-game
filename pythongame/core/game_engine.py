@@ -46,8 +46,8 @@ class GameEngine:
     def switch_inventory_items(self, slot_1: int, slot_2: int):
         self.game_state.player_state.switch_item_slots(slot_1, slot_2)
 
-    def switch_consumable_slots(self, slot_1: int, slot_2):
-        self.game_state.player_state.consumable_inventory.switch_consumable_slots(slot_1, slot_2)
+    def drag_consumable_between_slots(self, from_slot: int, to_slot: int):
+        self.game_state.player_state.consumable_inventory.drag_consumable_between_slots(from_slot, to_slot)
 
     def drop_inventory_item_on_ground(self, item_slot: int, game_world_position: Tuple[int, int]):
         item_type = self.game_state.player_state.item_slots[item_slot].get_item_type()
@@ -84,9 +84,10 @@ class GameEngine:
 
     def _try_pick_up_consumable_from_ground(self, consumable: ConsumableOnGround):
         has_space = self.game_state.player_state.consumable_inventory.has_space_for_more()
-        consumable_name = CONSUMABLES[consumable.consumable_type].name
+        consumable_type = consumable.consumable_type
+        consumable_name = CONSUMABLES[consumable_type].name
         if has_space:
-            self.game_state.player_state.consumable_inventory.gain_consumable(consumable.consumable_type)
+            self.game_state.player_state.consumable_inventory.add_consumable(consumable_type)
             self.view_state.set_message("You picked up " + consumable_name)
             play_sound(SoundId.EVENT_PICKED_UP)
             self.game_state.remove_entities([consumable])

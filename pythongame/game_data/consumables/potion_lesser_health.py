@@ -3,7 +3,7 @@ from pythongame.core.consumable_effects import create_potion_visual_effect_at_pl
     ConsumableFailedToBeConsumed, \
     register_consumable_effect
 from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer, \
-    register_ui_icon_sprite_path, register_consumable_data, ConsumableData, POTION_ENTITY_SIZE
+    register_ui_icon_sprite_path, register_consumable_data, ConsumableData, POTION_ENTITY_SIZE, ConsumableCategory
 from pythongame.core.game_state import GameState
 from pythongame.core.visual_effects import create_visual_healing_text
 
@@ -31,5 +31,5 @@ def register_lesser_health_potion():
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_path, POTION_ENTITY_SIZE))
     register_ui_icon_sprite_path(ui_icon_sprite, image_path)
     description = "Restores " + str(HEALING_AMOUNT) + " health"
-    register_consumable_data(consumable_type,
-                             ConsumableData(ui_icon_sprite, sprite, "Lesser health potion", description))
+    data = ConsumableData(ui_icon_sprite, sprite, "Lesser health potion", description, ConsumableCategory.HEALTH)
+    register_consumable_data(consumable_type, data)

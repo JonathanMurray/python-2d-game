@@ -79,7 +79,8 @@ class UserAbilityKey:
 user_ability_keys = [UserAbilityKey("Q", pygame.K_q),
                      UserAbilityKey("W", pygame.K_w),
                      UserAbilityKey("E", pygame.K_e),
-                     UserAbilityKey("R", pygame.K_r)]
+                     UserAbilityKey("R", pygame.K_r),
+                     UserAbilityKey("T", pygame.K_t)]
 
 
 class NpcDialog:
@@ -105,12 +106,20 @@ class NpcData:
         self.enemy_loot_table: LootTable = enemy_loot_table
 
 
+class ConsumableCategory(Enum):
+    HEALTH = 1
+    MANA = 2
+    OTHER = 3
+
+
 class ConsumableData:
-    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Optional[Sprite], name: str, description: str):
+    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Optional[Sprite], name: str, description: str,
+                 category: ConsumableCategory):
         self.icon_sprite = icon_sprite
         self.entity_sprite = entity_sprite
         self.name = name
         self.description = description
+        self.category = category
 
 
 class ItemData:
