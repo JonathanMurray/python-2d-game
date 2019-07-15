@@ -7,6 +7,7 @@ from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE
     ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, PORTRAIT_ICON_SPRITE_PATHS, NpcDialog, \
     HEROES
 from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter
+from pythongame.core.item_effects import AbstractItemEffect
 from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
@@ -502,7 +503,7 @@ class View:
                   highlighted_ability_action, highlighted_consumable_action, message: str, player_active_buffs,
                   player_health, player_mana, player_max_health, player_max_mana, player_health_regen: float,
                   player_mana_regen: float, player_speed_multiplier: float, player_life_steal: float,
-                  player_minimap_relative_position, consumable_slots, item_slots: Dict[int, ItemType],
+                  player_minimap_relative_position, consumable_slots, item_slots: Dict[int, AbstractItemEffect],
                   player_level: int, mouse_screen_position: Tuple[int, int], player_exp: int,
                   player_max_exp_in_this_level: int, dialog: Optional[DialogGraphics], player_money: int,
                   player_damage_modifier: float, hero_id: HeroId) -> MouseHoverEvent:
@@ -618,7 +619,8 @@ class View:
         for i, item_slot_number in enumerate(item_slots.keys()):
             x = x_2 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_2
-            item_type = item_slots[item_slot_number]
+            item_effect = item_slots[item_slot_number]
+            item_type = item_effect.get_item_type() if item_effect else None
             if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
                 hovered_item_slot_number = item_slot_number
                 if item_type:

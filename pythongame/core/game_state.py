@@ -246,9 +246,9 @@ class BuffWithDuration:
         return self._total_duration > 1000
 
 
-# These are sent as messages to active player buffs. They let the buffs react to events. One buff might have its
-# duration prolonged if an enemy dies for example.
-class BuffNotification:
+# These are sent as messages to player. They let buffs and items react to events. One buff might have its
+# duration prolonged if an enemy dies for example, and an item might give mana on enemy kills.
+class Event:
     def __init__(self, enemy_died: bool, player_used_ability: Optional[AbilityType], player_lost_health: Optional[int]):
         self.enemy_died = enemy_died
         self.player_used_ability = player_used_ability
@@ -256,35 +256,35 @@ class BuffNotification:
 
     @staticmethod
     def enemy_died():
-        return BuffNotification(True, None, None)
+        return Event(True, None, None)
 
     @staticmethod
     def player_used_ability(ability: AbilityType):
-        return BuffNotification(False, ability, None)
+        return Event(False, ability, None)
 
     @staticmethod
     def player_lost_health(amount: int):
-        return BuffNotification(False, None, amount)
+        return Event(False, None, amount)
 
 
-class BuffNotificationOutcome:
+class BuffEventOutcome:
     def __init__(self, change_remaining_duration: Optional[Millis], cancel_effect: bool):
         self.change_remaining_duration = change_remaining_duration
         self.cancel_effect = cancel_effect
 
     @staticmethod
     def change_remaining_duration(delta: Millis):
-        return BuffNotificationOutcome(delta, False)
+        return BuffEventOutcome(delta, False)
 
     @staticmethod
     def cancel_effect():
-        return BuffNotificationOutcome(None, True)
+        return BuffEventOutcome(None, True)
 
 
 class PlayerState:
     def __init__(self, health: int, max_health: int, mana: int, max_mana: int, mana_regen: float,
                  consumable_slots: Dict[int, ConsumableType], abilities: List[AbilityType],
-                 item_slots: Dict[int, ItemType], new_level_abilities: Dict[int, AbilityType], hero_id: HeroId):
+                 item_slots: Dict[int, Any], new_level_abilities: Dict[int, AbilityType], hero_id: HeroId):
         self.health = health
         self._health_float = health
         self.max_health = max_health
@@ -299,7 +299,7 @@ class PlayerState:
         self.active_buffs: List[BuffWithDuration] = []
         self.is_invisible = False
         self._number_of_active_stuns = 0
-        self.item_slots = item_slots
+        self.item_slots = item_slots  # Values are of type AbstractItemEffect
         self.life_steal_ratio: float = 0
         self.exp = 0
         self.level = 1
@@ -440,14 +440,17 @@ class PlayerState:
     def is_stunned(self):
         return self._number_of_active_stuns > 0
 
-    def notify_buffs(self, notification: BuffNotification):
+    def notify_about_event(self, event: Event):
         for buff in self.active_buffs:
-            outcome: Optional[BuffNotificationOutcome] = buff.buff_effect.handle_notification(notification)
+            outcome: Optional[BuffEventOutcome] = buff.buff_effect.buff_handle_event(event)
             if outcome:
                 if outcome.change_remaining_duration:
                     buff.change_remaining_duration(outcome.change_remaining_duration)
                 if outcome.cancel_effect:
                     buff.force_cancel()
+        for item_effect in self.item_slots.values():
+            if item_effect:
+                item_effect.item_handle_event(event)
 
 
 # TODO Is there a way to handle this better in the view module? This class shouldn't need to masquerade as a WorldEntity

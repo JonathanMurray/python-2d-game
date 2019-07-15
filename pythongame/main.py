@@ -172,7 +172,7 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
                 item_slot_being_dragged = hovered_item_slot_number
 
         if item_slot_being_dragged:
-            item_type = game_state.player_state.item_slots[item_slot_being_dragged]
+            item_type = game_state.player_state.item_slots[item_slot_being_dragged].get_item_type()
             view.render_item_being_dragged(item_type, mouse_screen_position)
 
         if mouse_was_just_released and item_slot_being_dragged:

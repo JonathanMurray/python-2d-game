@@ -1,8 +1,7 @@
 from typing import Dict, Type, Optional, Any
 
 from pythongame.core.common import *
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, BuffNotification, \
-    BuffNotificationOutcome
+from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, BuffEventOutcome
 
 
 class AbstractBuffEffect:
@@ -19,7 +18,7 @@ class AbstractBuffEffect:
     def get_buff_type(self):
         pass
 
-    def handle_notification(self, notification: BuffNotification) -> Optional[BuffNotificationOutcome]:
+    def buff_handle_event(self, notification: Event) -> Optional[BuffEventOutcome]:
         return None
 
 

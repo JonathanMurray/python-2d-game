@@ -1,7 +1,7 @@
 from typing import Dict
 
 from pythongame.core.common import *
-from pythongame.core.game_state import GameState
+from pythongame.core.game_state import GameState, Event
 
 
 class AbstractItemEffect:
@@ -17,6 +17,9 @@ class AbstractItemEffect:
     def get_item_type(self):
         pass
 
+    def item_handle_event(self, notification: Event):
+        pass
+
 
 _item_effects: Dict[ItemType, AbstractItemEffect] = {}
 
@@ -25,5 +28,7 @@ def register_item_effect(item_type: ItemType, effect: AbstractItemEffect):
     _item_effects[item_type] = effect
 
 
+# Note this is handled differently compared to buffs
+# There is only one effect instance per item type - having duplicate items with active effects may not be well supported
 def get_item_effect(item_type: ItemType) -> AbstractItemEffect:
     return _item_effects[item_type]

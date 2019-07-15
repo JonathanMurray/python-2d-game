@@ -6,7 +6,7 @@ from pythongame.core.entity_creation import create_money_pile_on_ground, create_
     create_consumable_on_ground
 from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
-    BuffNotification
+    Event
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.loot import LootEntry
 from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vectors, \
@@ -24,9 +24,8 @@ class GameEngine:
         self.view_state = view_state
 
     def initialize(self):
-        for item_type in self.game_state.player_state.item_slots.values():
-            if item_type:
-                item_effect = get_item_effect(item_type)
+        for item_effect in self.game_state.player_state.item_slots.values():
+            if item_effect:
                 item_effect.apply_start_effect(self.game_state)
 
     def try_use_ability(self, ability_type: AbilityType):
@@ -51,7 +50,7 @@ class GameEngine:
         self.game_state.player_state.switch_consumable_slots(slot_1, slot_2)
 
     def drop_inventory_item_on_ground(self, item_slot: int, game_world_position: Tuple[int, int]):
-        item_type = self.game_state.player_state.item_slots[item_slot]
+        item_type = self.game_state.player_state.item_slots[item_slot].get_item_type()
         item = create_item_on_ground(item_type, game_world_position)
         self.game_state.items_on_ground.append(item)
         get_item_effect(item_type).apply_end_effect(self.game_state)
@@ -75,8 +74,8 @@ class GameEngine:
         empty_item_slot = self.game_state.player_state.find_first_empty_item_slot()
         item_name = ITEMS[item.item_type].name
         if empty_item_slot:
-            self.game_state.player_state.item_slots[empty_item_slot] = item.item_type
             item_effect = get_item_effect(item.item_type)
+            self.game_state.player_state.item_slots[empty_item_slot] = item_effect
             item_effect.apply_start_effect(self.game_state)
             self.view_state.set_message("You picked up " + item_name)
             play_sound(SoundId.EVENT_PICKED_UP)
@@ -128,7 +127,7 @@ class GameEngine:
                 loot = enemy_that_died.enemy_loot_table.generate_loot()
                 enemy_death_position = enemy_that_died.world_entity.get_position()
                 self._put_loot_on_ground(enemy_death_position, loot)
-                self.game_state.player_state.notify_buffs(BuffNotification.enemy_died())
+                self.game_state.player_state.notify_about_event(Event.enemy_died())
 
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_effects()
@@ -155,9 +154,9 @@ class GameEngine:
             for buff in buffs_update.buffs_that_ended:
                 buff.buff_effect.apply_end_effect(self.game_state, enemy.world_entity, enemy)
 
-        for item_type in self.game_state.player_state.item_slots.values():
-            if item_type:
-                get_item_effect(item_type).apply_middle_effect(self.game_state, time_passed)
+        for item_effect in self.game_state.player_state.item_slots.values():
+            if item_effect:
+                item_effect.apply_middle_effect(self.game_state, time_passed)
 
         self.game_state.player_state.regenerate_health_and_mana(time_passed)
         self.game_state.player_state.recharge_ability_cooldowns(time_passed)

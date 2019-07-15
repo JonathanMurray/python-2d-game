@@ -5,6 +5,7 @@ from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, I
     WALLS, PORTALS, HEROES
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
     ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState
+from pythongame.core.item_effects import get_item_effect
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
@@ -68,6 +69,9 @@ def create_decoration_entity(pos: Tuple[int, int], sprite: Sprite) -> Decoration
 
 def create_player_state(hero_id: HeroId) -> PlayerState:
     data = HEROES[hero_id].initial_player_state
+    item_slots_with_effects = {slot_number: get_item_effect(item_id) if item_id else None
+                               for (slot_number, item_id)
+                               in data.item_slots.items()}
     return PlayerState(
         data.health, data.health, data.mana, data.mana, data.mana_regen, data.consumable_slots, data.abilities,
-        data.item_slots, data.new_level_abilities, data.hero_id)
+        item_slots_with_effects, data.new_level_abilities, data.hero_id)
