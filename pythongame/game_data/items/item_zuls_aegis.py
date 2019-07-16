@@ -23,7 +23,7 @@ class ItemEffect(AbstractItemEffect):
 
     def item_handle_event(self, event: Event, player_state: PlayerState):
         if isinstance(event, PlayerLostHealthEvent):
-            if random.random() < PROC_CHANCE:
+            if event.npc_attacker and random.random() < PROC_CHANCE:
                 event.npc_attacker.gain_buff_effect(get_buff_effect(BUFF_TYPE_STUNNED), STUN_DURATION)
 
     def get_item_type(self):
