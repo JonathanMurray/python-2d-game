@@ -50,4 +50,4 @@ class ConsumableInventory:
             return None
 
     def get_consumable_at_slot(self, slot_number: int) -> Optional[ConsumableType]:
-        return self.consumables_in_slots[slot_number][0] if len(self.consumables_in_slots) > 1 else None
+        return self.consumables_in_slots[slot_number][0] if len(self.consumables_in_slots[slot_number]) > 0 else None
