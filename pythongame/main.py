@@ -33,7 +33,7 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
     pygame.init()
 
     view = View(CAMERA_SIZE, SCREEN_SIZE)
-    view_state = ViewState(game_state.game_world_size)
+    view_state = ViewState(game_state.entire_world_area)
     clock = pygame.time.Clock()
 
     init_sound_player()
@@ -138,7 +138,7 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
             render_hit_and_collision_boxes=render_hit_and_collision_boxes,
             player_health=game_state.player_state.health,
             player_max_health=game_state.player_state.max_health,
-            game_world_size=game_state.game_world_size,
+            entire_world_area=game_state.entire_world_area,
             entity_action_text=entity_action_text)
 
         dialog = player_interactions_state.get_dialog()

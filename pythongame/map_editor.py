@@ -8,7 +8,7 @@ from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, It
 from pythongame.core.entity_creation import create_portal, create_hero_world_entity, create_npc, create_wall, \
     create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground, \
     create_player_state
-from pythongame.core.game_state import GameState
+from pythongame.core.game_state import GameState, WorldArea
 from pythongame.core.math import sum_of_vectors
 from pythongame.core.view import View
 from pythongame.game_world_init import save_game_state_to_json_file, create_game_state_from_json_file
@@ -132,9 +132,10 @@ def main(map_file_name: Optional[str]):
         game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file_path, HERO_ID)
     else:
 
-        player_entity = create_hero_world_entity(HERO_ID, (250, 250))
+        player_entity = create_hero_world_entity(HERO_ID, (0, 0))
         player_state = create_player_state(HERO_ID)
-        game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, (500, 500), player_state, [], [])
+        game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, WorldArea((-250, -250), (500, 500)),
+                               player_state, [], [])
 
     pygame.init()
 
@@ -255,7 +256,7 @@ def main(map_file_name: Optional[str]):
             render_hit_and_collision_boxes=True,
             player_health=game_state.player_state.health,
             player_max_health=game_state.player_state.max_health,
-            game_world_size=game_state.game_world_size,
+            entire_world_area=game_state.entire_world_area,
             entity_action_text=None)
 
         entity_icon_hovered_by_mouse = view.render_map_editor_ui(

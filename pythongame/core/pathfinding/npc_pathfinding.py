@@ -1,8 +1,8 @@
-from typing import Tuple, Any, Optional
+from typing import Tuple, Any, Optional, List
 
 from pythongame.core.common import Millis, Direction
+from pythongame.core.game_state import GRID_CELL_WIDTH, GameState, WorldEntity, WorldArea
 from pythongame.core.math import get_directions_to_position, get_opposite_direction, is_x_and_y_within_distance
-from pythongame.core.game_state import GRID_CELL_WIDTH, GameState, WorldEntity
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.visual_effects import VisualLine, VisualRect
 
@@ -12,19 +12,20 @@ DEBUG_PATHFINDER_INTERVAL = 900
 
 class NpcPathfinder:
 
-    def __init__(self, global_path_finder):
-        self.path = None
+    def __init__(self, global_path_finder: GlobalPathFinder):
+        self.path: List[Tuple[int, int]] = None  # This is expressed in game world coordinates (can be negative)
         self.global_path_finder: GlobalPathFinder = global_path_finder
 
     def update_path_towards_target(self, agent_entity: WorldEntity, game_state: GameState, target_entity: WorldEntity):
-        agent_cell = _get_cell_from_position(agent_entity.get_position())
-        target_cell = _get_cell_from_position(target_entity.get_position())
+        agent_cell = _translate_world_position_to_cell(agent_entity.get_position(), game_state.entire_world_area)
+        target_cell = _translate_world_position_to_cell(target_entity.get_position(), game_state.entire_world_area)
 
         agent_cell_size = (agent_entity.w // GRID_CELL_WIDTH + 1, agent_entity.h // GRID_CELL_WIDTH + 1)
         self.global_path_finder.register_entity_size(agent_cell_size)
         path_with_cells = self.global_path_finder.run(agent_cell_size, agent_cell, target_cell)
         if path_with_cells:
-            path = [(cell[0] * GRID_CELL_WIDTH, cell[1] * GRID_CELL_WIDTH) for cell in path_with_cells]
+            # Note: Cells are expressed in non-negative values (and need to be translated to game world coordinates)
+            path = [_translate_cell_to_world_position(cell, game_state.entire_world_area) for cell in path_with_cells]
             if DEBUG_RENDER_PATHFINDING:
                 _add_visual_lines_along_path(game_state, path)
             self.path = path
@@ -93,9 +94,9 @@ class NpcPathfinder:
 
 
 def _add_visual_line_to_next_waypoint(destination, agent_entity: WorldEntity, game_state: GameState):
-    game_state.visual_effects.append(
-        VisualLine((150, 150, 150), _get_middle_of_cell_from_position(agent_entity.get_position()),
-                   _get_middle_of_cell_from_position(destination), Millis(100), 2))
+    start = _get_middle_of_cell_from_position(agent_entity.get_position(), game_state.entire_world_area)
+    end = _get_middle_of_cell_from_position(destination, game_state.entire_world_area)
+    game_state.visual_effects.append(VisualLine((150, 150, 150), start, end, Millis(100), 2))
 
 
 def _add_visual_lines_along_path(game_state, path):
@@ -104,16 +105,18 @@ def _add_visual_lines_along_path(game_state, path):
         next_pos = path[i + 1]
         game_state.visual_effects.append(
             VisualRect((100, 150, 150),
-                       _get_middle_of_cell_from_position(current_pos), 7, 10, Millis(DEBUG_PATHFINDER_INTERVAL), 1))
+                       _get_middle_of_cell_from_position(current_pos, game_state.entire_world_area), 7, 10,
+                       Millis(DEBUG_PATHFINDER_INTERVAL), 1))
         game_state.visual_effects.append(
             VisualLine((250, 250, 250),
-                       _get_middle_of_cell_from_position(current_pos),
-                       _get_middle_of_cell_from_position(next_pos),
+                       _get_middle_of_cell_from_position(current_pos, game_state.entire_world_area),
+                       _get_middle_of_cell_from_position(next_pos, game_state.entire_world_area),
                        Millis(DEBUG_PATHFINDER_INTERVAL), 1))
 
 
-def _get_middle_of_cell_from_position(position):
-    return position[0] + GRID_CELL_WIDTH // 2, position[1] + GRID_CELL_WIDTH // 2
+def _get_middle_of_cell_from_position(world_position: Tuple[int, int], entire_world_area: WorldArea) -> Tuple[int, int]:
+    return world_position[0] + GRID_CELL_WIDTH // 2, \
+           world_position[1] + GRID_CELL_WIDTH // 2
 
 
 def _would_collide_with_dir(direction: Direction, agent_entity: WorldEntity, game_state: GameState):
@@ -125,6 +128,11 @@ def _would_collide_with_dir(direction: Direction, agent_entity: WorldEntity, gam
     return would_collide
 
 
-def _get_cell_from_position(position):
-    return (int((position[0] + GRID_CELL_WIDTH / 2) // GRID_CELL_WIDTH),
-            int((position[1] + GRID_CELL_WIDTH / 2) // GRID_CELL_WIDTH))
+def _translate_world_position_to_cell(position: Tuple[int, int], entire_world_area: WorldArea) -> Tuple[int, int]:
+    return (int((position[0] - entire_world_area.x + GRID_CELL_WIDTH / 2) // GRID_CELL_WIDTH),
+            int((position[1] - entire_world_area.y + GRID_CELL_WIDTH / 2) // GRID_CELL_WIDTH))
+
+
+def _translate_cell_to_world_position(cell: Tuple[int, int], entire_world_area: WorldArea) -> Tuple[int, int]:
+    return (cell[0] * GRID_CELL_WIDTH + entire_world_area.x,
+            cell[1] * GRID_CELL_WIDTH + entire_world_area.y)

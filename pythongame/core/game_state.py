@@ -477,7 +477,7 @@ class GameState:
     def __init__(self, player_entity: WorldEntity, consumables_on_ground: List[ConsumableOnGround],
                  items_on_ground: List[ItemOnGround], money_piles_on_ground: List[MoneyPileOnGround],
                  non_player_characters: List[NonPlayerCharacter], walls: List[Wall], camera_size: Tuple[int, int],
-                 game_world_size: Tuple[int, int], player_state: PlayerState,
+                 entire_world_area: WorldArea, player_state: PlayerState,
                  decoration_entities: List[DecorationEntity], portals: List[Portal]):
         self.camera_size = camera_size
         self.camera_world_area = WorldArea((0, 0), self.camera_size)
@@ -492,29 +492,27 @@ class GameState:
         # overlaps with non_player_characters
         self.non_enemy_npcs: List[NonPlayerCharacter] = [npc for npc in non_player_characters if not npc.is_enemy]
         self.walls: List[Wall] = walls
-        self._wall_buckets = self._put_walls_in_buckets(game_world_size, [w.world_entity for w in walls])
+        self.entire_world_area = entire_world_area
+        self._wall_buckets = self._put_walls_in_buckets(self.entire_world_area, [w.world_entity for w in walls])
         self.visual_effects = []
         self.player_state: PlayerState = player_state
-        self.game_world_size = game_world_size
-        self.entire_world_area = WorldArea((0, 0), self.game_world_size)
-        self.grid = self._setup_grid(game_world_size, [w.world_entity for w in walls])
+        self.pathfinder_wall_grid = self._setup_pathfinder_wall_grid(
+            self.entire_world_area, [w.world_entity for w in walls])
         self.decoration_entities = decoration_entities
         self.portals: List[Portal] = portals
 
     @staticmethod
-    def _setup_grid(game_world_size: Tuple[int, int], walls: List[WorldEntity]):
-        world_w = game_world_size[0]
-        world_h = game_world_size[1]
-        grid_width = world_w // GRID_CELL_WIDTH
-        grid_height = world_h // GRID_CELL_WIDTH
+    def _setup_pathfinder_wall_grid(entire_world_area: WorldArea, walls: List[WorldEntity]):
+        # TODO extract world area arithmetic
+        grid_width = entire_world_area.w // GRID_CELL_WIDTH
+        grid_height = entire_world_area.h // GRID_CELL_WIDTH
         grid = []
         for x in range(grid_width + 1):
             grid.append((grid_height + 1) * [0])
         for w in walls:
-            cell_x = w.x // GRID_CELL_WIDTH
-            cell_y = w.y // GRID_CELL_WIDTH
+            cell_x = (w.x - entire_world_area.x) // GRID_CELL_WIDTH
+            cell_y = (w.y - entire_world_area.y) // GRID_CELL_WIDTH
             grid[cell_x][cell_y] = 1
-
         return grid
 
     def add_non_player_character(self, npc: NonPlayerCharacter):
@@ -596,9 +594,11 @@ class GameState:
         entity.set_position(old_pos)
         return collision
 
-    def get_within_world(self, pos, size):
-        return (max(0, min(self.game_world_size[0] - size[0], pos[0])),
-                max(0, min(self.game_world_size[1] - size[1], pos[1])))
+    def get_within_world(self, pos: Tuple[int, int], size: Tuple[int, int]):
+        # TODO extract world area arithmetic
+        x = max(self.entire_world_area.x, min(self.entire_world_area.x + self.entire_world_area.w - size[0], pos[0]))
+        y = max(self.entire_world_area.y, min(self.entire_world_area.y + self.entire_world_area.h - size[1], pos[1]))
+        return x, y
 
     def is_position_within_game_world(self, position: Tuple[int, int]) -> bool:
         return self.entire_world_area.contains_position(position)
@@ -624,28 +624,28 @@ class GameState:
     # Optimization for only checking collision with walls that are known beforehand (through use of buckets) to be
     # somewhat close to the entity
     @staticmethod
-    def _put_walls_in_buckets(game_world_size: Tuple[int, int], walls: List[WorldEntity]):
+    def _put_walls_in_buckets(entire_world_area: WorldArea, walls: List[WorldEntity]):
         wall_buckets = {}
-        for x_bucket in range(game_world_size[0] // WALL_BUCKET_WIDTH + 1):
+        for x_bucket in range(entire_world_area.w // WALL_BUCKET_WIDTH + 1):
             wall_buckets[x_bucket] = {}
-            for y_bucket in range(game_world_size[1] // WALL_BUCKET_HEIGHT + 1):
+            for y_bucket in range(entire_world_area.h // WALL_BUCKET_HEIGHT + 1):
                 wall_buckets[x_bucket][y_bucket] = []
-        for w in walls:
-            x_bucket = int(w.x) // WALL_BUCKET_WIDTH
-            y_bucket = int(w.y) // WALL_BUCKET_HEIGHT
-            wall_buckets[x_bucket][y_bucket].append(w)
+        for wall in walls:
+            x_bucket = int(wall.x - entire_world_area.x) // WALL_BUCKET_WIDTH
+            y_bucket = int(wall.y - entire_world_area.y) // WALL_BUCKET_HEIGHT
+            wall_buckets[x_bucket][y_bucket].append(wall)
         return wall_buckets
 
     def add_wall(self, wall: Wall):
         self.walls.append(wall)
-        x_bucket = int(wall.world_entity.x) // WALL_BUCKET_WIDTH
-        y_bucket = int(wall.world_entity.y) // WALL_BUCKET_HEIGHT
+        x_bucket = int(wall.world_entity.x - self.entire_world_area.x) // WALL_BUCKET_WIDTH
+        y_bucket = int(wall.world_entity.y - self.entire_world_area.y) // WALL_BUCKET_HEIGHT
         self._wall_buckets[x_bucket][y_bucket].append(wall.world_entity)
 
     def remove_wall(self, wall: Wall):
         self.walls.remove(wall)
-        x_bucket = int(wall.world_entity.x) // WALL_BUCKET_WIDTH
-        y_bucket = int(wall.world_entity.y) // WALL_BUCKET_HEIGHT
+        x_bucket = int(wall.world_entity.x - self.entire_world_area.x) // WALL_BUCKET_WIDTH
+        y_bucket = int(wall.world_entity.y - self.entire_world_area.y) // WALL_BUCKET_HEIGHT
         self._wall_buckets[x_bucket][y_bucket].remove(wall.world_entity)
 
     def does_entity_intersect_with_wall(self, entity: WorldEntity):
@@ -653,8 +653,8 @@ class GameState:
         return any([w for w in nearby_walls if boxes_intersect(w, entity)])
 
     def _get_walls_from_buckets_adjacent_to_entity(self, entity: WorldEntity):
-        entity_x_bucket = int(entity.x) // WALL_BUCKET_WIDTH
-        entity_y_bucket = int(entity.y) // WALL_BUCKET_HEIGHT
+        entity_x_bucket = int(entity.x - self.entire_world_area.x) // WALL_BUCKET_WIDTH
+        entity_y_bucket = int(entity.y - self.entire_world_area.y) // WALL_BUCKET_HEIGHT
         walls = []
         for x_bucket in range(max(0, entity_x_bucket - 1), min(len(self._wall_buckets), entity_x_bucket + 2)):
             for y_bucket in range(max(0, entity_y_bucket - 1),
@@ -663,12 +663,16 @@ class GameState:
         return walls
 
     def _get_walls_from_buckets_in_camera(self):
-        x0_bucket = int(self.camera_world_area.x) // WALL_BUCKET_WIDTH
-        y0_bucket = int(self.camera_world_area.y) // WALL_BUCKET_HEIGHT
-        x1_bucket = int(self.camera_world_area.x + self.camera_world_area.w) // WALL_BUCKET_WIDTH
-        y1_bucket = int(self.camera_world_area.y + self.camera_world_area.h) // WALL_BUCKET_HEIGHT
+        x0_bucket = int(self.camera_world_area.x - self.entire_world_area.x) // WALL_BUCKET_WIDTH
+        y0_bucket = int(self.camera_world_area.y - self.entire_world_area.y) // WALL_BUCKET_HEIGHT
+        x1_bucket = int(
+            self.camera_world_area.x + self.camera_world_area.w - self.entire_world_area.x) // WALL_BUCKET_WIDTH
+        y1_bucket = int(
+            self.camera_world_area.y + self.camera_world_area.h - self.entire_world_area.y) // WALL_BUCKET_HEIGHT
         walls = []
         for x_bucket in range(max(0, x0_bucket), min(x1_bucket + 1, len(self._wall_buckets))):
             for y_bucket in range(max(0, y0_bucket - 1), min(y1_bucket + 1, len(self._wall_buckets[x_bucket]))):
                 walls += self._wall_buckets[x_bucket][y_bucket]
         return walls
+
+    # TODO Add helper method for finding wall bucket

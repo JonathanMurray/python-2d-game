@@ -6,7 +6,7 @@ from pythongame.core.common import Direction, Sprite, ConsumableType, ItemType, 
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, PORTRAIT_ICON_SPRITE_PATHS, \
     HEROES, ConsumableCategory
-from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration
+from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration, WorldArea
 from pythongame.core.item_effects import AbstractItemEffect
 from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.npc_behaviors import DialogGraphics
@@ -210,34 +210,34 @@ class View:
     #       DRAWING THE GAME WORLD
     # ------------------------------------
 
-    def _world_ground(self, game_world_size):
+    def _world_ground(self, entire_world_area: WorldArea):
         grid_width = 35
         # TODO num squares should depend on map size. Ideally this dumb looping logic should change.
         num_squares = 200
-        column_screen_y_0 = self._translate_world_y_to_screen(max(0, self.camera_world_area.y))
+        column_screen_y_0 = self._translate_world_y_to_screen(self.camera_world_area.y)
         column_screen_y_1 = self._translate_world_y_to_screen(
-            min(game_world_size[1], self.camera_world_area.y + self.camera_world_area.h))
-        for col in range(num_squares):
-            world_x = col * grid_width
-            if 0 < world_x < game_world_size[0]:
+            min(entire_world_area.y + entire_world_area.h, self.camera_world_area.y + self.camera_world_area.h))
+        for i_col in range(num_squares):
+            world_x = entire_world_area.x + i_col * grid_width
+            if entire_world_area.x < world_x < entire_world_area.x + entire_world_area.w:
                 screen_x = self._translate_world_x_to_screen(world_x)
                 self._line(COLOR_BACKGROUND_LINES, (screen_x, column_screen_y_0), (screen_x, column_screen_y_1), 1)
-        row_screen_x_0 = self._translate_world_x_to_screen(max(0, self.camera_world_area.x))
+        row_screen_x_0 = self._translate_world_x_to_screen(self.camera_world_area.x)
         row_screen_x_1 = self._translate_world_x_to_screen(
-            min(game_world_size[0], self.camera_world_area.x + self.camera_world_area.w))
-        for row in range(num_squares):
-            world_y = row * grid_width
-            if 0 < world_y < game_world_size[1]:
+            min(entire_world_area.x + entire_world_area.w, self.camera_world_area.x + self.camera_world_area.w))
+        for i_row in range(num_squares):
+            world_y = entire_world_area.y + i_row * grid_width
+            if entire_world_area.y < world_y < entire_world_area.y + entire_world_area.h:
                 screen_y = self._translate_world_y_to_screen(world_y)
                 self._line(COLOR_BACKGROUND_LINES, (row_screen_x_0, screen_y), (row_screen_x_1, screen_y), 1)
 
         if RENDER_WORLD_COORDINATES:
-            for col in range(num_squares):
-                for row in range(num_squares):
-                    if col % 4 == 0 and row % 4 == 0:
-                        world_x = col * grid_width
+            for i_col in range(num_squares):
+                for i_row in range(num_squares):
+                    if i_col % 4 == 0 and i_row % 4 == 0:
+                        world_x = entire_world_area.x + i_col * grid_width
                         screen_x = self._translate_world_x_to_screen(world_x)
-                        world_y = row * grid_width
+                        world_y = entire_world_area.y + i_row * grid_width
                         screen_y = self._translate_world_y_to_screen(world_y)
                         self._text(self.font_debug_info, str(world_x) + "," + str(world_y), (screen_x, screen_y),
                                    (250, 250, 250))
@@ -468,11 +468,11 @@ class View:
     def render_world(self, all_entities_to_render: List[WorldEntity], decorations_to_render: List[DecorationEntity],
                      camera_world_area, non_player_characters: List[NonPlayerCharacter], is_player_invisible: bool,
                      player_entity, visual_effects, render_hit_and_collision_boxes, player_health, player_max_health,
-                     game_world_size, entity_action_text: Optional[EntityActionText]):
+                     entire_world_area: WorldArea, entity_action_text: Optional[EntityActionText]):
         self.camera_world_area = camera_world_area
 
         self.screen.fill(COLOR_BACKGROUND)
-        self._world_ground(game_world_size)
+        self._world_ground(entire_world_area)
 
         all_entities_to_render.sort(key=lambda entry: entry.y)
 

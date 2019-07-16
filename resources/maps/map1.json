@@ -12929,9 +12929,11 @@
       ]
     }
   ],
-  "game_world_size": [
-    6500,
-    3500
+  "entire_world_area": [
+    -1000,
+    -1000,
+    7500,
+    4500
   ],
   "decorations": [
     {

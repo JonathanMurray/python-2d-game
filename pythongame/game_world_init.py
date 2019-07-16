@@ -6,11 +6,11 @@ from pythongame.core.entity_creation import create_npc, set_global_path_finder, 
     create_consumable_on_ground, create_portal, create_wall, create_hero_world_entity, \
     create_decoration_entity, create_item_on_ground, create_player_state
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Wall, Portal, DecorationEntity, \
-    MoneyPileOnGround, ItemOnGround, ConsumableOnGround, PlayerState
+    MoneyPileOnGround, ItemOnGround, ConsumableOnGround, PlayerState, WorldArea
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
 
-def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file_path: str, hero_id: HeroId):
+def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file_path: str, hero_id: HeroId) -> GameState:
     with open(map_file_path) as map_file:
         json_data = json.loads(map_file.read())
 
@@ -20,7 +20,7 @@ def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file_path
         player_state = create_player_state(hero_id)
         game_state = MapJson.deserialize(json_data, player_state, camera_size)
 
-        path_finder.set_grid(game_state.grid)
+        path_finder.set_grid(game_state.pathfinder_wall_grid)
         return game_state
 
 
@@ -40,7 +40,7 @@ class MapJson:
             "money_piles_on_ground": [MoneyJson.serialize(m) for m in game_state.money_piles_on_ground],
             "non_player_characters": [NpcJson.serialize(npc) for npc in game_state.non_player_characters],
             "walls": [WallJson.serialize(wall) for wall in game_state.walls],
-            "game_world_size": game_state.game_world_size,
+            "entire_world_area": WorldAreaJson.serialize(game_state.entire_world_area),
             "decorations": [DecorationJson.serialize(d) for d in game_state.decoration_entities],
             "portals": [PortalJson.serialize(p) for p in game_state.portals]
         }
@@ -55,7 +55,7 @@ class MapJson:
             non_player_characters=[NpcJson.deserialize(e) for e in data.get("non_player_characters", [])],
             walls=[WallJson.deserialize(w) for w in data.get("walls", [])],
             camera_size=camera_size,
-            game_world_size=(data["game_world_size"]),
+            entire_world_area=WorldAreaJson.deserialize(data["entire_world_area"]),
             player_state=player_state,
             decoration_entities=[DecorationJson.deserialize(d) for d in data.get("decorations", [])],
             portals=[PortalJson.deserialize(p) for p in data.get("portals", [])]
@@ -140,3 +140,12 @@ class ConsumableJson:
     @staticmethod
     def deserialize(data) -> ConsumableOnGround:
         return create_consumable_on_ground(ConsumableType[data["consumable_type"]], data["position"])
+
+class WorldAreaJson:
+    @staticmethod
+    def serialize(game_world_area: WorldArea):
+        return [game_world_area.x, game_world_area.y, game_world_area.w, game_world_area.h]
+
+    @staticmethod
+    def deserialize(data) -> WorldArea:
+        return WorldArea((data[0], data[1]), (data[2], data[3]))
