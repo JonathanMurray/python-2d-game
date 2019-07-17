@@ -4,7 +4,8 @@ from typing import List, Tuple
 from pythongame.core.common import *
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
     create_consumable_on_ground
-from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities
+from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities, \
+    NpcCategory
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
     EnemyDiedEvent
 from pythongame.core.item_effects import get_item_effect
@@ -203,10 +204,11 @@ class GameEngine:
                 if should_remove_projectile:
                     entities_to_remove.append(projectile)
 
-        for non_enemy_npc in [npc for npc in self.game_state.non_player_characters if not npc.is_enemy]:
-            for projectile in self.game_state.get_projectiles_intersecting_with(non_enemy_npc.world_entity):
-                should_remove_projectile = projectile.projectile_controller.apply_non_enemy_npc_collision(
-                    non_enemy_npc, self.game_state)
+        for player_summon in [npc for npc in self.game_state.non_player_characters
+                              if npc.npc_category == NpcCategory.PLAYER_SUMMON]:
+            for projectile in self.game_state.get_projectiles_intersecting_with(player_summon.world_entity):
+                should_remove_projectile = projectile.projectile_controller.apply_player_summon_collision(
+                    player_summon, self.game_state)
                 if should_remove_projectile:
                     entities_to_remove.append(projectile)
 

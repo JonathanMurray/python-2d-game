@@ -20,9 +20,7 @@ class AbstractProjectileController:
     def apply_enemy_collision(self, _npc: NonPlayerCharacter, _game_state: GameState):
         return False
 
-    # TODO separate SUMMON from NEUTRAL. (Currently, goblin warlock's fire projectile kills neutral NPCs)
-    # Example: enemy's ability hits player's summon
-    def apply_non_enemy_npc_collision(self, _npc: NonPlayerCharacter, _game_state: GameState):
+    def apply_player_summon_collision(self, _npc: NonPlayerCharacter, _game_state: GameState):
         return False
 
     # Example: enemy's ability hits player

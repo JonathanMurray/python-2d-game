@@ -6,7 +6,7 @@ from pythongame.core.common import Millis, NpcType, Sprite, \
 from pythongame.core.damage_interactions import deal_damage_to_player, deal_npc_damage_to_npc
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import register_npc_data, NpcData, register_buff_text, SpriteSheet, \
-    register_entity_sprite_map, NpcCategory
+    register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
 from pythongame.core.loot import LootTable, LootGroup, LootEntry
 from pythongame.core.math import get_perpendicular_directions, get_position_from_center_position, translate_in_direction
@@ -122,7 +122,7 @@ class ProjectileController(AbstractProjectileController):
                                                       25, 50, Millis(100), 0))
         return True
 
-    def apply_non_enemy_npc_collision(self, npc: NonPlayerCharacter, game_state: GameState):
+    def apply_player_summon_collision(self, npc: NonPlayerCharacter, game_state: GameState):
         deal_npc_damage_to_npc(game_state, npc, 1)
         npc.gain_buff_effect(get_buff_effect(BuffType.ENEMY_GOBLIN_WARLOCK_BURNT), Millis(5000))
         game_state.visual_effects.append(
