@@ -36,6 +36,8 @@ def _apply_ability(game_state: GameState) -> bool:
         summon = create_npc(NpcType.PLAYER_SUMMON, summon_pos)
         is_valid_pos = not game_state.would_entity_collide_if_new_pos(summon.world_entity, summon_pos)
         if is_valid_pos:
+            # TODO This is wrong. This removes all neutral NPC's, but it should only remove the active summon.
+            # Improve how neutrals, enemies and summons are stored and handled in game_state
             game_state.remove_all_non_enemy_npcs()
             game_state.add_non_player_character(summon)
             summon.gain_buff_effect(get_buff_effect(BuffType.SUMMON_DIE_AFTER_DURATION), Millis(50000))
