@@ -64,6 +64,8 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.consumable(ConsumableType.MANA_LESSER),
     MapEditorWorldEntity.consumable(ConsumableType.MANA),
     MapEditorWorldEntity.consumable(ConsumableType.SCROLL_SUMMON_DRAGON),
+    MapEditorWorldEntity.consumable(ConsumableType.INVISIBILITY),
+    MapEditorWorldEntity.consumable(ConsumableType.SPEED),
 
     MapEditorWorldEntity.item(ItemType.WINGED_BOOTS),
     MapEditorWorldEntity.item(ItemType.SWORD_OF_LEECHING),
