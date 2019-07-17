@@ -14,7 +14,8 @@ from pythongame.core.projectile_controllers import create_projectile_controller,
     register_projectile_controller
 from pythongame.core.visual_effects import VisualCircle
 
-PROJECTILE_SIZE = (30, 30)
+# Note: Projectil size must be smaller than hero entity size (otherwise you get a collision when shooting next to wall)
+PROJECTILE_SIZE = (28, 28)
 MIN_DMG = 2
 MAX_DMG = 4
 
