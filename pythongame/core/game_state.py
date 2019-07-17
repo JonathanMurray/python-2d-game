@@ -491,8 +491,6 @@ class GameState:
         self.items_on_ground: List[ItemOnGround] = items_on_ground
         self.money_piles_on_ground: List[MoneyPileOnGround] = money_piles_on_ground
         self.non_player_characters: List[NonPlayerCharacter] = non_player_characters
-        # overlaps with non_player_characters
-        self.non_enemy_npcs: List[NonPlayerCharacter] = [npc for npc in non_player_characters if not npc.is_enemy]
         self.walls: List[Wall] = walls
         self.entire_world_area = entire_world_area
         self._wall_buckets = self._put_walls_in_buckets(self.entire_world_area, [w.world_entity for w in walls])
@@ -519,12 +517,9 @@ class GameState:
 
     def add_non_player_character(self, npc: NonPlayerCharacter):
         self.non_player_characters.append(npc)
-        if not npc.is_enemy:
-            self.non_enemy_npcs.append(npc)
 
     def remove_all_non_enemy_npcs(self):
-        self.non_player_characters = [npc for npc in self.non_player_characters if npc not in self.non_enemy_npcs]
-        self.non_enemy_npcs = []
+        self.non_player_characters = [npc for npc in self.non_player_characters if npc.is_enemy]
 
     # TODO clarify how this method should be used.
     # entities_to_remove aren't necessarily of the class WorldEntity
@@ -609,9 +604,8 @@ class GameState:
         self.projectile_entities = [p for p in self.projectile_entities if not p.has_expired]
 
     def remove_dead_npcs(self) -> List[NonPlayerCharacter]:
-        npcs_that_died = [e for e in self.non_player_characters if e.health <= 0]
-        self.non_enemy_npcs = [npc for npc in self.non_enemy_npcs if npc.health > 0]
-        self.non_player_characters = [e for e in self.non_player_characters if e.health > 0]
+        npcs_that_died = [npc for npc in self.non_player_characters if npc.health <= 0]
+        self.non_player_characters = [npc for npc in self.non_player_characters if npc.health > 0]
         return npcs_that_died
 
     def remove_expired_visual_effects(self):
