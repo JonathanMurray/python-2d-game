@@ -46,8 +46,7 @@ def register_nomad_npc():
     sprite = Sprite.NEUTRAL_NPC_NOMAD
     npc_type = NpcType.NEUTRAL_NOMAD
     movement_speed = 0.03
-    health = 6
-    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, False, True, None))
+    register_npc_data(npc_type, NpcData.neutral(sprite, size, movement_speed))
     register_npc_behavior(npc_type, NpcMind)
     # TODO Use proper icon for 'cancel' option
     dialog_options = [

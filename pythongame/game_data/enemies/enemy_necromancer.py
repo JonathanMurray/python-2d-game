@@ -3,7 +3,7 @@ import random
 from pythongame.core.common import Millis, NpcType, Sprite, Direction, ItemType
 from pythongame.core.entity_creation import create_npc
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
-    NON_PLAYER_CHARACTERS
+    NON_PLAYER_CHARACTERS, NpcCategory
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.loot import LootTable, LootEntry, LootGroup
 from pythongame.core.math import random_direction, get_position_from_center_position, sum_of_vectors, \
@@ -86,7 +86,7 @@ def register_necromancer_enemy():
             [LootEntry.item(ItemType.BLESSED_SHIELD_2), LootEntry.item(ItemType.SOLDIERS_HELMET_2)],
             0.3)
     ])
-    register_npc_data(ENEMY_TYPE, NpcData(SPRITE, size, health, 0, 0.02, 15, True, False, loot))
+    register_npc_data(ENEMY_TYPE, NpcData.enemy(SPRITE, size, health, 0, 0.02, 15, loot))
     register_npc_behavior(ENEMY_TYPE, NpcMind)
 
     enemy_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")

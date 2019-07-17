@@ -3,7 +3,7 @@ import random
 from pythongame.core.common import Millis, NpcType, Sprite, Direction
 from pythongame.core.damage_interactions import deal_npc_damage
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
-from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
+from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, NpcCategory
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.loot import LootTable, LootEntry
 from pythongame.core.math import get_perpendicular_directions, is_x_and_y_within_distance
@@ -79,7 +79,7 @@ def register_rat_2_enemy():
     movement_speed = 0.08
     health = 11
     loot = LootTable.single(LootEntry.money(1), 0.1)
-    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 8, True, False, loot))
+    register_npc_data(npc_type, NpcData.enemy(sprite, size, health, 0, movement_speed, 8, loot))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/gray_rat.png")
     original_sprite_size = (32, 32)

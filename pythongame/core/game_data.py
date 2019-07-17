@@ -83,18 +83,36 @@ user_ability_keys = [UserAbilityKey("Q", pygame.K_q),
                      UserAbilityKey("T", pygame.K_t)]
 
 
+class NpcCategory(Enum):
+    ENEMY = 1
+    PLAYER_SUMMON = 2
+    NEUTRAL = 3
+
+
 class NpcData:
     def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
-                 exp_reward: int, is_enemy: bool, is_neutral: bool, enemy_loot_table: Optional[LootTable]):
+                 exp_reward: int, npc_category: NpcCategory, enemy_loot_table: Optional[LootTable]):
         self.sprite = sprite
         self.size = size
         self.max_health = max_health
         self.health_regen = health_regen
         self.speed = speed
         self.exp_reward = exp_reward
-        self.is_enemy = is_enemy
-        self.is_neutral = is_neutral  # a neutral NPC can't take damage from enemies or player. It may have dialog.
+        self.npc_category = npc_category
         self.enemy_loot_table: LootTable = enemy_loot_table
+
+    @staticmethod
+    def enemy(sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
+              exp_reward: int, enemy_loot_table: Optional[LootTable]):
+        return NpcData(sprite, size, max_health, health_regen, speed, exp_reward, NpcCategory.ENEMY, enemy_loot_table)
+
+    @staticmethod
+    def player_summon(sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float):
+        return NpcData(sprite, size, max_health, health_regen, speed, 0, NpcCategory.PLAYER_SUMMON, None)
+
+    @staticmethod
+    def neutral(sprite: Sprite, size: Tuple[int, int], speed: float):
+        return NpcData(sprite, size, 5, 0, speed, 0, NpcCategory.NEUTRAL, None)
 
 
 class ConsumableCategory(Enum):

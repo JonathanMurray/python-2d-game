@@ -5,7 +5,7 @@ from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_d
     UiIconSprite
 from pythongame.core.damage_interactions import deal_damage_to_player
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
-    register_portrait_icon_sprite_path
+    register_portrait_icon_sprite_path, NpcCategory
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
     register_npc_dialog_data, DialogData, DialogOptionData
@@ -42,8 +42,7 @@ def register_dwarf_npc():
     sprite = Sprite.NEUTRAL_NPC_DWARF
     npc_type = NpcType.NEUTRAL_DWARF
     movement_speed = 0.03
-    health = 6
-    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, False, True, None))
+    register_npc_data(npc_type, NpcData.neutral(sprite, size, movement_speed))
     register_npc_behavior(npc_type, NpcMind)
     # TODO Use proper sprites for options
     dialog_options = [

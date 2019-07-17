@@ -6,7 +6,7 @@ from pythongame.core.common import Millis, NpcType, Sprite, \
 from pythongame.core.damage_interactions import deal_damage_to_player, deal_npc_damage_to_npc
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import register_npc_data, NpcData, register_buff_text, SpriteSheet, \
-    register_entity_sprite_map
+    register_entity_sprite_map, NpcCategory
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
 from pythongame.core.loot import LootTable, LootGroup, LootEntry
 from pythongame.core.math import get_perpendicular_directions, get_position_from_center_position, translate_in_direction
@@ -164,7 +164,7 @@ def register_goblin_warlock_enemy():
         LootGroup(1, [LootEntry.money(1), LootEntry.money(2)], 0.2),
         LootGroup.single(LootEntry.consumable(ConsumableType.MANA_LESSER), 0.2)
     ])
-    register_npc_data(npc_type, NpcData(enemy_sprite, enemy_size, health, 0, 0.032, 12, True, False, loot))
+    register_npc_data(npc_type, NpcData.enemy(enemy_sprite, enemy_size, health, 0, 0.032, 12, loot))
     register_npc_behavior(npc_type, NpcMind)
 
     enemy_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")

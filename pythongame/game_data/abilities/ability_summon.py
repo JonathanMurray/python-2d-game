@@ -135,7 +135,7 @@ def register_summon_ability():
     health_regen = 0.6
     move_speed = 0.14
     health = 28
-    npc_data = NpcData(summon_sprite, (32, 32), health, health_regen, move_speed, 0, False, False, None)
+    npc_data = NpcData.player_summon(summon_sprite, (32, 32), health, health_regen, move_speed)
     register_npc_data(summoned_npc_type, npc_data)
     register_npc_behavior(summoned_npc_type, NpcMind)
 
