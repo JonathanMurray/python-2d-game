@@ -1,25 +1,26 @@
-import random
-
-from pythongame.core.ability_effects import register_ability_effect
-from pythongame.core.buff_effects import get_buff_effect, register_buff_effect, AbstractBuffEffect
-from pythongame.core.common import Sprite, AbilityType, Millis, NpcType, Direction, BuffType, UiIconSprite
+from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
+from pythongame.core.common import *
+from pythongame.core.consumable_effects import ConsumableWasConsumed, \
+    register_consumable_effect, ConsumableFailedToBeConsumed
 from pythongame.core.damage_interactions import deal_npc_damage_to_npc
 from pythongame.core.entity_creation import create_npc
-from pythongame.core.game_data import register_ability_data, AbilityData, NON_PLAYER_CHARACTERS, register_npc_data, \
-    NpcData, SpriteSheet, register_entity_sprite_map, \
-    register_ui_icon_sprite_path
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
-from pythongame.core.math import sum_of_vectors
-from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
+from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer, \
+    register_ui_icon_sprite_path, register_consumable_data, ConsumableData, POTION_ENTITY_SIZE, ConsumableCategory, \
+    NON_PLAYER_CHARACTERS, NpcData, register_npc_data, SpriteSheet, register_entity_sprite_map
+from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.math import *
+from pythongame.core.npc_behaviors import AbstractNpcMind, register_npc_behavior
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
-from pythongame.core.visual_effects import VisualLine, VisualCircle
+from pythongame.core.visual_effects import VisualCircle, VisualLine
+
+DURATION_SUMMON = Millis(50000)
 
 
-def _apply_ability(game_state: GameState) -> bool:
+def _apply_scroll(game_state: GameState):
     player_entity = game_state.player_entity
 
-    summon_size = NON_PLAYER_CHARACTERS[NpcType.PLAYER_SUMMON].size
+    summon_size = NON_PLAYER_CHARACTERS[NpcType.PLAYER_SUMMON_DRAGON].size
     player_size = game_state.player_entity.w, game_state.player_entity.h
     candidate_relative_positions = [
         (0, - summon_size[1]),  # top
@@ -33,17 +34,17 @@ def _apply_ability(game_state: GameState) -> bool:
     ]
     for relative_pos in candidate_relative_positions:
         summon_pos = sum_of_vectors(player_entity.get_position(), relative_pos)
-        summon = create_npc(NpcType.PLAYER_SUMMON, summon_pos)
+        summon = create_npc(NpcType.PLAYER_SUMMON_DRAGON, summon_pos)
         is_valid_pos = not game_state.would_entity_collide_if_new_pos(summon.world_entity, summon_pos)
         if is_valid_pos:
             game_state.remove_all_player_summons()
             game_state.add_non_player_character(summon)
-            summon.gain_buff_effect(get_buff_effect(BuffType.SUMMON_DIE_AFTER_DURATION), Millis(50000))
+            summon.gain_buff_effect(get_buff_effect(BuffType.SUMMON_DIE_AFTER_DURATION), DURATION_SUMMON)
             game_state.visual_effects.append(
                 VisualCircle((200, 200, 30), player_entity.get_position(), 40, 70, Millis(140), 3))
             game_state.visual_effects.append(VisualCircle((200, 200, 30), summon_pos, 40, 70, Millis(140), 3))
-            return True
-    return False
+            return ConsumableWasConsumed("Summoned dragon")
+    return ConsumableFailedToBeConsumed("No space to summon dragon")
 
 
 class NpcMind(AbstractNpcMind):
@@ -118,19 +119,21 @@ class DieAfterDuration(AbstractBuffEffect):
         return BuffType.SUMMON_DIE_AFTER_DURATION
 
 
-def register_summon_ability():
-    ability_type = AbilityType.SUMMON
-    register_ability_effect(ability_type, _apply_ability)
-    ui_icon_sprite = UiIconSprite.ABILITY_SUMMON
-    register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_ability_summon.png")
-    description = "Follows you and attacks nearby enemies"
-    cooldown = Millis(30000)
-    mana_cost = 25
-    register_ability_data(ability_type,
-                          AbilityData("Summon Dragonwhelp", ui_icon_sprite, mana_cost, cooldown, description, None))
+def register_summon_scroll():
+    consumable_type = ConsumableType.SCROLL_SUMMON_DRAGON
+    sprite = Sprite.CONSUMABLE_SCROLL_SUMMON_DRAGON
+    ui_icon_sprite = UiIconSprite.CONSUMABLE_SCROLL_SUMMON_DRAGON
 
-    summoned_npc_type = NpcType.PLAYER_SUMMON
-    summon_sprite = Sprite.PLAYER_SUMMON
+    register_consumable_effect(consumable_type, _apply_scroll)
+    image_path = "resources/graphics/icon_scroll_ability_summon.png"
+    register_entity_sprite_initializer(sprite, SpriteInitializer(image_path, POTION_ENTITY_SIZE))
+    register_ui_icon_sprite_path(ui_icon_sprite, image_path)
+    description = "Summon a dragonling to fight for you (" + str(int(DURATION_SUMMON / 1000)) + "s)"
+    data = ConsumableData(ui_icon_sprite, sprite, "Dragon's scroll", description, ConsumableCategory.OTHER)
+    register_consumable_data(consumable_type, data)
+
+    summoned_npc_type = NpcType.PLAYER_SUMMON_DRAGON
+    summon_sprite = Sprite.PLAYER_SUMMON_DRAGON
 
     health_regen = 0.6
     move_speed = 0.14

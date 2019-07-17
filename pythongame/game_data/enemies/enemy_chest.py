@@ -37,7 +37,7 @@ def register_chest_enemy():
         LootEntry.item(ItemType.ZULS_AEGIS),
         LootEntry.item(ItemType.KNIGHTS_ARMOR),
         LootEntry.item(ItemType.GOATS_RING),
-        LootEntry.consumable(ConsumableType.SCROLL_ABILITY_SUMMON)
+        LootEntry.consumable(ConsumableType.SCROLL_SUMMON_DRAGON)
     ]
     loot = LootTable([LootGroup(1, possible_drops, 1)])
     register_npc_data(npc_type, NpcData.enemy(sprite, size, health, 0, 0, 0, loot))

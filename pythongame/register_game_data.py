@@ -8,7 +8,6 @@ from pythongame.game_data.abilities.ability_heal import register_heal_ability
 from pythongame.game_data.abilities.ability_shiv import register_shiv_ability
 from pythongame.game_data.abilities.ability_sneak import register_sneak_ability
 from pythongame.game_data.abilities.ability_stomp import register_stomp_ability
-from pythongame.game_data.abilities.ability_summon import register_summon_ability
 from pythongame.game_data.abilities.ability_sword_slash import register_sword_slash_ability
 from pythongame.game_data.abilities.ability_teleport import register_teleport_ability
 from pythongame.game_data.abilities.ability_whirlwind import register_whirlwind_ability
@@ -19,8 +18,8 @@ from pythongame.game_data.consumables.potion_invis import register_invis_potion
 from pythongame.game_data.consumables.potion_lesser_health import register_lesser_health_potion
 from pythongame.game_data.consumables.potion_lesser_mana import register_lesser_mana_potion
 from pythongame.game_data.consumables.potion_mana import register_mana_potion
-from pythongame.game_data.consumables.potion_scroll_ability_summon import register_summon_scroll
 from pythongame.game_data.consumables.potion_speed import register_speed_potion
+from pythongame.game_data.consumables.scroll_ability_summon import register_summon_scroll
 from pythongame.game_data.decorations import register_decorations
 from pythongame.game_data.enemies.enemy_chest import register_chest_enemy
 from pythongame.game_data.enemies.enemy_dark_reaper import register_dark_reaper_enemy
@@ -65,7 +64,6 @@ def register_all_game_data():
     register_charge_ability()
     register_whirlwind_ability()
     register_entangling_roots_ability()
-    register_summon_ability()
     register_stomp_ability()
     register_shiv_ability()
     register_sneak_ability()
