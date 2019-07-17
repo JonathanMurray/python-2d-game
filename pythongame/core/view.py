@@ -819,7 +819,6 @@ class View:
 
         y_1 = 17
         y_2 = y_1 + 22
-        y_3 = y_2 + MAP_EDITOR_UI_ICON_SIZE[1] + 25
 
         x_0 = 20
         self._map_editor_icon_in_ui(x_0, y_2, MAP_EDITOR_UI_ICON_SIZE, deleting_entities, 'Q', None,
@@ -837,7 +836,8 @@ class View:
                 char = ''
             is_this_entity_being_placed = entity is placing_entity
             x = x_1 + (i % num_icons_per_row) * (MAP_EDITOR_UI_ICON_SIZE[0] + icon_space)
-            y = y_2 if i < num_icons_per_row else y_3
+            row_index = (i // num_icons_per_row)
+            y = y_2 + row_index * (MAP_EDITOR_UI_ICON_SIZE[1] + 25)
             if is_point_in_rect(mouse_ui_position, (x, y, MAP_EDITOR_UI_ICON_SIZE[0], MAP_EDITOR_UI_ICON_SIZE[1])):
                 hovered_by_mouse = entity
             self._map_editor_icon_in_ui(

@@ -95,7 +95,7 @@ ENTITIES_BY_CHAR: Dict[str, MapEditorWorldEntity] = dict(zip(MAP_EDITOR_INPUT_CH
 CHARS_BY_ENTITY: Dict[MapEditorWorldEntity, str] = {v: k for k, v in ENTITIES_BY_CHAR.items()}
 
 SCREEN_SIZE = (1200, 750)
-CAMERA_SIZE = (1200, 600)
+CAMERA_SIZE = (1200, 550)
 
 # The choice of hero shouldn't matter in the map editor, as we only store its position in the map file
 HERO_ID = HeroId.MAGE
