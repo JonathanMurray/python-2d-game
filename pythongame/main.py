@@ -1,3 +1,4 @@
+import datetime
 import sys
 from typing import Optional
 
@@ -12,10 +13,10 @@ from pythongame.core.sound_player import play_sound, init_sound_player
 from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_main_user_inputs, get_dialog_user_inputs, \
-    ActionChangeDialogOption
+    ActionChangeDialogOption, ActionSaveGameState
 from pythongame.core.view import View, MouseHoverEvent
 from pythongame.core.view_state import ViewState
-from pythongame.game_world_init import create_game_state_from_json_file
+from pythongame.game_world_init import create_game_state_from_json_file, save_game_state_to_json_file
 from pythongame.register_game_data import register_all_game_data
 
 SCREEN_SIZE = (700, 700)
@@ -107,6 +108,10 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
                     mouse_was_just_released = True
                 if isinstance(action, ActionPressSpaceKey) and not is_game_over:
                     player_interactions_state.handle_user_clicked_space(game_state, game_engine)
+                if isinstance(action, ActionSaveGameState):
+                    filename = "savefiles/DEBUG_" + str(datetime.datetime.now()).replace(" ", "_") + ".json"
+                    save_game_state_to_json_file(game_state, filename)
+                    print("Saved game state to file: " + filename)
 
         # ------------------------------------
         #     UPDATE STATE BASED ON CLOCK

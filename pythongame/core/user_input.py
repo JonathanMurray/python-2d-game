@@ -36,6 +36,9 @@ class ActionPauseGame:
 class ActionPressSpaceKey:
     pass
 
+class ActionSaveGameState:
+    pass
+
 
 class ActionToggleRenderDebugging:
     pass
@@ -119,6 +122,8 @@ def get_main_user_inputs():
                 actions.append(ActionPauseGame())
             elif event.key == pygame.K_SPACE:
                 actions.append(ActionPressSpaceKey())
+            elif event.key == pygame.K_s:
+                actions.append(ActionSaveGameState())
             else:
                 for ability_type in KEYS_BY_ABILITY_TYPE:
                     if event.key == KEYS_BY_ABILITY_TYPE[ability_type].pygame_key:
