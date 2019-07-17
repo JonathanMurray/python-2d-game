@@ -518,8 +518,9 @@ class GameState:
     def add_non_player_character(self, npc: NonPlayerCharacter):
         self.non_player_characters.append(npc)
 
-    def remove_all_non_enemy_npcs(self):
-        self.non_player_characters = [npc for npc in self.non_player_characters if npc.is_enemy]
+    def remove_all_player_summons(self):
+        self.non_player_characters = [npc for npc in self.non_player_characters
+                                      if npc.npc_category != NpcCategory.PLAYER_SUMMON]
 
     # TODO clarify how this method should be used.
     # entities_to_remove aren't necessarily of the class WorldEntity
