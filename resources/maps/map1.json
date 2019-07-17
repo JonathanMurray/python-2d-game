@@ -1076,13 +1076,6 @@
       ]
     },
     {
-      "npc_type": "NEUTRAL_DWARF",
-      "position": [
-        300,
-        150
-      ]
-    },
-    {
       "npc_type": "RAT_1",
       "position": [
         -950,
@@ -1129,6 +1122,20 @@
       "position": [
         -750,
         1850
+      ]
+    },
+    {
+      "npc_type": "CHEST",
+      "position": [
+        350,
+        75
+      ]
+    },
+    {
+      "npc_type": "NEUTRAL_DWARF",
+      "position": [
+        275,
+        75
       ]
     }
   ],
@@ -12709,13 +12716,6 @@
       "position": [
         350,
         25
-      ]
-    },
-    {
-      "wall_type": "ALTAR",
-      "position": [
-        275,
-        50
       ]
     },
     {
