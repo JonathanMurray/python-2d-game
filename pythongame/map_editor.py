@@ -88,6 +88,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.money(1),
 
     MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE),
+    MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE_GRAY),
     MapEditorWorldEntity.decoration(Sprite.DECORATION_PLANT)
 ]
 
