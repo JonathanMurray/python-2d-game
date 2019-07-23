@@ -2,7 +2,7 @@ from typing import Optional
 
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
-from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite
+from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text, register_buff_as_channeling
@@ -17,7 +17,7 @@ DEBUFF = BuffType.DAMAGED_BY_INFUSED_DAGGER
 
 
 def _apply_ability(game_state: GameState) -> bool:
-    game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_CHANNELING), Millis(2000))
+    game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_CHANNELING), Millis(3000))
     return True
 
 
@@ -71,7 +71,8 @@ def register_infuse_dagger_ability():
 
     register_ability_effect(ABILITY_TYPE, _apply_ability)
     description = "On next Shiv: slow, damage-over-time"
-    ability_data = AbilityData("Infuse Dagger", ui_icon_sprite, 25, Millis(20000), description, None)
+    ability_data = AbilityData(
+        "Infuse Dagger", ui_icon_sprite, 25, Millis(20000), description, SoundId.ABILITY_INFUSE_DAGGER)
     register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/ability_infuse_dagger.png")
     register_buff_effect(BUFF_CHANNELING, ChannelingInfuseDagger)
