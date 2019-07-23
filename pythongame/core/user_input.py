@@ -36,6 +36,7 @@ class ActionPauseGame:
 class ActionPressSpaceKey:
     pass
 
+
 class ActionSaveGameState:
     pass
 
@@ -73,6 +74,8 @@ DIRECTION_BY_PYGAME_MOVEMENT_KEY = {
     pygame.K_UP: Direction.UP,
     pygame.K_DOWN: Direction.DOWN
 }
+
+# TODO: Change this file into a class with clearer state handling
 movement_keys_down = []
 ability_keys_down: List[AbilityType] = []
 
@@ -91,6 +94,14 @@ def get_dialog_user_inputs():
                 actions.append(ActionChangeDialogOption(1))
             elif event.key == pygame.K_SPACE:
                 actions.append(ActionPressSpaceKey())
+        if event.type == pygame.KEYUP:
+            if event.key in PYGAME_MOVEMENT_KEYS:
+                if event.key in movement_keys_down:
+                    movement_keys_down.remove(event.key)
+            else:
+                for ability_type in KEYS_BY_ABILITY_TYPE:
+                    if event.key == KEYS_BY_ABILITY_TYPE[ability_type].pygame_key:
+                        ability_keys_down.remove(ability_type)
     return actions
 
 

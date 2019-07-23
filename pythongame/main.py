@@ -69,6 +69,7 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
         # ------------------------------------
 
         if player_interactions_state.is_player_in_dialog():
+            game_state.player_entity.set_not_moving()
             user_actions = get_dialog_user_inputs()
             for action in user_actions:
                 if isinstance(action, ActionExitGame):
