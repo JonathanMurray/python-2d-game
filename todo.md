@@ -20,7 +20,6 @@
 * render action text further up for tall entities
 * render healthbars further up for tall characters
 * Show more clearly when player is channeling an ability - visualize differently than regular "buffs"
-* Show active buffs more clearly - dark background behind the text?
 
 #### Features:
 * New heroes

@@ -650,7 +650,7 @@ class View:
             self._dialog(dialog)
 
         # BUFFS
-        x_buffs = 22
+        x_buffs = 10
         buff_texts = []
         buff_duration_ratios_remaining = []
         for active_buff in player_active_buffs:
@@ -660,10 +660,23 @@ class View:
             if buff_type in BUFF_TEXTS:
                 buff_texts.append(BUFF_TEXTS[buff_type])
                 buff_duration_ratios_remaining.append(active_buff.get_ratio_duration_remaining())
+        num_buffs_to_render = len(buff_texts)
+        y_buffs = -35 - (num_buffs_to_render - 1) * 25
+        buffs_screen_position = self._translate_ui_position_to_screen((x_buffs, y_buffs))
+        if num_buffs_to_render:
+            rect_padding = 5
+            # Note: The width of this rect is hard-coded so long buff descriptions aren't well supported
+            buffs_background_rect = (
+                buffs_screen_position[0] - rect_padding,
+                buffs_screen_position[1] - rect_padding,
+                140 + rect_padding * 2,
+                num_buffs_to_render * 25 + rect_padding * 2)
+            self._rect_transparent(buffs_background_rect, 125, COLOR_BLACK)
         for i, text in enumerate(buff_texts):
-            y_offset_buff = -i * 25
-            self._text_in_ui(self.font_buff_texts, text, (x_buffs, -40 + y_offset_buff))
-            self._stat_bar_in_ui((x_buffs, -20 + y_offset_buff), 60, 2, buff_duration_ratios_remaining[i],
+            y_offset_buff = i * 25
+            y = y_buffs + y_offset_buff
+            self._text_in_ui(self.font_buff_texts, text, (x_buffs, y))
+            self._stat_bar_in_ui((x_buffs, y + 20), 60, 2, buff_duration_ratios_remaining[i],
                                  (250, 250, 0), False)
 
         # STATS
