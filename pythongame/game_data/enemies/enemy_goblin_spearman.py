@@ -74,7 +74,7 @@ def register_goblin_spearman_enemy():
     size = (24, 24)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.ENEMY_GOBLIN_SPEARMAN
     npc_type = NpcType.GOBLIN_SPEARMAN
-    movement_speed = 0.09
+    movement_speed = 0.11
     health = 21
     exp_reward = 8
     register_npc_data(npc_type, NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_1))

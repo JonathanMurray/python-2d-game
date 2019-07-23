@@ -42,6 +42,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.npc(NpcType.GOBLIN_WORKER),
     MapEditorWorldEntity.npc(NpcType.GOBLIN_SPEARMAN),
     MapEditorWorldEntity.npc(NpcType.GOBLIN_SPEARMAN_ELITE),
+    MapEditorWorldEntity.npc(NpcType.GOBLIN_WARRIOR),
     MapEditorWorldEntity.npc(NpcType.DARK_REAPER),
     MapEditorWorldEntity.npc(NpcType.RAT_1),
     MapEditorWorldEntity.npc(NpcType.RAT_2),
