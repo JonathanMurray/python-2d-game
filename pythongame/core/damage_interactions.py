@@ -24,9 +24,7 @@ def deal_player_damage_to_enemy(game_state: GameState, npc: NonPlayerCharacter, 
     game_state.player_state.notify_about_event(PlayerDamagedEnemy(npc, damage_source))
     game_state.visual_effects.append(create_visual_damage_text(npc.world_entity, int(round(amount))))
     health_from_life_steal = player_state.life_steal_ratio * amount
-    health_gained = player_state.gain_health(health_from_life_steal)
-    if health_gained > 0:
-        game_state.visual_effects.append(create_visual_healing_text(game_state.player_entity, health_gained))
+    player_receive_healing(health_from_life_steal, game_state)
     return True
 
 
@@ -58,3 +56,9 @@ def deal_npc_damage(damage_amount: float, game_state: GameState, attacker_entity
         deal_npc_damage_to_npc(game_state, target.non_enemy_npc, damage_amount)
     else:
         deal_damage_to_player(game_state, damage_amount, attacker_npc)
+
+
+def player_receive_healing(healing_amount: float, game_state: GameState):
+    health_gained = game_state.player_state.gain_health(healing_amount)
+    if health_gained > 0:
+        game_state.visual_effects.append(create_visual_healing_text(game_state.player_entity, health_gained))
