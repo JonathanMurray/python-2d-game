@@ -2,7 +2,7 @@ from typing import Optional
 
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
-from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite
+from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, BuffEventOutcome, \
@@ -77,7 +77,7 @@ def register_sneak_ability():
     register_ability_effect(ABILITY_TYPE, _apply_ability)
     description = "Invis -> [+" + str(DAMAGE_BONUS * 100) + "% dmg, +" + str(ARMOR_BONUS) + " armor for " \
                   + "{:.1f}".format(DURATION_POST_SNEAK / 1000) + "s]"
-    ability_data = AbilityData("Sneak", ui_icon_sprite, 10, Millis(10000), description, None)
+    ability_data = AbilityData("Sneak", ui_icon_sprite, 10, Millis(10000), description, SoundId.ABILITYS_SNEAK)
     register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/sneak_icon.png")
     register_buff_effect(BUFF_SNEAK, Sneaking)
