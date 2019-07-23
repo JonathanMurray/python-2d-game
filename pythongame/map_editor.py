@@ -252,6 +252,7 @@ def main(map_file_name: Optional[str]):
             decorations_to_render=decorations_to_render,
             player_entity=game_state.player_entity,
             is_player_invisible=game_state.player_state.is_invisible,
+            player_active_buffs=game_state.player_state.active_buffs,
             camera_world_area=game_state.camera_world_area,
             non_player_characters=game_state.non_player_characters,
             visual_effects=game_state.visual_effects,

@@ -19,7 +19,6 @@
 * put dmg/healing/xp numbers further up for tall characters (base it on sprite size, not entity size)
 * render action text further up for tall entities
 * render healthbars further up for tall characters
-* Show more clearly when player is channeling an ability - visualize differently than regular "buffs"
 
 #### Features:
 * New heroes

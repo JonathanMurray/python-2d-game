@@ -5,7 +5,7 @@ from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effec
 from pythongame.core.common import BuffType, Millis, AbilityType, SoundId, HeroId, UiIconSprite
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
-    register_buff_text, HEROES
+    HEROES, register_buff_as_channeling
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
 from pythongame.core.math import translate_in_direction, get_middle_point
 from pythongame.core.visual_effects import VisualRect, VisualCircle
@@ -107,5 +107,5 @@ def register_charge_ability():
         AbilityData("Charge", ui_icon_sprite, 10, Millis(5000), description, SoundId.ABILITY_CHARGE))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_charge.png")
     register_buff_effect(BUFF_TYPE_CHARGING, Charging)
-    register_buff_text(BUFF_TYPE_CHARGING, "Charging")
+    register_buff_as_channeling(BUFF_TYPE_CHARGING)
     register_buff_effect(BUFF_TYPE_STUNNED, StunnedFromCharge)

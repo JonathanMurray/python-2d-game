@@ -5,7 +5,7 @@ from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, re
 from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
-    register_buff_text
+    register_buff_text, register_buff_as_channeling
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, PlayerUsedAbilityEvent, \
     BuffEventOutcome
 
@@ -75,7 +75,7 @@ def register_infuse_dagger_ability():
     register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/ability_infuse_dagger.png")
     register_buff_effect(BUFF_CHANNELING, ChannelingInfuseDagger)
-    register_buff_text(BUFF_CHANNELING, "Channeling")
+    register_buff_as_channeling(BUFF_CHANNELING)
 
     register_buff_effect(BUFF_INFUSED, HasInfusedDagger)
     register_buff_text(BUFF_INFUSED, "Infused dagger")

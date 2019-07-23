@@ -3,7 +3,7 @@ from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effec
 from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, ProjectileType, UiIconSprite
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
-    register_entity_sprite_initializer, SpriteInitializer, register_buff_text
+    register_entity_sprite_initializer, SpriteInitializer, register_buff_as_channeling
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
 from pythongame.core.math import get_position_from_center_position
 from pythongame.core.projectile_controllers import AbstractProjectileController, register_projectile_controller, \
@@ -75,4 +75,4 @@ def register_channel_attack_ability():
         Sprite.PROJECTILE_PLAYER_MAGIC_MISSILE,
         SpriteInitializer("resources/graphics/magic_missile.png", PROJECTILE_SIZE))
     register_projectile_controller(ProjectileType.PLAYER_MAGIC_MISSILE, PlayerMagicMissileProjectileController)
-    register_buff_text(BuffType.CHANNELING_MAGIC_MISSILES, "Channeling")
+    register_buff_as_channeling(BuffType.CHANNELING_MAGIC_MISSILES)

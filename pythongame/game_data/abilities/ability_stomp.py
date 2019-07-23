@@ -5,7 +5,7 @@ from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, re
 from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
-    register_buff_text
+    register_buff_as_channeling
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
 from pythongame.core.visual_effects import VisualRect, VisualCircle
 
@@ -91,5 +91,5 @@ def register_stomp_ability():
         AbilityData("War Stomp", ui_icon_sprite, 12, Millis(7000), description, None))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/warstomp_icon.png")
     register_buff_effect(CHANNELING_STOMP, ChannelingStomp)
-    register_buff_text(CHANNELING_STOMP, "Channeling")
+    register_buff_as_channeling(CHANNELING_STOMP)
     register_buff_effect(STUNNED_BY_STOMP, StunnedFromStomp)

@@ -5,7 +5,7 @@ import pygame
 from pythongame.core.common import Direction, Sprite, ConsumableType, ItemType, HeroId, UiIconSprite
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, PORTRAIT_ICON_SPRITE_PATHS, \
-    HEROES, ConsumableCategory
+    HEROES, ConsumableCategory, CHANNELING_BUFFS
 from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration, WorldArea
 from pythongame.core.item_effects import AbstractItemEffect
 from pythongame.core.math import is_point_in_rect, sum_of_vectors
@@ -467,8 +467,9 @@ class View:
 
     def render_world(self, all_entities_to_render: List[WorldEntity], decorations_to_render: List[DecorationEntity],
                      camera_world_area, non_player_characters: List[NonPlayerCharacter], is_player_invisible: bool,
-                     player_entity, visual_effects, render_hit_and_collision_boxes, player_health, player_max_health,
-                     entire_world_area: WorldArea, entity_action_text: Optional[EntityActionText]):
+                     player_active_buffs: List[BuffWithDuration],
+                     player_entity: WorldEntity, visual_effects, render_hit_and_collision_boxes, player_health,
+                     player_max_health, entire_world_area: WorldArea, entity_action_text: Optional[EntityActionText]):
         self.camera_world_area = camera_world_area
 
         self.screen.fill(COLOR_BACKGROUND)
@@ -486,15 +487,21 @@ class View:
 
         self._stat_bar_for_world_entity(player_entity, 5, -35, player_health / player_max_health, (100, 200, 0))
 
+        # Buffs related to channeling something are rendered above player's head with progress from left to right
+        for buff in player_active_buffs:
+            if buff.buff_effect.get_buff_type() in CHANNELING_BUFFS:
+                ratio = 1 - buff.get_ratio_duration_remaining()
+                self._stat_bar_for_world_entity(player_entity, 3, -41, ratio, (150, 150, 250))
+
         if render_hit_and_collision_boxes:
             for entity in all_entities_to_render:
                 # hit box
                 self._world_rect((250, 250, 250), entity.rect(), 1)
 
         for npc in non_player_characters:
-            color = COLOR_RED if npc.is_enemy else (250, 250, 0)
+            healthbar_color = COLOR_RED if npc.is_enemy else (250, 250, 0)
             if not npc.is_neutral:
-                self._stat_bar_for_world_entity(npc.world_entity, 5, -10, npc.health / npc.max_health, color)
+                self._stat_bar_for_world_entity(npc.world_entity, 5, -10, npc.health / npc.max_health, healthbar_color)
             if npc.active_buffs:
                 buff = npc.active_buffs[0]
                 if buff.should_duration_be_visualized_on_enemies():

@@ -203,6 +203,8 @@ KEYS_BY_ABILITY_TYPE: Dict[AbilityType, UserAbilityKey] = {}
 
 BUFF_TEXTS: Dict[BuffType, str] = {}
 
+CHANNELING_BUFFS: List[BuffType] = []
+
 PORTALS: Dict[PortalId, PortalData] = {}
 
 HEROES: Dict[HeroId, HeroData] = {}
@@ -262,6 +264,12 @@ def register_entity_sprite_map(
 
 def register_buff_text(buff_type: BuffType, text: str):
     BUFF_TEXTS[buff_type] = text
+
+
+# Indicates that this buff should be visualized with a "channeling bar" in the UI,
+# rather than a decreasing buff bar as other buffs
+def register_buff_as_channeling(buff_type: BuffType):
+    CHANNELING_BUFFS.append(buff_type)
 
 
 def register_consumable_data(consumable_type: ConsumableType, data: ConsumableData):
