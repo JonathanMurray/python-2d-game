@@ -994,13 +994,6 @@
     {
       "npc_type": "RAT_1",
       "position": [
-        -950,
-        250
-      ]
-    },
-    {
-      "npc_type": "RAT_1",
-      "position": [
         -850,
         250
       ]
@@ -1136,6 +1129,13 @@
       "position": [
         275,
         75
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -900,
+        250
       ]
     }
   ],
@@ -13995,20 +13995,6 @@
     {
       "wall_type": "WALL_DIRECTIONAL_N",
       "position": [
-        -625,
-        -675
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
-        -600,
-        -675
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
         -575,
         -675
       ]
@@ -16951,6 +16937,104 @@
       "position": [
         -200,
         -925
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -625,
+        -675
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -600,
+        -675
+      ]
+    },
+    {
+      "wall_type": "BARREL_6",
+      "position": [
+        -150,
+        -450
+      ]
+    },
+    {
+      "wall_type": "BARREL_5",
+      "position": [
+        -100,
+        -450
+      ]
+    },
+    {
+      "wall_type": "SHELF_EMPTY",
+      "position": [
+        -625,
+        -625
+      ]
+    },
+    {
+      "wall_type": "BARREL_5",
+      "position": [
+        -800,
+        -625
+      ]
+    },
+    {
+      "wall_type": "BARREL_6",
+      "position": [
+        -975,
+        200
+      ]
+    },
+    {
+      "wall_type": "BARREL_5",
+      "position": [
+        -975,
+        225
+      ]
+    },
+    {
+      "wall_type": "BARREL_5",
+      "position": [
+        -700,
+        1650
+      ]
+    },
+    {
+      "wall_type": "BARREL_6",
+      "position": [
+        -650,
+        1625
+      ]
+    },
+    {
+      "wall_type": "BARREL_5",
+      "position": [
+        -350,
+        800
+      ]
+    },
+    {
+      "wall_type": "BARREL_5",
+      "position": [
+        750,
+        550
+      ]
+    },
+    {
+      "wall_type": "BARREL_6",
+      "position": [
+        750,
+        600
+      ]
+    },
+    {
+      "wall_type": "BARREL_6",
+      "position": [
+        750,
+        650
       ]
     }
   ],

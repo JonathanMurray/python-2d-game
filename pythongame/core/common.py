@@ -65,6 +65,13 @@ class WallType(Enum):
     SHELF_EMPTY = 40
     SHELF_HELMETS = 41
     SHELF_ARMORS = 42
+    BARREL_1 = 50
+    BARREL_2 = 51
+    BARREL_3 = 52
+    BARREL_4 = 53
+    BARREL_5 = 54
+    BARREL_6 = 55
+
 
 
 class AbilityType(Enum):
@@ -154,6 +161,12 @@ class Sprite(Enum):
     WALL_SHELF_EMPTY = 540
     WALL_SHELF_HELMETS = 541
     WALL_SHELF_ARMORS = 542
+    WALL_BARREL_1 = 550
+    WALL_BARREL_2 = 551
+    WALL_BARREL_3 = 552
+    WALL_BARREL_4 = 553
+    WALL_BARREL_5 = 554
+    WALL_BARREL_6 = 555
     PORTAL_DISABLED = 600
     PORTAL_BLUE = 601
     PORTAL_GREEN = 602

@@ -92,7 +92,13 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.decoration(Sprite.DECORATION_PLANT),
     MapEditorWorldEntity.wall(WallType.SHELF_EMPTY),
     MapEditorWorldEntity.wall(WallType.SHELF_HELMETS),
-    MapEditorWorldEntity.wall(WallType.SHELF_ARMORS)
+    MapEditorWorldEntity.wall(WallType.SHELF_ARMORS),
+    MapEditorWorldEntity.wall(WallType.BARREL_1),
+    MapEditorWorldEntity.wall(WallType.BARREL_2),
+    MapEditorWorldEntity.wall(WallType.BARREL_3),
+    MapEditorWorldEntity.wall(WallType.BARREL_4),
+    MapEditorWorldEntity.wall(WallType.BARREL_5),
+    MapEditorWorldEntity.wall(WallType.BARREL_6),
 ]
 
 MAP_EDITOR_INPUT_CHARS: List[str] = [
