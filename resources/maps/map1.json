@@ -16945,6 +16945,13 @@
         -975,
         1925
       ]
+    },
+    {
+      "wall_type": "SHELF_HELMETS",
+      "position": [
+        -200,
+        -925
+      ]
     }
   ],
   "entire_world_area": [

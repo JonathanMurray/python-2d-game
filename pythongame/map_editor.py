@@ -89,7 +89,10 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
 
     MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE),
     MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE_GRAY),
-    MapEditorWorldEntity.decoration(Sprite.DECORATION_PLANT)
+    MapEditorWorldEntity.decoration(Sprite.DECORATION_PLANT),
+    MapEditorWorldEntity.wall(WallType.SHELF_EMPTY),
+    MapEditorWorldEntity.wall(WallType.SHELF_HELMETS),
+    MapEditorWorldEntity.wall(WallType.SHELF_ARMORS)
 ]
 
 MAP_EDITOR_INPUT_CHARS: List[str] = [

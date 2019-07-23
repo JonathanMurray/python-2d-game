@@ -8,6 +8,7 @@ def register_walls():
     _register_directional_walls()
     _register_chair()
     _register_altar()
+    _register_shelves()
 
 
 def _register_wall():
@@ -88,3 +89,16 @@ def _register_chair():
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size,
                                indices_by_dir, (0, 0))
     register_wall_data(WallType.WALL_CHAIR, WallData(sprite, (50, 50)))
+
+
+def _register_shelves():
+    sprites = [Sprite.WALL_SHELF_EMPTY, Sprite.WALL_SHELF_HELMETS, Sprite.WALL_SHELF_ARMORS]
+    wall_types = [WallType.SHELF_EMPTY, WallType.SHELF_HELMETS, WallType.SHELF_ARMORS]
+    indices = [(1, 0), (1, 1), (1, 2)]
+    sprite_sheet = SpriteSheet("resources/graphics/human_tileset.png")
+    original_sprite_size = (64, 32)
+    scaled_sprite_size = (100, 50)
+    for i in range(3):
+        register_entity_sprite_map(sprites[i], sprite_sheet, original_sprite_size, scaled_sprite_size,
+                                   {Direction.DOWN: [indices[i]]}, (0, -25))
+        register_wall_data(wall_types[i], WallData(sprites[i], (100, 25)))
