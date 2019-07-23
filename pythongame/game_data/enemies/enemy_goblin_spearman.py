@@ -50,8 +50,6 @@ class NpcMind(AbstractNpcMind):
             if self.next_waypoint:
                 direction = self.pathfinder.get_dir_towards_considering_collisions(
                     game_state, enemy_entity, self.next_waypoint)
-                if random.random() < 0.2 and direction:
-                    direction = random.choice(get_perpendicular_directions(direction))
                 _move_in_dir(enemy_entity, direction)
             else:
                 enemy_entity.set_not_moving()
@@ -62,7 +60,7 @@ class NpcMind(AbstractNpcMind):
                 enemy_position = enemy_entity.get_center_position()
                 target_center_pos = target.entity.get_center_position()
                 if is_x_and_y_within_distance(enemy_position, target_center_pos, 80):
-                    deal_npc_damage(1, game_state, enemy_entity, npc, target)
+                    deal_npc_damage(2, game_state, enemy_entity, npc, target)
 
 
 def _move_in_dir(enemy_entity, direction):
@@ -72,19 +70,19 @@ def _move_in_dir(enemy_entity, direction):
         enemy_entity.set_not_moving()
 
 
-def register_goblin_worker_enemy():
+def register_goblin_spearman_enemy():
     size = (24, 24)  # Must not align perfectly with grid cell size (pathfinding issues)
-    sprite = Sprite.ENEMY_GOBLIN_WORKER
-    npc_type = NpcType.GOBLIN_WORKER
-    movement_speed = 0.07
-    health = 10
-    exp_reward = 4
+    sprite = Sprite.ENEMY_GOBLIN_SPEARMAN
+    npc_type = NpcType.GOBLIN_SPEARMAN
+    movement_speed = 0.09
+    health = 21
+    exp_reward = 8
     register_npc_data(npc_type, NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_1))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")
     original_sprite_size = (32, 32)
     scaled_sprite_size = (48, 48)
-    sprite_sheet_x = 3
+    sprite_sheet_x = 9
     sprite_sheet_y = 0
     indices_by_dir = {
         Direction.DOWN: [(sprite_sheet_x + i, sprite_sheet_y + 0) for i in range(3)],

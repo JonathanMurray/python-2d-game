@@ -24,6 +24,7 @@ from pythongame.game_data.consumables.scroll_ability_summon import register_summ
 from pythongame.game_data.decorations import register_decorations
 from pythongame.game_data.enemies.enemy_chest import register_chest_enemy
 from pythongame.game_data.enemies.enemy_dark_reaper import register_dark_reaper_enemy
+from pythongame.game_data.enemies.enemy_goblin_spearman import register_goblin_spearman_enemy
 from pythongame.game_data.enemies.enemy_goblin_warlock import register_goblin_warlock_enemy
 from pythongame.game_data.enemies.enemy_goblin_worker import register_goblin_worker_enemy
 from pythongame.game_data.enemies.enemy_mummy import register_mummy_enemy
@@ -91,6 +92,7 @@ def register_all_game_data():
     register_mummy_enemy()
     register_warrior_enemy()
     register_goblin_worker_enemy()
+    register_goblin_spearman_enemy()
 
     register_hero_mage()
     register_hero_warrior()
