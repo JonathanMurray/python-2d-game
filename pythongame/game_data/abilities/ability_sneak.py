@@ -7,13 +7,14 @@ from pythongame.core.game_data import register_ability_data, AbilityData, regist
     register_buff_text
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, BuffEventOutcome, \
     PlayerUsedAbilityEvent, PlayerLostHealthEvent
+from pythongame.core.visual_effects import VisualCircle
 
 ABILITY_TYPE = AbilityType.SNEAK
 BUFF_SNEAK = BuffType.SNEAKING
 BUFF_POST_SNEAK = BuffType.AFTER_SNEAKING
 DURATION_SNEAK = Millis(10000)
 DURATION_POST_SNEAK = Millis(2500)
-SPEED_DECREASE = 0.5
+SPEED_DECREASE = 0.3
 DAMAGE_BONUS = 1
 ARMOR_BONUS = 5
 
@@ -49,6 +50,19 @@ class Sneaking(AbstractBuffEffect):
 
 
 class AfterSneaking(AbstractBuffEffect):
+
+    def __init__(self):
+        self.time_since_graphics = 150
+
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
+                            time_passed: Millis):
+        self.time_since_graphics += time_passed
+        if self.time_since_graphics > 160:
+            self.time_since_graphics = 0
+            visual_effect = VisualCircle(
+                (250, 150, 250), buffed_entity.get_center_position(), 18, 25, Millis(220), 1, buffed_entity)
+            game_state.visual_effects.append(visual_effect)
+
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.damage_modifier_bonus -= DAMAGE_BONUS
