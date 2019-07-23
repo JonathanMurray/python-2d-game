@@ -1,9 +1,9 @@
 import random
 
-from pythongame.core.common import Millis, NpcType, Sprite, Direction, ItemType
+from pythongame.core.common import Millis, NpcType, Sprite, Direction
 from pythongame.core.entity_creation import create_npc
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
-    NON_PLAYER_CHARACTERS, NpcCategory
+    NON_PLAYER_CHARACTERS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.loot import LootTable, LootEntry, LootGroup
 from pythongame.core.math import random_direction, get_position_from_center_position, sum_of_vectors, \
@@ -11,6 +11,7 @@ from pythongame.core.math import random_direction, get_position_from_center_posi
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.visual_effects import VisualLine, VisualCircle
+from pythongame.game_data.loot_tables import LOOT_ITEMS_1
 
 SPRITE = Sprite.ENEMY_NECROMANCER
 ENEMY_TYPE = NpcType.NECROMANCER
@@ -81,10 +82,7 @@ def register_necromancer_enemy():
     loot = LootTable([
         LootGroup(1, [LootEntry.money(1), LootEntry.money(2), LootEntry.money(3)], 0.9),
         LootGroup.single(LootEntry.money(1), 0.4),
-        LootGroup(
-            1,
-            [LootEntry.item(ItemType.BLESSED_SHIELD_2), LootEntry.item(ItemType.SOLDIERS_HELMET_2)],
-            0.3)
+        LootGroup(1, LOOT_ITEMS_1, 0.3)
     ])
     register_npc_data(ENEMY_TYPE, NpcData.enemy(SPRITE, size, health, 0, 0.02, 15, loot))
     register_npc_behavior(ENEMY_TYPE, NpcMind)

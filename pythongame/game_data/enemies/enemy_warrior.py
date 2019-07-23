@@ -1,13 +1,13 @@
 from pythongame.core.common import Millis, NpcType, Sprite, Direction
 from pythongame.core.damage_interactions import deal_npc_damage
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
-from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, NpcCategory
+from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
-from pythongame.core.loot import LootTable, LootEntry, LootGroup
 from pythongame.core.math import is_x_and_y_within_distance
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
+from pythongame.game_data.loot_tables import LOOT_TABLE_2
 
 
 class NpcMind(AbstractNpcMind):
@@ -76,8 +76,7 @@ def register_warrior_enemy():
     movement_speed = 0.12
     health = 32
     exp_reward = 20
-    loot = LootTable([LootGroup(1, [LootEntry.money(1), LootEntry.money(2)], 0.2)])
-    npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, loot)
+    npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_2)
     register_npc_data(npc_type, npc_data)
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/human_spritesheet.png")

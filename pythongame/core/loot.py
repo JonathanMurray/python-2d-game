@@ -4,6 +4,7 @@ from typing import Optional, List
 from pythongame.core.common import ConsumableType, ItemType
 
 
+# Represents the smallest unit of loot. It shows up on the ground as "one item"
 class LootEntry:
     def __init__(self, money_amount: Optional[int], item_type: Optional[ItemType],
                  consumable_type: Optional[ConsumableType]):
@@ -24,6 +25,8 @@ class LootEntry:
         return LootEntry(None, None, consumable_type)
 
 
+# A group of possible loot entries that are interdependent.
+# Example: 40% to find the group {A, B, C} and exactly 2 entries of the group will be dropped
 class LootGroup:
     def __init__(self, pick_n: int, entries: List[LootEntry], chance_to_get_group: float):
         self.pick_n = pick_n
@@ -35,6 +38,7 @@ class LootGroup:
         return LootGroup(1, [single_entry], chance_to_get_entry)
 
 
+# Represents the loot of one enemy. Made up of one to many "loot groups"
 class LootTable:
     def __init__(self, groups: List[LootGroup]):
         self.groups = groups
