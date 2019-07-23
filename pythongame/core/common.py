@@ -115,6 +115,7 @@ class Sprite(Enum):
     ITEM_ZULS_AEGIS = 311
     ITEM_KNIGHTS_ARMOR = 312
     ITEM_GOATS_RING = 313
+    ITEM_BLOOD_AMULET = 314
     COINS_1 = 350
     COINS_2 = 351
     COINS_5 = 352
@@ -195,6 +196,7 @@ class ItemType(Enum):
     ZULS_AEGIS = 70
     KNIGHTS_ARMOR = 71
     GOATS_RING = 72
+    BLOOD_AMULET = 73
 
 
 class ProjectileType(Enum):
@@ -272,6 +274,7 @@ class UiIconSprite(Enum):
     ITEM_ZULS_AEGIS = 211
     ITEM_KNIGHTS_ARMOR = 212
     ITEM_GOATS_RING = 213
+    ITEM_BLOOD_AMULET = 214
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
 

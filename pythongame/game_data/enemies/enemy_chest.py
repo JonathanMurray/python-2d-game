@@ -37,6 +37,7 @@ def register_chest_enemy():
         LootEntry.item(ItemType.ZULS_AEGIS),
         LootEntry.item(ItemType.KNIGHTS_ARMOR),
         LootEntry.item(ItemType.GOATS_RING),
+        LootEntry.item(ItemType.BLOOD_AMULET),
         LootEntry.consumable(ConsumableType.SCROLL_SUMMON_DRAGON)
     ]
     loot = LootTable([LootGroup(1, possible_drops, 1)])
