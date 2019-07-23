@@ -155,7 +155,7 @@ class Burnt(AbstractBuffEffect):
 
 
 def register_goblin_warlock_enemy():
-    enemy_size = (42, 42)
+    enemy_size = (24, 24)
     enemy_sprite = Sprite.ENEMY_GOBLIN_WARLOCK
     npc_type = NpcType.GOBLIN_WARLOCK
 
@@ -173,7 +173,7 @@ def register_goblin_warlock_enemy():
         Direction.UP: [(0, 7), (1, 7), (2, 7)]
     }
     register_entity_sprite_map(enemy_sprite, enemy_sprite_sheet, enemy_original_sprite_size, enemy_scaled_sprite_size,
-                               enemy_indices_by_dir, (-3, -3))
+                               enemy_indices_by_dir, (-12, -24))
 
     register_projectile_controller(ProjectileType.ENEMY_GOBLIN_WARLOCK, ProjectileController)
 
