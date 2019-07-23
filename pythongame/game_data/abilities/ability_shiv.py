@@ -28,6 +28,11 @@ def _apply_ability(game_state: GameState) -> bool:
     affected_enemies = game_state.get_enemy_intersecting_rect(slash_rect)
     for enemy in affected_enemies:
         damage: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
+
+        # Note: Dependency on other rogue ability
+        if game_state.player_state.has_active_buff(BuffType.HAS_INFUSED_DAGGER):
+            enemy.gain_buff_effect(get_buff_effect(BuffType.DAMAGED_BY_INFUSED_DAGGER), Millis(20000))
+
         deal_player_damage_to_enemy(game_state, enemy, damage)
         break
 

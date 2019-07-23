@@ -5,6 +5,7 @@ from pythongame.game_data.abilities.ability_entangling_roots import register_ent
 from pythongame.game_data.abilities.ability_fireball import register_fireball_ability
 from pythongame.game_data.abilities.ability_frost_nova import register_frost_nova_ability
 from pythongame.game_data.abilities.ability_heal import register_heal_ability
+from pythongame.game_data.abilities.ability_infuse_dagger import register_infuse_dagger_ability
 from pythongame.game_data.abilities.ability_shiv import register_shiv_ability
 from pythongame.game_data.abilities.ability_sneak import register_sneak_ability
 from pythongame.game_data.abilities.ability_stomp import register_stomp_ability
@@ -68,6 +69,7 @@ def register_all_game_data():
     register_stomp_ability()
     register_shiv_ability()
     register_sneak_ability()
+    register_infuse_dagger_ability()
 
     register_recovering_after_ability_buff()
 

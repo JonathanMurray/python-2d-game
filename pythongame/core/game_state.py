@@ -380,6 +380,9 @@ class PlayerState:
         else:
             self.active_buffs.append(BuffWithDuration(buff, duration))
 
+    def has_active_buff(self, buff_type: BuffType):
+        return len([b for b in self.active_buffs if b.buff_effect.get_buff_type() == buff_type]) > 0
+
     def regenerate_health_and_mana(self, time_passed: Millis):
         self.gain_mana(self.mana_regen / 1000.0 * float(time_passed))
         self.gain_health(self.health_regen / 1000.0 * float(time_passed))

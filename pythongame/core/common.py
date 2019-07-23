@@ -74,6 +74,7 @@ class AbilityType(Enum):
     STOMP = 13
     SHIV = 14
     SNEAK = 15
+    INFUSE_DAGGER = 16
 
 
 class Sprite(Enum):
@@ -170,6 +171,9 @@ class BuffType(Enum):
     AFTER_SNEAKING = 21
     STUNNED_BY_AEGIS_ITEM = 22
     DEBUFFED_BY_GOATS_RING = 23
+    CHANNELING_INFUSE_DAGGER = 24
+    HAS_INFUSED_DAGGER = 25
+    DAMAGED_BY_INFUSED_DAGGER = 26
 
 
 class ItemType(Enum):
@@ -261,6 +265,7 @@ class UiIconSprite(Enum):
     ABILITY_STOMP = 112
     ABILITY_SHIV = 113
     ABILITY_SNEAK = 114
+    ABILITY_INFUSE_DAGGER = 115
     ITEM_WINGED_BOOTS = 201
     ITEM_AMULET_OF_MANA = 202
     ITEM_SWORD_OF_LEECHING = 203
