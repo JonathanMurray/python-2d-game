@@ -1,6 +1,6 @@
 import random
 
-from pythongame.core.common import Millis, NpcType, Sprite, Direction
+from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId
 from pythongame.core.damage_interactions import deal_npc_damage
 from pythongame.core.enemy_target_selection import get_target, EnemyTarget
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
@@ -80,7 +80,8 @@ def register_mummy_enemy():
     movement_speed = 0.06
     health = 12
     health_regen = 1
-    register_npc_data(npc_type, NpcData.enemy(sprite, size, health, health_regen, movement_speed, 10, LOOT_TABLE_2))
+    register_npc_data(npc_type, NpcData.enemy(sprite, size, health, health_regen, movement_speed, 10, LOOT_TABLE_2,
+                                              SoundId.DEATH_ZOMBIE))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")
     original_sprite_size = (32, 32)

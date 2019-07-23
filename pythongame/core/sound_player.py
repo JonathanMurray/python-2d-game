@@ -26,6 +26,7 @@ def init_sound_player():
         SoundId.EVENT_PLAYER_DIED: load_sound_file('Death01.ogg'),
         SoundId.EVENT_ENEMY_DIED: load_sound_file('Damage02.ogg'),
         SoundId.DEATH_RAT: load_sound_file('rat_death.ogg', volume=2),
+        SoundId.DEATH_ZOMBIE: load_sound_file('zombie_death.ogg', 'zombie_death_2.ogg'),
         SoundId.WARNING: load_sound_file('UI06.ogg'),
         SoundId.PLAYER_PAIN: load_sound_file('pain1.ogg', 'pain2.ogg', 'pain3.ogg', 'pain4.ogg'),
         SoundId.ENEMY_ATTACK_GOBLIN_WARLOCK: load_sound_file('Shot08.ogg')
