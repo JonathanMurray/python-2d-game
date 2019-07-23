@@ -25,6 +25,7 @@ from pythongame.game_data.decorations import register_decorations
 from pythongame.game_data.enemies.enemy_chest import register_chest_enemy
 from pythongame.game_data.enemies.enemy_dark_reaper import register_dark_reaper_enemy
 from pythongame.game_data.enemies.enemy_goblin_warlock import register_goblin_warlock_enemy
+from pythongame.game_data.enemies.enemy_goblin_worker import register_goblin_worker_enemy
 from pythongame.game_data.enemies.enemy_mummy import register_mummy_enemy
 from pythongame.game_data.enemies.enemy_necromancer import register_necromancer_enemy
 from pythongame.game_data.enemies.enemy_rat_1 import register_rat_1_enemy
@@ -89,6 +90,7 @@ def register_all_game_data():
     register_goblin_warlock_enemy()
     register_mummy_enemy()
     register_warrior_enemy()
+    register_goblin_worker_enemy()
 
     register_hero_mage()
     register_hero_warrior()

@@ -5,79 +5,15 @@
       300
     ]
   },
-  "consumables_on_ground": [
-    {
-      "consumable_type": "HEALTH_LESSER",
-      "position": [
-        350,
-        225
-      ]
-    }
-  ],
+  "consumables_on_ground": [],
   "items_on_ground": [],
   "money_piles_on_ground": [],
   "non_player_characters": [
     {
       "npc_type": "MUMMY",
       "position": [
-        600,
-        400
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
-        525,
-        300
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
-        800,
-        325
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
         875,
         175
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
-        500,
-        175
-      ]
-    },
-    {
-      "npc_type": "WARRIOR",
-      "position": [
-        600,
-        225
-      ]
-    },
-    {
-      "npc_type": "WARRIOR",
-      "position": [
-        725,
-        175
-      ]
-    },
-    {
-      "npc_type": "WARRIOR",
-      "position": [
-        700,
-        300
-      ]
-    },
-    {
-      "npc_type": "WARRIOR",
-      "position": [
-        775,
-        400
       ]
     },
     {
@@ -95,52 +31,52 @@
       ]
     },
     {
-      "npc_type": "MUMMY",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
-        500,
-        250
+        475,
+        350
       ]
     },
     {
-      "npc_type": "WARRIOR",
+      "npc_type": "GOBLIN_WORKER",
       "position": [
-        450,
-        225
-      ]
-    },
-    {
-      "npc_type": "WARRIOR",
-      "position": [
-        550,
-        175
-      ]
-    },
-    {
-      "npc_type": "RAT_2",
-      "position": [
-        550,
-        250
-      ]
-    },
-    {
-      "npc_type": "RAT_2",
-      "position": [
-        600,
-        175
-      ]
-    },
-    {
-      "npc_type": "RAT_2",
-      "position": [
-        600,
+        -25,
         275
       ]
     },
     {
-      "npc_type": "RAT_2",
+      "npc_type": "GOBLIN_WORKER",
       "position": [
-        650,
-        225
+        -25,
+        300
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_WORKER",
+      "position": [
+        -25,
+        325
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_WORKER",
+      "position": [
+        0,
+        325
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_WORKER",
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_WORKER",
+      "position": [
+        0,
+        275
       ]
     }
   ],
