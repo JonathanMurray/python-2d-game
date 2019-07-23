@@ -435,7 +435,7 @@ class PlayerState:
     def is_stunned(self):
         return self._number_of_active_stuns > 0
 
-    def notify_about_event(self, event: Event):
+    def notify_about_event(self, event: Event, game_state):
         for buff in self.active_buffs:
             outcome: Optional[BuffEventOutcome] = buff.buff_effect.buff_handle_event(event)
             if outcome:
@@ -445,7 +445,7 @@ class PlayerState:
                     buff.force_cancel()
         for item_effect in self.item_slots.values():
             if item_effect:
-                item_effect.item_handle_event(event, self)
+                item_effect.item_handle_event(event, game_state)
 
 
 # TODO Is there a way to handle this better in the view module? This class shouldn't need to masquerade as a WorldEntity

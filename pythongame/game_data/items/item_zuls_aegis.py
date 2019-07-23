@@ -4,7 +4,7 @@ from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effec
 from pythongame.core.common import ItemType, Sprite, BuffType, Millis
 from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
     register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
-from pythongame.core.game_state import Event, PlayerState, PlayerLostHealthEvent, GameState, WorldEntity, \
+from pythongame.core.game_state import Event, PlayerLostHealthEvent, GameState, WorldEntity, \
     NonPlayerCharacter
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
 from pythongame.core.visual_effects import VisualCircle
@@ -21,7 +21,7 @@ class ItemEffect(AbstractItemEffect):
     def __init__(self, item_type: ItemType):
         self.item_type = item_type
 
-    def item_handle_event(self, event: Event, player_state: PlayerState):
+    def item_handle_event(self, event: Event, game_state: GameState):
         if isinstance(event, PlayerLostHealthEvent):
             if event.npc_attacker and random.random() < PROC_CHANCE:
                 event.npc_attacker.gain_buff_effect(get_buff_effect(BUFF_TYPE_STUNNED), STUN_DURATION)

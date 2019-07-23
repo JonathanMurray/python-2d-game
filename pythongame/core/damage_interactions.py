@@ -21,7 +21,7 @@ def deal_player_damage_to_enemy(game_state: GameState, npc: NonPlayerCharacter, 
     if npc.invulnerable:
         return False
     npc.lose_health(amount)
-    game_state.player_state.notify_about_event(PlayerDamagedEnemy(npc, damage_source))
+    game_state.player_state.notify_about_event(PlayerDamagedEnemy(npc, damage_source), game_state)
     game_state.visual_effects.append(create_visual_damage_text(npc.world_entity, int(round(amount))))
     health_from_life_steal = player_state.life_steal_ratio * amount
     player_receive_healing(health_from_life_steal, game_state)
@@ -37,7 +37,7 @@ def deal_damage_to_player(game_state: GameState, base_amount: float, npc_attacke
     if health_lost > 0:
         game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, health_lost))
         play_sound(SoundId.PLAYER_PAIN)
-        player_state.notify_about_event(PlayerLostHealthEvent(health_lost, npc_attacker))
+        player_state.notify_about_event(PlayerLostHealthEvent(health_lost, npc_attacker), game_state)
 
 
 def deal_npc_damage_to_npc(game_state: GameState, target: NonPlayerCharacter, amount: float):

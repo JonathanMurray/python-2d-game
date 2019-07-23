@@ -36,7 +36,7 @@ class PlayerControls:
                 print("WARN: No sound defined for ability: " + str(ability_type))
             player_state.lose_mana(mana_cost)
             player_state.ability_cooldowns_remaining[ability_type] = ability_data.cooldown
-            game_state.player_state.notify_about_event(PlayerUsedAbilityEvent(ability_type))
+            game_state.player_state.notify_about_event(PlayerUsedAbilityEvent(ability_type), game_state)
             return
         else:
             view_state.set_message("Failed to execute ability!")

@@ -3,7 +3,7 @@ from pythongame.core.common import ItemType, Sprite, BuffType, Millis
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
     register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
-from pythongame.core.game_state import Event, PlayerState, PlayerDamagedEnemy, GameState, WorldEntity, \
+from pythongame.core.game_state import Event, PlayerDamagedEnemy, GameState, WorldEntity, \
     NonPlayerCharacter
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
 from pythongame.core.visual_effects import VisualCircle
@@ -18,7 +18,7 @@ class ItemEffect(AbstractItemEffect):
     def __init__(self, item_type: ItemType):
         self.item_type = item_type
 
-    def item_handle_event(self, event: Event, player_state: PlayerState):
+    def item_handle_event(self, event: Event, game_state: GameState):
         if isinstance(event, PlayerDamagedEnemy):
             # Compare "source" to prevent the debuff from renewing itself indefinitely
             if event.damage_source != DAMAGE_SOURCE:
