@@ -485,13 +485,17 @@ class View:
             if entity == player_entity and is_player_invisible:
                 self._world_rect((200, 100, 250), player_entity.rect(), 2)
 
-        self._stat_bar_for_world_entity(player_entity, 5, -35, player_health / player_max_health, (100, 200, 0))
+        player_sprite_y_relative_to_entity = \
+            ENTITY_SPRITE_INITIALIZERS[player_entity.sprite][Direction.DOWN].position_relative_to_entity[1]
+        self._stat_bar_for_world_entity(player_entity, 5, player_sprite_y_relative_to_entity - 5,
+                                        player_health / player_max_health, (100, 200, 0))
 
         # Buffs related to channeling something are rendered above player's head with progress from left to right
         for buff in player_active_buffs:
             if buff.buff_effect.get_buff_type() in CHANNELING_BUFFS:
                 ratio = 1 - buff.get_ratio_duration_remaining()
-                self._stat_bar_for_world_entity(player_entity, 3, -41, ratio, (150, 150, 250))
+                self._stat_bar_for_world_entity(player_entity, 3, player_sprite_y_relative_to_entity - 11, ratio,
+                                                (150, 150, 250))
 
         if render_hit_and_collision_boxes:
             for entity in all_entities_to_render:
@@ -500,13 +504,16 @@ class View:
 
         for npc in non_player_characters:
             healthbar_color = COLOR_RED if npc.is_enemy else (250, 250, 0)
+            npc_sprite_y_relative_to_entity = \
+                ENTITY_SPRITE_INITIALIZERS[npc.world_entity.sprite][Direction.DOWN].position_relative_to_entity[1]
             if not npc.is_neutral:
-                self._stat_bar_for_world_entity(npc.world_entity, 5, -10, npc.health / npc.max_health, healthbar_color)
+                self._stat_bar_for_world_entity(npc.world_entity, 3, npc_sprite_y_relative_to_entity - 5,
+                                                npc.health / npc.max_health, healthbar_color)
             if npc.active_buffs:
                 buff = npc.active_buffs[0]
                 if buff.should_duration_be_visualized_on_enemies():
-                    self._stat_bar_for_world_entity(npc.world_entity, 2, -14, buff.get_ratio_duration_remaining(),
-                                                    (250, 250, 250))
+                    self._stat_bar_for_world_entity(npc.world_entity, 2, npc_sprite_y_relative_to_entity - 9,
+                                                    buff.get_ratio_duration_remaining(), (250, 250, 250))
         for visual_effect in visual_effects:
             self._visual_effect(visual_effect)
 
