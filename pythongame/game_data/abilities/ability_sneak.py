@@ -43,9 +43,9 @@ class Sneaking(AbstractBuffEffect):
         return BUFF_SNEAK
 
     def buff_handle_event(self, event: Event) -> Optional[BuffEventOutcome]:
-        used_other_ability = isinstance(event, PlayerUsedAbilityEvent) and event.ability != ABILITY_TYPE
+        used_shiv_ability = isinstance(event, PlayerUsedAbilityEvent) and event.ability == AbilityType.SHIV
         player_lost_health = isinstance(event, PlayerLostHealthEvent)
-        if used_other_ability or player_lost_health:
+        if used_shiv_ability or player_lost_health:
             return BuffEventOutcome.cancel_effect()
 
 
@@ -62,7 +62,6 @@ class AfterSneaking(AbstractBuffEffect):
             visual_effect = VisualCircle(
                 (250, 150, 250), buffed_entity.get_center_position(), 18, 25, Millis(220), 1, buffed_entity)
             game_state.visual_effects.append(visual_effect)
-
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.damage_modifier_bonus -= DAMAGE_BONUS
