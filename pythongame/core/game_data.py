@@ -91,7 +91,8 @@ class NpcCategory(Enum):
 
 class NpcData:
     def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
-                 exp_reward: int, npc_category: NpcCategory, enemy_loot_table: Optional[LootTable]):
+                 exp_reward: int, npc_category: NpcCategory, enemy_loot_table: Optional[LootTable],
+                 death_sound_id: Optional[SoundId]):
         self.sprite = sprite
         self.size = size
         self.max_health = max_health
@@ -100,19 +101,21 @@ class NpcData:
         self.exp_reward = exp_reward
         self.npc_category = npc_category
         self.enemy_loot_table: LootTable = enemy_loot_table
+        self.death_sound_id: Optional[SoundId] = death_sound_id
 
     @staticmethod
     def enemy(sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
-              exp_reward: int, enemy_loot_table: Optional[LootTable]):
-        return NpcData(sprite, size, max_health, health_regen, speed, exp_reward, NpcCategory.ENEMY, enemy_loot_table)
+              exp_reward: int, enemy_loot_table: Optional[LootTable], death_sound_id: Optional[SoundId]=None):
+        return NpcData(sprite, size, max_health, health_regen, speed, exp_reward, NpcCategory.ENEMY, enemy_loot_table,
+                       death_sound_id)
 
     @staticmethod
     def player_summon(sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float):
-        return NpcData(sprite, size, max_health, health_regen, speed, 0, NpcCategory.PLAYER_SUMMON, None)
+        return NpcData(sprite, size, max_health, health_regen, speed, 0, NpcCategory.PLAYER_SUMMON, None, None)
 
     @staticmethod
     def neutral(sprite: Sprite, size: Tuple[int, int], speed: float):
-        return NpcData(sprite, size, 5, 0, speed, 0, NpcCategory.NEUTRAL, None)
+        return NpcData(sprite, size, 5, 0, speed, 0, NpcCategory.NEUTRAL, None, None)
 
 
 class ConsumableCategory(Enum):

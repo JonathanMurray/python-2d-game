@@ -255,6 +255,7 @@ class SoundId(Enum):
     WARNING = 200
     PLAYER_PAIN = 300
     ENEMY_ATTACK_GOBLIN_WARLOCK = 400
+    DEATH_RAT = 500
 
 
 class PortalId(Enum):

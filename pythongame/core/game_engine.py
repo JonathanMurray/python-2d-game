@@ -116,7 +116,6 @@ class GameEngine:
         npcs_that_died = self.game_state.remove_dead_npcs()
         enemies_that_died = [e for e in npcs_that_died if e.is_enemy]
         if enemies_that_died:
-            play_sound(SoundId.EVENT_ENEMY_DIED)
             exp_gained = sum([NON_PLAYER_CHARACTERS[e.npc_type].exp_reward for e in enemies_that_died])
             self.game_state.visual_effects.append(create_visual_exp_text(self.game_state.player_entity, exp_gained))
             did_player_level_up = self.game_state.player_state.gain_exp(exp_gained)
@@ -125,6 +124,10 @@ class GameEngine:
                 self.view_state.set_message("You reached level " + str(self.game_state.player_state.level))
                 allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
             for enemy_that_died in enemies_that_died:
+                if enemy_that_died.death_sound_id:
+                    play_sound(enemy_that_died.death_sound_id)
+                else:
+                    play_sound(SoundId.EVENT_ENEMY_DIED)
                 loot = enemy_that_died.enemy_loot_table.generate_loot()
                 enemy_death_position = enemy_that_died.world_entity.get_position()
                 self._put_loot_on_ground(enemy_death_position, loot)

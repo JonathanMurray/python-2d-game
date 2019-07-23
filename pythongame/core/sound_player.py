@@ -25,6 +25,7 @@ def init_sound_player():
         SoundId.EVENT_PURCHASED_SOMETHING: load_sound_file('Retro_8-Bit_Game-Pickup_Object_Item_Coin_08.wav'),
         SoundId.EVENT_PLAYER_DIED: load_sound_file('Death01.ogg'),
         SoundId.EVENT_ENEMY_DIED: load_sound_file('Damage02.ogg'),
+        SoundId.DEATH_RAT: load_sound_file('rat_death.ogg', volume=2),
         SoundId.WARNING: load_sound_file('UI06.ogg'),
         SoundId.PLAYER_PAIN: load_sound_file('pain1.ogg', 'pain2.ogg', 'pain3.ogg', 'pain4.ogg'),
         SoundId.ENEMY_ATTACK_GOBLIN_WARLOCK: load_sound_file('Shot08.ogg')
@@ -42,8 +43,8 @@ def play_sound(sound_id: SoundId):
         raise Exception("No sound defined for: " + str(sound_id))
 
 
-def load_sound_file(*filenames):
+def load_sound_file(*filenames, volume:float=1):
     sounds = [pygame.mixer.Sound('./resources/sound/' + filename) for filename in filenames]
     for sound in sounds:
-        sound.set_volume(0.1)
+        sound.set_volume(0.1 * volume)
     return sounds

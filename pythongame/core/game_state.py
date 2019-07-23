@@ -155,7 +155,7 @@ class Projectile:
 class NonPlayerCharacter:
     def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health: int, max_health: int,
                  health_regen: float, npc_mind, npc_category: NpcCategory,
-                 enemy_loot_table: Optional[LootTable]):
+                 enemy_loot_table: Optional[LootTable], death_sound_id: Optional[SoundId]):
         self.npc_type = npc_type
         self.world_entity = world_entity
         self._health_float = health
@@ -170,6 +170,7 @@ class NonPlayerCharacter:
         self.is_enemy = npc_category == NpcCategory.ENEMY
         self.is_neutral = npc_category == NpcCategory.NEUTRAL
         self.enemy_loot_table = enemy_loot_table
+        self.death_sound_id = death_sound_id
 
     def lose_health(self, amount: float):
         self._health_float = min(self._health_float - amount, self.max_health)
