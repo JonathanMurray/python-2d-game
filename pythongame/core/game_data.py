@@ -31,7 +31,7 @@ class SpriteSheet(object):
 
         rect = pygame.Rect(rectangle)
         # noinspection PyArgumentList
-        image = pygame.Surface(rect.size).convert()
+        image = pygame.Surface(rect.size, pygame.SRCALPHA)
         destination_in_image = (0, 0)
         image.blit(self.sheet, destination_in_image, rect)
         transparent_color_in_image = (0, 0, 0)
