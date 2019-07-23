@@ -101,7 +101,8 @@ def get_dialog_user_inputs():
             else:
                 for ability_type in KEYS_BY_ABILITY_TYPE:
                     if event.key == KEYS_BY_ABILITY_TYPE[ability_type].pygame_key:
-                        ability_keys_down.remove(ability_type)
+                        if ability_type in ability_keys_down:
+                            ability_keys_down.remove(ability_type)
     return actions
 
 
@@ -138,6 +139,8 @@ def get_main_user_inputs():
             else:
                 for ability_type in KEYS_BY_ABILITY_TYPE:
                     if event.key == KEYS_BY_ABILITY_TYPE[ability_type].pygame_key:
+                        if ability_type in ability_keys_down:
+                            ability_keys_down.remove(ability_type)
                         ability_keys_down.append(ability_type)
 
         if event.type == pygame.KEYUP:
@@ -147,7 +150,8 @@ def get_main_user_inputs():
             else:
                 for ability_type in KEYS_BY_ABILITY_TYPE:
                     if event.key == KEYS_BY_ABILITY_TYPE[ability_type].pygame_key:
-                        ability_keys_down.remove(ability_type)
+                        if ability_type in ability_keys_down:
+                            ability_keys_down.remove(ability_type)
 
         if event.type == pygame.MOUSEMOTION:
             actions.append(ActionMouseMovement(event.pos))
