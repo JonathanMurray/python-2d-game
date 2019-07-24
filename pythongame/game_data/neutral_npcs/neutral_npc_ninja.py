@@ -29,12 +29,15 @@ class NpcMind(AbstractNpcMind):
                 npc.world_entity.set_moving_in_dir(direction)
 
 
-class SellManaPotion(AbstractNpcAction):
+class SellConsumable(AbstractNpcAction):
+    def __init__(self, cost: int, consumable_type: ConsumableType, name: str):
+        self.cost = cost
+        self.consumable_type = consumable_type
+        self.name = name
 
     def act(self, game_state: GameState):
-        cost = 5
         player_state = game_state.player_state
-        can_afford = player_state.money >= cost
+        can_afford = player_state.money >= self.cost
         has_space = player_state.consumable_inventory.has_space_for_more()
         if not can_afford:
             play_sound(SoundId.WARNING)
@@ -42,28 +45,10 @@ class SellManaPotion(AbstractNpcAction):
         if not has_space:
             play_sound(SoundId.WARNING)
             return "Not enough space!"
-        player_state.money -= cost
-        player_state.consumable_inventory.add_consumable(ConsumableType.MANA_LESSER)
+        player_state.money -= self.cost
+        player_state.consumable_inventory.add_consumable(self.consumable_type)
         play_sound(SoundId.EVENT_PURCHASED_SOMETHING)
-        return "Bought mana potion!"
-
-
-class SellHealthPotion(AbstractNpcAction):
-    def act(self, game_state: GameState):
-        cost = 5
-        player_state = game_state.player_state
-        can_afford = player_state.money >= cost
-        has_space = player_state.consumable_inventory.has_space_for_more()
-        if not can_afford:
-            play_sound(SoundId.WARNING)
-            return "Not enough gold!"
-        if not has_space:
-            play_sound(SoundId.WARNING)
-            return "Not enough space!"
-        player_state.money -= cost
-        player_state.consumable_inventory.add_consumable(ConsumableType.HEALTH_LESSER)
-        play_sound(SoundId.EVENT_PURCHASED_SOMETHING)
-        return "Bought health potion!"
+        return "Bought " + self.name
 
 
 def register_ninja_npc():
@@ -76,8 +61,15 @@ def register_ninja_npc():
     register_npc_behavior(npc_type, NpcMind)
     # TODO Use proper icon for 'cancel' option
     dialog_options = [
-        DialogOptionData("Lesser mana potion [5 gold]", "buy", SellManaPotion(), UiIconSprite.POTION_MANA_LESSER),
-        DialogOptionData("Lesser health potion [5 gold]", "buy", SellHealthPotion(), UiIconSprite.POTION_HEALTH_LESSER),
+        DialogOptionData("Lesser mana potion [5 gold]", "buy",
+                         SellConsumable(5, ConsumableType.MANA_LESSER, "lesser mana potion"),
+                         UiIconSprite.POTION_MANA_LESSER),
+        DialogOptionData("Lesser health potion [5 gold]", "buy",
+                         SellConsumable(5, ConsumableType.HEALTH_LESSER, "lesser health potion"),
+                         UiIconSprite.POTION_HEALTH_LESSER),
+        DialogOptionData("Speed potion [10 gold]", "buy",
+                         SellConsumable(10, ConsumableType.SPEED, "speed potion"),
+                         UiIconSprite.POTION_SPEED),
         DialogOptionData("\"Good bye\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
     dialog_text_body = "Ah.. You're new here, aren't you? Interested in my stock of potions?"
     dialog_data = DialogData(portrait_icon_sprite, dialog_text_body, dialog_options)
