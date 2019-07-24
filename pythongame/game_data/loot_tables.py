@@ -23,7 +23,8 @@ LOOT_ITEMS_2 = [
     LootEntry.item(ItemType.ZULS_AEGIS),
     LootEntry.item(ItemType.GOATS_RING),
     LootEntry.item(ItemType.BLOOD_AMULET),
-    LootEntry.item(ItemType.KNIGHTS_ARMOR)
+    LootEntry.item(ItemType.KNIGHTS_ARMOR),
+    LootEntry.item(ItemType.ELVEN_ARMOR)
 ]
 
 LOOT_POTIONS_1 = [
