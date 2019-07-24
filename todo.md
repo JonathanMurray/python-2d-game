@@ -19,13 +19,25 @@
 * put dmg/healing/xp numbers further up for tall characters (base it on sprite size, not entity size)
 * render action text further up for tall entities
 
+#### Sounds:
+* Warrior abilities
+    * Sword Slash
+    * Stomp
+* UI
+    * drag potion or item
+    * drop potion or item
+    * put potion or item in inventory slot
+* using portal
+* armor blocking damage
+* goblin death sounds
+* start dialog
+
 #### Features:
 * New heroes
     * builder
         * place turret on ground that shoots in all directions
         * send out mechanical minion that seeks out enemies and self detonates
 * More Rogue abilities:
-    * dash forward. If passed through an enemy, gain armor for a few seconds
     * things to prepare from stealth
         - place trap on ground
             - long cast time
