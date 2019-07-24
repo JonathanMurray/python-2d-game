@@ -51,6 +51,7 @@ from pythongame.game_data.items.item_staff_of_fire import register_staff_of_fire
 from pythongame.game_data.items.item_sword_of_leeching import register_sword_of_leeching_item
 from pythongame.game_data.items.item_winged_boots import register_winged_boots_item
 from pythongame.game_data.items.item_wizards_cowl import register_wizards_cowl
+from pythongame.game_data.items.item_wooden_shield import register_wooden_shield
 from pythongame.game_data.items.item_zuls_aegis import register_zuls_aegis
 from pythongame.game_data.map_editor_icons import register_map_editor_icons
 from pythongame.game_data.neutral_npcs.neutral_npc_dwarf import register_dwarf_npc
@@ -122,6 +123,7 @@ def register_all_game_data():
     register_knights_armor()
     register_goats_ring()
     register_blood_amulet()
+    register_wooden_shield()
 
     register_decorations()
     register_map_editor_icons()

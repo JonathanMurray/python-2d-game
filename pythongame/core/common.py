@@ -136,6 +136,7 @@ class Sprite(Enum):
     ITEM_KNIGHTS_ARMOR = 312
     ITEM_GOATS_RING = 313
     ITEM_BLOOD_AMULET = 314
+    ITEM_WOODEN_SHIELD = 315
     COINS_1 = 350
     COINS_2 = 351
     COINS_5 = 352
@@ -231,6 +232,7 @@ class ItemType(Enum):
     KNIGHTS_ARMOR = 71
     GOATS_RING = 72
     BLOOD_AMULET = 73
+    WOODEN_SHIELD = 74
 
 
 class ProjectileType(Enum):
@@ -317,6 +319,7 @@ class UiIconSprite(Enum):
     ITEM_KNIGHTS_ARMOR = 212
     ITEM_GOATS_RING = 213
     ITEM_BLOOD_AMULET = 214
+    ITEM_WOODEN_SHIELD = 215
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
 
