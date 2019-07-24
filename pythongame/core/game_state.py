@@ -403,6 +403,20 @@ class PlayerState:
         self.item_slots[slot_1] = self.item_slots[slot_2]
         self.item_slots[slot_2] = item_type_1
 
+    def has_item_in_inventory(self, item_type: ItemType):
+        matches = [item_effect for item_effect in self.item_slots.values()
+                   if item_effect and item_effect.get_item_type() == item_type]
+        if len(matches) > 0:
+            return True
+
+    def lose_item_from_inventory(self, item_type: ItemType):
+        for slot_number in self.item_slots:
+            item_in_slot = self.item_slots[slot_number]
+            if item_in_slot and item_in_slot.get_item_type() == item_type:
+                self.item_slots[slot_number] = None
+                return
+        print("WARN: item not found in inventory: " + item_type.name)
+
     # returns True if player leveled up
     def gain_exp(self, amount: int):
         self.exp += amount

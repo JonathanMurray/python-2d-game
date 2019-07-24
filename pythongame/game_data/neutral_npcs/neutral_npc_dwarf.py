@@ -2,14 +2,15 @@ import random
 from typing import Optional
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
-    UiIconSprite
-from pythongame.core.damage_interactions import deal_damage_to_player
+    UiIconSprite, ItemType
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
     register_npc_dialog_data, DialogData, DialogOptionData
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+
+ITEM_TYPE_GOLD = ItemType.GOLD_NUGGET
 
 
 class NpcMind(AbstractNpcMind):
@@ -30,11 +31,16 @@ class NpcMind(AbstractNpcMind):
                 npc.world_entity.set_moving_in_dir(direction)
 
 
-class NpcAction(AbstractNpcAction):
+class BuyGold(AbstractNpcAction):
 
     def act(self, game_state: GameState) -> Optional[str]:
-        deal_damage_to_player(game_state, 10, None)
-        return "You take a beating!"
+        player_has_gold = game_state.player_state.has_item_in_inventory(ITEM_TYPE_GOLD)
+        if player_has_gold:
+            game_state.player_state.lose_item_from_inventory(ITEM_TYPE_GOLD)
+            game_state.player_state.money += 50
+            return "Sold gold nugget"
+        else:
+            return "You don't have that!"
 
 
 def register_dwarf_npc():
@@ -44,11 +50,11 @@ def register_dwarf_npc():
     movement_speed = 0.03
     register_npc_data(npc_type, NpcData.neutral(sprite, size, movement_speed))
     register_npc_behavior(npc_type, NpcMind)
-    # TODO Use proper sprites for options
+    introdution = "Hello there. I'm always looking for treasure. If you find any, we might be able to strike a deal!"
     dialog_options = [
-        DialogOptionData("\"You bet!\"", "start a fight", NpcAction(), UiIconSprite.ABILITY_SWORD_SLASH),
-        DialogOptionData("\"No way!\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
-    dialog_data = DialogData(PortraitIconSprite.VIKING, "Hey there! You want a piece of me!? ", dialog_options)
+        DialogOptionData("Gold nugget [50 gold]", "sell", BuyGold(), UiIconSprite.ITEM_GOLD_NUGGET),
+        DialogOptionData("\"Good bye\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
+    dialog_data = DialogData(PortraitIconSprite.VIKING, introdution, dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet.png")
     original_sprite_size = (32, 32)
