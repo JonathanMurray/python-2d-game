@@ -4,6 +4,7 @@ from pythongame.core.common import ItemType, HeroId, PortraitIconSprite
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
+from pythongame.core.game_state import PlayerLevelBonus
 
 
 def register_hero_mage():
@@ -30,8 +31,12 @@ def register_hero_mage():
 
 def _get_initial_player_state_mage() -> InitialPlayerStateData:
     health = 40
-    mana = 120
+    mana = 60
     mana_regen = 4
+    health_per_level = 5
+    mana_per_level = 15
+    level_bonus = PlayerLevelBonus(health_per_level, mana_per_level)
+    armor = 0
     consumable_slots = {
         1: ConsumableType.HEALTH_LESSER,
         2: ConsumableType.MANA_LESSER,
@@ -51,4 +56,5 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
         7: AbilityType.CHANNEL_ATTACK
     }
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities, HeroId.MAGE, 0)
+        health, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities, HeroId.MAGE, armor,
+        level_bonus)

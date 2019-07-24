@@ -4,6 +4,7 @@ from pythongame.core.common import ItemType, HeroId, PortraitIconSprite
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
+from pythongame.core.game_state import PlayerLevelBonus
 
 HERO_ID = HeroId.ROGUE
 
@@ -32,9 +33,13 @@ def register_hero_rogue():
 
 
 def _get_initial_player_state_rogue() -> InitialPlayerStateData:
-    health = 40
+    health = 50
     mana = 50
     mana_regen = 1
+    health_per_level = 10
+    mana_per_level = 10
+    level_bonus = PlayerLevelBonus(health_per_level, mana_per_level)
+    armor = 1
     consumable_slots = {
         1: ConsumableType.HEALTH_LESSER,
         2: ConsumableType.HEALTH_LESSER,
@@ -50,4 +55,4 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
     }
     new_level_abilities = {}
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities, HERO_ID, 1)
+        health, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities, HERO_ID, armor, level_bonus)

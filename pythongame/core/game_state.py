@@ -5,7 +5,7 @@ from pygame.rect import Rect
 
 from pythongame.core.common import *
 from pythongame.core.consumable_inventory import ConsumableInventory
-from pythongame.core.game_data import NpcCategory
+from pythongame.core.game_data import NpcCategory, PlayerLevelBonus
 from pythongame.core.loot import LootTable
 from pythongame.core.math import boxes_intersect, rects_intersect, get_position_from_center_position, \
     translate_in_direction, is_x_and_y_within_distance
@@ -290,7 +290,8 @@ class BuffEventOutcome:
 class PlayerState:
     def __init__(self, health: int, max_health: int, mana: int, max_mana: int, mana_regen: float,
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
-                 item_slots: Dict[int, Any], new_level_abilities: Dict[int, AbilityType], hero_id: HeroId, armor: int):
+                 item_slots: Dict[int, Any], new_level_abilities: Dict[int, AbilityType], hero_id: HeroId, armor: int,
+                 level_bonus: PlayerLevelBonus):
         self.health = health
         self._health_float = health
         self.max_health = max_health
@@ -317,6 +318,7 @@ class PlayerState:
         self.damage_modifier_bonus: float = 0  # affected by items. Only allowed to change additively
         self.hero_id: HeroId = hero_id
         self.armor: int = armor
+        self.level_bonus = level_bonus
 
     def gain_health(self, amount: float) -> int:
         health_before = self.health
@@ -417,8 +419,8 @@ class PlayerState:
             self.gain_exp(amount)
 
     def update_stats_for_new_level(self):
-        self.max_health += 7
-        self.max_mana += 5
+        self.max_health += self.level_bonus.health
+        self.max_mana += self.level_bonus.mana
         self.gain_full_health()
         self.gain_full_mana()
         self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.4)

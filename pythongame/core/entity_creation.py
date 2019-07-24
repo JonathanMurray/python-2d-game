@@ -75,4 +75,4 @@ def create_player_state(hero_id: HeroId) -> PlayerState:
     consumable_inventory = ConsumableInventory(data.consumable_slots)
     return PlayerState(
         data.health, data.health, data.mana, data.mana, data.mana_regen, consumable_inventory, data.abilities,
-        item_slots_with_effects, data.new_level_abilities, data.hero_id, data.armor)
+        item_slots_with_effects, data.new_level_abilities, data.hero_id, data.armor, data.level_bonus)
