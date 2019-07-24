@@ -15,6 +15,7 @@ BUFF_DURATION = Millis(3000)
 ABILITY_TYPE = AbilityType.DASH
 BUFF_TYPE = BuffType.AFTER_DASH
 ARMOR_BOOST = 1
+DAMAGE = 5
 
 
 def _apply_ability(game_state: GameState) -> bool:
@@ -30,8 +31,7 @@ def _apply_ability(game_state: GameState) -> bool:
                 return False
             enemy_hit = _get_enemy_that_was_hit(game_state, player_entity, distance)
             if enemy_hit:
-                damage = 5
-                deal_player_damage_to_enemy(game_state, enemy_hit, damage)
+                deal_player_damage_to_enemy(game_state, enemy_hit, DAMAGE)
                 game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_TYPE), BUFF_DURATION)
             player_entity.set_position(new_position)
             new_center_position = player_entity.get_center_position()
@@ -86,7 +86,7 @@ class AfterDash(AbstractBuffEffect):
 def register_dash_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_DASH
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    description = "Dash forward, gain armor if enemy was hit"
+    description = "Dash forward, dealing " + str(DAMAGE) + " damage to one enemy. If an enemy was hit, gain armor."
     ability_data = AbilityData("Dash", ui_icon_sprite, 5, Millis(4000), description, SoundId.ABILITY_DASH)
     register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_ability_dash.png")

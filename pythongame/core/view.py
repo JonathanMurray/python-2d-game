@@ -453,8 +453,12 @@ class View:
         self._text(self.font_tooltip_header, title, (x_tooltip + 20, y_tooltip + 15), COLOR_WHITE)
         y_separator = y_tooltip + 40
         self._line(COLOR_WHITE, (x_tooltip + 10, y_separator), (x_tooltip + w_tooltip - 10, y_separator), 1)
-        for i, detail in enumerate(details):
-            self._text(self.font_tooltip_details, detail, (x_tooltip + 20, y_tooltip + 50 + i * 20), COLOR_WHITE)
+        detail_lines = []
+        detail_max_line_length = 42
+        for detail in details:
+            detail_lines += self._split_text_into_lines(detail, detail_max_line_length)
+        for i, line in enumerate(detail_lines):
+            self._text(self.font_tooltip_details, line, (x_tooltip + 20, y_tooltip + 50 + i * 18), COLOR_WHITE)
 
     def _entity_action_text(self, entity_action_text: EntityActionText):
         npc_center_pos = self._translate_world_position_to_screen(

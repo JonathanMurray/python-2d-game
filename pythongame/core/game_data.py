@@ -66,6 +66,9 @@ class AbilityData:
         self.icon_sprite = icon_sprite
         self.mana_cost = mana_cost
         self.cooldown = cooldown
+        if len(description) > 84:
+            # in view.py, one line fits 42 characters, and the tooltip fits 2 rows
+            print("WARN: Ability description is too long for " + str(name) + ": " + description)
         self.description = description
         self.sound_id = sound_id
 
