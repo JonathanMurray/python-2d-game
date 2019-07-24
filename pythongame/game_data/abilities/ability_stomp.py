@@ -85,7 +85,7 @@ def register_stomp_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_STOMP
 
     register_ability_effect(ability_type, _apply_ability)
-    description = "Damages and stuns enemies around you (" + str(MIN_DMG) + "-" + str(MAX_DMG) + ")"
+    description = "Stun and deal " + str(MIN_DMG) + "-" + str(MAX_DMG) + " damage to all enemies around you."
     register_ability_data(
         ability_type,
         AbilityData("War Stomp", ui_icon_sprite, 12, Millis(7000), description, None))

@@ -47,7 +47,7 @@ def register_shiv_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_SHIV
 
     register_ability_effect(ability_type, _apply_ability)
-    description = "Damages an enemy (" + str(MIN_DMG) + "-" + str(MAX_DMG) + ")"
+    description = "Deal " + str(MIN_DMG) + "-" + str(MAX_DMG) + " damage to one enemy in front of you."
     ability_data = AbilityData("Shiv", ui_icon_sprite, 1, Millis(400), description, SoundId.ABILITY_SHIV)
     register_ability_data(ability_type, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/double_edged_dagger.png")

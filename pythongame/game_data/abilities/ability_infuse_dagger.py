@@ -70,7 +70,8 @@ def register_infuse_dagger_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_INFUSE_DAGGER
 
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    description = "On next Shiv: slow, damage-over-time"
+    description = "Add a debuff to your next Shiv: periodic damage and " + "{:.0f}".format(
+        DEBUFF_SPEED_DECREASE * 100) + "% slow."
     ability_data = AbilityData(
         "Infuse Dagger", ui_icon_sprite, 25, Millis(20000), description, SoundId.ABILITY_INFUSE_DAGGER)
     register_ability_data(ABILITY_TYPE, ability_data)

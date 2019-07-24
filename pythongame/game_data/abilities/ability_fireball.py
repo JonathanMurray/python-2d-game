@@ -59,7 +59,8 @@ def _apply_ability(game_state: GameState) -> bool:
 
 def register_fireball_ability():
     register_ability_effect(AbilityType.FIREBALL, _apply_ability)
-    description = "Damages first enemy that is hit (" + str(MIN_DMG) + "-" + str(MAX_DMG) + ")"
+    description = "Shoot a fireball, dealing " + str(MIN_DMG) + "-" + str(MAX_DMG) + \
+                  " damage to the first enemy that it hits."
     register_ability_data(
         AbilityType.FIREBALL,
         AbilityData("Fireball", UiIconSprite.ABILITY_FIREBALL, 4, Millis(500), description, SoundId.ABILITY_FIREBALL))

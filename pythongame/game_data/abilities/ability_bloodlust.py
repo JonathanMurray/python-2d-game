@@ -13,6 +13,7 @@ COOLDOWN = Millis(25000)
 BUFF_DURATION = Millis(10000)
 BUFF_TYPE = BuffType.BLOOD_LUST
 LIFE_STEAL_BONUS_RATIO = 0.3
+KILL_DURATION_INCREASE_BONUS = Millis(1000)
 
 
 def _apply_ability(game_state: GameState) -> bool:
@@ -45,14 +46,16 @@ class BloodLust(AbstractBuffEffect):
 
     def buff_handle_event(self, event: Event) -> Optional[BuffEventOutcome]:
         if isinstance(event, EnemyDiedEvent):
-            return BuffEventOutcome.change_remaining_duration(Millis(1000))
+            return BuffEventOutcome.change_remaining_duration(KILL_DURATION_INCREASE_BONUS)
 
 
 def register_bloodlust_ability():
     ability_type = AbilityType.BLOOD_LUST
     register_ability_effect(ability_type, _apply_ability)
     ui_icon_sprite = UiIconSprite.ABILITY_BLOODLUST
-    description = "+" + str(int(LIFE_STEAL_BONUS_RATIO * 100)) + "% lifesteal (Kills increase duration)"
+    description = "Gain +" + str(int(LIFE_STEAL_BONUS_RATIO * 100)) + "% lifesteal for " + \
+                  "{:.0f}".format(BUFF_DURATION / 1000) + "s. Duration is increased by " + \
+                  "{:.0f}".format(KILL_DURATION_INCREASE_BONUS / 1000) + "s for each enemy killed."
     register_ability_data(
         ability_type,
         AbilityData("Bloodlust", ui_icon_sprite, 25, COOLDOWN, description, None))

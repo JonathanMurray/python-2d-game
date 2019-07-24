@@ -41,7 +41,7 @@ def register_sword_slash_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_SWORD_SLASH
 
     register_ability_effect(ability_type, _apply_ability)
-    description = "Damages enemies in front of you (" + str(MIN_DMG) + "-" + str(MAX_DMG) + ")"
+    description = "Deal " + str(MIN_DMG) + "-" + str(MAX_DMG) + " damage to enemies in front of you."
     register_ability_data(
         ability_type,
         AbilityData("Slash", ui_icon_sprite, 0, Millis(700), description, None))

@@ -16,6 +16,9 @@ BONUS_SPEED_MULTIPLIER = 5
 BUFF_TYPE_CHARGING = BuffType.CHARGING
 BUFF_TYPE_STUNNED = BuffType.STUNNED_FROM_CHARGE_IMPACT
 
+MIN_DMG = 4
+MAX_DMG = 8
+
 
 def _apply_ability(game_state: GameState) -> bool:
     game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_TYPE_CHARGING), CHARGE_DURATION)
@@ -56,9 +59,9 @@ class Charging(AbstractBuffEffect):
         affected_enemies = game_state.get_enemy_intersecting_rect(impact_rect)
         for enemy in affected_enemies:
             visual_impact_pos = get_middle_point(charger_center_pos, enemy.world_entity.get_center_position())
-            damage = 4
+            damage = MIN_DMG
             if self.time_since_start > float(CHARGE_DURATION) * 0.3:
-                damage += 4
+                damage = MAX_DMG
             deal_player_damage_to_enemy(game_state, enemy, damage)
             game_state.visual_effects.append(
                 VisualRect((250, 170, 0), visual_impact_pos, 45, 25, IMPACT_STUN_DURATION, 2, None))
@@ -101,7 +104,8 @@ def register_charge_ability():
     ability_type = AbilityType.CHARGE
     register_ability_effect(ability_type, _apply_ability)
     ui_icon_sprite = UiIconSprite.ABILITY_CHARGE
-    description = "Charge forward, damaging enemy on impact"
+    description = "Charge forward, dealing " + str(MIN_DMG) + "-" + str(MAX_DMG) + " to enemy hit on impact. " + \
+                  "(Higher damage on long range)"
     register_ability_data(
         ability_type,
         AbilityData("Charge", ui_icon_sprite, 10, Millis(5000), description, SoundId.ABILITY_CHARGE))

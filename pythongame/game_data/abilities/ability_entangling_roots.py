@@ -19,6 +19,7 @@ ICON_SPRITE = UiIconSprite.ABILITY_ENTANGLING_ROOTS
 ABILITY_TYPE = AbilityType.ENTANGLING_ROOTS
 PROJECTILE_SIZE = (55, 55)
 ENTANGLING_ROOTS_SIZE = (50, 50)
+DEBUFF_DURATION = Millis(5000)
 
 
 class ProjectileController(AbstractProjectileController):
@@ -29,13 +30,13 @@ class ProjectileController(AbstractProjectileController):
         damage_was_dealt = deal_player_damage_to_enemy(game_state, npc, 1)
         if not damage_was_dealt:
             return False
-        debuff_duration = Millis(5000)
-        npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), debuff_duration)
+
+        npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), DEBUFF_DURATION)
         victim_center_pos = npc.world_entity.get_center_position()
         visual_effect_pos = (victim_center_pos[0] - ENTANGLING_ROOTS_SIZE[0] // 2,
                              victim_center_pos[1] - ENTANGLING_ROOTS_SIZE[1] // 2)
         debuff_visual_effect = VisualSprite(Sprite.DECORATION_ENTANGLING_ROOTS_EFFECT, visual_effect_pos,
-                                            debuff_duration, npc.world_entity)
+                                            DEBUFF_DURATION, npc.world_entity)
         game_state.visual_effects.append(debuff_visual_effect)
         return True
 
@@ -85,10 +86,10 @@ class Rooted(AbstractBuffEffect):
 
 def register_entangling_roots_ability():
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    register_ability_data(
-        ABILITY_TYPE,
-        AbilityData("Entangling roots", ICON_SPRITE, 16, Millis(8000), "Roots an enemy and deals damage over time",
-                    SoundId.ABILITY_ENTANGLING_ROOTS))
+    description = "Root an enemy for " + "{:.0f}".format(DEBUFF_DURATION / 1000) + "s and deal periodic damage."
+    ability_data = AbilityData("Entangling roots", ICON_SPRITE, 16, Millis(8000), description,
+                               SoundId.ABILITY_ENTANGLING_ROOTS)
+    register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ICON_SPRITE, "resources/graphics/ability_icon_entangling_roots.png")
     register_projectile_controller(PROJECTILE_TYPE, ProjectileController)
 

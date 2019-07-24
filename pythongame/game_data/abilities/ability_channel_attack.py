@@ -10,12 +10,13 @@ from pythongame.core.projectile_controllers import AbstractProjectileController,
     create_projectile_controller
 from pythongame.core.visual_effects import VisualCircle, VisualRect
 
+CHANNEL_DURATION = Millis(1000)
 PROJECTILE_SIZE = (30, 30)
 PROJECTILE_SPEED = 0.7
 
 
 def _apply_channel_attack(game_state: GameState) -> bool:
-    game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.CHANNELING_MAGIC_MISSILES), Millis(1000))
+    game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.CHANNELING_MAGIC_MISSILES), CHANNEL_DURATION)
     return True
 
 
@@ -65,7 +66,8 @@ class PlayerMagicMissileProjectileController(AbstractProjectileController):
 
 def register_channel_attack_ability():
     register_ability_effect(AbilityType.CHANNEL_ATTACK, _apply_channel_attack)
-    description = "Channel, piercing enemies in front of you"
+    description = "Channel for " + "{:.1f}".format(CHANNEL_DURATION / 1000) + \
+                  "s, firing piercing missiles in front of you that damage enemies."
     ability_data = AbilityData("Arcane Fire", UiIconSprite.ABILITY_MAGIC_MISSILE, 35, Millis(12000), description, None)
     register_ability_data(AbilityType.CHANNEL_ATTACK, ability_data)
 
