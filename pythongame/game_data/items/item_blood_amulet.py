@@ -8,7 +8,7 @@ from pythongame.core.game_state import Event, EnemyDiedEvent, GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
 
 ITEM_TYPE = ItemType.BLOOD_AMULET
-AMOUNT = 1
+HEALTH_ON_KILL_AMOUNT = 1
 
 
 class ItemEffect(AbstractItemEffect):
@@ -16,7 +16,7 @@ class ItemEffect(AbstractItemEffect):
     def item_handle_event(self, event: Event, game_state: GameState):
         if isinstance(event, EnemyDiedEvent):
             if random.random() < 0.5:
-                player_receive_healing(AMOUNT, game_state)
+                player_receive_healing(HEALTH_ON_KILL_AMOUNT, game_state)
 
     def get_item_type(self):
         return ITEM_TYPE
@@ -30,5 +30,5 @@ def register_blood_amulet():
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
     register_item_effect(ITEM_TYPE, ItemEffect())
     name = "Blood Amulet"
-    description = "Gives a chance to restore " + str(AMOUNT) + " health on kills"
+    description = "Gives a chance to restore " + str(HEALTH_ON_KILL_AMOUNT) + " health on kills"
     register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, sprite, name, description))
