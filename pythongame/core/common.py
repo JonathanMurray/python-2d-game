@@ -89,6 +89,7 @@ class AbilityType(Enum):
     SHIV = 14
     SNEAK = 15
     INFUSE_DAGGER = 16
+    DASH = 17
 
 
 class Sprite(Enum):
@@ -202,6 +203,7 @@ class BuffType(Enum):
     CHANNELING_INFUSE_DAGGER = 24
     HAS_INFUSED_DAGGER = 25
     DAMAGED_BY_INFUSED_DAGGER = 26
+    AFTER_DASH = 27
 
 
 class ItemType(Enum):
@@ -248,6 +250,7 @@ class SoundId(Enum):
     ABILITY_SHIV = 6
     ABILITY_SNEAK = 7
     ABILITY_INFUSE_DAGGER = 8
+    ABILITY_DASH = 9
     POTION = 50
     EVENT_PLAYER_LEVELED_UP = 100
     EVENT_PICKED_UP = 101
@@ -299,6 +302,7 @@ class UiIconSprite(Enum):
     ABILITY_SHIV = 113
     ABILITY_SNEAK = 114
     ABILITY_INFUSE_DAGGER = 115
+    ABILITY_DASH = 116
     ITEM_WINGED_BOOTS = 201
     ITEM_AMULET_OF_MANA = 202
     ITEM_SWORD_OF_LEECHING = 203

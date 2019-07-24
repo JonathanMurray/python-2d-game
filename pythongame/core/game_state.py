@@ -566,7 +566,7 @@ class GameState:
     def get_enemy_intersecting_with(self, entity: WorldEntity) -> List[NonPlayerCharacter]:
         return [e for e in self.non_player_characters if e.is_enemy and boxes_intersect(e.world_entity, entity)]
 
-    def get_enemy_intersecting_rect(self, rect: Tuple[int, int, int, int]):
+    def get_enemy_intersecting_rect(self, rect: Tuple[int, int, int, int]) -> List[NonPlayerCharacter]:
         return [e for e in self.non_player_characters if e.is_enemy and rects_intersect(e.world_entity.rect(), rect)]
 
     def get_enemies_within_x_y_distance_of(self, distance: int, position: Tuple[int, int]):
@@ -652,6 +652,10 @@ class GameState:
     def does_entity_intersect_with_wall(self, entity: WorldEntity):
         nearby_walls = self._get_walls_from_buckets_adjacent_to_entity(entity)
         return any([w for w in nearby_walls if boxes_intersect(w, entity)])
+
+    def does_rect_intersect_with_wall(self, rect: Tuple[int, int, int, int]):
+        nearby_walls = self._get_walls_from_buckets_in_camera()
+        return any([w for w in nearby_walls if rects_intersect((w.x, w.y, w.w, w.h), rect)])
 
     def _get_walls_from_buckets_adjacent_to_entity(self, entity: WorldEntity):
         entity_x_bucket = int(entity.x - self.entire_world_area.x) // WALL_BUCKET_WIDTH

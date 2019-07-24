@@ -1,6 +1,7 @@
 from pythongame.game_data.abilities.ability_bloodlust import register_bloodlust_ability
 from pythongame.game_data.abilities.ability_channel_attack import register_channel_attack_ability
 from pythongame.game_data.abilities.ability_charge import register_charge_ability
+from pythongame.game_data.abilities.ability_dash import register_dash_ability
 from pythongame.game_data.abilities.ability_entangling_roots import register_entangling_roots_ability
 from pythongame.game_data.abilities.ability_fireball import register_fireball_ability
 from pythongame.game_data.abilities.ability_frost_nova import register_frost_nova_ability
@@ -74,6 +75,7 @@ def register_all_game_data():
     register_shiv_ability()
     register_sneak_ability()
     register_infuse_dagger_ability()
+    register_dash_ability()
 
     register_recovering_after_ability_buff()
 

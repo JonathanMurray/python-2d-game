@@ -21,6 +21,7 @@ def init_sound_player():
         SoundId.ABILITY_SHIV: load_sound_file('dagger_1.ogg', 'dagger_2.ogg'),
         SoundId.ABILITY_SNEAK: load_sound_file('stealth.ogg', volume=3),
         SoundId.ABILITY_INFUSE_DAGGER: load_sound_file('poison.ogg', volume=5),
+        SoundId.ABILITY_DASH: load_sound_file('dash.ogg', volume=5),
         SoundId.POTION: load_sound_file('PowerUp04.ogg'),
         SoundId.EVENT_PLAYER_LEVELED_UP: load_sound_file('PowerUp02.ogg'),
         SoundId.EVENT_PICKED_UP: load_sound_file('UI01.ogg'),
@@ -47,7 +48,7 @@ def play_sound(sound_id: SoundId):
         raise Exception("No sound defined for: " + str(sound_id))
 
 
-def load_sound_file(*filenames, volume:float=1):
+def load_sound_file(*filenames, volume: float = 1):
     sounds = [pygame.mixer.Sound('./resources/sound/' + filename) for filename in filenames]
     for sound in sounds:
         sound.set_volume(0.1 * volume)
