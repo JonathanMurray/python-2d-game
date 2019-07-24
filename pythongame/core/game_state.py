@@ -155,7 +155,8 @@ class Projectile:
 class NonPlayerCharacter:
     def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health: int, max_health: int,
                  health_regen: float, npc_mind, npc_category: NpcCategory,
-                 enemy_loot_table: Optional[LootTable], death_sound_id: Optional[SoundId]):
+                 enemy_loot_table: Optional[LootTable], death_sound_id: Optional[SoundId],
+                 max_distance_allowed_from_start_position: Optional[int]):
         self.npc_type = npc_type
         self.world_entity = world_entity
         self._health_float = health
@@ -171,6 +172,8 @@ class NonPlayerCharacter:
         self.is_neutral = npc_category == NpcCategory.NEUTRAL
         self.enemy_loot_table = enemy_loot_table
         self.death_sound_id = death_sound_id
+        self.start_position = world_entity.get_position()  # Should never be updated
+        self.max_distance_allowed_from_start_position = max_distance_allowed_from_start_position
 
     def lose_health(self, amount: float):
         self._health_float = min(self._health_float - amount, self.max_health)
@@ -580,6 +583,20 @@ class GameState:
     def update_world_entity_position_within_game_world(self, entity: WorldEntity, time_passed: Millis):
         new_position = entity.get_new_position_according_to_dir_and_speed(time_passed)
         if new_position:
+            new_pos_within_world = self.get_within_world(new_position, (entity.w, entity.h))
+            if not self.would_entity_collide_if_new_pos(entity, new_pos_within_world):
+                entity.set_position(new_pos_within_world)
+
+    # NOTE: Very naive brute-force collision checking
+    def update_npc_position_within_game_world(self, npc: NonPlayerCharacter, time_passed: Millis):
+        entity = npc.world_entity
+        new_position = entity.get_new_position_according_to_dir_and_speed(time_passed)
+        if new_position:
+            if npc.max_distance_allowed_from_start_position:
+                is_close_to_start_position = is_x_and_y_within_distance(
+                    npc.start_position, new_position, npc.max_distance_allowed_from_start_position)
+                if not is_close_to_start_position:
+                    return
             new_pos_within_world = self.get_within_world(new_position, (entity.w, entity.h))
             if not self.would_entity_collide_if_new_pos(entity, new_pos_within_world):
                 entity.set_position(new_pos_within_world)

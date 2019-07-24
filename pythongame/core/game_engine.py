@@ -7,7 +7,7 @@ from pythongame.core.entity_creation import create_money_pile_on_ground, create_
 from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities, \
     NpcCategory
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
-    EnemyDiedEvent
+    EnemyDiedEvent, NonPlayerCharacter
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.loot import LootEntry
 from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vectors, \
@@ -97,11 +97,11 @@ class GameEngine:
 
     # Returns True if player died
     def run_one_frame(self, time_passed: Millis):
-        for e in self.game_state.non_player_characters:
+        for npc in self.game_state.non_player_characters:
             # NonPlayerCharacter AI shouldn't run if enemy is too far out of sight
-            if self._is_enemy_close_to_camera(e) and not e.is_stunned():
-                e.npc_mind.control_npc(self.game_state, e, self.game_state.player_entity,
-                                       self.game_state.player_state.is_invisible, time_passed)
+            if self._is_npc_close_to_camera(npc) and not npc.is_stunned():
+                npc.npc_mind.control_npc(self.game_state, npc, self.game_state.player_entity,
+                                         self.game_state.player_state.is_invisible, time_passed)
 
         self.view_state.notify_player_entity_center_position(self.game_state.player_entity.get_center_position())
 
@@ -166,15 +166,15 @@ class GameEngine:
         self.game_state.player_state.recharge_ability_cooldowns(time_passed)
 
         self.game_state.player_entity.update_movement_animation(time_passed)
-        for e in self.game_state.non_player_characters:
-            e.world_entity.update_movement_animation(time_passed)
+        for npc in self.game_state.non_player_characters:
+            npc.world_entity.update_movement_animation(time_passed)
         for projectile in self.game_state.projectile_entities:
             projectile.world_entity.update_movement_animation(time_passed)
 
-        for e in self.game_state.non_player_characters:
+        for npc in self.game_state.non_player_characters:
             # Enemies shouldn't move towards player when they are out of sight
-            if self._is_enemy_close_to_camera(e) and not e.is_stunned():
-                self.game_state.update_world_entity_position_within_game_world(e.world_entity, time_passed)
+            if self._is_npc_close_to_camera(npc) and not npc.is_stunned():
+                self.game_state.update_npc_position_within_game_world(npc, time_passed)
         # player can still move when stunned (could be charging)
         self.game_state.update_world_entity_position_within_game_world(self.game_state.player_entity, time_passed)
         for projectile in self.game_state.projectile_entities:
@@ -237,10 +237,10 @@ class GameEngine:
         if self.game_state.player_state.health <= 0:
             return True  # Game over
 
-    def _is_enemy_close_to_camera(self, enemy):
+    def _is_npc_close_to_camera(self, npc: NonPlayerCharacter):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(
             self.game_state.camera_world_area.rect(), 100)
-        return rects_intersect(enemy.world_entity.rect(), camera_rect_with_margin)
+        return rects_intersect(npc.world_entity.rect(), camera_rect_with_margin)
 
     def _put_loot_on_ground(self, enemy_death_position: Tuple[int, int], loot: List[LootEntry]):
         for loot_entry in loot:

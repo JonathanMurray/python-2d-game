@@ -5,7 +5,7 @@ from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_d
     UiIconSprite
 from pythongame.core.damage_interactions import deal_damage_to_player
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
-    register_portrait_icon_sprite_path, NpcCategory
+    register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
     register_npc_dialog_data, DialogData, DialogOptionData
@@ -15,7 +15,7 @@ from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
-        self._update_path_interval = 900
+        self._update_path_interval = 500
         self._time_since_updated_path = self._update_path_interval
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,

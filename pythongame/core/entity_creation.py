@@ -3,7 +3,7 @@ from typing import Tuple
 from pythongame.core.common import NpcType, Direction, Sprite, ItemType, ConsumableType, WallType, PortalId, HeroId
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, ITEMS, CONSUMABLES, POTION_ENTITY_SIZE, \
-    WALLS, PORTALS, HEROES
+    WALLS, PORTALS, HEROES, NpcData
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
     ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState
 from pythongame.core.item_effects import get_item_effect
@@ -21,11 +21,12 @@ def set_global_path_finder(_global_path_finder: GlobalPathFinder):
 
 
 def create_npc(npc_type: NpcType, pos: Tuple[int, int]) -> NonPlayerCharacter:
-    data = NON_PLAYER_CHARACTERS[npc_type]
+    data: NpcData = NON_PLAYER_CHARACTERS[npc_type]
     entity = WorldEntity(pos, data.size, data.sprite, Direction.LEFT, data.speed)
     npc_mind = create_npc_mind(npc_type, global_path_finder)
     return NonPlayerCharacter(npc_type, entity, data.max_health, data.max_health, data.health_regen, npc_mind,
-                              data.npc_category, data.enemy_loot_table, data.death_sound_id)
+                              data.npc_category, data.enemy_loot_table, data.death_sound_id,
+                              data.max_distance_allowed_from_start_position)
 
 
 def create_money_pile_on_ground(amount: int, pos: Tuple[int, int]) -> MoneyPileOnGround:

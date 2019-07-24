@@ -992,20 +992,6 @@
       ]
     },
     {
-      "npc_type": "NEUTRAL_NOMAD",
-      "position": [
-        -175,
-        -550
-      ]
-    },
-    {
-      "npc_type": "NEUTRAL_NINJA",
-      "position": [
-        -500,
-        -525
-      ]
-    },
-    {
       "npc_type": "RAT_1",
       "position": [
         -925,
@@ -1542,6 +1528,20 @@
       "position": [
         3425,
         -2750
+      ]
+    },
+    {
+      "npc_type": "NEUTRAL_NOMAD",
+      "position": [
+        -350,
+        -475
+      ]
+    },
+    {
+      "npc_type": "NEUTRAL_NINJA",
+      "position": [
+        -550,
+        -475
       ]
     }
   ],
