@@ -78,7 +78,8 @@ def register_rat_2_enemy():
     npc_type = NpcType.RAT_2
     movement_speed = 0.08
     health = 11
-    npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, 8, LOOT_TABLE_1, SoundId.DEATH_RAT)
+    exp_reward = 8
+    npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_1, SoundId.DEATH_RAT)
     register_npc_data(npc_type, npc_data)
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/gray_rat.png")

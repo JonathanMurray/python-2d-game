@@ -74,7 +74,7 @@ def register_goblin_spearman_elite_enemy():
     npc_type = NpcType.GOBLIN_SPEARMAN_ELITE
     movement_speed = 0.11
     health = 42
-    exp_reward = 8
+    exp_reward = 20
     register_npc_data(npc_type, NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_3))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")

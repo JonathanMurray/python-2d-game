@@ -78,7 +78,7 @@ def register_goblin_worker_enemy():
     npc_type = NpcType.GOBLIN_WORKER
     movement_speed = 0.07
     health = 10
-    exp_reward = 4
+    exp_reward = 5
     register_npc_data(npc_type, NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_1))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")
