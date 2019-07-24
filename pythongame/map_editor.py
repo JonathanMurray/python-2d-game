@@ -86,6 +86,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.GOATS_RING),
     MapEditorWorldEntity.item(ItemType.WOODEN_SHIELD),
     MapEditorWorldEntity.item(ItemType.ELVEN_ARMOR),
+    MapEditorWorldEntity.item(ItemType.GOLD_NUGGET),
 
     MapEditorWorldEntity.money(1),
 

@@ -44,6 +44,7 @@ from pythongame.game_data.items.item_blood_amulet import register_blood_amulet
 from pythongame.game_data.items.item_blue_robe import register_blue_robe_item
 from pythongame.game_data.items.item_elven_armor import register_elven_armor
 from pythongame.game_data.items.item_goats_ring import register_goats_ring
+from pythongame.game_data.items.item_gold_nugget import register_gold_nugget
 from pythongame.game_data.items.item_knights_armor import register_knights_armor
 from pythongame.game_data.items.item_orb_of_the_magi import register_orb_of_the_magi_item
 from pythongame.game_data.items.item_rod_of_lightning import register_rod_of_lightning_item
@@ -126,6 +127,7 @@ def register_all_game_data():
     register_blood_amulet()
     register_wooden_shield()
     register_elven_armor()
+    register_gold_nugget()
 
     register_decorations()
     register_map_editor_icons()
