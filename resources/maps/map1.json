@@ -1,8 +1,8 @@
 {
   "player": {
     "position": [
-      2700,
-      -1000
+      -625,
+      -550
     ]
   },
   "consumables_on_ground": [
@@ -127,13 +127,6 @@
       "npc_type": "MUMMY",
       "position": [
         2300,
-        50
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
-        1950,
         50
       ]
     },
@@ -46028,13 +46021,6 @@
       ]
     },
     {
-      "portal_id": "C_REMOTE",
-      "position": [
-        3450,
-        2025
-      ]
-    },
-    {
       "portal_id": "A_BASE",
       "position": [
         -950,
@@ -46060,6 +46046,13 @@
       "position": [
         100,
         150
+      ]
+    },
+    {
+      "portal_id": "C_REMOTE",
+      "position": [
+        1975,
+        50
       ]
     }
   ]
