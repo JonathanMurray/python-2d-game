@@ -77,7 +77,7 @@ class NpcMind(AbstractNpcMind):
 
 
 def register_necromancer_enemy():
-    size = (50, 60)
+    size = (36, 36)
     health = 33
     loot = LootTable([
         LootGroup(1, [LootEntry.money(1), LootEntry.money(2), LootEntry.money(3)], 0.9),
@@ -97,4 +97,4 @@ def register_necromancer_enemy():
         Direction.UP: [(x, 3) for x in range(9, 12)]
     }
     register_entity_sprite_map(SPRITE, enemy_sprite_sheet, enemy_original_sprite_size,
-                               enemy_scaled_sprite_size, enemy_indices_by_dir, (0, 0))
+                               enemy_scaled_sprite_size, enemy_indices_by_dir, (-7, -24))

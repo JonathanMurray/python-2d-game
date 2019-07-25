@@ -74,7 +74,7 @@ def _move_in_dir(enemy_entity, direction):
 
 
 def register_mummy_enemy():
-    size = (42, 42)  # Must not align perfectly with grid cell size (pathfinding issues)
+    size = (30, 30)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.ENEMY_MUMMY
     npc_type = NpcType.MUMMY
     movement_speed = 0.06
@@ -94,4 +94,5 @@ def register_mummy_enemy():
         Direction.RIGHT: [(6, 6), (7, 6), (8, 6)],
         Direction.UP: [(6, 7), (7, 7), (8, 7)]
     }
-    register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir, (-3, -3))
+    register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir,
+                               (-9, -18))
