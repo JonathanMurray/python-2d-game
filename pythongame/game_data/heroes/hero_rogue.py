@@ -15,7 +15,7 @@ def register_hero_rogue():
     player_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")
     original_sprite_size = (32, 32)
     scaled_sprite_size = (48, 48)
-    x = 3
+    x = 0
     indices_by_dir = {
         Direction.DOWN: [(x + i, 4) for i in range(3)],
         Direction.LEFT: [(x + i, 5) for i in range(3)],
@@ -25,7 +25,7 @@ def register_hero_rogue():
     sprite_position_relative_to_entity = (-8, -16)
     register_entity_sprite_map(sprite, player_sprite_sheet, original_sprite_size,
                                scaled_sprite_size, indices_by_dir, sprite_position_relative_to_entity)
-    register_portrait_icon_sprite_path(portrait_icon_sprite, 'resources/graphics/hero2_portrait.png')
+    register_portrait_icon_sprite_path(portrait_icon_sprite, 'resources/graphics/portrait_rogue_hero.png')
     entity_speed = 0.105
     entity_size = (30, 30)
     hero_data = HeroData(sprite, portrait_icon_sprite, _get_initial_player_state_rogue(), entity_speed, entity_size)
