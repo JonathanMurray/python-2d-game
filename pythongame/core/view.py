@@ -637,16 +637,18 @@ class View:
                                      highlighted_ability_action, ability_cooldowns_remaining)
 
         # ITEMS
-        x_2 = 326
+        x_2 = 340
         items_rect_pos = self._translate_ui_position_to_screen((x_2 - icon_rect_padding, y_2 - icon_rect_padding))
+        num_item_slot_rows = 3
+        num_slots_per_row = 2
         items_rect = (
             items_rect_pos[0], items_rect_pos[1],
-            (UI_ICON_SIZE[0] + icon_space) * len(item_slots) - icon_space + icon_rect_padding * 2,
-            UI_ICON_SIZE[1] + icon_rect_padding * 2)
+            (UI_ICON_SIZE[0] + icon_space) * num_slots_per_row - icon_space + icon_rect_padding * 2,
+            num_item_slot_rows * UI_ICON_SIZE[1] + (num_item_slot_rows - 1) * icon_space + icon_rect_padding * 2)
         self._rect_filled((60, 60, 80), items_rect)
         for i, item_slot_number in enumerate(item_slots.keys()):
-            x = x_2 + i * (UI_ICON_SIZE[0] + icon_space)
-            y = y_2
+            x = x_2 + (i % num_slots_per_row) * (UI_ICON_SIZE[0] + icon_space)
+            y = y_2 + (i // num_slots_per_row) * (UI_ICON_SIZE[1] + icon_space)
             item_effect = item_slots[item_slot_number]
             item_type = item_effect.get_item_type() if item_effect else None
             if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):

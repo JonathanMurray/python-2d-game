@@ -48,7 +48,10 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
     items: Dict[int, ItemType] = {
         1: None,
         2: None,
-        3: None
+        3: None,
+        4: None,
+        5: None,
+        6: None
     }
     new_level_abilities = {
         3: AbilityType.WHIRLWIND,

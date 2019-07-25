@@ -51,7 +51,10 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
     items: Dict[int, ItemType] = {
         1: None,
         2: None,
-        3: None
+        3: None,
+        4: None,
+        5: None,
+        6: None
     }
     new_level_abilities = {}
     return InitialPlayerStateData(

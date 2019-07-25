@@ -48,7 +48,10 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
     items: Dict[int, ItemType] = {
         1: ItemType.WINGED_BOOTS,
         2: None,
-        3: None
+        3: None,
+        4: None,
+        5: None,
+        6: None
     }
     new_level_abilities = {
         3: AbilityType.CHARGE,
