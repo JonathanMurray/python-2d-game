@@ -349,6 +349,10 @@ class PlayerState:
         self._health_float = self.max_health
         self.health = self.max_health
 
+    def set_health_to_partial_of_max(self, partial: float):
+        self._health_float = partial * self.max_health
+        self.health = int(math.floor(self._health_float))
+
     def gain_full_mana(self):
         self._mana_float = self.max_mana
         self.mana = self.max_mana
@@ -429,6 +433,10 @@ class PlayerState:
                 new_ability = self.new_level_abilities[self.level]
                 self.gain_ability(new_ability)
         return did_level_up
+
+    def lose_exp_from_death(self):
+        partial_exp_loss = 0.5
+        self.exp = max(0, self.exp - int(self.max_exp_in_this_level * partial_exp_loss))
 
     def gain_exp_worth_n_levels(self, num_levels: int):
         for i in range(num_levels):

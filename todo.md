@@ -45,8 +45,6 @@
         - sap enemy
             - puts enemy into a statis (like stun, but interrupted on damage)
             - can only be used from stealth
-* Respawn on death
-    * some fitting penalty
 * Save functionality
     * save the current game_state into a JSON file and load it on startup
 * New "progress" functionality:

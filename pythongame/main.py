@@ -5,11 +5,11 @@ from typing import Optional
 import pygame
 
 import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis, SoundId, HeroId
+from pythongame.core.common import Millis, HeroId
 from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.player_environment_interactions import PlayerInteractionsState
-from pythongame.core.sound_player import play_sound, init_sound_player
+from pythongame.core.sound_player import init_sound_player
 from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_main_user_inputs, get_dialog_user_inputs, \
@@ -44,7 +44,10 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
     game_engine = GameEngine(game_state, view_state)
 
     is_paused = False
+
+    # TODO Is this flag needed, now that player re-spawns upon death?
     is_game_over = False
+
     render_hit_and_collision_boxes = False
     mouse_screen_position = (0, 0)
 
@@ -127,10 +130,7 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
         time_passed = Millis(clock.get_time())
 
         if not is_paused and not is_game_over:
-            player_died = game_engine.run_one_frame(time_passed)
-            if player_died:
-                play_sound(SoundId.EVENT_PLAYER_DIED)
-                is_game_over = True
+            game_engine.run_one_frame(time_passed)
 
         # ------------------------------------
         #          RENDER EVERYTHING

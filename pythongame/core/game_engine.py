@@ -15,13 +15,14 @@ from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vector
 from pythongame.core.player_controls import PlayerControls
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view_state import ViewState
-from pythongame.core.visual_effects import create_visual_exp_text
+from pythongame.core.visual_effects import create_visual_exp_text, VisualCircle, VisualRect
 
 
 class GameEngine:
 
     def __init__(self, game_state: GameState, view_state: ViewState):
         self.game_state = game_state
+        self.player_spawn_position = game_state.player_entity.get_position()
         self.view_state = view_state
 
     def initialize(self):
@@ -95,7 +96,6 @@ class GameEngine:
         else:
             self.view_state.set_message("No space for " + consumable_name)
 
-    # Returns True if player died
     def run_one_frame(self, time_passed: Millis):
         for npc in self.game_state.non_player_characters:
             # NonPlayerCharacter AI shouldn't run if enemy is too far out of sight
@@ -235,7 +235,19 @@ class GameEngine:
         self.game_state.center_camera_on_player()
 
         if self.game_state.player_state.health <= 0:
-            return True  # Game over
+            self._spawn_player_after_death()
+
+    def _spawn_player_after_death(self):
+        self.game_state.player_entity.set_position(self.player_spawn_position)
+        self.game_state.player_state.set_health_to_partial_of_max(0.5)
+        self.game_state.player_state.lose_exp_from_death()
+        self.view_state.set_message("Lost exp from dying")
+        play_sound(SoundId.EVENT_PLAYER_DIED)
+        color = (140, 140, 230)
+        effect_position = self.game_state.player_entity.get_center_position()
+        self.game_state.visual_effects.append(VisualCircle(color, effect_position, 17, 35, Millis(150), 1))
+        self.game_state.visual_effects.append(VisualRect(color, effect_position, 37, 50, Millis(150), 1))
+        self.game_state.visual_effects.append(VisualCircle(color, effect_position, 25, 50, Millis(300), 2))
 
     def _is_npc_close_to_camera(self, npc: NonPlayerCharacter):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(
