@@ -37,7 +37,7 @@ class BuyGold(AbstractNpcAction):
         player_has_gold = game_state.player_state.has_item_in_inventory(ITEM_TYPE_GOLD)
         if player_has_gold:
             game_state.player_state.lose_item_from_inventory(ITEM_TYPE_GOLD)
-            game_state.player_state.money += 50
+            game_state.player_state.money += 25
             return "Sold gold nugget"
         else:
             return "You don't have that!"
@@ -52,7 +52,7 @@ def register_dwarf_npc():
     register_npc_behavior(npc_type, NpcMind)
     introdution = "Hello there. I'm always looking for treasure. If you find any, we might be able to strike a deal!"
     dialog_options = [
-        DialogOptionData("Gold nugget [50 gold]", "sell", BuyGold(), UiIconSprite.ITEM_GOLD_NUGGET),
+        DialogOptionData("Gold nugget [25 gold]", "sell", BuyGold(), UiIconSprite.ITEM_GOLD_NUGGET),
         DialogOptionData("\"Good bye\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
     dialog_data = DialogData(PortraitIconSprite.VIKING, introdution, dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)

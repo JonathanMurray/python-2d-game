@@ -62,7 +62,7 @@ def _apply_ability(game_state: GameState) -> bool:
 class Rooted(AbstractBuffEffect):
 
     def __init__(self):
-        self._damage_interval = 666
+        self._damage_interval = 500
         self._time_since_damage = self._damage_interval
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
@@ -73,7 +73,7 @@ class Rooted(AbstractBuffEffect):
         self._time_since_damage += time_passed
         if self._time_since_damage > self._damage_interval:
             self._time_since_damage = 0
-            deal_player_damage_to_enemy(game_state, buffed_npc, 2)
+            deal_player_damage_to_enemy(game_state, buffed_npc, 1)
             game_state.visual_effects.append(
                 VisualCircle((0, 150, 0), buffed_entity.get_center_position(), 30, 55, Millis(150), 2, buffed_entity))
 

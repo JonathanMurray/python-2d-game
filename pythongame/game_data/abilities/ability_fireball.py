@@ -16,7 +16,7 @@ from pythongame.core.visual_effects import VisualCircle
 
 # Note: Projectil size must be smaller than hero entity size (otherwise you get a collision when shooting next to wall)
 PROJECTILE_SIZE = (28, 28)
-MIN_DMG = 2
+MIN_DMG = 3
 MAX_DMG = 4
 
 

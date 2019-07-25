@@ -20,6 +20,8 @@
 * render action text further up for tall entities
 
 #### Sounds:
+* Abilities
+    * mage channeling ability
 * UI
     * drop potion or item
 * using portal
