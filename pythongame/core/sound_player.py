@@ -36,7 +36,8 @@ def init_sound_player():
         SoundId.PLAYER_PAIN: load_sound_file('pain1.ogg', 'pain2.ogg', 'pain3.ogg', 'pain4.ogg'),
         SoundId.ENEMY_ATTACK_GOBLIN_WARLOCK: load_sound_file('Shot08.ogg'),
         SoundId.ENEMY_ATTACK: load_sound_file('enemy_hit.ogg'),
-        SoundId.ENEMY_ATTACK_WAS_BLOCKED: load_sound_file('enemy_hit_blocked_2.ogg', volume=0.5)
+        SoundId.ENEMY_ATTACK_WAS_BLOCKED: load_sound_file('enemy_hit_blocked_2.ogg', volume=0.5),
+        SoundId.UI_ITEM_WAS_MOVED: load_sound_file('UI04.ogg')
     }
 
 

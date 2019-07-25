@@ -24,9 +24,7 @@
     * Sword Slash
     * Stomp
 * UI
-    * drag potion or item
     * drop potion or item
-    * put potion or item in inventory slot
 * using portal
 * goblin death sounds
 * start dialog

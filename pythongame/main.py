@@ -5,11 +5,11 @@ from typing import Optional
 import pygame
 
 import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis, HeroId
+from pythongame.core.common import Millis, HeroId, SoundId
 from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.player_environment_interactions import PlayerInteractionsState
-from pythongame.core.sound_player import init_sound_player
+from pythongame.core.sound_player import init_sound_player, play_sound
 from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_main_user_inputs, get_dialog_user_inputs, \
@@ -202,6 +202,7 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
         if mouse_was_just_released and item_slot_being_dragged:
             if hovered_item_slot_number and item_slot_being_dragged != hovered_item_slot_number:
                 game_engine.switch_inventory_items(item_slot_being_dragged, hovered_item_slot_number)
+                play_sound(SoundId.UI_ITEM_WAS_MOVED)
             if mouse_hover_event.game_world_position:
                 game_engine.drop_inventory_item_on_ground(item_slot_being_dragged,
                                                           mouse_hover_event.game_world_position)
@@ -219,6 +220,7 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
         if mouse_was_just_released and consumable_slot_being_dragged:
             if hovered_consumable_slot_number and consumable_slot_being_dragged != hovered_consumable_slot_number:
                 game_engine.drag_consumable_between_slots(consumable_slot_being_dragged, hovered_consumable_slot_number)
+                play_sound(SoundId.UI_ITEM_WAS_MOVED)
             if mouse_hover_event.game_world_position:
                 game_engine.drop_consumable_on_ground(consumable_slot_being_dragged,
                                                       mouse_hover_event.game_world_position)

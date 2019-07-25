@@ -272,6 +272,7 @@ class SoundId(Enum):
     ENEMY_ATTACK_WAS_BLOCKED = 402
     DEATH_RAT = 500
     DEATH_ZOMBIE = 501
+    UI_ITEM_WAS_MOVED = 600
 
 
 class PortalId(Enum):
