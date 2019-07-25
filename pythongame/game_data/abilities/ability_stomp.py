@@ -14,7 +14,7 @@ STUN_DURATION = Millis(3500)
 CHANNELING_STOMP = BuffType.CHANNELING_STOMP
 STUNNED_BY_STOMP = BuffType.STUNNED_BY_STOMP
 
-MIN_DMG = 3
+MIN_DMG = 2
 MAX_DMG = 5
 
 
@@ -90,7 +90,7 @@ def register_stomp_ability():
     description = "Stun and deal " + str(MIN_DMG) + "-" + str(MAX_DMG) + " damage to all enemies around you."
     register_ability_data(
         ability_type,
-        AbilityData("War Stomp", ui_icon_sprite, 12, Millis(7000), description, None))
+        AbilityData("War Stomp", ui_icon_sprite, 13, Millis(10000), description, None))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/warstomp_icon.png")
     register_buff_effect(CHANNELING_STOMP, ChannelingStomp)
     register_buff_as_channeling(CHANNELING_STOMP)

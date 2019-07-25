@@ -7,7 +7,7 @@ from pythongame.core.game_data import register_entity_sprite_initializer, Sprite
     register_ui_icon_sprite_path, register_consumable_data, ConsumableData, POTION_ENTITY_SIZE, ConsumableCategory
 from pythongame.core.game_state import GameState
 
-HEALING_AMOUNT = 40
+HEALING_AMOUNT = 50
 
 
 def _apply_health(game_state: GameState):

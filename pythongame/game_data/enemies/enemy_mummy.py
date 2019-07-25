@@ -79,7 +79,7 @@ def register_mummy_enemy():
     npc_type = NpcType.MUMMY
     movement_speed = 0.06
     health = 12
-    health_regen = 1
+    health_regen = 1.5
     exp_reward = 10
     npc_data = NpcData.enemy(sprite, size, health, health_regen, movement_speed, exp_reward, LOOT_TABLE_2,
                              SoundId.DEATH_ZOMBIE)

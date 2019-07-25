@@ -32,11 +32,11 @@ def register_hero_warrior():
 def _get_initial_player_state_warrior() -> InitialPlayerStateData:
     health = 60
     mana = 40
-    mana_regen = 1
+    mana_regen = 2
     health_per_level = 15
     mana_per_level = 5
     level_bonus = PlayerLevelBonus(health_per_level, mana_per_level)
-    armor = 2
+    armor = 3
     consumable_slots = {
         1: ConsumableType.HEALTH_LESSER,
         2: ConsumableType.HEALTH_LESSER,

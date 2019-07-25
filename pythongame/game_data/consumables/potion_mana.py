@@ -7,7 +7,7 @@ from pythongame.core.game_data import register_ui_icon_sprite_path, register_ent
 from pythongame.core.game_state import GameState
 from pythongame.core.visual_effects import create_visual_mana_text
 
-MANA_AMOUNT = 150
+MANA_AMOUNT = 100
 
 
 def _apply_mana(game_state: GameState):

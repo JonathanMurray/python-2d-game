@@ -12,7 +12,7 @@ from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacte
 ABILITY_TYPE = AbilityType.INFUSE_DAGGER
 BUFF_CHANNELING = BuffType.CHANNELING_INFUSE_DAGGER
 BUFF_INFUSED = BuffType.HAS_INFUSED_DAGGER
-DEBUFF_SPEED_DECREASE = 0.5
+DEBUFF_SPEED_DECREASE = 0.7
 DEBUFF = BuffType.DAMAGED_BY_INFUSED_DAGGER
 
 
@@ -72,8 +72,9 @@ def register_infuse_dagger_ability():
     register_ability_effect(ABILITY_TYPE, _apply_ability)
     description = "Add a debuff to your next Shiv: periodic damage and " + "{:.0f}".format(
         DEBUFF_SPEED_DECREASE * 100) + "% slow."
+    mana_cost = 35
     ability_data = AbilityData(
-        "Infuse Dagger", ui_icon_sprite, 25, Millis(20000), description, SoundId.ABILITY_INFUSE_DAGGER)
+        "Infuse Dagger", ui_icon_sprite, mana_cost, Millis(20000), description, SoundId.ABILITY_INFUSE_DAGGER)
     register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/ability_infuse_dagger.png")
     register_buff_effect(BUFF_CHANNELING, ChannelingInfuseDagger)

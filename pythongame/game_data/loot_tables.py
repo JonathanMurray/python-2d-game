@@ -32,18 +32,24 @@ LOOT_POTIONS_1 = [
     LootEntry.consumable(ConsumableType.MANA_LESSER)
 ]
 
+LOOT_POTIONS_2 = [
+    LootEntry.consumable(ConsumableType.HEALTH),
+    LootEntry.consumable(ConsumableType.MANA),
+    LootEntry.consumable(ConsumableType.SPEED)
+]
+
 LOOT_TABLE_1 = LootTable([LootGroup.single(LootEntry.money(1), 0.1), LootGroup(1, LOOT_POTIONS_1, 0.05)])
 
 LOOT_TABLE_2 = LootTable([
     LootGroup(1, [LootEntry.money(1), LootEntry.money(2)], 0.6),
-    LootGroup(1, LOOT_POTIONS_1, 0.2),
+    LootGroup(1, LOOT_POTIONS_1 + LOOT_POTIONS_2, 0.2),
     LootGroup(1, LOOT_ITEMS_1, 0.05),
     LootGroup.single(LootEntry.item(ItemType.GOLD_NUGGET), 0.015)
 ])
 
 LOOT_TABLE_3 = LootTable([
     LootGroup(1, [LootEntry.money(1), LootEntry.money(2)], 0.4),
-    LootGroup(1, LOOT_POTIONS_1, 0.2),
+    LootGroup(1, LOOT_POTIONS_1 + LOOT_POTIONS_2, 0.2),
     LootGroup(1, LOOT_ITEMS_1 + LOOT_ITEMS_2, 0.2),
     LootGroup.single(LootEntry.item(ItemType.GOLD_NUGGET), 0.1)
 ])

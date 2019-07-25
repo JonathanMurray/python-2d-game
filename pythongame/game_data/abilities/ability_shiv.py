@@ -16,7 +16,7 @@ MAX_DMG = 4
 
 def _apply_ability(game_state: GameState) -> bool:
     player_entity = game_state.player_entity
-    rect_w = 36
+    rect_w = 28
     # Note: We assume that this ability is used by this specific hero
     hero_entity_size = HEROES[HeroId.ROGUE].entity_size
     slash_pos = translate_in_direction(

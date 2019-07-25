@@ -11,7 +11,7 @@ from pythongame.core.math import translate_in_direction
 from pythongame.core.visual_effects import VisualRect
 
 MIN_DMG = 2
-MAX_DMG = 4
+MAX_DMG = 5
 
 
 def _apply_ability(game_state: GameState) -> bool:

@@ -12,7 +12,7 @@ from pythongame.core.visual_effects import VisualCircle
 ABILITY_TYPE = AbilityType.SNEAK
 BUFF_SNEAK = BuffType.SNEAKING
 BUFF_POST_SNEAK = BuffType.AFTER_SNEAKING
-DURATION_SNEAK = Millis(10000)
+DURATION_SNEAK = Millis(15000)
 DURATION_POST_SNEAK = Millis(2500)
 SPEED_DECREASE = 0.3
 DAMAGE_BONUS = 1
@@ -78,7 +78,8 @@ def register_sneak_ability():
     description = "Become invisible. Afterwards, gain " \
                   + str(DAMAGE_BONUS * 100) + "% dmg and +" + str(ARMOR_BONUS) + " armor for " \
                   + "{:.1f}".format(DURATION_POST_SNEAK / 1000) + "s]"
-    ability_data = AbilityData("Sneak", ui_icon_sprite, 10, Millis(10000), description, SoundId.ABILITY_SNEAK)
+    mana_cost = 20
+    ability_data = AbilityData("Sneak", ui_icon_sprite, mana_cost, Millis(10000), description, SoundId.ABILITY_SNEAK)
     register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/sneak_icon.png")
     register_buff_effect(BUFF_SNEAK, Sneaking)

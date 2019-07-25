@@ -78,7 +78,7 @@ class NpcMind(AbstractNpcMind):
 
 def register_necromancer_enemy():
     size = (50, 60)
-    health = 25
+    health = 33
     loot = LootTable([
         LootGroup(1, [LootEntry.money(1), LootEntry.money(2), LootEntry.money(3)], 0.9),
         LootGroup.single(LootEntry.money(1), 0.4),

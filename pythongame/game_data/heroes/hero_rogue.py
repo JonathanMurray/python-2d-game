@@ -35,11 +35,11 @@ def register_hero_rogue():
 def _get_initial_player_state_rogue() -> InitialPlayerStateData:
     health = 50
     mana = 50
-    mana_regen = 1
+    mana_regen = 2.5
     health_per_level = 10
     mana_per_level = 10
     level_bonus = PlayerLevelBonus(health_per_level, mana_per_level)
-    armor = 1
+    armor = 2
     consumable_slots = {
         1: ConsumableType.HEALTH_LESSER,
         2: ConsumableType.HEALTH_LESSER,
@@ -47,7 +47,7 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
         4: None,
         5: None
     }
-    abilities = [AbilityType.SHIV, AbilityType.SNEAK, AbilityType.INFUSE_DAGGER, AbilityType.DASH]
+    abilities = [AbilityType.SHIV]
     items: Dict[int, ItemType] = {
         1: None,
         2: None,
@@ -56,6 +56,10 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
         5: None,
         6: None
     }
-    new_level_abilities = {}
+    new_level_abilities = {
+        3: AbilityType.SNEAK,
+        5: AbilityType.DASH,
+        7: AbilityType.INFUSE_DAGGER
+    }
     return InitialPlayerStateData(
         health, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities, HERO_ID, armor, level_bonus)
