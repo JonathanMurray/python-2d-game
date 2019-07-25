@@ -14,8 +14,8 @@ STUN_DURATION = Millis(3500)
 CHANNELING_STOMP = BuffType.CHANNELING_STOMP
 STUNNED_BY_STOMP = BuffType.STUNNED_BY_STOMP
 
-MIN_DMG = 6
-MAX_DMG = 8
+MIN_DMG = 3
+MAX_DMG = 5
 
 
 def _apply_ability(game_state: GameState) -> bool:
