@@ -28,7 +28,6 @@
     * drop potion or item
     * put potion or item in inventory slot
 * using portal
-* armor blocking damage
 * goblin death sounds
 * start dialog
 

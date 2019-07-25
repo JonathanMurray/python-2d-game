@@ -32,8 +32,11 @@ def init_sound_player():
         SoundId.DEATH_RAT: load_sound_file('rat_death.ogg', volume=2),
         SoundId.DEATH_ZOMBIE: load_sound_file('zombie_death.ogg', 'zombie_death_2.ogg'),
         SoundId.WARNING: load_sound_file('UI06.ogg'),
+        SoundId.INVALID_ACTION: load_sound_file('invalid_action.ogg'),
         SoundId.PLAYER_PAIN: load_sound_file('pain1.ogg', 'pain2.ogg', 'pain3.ogg', 'pain4.ogg'),
-        SoundId.ENEMY_ATTACK_GOBLIN_WARLOCK: load_sound_file('Shot08.ogg')
+        SoundId.ENEMY_ATTACK_GOBLIN_WARLOCK: load_sound_file('Shot08.ogg'),
+        SoundId.ENEMY_ATTACK: load_sound_file('enemy_hit.ogg'),
+        SoundId.ENEMY_ATTACK_WAS_BLOCKED: load_sound_file('enemy_hit_blocked_2.ogg', volume=0.5)
     }
 
 

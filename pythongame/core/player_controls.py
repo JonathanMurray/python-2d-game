@@ -1,5 +1,5 @@
 from pythongame.core.ability_effects import apply_ability_effect
-from pythongame.core.common import AbilityType, SoundId
+from pythongame.core.common import AbilityType, SoundId, Millis
 from pythongame.core.consumable_effects import try_consume_consumable, ConsumableWasConsumed, \
     ConsumableFailedToBeConsumed
 from pythongame.core.game_data import ABILITIES
@@ -24,8 +24,9 @@ class PlayerControls:
             return
 
         if player_state.mana < mana_cost:
-            play_sound(SoundId.WARNING)
+            play_sound(SoundId.INVALID_ACTION)
             view_state.set_message("Not enough mana!")
+            player_state.ability_cooldowns_remaining[ability_type] = Millis(500)
             return
 
         did_execute = apply_ability_effect(game_state, ability_type)
@@ -40,6 +41,8 @@ class PlayerControls:
             return
         else:
             view_state.set_message("Failed to execute ability!")
+            play_sound(SoundId.INVALID_ACTION)
+            player_state.ability_cooldowns_remaining[ability_type] = Millis(500)
 
     @staticmethod
     def try_use_consumable(slot_number: int, game_state: GameState, view_state: ViewState):

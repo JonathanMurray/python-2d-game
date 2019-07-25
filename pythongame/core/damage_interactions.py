@@ -36,8 +36,12 @@ def deal_damage_to_player(game_state: GameState, base_amount: float, npc_attacke
     health_lost = player_state.lose_health(amount)
     if health_lost > 0:
         game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, health_lost))
-        play_sound(SoundId.PLAYER_PAIN)
+        play_sound(SoundId.ENEMY_ATTACK)
+        if random.random() < 0.3:
+            play_sound(SoundId.PLAYER_PAIN)
         player_state.notify_about_event(PlayerLostHealthEvent(health_lost, npc_attacker), game_state)
+    else:
+        play_sound(SoundId.ENEMY_ATTACK_WAS_BLOCKED)
 
 
 def deal_npc_damage_to_npc(game_state: GameState, target: NonPlayerCharacter, amount: float):
