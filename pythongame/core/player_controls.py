@@ -59,8 +59,10 @@ class PlayerControls:
                         view_state.set_message(result.message)
                     play_sound(SoundId.POTION)
                 elif isinstance(result, ConsumableFailedToBeConsumed):
+                    play_sound(SoundId.INVALID_ACTION)
                     view_state.set_message(result.reason)
             else:
+                play_sound(SoundId.INVALID_ACTION)
                 view_state.set_message("Nothing to use!")
 
     # TODO Move more player controls into this package?

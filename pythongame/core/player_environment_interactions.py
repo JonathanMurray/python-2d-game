@@ -2,13 +2,14 @@ import sys
 from typing import Optional, List
 
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect
-from pythongame.core.common import Direction, BuffType
+from pythongame.core.common import Direction, BuffType, SoundId
 from pythongame.core.game_data import PORTALS
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, LootableOnGround, Portal
 from pythongame.core.math import boxes_intersect, translate_in_direction, is_x_and_y_within_distance, \
     get_manhattan_distance_between_rects
 from pythongame.core.npc_behaviors import invoke_npc_action, has_npc_dialog, get_dialog_graphics, get_dialog_data
+from pythongame.core.sound_player import play_sound
 from pythongame.core.view import EntityActionText, DialogGraphics
 from pythongame.core.view_state import ViewState
 
@@ -61,6 +62,7 @@ class PlayerInteractionsState:
                 # case that you want to talk to the same NPC rapidly over and over (to buy potions for example)
                 self.active_dialog_option_index = 0
             self.npc_ready_for_dialog = None
+            play_sound(SoundId.DIALOG)
         elif self.npc_active_in_dialog:
             message = invoke_npc_action(self.npc_active_in_dialog.npc_type, self.active_dialog_option_index, game_state)
             if message:
@@ -106,3 +108,4 @@ class PlayerInteractionsState:
     def change_dialog_option(self, option_index_delta: int):
         num_options = len(get_dialog_data(self.npc_active_in_dialog.npc_type).options)
         self.active_dialog_option_index = (self.active_dialog_option_index + option_index_delta) % num_options
+        play_sound(SoundId.DIALOG)

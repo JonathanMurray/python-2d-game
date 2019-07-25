@@ -2,7 +2,7 @@ import random
 
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import get_buff_effect
-from pythongame.core.common import AbilityType, Millis, BuffType, HeroId, UiIconSprite
+from pythongame.core.common import AbilityType, Millis, BuffType, HeroId, UiIconSprite, SoundId
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     HEROES
@@ -44,5 +44,5 @@ def register_sword_slash_ability():
     description = "Deal " + str(MIN_DMG) + "-" + str(MAX_DMG) + " damage to enemies in front of you."
     register_ability_data(
         ability_type,
-        AbilityData("Slash", ui_icon_sprite, 0, Millis(700), description, None))
+        AbilityData("Slash", ui_icon_sprite, 0, Millis(700), description, SoundId.ABILITY_SLASH))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_slash.png")

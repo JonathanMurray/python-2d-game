@@ -194,6 +194,7 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
         if mouse_was_just_clicked and hovered_item_slot_number:
             if game_state.player_state.item_slots[hovered_item_slot_number]:
                 item_slot_being_dragged = hovered_item_slot_number
+                play_sound(SoundId.UI_START_DRAGGING_ITEM)
 
         if item_slot_being_dragged:
             item_type = game_state.player_state.item_slots[item_slot_being_dragged].get_item_type()
@@ -211,6 +212,7 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
         if mouse_was_just_clicked and hovered_consumable_slot_number:
             if game_state.player_state.consumable_inventory.consumables_in_slots[hovered_consumable_slot_number]:
                 consumable_slot_being_dragged = hovered_consumable_slot_number
+                play_sound(SoundId.UI_START_DRAGGING_ITEM)
 
         if consumable_slot_being_dragged:
             consumable_type = game_state.player_state.consumable_inventory.consumables_in_slots[

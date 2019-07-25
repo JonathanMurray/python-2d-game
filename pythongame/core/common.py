@@ -73,7 +73,6 @@ class WallType(Enum):
     BARREL_6 = 55
 
 
-
 class AbilityType(Enum):
     HEAL = 1
     FIREBALL = 2
@@ -257,6 +256,9 @@ class SoundId(Enum):
     ABILITY_SNEAK = 7
     ABILITY_INFUSE_DAGGER = 8
     ABILITY_DASH = 9
+    ABILITY_SLASH = 10
+    ABILITY_STOMP = 11
+    ABILITY_BLOODLUST = 12
     POTION = 50
     EVENT_PLAYER_LEVELED_UP = 100
     EVENT_PICKED_UP = 101
@@ -273,6 +275,8 @@ class SoundId(Enum):
     DEATH_RAT = 500
     DEATH_ZOMBIE = 501
     UI_ITEM_WAS_MOVED = 600
+    UI_START_DRAGGING_ITEM = 601
+    DIALOG = 700
 
 
 class PortalId(Enum):

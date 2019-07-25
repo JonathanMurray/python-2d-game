@@ -2,11 +2,12 @@ import random
 
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
-from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite
+from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_as_channeling
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import VisualRect, VisualCircle
 
 STUN_DURATION = Millis(3500)
@@ -62,6 +63,7 @@ class ChannelingStomp(AbstractBuffEffect):
             deal_player_damage_to_enemy(game_state, enemy, damage)
             enemy.gain_buff_effect(get_buff_effect(STUNNED_BY_STOMP), STUN_DURATION)
         game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(300))
+        play_sound(SoundId.ABILITY_STOMP)
 
     def get_buff_type(self):
         return CHANNELING_STOMP

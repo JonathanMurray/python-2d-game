@@ -22,6 +22,9 @@ def init_sound_player():
         SoundId.ABILITY_SNEAK: load_sound_file('stealth.ogg', volume=3),
         SoundId.ABILITY_INFUSE_DAGGER: load_sound_file('poison.ogg', volume=5),
         SoundId.ABILITY_DASH: load_sound_file('dash.ogg', volume=5),
+        SoundId.ABILITY_SLASH: load_sound_file('Slash02.ogg'),
+        SoundId.ABILITY_STOMP: load_sound_file('Slash01.ogg'),
+        SoundId.ABILITY_BLOODLUST: load_sound_file('bloodlust.ogg'),
         SoundId.POTION: load_sound_file('PowerUp04.ogg'),
         SoundId.EVENT_PLAYER_LEVELED_UP: load_sound_file('PowerUp02.ogg'),
         SoundId.EVENT_PICKED_UP: load_sound_file('UI01.ogg'),
@@ -37,7 +40,9 @@ def init_sound_player():
         SoundId.ENEMY_ATTACK_GOBLIN_WARLOCK: load_sound_file('Shot08.ogg'),
         SoundId.ENEMY_ATTACK: load_sound_file('enemy_hit.ogg'),
         SoundId.ENEMY_ATTACK_WAS_BLOCKED: load_sound_file('enemy_hit_blocked_2.ogg', volume=0.5),
-        SoundId.UI_ITEM_WAS_MOVED: load_sound_file('UI04.ogg')
+        SoundId.UI_ITEM_WAS_MOVED: load_sound_file('UI04.ogg'),
+        SoundId.UI_START_DRAGGING_ITEM: load_sound_file('drag.ogg'),
+        SoundId.DIALOG: load_sound_file('UI04.ogg'),
     }
 
 
@@ -55,5 +60,5 @@ def play_sound(sound_id: SoundId):
 def load_sound_file(*filenames, volume: float = 1):
     sounds = [pygame.mixer.Sound('./resources/sound/' + filename) for filename in filenames]
     for sound in sounds:
-        sound.set_volume(0.1 * volume)
+        sound.set_volume(0.3 * volume)
     return sounds

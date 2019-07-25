@@ -20,14 +20,10 @@
 * render action text further up for tall entities
 
 #### Sounds:
-* Warrior abilities
-    * Sword Slash
-    * Stomp
 * UI
     * drop potion or item
 * using portal
 * goblin death sounds
-* start dialog
 
 #### Features:
 * New heroes

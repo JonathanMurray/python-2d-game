@@ -2,7 +2,7 @@ from typing import Optional
 
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
-from pythongame.core.common import BuffType, Millis, AbilityType, UiIconSprite
+from pythongame.core.common import BuffType, Millis, AbilityType, UiIconSprite, SoundId
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, BuffEventOutcome, \
@@ -58,7 +58,7 @@ def register_bloodlust_ability():
                   "{:.0f}".format(KILL_DURATION_INCREASE_BONUS / 1000) + "s for each enemy killed."
     register_ability_data(
         ability_type,
-        AbilityData("Bloodlust", ui_icon_sprite, 25, COOLDOWN, description, None))
+        AbilityData("Bloodlust", ui_icon_sprite, 25, COOLDOWN, description, SoundId.ABILITY_BLOODLUST))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_bloodlust.png")
     register_buff_effect(BUFF_TYPE, BloodLust)
     register_buff_text(BUFF_TYPE, "Bloodlust")
