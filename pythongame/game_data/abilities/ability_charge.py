@@ -32,7 +32,7 @@ class Charging(AbstractBuffEffect):
         self.time_since_start = 0
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.add_stun()
+        game_state.player_state.stun_status.add_one()
         game_state.player_entity.add_to_speed_multiplier(BONUS_SPEED_MULTIPLIER)
         game_state.player_entity.set_moving_in_dir(game_state.player_entity.direction)
 
@@ -74,7 +74,7 @@ class Charging(AbstractBuffEffect):
         return False
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.remove_stun()
+        game_state.player_state.stun_status.remove_one()
         game_state.player_entity.add_to_speed_multiplier(-BONUS_SPEED_MULTIPLIER)
 
     def get_buff_type(self):
@@ -85,16 +85,16 @@ class StunnedFromCharge(AbstractBuffEffect):
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         if buffed_npc:
-            buffed_npc.add_stun()
+            buffed_npc.stun_status.add_one()
         else:
-            game_state.player_state.add_stun()
+            game_state.player_state.stun_status.add_one()
         buffed_entity.set_not_moving()
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         if buffed_npc:
-            buffed_npc.remove_stun()
+            buffed_npc.stun_status.remove_one()
         else:
-            game_state.player_state.remove_stun()
+            game_state.player_state.stun_status.remove_one()
 
     def get_buff_type(self):
         return BUFF_TYPE_STUNNED

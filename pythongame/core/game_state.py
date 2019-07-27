@@ -214,6 +214,22 @@ class HealthOrManaResource:
         return self.base_regen + self.regen_bonus
 
 
+class StunStatus:
+    def __init__(self):
+        self._number_of_active_stuns = 0
+
+    def add_one(self):
+        self._number_of_active_stuns += 1
+
+    def remove_one(self):
+        self._number_of_active_stuns -= 1
+        if self._number_of_active_stuns < 0:
+            raise Exception("Number of active stuns went below 0 down to " + str(self._number_of_active_stuns))
+
+    def is_stunned(self):
+        return self._number_of_active_stuns > 0
+
+
 class NonPlayerCharacter:
     def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health_resource: HealthOrManaResource,
                  npc_mind, npc_category: NpcCategory,
@@ -225,7 +241,7 @@ class NonPlayerCharacter:
         self.npc_mind = npc_mind
         self.active_buffs: List[BuffWithDuration] = []
         self.invulnerable: bool = False
-        self._number_of_active_stuns = 0
+        self.stun_status = StunStatus()
         self.npc_category = npc_category
         self.is_enemy = npc_category == NpcCategory.ENEMY
         self.is_neutral = npc_category == NpcCategory.NEUTRAL
@@ -242,17 +258,6 @@ class NonPlayerCharacter:
             existing_buffs_with_this_type[0].set_remaining_duration(duration)
         else:
             self.active_buffs.append(BuffWithDuration(buff, duration))
-
-    def add_stun(self):
-        self._number_of_active_stuns += 1
-
-    def remove_stun(self):
-        self._number_of_active_stuns -= 1
-        if self._number_of_active_stuns < 0:
-            raise Exception("Number of active stuns went below 0 down to " + str(self._number_of_active_stuns))
-
-    def is_stunned(self):
-        return self._number_of_active_stuns > 0
 
 
 class Wall:
@@ -346,7 +351,7 @@ class PlayerState:
         self.ability_cooldowns_remaining = {ability_type: 0 for ability_type in abilities}
         self.active_buffs: List[BuffWithDuration] = []
         self.is_invisible = False
-        self._number_of_active_stuns = 0
+        self.stun_status = StunStatus()
         self.item_slots = item_slots  # Values are of type AbstractItemEffect
         self.life_steal_ratio: float = 0
         self.exp = 0
@@ -437,17 +442,6 @@ class PlayerState:
     def gain_ability(self, ability_type: AbilityType):
         self.ability_cooldowns_remaining[ability_type] = 0
         self.abilities.append(ability_type)
-
-    def add_stun(self):
-        self._number_of_active_stuns += 1
-
-    def remove_stun(self):
-        self._number_of_active_stuns -= 1
-        if self._number_of_active_stuns < 0:
-            raise Exception("Number of active stuns went below 0 down to " + str(self._number_of_active_stuns))
-
-    def is_stunned(self):
-        return self._number_of_active_stuns > 0
 
     def notify_about_event(self, event: Event, game_state):
         for buff in self.active_buffs:

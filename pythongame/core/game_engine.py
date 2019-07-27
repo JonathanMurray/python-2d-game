@@ -37,12 +37,12 @@ class GameEngine:
         PlayerControls.try_use_consumable(slot_number, self.game_state, self.view_state)
 
     def move_in_direction(self, direction: Direction):
-        if not self.game_state.player_state.is_stunned():
+        if not self.game_state.player_state.stun_status.is_stunned():
             self.game_state.player_entity.set_moving_in_dir(direction)
 
     def stop_moving(self):
         # Don't stop moving if stunned (could be charging)
-        if not self.game_state.player_state.is_stunned():
+        if not self.game_state.player_state.stun_status.is_stunned():
             self.game_state.player_entity.set_not_moving()
 
     def switch_inventory_items(self, slot_1: int, slot_2: int):
@@ -99,7 +99,7 @@ class GameEngine:
     def run_one_frame(self, time_passed: Millis):
         for npc in self.game_state.non_player_characters:
             # NonPlayerCharacter AI shouldn't run if enemy is too far out of sight
-            if self._is_npc_close_to_camera(npc) and not npc.is_stunned():
+            if self._is_npc_close_to_camera(npc) and not npc.stun_status.is_stunned():
                 npc.npc_mind.control_npc(self.game_state, npc, self.game_state.player_entity,
                                          self.game_state.player_state.is_invisible, time_passed)
 
@@ -174,7 +174,7 @@ class GameEngine:
 
         for npc in self.game_state.non_player_characters:
             # Enemies shouldn't move towards player when they are out of sight
-            if self._is_npc_close_to_camera(npc) and not npc.is_stunned():
+            if self._is_npc_close_to_camera(npc) and not npc.stun_status.is_stunned():
                 self.game_state.update_npc_position_within_game_world(npc, time_passed)
         # player can still move when stunned (could be charging)
         self.game_state.update_world_entity_position_within_game_world(self.game_state.player_entity, time_passed)

@@ -66,7 +66,7 @@ class Rooted(AbstractBuffEffect):
         self._time_since_damage = self._damage_interval
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        buffed_npc.add_stun()
+        buffed_npc.stun_status.add_one()
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
@@ -78,7 +78,7 @@ class Rooted(AbstractBuffEffect):
                 VisualCircle((0, 150, 0), buffed_entity.get_center_position(), 30, 55, Millis(150), 2, buffed_entity))
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        buffed_npc.remove_stun()
+        buffed_npc.stun_status.remove_one()
 
     def get_buff_type(self):
         return BUFF_TYPE

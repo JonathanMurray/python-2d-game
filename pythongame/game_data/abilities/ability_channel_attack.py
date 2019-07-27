@@ -25,7 +25,7 @@ class ChannelingMagicMissiles(AbstractBuffEffect):
         self._time_since_firing = 0
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.add_stun()
+        game_state.player_state.stun_status.add_one()
         game_state.player_entity.set_not_moving()
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
@@ -42,7 +42,7 @@ class ChannelingMagicMissiles(AbstractBuffEffect):
             game_state.visual_effects.append(VisualRect((250, 0, 250), player_center_position, 45, 60, Millis(250), 1))
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.remove_stun()
+        game_state.player_state.stun_status.remove_one()
 
     def get_buff_type(self):
         return BuffType.CHANNELING_MAGIC_MISSILES

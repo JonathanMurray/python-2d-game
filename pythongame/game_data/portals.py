@@ -18,7 +18,7 @@ class BeingTeleported(AbstractBuffEffect):
         self.has_teleport_happened = False
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.add_stun()
+        game_state.player_state.stun_status.add_one()
         game_state.player_entity.set_not_moving()
         effect_position = buffed_entity.get_center_position()
         color = (140, 140, 230)
@@ -40,7 +40,7 @@ class BeingTeleported(AbstractBuffEffect):
             game_state.visual_effects.append(VisualCircle(color, effect_position, 25, 50, Millis(300), 2))
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.remove_stun()
+        game_state.player_state.stun_status.remove_one()
         game_state.player_entity.visible = True
 
     def get_buff_type(self):

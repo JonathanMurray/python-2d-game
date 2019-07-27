@@ -30,7 +30,7 @@ class ChannelingStomp(AbstractBuffEffect):
         self.graphics_size = 40
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.add_stun()
+        game_state.player_state.stun_status.add_one()
         game_state.player_entity.set_not_moving()
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
@@ -48,7 +48,7 @@ class ChannelingStomp(AbstractBuffEffect):
         return False
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.remove_stun()
+        game_state.player_state.stun_status.remove_one()
         hero_center_pos = game_state.player_entity.get_center_position()
         distance = 80
         affected_enemies = game_state.get_enemies_within_x_y_distance_of(distance, hero_center_pos)
@@ -72,11 +72,11 @@ class ChannelingStomp(AbstractBuffEffect):
 class StunnedFromStomp(AbstractBuffEffect):
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        buffed_npc.add_stun()
+        buffed_npc.stun_status.add_one()
         buffed_entity.set_not_moving()
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        buffed_npc.remove_stun()
+        buffed_npc.stun_status.remove_one()
 
     def get_buff_type(self):
         return STUNNED_BY_STOMP
