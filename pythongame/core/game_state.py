@@ -157,7 +157,8 @@ class HealthOrManaResource:
         self._value_float = max_value
         self.value = max_value
         self.max_value = max_value
-        self.regen = regen
+        self.base_regen = regen
+        self.regen_bonus = 0
 
     def gain(self, amount: float) -> int:
         value_before = self.value
@@ -189,7 +190,7 @@ class HealthOrManaResource:
         self.value = int(math.floor(self._value_float))
 
     def regenerate(self, time_passed: Millis):
-        self.gain(self.regen / 1000.0 * float(time_passed))
+        self.gain(self.get_effective_regen() / 1000.0 * float(time_passed))
 
     def is_at_max(self):
         return self.value == self.max_value
@@ -208,6 +209,9 @@ class HealthOrManaResource:
 
     def get_partial(self) -> float:
         return self.value / self.max_value
+
+    def get_effective_regen(self) -> float:
+        return self.base_regen + self.regen_bonus
 
 
 class NonPlayerCharacter:
@@ -331,17 +335,12 @@ class BuffEventOutcome:
 
 
 class PlayerState:
-    def __init__(self, health_resource: HealthOrManaResource, mana: int, max_mana: int, mana_regen: float,
+    def __init__(self, health_resource: HealthOrManaResource, mana_resource: HealthOrManaResource,
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
                  item_slots: Dict[int, Any], new_level_abilities: Dict[int, AbilityType], hero_id: HeroId, armor: int,
                  level_bonus: PlayerLevelBonus):
         self.health_resource: HealthOrManaResource = health_resource
-        self.mana = mana
-        self._mana_float = mana
-        self.max_mana = max_mana
-        self.base_mana_regen: float = mana_regen  # depends on which hero is being played
-        self.mana_regen_bonus: float = 0  # affected by items/buffs. [Change it additively]
-
+        self.mana_resource: HealthOrManaResource = mana_resource
         self.consumable_inventory = consumable_inventory
         self.abilities: List[AbilityType] = abilities
         self.ability_cooldowns_remaining = {ability_type: 0 for ability_type in abilities}
@@ -363,27 +362,6 @@ class PlayerState:
         self.armor_bonus: int = 0  # affected by items/buffs. [Change it additively]
         self.level_bonus = level_bonus
 
-    def gain_mana(self, amount: float):
-        self._mana_float = min(self._mana_float + amount, self.max_mana)
-        self.mana = int(math.floor(self._mana_float))
-
-    def lose_mana(self, amount: float):
-        self._mana_float -= amount
-        self.mana = int(math.floor(self._mana_float))
-
-    def gain_full_mana(self):
-        self._mana_float = self.max_mana
-        self.mana = self.max_mana
-
-    def gain_max_mana(self, amount: int):
-        self.max_mana += amount
-
-    def lose_max_mana(self, amount: int):
-        self.max_mana -= amount
-        if self.mana > self.max_mana:
-            self._mana_float = self.max_mana
-            self.mana = int(math.floor(self._mana_float))
-
     def find_first_empty_item_slot(self) -> Optional[int]:
         empty_slots = [slot for slot in self.item_slots if not self.item_slots[slot]]
         if empty_slots:
@@ -401,10 +379,6 @@ class PlayerState:
 
     def has_active_buff(self, buff_type: BuffType):
         return len([b for b in self.active_buffs if b.buff_effect.get_buff_type() == buff_type]) > 0
-
-    def regenerate_health_and_mana(self, time_passed: Millis):
-        self.gain_mana((self.base_mana_regen + self.mana_regen_bonus) / 1000.0 * float(time_passed))
-        self.health_resource.regenerate(time_passed)
 
     def recharge_ability_cooldowns(self, time_passed: Millis):
         for ability_type in self.ability_cooldowns_remaining:
@@ -454,9 +428,9 @@ class PlayerState:
 
     def update_stats_for_new_level(self):
         self.health_resource.increase_max(self.level_bonus.health)
-        self.max_mana += self.level_bonus.mana
         self.health_resource.gain_to_max()
-        self.gain_full_mana()
+        self.mana_resource.increase_max(self.level_bonus.mana)
+        self.mana_resource.gain_to_max()
         self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.4)
         self.base_damage_modifier *= 1.1
 

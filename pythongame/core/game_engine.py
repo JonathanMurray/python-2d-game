@@ -162,7 +162,8 @@ class GameEngine:
             if item_effect:
                 item_effect.apply_middle_effect(self.game_state, time_passed)
 
-        self.game_state.player_state.regenerate_health_and_mana(time_passed)
+        self.game_state.player_state.health_resource.regenerate(time_passed)
+        self.game_state.player_state.mana_resource.regenerate(time_passed)
         self.game_state.player_state.recharge_ability_cooldowns(time_passed)
 
         self.game_state.player_entity.update_movement_animation(time_passed)

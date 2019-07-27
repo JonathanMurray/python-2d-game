@@ -16,7 +16,7 @@ class ItemEffect(AbstractItemEffect):
 
     def item_handle_event(self, event: Event, game_state: GameState):
         if isinstance(event, EnemyDiedEvent):
-            game_state.player_state.gain_mana(self.amount)
+            game_state.player_state.mana_resource.gain(self.amount)
 
     def get_item_type(self):
         return self.item_type

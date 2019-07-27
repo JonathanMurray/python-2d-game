@@ -76,6 +76,7 @@ def create_player_state(hero_id: HeroId) -> PlayerState:
                                in data.item_slots.items()}
     consumable_inventory = ConsumableInventory(data.consumable_slots)
     health_resource = HealthOrManaResource(data.health, 0)
+    mana_resource = HealthOrManaResource(data.mana, data.mana_regen)
     return PlayerState(
-        health_resource, data.mana, data.mana, data.mana_regen, consumable_inventory, data.abilities,
+        health_resource, mana_resource, consumable_inventory, data.abilities,
         item_slots_with_effects, data.new_level_abilities, data.hero_id, data.armor, data.level_bonus)

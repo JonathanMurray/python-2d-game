@@ -538,9 +538,8 @@ class View:
 
         player_health = player_state.health_resource.value
         player_max_health = player_state.health_resource.max_value
-        player_health_regen = player_state.health_resource.regen
-        player_max_mana = player_state.max_mana
-        player_mana = player_state.mana
+        player_max_mana = player_state.mana_resource.max_value
+        player_mana = player_state.mana_resource.value
         player_life_steal = player_state.life_steal_ratio
         player_active_buffs = player_state.active_buffs
         consumable_slots = player_state.consumable_inventory.consumables_in_slots
@@ -596,7 +595,8 @@ class View:
                              player_health / player_max_health, (200, 0, 50), True)
         if is_point_in_rect(mouse_ui_position, rect_healthbar):
             tooltip_title = "Health"
-            tooltip_details = ["regeneration: " + "{:.1f}".format(player_health_regen) + "/s"]
+            tooltip_details = [
+                "regeneration: " + "{:.1f}".format(player_state.health_resource.get_effective_regen()) + "/s"]
             tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_healthbar[0], rect_healthbar[1]))
         health_text = str(player_health) + "/" + str(player_max_health)
         self._text_in_ui(self.font_ui_stat_bar_numbers, health_text, (x_0 + 20, y_4 - 1))
@@ -607,7 +607,7 @@ class View:
         if is_point_in_rect(mouse_ui_position, rect_manabar):
             tooltip_title = "Mana"
             tooltip_details = [
-                "regeneration: " + "{:.1f}".format(player_state.base_mana_regen + player_state.mana_regen_bonus) + "/s"]
+                "regeneration: " + "{:.1f}".format(player_state.mana_resource.get_effective_regen()) + "/s"]
             tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_manabar[0], rect_manabar[1]))
         mana_text = str(player_mana) + "/" + str(player_max_mana)
         self._text_in_ui(self.font_ui_stat_bar_numbers, mana_text, (x_0 + 20, y_4 + 20))
@@ -725,11 +725,13 @@ class View:
         # STATS
         x_stats = 555
         health_regen_text = \
-            "  health reg: " + "{:.1f}".format(player_health_regen)
+            "  health reg: " + "{:.1f}".format(player_state.health_resource.base_regen)
+        if player_state.health_resource.regen_bonus > 0:
+            health_regen_text += " +" + "{:.1f}".format(player_state.health_resource.regen_bonus)
         mana_regen_text = \
-            "    mana reg: " + "{:.1f}".format(player_state.base_mana_regen)
-        if player_state.mana_regen_bonus > 0:
-            mana_regen_text += " +" + "{:.1f}".format(player_state.mana_regen_bonus)
+            "    mana reg: " + "{:.1f}".format(player_state.mana_resource.base_regen)
+        if player_state.mana_resource.regen_bonus > 0:
+            mana_regen_text += " +" + "{:.1f}".format(player_state.mana_resource.regen_bonus)
         damage_stat_text = \
             "    % damage: " + str(int(round(player_state.base_damage_modifier * 100)))
         if player_state.damage_modifier_bonus > 0:

@@ -15,10 +15,10 @@ class ItemEffect(AbstractItemEffect):
         self.item_type = item_type
 
     def apply_start_effect(self, game_state: GameState):
-        game_state.player_state.mana_regen_bonus += self.mana_regen_boost
+        game_state.player_state.mana_resource.regen_bonus += self.mana_regen_boost
 
     def apply_end_effect(self, game_state: GameState):
-        game_state.player_state.mana_regen_bonus -= self.mana_regen_boost
+        game_state.player_state.mana_resource.regen_bonus -= self.mana_regen_boost
 
     def get_item_type(self):
         return self.item_type

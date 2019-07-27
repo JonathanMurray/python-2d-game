@@ -23,7 +23,7 @@ class PlayerControls:
         if player_state.ability_cooldowns_remaining[ability_type] > 0:
             return
 
-        if player_state.mana < mana_cost:
+        if player_state.mana_resource.value < mana_cost:
             play_sound(SoundId.INVALID_ACTION)
             view_state.set_message("Not enough mana!")
             player_state.ability_cooldowns_remaining[ability_type] = Millis(500)
@@ -35,7 +35,7 @@ class PlayerControls:
                 play_sound(ability_data.sound_id)
             else:
                 print("WARN: No sound defined for ability: " + str(ability_type))
-            player_state.lose_mana(mana_cost)
+            player_state.mana_resource.lose(mana_cost)
             player_state.ability_cooldowns_remaining[ability_type] = ability_data.cooldown
             game_state.player_state.notify_about_event(PlayerUsedAbilityEvent(ability_type), game_state)
             return
