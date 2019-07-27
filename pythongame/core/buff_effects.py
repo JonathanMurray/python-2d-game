@@ -16,7 +16,7 @@ class AbstractBuffEffect:
         pass
 
     def get_buff_type(self):
-        pass
+        raise Exception("This method needs to be overridden")
 
     def buff_handle_event(self, event: Event) -> Optional[BuffEventOutcome]:
         return None

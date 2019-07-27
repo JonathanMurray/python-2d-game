@@ -70,6 +70,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.consumable(ConsumableType.SCROLL_SUMMON_DRAGON),
     MapEditorWorldEntity.consumable(ConsumableType.INVISIBILITY),
     MapEditorWorldEntity.consumable(ConsumableType.SPEED),
+    MapEditorWorldEntity.consumable(ConsumableType.BREW),
 
     MapEditorWorldEntity.item(ItemType.WINGED_BOOTS),
     MapEditorWorldEntity.item(ItemType.SWORD_OF_LEECHING),
