@@ -48,7 +48,7 @@ def _apply_ability(game_state: GameState) -> bool:
         get_position_from_center_position(player_entity.get_center_position(), PROJECTILE_SIZE),
         player_entity.direction,
         distance_from_player)
-    projectile_speed = 0.1
+    projectile_speed = 0.2
     entity = WorldEntity(projectile_pos, PROJECTILE_SIZE, PROJECTILE_SPRITE, player_entity.direction,
                          projectile_speed)
     projectile = Projectile(entity, create_projectile_controller(PROJECTILE_TYPE))
@@ -87,7 +87,8 @@ class Rooted(AbstractBuffEffect):
 def register_entangling_roots_ability():
     register_ability_effect(ABILITY_TYPE, _apply_ability)
     description = "Root an enemy for " + "{:.0f}".format(DEBUFF_DURATION / 1000) + "s and deal periodic damage."
-    ability_data = AbilityData("Entangling roots", ICON_SPRITE, 16, Millis(8000), description,
+    mana_cost = 22
+    ability_data = AbilityData("Entangling roots", ICON_SPRITE, mana_cost, Millis(8000), description,
                                SoundId.ABILITY_ENTANGLING_ROOTS)
     register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ICON_SPRITE, "resources/graphics/ability_icon_entangling_roots.png")
