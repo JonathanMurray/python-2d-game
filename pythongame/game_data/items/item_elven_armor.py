@@ -12,12 +12,12 @@ MANA_BOOST = 15
 class ItemEffect(AbstractItemEffect):
 
     def apply_start_effect(self, game_state: GameState):
-        game_state.player_state.mana_regen += MANA_REGEN_BOOST
+        game_state.player_state.mana_regen_bonus += MANA_REGEN_BOOST
         game_state.player_state.max_mana += MANA_BOOST
         game_state.player_state.gain_max_mana(MANA_BOOST)
 
     def apply_end_effect(self, game_state: GameState):
-        game_state.player_state.mana_regen -= MANA_REGEN_BOOST
+        game_state.player_state.mana_regen_bonus -= MANA_REGEN_BOOST
         game_state.player_state.lose_max_mana(MANA_BOOST)
 
     def get_item_type(self):

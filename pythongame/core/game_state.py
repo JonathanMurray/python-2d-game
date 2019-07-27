@@ -302,7 +302,8 @@ class PlayerState:
         self.mana = mana
         self._mana_float = mana
         self.max_mana = max_mana
-        self.mana_regen: float = mana_regen
+        self.base_mana_regen: float = mana_regen  # depends on which hero is being played
+        self.mana_regen_bonus: float = 0  # affected by items/buffs. [Change it additively]
         self.consumable_inventory = consumable_inventory
         self.abilities: List[AbilityType] = abilities
         self.ability_cooldowns_remaining = {ability_type: 0 for ability_type in abilities}
@@ -395,7 +396,7 @@ class PlayerState:
         return len([b for b in self.active_buffs if b.buff_effect.get_buff_type() == buff_type]) > 0
 
     def regenerate_health_and_mana(self, time_passed: Millis):
-        self.gain_mana(self.mana_regen / 1000.0 * float(time_passed))
+        self.gain_mana((self.base_mana_regen + self.mana_regen_bonus) / 1000.0 * float(time_passed))
         self.gain_health(self.health_regen / 1000.0 * float(time_passed))
 
     def recharge_ability_cooldowns(self, time_passed: Millis):

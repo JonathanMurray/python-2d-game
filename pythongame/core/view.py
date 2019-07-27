@@ -541,7 +541,6 @@ class View:
         player_max_mana = player_state.max_mana
         player_mana = player_state.mana
         player_health_regen = player_state.health_regen
-        player_mana_regen = player_state.mana_regen
         player_life_steal = player_state.life_steal_ratio
         player_active_buffs = player_state.active_buffs
         consumable_slots = player_state.consumable_inventory.consumables_in_slots
@@ -607,7 +606,8 @@ class View:
                              player_mana / player_max_mana, (50, 0, 200), True)
         if is_point_in_rect(mouse_ui_position, rect_manabar):
             tooltip_title = "Mana"
-            tooltip_details = ["regeneration: " + "{:.1f}".format(player_mana_regen) + "/s"]
+            tooltip_details = [
+                "regeneration: " + "{:.1f}".format(player_state.base_mana_regen + player_state.mana_regen_bonus) + "/s"]
             tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_manabar[0], rect_manabar[1]))
         mana_text = str(player_mana) + "/" + str(player_max_mana)
         self._text_in_ui(self.font_ui_stat_bar_numbers, mana_text, (x_0 + 20, y_4 + 20))
@@ -725,20 +725,22 @@ class View:
         # STATS
         x_stats = 555
         health_regen_text = \
-            "health reg: " + "{:.1f}".format(player_health_regen) + "/s"
+            "  health reg: " + "{:.1f}".format(player_health_regen)
         mana_regen_text = \
-            "  mana reg: " + "{:.1f}".format(player_mana_regen) + "/s"
+            "    mana reg: " + "{:.1f}".format(player_state.base_mana_regen)
+        if player_state.mana_regen_bonus > 0:
+            mana_regen_text += " +" + "{:.1f}".format(player_state.mana_regen_bonus)
         damage_stat_text = \
-            "  % damage: " + str(int(round(player_state.base_damage_modifier * 100)))
+            "    % damage: " + str(int(round(player_state.base_damage_modifier * 100)))
         if player_state.damage_modifier_bonus > 0:
             damage_stat_text += " +" + str(int(round(player_state.damage_modifier_bonus * 100)))
         speed_stat_text = \
-            "     speed: " + ("+" if player_speed_multiplier >= 1 else "") \
-            + str(int(round((player_speed_multiplier - 1) * 100))) + "%"
+            "     % speed: " + ("+" if player_speed_multiplier >= 1 else "") \
+            + str(int(round((player_speed_multiplier - 1) * 100)))
         lifesteal_stat_text = \
-            "life steal: " + str(int(round(player_life_steal * 100))) + "%"
+            "% life steal: " + str(int(round(player_life_steal * 100)))
         armor_stat_text = \
-            "     armor: " + str(player_state.base_armor)
+            "       armor: " + str(player_state.base_armor)
         if player_state.armor_bonus > 0:
             armor_stat_text += " +" + str(player_state.armor_bonus)
         self._text_in_ui(self.font_stats, health_regen_text, (x_stats, y_1), COLOR_WHITE)
