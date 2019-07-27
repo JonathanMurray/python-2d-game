@@ -58,11 +58,11 @@ class NpcMind(AbstractNpcMind):
                 e for e in game_state.non_player_characters
                 if e.is_enemy
                    and is_x_and_y_within_distance(necro_center_pos, e.world_entity.get_center_position(), 200)
-                   and e != npc and e.health < e.max_health
+                   and e != npc and not e.health_resource.is_at_max()
             ]
             if nearby_hurt_enemies:
                 healing_target = nearby_hurt_enemies[0]
-                healing_target.gain_health(5)
+                healing_target.health_resource.gain(5)
                 healing_target_pos = healing_target.world_entity.get_center_position()
                 visual_line = VisualLine((80, 200, 150), necro_center_pos, healing_target_pos, Millis(350), 3)
                 game_state.visual_effects.append(visual_line)

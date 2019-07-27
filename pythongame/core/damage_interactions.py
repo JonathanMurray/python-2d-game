@@ -20,7 +20,7 @@ def deal_player_damage_to_enemy(game_state: GameState, npc: NonPlayerCharacter, 
     amount: float = base_amount * damage_modifier
     if npc.invulnerable:
         return False
-    npc.lose_health(amount)
+    npc.health_resource.lose(amount)
     game_state.player_state.notify_about_event(PlayerDamagedEnemy(npc, damage_source), game_state)
     game_state.visual_effects.append(create_visual_damage_text(npc.world_entity, int(round(amount))))
     health_from_life_steal = player_state.life_steal_ratio * amount
@@ -45,7 +45,7 @@ def deal_damage_to_player(game_state: GameState, base_amount: float, npc_attacke
 
 
 def deal_npc_damage_to_npc(game_state: GameState, target: NonPlayerCharacter, amount: float):
-    target.lose_health(amount)
+    target.health_resource.lose(amount)
     rounded_amount = round(amount)
     if rounded_amount > 0:
         game_state.visual_effects.append(create_visual_damage_text(target.world_entity, rounded_amount))

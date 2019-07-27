@@ -113,7 +113,7 @@ def _move_in_dir(enemy_entity, direction):
 class DieAfterDuration(AbstractBuffEffect):
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        buffed_npc.lose_all_health()
+        buffed_npc.health_resource.set_zero()
 
     def get_buff_type(self):
         return BuffType.SUMMON_DIE_AFTER_DURATION

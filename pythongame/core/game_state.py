@@ -152,17 +152,40 @@ class Projectile:
         self.projectile_controller = projectile_controller
 
 
+class HealthOrManaResource:
+    def __init__(self, max_value: int, regen: float):
+        self._value_float = max_value
+        self.value = max_value
+        self.max_value = max_value
+        self.regen = regen
+
+    def lose(self, amount: float):
+        self._value_float = min(self._value_float - amount, self.max_value)
+        self.value = int(math.floor(self._value_float))
+
+    def set_zero(self):
+        self._value_float = 0
+        self.value = 0
+
+    def gain(self, amount: float):
+        self._value_float = min(self._value_float + amount, self.max_value)
+        self.value = int(math.floor(self._value_float))
+
+    def regenerate(self, time_passed: Millis):
+        self.gain(self.regen / 1000.0 * float(time_passed))
+
+    def is_at_max(self):
+        self.value = self.max_value
+
+
 class NonPlayerCharacter:
-    def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health: int, max_health: int,
-                 health_regen: float, npc_mind, npc_category: NpcCategory,
+    def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health_resource: HealthOrManaResource,
+                 npc_mind, npc_category: NpcCategory,
                  enemy_loot_table: Optional[LootTable], death_sound_id: Optional[SoundId],
                  max_distance_allowed_from_start_position: Optional[int]):
         self.npc_type = npc_type
         self.world_entity = world_entity
-        self._health_float = health
-        self.health = health
-        self.max_health = max_health
-        self.health_regen = health_regen
+        self.health_resource = health_resource
         self.npc_mind = npc_mind
         self.active_buffs: List[BuffWithDuration] = []
         self.invulnerable: bool = False
@@ -175,18 +198,6 @@ class NonPlayerCharacter:
         self.start_position = world_entity.get_position()  # Should never be updated
         self.max_distance_allowed_from_start_position = max_distance_allowed_from_start_position
 
-    def lose_health(self, amount: float):
-        self._health_float = min(self._health_float - amount, self.max_health)
-        self.health = int(math.floor(self._health_float))
-
-    def lose_all_health(self):
-        self._health_float = 0
-        self.health = 0
-
-    def gain_health(self, amount: float):
-        self._health_float = min(self._health_float + amount, self.max_health)
-        self.health = int(math.floor(self._health_float))
-
     # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):
         existing_buffs_with_this_type = [b for b in self.active_buffs
@@ -195,9 +206,6 @@ class NonPlayerCharacter:
             existing_buffs_with_this_type[0].set_remaining_duration(duration)
         else:
             self.active_buffs.append(BuffWithDuration(buff, duration))
-
-    def regenerate_health(self, time_passed: Millis):
-        self.gain_health(self.health_regen / 1000.0 * float(time_passed))
 
     def add_stun(self):
         self._number_of_active_stuns += 1
@@ -304,6 +312,7 @@ class PlayerState:
         self.max_mana = max_mana
         self.base_mana_regen: float = mana_regen  # depends on which hero is being played
         self.mana_regen_bonus: float = 0  # affected by items/buffs. [Change it additively]
+
         self.consumable_inventory = consumable_inventory
         self.abilities: List[AbilityType] = abilities
         self.ability_cooldowns_remaining = {ability_type: 0 for ability_type in abilities}
@@ -652,8 +661,8 @@ class GameState:
         self.projectile_entities = [p for p in self.projectile_entities if not p.has_expired]
 
     def remove_dead_npcs(self) -> List[NonPlayerCharacter]:
-        npcs_that_died = [npc for npc in self.non_player_characters if npc.health <= 0]
-        self.non_player_characters = [npc for npc in self.non_player_characters if npc.health > 0]
+        npcs_that_died = [npc for npc in self.non_player_characters if npc.health_resource.value <= 0]
+        self.non_player_characters = [npc for npc in self.non_player_characters if npc.health_resource.value > 0]
         return npcs_that_died
 
     def remove_expired_visual_effects(self):

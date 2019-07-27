@@ -5,7 +5,7 @@ from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, ITEMS, CONSUMABLES, POTION_ENTITY_SIZE, \
     WALLS, PORTALS, HEROES, NpcData
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
-    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState
+    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, HealthOrManaResource
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
@@ -24,7 +24,8 @@ def create_npc(npc_type: NpcType, pos: Tuple[int, int]) -> NonPlayerCharacter:
     data: NpcData = NON_PLAYER_CHARACTERS[npc_type]
     entity = WorldEntity(pos, data.size, data.sprite, Direction.LEFT, data.speed)
     npc_mind = create_npc_mind(npc_type, global_path_finder)
-    return NonPlayerCharacter(npc_type, entity, data.max_health, data.max_health, data.health_regen, npc_mind,
+    health_resource = HealthOrManaResource(data.max_health, data.health_regen)
+    return NonPlayerCharacter(npc_type, entity, health_resource, npc_mind,
                               data.npc_category, data.enemy_loot_table, data.death_sound_id,
                               data.max_distance_allowed_from_start_position)
 

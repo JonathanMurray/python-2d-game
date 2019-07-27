@@ -513,7 +513,8 @@ class View:
                 ENTITY_SPRITE_INITIALIZERS[npc.world_entity.sprite][Direction.DOWN].position_relative_to_entity[1]
             if not npc.is_neutral:
                 self._stat_bar_for_world_entity(npc.world_entity, 3, npc_sprite_y_relative_to_entity - 5,
-                                                npc.health / npc.max_health, healthbar_color)
+                                                npc.health_resource.value / npc.health_resource.max_value,
+                                                healthbar_color)
             if npc.active_buffs:
                 buff = npc.active_buffs[0]
                 if buff.should_duration_be_visualized_on_enemies():
