@@ -156,35 +156,14 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
         dialog = player_interactions_state.get_dialog()
 
         mouse_hover_event: MouseHoverEvent = view.render_ui(
-            player_health=game_state.player_state.health,
-            player_max_health=game_state.player_state.max_health,
-            player_mana=game_state.player_state.mana,
-            player_max_mana=game_state.player_state.max_mana,
-            player_health_regen=game_state.player_state.health_regen,
-            player_mana_regen=game_state.player_state.mana_regen,
+            player_state=game_state.player_state,
+            view_state=view_state,
             player_speed_multiplier=game_state.player_entity.speed_multiplier,
-            player_life_steal=game_state.player_state.life_steal_ratio,
-            consumable_slots=game_state.player_state.consumable_inventory.consumables_in_slots,
-            player_armor=game_state.player_state.armor,
-            player_active_buffs=game_state.player_state.active_buffs,
             fps_string=str(int(clock.get_fps())),
-            player_minimap_relative_position=view_state.player_minimap_relative_position,
-            abilities=game_state.player_state.abilities,
-            message=view_state.message,
-            highlighted_consumable_action=view_state.highlighted_consumable_action,
-            highlighted_ability_action=view_state.highlighted_ability_action,
             is_paused=is_paused,
             is_game_over=is_game_over,
-            ability_cooldowns_remaining=game_state.player_state.ability_cooldowns_remaining,
-            item_slots=game_state.player_state.item_slots,
-            player_level=game_state.player_state.level,
             mouse_screen_position=mouse_screen_position,
-            player_exp=game_state.player_state.exp,
-            player_max_exp_in_this_level=game_state.player_state.max_exp_in_this_level,
-            dialog=dialog,
-            player_money=game_state.player_state.money,
-            player_damage_modifier=game_state.player_state.base_damage_modifier + game_state.player_state.damage_modifier_bonus,
-            hero_id=game_state.player_state.hero_id)
+            dialog=dialog)
 
         # TODO There is a lot of details here about UI state (dragging items). Move that elsewhere.
 

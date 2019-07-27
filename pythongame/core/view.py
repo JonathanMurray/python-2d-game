@@ -2,14 +2,15 @@ from typing import Dict, Any, List, Tuple, Optional, Union
 
 import pygame
 
-from pythongame.core.common import Direction, Sprite, ConsumableType, ItemType, HeroId, UiIconSprite
+from pythongame.core.common import Direction, Sprite, ConsumableType, ItemType, HeroId, UiIconSprite, AbilityType
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, PORTRAIT_ICON_SPRITE_PATHS, \
     HEROES, ConsumableCategory, CHANNELING_BUFFS
-from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration, WorldArea
-from pythongame.core.item_effects import AbstractItemEffect
+from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration, WorldArea, \
+    PlayerState
 from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.npc_behaviors import DialogGraphics
+from pythongame.core.view_state import ViewState
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 
@@ -524,16 +525,41 @@ class View:
         if entity_action_text:
             self._entity_action_text(entity_action_text)
 
-    def render_ui(self, fps_string, is_paused, is_game_over, abilities, ability_cooldowns_remaining,
-                  highlighted_ability_action, highlighted_consumable_action, message: str, player_armor: int,
-                  player_active_buffs: List[BuffWithDuration],
-                  player_health, player_mana, player_max_health, player_max_mana, player_health_regen: float,
-                  player_mana_regen: float, player_speed_multiplier: float, player_life_steal: float,
-                  player_minimap_relative_position, consumable_slots: Dict[int, List[ConsumableType]],
-                  item_slots: Dict[int, AbstractItemEffect],
-                  player_level: int, mouse_screen_position: Tuple[int, int], player_exp: int,
-                  player_max_exp_in_this_level: int, dialog: Optional[DialogGraphics], player_money: int,
-                  player_damage_modifier: float, hero_id: HeroId) -> MouseHoverEvent:
+    def render_ui(
+            self,
+            player_state: PlayerState,
+            view_state: ViewState,
+            fps_string: str,
+            is_paused: bool,
+            is_game_over: bool,
+            player_speed_multiplier: float,
+            mouse_screen_position: Tuple[int, int],
+            dialog: Optional[DialogGraphics]) -> MouseHoverEvent:
+
+        player_health = player_state.health
+        player_max_health = player_state.max_health
+        player_max_mana = player_state.max_mana
+        player_mana = player_state.mana
+        player_health_regen = player_state.health_regen
+        player_mana_regen = player_state.mana_regen
+        player_life_steal = player_state.life_steal_ratio
+        player_armor = player_state.armor
+        player_active_buffs = player_state.active_buffs
+        consumable_slots = player_state.consumable_inventory.consumables_in_slots
+        ability_cooldowns_remaining = player_state.ability_cooldowns_remaining
+        abilities = player_state.abilities
+        item_slots = player_state.item_slots
+        player_exp = player_state.exp
+        player_max_exp_in_this_level = player_state.max_exp_in_this_level
+        player_level = player_state.level
+        player_money = player_state.money
+        hero_id = player_state.hero_id
+        player_damage_modifier = player_state.base_damage_modifier + player_state.damage_modifier_bonus
+
+        player_minimap_relative_position=view_state.player_minimap_relative_position
+        message=view_state.message
+        highlighted_consumable_action=view_state.highlighted_consumable_action
+        highlighted_ability_action=view_state.highlighted_ability_action
 
         hovered_item_slot_number = None
         hovered_consumable_slot_number = None
