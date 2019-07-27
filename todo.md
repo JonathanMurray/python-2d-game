@@ -18,6 +18,8 @@
 * gray out ability icon when player doesn't have enough mana for it
 * put dmg/healing/xp numbers further up for tall characters (base it on sprite size, not entity size)
 * render action text further up for tall entities
+* use transparent sprite when hero is stealthed
+* separate base stats from bonuses in UI
 
 #### Sounds:
 * Abilities
@@ -28,6 +30,7 @@
 * goblin death sounds
 
 #### Features:
+* Potion that restores health/mana outside of combat
 * New heroes
     * builder
         * place turret on ground that shoots in all directions
