@@ -74,10 +74,10 @@ def _would_collide_with_wall(game_state: GameState, player_entity: WorldEntity, 
 
 class AfterDash(AbstractBuffEffect):
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.armor += ARMOR_BOOST
+        game_state.player_state.armor_bonus += ARMOR_BOOST
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.armor -= ARMOR_BOOST
+        game_state.player_state.armor_bonus -= ARMOR_BOOST
 
     def get_buff_type(self):
         return BUFF_TYPE

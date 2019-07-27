@@ -317,10 +317,11 @@ class PlayerState:
         self.fireball_dmg_boost = 0
         self.new_level_abilities: Dict[int, AbilityType] = new_level_abilities
         self.money = 0
-        self.base_damage_modifier: float = 1  # only affected by level. Changes multiplicatively
-        self.damage_modifier_bonus: float = 0  # affected by items. Only allowed to change additively
+        self.base_damage_modifier: float = 1  # only affected by level. [Changes multiplicatively]
+        self.damage_modifier_bonus: float = 0  # affected by items. [Change it additively]
         self.hero_id: HeroId = hero_id
-        self.armor: int = armor
+        self.base_armor: int = armor  # depends on which hero is being played
+        self.armor_bonus: int = 0  # affected by items/buffs. [Change it additively]
         self.level_bonus = level_bonus
 
     def gain_health(self, amount: float) -> int:

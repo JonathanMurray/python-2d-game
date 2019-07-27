@@ -10,10 +10,10 @@ ARMOR_BOOST = 2
 
 class ItemEffect(AbstractItemEffect):
     def apply_start_effect(self, game_state: GameState):
-        game_state.player_state.armor += ARMOR_BOOST
+        game_state.player_state.armor_bonus += ARMOR_BOOST
 
     def apply_end_effect(self, game_state: GameState):
-        game_state.player_state.armor -= ARMOR_BOOST
+        game_state.player_state.armor_bonus -= ARMOR_BOOST
 
     def get_item_type(self):
         return ITEM_TYPE

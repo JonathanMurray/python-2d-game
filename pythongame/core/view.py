@@ -543,7 +543,6 @@ class View:
         player_health_regen = player_state.health_regen
         player_mana_regen = player_state.mana_regen
         player_life_steal = player_state.life_steal_ratio
-        player_armor = player_state.armor
         player_active_buffs = player_state.active_buffs
         consumable_slots = player_state.consumable_inventory.consumables_in_slots
         ability_cooldowns_remaining = player_state.ability_cooldowns_remaining
@@ -739,7 +738,9 @@ class View:
         lifesteal_stat_text = \
             "life steal: " + str(int(round(player_life_steal * 100))) + "%"
         armor_stat_text = \
-            "     armor: " + str(player_armor)
+            "     armor: " + str(player_state.base_armor)
+        if player_state.armor_bonus > 0:
+            armor_stat_text += " +" + str(player_state.armor_bonus)
         self._text_in_ui(self.font_stats, health_regen_text, (x_stats, y_1), COLOR_WHITE)
         self._text_in_ui(self.font_stats, mana_regen_text, (x_stats, y_1 + 20), COLOR_WHITE)
         self._text_in_ui(self.font_stats, damage_stat_text, (x_stats, y_1 + 40), COLOR_WHITE)

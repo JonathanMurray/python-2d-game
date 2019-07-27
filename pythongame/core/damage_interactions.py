@@ -31,7 +31,7 @@ def deal_player_damage_to_enemy(game_state: GameState, npc: NonPlayerCharacter, 
 def deal_damage_to_player(game_state: GameState, base_amount: float, npc_attacker: Optional[NonPlayerCharacter]):
     player_state = game_state.player_state
     # Armor has a random element to it. Example: 5 armor absorbs 0-5 damage
-    reduction = random.randint(0, player_state.armor)
+    reduction = random.randint(0, player_state.base_armor + player_state.armor_bonus)
     amount = max(0.0, base_amount - reduction)
     health_lost = player_state.lose_health(amount)
     if health_lost > 0:

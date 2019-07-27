@@ -32,7 +32,7 @@ class Sneaking(AbstractBuffEffect):
         # TODO Wearing items that grant movement speed are too effective at countering this
         game_state.player_entity.add_to_speed_multiplier(-SPEED_DECREASE)
         game_state.player_state.damage_modifier_bonus += DAMAGE_BONUS
-        game_state.player_state.armor += ARMOR_BONUS
+        game_state.player_state.armor_bonus += ARMOR_BONUS
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.is_invisible = False
@@ -65,7 +65,7 @@ class AfterSneaking(AbstractBuffEffect):
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.damage_modifier_bonus -= DAMAGE_BONUS
-        game_state.player_state.armor -= ARMOR_BONUS
+        game_state.player_state.armor_bonus -= ARMOR_BONUS
 
     def get_buff_type(self):
         return BUFF_POST_SNEAK
