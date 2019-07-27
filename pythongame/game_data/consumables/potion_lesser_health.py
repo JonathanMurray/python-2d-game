@@ -11,7 +11,7 @@ HEALING_AMOUNT = 50
 
 
 def _apply_health(game_state: GameState):
-    if game_state.player_state.health < game_state.player_state.max_health:
+    if not game_state.player_state.health_resource.is_at_max():
         create_potion_visual_effect_at_player(game_state)
         player_receive_healing(HEALING_AMOUNT, game_state)
         return ConsumableWasConsumed()
