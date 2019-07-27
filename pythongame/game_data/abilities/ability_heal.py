@@ -20,7 +20,7 @@ class HealingOverTime(AbstractBuffEffect):
                             time_passed: Millis):
         self._time_since_graphics += time_passed
         healing_amount = 0.04
-        game_state.player_state.gain_health(healing_amount * float(time_passed))
+        game_state.player_state.health_resource.gain(healing_amount * float(time_passed))
         if self._time_since_graphics > 500:
             estimate_health_gained = int(self._time_since_graphics * healing_amount)
             game_state.visual_effects.append(

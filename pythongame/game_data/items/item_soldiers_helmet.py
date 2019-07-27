@@ -15,10 +15,10 @@ class ItemEffect(AbstractItemEffect):
         self.item_type = item_type
 
     def apply_start_effect(self, game_state: GameState):
-        game_state.player_state.gain_max_health(self.health_amount)
+        game_state.player_state.health_resource.increase_max(self.health_amount)
 
     def apply_end_effect(self, game_state: GameState):
-        game_state.player_state.lose_max_health(self.health_amount)
+        game_state.player_state.health_resource.decrease_max(self.health_amount)
 
     def get_item_type(self):
         return self.item_type

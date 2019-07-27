@@ -33,7 +33,7 @@ def deal_damage_to_player(game_state: GameState, base_amount: float, npc_attacke
     # Armor has a random element to it. Example: 5 armor absorbs 0-5 damage
     reduction = random.randint(0, player_state.base_armor + player_state.armor_bonus)
     amount = max(0.0, base_amount - reduction)
-    health_lost = player_state.lose_health(amount)
+    health_lost = player_state.health_resource.lose(amount)
     if health_lost > 0:
         game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, health_lost))
         play_sound(SoundId.ENEMY_ATTACK)
@@ -63,6 +63,6 @@ def deal_npc_damage(damage_amount: float, game_state: GameState, attacker_entity
 
 
 def player_receive_healing(healing_amount: float, game_state: GameState):
-    health_gained = game_state.player_state.gain_health(healing_amount)
+    health_gained = game_state.player_state.health_resource.gain(healing_amount)
     if health_gained > 0:
         game_state.visual_effects.append(create_visual_healing_text(game_state.player_entity, health_gained))

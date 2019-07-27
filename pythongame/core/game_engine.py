@@ -234,12 +234,12 @@ class GameEngine:
 
         self.game_state.center_camera_on_player()
 
-        if self.game_state.player_state.health <= 0:
+        if self.game_state.player_state.health_resource.is_at_or_below_zero():
             self._spawn_player_after_death()
 
     def _spawn_player_after_death(self):
         self.game_state.player_entity.set_position(self.player_spawn_position)
-        self.game_state.player_state.set_health_to_partial_of_max(0.5)
+        self.game_state.player_state.health_resource.set_to_partial_of_max(0.5)
         self.game_state.player_state.lose_exp_from_death()
         self.view_state.set_message("Lost exp from dying")
         play_sound(SoundId.EVENT_PLAYER_DIED)

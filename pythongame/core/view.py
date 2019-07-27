@@ -513,8 +513,7 @@ class View:
                 ENTITY_SPRITE_INITIALIZERS[npc.world_entity.sprite][Direction.DOWN].position_relative_to_entity[1]
             if not npc.is_neutral:
                 self._stat_bar_for_world_entity(npc.world_entity, 3, npc_sprite_y_relative_to_entity - 5,
-                                                npc.health_resource.value / npc.health_resource.max_value,
-                                                healthbar_color)
+                                                npc.health_resource.get_partial(), healthbar_color)
             if npc.active_buffs:
                 buff = npc.active_buffs[0]
                 if buff.should_duration_be_visualized_on_enemies():
@@ -537,11 +536,11 @@ class View:
             mouse_screen_position: Tuple[int, int],
             dialog: Optional[DialogGraphics]) -> MouseHoverEvent:
 
-        player_health = player_state.health
-        player_max_health = player_state.max_health
+        player_health = player_state.health_resource.value
+        player_max_health = player_state.health_resource.max_value
+        player_health_regen = player_state.health_resource.regen
         player_max_mana = player_state.max_mana
         player_mana = player_state.mana
-        player_health_regen = player_state.health_regen
         player_life_steal = player_state.life_steal_ratio
         player_active_buffs = player_state.active_buffs
         consumable_slots = player_state.consumable_inventory.consumables_in_slots

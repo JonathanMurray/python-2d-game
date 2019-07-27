@@ -159,23 +159,55 @@ class HealthOrManaResource:
         self.max_value = max_value
         self.regen = regen
 
-    def lose(self, amount: float):
+    def gain(self, amount: float) -> int:
+        value_before = self.value
+        self._value_float = min(self._value_float + amount, self.max_value)
+        self.value = int(math.floor(self._value_float))
+        amount_gained = self.value - value_before
+        return amount_gained
+
+    def lose(self, amount: float) -> int:
+        value_before = self.value
         self._value_float = min(self._value_float - amount, self.max_value)
         self.value = int(math.floor(self._value_float))
+        amount_lost = value_before - self.value
+        return amount_lost
 
     def set_zero(self):
         self._value_float = 0
         self.value = 0
 
-    def gain(self, amount: float):
-        self._value_float = min(self._value_float + amount, self.max_value)
+    def gain_to_max(self) -> int:
+        value_before = self.value
+        self._value_float = self.max_value
+        self.value = self.max_value
+        amount_gained = self.value - value_before
+        return amount_gained
+
+    def set_to_partial_of_max(self, partial: float):
+        self._value_float = partial * self.max_value
         self.value = int(math.floor(self._value_float))
 
     def regenerate(self, time_passed: Millis):
         self.gain(self.regen / 1000.0 * float(time_passed))
 
     def is_at_max(self):
-        self.value = self.max_value
+        return self.value == self.max_value
+
+    def is_at_or_below_zero(self):
+        return self.value <= 0
+
+    def increase_max(self, amount: int):
+        self.max_value += amount
+
+    def decrease_max(self, amount: int):
+        self.max_value -= amount
+        if self.value > self.max_value:
+            self._value_float = self.max_value
+            self.value = int(math.floor(self._value_float))
+
+    def get_partial(self) -> float:
+        return self.value / self.max_value
 
 
 class NonPlayerCharacter:
@@ -299,14 +331,11 @@ class BuffEventOutcome:
 
 
 class PlayerState:
-    def __init__(self, health: int, max_health: int, mana: int, max_mana: int, mana_regen: float,
+    def __init__(self, health_resource: HealthOrManaResource, mana: int, max_mana: int, mana_regen: float,
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
                  item_slots: Dict[int, Any], new_level_abilities: Dict[int, AbilityType], hero_id: HeroId, armor: int,
                  level_bonus: PlayerLevelBonus):
-        self.health = health
-        self._health_float = health
-        self.max_health = max_health
-        self.health_regen: float = 0
+        self.health_resource: HealthOrManaResource = health_resource
         self.mana = mana
         self._mana_float = mana
         self.max_mana = max_mana
@@ -334,20 +363,6 @@ class PlayerState:
         self.armor_bonus: int = 0  # affected by items/buffs. [Change it additively]
         self.level_bonus = level_bonus
 
-    def gain_health(self, amount: float) -> int:
-        health_before = self.health
-        self._health_float = min(self._health_float + amount, self.max_health)
-        self.health = int(math.floor(self._health_float))
-        health_gained = self.health - health_before
-        return health_gained
-
-    def lose_health(self, amount: float) -> int:
-        health_before = self.health
-        self._health_float = max(self._health_float - amount, 0)
-        self.health = int(math.floor(self._health_float))
-        health_lost = health_before - self.health
-        return health_lost
-
     def gain_mana(self, amount: float):
         self._mana_float = min(self._mana_float + amount, self.max_mana)
         self.mana = int(math.floor(self._mana_float))
@@ -355,14 +370,6 @@ class PlayerState:
     def lose_mana(self, amount: float):
         self._mana_float -= amount
         self.mana = int(math.floor(self._mana_float))
-
-    def gain_full_health(self):
-        self._health_float = self.max_health
-        self.health = self.max_health
-
-    def set_health_to_partial_of_max(self, partial: float):
-        self._health_float = partial * self.max_health
-        self.health = int(math.floor(self._health_float))
 
     def gain_full_mana(self):
         self._mana_float = self.max_mana
@@ -376,15 +383,6 @@ class PlayerState:
         if self.mana > self.max_mana:
             self._mana_float = self.max_mana
             self.mana = int(math.floor(self._mana_float))
-
-    def gain_max_health(self, amount: int):
-        self.max_health += amount
-
-    def lose_max_health(self, amount: int):
-        self.max_health -= amount
-        if self.health > self.max_health:
-            self._health_float = self.max_health
-            self.health = int(math.floor(self._health_float))
 
     def find_first_empty_item_slot(self) -> Optional[int]:
         empty_slots = [slot for slot in self.item_slots if not self.item_slots[slot]]
@@ -406,7 +404,7 @@ class PlayerState:
 
     def regenerate_health_and_mana(self, time_passed: Millis):
         self.gain_mana((self.base_mana_regen + self.mana_regen_bonus) / 1000.0 * float(time_passed))
-        self.gain_health(self.health_regen / 1000.0 * float(time_passed))
+        self.health_resource.regenerate(time_passed)
 
     def recharge_ability_cooldowns(self, time_passed: Millis):
         for ability_type in self.ability_cooldowns_remaining:
@@ -455,9 +453,9 @@ class PlayerState:
             self.gain_exp(amount)
 
     def update_stats_for_new_level(self):
-        self.max_health += self.level_bonus.health
+        self.health_resource.increase_max(self.level_bonus.health)
         self.max_mana += self.level_bonus.mana
-        self.gain_full_health()
+        self.health_resource.gain_to_max()
         self.gain_full_mana()
         self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.4)
         self.base_damage_modifier *= 1.1
@@ -661,8 +659,9 @@ class GameState:
         self.projectile_entities = [p for p in self.projectile_entities if not p.has_expired]
 
     def remove_dead_npcs(self) -> List[NonPlayerCharacter]:
-        npcs_that_died = [npc for npc in self.non_player_characters if npc.health_resource.value <= 0]
-        self.non_player_characters = [npc for npc in self.non_player_characters if npc.health_resource.value > 0]
+        npcs_that_died = [npc for npc in self.non_player_characters if npc.health_resource.is_at_or_below_zero()]
+        self.non_player_characters = [npc for npc in self.non_player_characters if
+                                      not npc.health_resource.is_at_or_below_zero()]
         return npcs_that_died
 
     def remove_expired_visual_effects(self):

@@ -276,8 +276,8 @@ def main(map_file_name: Optional[str]):
             non_player_characters=game_state.non_player_characters,
             visual_effects=game_state.visual_effects,
             render_hit_and_collision_boxes=True,
-            player_health=game_state.player_state.health,
-            player_max_health=game_state.player_state.max_health,
+            player_health=game_state.player_state.health_resource.value,
+            player_max_health=game_state.player_state.health_resource.max_value,
             entire_world_area=game_state.entire_world_area,
             entity_action_text=None)
 
