@@ -29,7 +29,6 @@
 * goblin death sounds
 
 #### Features:
-* Potion that restores health/mana outside of combat
 * New heroes
     * builder
         * place turret on ground that shoots in all directions
