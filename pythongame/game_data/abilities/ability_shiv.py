@@ -29,9 +29,13 @@ def _apply_ability(game_state: GameState) -> bool:
     for enemy in affected_enemies:
         damage: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
 
-        # Note: Dependency on other rogue ability
+        # Note: Dependency on other rability 'infuse dagger'
         if game_state.player_state.has_active_buff(BuffType.HAS_INFUSED_DAGGER):
             enemy.gain_buff_effect(get_buff_effect(BuffType.DAMAGED_BY_INFUSED_DAGGER), Millis(20000))
+
+        # Note: Dependency on other rability 'sneak'
+        if game_state.player_state.has_active_buff(BuffType.SNEAKING):
+            damage *= 3
 
         deal_player_damage_to_enemy(game_state, enemy, damage)
         break

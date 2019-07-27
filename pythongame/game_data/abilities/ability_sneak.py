@@ -15,11 +15,8 @@ BUFF_POST_SNEAK = BuffType.AFTER_SNEAKING
 DURATION_SNEAK = Millis(15000)
 DURATION_POST_SNEAK = Millis(2500)
 SPEED_DECREASE = 0.3
-DAMAGE_BONUS = 1
 ARMOR_BONUS = 5
 
-
-# TODO Should there be a charge-up time for using invis, to stop it from being used mid-combat as a pure damage bonus?
 
 def _apply_ability(game_state: GameState) -> bool:
     game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_SNEAK), DURATION_SNEAK)
@@ -29,9 +26,7 @@ def _apply_ability(game_state: GameState) -> bool:
 class Sneaking(AbstractBuffEffect):
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.is_invisible = True
-        # TODO Wearing items that grant movement speed are too effective at countering this
         game_state.player_entity.add_to_speed_multiplier(-SPEED_DECREASE)
-        game_state.player_state.damage_modifier_bonus += DAMAGE_BONUS
         game_state.player_state.armor_bonus += ARMOR_BONUS
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
@@ -64,7 +59,6 @@ class AfterSneaking(AbstractBuffEffect):
             game_state.visual_effects.append(visual_effect)
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.damage_modifier_bonus -= DAMAGE_BONUS
         game_state.player_state.armor_bonus -= ARMOR_BONUS
 
     def get_buff_type(self):
@@ -75,9 +69,8 @@ def register_sneak_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_SNEAK
 
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    description = "Become invisible. Afterwards, gain " \
-                  + str(DAMAGE_BONUS * 100) + "% dmg and +" + str(ARMOR_BONUS) + " armor for " \
-                  + "{:.1f}".format(DURATION_POST_SNEAK / 1000) + "s]"
+    description = "Become invisible. Shiv deals 300% damage from stealth. Then, gain " + \
+                  str(ARMOR_BONUS) + " armor for " + "{:.1f}".format(DURATION_POST_SNEAK / 1000) + "s"
     mana_cost = 20
     ability_data = AbilityData("Sneak", ui_icon_sprite, mana_cost, Millis(10000), description, SoundId.ABILITY_SNEAK)
     register_ability_data(ABILITY_TYPE, ability_data)
