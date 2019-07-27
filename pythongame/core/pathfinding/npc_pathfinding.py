@@ -94,8 +94,8 @@ class NpcPathfinder:
 
 
 def _add_visual_line_to_next_waypoint(destination, agent_entity: WorldEntity, game_state: GameState):
-    start = _get_middle_of_cell_from_position(agent_entity.get_position(), game_state.entire_world_area)
-    end = _get_middle_of_cell_from_position(destination, game_state.entire_world_area)
+    start = _get_middle_of_cell_from_position(agent_entity.get_position())
+    end = _get_middle_of_cell_from_position(destination)
     game_state.visual_effects.append(VisualLine((150, 150, 150), start, end, Millis(100), 2))
 
 
@@ -105,16 +105,16 @@ def _add_visual_lines_along_path(game_state, path):
         next_pos = path[i + 1]
         game_state.visual_effects.append(
             VisualRect((100, 150, 150),
-                       _get_middle_of_cell_from_position(current_pos, game_state.entire_world_area), 7, 10,
+                       _get_middle_of_cell_from_position(current_pos), 7, 10,
                        Millis(DEBUG_PATHFINDER_INTERVAL), 1))
         game_state.visual_effects.append(
             VisualLine((250, 250, 250),
-                       _get_middle_of_cell_from_position(current_pos, game_state.entire_world_area),
-                       _get_middle_of_cell_from_position(next_pos, game_state.entire_world_area),
+                       _get_middle_of_cell_from_position(current_pos),
+                       _get_middle_of_cell_from_position(next_pos),
                        Millis(DEBUG_PATHFINDER_INTERVAL), 1))
 
 
-def _get_middle_of_cell_from_position(world_position: Tuple[int, int], entire_world_area: WorldArea) -> Tuple[int, int]:
+def _get_middle_of_cell_from_position(world_position: Tuple[int, int]) -> Tuple[int, int]:
     return world_position[0] + GRID_CELL_WIDTH // 2, \
            world_position[1] + GRID_CELL_WIDTH // 2
 

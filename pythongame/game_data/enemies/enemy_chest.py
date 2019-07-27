@@ -1,5 +1,5 @@
 from pythongame.core.common import Millis, NpcType, Sprite, Direction, ItemType, ConsumableType
-from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, NpcCategory
+from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.loot import LootEntry, LootTable, LootGroup
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind

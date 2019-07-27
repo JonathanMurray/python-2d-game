@@ -1,6 +1,6 @@
-from typing import Dict, List, Optional, Any
+from typing import Dict, Optional, Any
 
-from pythongame.core.common import ConsumableType, ItemType
+from pythongame.core.common import ItemType
 
 
 class ItemInventory:
