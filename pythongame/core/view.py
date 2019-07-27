@@ -2,7 +2,7 @@ from typing import Dict, Any, List, Tuple, Optional, Union
 
 import pygame
 
-from pythongame.core.common import Direction, Sprite, ConsumableType, ItemType, HeroId, UiIconSprite, AbilityType
+from pythongame.core.common import Direction, Sprite, ConsumableType, ItemType, HeroId, UiIconSprite
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, PORTRAIT_ICON_SPRITE_PATHS, \
     HEROES, ConsumableCategory, CHANNELING_BUFFS
@@ -554,12 +554,11 @@ class View:
         player_level = player_state.level
         player_money = player_state.money
         hero_id = player_state.hero_id
-        player_damage_modifier = player_state.base_damage_modifier + player_state.damage_modifier_bonus
 
-        player_minimap_relative_position=view_state.player_minimap_relative_position
-        message=view_state.message
-        highlighted_consumable_action=view_state.highlighted_consumable_action
-        highlighted_ability_action=view_state.highlighted_ability_action
+        player_minimap_relative_position = view_state.player_minimap_relative_position
+        message = view_state.message
+        highlighted_consumable_action = view_state.highlighted_consumable_action
+        highlighted_ability_action = view_state.highlighted_ability_action
 
         hovered_item_slot_number = None
         hovered_consumable_slot_number = None
@@ -600,7 +599,6 @@ class View:
         if is_point_in_rect(mouse_ui_position, rect_healthbar):
             tooltip_title = "Health"
             tooltip_details = ["regeneration: " + "{:.1f}".format(player_health_regen) + "/s"]
-            tooltip_details += ["damage bonus: +" + str(int(round((player_damage_modifier - 1) * 100))) + "%"]
             tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_healthbar[0], rect_healthbar[1]))
         health_text = str(player_health) + "/" + str(player_max_health)
         self._text_in_ui(self.font_ui_stat_bar_numbers, health_text, (x_0 + 20, y_4 - 1))
@@ -732,7 +730,9 @@ class View:
         mana_regen_text = \
             "  mana reg: " + "{:.1f}".format(player_mana_regen) + "/s"
         damage_stat_text = \
-            "    damage: +" + str(int(round((player_damage_modifier - 1) * 100))) + "%"
+            "  % damage: " + str(int(round(player_state.base_damage_modifier * 100)))
+        if player_state.damage_modifier_bonus > 0:
+            damage_stat_text += " +" + str(int(round(player_state.damage_modifier_bonus * 100)))
         speed_stat_text = \
             "     speed: " + ("+" if player_speed_multiplier >= 1 else "") \
             + str(int(round((player_speed_multiplier - 1) * 100))) + "%"
