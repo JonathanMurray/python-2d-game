@@ -4,7 +4,7 @@ from typing import Optional
 from pythongame.core.common import SoundId, Millis
 from pythongame.core.enemy_target_selection import EnemyTarget
 from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, PlayerLostHealthEvent, \
-    PlayerDamagedEnemy
+    PlayerDamagedEnemy, PlayerWasAttackedEvent
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import create_visual_damage_text, VisualRect, create_visual_healing_text
 
@@ -30,6 +30,8 @@ def deal_player_damage_to_enemy(game_state: GameState, npc: NonPlayerCharacter, 
 
 def deal_damage_to_player(game_state: GameState, base_amount: float, npc_attacker: Optional[NonPlayerCharacter]):
     player_state = game_state.player_state
+    if npc_attacker:
+        player_state.notify_about_event(PlayerWasAttackedEvent(npc_attacker), game_state)
     # Armor has a random element to it. Example: 5 armor absorbs 0-5 damage
     reduction = random.randint(0, player_state.base_armor + player_state.armor_bonus)
     amount = max(0.0, base_amount - reduction)

@@ -319,6 +319,9 @@ class PlayerLostHealthEvent(Event):
         self.amount = amount
         self.npc_attacker = npc_attacker
 
+class PlayerWasAttackedEvent(Event):
+    def __init__(self, npc_attacker: NonPlayerCharacter):
+        self.npc_attacker = npc_attacker
 
 class PlayerDamagedEnemy(Event):
     def __init__(self, enemy_npc: NonPlayerCharacter, damage_source: Optional[str]):

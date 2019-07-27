@@ -7,6 +7,7 @@ from pythongame.core.item_effects import register_item_effect, AbstractItemEffec
 ITEM_TYPE = ItemType.ELVEN_ARMOR
 MANA_REGEN_BOOST = 0.5
 MANA_BOOST = 15
+ARMOR_BOOST = 1
 
 
 class ItemEffect(AbstractItemEffect):
@@ -14,10 +15,12 @@ class ItemEffect(AbstractItemEffect):
     def apply_start_effect(self, game_state: GameState):
         game_state.player_state.mana_resource.regen_bonus += MANA_REGEN_BOOST
         game_state.player_state.mana_resource.increase_max(MANA_BOOST)
+        game_state.player_state.armor_bonus += ARMOR_BOOST
 
     def apply_end_effect(self, game_state: GameState):
         game_state.player_state.mana_resource.regen_bonus -= MANA_REGEN_BOOST
         game_state.player_state.mana_resource.decrease_max(MANA_BOOST)
+        game_state.player_state.armor_bonus -= ARMOR_BOOST
 
     def get_item_type(self):
         return ITEM_TYPE
@@ -31,5 +34,5 @@ def register_elven_armor():
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
     register_item_effect(ITEM_TYPE, ItemEffect())
     name = "Elven Armor"
-    description = "Grants +" + str(MANA_REGEN_BOOST) + " mana regeneration and +" + str(MANA_BOOST) + " max mana."
+    description = "Grants +" + str(ARMOR_BOOST) + " armor, " + str(MANA_REGEN_BOOST) + " mana regeneration, and +" + str(MANA_BOOST) + " max mana"
     register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, sprite, name, description))

@@ -8,8 +8,8 @@ from pythongame.core.game_state import Event, EnemyDiedEvent, GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
 
 ITEM_TYPE = ItemType.BLOOD_AMULET
-HEALTH_ON_KILL_AMOUNT = 2
-PROC_CHANCE = 0.5
+HEALTH_ON_KILL_AMOUNT = 5
+PROC_CHANCE = 0.3
 
 
 class ItemEffect(AbstractItemEffect):

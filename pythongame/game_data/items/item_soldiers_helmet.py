@@ -6,7 +6,7 @@ from pythongame.core.item_effects import register_item_effect, AbstractItemEffec
 
 ITEM_TYPES = [ItemType.SOLDIERS_HELMET_1, ItemType.SOLDIERS_HELMET_2, ItemType.SOLDIERS_HELMET_3]
 HEALTH_AMOUNTS = [10, 15, 20]
-
+ARMOR_BOOST = 1
 
 class ItemEffect(AbstractItemEffect):
 
@@ -15,9 +15,11 @@ class ItemEffect(AbstractItemEffect):
         self.item_type = item_type
 
     def apply_start_effect(self, game_state: GameState):
+        game_state.player_state.armor_bonus += ARMOR_BOOST
         game_state.player_state.health_resource.increase_max(self.health_amount)
 
     def apply_end_effect(self, game_state: GameState):
+        game_state.player_state.armor_bonus -= ARMOR_BOOST
         game_state.player_state.health_resource.decrease_max(self.health_amount)
 
     def get_item_type(self):
@@ -35,5 +37,5 @@ def register_soldiers_helmet_item():
         health_amount = HEALTH_AMOUNTS[i]
         register_item_effect(item_type, ItemEffect(health_amount, item_type))
         name = "Soldier's Helmet (" + str(i + 1) + ")"
-        description = "Grants +" + str(health_amount) + " max health"
+        description = "Grants +" + str(ARMOR_BOOST) + " armor and +" + str(health_amount) + " max health"
         register_item_data(item_type, ItemData(ui_icon_sprite, sprite, name, description))

@@ -6,7 +6,7 @@ from pythongame.core.item_effects import register_item_effect, AbstractItemEffec
 
 ITEM_TYPES = [ItemType.BLUE_ROBE_1, ItemType.BLUE_ROBE_2, ItemType.BLUE_ROBE_3]
 MANA_AMOUNTS = [10, 15, 20]
-
+ARMOR_BOOST = 1
 
 class ItemEffect(AbstractItemEffect):
 
@@ -16,9 +16,11 @@ class ItemEffect(AbstractItemEffect):
 
     def apply_start_effect(self, game_state: GameState):
         game_state.player_state.mana_resource.increase_max(self.mana_amount)
+        game_state.player_state.armor_bonus += ARMOR_BOOST
 
     def apply_end_effect(self, game_state: GameState):
         game_state.player_state.mana_resource.decrease_max(self.mana_amount)
+        game_state.player_state.armor_bonus -= ARMOR_BOOST
 
     def get_item_type(self):
         return self.item_type
@@ -35,5 +37,5 @@ def register_blue_robe_item():
         health_amount = MANA_AMOUNTS[i]
         register_item_effect(item_type, ItemEffect(health_amount, item_type))
         name = "Blue Robe (" + str(i + 1) + ")"
-        description = "Grants +" + str(health_amount) + " max mana"
+        description = "Grants +" + str(ARMOR_BOOST) + " armor and "+ str(health_amount) + " max mana"
         register_item_data(item_type, ItemData(ui_icon_sprite, sprite, name, description))

@@ -17,7 +17,7 @@ class AbstractItemEffect:
     def get_item_type(self):
         pass
 
-    def item_handle_event(self, notification: Event, game_state: GameState):
+    def item_handle_event(self, event: Event, game_state: GameState):
         pass
 
 
