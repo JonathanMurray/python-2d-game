@@ -26,7 +26,7 @@ class GameEngine:
         self.view_state = view_state
 
     def initialize(self):
-        for item_effect in self.game_state.player_state.item_slots.values():
+        for item_effect in self.game_state.player_state.item_inventory.item_slots.values():
             if item_effect:
                 item_effect.apply_start_effect(self.game_state)
 
@@ -46,17 +46,18 @@ class GameEngine:
             self.game_state.player_entity.set_not_moving()
 
     def switch_inventory_items(self, slot_1: int, slot_2: int):
-        self.game_state.player_state.switch_item_slots(slot_1, slot_2)
+        self.game_state.player_state.item_inventory.switch_item_slots(slot_1, slot_2)
 
     def drag_consumable_between_slots(self, from_slot: int, to_slot: int):
         self.game_state.player_state.consumable_inventory.drag_consumable_between_slots(from_slot, to_slot)
 
     def drop_inventory_item_on_ground(self, item_slot: int, game_world_position: Tuple[int, int]):
-        item_type = self.game_state.player_state.item_slots[item_slot].get_item_type()
+        # TODO move some logic into ItemInventory class
+        item_type = self.game_state.player_state.item_inventory.item_slots[item_slot].get_item_type()
         item = create_item_on_ground(item_type, game_world_position)
         self.game_state.items_on_ground.append(item)
         get_item_effect(item_type).apply_end_effect(self.game_state)
-        self.game_state.player_state.item_slots[item_slot] = None
+        self.game_state.player_state.item_inventory.item_slots[item_slot] = None
 
     def drop_consumable_on_ground(self, consumable_slot: int, game_world_position: Tuple[int, int]):
         consumable_type = self.game_state.player_state.consumable_inventory.remove_consumable_from_slot(consumable_slot)
@@ -72,11 +73,12 @@ class GameEngine:
             raise Exception("Unhandled type of loot: " + str(loot))
 
     def _try_pick_up_item_from_ground(self, item: ItemOnGround):
-        empty_item_slot = self.game_state.player_state.find_first_empty_item_slot()
+        # TODO move some logic into ItemInventory class
+        empty_item_slot = self.game_state.player_state.item_inventory.find_first_empty_item_slot()
         item_name = ITEMS[item.item_type].name
         if empty_item_slot:
             item_effect = get_item_effect(item.item_type)
-            self.game_state.player_state.item_slots[empty_item_slot] = item_effect
+            self.game_state.player_state.item_inventory.item_slots[empty_item_slot] = item_effect
             item_effect.apply_start_effect(self.game_state)
             self.view_state.set_message("You picked up " + item_name)
             play_sound(SoundId.EVENT_PICKED_UP)
@@ -85,6 +87,7 @@ class GameEngine:
             self.view_state.set_message("No space for " + item_name)
 
     def _try_pick_up_consumable_from_ground(self, consumable: ConsumableOnGround):
+        # TODO move some logic into ConsumableInventory class
         has_space = self.game_state.player_state.consumable_inventory.has_space_for_more()
         consumable_type = consumable.consumable_type
         consumable_name = CONSUMABLES[consumable_type].name
@@ -158,7 +161,7 @@ class GameEngine:
             for buff in buffs_update.buffs_that_ended:
                 buff.buff_effect.apply_end_effect(self.game_state, enemy.world_entity, enemy)
 
-        for item_effect in self.game_state.player_state.item_slots.values():
+        for item_effect in self.game_state.player_state.item_inventory.item_slots.values():
             if item_effect:
                 item_effect.apply_middle_effect(self.game_state, time_passed)
 

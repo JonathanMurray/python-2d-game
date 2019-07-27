@@ -7,6 +7,7 @@ from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, I
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
     ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, HealthOrManaResource
 from pythongame.core.item_effects import get_item_effect
+from pythongame.core.item_inventory import ItemInventory
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
@@ -75,8 +76,9 @@ def create_player_state(hero_id: HeroId) -> PlayerState:
                                for (slot_number, item_id)
                                in data.item_slots.items()}
     consumable_inventory = ConsumableInventory(data.consumable_slots)
+    item_inventory = ItemInventory(item_slots_with_effects)
     health_resource = HealthOrManaResource(data.health, 0)
     mana_resource = HealthOrManaResource(data.mana, data.mana_regen)
     return PlayerState(
         health_resource, mana_resource, consumable_inventory, data.abilities,
-        item_slots_with_effects, data.new_level_abilities, data.hero_id, data.armor, data.level_bonus)
+        item_inventory, data.new_level_abilities, data.hero_id, data.armor, data.level_bonus)

@@ -545,7 +545,7 @@ class View:
         consumable_slots = player_state.consumable_inventory.consumables_in_slots
         ability_cooldowns_remaining = player_state.ability_cooldowns_remaining
         abilities = player_state.abilities
-        item_slots = player_state.item_slots
+        item_slots = player_state.item_inventory.item_slots
         player_exp = player_state.exp
         player_max_exp_in_this_level = player_state.max_exp_in_this_level
         player_level = player_state.level

@@ -6,6 +6,7 @@ from pygame.rect import Rect
 from pythongame.core.common import *
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import NpcCategory, PlayerLevelBonus
+from pythongame.core.item_inventory import ItemInventory
 from pythongame.core.loot import LootTable
 from pythongame.core.math import boxes_intersect, rects_intersect, get_position_from_center_position, \
     translate_in_direction, is_x_and_y_within_distance
@@ -342,8 +343,8 @@ class BuffEventOutcome:
 class PlayerState:
     def __init__(self, health_resource: HealthOrManaResource, mana_resource: HealthOrManaResource,
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
-                 item_slots: Dict[int, Any], new_level_abilities: Dict[int, AbilityType], hero_id: HeroId, armor: int,
-                 level_bonus: PlayerLevelBonus):
+                 item_inventory: ItemInventory, new_level_abilities: Dict[int, AbilityType], hero_id: HeroId,
+                 armor: int, level_bonus: PlayerLevelBonus):
         self.health_resource: HealthOrManaResource = health_resource
         self.mana_resource: HealthOrManaResource = mana_resource
         self.consumable_inventory = consumable_inventory
@@ -352,7 +353,7 @@ class PlayerState:
         self.active_buffs: List[BuffWithDuration] = []
         self.is_invisible = False
         self.stun_status = StunStatus()
-        self.item_slots = item_slots  # Values are of type AbstractItemEffect
+        self.item_inventory = item_inventory
         self.life_steal_ratio: float = 0
         self.exp = 0
         self.level = 1
@@ -366,12 +367,6 @@ class PlayerState:
         self.base_armor: int = armor  # depends on which hero is being played
         self.armor_bonus: int = 0  # affected by items/buffs. [Change it additively]
         self.level_bonus = level_bonus
-
-    def find_first_empty_item_slot(self) -> Optional[int]:
-        empty_slots = [slot for slot in self.item_slots if not self.item_slots[slot]]
-        if empty_slots:
-            return empty_slots[0]
-        return None
 
     # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):
@@ -389,25 +384,6 @@ class PlayerState:
         for ability_type in self.ability_cooldowns_remaining:
             if self.ability_cooldowns_remaining[ability_type] > 0:
                 self.ability_cooldowns_remaining[ability_type] -= time_passed
-
-    def switch_item_slots(self, slot_1: int, slot_2: int):
-        item_type_1 = self.item_slots[slot_1]
-        self.item_slots[slot_1] = self.item_slots[slot_2]
-        self.item_slots[slot_2] = item_type_1
-
-    def has_item_in_inventory(self, item_type: ItemType):
-        matches = [item_effect for item_effect in self.item_slots.values()
-                   if item_effect and item_effect.get_item_type() == item_type]
-        if len(matches) > 0:
-            return True
-
-    def lose_item_from_inventory(self, item_type: ItemType):
-        for slot_number in self.item_slots:
-            item_in_slot = self.item_slots[slot_number]
-            if item_in_slot and item_in_slot.get_item_type() == item_type:
-                self.item_slots[slot_number] = None
-                return
-        print("WARN: item not found in inventory: " + item_type.name)
 
     # returns True if player leveled up
     def gain_exp(self, amount: int):
@@ -451,7 +427,7 @@ class PlayerState:
                     buff.change_remaining_duration(outcome.change_remaining_duration)
                 if outcome.cancel_effect:
                     buff.force_cancel()
-        for item_effect in self.item_slots.values():
+        for item_effect in self.item_inventory.item_slots.values():
             if item_effect:
                 item_effect.item_handle_event(event, game_state)
 
