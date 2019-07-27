@@ -90,6 +90,7 @@ class AbilityType(Enum):
     SNEAK = 15
     INFUSE_DAGGER = 16
     DASH = 17
+    KILL_EVERYTHING = 18
 
 
 class Sprite(Enum):
@@ -181,6 +182,7 @@ class Sprite(Enum):
     HERO_MAGE = 700
     HERO_WARRIOR = 701
     HERO_ROGUE = 702
+    HERO_GOD =703
 
 
 class BuffType(Enum):
@@ -297,6 +299,7 @@ class HeroId(Enum):
     MAGE = 1
     WARRIOR = 2
     ROGUE = 3
+    GOD = 4
 
 
 class UiIconSprite(Enum):
@@ -323,6 +326,7 @@ class UiIconSprite(Enum):
     ABILITY_SNEAK = 114
     ABILITY_INFUSE_DAGGER = 115
     ABILITY_DASH = 116
+    ABILITY_KILL_EVERYTHING = 117
     ITEM_WINGED_BOOTS = 201
     ITEM_AMULET_OF_MANA = 202
     ITEM_SWORD_OF_LEECHING = 203
@@ -353,3 +357,4 @@ class PortraitIconSprite(Enum):
     HERO_MAGE = 10
     HERO_WARRIOR = 11
     HERO_ROGUE = 12
+    HERO_GOD =13

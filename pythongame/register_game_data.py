@@ -36,6 +36,7 @@ from pythongame.game_data.enemies.enemy_necromancer import register_necromancer_
 from pythongame.game_data.enemies.enemy_rat_1 import register_rat_1_enemy
 from pythongame.game_data.enemies.enemy_rat_2 import register_rat_2_enemy
 from pythongame.game_data.enemies.enemy_warrior import register_warrior_enemy
+from pythongame.game_data.heroes.hero_god import register_hero_god
 from pythongame.game_data.heroes.hero_mage import register_hero_mage
 from pythongame.game_data.heroes.hero_rogue import register_hero_rogue
 from pythongame.game_data.heroes.hero_warrior import register_hero_warrior
@@ -109,6 +110,7 @@ def register_all_game_data():
     register_hero_mage()
     register_hero_warrior()
     register_hero_rogue()
+    register_hero_god()
 
     register_dwarf_npc()
     register_nomad_npc()
