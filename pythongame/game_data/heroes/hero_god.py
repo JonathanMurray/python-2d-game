@@ -1,7 +1,5 @@
-from typing import Dict
-
 from pythongame.core.ability_effects import register_ability_effect
-from pythongame.core.common import ItemType, HeroId, PortraitIconSprite, UiIconSprite, Millis
+from pythongame.core.common import HeroId, PortraitIconSprite, UiIconSprite, Millis
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData, AbilityData, register_ability_data, register_ui_icon_sprite_path
@@ -47,17 +45,10 @@ def _get_initial_player_state_god() -> InitialPlayerStateData:
         5: None
     }
     abilities = [AbilityType.KILL_EVERYTHING, AbilityType.TELEPORT]
-    items: Dict[int, ItemType] = {
-        1: None,
-        2: None,
-        3: None,
-        4: None,
-        5: None,
-        6: None
-    }
     new_level_abilities = {}
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities, HERO_ID, armor, level_bonus)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus)
+
 
 def _apply_ability(game_state: GameState) -> bool:
     player_entity = game_state.player_entity

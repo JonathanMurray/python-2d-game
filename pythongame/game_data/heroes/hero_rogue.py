@@ -1,6 +1,4 @@
-from typing import Dict
-
-from pythongame.core.common import ItemType, HeroId, PortraitIconSprite
+from pythongame.core.common import HeroId, PortraitIconSprite
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
@@ -48,18 +46,10 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
         5: None
     }
     abilities = [AbilityType.SHIV]
-    items: Dict[int, ItemType] = {
-        1: None,
-        2: None,
-        3: None,
-        4: None,
-        5: None,
-        6: None
-    }
     new_level_abilities = {
         3: AbilityType.SNEAK,
         5: AbilityType.DASH,
         7: AbilityType.INFUSE_DAGGER
     }
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities, HERO_ID, armor, level_bonus)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus)

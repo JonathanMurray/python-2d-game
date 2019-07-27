@@ -1,6 +1,4 @@
-from typing import Dict
-
-from pythongame.core.common import ItemType, HeroId, PortraitIconSprite
+from pythongame.core.common import HeroId, PortraitIconSprite
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
@@ -45,19 +43,11 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
         5: None
     }
     abilities = [AbilityType.FIREBALL]
-    items: Dict[int, ItemType] = {
-        1: None,
-        2: None,
-        3: None,
-        4: None,
-        5: None,
-        6: None
-    }
     new_level_abilities = {
         3: AbilityType.WHIRLWIND,
         5: AbilityType.ENTANGLING_ROOTS,
         7: AbilityType.CHANNEL_ATTACK
     }
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities, HeroId.MAGE, armor,
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HeroId.MAGE, armor,
         level_bonus)
