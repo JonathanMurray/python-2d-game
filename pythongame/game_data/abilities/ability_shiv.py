@@ -8,7 +8,7 @@ from pythongame.core.game_data import register_ability_data, AbilityData, regist
     HEROES
 from pythongame.core.game_state import GameState
 from pythongame.core.math import translate_in_direction
-from pythongame.core.visual_effects import VisualRect
+from pythongame.core.visual_effects import VisualRect, VisualCross
 
 MIN_DMG = 3
 MAX_DMG = 4
@@ -19,12 +19,12 @@ def _apply_ability(game_state: GameState) -> bool:
     rect_w = 28
     # Note: We assume that this ability is used by this specific hero
     hero_entity_size = HEROES[HeroId.ROGUE].entity_size
-    slash_pos = translate_in_direction(
+    slash_center_pos = translate_in_direction(
         player_entity.get_center_position(),
         player_entity.direction,
         rect_w / 2 + hero_entity_size[0] * 0.25)
 
-    slash_rect = (int(slash_pos[0] - rect_w / 2), int(slash_pos[1] - rect_w / 2), rect_w, rect_w)
+    slash_rect = (int(slash_center_pos[0] - rect_w / 2), int(slash_center_pos[1] - rect_w / 2), rect_w, rect_w)
     affected_enemies = game_state.get_enemy_intersecting_rect(slash_rect)
     for enemy in affected_enemies:
         damage: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
@@ -37,7 +37,9 @@ def _apply_ability(game_state: GameState) -> bool:
         break
 
     game_state.visual_effects.append(
-        VisualRect((200, 200, 100), slash_pos, rect_w, int(rect_w * 0.7), Millis(150), 2, None))
+        VisualRect((150, 150, 75), slash_center_pos, rect_w, int(rect_w * 0.7), Millis(200), 2, None))
+    game_state.visual_effects.append(VisualCross((100, 100, 70), slash_center_pos, 6, Millis(100), 2))
+
     game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(250))
     return True
 

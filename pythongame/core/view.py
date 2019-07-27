@@ -11,7 +11,7 @@ from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerC
 from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.npc_behaviors import DialogGraphics
 from pythongame.core.view_state import ViewState
-from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
+from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite, VisualCross
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 
 COLOR_BACKGROUND = (88 + 30, 72 + 30, 40 + 30)
@@ -247,6 +247,12 @@ class View:
         translated_pos = self._translate_world_position_to_screen((world_rect[0], world_rect[1]))
         self._rect(color, (translated_pos[0], translated_pos[1], world_rect[2], world_rect[3]), line_width)
 
+    def _world_line(self, color: Tuple[int, int, int], start_pos: Tuple[int, int], end_pos: Tuple[int, int],
+                    line_width: int):
+        start_position = self._translate_world_position_to_screen(start_pos)
+        end_position = self._translate_world_position_to_screen(end_pos)
+        self._line(color, start_position, end_position, line_width)
+
     def _world_entity(self, entity: Union[WorldEntity, DecorationEntity]):
         if not entity.visible:
             return
@@ -280,6 +286,8 @@ class View:
             self._visual_circle(visual_effect)
         elif isinstance(visual_effect, VisualRect):
             self._visual_rect(visual_effect)
+        elif isinstance(visual_effect, VisualCross):
+            self._visual_cross(visual_effect)
         elif isinstance(visual_effect, VisualText):
             self._visual_text(visual_effect)
         elif isinstance(visual_effect, VisualSprite):
@@ -288,9 +296,7 @@ class View:
             raise Exception("Unhandled visual effect: " + str(visual_effect))
 
     def _visual_line(self, line: VisualLine):
-        start_position = self._translate_world_position_to_screen(line.start_position)
-        end_position = self._translate_world_position_to_screen(line.end_position)
-        self._line(line.color, start_position, end_position, line.line_width)
+        self._world_line(line.color, line.start_position, line.end_position, line.line_width)
 
     def _visual_circle(self, visual_circle: VisualCircle):
         position = visual_circle.circle()[0]
@@ -300,6 +306,10 @@ class View:
 
     def _visual_rect(self, visual_rect: VisualRect):
         self._world_rect(visual_rect.color, visual_rect.rect(), visual_rect.line_width)
+
+    def _visual_cross(self, visual_cross: VisualCross):
+        for start_pos, end_pos in visual_cross.lines():
+            self._world_line(visual_cross.color, start_pos, end_pos, visual_cross.line_width)
 
     def _visual_text(self, visual_text: VisualText):
         position = visual_text.position()
