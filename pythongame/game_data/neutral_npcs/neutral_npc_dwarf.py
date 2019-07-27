@@ -34,9 +34,9 @@ class NpcMind(AbstractNpcMind):
 class BuyGold(AbstractNpcAction):
 
     def act(self, game_state: GameState) -> Optional[str]:
-        player_has_gold = game_state.player_state.has_item_in_inventory(ITEM_TYPE_GOLD)
+        player_has_gold = game_state.player_state.item_inventory.has_item_in_inventory(ITEM_TYPE_GOLD)
         if player_has_gold:
-            game_state.player_state.lose_item_from_inventory(ITEM_TYPE_GOLD)
+            game_state.player_state.item_inventory.lose_item_from_inventory(ITEM_TYPE_GOLD)
             game_state.player_state.money += 25
             return "Sold gold nugget"
         else:
