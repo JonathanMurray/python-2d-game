@@ -88,6 +88,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.WOODEN_SHIELD),
     MapEditorWorldEntity.item(ItemType.ELVEN_ARMOR),
     MapEditorWorldEntity.item(ItemType.GOLD_NUGGET),
+    MapEditorWorldEntity.item(ItemType.SAPHIRE),
     MapEditorWorldEntity.item(ItemType.BLOOD_AMULET),
 
 

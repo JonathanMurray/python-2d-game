@@ -31,14 +31,19 @@ class NpcMind(AbstractNpcMind):
                 npc.world_entity.set_moving_in_dir(direction)
 
 
-class BuyGold(AbstractNpcAction):
+class BuyTreasure(AbstractNpcAction):
+
+    def __init__(self, item_type: ItemType, price: int, name: str):
+        self.item_type = item_type
+        self.price = price
+        self.name = name
 
     def act(self, game_state: GameState) -> Optional[str]:
-        player_has_gold = game_state.player_state.item_inventory.has_item_in_inventory(ITEM_TYPE_GOLD)
-        if player_has_gold:
-            game_state.player_state.item_inventory.lose_item_from_inventory(ITEM_TYPE_GOLD)
-            game_state.player_state.money += 25
-            return "Sold gold nugget"
+        player_has_it = game_state.player_state.item_inventory.has_item_in_inventory(self.item_type)
+        if player_has_it:
+            game_state.player_state.item_inventory.lose_item_from_inventory(self.item_type)
+            game_state.player_state.money += self.price
+            return "Sold " + self.name
         else:
             return "You don't have that!"
 
@@ -52,7 +57,10 @@ def register_dwarf_npc():
     register_npc_behavior(npc_type, NpcMind)
     introdution = "Hello there. I'm always looking for treasure. If you find any, we might be able to strike a deal!"
     dialog_options = [
-        DialogOptionData("Gold nugget [25 gold]", "sell", BuyGold(), UiIconSprite.ITEM_GOLD_NUGGET),
+        DialogOptionData("Gold nugget [25 gold]", "sell", BuyTreasure(ItemType.GOLD_NUGGET, 25, "gold nugget"),
+                         UiIconSprite.ITEM_GOLD_NUGGET),
+        DialogOptionData("Saphire [40 gold]", "sell", BuyTreasure(ItemType.SAPHIRE, 40, "saphire"),
+                         UiIconSprite.ITEM_SAPHIRE),
         DialogOptionData("\"Good bye\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
     dialog_data = DialogData(PortraitIconSprite.VIKING, introdution, dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)

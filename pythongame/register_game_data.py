@@ -49,6 +49,7 @@ from pythongame.game_data.items.item_gold_nugget import register_gold_nugget
 from pythongame.game_data.items.item_knights_armor import register_knights_armor
 from pythongame.game_data.items.item_orb_of_the_magi import register_orb_of_the_magi_item
 from pythongame.game_data.items.item_rod_of_lightning import register_rod_of_lightning_item
+from pythongame.game_data.items.item_saphire import register_saphire
 from pythongame.game_data.items.item_soldiers_helmet import register_soldiers_helmet_item
 from pythongame.game_data.items.item_staff_of_fire import register_staff_of_fire_item
 from pythongame.game_data.items.item_sword_of_leeching import register_sword_of_leeching_item
@@ -130,6 +131,7 @@ def register_all_game_data():
     register_wooden_shield()
     register_elven_armor()
     register_gold_nugget()
+    register_saphire()
 
     register_decorations()
     register_map_editor_icons()

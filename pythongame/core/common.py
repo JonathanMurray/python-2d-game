@@ -140,6 +140,7 @@ class Sprite(Enum):
     ITEM_WOODEN_SHIELD = 315
     ITEM_ELVEN_ARMOR = 316
     ITEM_GOLD_NUGGET = 317
+    ITEM_SAPHIRE = 318
     COINS_1 = 350
     COINS_2 = 351
     COINS_5 = 352
@@ -239,6 +240,7 @@ class ItemType(Enum):
     WOODEN_SHIELD = 74
     ELVEN_ARMOR = 75
     GOLD_NUGGET = 76
+    SAPHIRE = 77
 
 
 class ProjectileType(Enum):
@@ -338,6 +340,7 @@ class UiIconSprite(Enum):
     ITEM_WOODEN_SHIELD = 215
     ITEM_ELVEN_ARMOR = 216
     ITEM_GOLD_NUGGET = 217
+    ITEM_SAPHIRE = 218
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
 
