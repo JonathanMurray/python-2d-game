@@ -7,6 +7,7 @@ from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path
 from pythongame.core.game_state import Event, PlayerLostHealthEvent, GameState, WorldEntity, \
     NonPlayerCharacter
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
+from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.visual_effects import VisualCircle
 
 STUN_DURATION = Millis(1500)
@@ -55,5 +56,6 @@ def register_zuls_aegis():
     name = "Zul's Aegis"
     description = "{:.0f}".format(PROC_CHANCE * 100) + "% chance to stun attacker for " \
                   + "{:.1f}".format(STUN_DURATION / 1000) + "s"
-    register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, sprite, name, description))
+    item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.OFF_HAND)
+    register_item_data(ITEM_TYPE, item_data)
     register_buff_effect(BUFF_TYPE_STUNNED, StunnedFromAegis)

@@ -3,6 +3,7 @@ from pythongame.core.game_data import register_ui_icon_sprite_path, register_ite
     register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
+from pythongame.core.item_inventory import ItemEquipmentCategory
 
 ITEM_TYPES = [ItemType.AMULET_OF_MANA_1, ItemType.AMULET_OF_MANA_2, ItemType.AMULET_OF_MANA_3]
 MANA_REGEN_BOOSTS = [0.5, 0.75, 1]
@@ -36,4 +37,5 @@ def register_amulet_of_mana_item():
         register_item_effect(item_type, ItemEffect(mana_regen_boost, item_type))
         name = "Amulet of Mana (" + str(i + 1) + ")"
         description = "Grants +" + str(mana_regen_boost) + " mana regeneration"
-        register_item_data(item_type, ItemData(ui_icon_sprite, sprite, name, description))
+        item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.NECK)
+        register_item_data(item_type, item_data)

@@ -8,6 +8,7 @@ from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE
     HEROES, ConsumableCategory, CHANNELING_BUFFS
 from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration, WorldArea, \
     PlayerState
+from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory
 from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.npc_behaviors import DialogGraphics
 from pythongame.core.view_state import ViewState
@@ -392,15 +393,35 @@ class View:
             self._rect_filled((100, 30, 30), cooldown_rect)
             self._rect((180, 30, 30), icon_rect, 2)
 
-    def _item_icon_in_ui(self, x_in_ui, y_in_ui, size, item_type: ItemType):
+    def _item_icon_in_ui(self, x_in_ui, y_in_ui, size, item_type: ItemType,
+                         slot_equipment_category: ItemEquipmentCategory):
         w = size[0]
         h = size[1]
         x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
         self._rect_filled((40, 40, 50), (x, y, w, h))
         if item_type:
+            if slot_equipment_category:
+                self._rect_filled((40, 40, 70), (x, y, w, h))
             ui_icon_sprite = ITEMS[item_type].icon_sprite
             self._image(self.images_by_ui_sprite[ui_icon_sprite], (x, y))
-        self._rect((150, 150, 190), (x, y, w, h), 1)
+        elif slot_equipment_category:
+            if slot_equipment_category == ItemEquipmentCategory.HEAD:
+                self._image(self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_HELMET], (x, y))
+            elif slot_equipment_category == ItemEquipmentCategory.CHEST:
+                self._image(self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_CHEST], (x, y))
+            elif slot_equipment_category == ItemEquipmentCategory.MAIN_HAND:
+                self._image(self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_MAINHAND], (x, y))
+            elif slot_equipment_category == ItemEquipmentCategory.OFF_HAND:
+                self._image(self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_OFFHAND], (x, y))
+            elif slot_equipment_category == ItemEquipmentCategory.NECK:
+                self._image(self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_NECK], (x, y))
+            elif slot_equipment_category == ItemEquipmentCategory.RING:
+                self._image(self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_RING], (x, y))
+        if item_type and slot_equipment_category:
+            color_outline = (250, 250, 250)
+        else:
+            color_outline = (100, 100, 140)
+        self._rect(color_outline, (x, y, w, h), 1)
 
     def _map_editor_icon_in_ui(self, x_in_ui, y_in_ui, size: Tuple[int, int], highlighted: bool, user_input_key: str,
                                sprite: Optional[Sprite], ui_icon_sprite: Optional[UiIconSprite]):
@@ -555,7 +576,7 @@ class View:
         consumable_slots = player_state.consumable_inventory.consumables_in_slots
         ability_cooldowns_remaining = player_state.ability_cooldowns_remaining
         abilities = player_state.abilities
-        item_slots = player_state.item_inventory.item_slots
+        item_slots: List[ItemInventorySlot] = player_state.item_inventory.slots
         player_exp = player_state.exp
         player_max_exp_in_this_level = player_state.max_exp_in_this_level
         player_level = player_state.level
@@ -670,27 +691,36 @@ class View:
                                      highlighted_ability_action, ability_cooldowns_remaining)
 
         # ITEMS
-        x_2 = 340
+        x_2 = 325
         items_rect_pos = self._translate_ui_position_to_screen((x_2 - icon_rect_padding, y_2 - icon_rect_padding))
         num_item_slot_rows = 3
-        num_slots_per_row = 2
+        num_slots_per_row = 3
         items_rect = (
             items_rect_pos[0], items_rect_pos[1],
             (UI_ICON_SIZE[0] + icon_space) * num_slots_per_row - icon_space + icon_rect_padding * 2,
             num_item_slot_rows * UI_ICON_SIZE[1] + (num_item_slot_rows - 1) * icon_space + icon_rect_padding * 2)
         self._rect_filled((60, 60, 80), items_rect)
-        for i, item_slot_number in enumerate(item_slots.keys()):
+        for i in range(len(item_slots)):
             x = x_2 + (i % num_slots_per_row) * (UI_ICON_SIZE[0] + icon_space)
             y = y_2 + (i // num_slots_per_row) * (UI_ICON_SIZE[1] + icon_space)
-            item_effect = item_slots[item_slot_number]
-            item_type = item_effect.get_item_type() if item_effect else None
+            slot = item_slots[i]
+            item_type = slot.item.item_effect.get_item_type() if not slot.is_empty() else None
+            slot_equipment_category = slot.enforced_equipment_category
             if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
-                hovered_item_slot_number = item_slot_number
+                hovered_item_slot_number = i
                 if item_type:
-                    tooltip_title = ITEMS[item_type].name
-                    tooltip_details = [ITEMS[item_type].description]
+                    item_data = ITEMS[item_type]
+                    tooltip_title = item_data.name
+                    tooltip_details = []
+                    if item_data.item_equipment_category:
+                        tooltip_details.append("[" + item_data.item_equipment_category.name + "]")
+                    tooltip_details.append(item_data.description)
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
-            self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type)
+                elif slot_equipment_category:
+                    tooltip_title = "[" + slot_equipment_category.name + "]"
+                    tooltip_details = ["Nothing equipped"]
+                    tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
+            self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type, slot_equipment_category)
 
         # MINIMAP
         x_3 = 440

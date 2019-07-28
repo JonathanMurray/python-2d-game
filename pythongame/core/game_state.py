@@ -430,9 +430,8 @@ class PlayerState:
                     buff.change_remaining_duration(outcome.change_remaining_duration)
                 if outcome.cancel_effect:
                     buff.force_cancel()
-        for item_effect in self.item_inventory.item_slots.values():
-            if item_effect:
-                item_effect.item_handle_event(event, game_state)
+        for item_effect in self.item_inventory.get_all_item_effects():
+            item_effect.item_handle_event(event, game_state)
 
 
 # TODO Is there a way to handle this better in the view module? This class shouldn't need to masquerade as a WorldEntity

@@ -5,6 +5,7 @@ import pygame
 
 from pythongame.core.common import *
 from pythongame.core.common import UiIconSprite, PortraitIconSprite
+from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.loot import LootTable
 
 ITEM_ENTITY_SIZE = (30, 30)
@@ -142,11 +143,13 @@ class ConsumableData:
 
 
 class ItemData:
-    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Sprite, name: str, description: str):
+    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Sprite, name: str, description: str,
+                 item_equipment_category: Optional[ItemEquipmentCategory] = None):
         self.icon_sprite = icon_sprite
         self.entity_sprite = entity_sprite
         self.name = name
         self.description = description
+        self.item_equipment_category = item_equipment_category
 
 
 class WallData:

@@ -1,8 +1,8 @@
 {
   "player": {
     "position": [
-      250,
-      250
+      -50,
+      300
     ]
   },
   "consumables_on_ground": [
@@ -39,57 +39,127 @@
     {
       "item_type": "WINGED_BOOTS",
       "position": [
-        175,
-        75
+        -100,
+        50
       ]
     },
     {
       "item_type": "SWORD_OF_LEECHING",
       "position": [
-        150,
-        125
+        -100,
+        100
       ]
     },
     {
       "item_type": "ROD_OF_LIGHTNING",
       "position": [
-        150,
-        175
+        -100,
+        150
       ]
     },
     {
       "item_type": "AMULET_OF_MANA_1",
       "position": [
-        100,
-        175
+        -100,
+        200
       ]
     },
     {
       "item_type": "SOLDIERS_HELMET_1",
       "position": [
-        175,
-        275
+        -100,
+        250
       ]
     },
     {
       "item_type": "BLESSED_SHIELD_1",
       "position": [
-        325,
-        425
+        -100,
+        300
       ]
     },
     {
       "item_type": "STAFF_OF_FIRE",
       "position": [
-        250,
-        425
+        -100,
+        350
       ]
     },
     {
-      "item_type": "AMULET_OF_MANA_1",
+      "item_type": "BLUE_ROBE_1",
       "position": [
-        425,
-        375
+        -100,
+        400
+      ]
+    },
+    {
+      "item_type": "ORB_OF_THE_MAGI_1",
+      "position": [
+        -50,
+        50
+      ]
+    },
+    {
+      "item_type": "WIZARDS_COWL",
+      "position": [
+        -50,
+        100
+      ]
+    },
+    {
+      "item_type": "ZULS_AEGIS",
+      "position": [
+        -50,
+        150
+      ]
+    },
+    {
+      "item_type": "KNIGHTS_ARMOR",
+      "position": [
+        -50,
+        200
+      ]
+    },
+    {
+      "item_type": "GOATS_RING",
+      "position": [
+        -50,
+        250
+      ]
+    },
+    {
+      "item_type": "WOODEN_SHIELD",
+      "position": [
+        -50,
+        300
+      ]
+    },
+    {
+      "item_type": "ELVEN_ARMOR",
+      "position": [
+        -50,
+        350
+      ]
+    },
+    {
+      "item_type": "GOLD_NUGGET",
+      "position": [
+        -50,
+        400
+      ]
+    },
+    {
+      "item_type": "SAPHIRE",
+      "position": [
+        0,
+        50
+      ]
+    },
+    {
+      "item_type": "BLOOD_AMULET",
+      "position": [
+        0,
+        100
       ]
     }
   ],
@@ -239,48 +309,5 @@
       ]
     }
   ],
-  "portals": [
-    {
-      "portal_id": "A_BASE",
-      "position": [
-        175,
-        200
-      ]
-    },
-    {
-      "portal_id": "B_BASE",
-      "position": [
-        175,
-        275
-      ]
-    },
-    {
-      "portal_id": "C_BASE",
-      "position": [
-        175,
-        400
-      ]
-    },
-    {
-      "portal_id": "A_REMOTE",
-      "position": [
-        300,
-        175
-      ]
-    },
-    {
-      "portal_id": "B_REMOTE",
-      "position": [
-        300,
-        275
-      ]
-    },
-    {
-      "portal_id": "C_REMOTE",
-      "position": [
-        350,
-        375
-      ]
-    }
-  ]
+  "portals": []
 }

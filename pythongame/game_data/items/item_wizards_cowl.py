@@ -3,6 +3,7 @@ from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path
     register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import Event, EnemyDiedEvent, GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
+from pythongame.core.item_inventory import ItemEquipmentCategory
 
 ITEM_TYPE = ItemType.WIZARDS_COWL
 MANA_AMOUNT_ON_KILL = 5
@@ -31,4 +32,5 @@ def register_wizards_cowl():
     register_item_effect(ITEM_TYPE, ItemEffect(MANA_AMOUNT_ON_KILL, ITEM_TYPE))
     name = "Wizard's Cowl"
     description = "Grants +" + str(MANA_AMOUNT_ON_KILL) + " mana on kills"
-    register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, sprite, name, description))
+    item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.HEAD)
+    register_item_data(ITEM_TYPE, item_data)

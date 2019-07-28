@@ -6,6 +6,7 @@ from pythongame.core.game_data import register_ui_icon_sprite_path, register_ite
     register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import GameState, Event, PlayerWasAttackedEvent
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
+from pythongame.core.item_inventory import ItemEquipmentCategory
 
 ITEM_TYPES = [ItemType.BLESSED_SHIELD_1, ItemType.BLESSED_SHIELD_2, ItemType.BLESSED_SHIELD_3]
 PROC_CHANCES = [0.4, 0.6, 0.8]
@@ -45,4 +46,5 @@ def register_blessed_shield_item():
         register_item_effect(item_type, ItemEffect(proc_chance, item_type))
         name = "Blessed Shield (" + str(i + 1) + ")"
         description = "Gives +" + str(ARMOR_BOOST) + " armor and {:.0f}".format(proc_chance * 100) + "% chance to gain 1 health when attacked"
-        register_item_data(item_type, ItemData(ui_icon_sprite, sprite, name, description))
+        item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.OFF_HAND)
+        register_item_data(item_type, item_data)

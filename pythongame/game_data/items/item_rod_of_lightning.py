@@ -6,6 +6,7 @@ from pythongame.core.game_data import register_ui_icon_sprite_path, register_ite
     register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
+from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.visual_effects import VisualCircle, VisualLine
 
 ITEM_TYPE = ItemType.ROD_OF_LIGHTNING
@@ -46,4 +47,5 @@ def register_rod_of_lightning_item():
     register_entity_sprite_initializer(
         sprite, SpriteInitializer("resources/graphics/item_rod_of_lightning.png", ITEM_ENTITY_SIZE))
     description = "Periodically damages nearby enemies (" + str(MIN_DMG) + "-" + str(MAX_DMG) + ")"
-    register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, sprite, "Rod of Lightning", description))
+    item_data = ItemData(ui_icon_sprite, sprite, "Rod of Lightning", description, ItemEquipmentCategory.MAIN_HAND)
+    register_item_data(ITEM_TYPE, item_data)

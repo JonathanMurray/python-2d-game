@@ -6,7 +6,7 @@ from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, I
     WALLS, PORTALS, HEROES, NpcData
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
     ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, HealthOrManaResource
-from pythongame.core.item_inventory import ItemInventory
+from pythongame.core.item_inventory import ItemInventory, ItemInventorySlot, ItemEquipmentCategory
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
@@ -71,16 +71,19 @@ def create_decoration_entity(pos: Tuple[int, int], sprite: Sprite) -> Decoration
 
 def create_player_state(hero_id: HeroId) -> PlayerState:
     data = HEROES[hero_id].initial_player_state
-    item_slots_with_effects = {
-        1: None,
-        2: None,
-        3: None,
-        4: None,
-        5: None,
-        6: None
-    }
     consumable_inventory = ConsumableInventory(data.consumable_slots)
-    item_inventory = ItemInventory(item_slots_with_effects)
+    item_slots = [
+        ItemInventorySlot(None, ItemEquipmentCategory.NECK),
+        ItemInventorySlot(None, ItemEquipmentCategory.HEAD),
+        ItemInventorySlot(None, ItemEquipmentCategory.RING),
+        ItemInventorySlot(None, ItemEquipmentCategory.MAIN_HAND),
+        ItemInventorySlot(None, ItemEquipmentCategory.CHEST),
+        ItemInventorySlot(None, ItemEquipmentCategory.OFF_HAND),
+        ItemInventorySlot(None, None),
+        ItemInventorySlot(None, None),
+        ItemInventorySlot(None, None)
+    ]
+    item_inventory = ItemInventory(item_slots)
     health_resource = HealthOrManaResource(data.health, 0)
     mana_resource = HealthOrManaResource(data.mana, data.mana_regen)
     return PlayerState(

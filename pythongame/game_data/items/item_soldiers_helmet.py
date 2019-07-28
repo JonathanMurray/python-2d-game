@@ -3,6 +3,7 @@ from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path
     register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
+from pythongame.core.item_inventory import ItemEquipmentCategory
 
 ITEM_TYPES = [ItemType.SOLDIERS_HELMET_1, ItemType.SOLDIERS_HELMET_2, ItemType.SOLDIERS_HELMET_3]
 HEALTH_AMOUNTS = [10, 15, 20]
@@ -38,4 +39,5 @@ def register_soldiers_helmet_item():
         register_item_effect(item_type, ItemEffect(health_amount, item_type))
         name = "Soldier's Helmet (" + str(i + 1) + ")"
         description = "Grants +" + str(ARMOR_BOOST) + " armor and +" + str(health_amount) + " max health"
-        register_item_data(item_type, ItemData(ui_icon_sprite, sprite, name, description))
+        item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.HEAD)
+        register_item_data(item_type, item_data)

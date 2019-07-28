@@ -51,8 +51,6 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
     render_hit_and_collision_boxes = False
     mouse_screen_position = (0, 0)
 
-    game_engine.initialize()
-
     item_slot_being_dragged: Optional[int] = None
     consumable_slot_being_dragged: Optional[int] = None
 
@@ -155,6 +153,8 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
 
         dialog = player_interactions_state.get_dialog()
 
+        # TODO If dragging an item, highlight the inventory slots that are valid for the item?
+
         mouse_hover_event: MouseHoverEvent = view.render_ui(
             player_state=game_state.player_state,
             view_state=view_state,
@@ -167,44 +167,53 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
 
         # TODO There is a lot of details here about UI state (dragging items). Move that elsewhere.
 
-        hovered_item_slot_number = mouse_hover_event.item_slot_number
-        hovered_consumable_slot_number = mouse_hover_event.consumable_slot_number
+        # DRAGGING ITEMS
 
-        if mouse_was_just_clicked and hovered_item_slot_number:
-            if game_state.player_state.item_inventory.item_slots[hovered_item_slot_number]:
+        hovered_item_slot_number = mouse_hover_event.item_slot_number
+
+        if mouse_was_just_clicked and hovered_item_slot_number is not None:
+            if not game_state.player_state.item_inventory.is_slot_empty(hovered_item_slot_number):
                 item_slot_being_dragged = hovered_item_slot_number
                 play_sound(SoundId.UI_START_DRAGGING_ITEM)
 
-        if item_slot_being_dragged:
-            item_type = game_state.player_state.item_inventory.item_slots[item_slot_being_dragged].get_item_type()
+        if item_slot_being_dragged is not None:
+            item_type = game_state.player_state.item_inventory.get_item_type_in_slot(item_slot_being_dragged)
             view.render_item_being_dragged(item_type, mouse_screen_position)
 
-        if mouse_was_just_released and item_slot_being_dragged:
-            if hovered_item_slot_number and item_slot_being_dragged != hovered_item_slot_number:
-                game_engine.switch_inventory_items(item_slot_being_dragged, hovered_item_slot_number)
-                play_sound(SoundId.UI_ITEM_WAS_MOVED)
+        if mouse_was_just_released and item_slot_being_dragged is not None:
+            if hovered_item_slot_number is not None and item_slot_being_dragged != hovered_item_slot_number:
+                did_switch_succeed = game_engine.switch_inventory_items(item_slot_being_dragged,
+                                                                        hovered_item_slot_number)
+                if did_switch_succeed:
+                    play_sound(SoundId.UI_ITEM_WAS_MOVED)
+                else:
+                    play_sound(SoundId.INVALID_ACTION)
             if mouse_hover_event.game_world_position:
                 game_engine.drop_inventory_item_on_ground(item_slot_being_dragged,
                                                           mouse_hover_event.game_world_position)
-            item_slot_being_dragged = False
+            item_slot_being_dragged = None
 
-        if mouse_was_just_clicked and hovered_consumable_slot_number:
+        # DRAGGING CONSUMABLES
+
+        hovered_consumable_slot_number = mouse_hover_event.consumable_slot_number
+
+        if mouse_was_just_clicked and hovered_consumable_slot_number is not None:
             if game_state.player_state.consumable_inventory.consumables_in_slots[hovered_consumable_slot_number]:
                 consumable_slot_being_dragged = hovered_consumable_slot_number
                 play_sound(SoundId.UI_START_DRAGGING_ITEM)
 
-        if consumable_slot_being_dragged:
+        if consumable_slot_being_dragged is not None:
             consumable_type = game_state.player_state.consumable_inventory.consumables_in_slots[
                 consumable_slot_being_dragged][0]
             view.render_consumable_being_dragged(consumable_type, mouse_screen_position)
 
-        if mouse_was_just_released and consumable_slot_being_dragged:
-            if hovered_consumable_slot_number and consumable_slot_being_dragged != hovered_consumable_slot_number:
+        if mouse_was_just_released and consumable_slot_being_dragged is not None:
+            if hovered_consumable_slot_number is not None and consumable_slot_being_dragged != hovered_consumable_slot_number:
                 game_engine.drag_consumable_between_slots(consumable_slot_being_dragged, hovered_consumable_slot_number)
                 play_sound(SoundId.UI_ITEM_WAS_MOVED)
             if mouse_hover_event.game_world_position:
                 game_engine.drop_consumable_on_ground(consumable_slot_being_dragged,
                                                       mouse_hover_event.game_world_position)
-            consumable_slot_being_dragged = False
+            consumable_slot_being_dragged = None
 
         view.update_display()

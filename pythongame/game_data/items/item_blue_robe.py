@@ -3,6 +3,7 @@ from pythongame.core.game_data import register_ui_icon_sprite_path, register_ite
     register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
+from pythongame.core.item_inventory import ItemEquipmentCategory
 
 ITEM_TYPES = [ItemType.BLUE_ROBE_1, ItemType.BLUE_ROBE_2, ItemType.BLUE_ROBE_3]
 MANA_AMOUNTS = [10, 15, 20]
@@ -38,4 +39,5 @@ def register_blue_robe_item():
         register_item_effect(item_type, ItemEffect(health_amount, item_type))
         name = "Blue Robe (" + str(i + 1) + ")"
         description = "Grants +" + str(ARMOR_BOOST) + " armor and "+ str(health_amount) + " max mana"
-        register_item_data(item_type, ItemData(ui_icon_sprite, sprite, name, description))
+        item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.CHEST)
+        register_item_data(item_type, item_data)

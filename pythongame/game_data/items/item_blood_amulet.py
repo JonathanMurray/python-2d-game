@@ -6,6 +6,7 @@ from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path
     register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import Event, EnemyDiedEvent, GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
+from pythongame.core.item_inventory import ItemEquipmentCategory
 
 ITEM_TYPE = ItemType.BLOOD_AMULET
 HEALTH_ON_KILL_AMOUNT = 5
@@ -33,4 +34,5 @@ def register_blood_amulet():
     name = "Blood Amulet"
     description = "Gives a " + str(int(PROC_CHANCE * 100)) + "% chance to restore " + \
                   str(HEALTH_ON_KILL_AMOUNT) + " health on kills"
-    register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, sprite, name, description))
+    item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.NECK)
+    register_item_data(ITEM_TYPE, item_data)

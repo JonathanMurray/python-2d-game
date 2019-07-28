@@ -25,11 +25,6 @@ class GameEngine:
         self.player_spawn_position = game_state.player_entity.get_position()
         self.view_state = view_state
 
-    def initialize(self):
-        for item_effect in self.game_state.player_state.item_inventory.item_slots.values():
-            if item_effect:
-                item_effect.apply_start_effect(self.game_state)
-
     def try_use_ability(self, ability_type: AbilityType):
         PlayerControls.try_use_ability(ability_type, self.game_state, self.view_state)
 
@@ -45,19 +40,18 @@ class GameEngine:
         if not self.game_state.player_state.stun_status.is_stunned():
             self.game_state.player_entity.set_not_moving()
 
-    def switch_inventory_items(self, slot_1: int, slot_2: int):
-        self.game_state.player_state.item_inventory.switch_item_slots(slot_1, slot_2)
+    def switch_inventory_items(self, slot_1: int, slot_2: int) -> bool:
+        did_switch_succeed = self.game_state.player_state.item_inventory.switch_item_slots(slot_1, slot_2)
+        return did_switch_succeed
 
     def drag_consumable_between_slots(self, from_slot: int, to_slot: int):
         self.game_state.player_state.consumable_inventory.drag_consumable_between_slots(from_slot, to_slot)
 
     def drop_inventory_item_on_ground(self, item_slot: int, game_world_position: Tuple[int, int]):
-        # TODO move some logic into ItemInventory class
-        item_type = self.game_state.player_state.item_inventory.item_slots[item_slot].get_item_type()
+        item_type = self.game_state.player_state.item_inventory.remove_item_from_slot(item_slot)
+        get_item_effect(item_type).apply_end_effect(self.game_state)
         item = create_item_on_ground(item_type, game_world_position)
         self.game_state.items_on_ground.append(item)
-        get_item_effect(item_type).apply_end_effect(self.game_state)
-        self.game_state.player_state.item_inventory.item_slots[item_slot] = None
 
     def drop_consumable_on_ground(self, consumable_slot: int, game_world_position: Tuple[int, int]):
         consumable_type = self.game_state.player_state.consumable_inventory.remove_consumable_from_slot(consumable_slot)
@@ -73,18 +67,17 @@ class GameEngine:
             raise Exception("Unhandled type of loot: " + str(loot))
 
     def _try_pick_up_item_from_ground(self, item: ItemOnGround):
-        # TODO move some logic into ItemInventory class
-        empty_item_slot = self.game_state.player_state.item_inventory.find_first_empty_item_slot()
-        item_name = ITEMS[item.item_type].name
-        if empty_item_slot:
-            item_effect = get_item_effect(item.item_type)
-            self.game_state.player_state.item_inventory.item_slots[empty_item_slot] = item_effect
+        item_effect = get_item_effect(item.item_type)
+        item_data = ITEMS[item.item_type]
+        item_equipment_category = item_data.item_equipment_category
+        could_pick_up = self.game_state.player_state.item_inventory.try_add_item(item_effect, item_equipment_category)
+        if could_pick_up:
             item_effect.apply_start_effect(self.game_state)
-            self.view_state.set_message("You picked up " + item_name)
+            self.view_state.set_message("You picked up " + item_data.name)
             play_sound(SoundId.EVENT_PICKED_UP)
             self.game_state.remove_entities([item])
         else:
-            self.view_state.set_message("No space for " + item_name)
+            self.view_state.set_message("No space for " + item_data.name)
 
     def _try_pick_up_consumable_from_ground(self, consumable: ConsumableOnGround):
         # TODO move some logic into ConsumableInventory class
@@ -161,9 +154,8 @@ class GameEngine:
             for buff in buffs_update.buffs_that_ended:
                 buff.buff_effect.apply_end_effect(self.game_state, enemy.world_entity, enemy)
 
-        for item_effect in self.game_state.player_state.item_inventory.item_slots.values():
-            if item_effect:
-                item_effect.apply_middle_effect(self.game_state, time_passed)
+        for item_effect in self.game_state.player_state.item_inventory.get_all_item_effects():
+            item_effect.apply_middle_effect(self.game_state, time_passed)
 
         self.game_state.player_state.health_resource.regenerate(time_passed)
         self.game_state.player_state.mana_resource.regenerate(time_passed)

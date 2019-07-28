@@ -3,6 +3,7 @@ from pythongame.core.game_data import register_ui_icon_sprite_path, register_ite
     register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
+from pythongame.core.item_inventory import ItemEquipmentCategory
 
 ITEM_TYPES = [ItemType.ORB_OF_THE_MAGI_1, ItemType.ORB_OF_THE_MAGI_2, ItemType.ORB_OF_THE_MAGI_3]
 MULTIPLIER_BONUSES = [0.1, 0.15, 0.2]
@@ -36,4 +37,5 @@ def register_orb_of_the_magi_item():
         register_item_effect(item_type, ItemEffect(bonus, item_type))
         name = "Orb of the Magi (" + str(i + 1) + ")"
         description = "Grants +" + str(int(round(bonus * 100))) + "% dmg"
-        register_item_data(item_type, ItemData(ui_icon_sprite, sprite, name, description))
+        item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.OFF_HAND)
+        register_item_data(item_type, item_data)

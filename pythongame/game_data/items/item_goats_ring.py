@@ -6,6 +6,7 @@ from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path
 from pythongame.core.game_state import Event, PlayerDamagedEnemy, GameState, WorldEntity, \
     NonPlayerCharacter
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
+from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.visual_effects import VisualCircle
 
 ITEM_TYPE = ItemType.GOATS_RING
@@ -62,5 +63,6 @@ def register_goats_ring():
     register_item_effect(ITEM_TYPE, ItemEffect(ITEM_TYPE))
     name = "The Goat's Curse"
     description = "Curses enemies to take damage over time"
-    register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, sprite, name, description))
+    item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.RING)
+    register_item_data(ITEM_TYPE, item_data)
     register_buff_effect(BUFF_TYPE, DebuffedByGoatsRing)
