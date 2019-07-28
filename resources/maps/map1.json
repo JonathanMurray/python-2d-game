@@ -1083,20 +1083,6 @@
       ]
     },
     {
-      "npc_type": "CHEST",
-      "position": [
-        350,
-        75
-      ]
-    },
-    {
-      "npc_type": "NEUTRAL_DWARF",
-      "position": [
-        275,
-        75
-      ]
-    },
-    {
       "npc_type": "GOBLIN_WORKER",
       "position": [
         2125,
@@ -1542,6 +1528,13 @@
       "position": [
         -550,
         -475
+      ]
+    },
+    {
+      "npc_type": "NEUTRAL_DWARF",
+      "position": [
+        300,
+        75
       ]
     }
   ],
