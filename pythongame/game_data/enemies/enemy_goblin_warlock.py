@@ -145,6 +145,7 @@ class Burnt(AbstractBuffEffect):
                     VisualCircle((180, 50, 50), buffed_npc.world_entity.get_center_position(), 10, 20, Millis(50), 0,
                                  buffed_entity))
             else:
+                # TODO This damage should bypass armor
                 deal_damage_to_player(game_state, 2, None)
                 game_state.visual_effects.append(
                     VisualCircle((180, 50, 50), game_state.player_entity.get_center_position(), 10, 20, Millis(50), 0,

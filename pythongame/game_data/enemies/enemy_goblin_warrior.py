@@ -10,6 +10,8 @@ from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.game_data.loot_tables import LOOT_ITEMS_2, LOOT_ITEMS_1, LOOT_POTIONS_1
 
+DAMAGE_AMOUNT = 12
+
 
 class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
@@ -59,7 +61,7 @@ class NpcMind(AbstractNpcMind):
                 enemy_position = enemy_entity.get_center_position()
                 target_center_pos = target.entity.get_center_position()
                 if is_x_and_y_within_distance(enemy_position, target_center_pos, 80):
-                    deal_npc_damage(6, game_state, enemy_entity, npc, target)
+                    deal_npc_damage(DAMAGE_AMOUNT, game_state, enemy_entity, npc, target)
 
 
 def _move_in_dir(enemy_entity, direction):
