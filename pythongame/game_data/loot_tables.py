@@ -8,7 +8,8 @@ LOOT_ITEMS_1 = [
     LootEntry.item(ItemType.SOLDIERS_HELMET_1),
     LootEntry.item(ItemType.BLUE_ROBE_1),
     LootEntry.item(ItemType.ORB_OF_THE_MAGI_1),
-    LootEntry.item(ItemType.WOODEN_SHIELD)
+    LootEntry.item(ItemType.WOODEN_SHIELD),
+    LootEntry.item(ItemType.LEATHER_COWL),
 ]
 
 LOOT_ITEMS_2 = [
@@ -24,7 +25,8 @@ LOOT_ITEMS_2 = [
     LootEntry.item(ItemType.GOATS_RING),
     LootEntry.item(ItemType.BLOOD_AMULET),
     LootEntry.item(ItemType.KNIGHTS_ARMOR),
-    LootEntry.item(ItemType.ELVEN_ARMOR)
+    LootEntry.item(ItemType.ELVEN_ARMOR),
+    LootEntry.item(ItemType.WINGED_HELMET)
 ]
 
 LOOT_POTIONS_1 = [

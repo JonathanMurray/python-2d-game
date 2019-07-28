@@ -48,6 +48,7 @@ from pythongame.game_data.items.item_elven_armor import register_elven_armor
 from pythongame.game_data.items.item_goats_ring import register_goats_ring
 from pythongame.game_data.items.item_gold_nugget import register_gold_nugget
 from pythongame.game_data.items.item_knights_armor import register_knights_armor
+from pythongame.game_data.items.item_leather_cowl import register_leather_cowl_item
 from pythongame.game_data.items.item_orb_of_the_magi import register_orb_of_the_magi_item
 from pythongame.game_data.items.item_rod_of_lightning import register_rod_of_lightning_item
 from pythongame.game_data.items.item_saphire import register_saphire
@@ -55,6 +56,7 @@ from pythongame.game_data.items.item_soldiers_helmet import register_soldiers_he
 from pythongame.game_data.items.item_staff_of_fire import register_staff_of_fire_item
 from pythongame.game_data.items.item_sword_of_leeching import register_sword_of_leeching_item
 from pythongame.game_data.items.item_messengers_hat import register_messengers_hat_item
+from pythongame.game_data.items.item_winged_helmet import register_winged_helmet_item
 from pythongame.game_data.items.item_wizards_cowl import register_wizards_cowl
 from pythongame.game_data.items.item_wooden_shield import register_wooden_shield
 from pythongame.game_data.items.item_zuls_aegis import register_zuls_aegis
@@ -135,6 +137,8 @@ def register_all_game_data():
     register_elven_armor()
     register_gold_nugget()
     register_saphire()
+    register_leather_cowl_item()
+    register_winged_helmet_item()
 
     register_decorations()
     register_map_editor_icons()

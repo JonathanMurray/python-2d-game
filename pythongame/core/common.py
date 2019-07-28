@@ -142,6 +142,8 @@ class Sprite(Enum):
     ITEM_ELVEN_ARMOR = 316
     ITEM_GOLD_NUGGET = 317
     ITEM_SAPHIRE = 318
+    ITEM_LEATHER_COWL = 319
+    ITEM_WINGED_HELMET = 320
     COINS_1 = 350
     COINS_2 = 351
     COINS_5 = 352
@@ -182,7 +184,7 @@ class Sprite(Enum):
     HERO_MAGE = 700
     HERO_WARRIOR = 701
     HERO_ROGUE = 702
-    HERO_GOD =703
+    HERO_GOD = 703
 
 
 class BuffType(Enum):
@@ -243,7 +245,8 @@ class ItemType(Enum):
     ELVEN_ARMOR = 75
     GOLD_NUGGET = 76
     SAPHIRE = 77
-
+    LEATHER_COWL = 78
+    WINGED_HELMET = 79
 
 class ProjectileType(Enum):
     PLAYER_FIREBALL = 1
@@ -345,6 +348,8 @@ class UiIconSprite(Enum):
     ITEM_ELVEN_ARMOR = 216
     ITEM_GOLD_NUGGET = 217
     ITEM_SAPHIRE = 218
+    ITEM_LEATHER_COWL = 219
+    ITEM_WINGED_HELMET = 220
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
     INVENTORY_TEMPLATE_HELMET = 400
@@ -363,4 +368,4 @@ class PortraitIconSprite(Enum):
     HERO_MAGE = 10
     HERO_WARRIOR = 11
     HERO_ROGUE = 12
-    HERO_GOD =13
+    HERO_GOD = 13

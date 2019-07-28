@@ -161,6 +161,20 @@
         0,
         100
       ]
+    },
+    {
+      "item_type": "LEATHER_COWL",
+      "position": [
+        0,
+        150
+      ]
+    },
+    {
+      "item_type": "WINGED_HELMET",
+      "position": [
+        0,
+        200
+      ]
     }
   ],
   "money_piles_on_ground": [],

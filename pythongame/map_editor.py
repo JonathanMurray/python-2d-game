@@ -90,6 +90,8 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.GOLD_NUGGET),
     MapEditorWorldEntity.item(ItemType.SAPHIRE),
     MapEditorWorldEntity.item(ItemType.BLOOD_AMULET),
+    MapEditorWorldEntity.item(ItemType.LEATHER_COWL),
+    MapEditorWorldEntity.item(ItemType.WINGED_HELMET),
 
 
     MapEditorWorldEntity.money(1),
