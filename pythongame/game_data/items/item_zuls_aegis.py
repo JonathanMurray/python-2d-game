@@ -15,12 +15,19 @@ STUN_DURATION = Millis(1500)
 ITEM_TYPE = ItemType.ZULS_AEGIS
 BUFF_TYPE_STUNNED = BuffType.STUNNED_BY_AEGIS_ITEM
 PROC_CHANCE = 0.2
+ARMOR_BOOST = 1
 
 
 class ItemEffect(AbstractItemEffect):
 
     def __init__(self, item_type: ItemType):
         self.item_type = item_type
+
+    def apply_start_effect(self, game_state: GameState):
+        game_state.player_state.armor_bonus += ARMOR_BOOST
+
+    def apply_end_effect(self, game_state: GameState):
+        game_state.player_state.armor_bonus -= ARMOR_BOOST
 
     def item_handle_event(self, event: Event, game_state: GameState):
         if isinstance(event, PlayerLostHealthEvent):
@@ -54,7 +61,8 @@ def register_zuls_aegis():
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
     register_item_effect(ITEM_TYPE, ItemEffect(ITEM_TYPE))
     name = "Zul's Aegis"
-    description = "{:.0f}".format(PROC_CHANCE * 100) + "% chance to stun attacker for " \
+    description = "Gives +" + str(ARMOR_BOOST) + " armor and " + \
+                  "{:.0f}".format(PROC_CHANCE * 100) + "% chance to stun attacker for " \
                   + "{:.1f}".format(STUN_DURATION / 1000) + "s"
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.OFF_HAND)
     register_item_data(ITEM_TYPE, item_data)
