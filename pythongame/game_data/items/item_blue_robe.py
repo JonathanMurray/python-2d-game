@@ -7,7 +7,8 @@ from pythongame.core.item_inventory import ItemEquipmentCategory
 
 ITEM_TYPES = [ItemType.BLUE_ROBE_1, ItemType.BLUE_ROBE_2, ItemType.BLUE_ROBE_3]
 MANA_AMOUNTS = [10, 15, 20]
-ARMOR_BOOST = 1
+MANA_REGEN_BOOST = 0.5
+
 
 class ItemEffect(AbstractItemEffect):
 
@@ -16,12 +17,12 @@ class ItemEffect(AbstractItemEffect):
         self.item_type = item_type
 
     def apply_start_effect(self, game_state: GameState):
+        game_state.player_state.mana_resource.regen_bonus += MANA_REGEN_BOOST
         game_state.player_state.mana_resource.increase_max(self.mana_amount)
-        game_state.player_state.armor_bonus += ARMOR_BOOST
 
     def apply_end_effect(self, game_state: GameState):
+        game_state.player_state.mana_resource.regen_bonus -= MANA_REGEN_BOOST
         game_state.player_state.mana_resource.decrease_max(self.mana_amount)
-        game_state.player_state.armor_bonus -= ARMOR_BOOST
 
     def get_item_type(self):
         return self.item_type
@@ -35,9 +36,9 @@ def register_blue_robe_item():
         sprite, SpriteInitializer("resources/graphics/item_blue_robe.png", ITEM_ENTITY_SIZE))
     for i in range(3):
         item_type = ITEM_TYPES[i]
-        health_amount = MANA_AMOUNTS[i]
-        register_item_effect(item_type, ItemEffect(health_amount, item_type))
+        mana_amount = MANA_AMOUNTS[i]
+        register_item_effect(item_type, ItemEffect(mana_amount, item_type))
         name = "Blue Robe (" + str(i + 1) + ")"
-        description = "Grants +" + str(ARMOR_BOOST) + " armor and "+ str(health_amount) + " max mana"
+        description = "Grants +" + str(MANA_REGEN_BOOST) + " mana regeneration and " + str(mana_amount) + " max mana"
         item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.CHEST)
         register_item_data(item_type, item_data)
