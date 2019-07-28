@@ -42,11 +42,16 @@ LOOT_POTIONS_2 = [
     LootEntry.consumable(ConsumableType.SPEED)
 ]
 
-LOOT_TABLE_1 = LootTable([LootGroup.single(LootEntry.money(1), 0.1), LootGroup(1, LOOT_POTIONS_1, 0.05)])
+LOOT_TABLE_1 = LootTable([
+    LootGroup.single(LootEntry.money(1), 0.1),
+    LootGroup(1, LOOT_POTIONS_1, 0.05),
+    LootGroup(1, LOOT_ITEMS_1, 0.02),
+])
 
 LOOT_TABLE_2 = LootTable([
     LootGroup(1, [LootEntry.money(1), LootEntry.money(2)], 0.6),
-    LootGroup(1, LOOT_POTIONS_1 + LOOT_POTIONS_2, 0.2),
+    LootGroup(1, LOOT_POTIONS_1, 0.15),
+    LootGroup(1, LOOT_POTIONS_2, 0.05),
     LootGroup(1, LOOT_ITEMS_1, 0.05),
     LootGroup.single(LootEntry.item(ItemType.GOLD_NUGGET), 0.015),
     LootGroup.single(LootEntry.item(ItemType.SAPHIRE), 0.005)
@@ -55,7 +60,7 @@ LOOT_TABLE_2 = LootTable([
 LOOT_TABLE_3 = LootTable([
     LootGroup(1, [LootEntry.money(1), LootEntry.money(2)], 0.4),
     LootGroup(1, LOOT_POTIONS_1 + LOOT_POTIONS_2, 0.2),
-    LootGroup(1, LOOT_ITEMS_1 + LOOT_ITEMS_2, 0.2),
+    LootGroup(1, LOOT_ITEMS_1 + LOOT_ITEMS_2, 0.25),
     LootGroup.single(LootEntry.item(ItemType.GOLD_NUGGET), 0.1),
     LootGroup.single(LootEntry.item(ItemType.SAPHIRE), 0.02),
 ])
