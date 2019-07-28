@@ -34,7 +34,7 @@ class ConsumableInventory:
                 return
         raise Exception("No space for consumable!")
 
-    def drag_consumable_between_slots(self, from_slot: int, to_slot: int):
+    def drag_consumable_between_inventory_slots(self, from_slot: int, to_slot: int):
         consumable_type_1 = self.remove_consumable_from_slot(from_slot)
         if len(self.consumables_in_slots[to_slot]) < self.capacity_per_slot:
             self.consumables_in_slots[to_slot].insert(0, consumable_type_1)
