@@ -57,9 +57,9 @@ def register_dwarf_npc():
     register_npc_behavior(npc_type, NpcMind)
     introdution = "Hello there. I'm always looking for treasure. If you find any, we might be able to strike a deal!"
     dialog_options = [
-        DialogOptionData("Gold nugget [25 gold]", "sell", BuyTreasure(ItemType.GOLD_NUGGET, 25, "gold nugget"),
+        DialogOptionData("Gold nugget [20 gold]", "sell", BuyTreasure(ItemType.GOLD_NUGGET, 20, "gold nugget"),
                          UiIconSprite.ITEM_GOLD_NUGGET),
-        DialogOptionData("Saphire [40 gold]", "sell", BuyTreasure(ItemType.SAPHIRE, 40, "saphire"),
+        DialogOptionData("Saphire [30 gold]", "sell", BuyTreasure(ItemType.SAPHIRE, 30, "saphire"),
                          UiIconSprite.ITEM_SAPHIRE),
         DialogOptionData("\"Good bye\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
     dialog_data = DialogData(PortraitIconSprite.VIKING, introdution, dialog_options)
