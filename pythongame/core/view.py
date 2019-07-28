@@ -703,8 +703,8 @@ class View:
         for i in range(len(item_slots)):
             x = x_2 + (i % num_slots_per_row) * (UI_ICON_SIZE[0] + icon_space)
             y = y_2 + (i // num_slots_per_row) * (UI_ICON_SIZE[1] + icon_space)
-            slot = item_slots[i]
-            item_type = slot.item.item_effect.get_item_type() if not slot.is_empty() else None
+            slot: ItemInventorySlot = item_slots[i]
+            item_type = slot.get_item_type() if not slot.is_empty() else None
             slot_equipment_category = slot.enforced_equipment_category
             if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
                 hovered_item_slot_number = i
@@ -785,6 +785,8 @@ class View:
             "       armor: " + str(player_state.base_armor)
         if player_state.armor_bonus > 0:
             armor_stat_text += " +" + str(player_state.armor_bonus)
+        elif player_state.armor_bonus < 0:
+            armor_stat_text += " " + str(player_state.armor_bonus)
         self._text_in_ui(self.font_stats, health_regen_text, (x_stats, y_1), COLOR_WHITE)
         self._text_in_ui(self.font_stats, mana_regen_text, (x_stats, y_1 + 20), COLOR_WHITE)
         self._text_in_ui(self.font_stats, damage_stat_text, (x_stats, y_1 + 40), COLOR_WHITE)

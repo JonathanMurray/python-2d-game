@@ -182,8 +182,8 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
 
         if mouse_was_just_released and item_slot_being_dragged is not None:
             if hovered_item_slot_number is not None and item_slot_being_dragged != hovered_item_slot_number:
-                did_switch_succeed = game_engine.switch_inventory_items(item_slot_being_dragged,
-                                                                        hovered_item_slot_number)
+                did_switch_succeed = game_engine.drag_item_between_inventory_slots(
+                    item_slot_being_dragged, hovered_item_slot_number)
                 if did_switch_succeed:
                     play_sound(SoundId.UI_ITEM_WAS_MOVED)
                 else:
@@ -209,7 +209,8 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
 
         if mouse_was_just_released and consumable_slot_being_dragged is not None:
             if hovered_consumable_slot_number is not None and consumable_slot_being_dragged != hovered_consumable_slot_number:
-                game_engine.drag_consumable_between_slots(consumable_slot_being_dragged, hovered_consumable_slot_number)
+                game_engine.drag_consumable_between_inventory_slots(
+                    consumable_slot_being_dragged, hovered_consumable_slot_number)
                 play_sound(SoundId.UI_ITEM_WAS_MOVED)
             if mouse_hover_event.game_world_position:
                 game_engine.drop_consumable_on_ground(consumable_slot_being_dragged,

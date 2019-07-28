@@ -430,7 +430,7 @@ class PlayerState:
                     buff.change_remaining_duration(outcome.change_remaining_duration)
                 if outcome.cancel_effect:
                     buff.force_cancel()
-        for item_effect in self.item_inventory.get_all_item_effects():
+        for item_effect in self.item_inventory.get_all_active_item_effects():
             item_effect.item_handle_event(event, game_state)
 
 
