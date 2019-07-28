@@ -54,7 +54,7 @@ from pythongame.game_data.items.item_saphire import register_saphire
 from pythongame.game_data.items.item_soldiers_helmet import register_soldiers_helmet_item
 from pythongame.game_data.items.item_staff_of_fire import register_staff_of_fire_item
 from pythongame.game_data.items.item_sword_of_leeching import register_sword_of_leeching_item
-from pythongame.game_data.items.item_winged_boots import register_winged_boots_item
+from pythongame.game_data.items.item_messengers_hat import register_messengers_hat_item
 from pythongame.game_data.items.item_wizards_cowl import register_wizards_cowl
 from pythongame.game_data.items.item_wooden_shield import register_wooden_shield
 from pythongame.game_data.items.item_zuls_aegis import register_zuls_aegis
@@ -117,7 +117,7 @@ def register_all_game_data():
     register_nomad_npc()
     register_ninja_npc()
 
-    register_winged_boots_item()
+    register_messengers_hat_item()
     register_amulet_of_mana_item()
     register_sword_of_leeching_item()
     register_rod_of_lightning_item()

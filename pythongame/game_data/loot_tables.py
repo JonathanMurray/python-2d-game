@@ -2,7 +2,7 @@ from pythongame.core.common import ItemType, ConsumableType
 from pythongame.core.loot import LootTable, LootGroup, LootEntry
 
 LOOT_ITEMS_1 = [
-    LootEntry.item(ItemType.WINGED_BOOTS),
+    LootEntry.item(ItemType.MESSENGERS_HAT),
     LootEntry.item(ItemType.AMULET_OF_MANA_1),
     LootEntry.item(ItemType.BLESSED_SHIELD_1),
     LootEntry.item(ItemType.SOLDIERS_HELMET_1),

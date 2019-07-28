@@ -72,7 +72,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.consumable(ConsumableType.SPEED),
     MapEditorWorldEntity.consumable(ConsumableType.BREW),
 
-    MapEditorWorldEntity.item(ItemType.WINGED_BOOTS),
+    MapEditorWorldEntity.item(ItemType.MESSENGERS_HAT),
     MapEditorWorldEntity.item(ItemType.SWORD_OF_LEECHING),
     MapEditorWorldEntity.item(ItemType.ROD_OF_LIGHTNING),
     MapEditorWorldEntity.item(ItemType.AMULET_OF_MANA_1),

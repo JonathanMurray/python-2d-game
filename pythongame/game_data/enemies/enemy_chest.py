@@ -21,7 +21,7 @@ def register_chest_enemy():
     npc_type = NpcType.CHEST
     health = 1
     possible_drops = [
-        LootEntry.item(ItemType.WINGED_BOOTS),
+        LootEntry.item(ItemType.MESSENGERS_HAT),
         LootEntry.item(ItemType.AMULET_OF_MANA_1),
         LootEntry.item(ItemType.AMULET_OF_MANA_2),
         LootEntry.item(ItemType.STAFF_OF_FIRE),
