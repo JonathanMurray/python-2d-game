@@ -65,6 +65,13 @@ class EntityActionText:
         self.text = text
 
 
+class TooltipGraphics:
+    def __init__(self, title: str, details: List[str], bottom_left_corner: Tuple[int, int]):
+        self.title = title
+        self.details = details
+        self.bottom_left_corner = bottom_left_corner
+
+
 def load_and_scale_sprite(sprite_initializer: SpriteInitializer):
     image = pygame.image.load(sprite_initializer.image_file_path).convert_alpha()
     return pygame.transform.scale(image, sprite_initializer.scaling_size)
@@ -474,20 +481,20 @@ class View:
         self._rect_transparent((x_message - 10, y_message - 5, 280, 28), 85, (0, 0, 0))
         self._text(self.font_message, message, (x_message, y_message))
 
-    def _tooltip(self, title: str, details: List[str], position_bottom_left: Tuple[int, int]):
+    def _tooltip(self, tooltip: TooltipGraphics):
         w_tooltip = 320
         h_tooltip = 130
-        x_tooltip = position_bottom_left[0]
-        y_tooltip = position_bottom_left[1] - h_tooltip
+        x_tooltip = tooltip.bottom_left_corner[0]
+        y_tooltip = tooltip.bottom_left_corner[1] - h_tooltip
         rect_tooltip = (x_tooltip, y_tooltip, w_tooltip, h_tooltip)
         self._rect_transparent((x_tooltip, y_tooltip, w_tooltip, h_tooltip), 240, (0, 0, 30))
         self._rect(COLOR_WHITE, rect_tooltip, 2)
-        self._text(self.font_tooltip_header, title, (x_tooltip + 20, y_tooltip + 15), COLOR_WHITE)
+        self._text(self.font_tooltip_header, tooltip.title, (x_tooltip + 20, y_tooltip + 15), COLOR_WHITE)
         y_separator = y_tooltip + 40
         self._line(COLOR_WHITE, (x_tooltip + 10, y_separator), (x_tooltip + w_tooltip - 10, y_separator), 1)
         detail_lines = []
         detail_max_line_length = 42
-        for detail in details:
+        for detail in tooltip.details:
             detail_lines += self._split_text_into_lines(detail, detail_max_line_length)
         for i, line in enumerate(detail_lines):
             self._text(self.font_tooltip_details, line, (x_tooltip + 20, y_tooltip + 50 + i * 18), COLOR_WHITE)
@@ -595,10 +602,7 @@ class View:
             (self.ui_screen_area.x, self.ui_screen_area.y, self.ui_screen_area.w, self.ui_screen_area.h))
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
-        tooltip_title = ""
-        tooltip_details = []
-        tooltip_bottom_left_position = (175, 450)
-
+        tooltip: Optional[TooltipGraphics] = None
         self._rect(COLOR_BORDER, (0, 0, self.camera_size[0], self.camera_size[1]), 1)
         self._rect_filled((20, 10, 0), (0, self.camera_size[1], self.screen_size[0],
                                         self.screen_size[1] - self.camera_size[1]))
@@ -625,10 +629,10 @@ class View:
         self._stat_bar_in_ui((rect_healthbar[0], rect_healthbar[1]), rect_healthbar[2], rect_healthbar[3],
                              player_health / player_max_health, (200, 0, 50), True)
         if is_point_in_rect(mouse_ui_position, rect_healthbar):
-            tooltip_title = "Health"
             tooltip_details = [
                 "regeneration: " + "{:.1f}".format(player_state.health_resource.get_effective_regen()) + "/s"]
             tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_healthbar[0], rect_healthbar[1]))
+            tooltip = TooltipGraphics("Health", tooltip_details, tooltip_bottom_left_position)
         health_text = str(player_health) + "/" + str(player_max_health)
         self._text_in_ui(self.font_ui_stat_bar_numbers, health_text, (x_0 + 20, y_4 - 1))
 
@@ -636,10 +640,10 @@ class View:
         self._stat_bar_in_ui((rect_manabar[0], rect_manabar[1]), rect_manabar[2], rect_manabar[3],
                              player_mana / player_max_mana, (50, 0, 200), True)
         if is_point_in_rect(mouse_ui_position, rect_manabar):
-            tooltip_title = "Mana"
             tooltip_details = [
                 "regeneration: " + "{:.1f}".format(player_state.mana_resource.get_effective_regen()) + "/s"]
             tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_manabar[0], rect_manabar[1]))
+            tooltip = TooltipGraphics("Mana", tooltip_details, tooltip_bottom_left_position)
         mana_text = str(player_mana) + "/" + str(player_max_mana)
         self._text_in_ui(self.font_ui_stat_bar_numbers, mana_text, (x_0 + 20, y_4 + 20))
 
@@ -665,6 +669,7 @@ class View:
                     tooltip_title = CONSUMABLES[consumable_type].name
                     tooltip_details = [CONSUMABLES[consumable_type].description]
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
+                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, tooltip_bottom_left_position)
             self._consumable_icon_in_ui(x, y, UI_ICON_SIZE, slot_number, consumable_types,
                                         highlighted_consumable_action)
 
@@ -687,6 +692,7 @@ class View:
                     mana_cost = str(ability_data.mana_cost)
                     tooltip_details = ["Cooldown: " + cooldown + " s", "Mana: " + mana_cost, ability_data.description]
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
+                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, tooltip_bottom_left_position)
             self._ability_icon_in_ui(x, y, UI_ICON_SIZE, ability_type,
                                      highlighted_ability_action, ability_cooldowns_remaining)
 
@@ -716,10 +722,12 @@ class View:
                         tooltip_details.append("[" + item_data.item_equipment_category.name + "]")
                     tooltip_details.append(item_data.description)
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
+                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, tooltip_bottom_left_position)
                 elif slot_equipment_category:
                     tooltip_title = "[" + slot_equipment_category.name + "]"
                     tooltip_details = ["Nothing equipped"]
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
+                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, tooltip_bottom_left_position)
             self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type, slot_equipment_category)
 
         # MINIMAP
@@ -802,8 +810,8 @@ class View:
         if message:
             self._message(message)
 
-        if tooltip_title:
-            self._tooltip(tooltip_title, tooltip_details, tooltip_bottom_left_position)
+        if tooltip:
+            self._tooltip(tooltip)
 
         if is_game_over:
             self._splash_screen_text("You died!", self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50)
