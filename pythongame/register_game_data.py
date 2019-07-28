@@ -44,6 +44,7 @@ from pythongame.game_data.items.item_amulet_of_mana import register_amulet_of_ma
 from pythongame.game_data.items.item_blessed_shield import register_blessed_shield_item
 from pythongame.game_data.items.item_blood_amulet import register_blood_amulet
 from pythongame.game_data.items.item_blue_robe import register_blue_robe_item
+from pythongame.game_data.items.item_elite_armor import register_elite_armor
 from pythongame.game_data.items.item_elven_armor import register_elven_armor
 from pythongame.game_data.items.item_goats_ring import register_goats_ring
 from pythongame.game_data.items.item_gold_nugget import register_gold_nugget
@@ -139,6 +140,7 @@ def register_all_game_data():
     register_saphire()
     register_leather_cowl_item()
     register_winged_helmet_item()
+    register_elite_armor()
 
     register_decorations()
     register_map_editor_icons()

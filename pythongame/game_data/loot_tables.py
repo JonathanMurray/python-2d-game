@@ -26,7 +26,8 @@ LOOT_ITEMS_2 = [
     LootEntry.item(ItemType.BLOOD_AMULET),
     LootEntry.item(ItemType.KNIGHTS_ARMOR),
     LootEntry.item(ItemType.ELVEN_ARMOR),
-    LootEntry.item(ItemType.WINGED_HELMET)
+    LootEntry.item(ItemType.WINGED_HELMET),
+    LootEntry.item(ItemType.ELITE_ARMOR),
 ]
 
 LOOT_POTIONS_1 = [

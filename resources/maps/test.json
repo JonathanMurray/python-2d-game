@@ -175,6 +175,13 @@
         0,
         200
       ]
+    },
+    {
+      "item_type": "ELITE_ARMOR",
+      "position": [
+        0,
+        250
+      ]
     }
   ],
   "money_piles_on_ground": [],
