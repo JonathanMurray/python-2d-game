@@ -487,7 +487,7 @@ class View:
         x_tooltip = tooltip.bottom_left_corner[0]
         y_tooltip = tooltip.bottom_left_corner[1] - h_tooltip
         rect_tooltip = (x_tooltip, y_tooltip, w_tooltip, h_tooltip)
-        self._rect_transparent((x_tooltip, y_tooltip, w_tooltip, h_tooltip), 240, (0, 0, 30))
+        self._rect_transparent((x_tooltip, y_tooltip, w_tooltip, h_tooltip), 200, (0, 0, 30))
         self._rect(COLOR_WHITE, rect_tooltip, 2)
         self._text(self.font_tooltip_header, tooltip.title, (x_tooltip + 20, y_tooltip + 15), COLOR_WHITE)
         y_separator = y_tooltip + 40
