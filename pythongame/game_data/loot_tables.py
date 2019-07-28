@@ -28,6 +28,7 @@ LOOT_ITEMS_2 = [
     LootEntry.item(ItemType.ELVEN_ARMOR),
     LootEntry.item(ItemType.WINGED_HELMET),
     LootEntry.item(ItemType.ELITE_ARMOR),
+    LootEntry.item(ItemType.RING_OF_POWER)
 ]
 
 LOOT_POTIONS_1 = [

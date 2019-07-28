@@ -182,6 +182,13 @@
         0,
         250
       ]
+    },
+    {
+      "item_type": "RING_OF_POWER",
+      "position": [
+        0,
+        300
+      ]
     }
   ],
   "money_piles_on_ground": [],
