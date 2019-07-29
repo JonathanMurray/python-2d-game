@@ -6,8 +6,6 @@ BUFF_TYPE = BuffType.RECOVERING_AFTER_ABILITY
 
 
 class RecoveringAfterAbility(AbstractBuffEffect):
-    def __init__(self):
-        self._time_since_firing = 0
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.add_one()
@@ -18,6 +16,7 @@ class RecoveringAfterAbility(AbstractBuffEffect):
 
     def get_buff_type(self):
         return BUFF_TYPE
+
 
 def register_recovering_after_ability_buff():
     register_buff_effect(BUFF_TYPE, RecoveringAfterAbility)

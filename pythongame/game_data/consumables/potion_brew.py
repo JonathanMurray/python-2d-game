@@ -1,7 +1,7 @@
 from typing import Optional
 
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect, register_buff_effect
-from pythongame.core.common import ConsumableType, Sprite, UiIconSprite, Millis, BuffType
+from pythongame.core.common import ConsumableType, Sprite, UiIconSprite, Millis, BuffType, PeriodicTimer
 from pythongame.core.consumable_effects import ConsumableWasConsumed, \
     register_consumable_effect, ConsumableFailedToBeConsumed
 from pythongame.core.damage_interactions import player_receive_healing
@@ -25,13 +25,11 @@ def _apply(game_state: GameState):
 
 class RestoringHealthFromBrew(AbstractBuffEffect):
     def __init__(self):
-        self.time_since_healing = 0
+        self.timer = PeriodicTimer(Millis(1000))
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
-        self.time_since_healing += time_passed
-        if self.time_since_healing > 1000:
-            self.time_since_healing = 0
+        if self.timer.update_and_check_if_ready(time_passed):
             player_receive_healing(5, game_state)
 
     def get_buff_type(self):
