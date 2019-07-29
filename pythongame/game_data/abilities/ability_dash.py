@@ -88,7 +88,7 @@ def register_dash_ability():
     register_ability_effect(ABILITY_TYPE, _apply_ability)
     description = "Dash forward, dealing " + str(DAMAGE) + " damage to one enemy. If an enemy was hit, gain +" + \
                   str(ARMOR_BOOST) + " armor."
-    mana_cost = 10
+    mana_cost = 12
     ability_data = AbilityData("Dash", ui_icon_sprite, mana_cost, Millis(4000), description, SoundId.ABILITY_DASH)
     register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_ability_dash.png")

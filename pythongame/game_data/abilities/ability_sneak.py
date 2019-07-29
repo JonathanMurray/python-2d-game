@@ -69,8 +69,8 @@ def register_sneak_ability():
     register_ability_effect(ABILITY_TYPE, _apply_ability)
     description = "Become invisible. Shiv deals 300% damage from stealth. Then, gain " + \
                   str(ARMOR_BONUS) + " armor for " + "{:.1f}".format(DURATION_POST_SNEAK / 1000) + "s"
-    mana_cost = 20
-    ability_data = AbilityData("Sneak", ui_icon_sprite, mana_cost, Millis(10000), description, SoundId.ABILITY_SNEAK)
+    mana_cost = 25
+    ability_data = AbilityData("Sneak", ui_icon_sprite, mana_cost, Millis(8000), description, SoundId.ABILITY_SNEAK)
     register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/sneak_icon.png")
     register_buff_effect(BUFF_SNEAK, Sneaking)
