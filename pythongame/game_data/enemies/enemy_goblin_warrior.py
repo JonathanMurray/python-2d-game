@@ -76,7 +76,7 @@ def register_goblin_warrior_enemy():
     sprite = Sprite.ENEMY_GOBLIN_WARRIOR
     npc_type = NpcType.GOBLIN_WARRIOR
     movement_speed = 0.09
-    health = 90
+    health = 100
     exp_reward = 40
     loot_table = LootTable(
         [
