@@ -482,10 +482,8 @@ class GameState:
         self.items_on_ground: List[ItemOnGround] = items_on_ground
         self.money_piles_on_ground: List[MoneyPileOnGround] = money_piles_on_ground
         self.non_player_characters: List[NonPlayerCharacter] = non_player_characters
-        self.walls: List[Wall] = walls
         self.entire_world_area = entire_world_area
-        self._wall_buckets: Dict[int, Dict[int, List[WorldEntity]]] = {}
-        self._initialize_wall_buckets([w.world_entity for w in walls])
+        self.walls_state = WallsState(walls, entire_world_area)
         self.visual_effects = []
         self.player_state: PlayerState = player_state
         self.pathfinder_wall_grid = self._setup_pathfinder_wall_grid(
@@ -524,7 +522,7 @@ class GameState:
         self.non_player_characters = [e for e in self.non_player_characters if e not in entities_to_remove]
 
     def get_all_entities_to_render(self) -> List[WorldEntity]:
-        walls = self._get_walls_from_buckets_in_camera()
+        walls = self.walls_state.get_walls_in_camera(self.camera_world_area)
         return [self.player_entity] + \
                [p.world_entity for p in self.consumables_on_ground] + \
                [i.world_entity for i in self.items_on_ground] + \
@@ -590,7 +588,7 @@ class GameState:
             raise Exception("not within game-world: " + str(new_pos_within_world))
         old_pos = entity.x, entity.y
         entity.set_position(new_pos_within_world)
-        walls = self._get_walls_from_buckets_adjacent_to_entity(entity)
+        walls = self.walls_state.get_walls_close_to_position(entity.get_position())
         other_entities = [e.world_entity for e in self.non_player_characters] + \
                          [self.player_entity] + walls + [p.world_entity for p in self.portals]
         collision = any([other for other in other_entities if self._entities_collide(entity, other)
@@ -624,18 +622,20 @@ class GameState:
         # Optimization: collision checking done with C-code from Pygame
         return a.pygame_collision_rect.colliderect(b.pygame_collision_rect)
 
-    # Wall buckets:
-    # Optimization for only checking collision with walls that are known beforehand (through use of buckets) to be
-    # somewhat close to the entity
-    def _initialize_wall_buckets(self, walls: List[WorldEntity]):
-        entire_world_area = self.entire_world_area
-        for x_bucket in range(entire_world_area.w // _WALL_BUCKET_WIDTH + 1):
+
+class WallsState:
+
+    def __init__(self, walls: List[Wall], entire_world_area: WorldArea):
+        self._wall_buckets: Dict[int, Dict[int, List[WorldEntity]]] = {}
+        self.walls: List[Wall] = walls
+        self.entire_world_area = entire_world_area
+        for x_bucket in range(self.entire_world_area.w // _WALL_BUCKET_WIDTH + 1):
             self._wall_buckets[x_bucket] = {}
-            for y_bucket in range(entire_world_area.h // _WALL_BUCKET_HEIGHT + 1):
+            for y_bucket in range(self.entire_world_area.h // _WALL_BUCKET_HEIGHT + 1):
                 self._wall_buckets[x_bucket][y_bucket] = []
-        for wall in walls:
-            wall_bucket = self._get_wall_bucket_from_world_position(wall.get_position())
-            wall_bucket.append(wall)
+        for wall_entity in [w.world_entity for w in walls]:
+            wall_bucket = self._get_wall_bucket_from_world_position(wall_entity.get_position())
+            wall_bucket.append(wall_entity)
 
     def add_wall(self, wall: Wall):
         self.walls.append(wall)
@@ -647,16 +647,18 @@ class GameState:
         wall_bucket = self._get_wall_bucket_from_world_position(wall.world_entity.get_position())
         wall_bucket.remove(wall.world_entity)
 
+    # TODO Use _entities_collide?
     def does_entity_intersect_with_wall(self, entity: WorldEntity):
-        nearby_walls = self._get_walls_from_buckets_adjacent_to_entity(entity)
+        nearby_walls = self.get_walls_close_to_position(entity.get_position())
         return any([w for w in nearby_walls if boxes_intersect(w, entity)])
 
+    # TODO Use _entities_collide?
     def does_rect_intersect_with_wall(self, rect: Tuple[int, int, int, int]):
-        nearby_walls = self._get_walls_from_buckets_in_camera()
+        nearby_walls = self.get_walls_close_to_position((rect[0], rect[1]))
         return any([w for w in nearby_walls if rects_intersect((w.x, w.y, w.w, w.h), rect)])
 
-    def _get_walls_from_buckets_adjacent_to_entity(self, entity: WorldEntity):
-        entity_x_bucket, entity_y_bucket = self._get_wall_bucket_index_from_world_position(entity.get_position())
+    def get_walls_close_to_position(self, position: Tuple[int, int]):
+        entity_x_bucket, entity_y_bucket = self._get_wall_bucket_index_from_world_position(position)
         walls = []
         for x_bucket in range(max(0, entity_x_bucket - 1), min(len(self._wall_buckets), entity_x_bucket + 2)):
             for y_bucket in range(max(0, entity_y_bucket - 1),
@@ -664,10 +666,10 @@ class GameState:
                 walls += self._wall_buckets[x_bucket][y_bucket]
         return walls
 
-    def _get_walls_from_buckets_in_camera(self):
-        x0_bucket, y0_bucket = self._get_wall_bucket_index_from_world_position(self.camera_world_area.get_position())
+    def get_walls_in_camera(self, camera_world_area: WorldArea):
+        x0_bucket, y0_bucket = self._get_wall_bucket_index_from_world_position(camera_world_area.get_position())
         x1_bucket, y1_bucket = self._get_wall_bucket_index_from_world_position(
-            self.camera_world_area.get_bot_right_position())
+            camera_world_area.get_bot_right_position())
         walls = []
         for x_bucket in range(max(0, x0_bucket), min(x1_bucket + 1, len(self._wall_buckets))):
             for y_bucket in range(max(0, y0_bucket - 1), min(y1_bucket + 1, len(self._wall_buckets[x_bucket]))):
@@ -682,3 +684,6 @@ class GameState:
         x_bucket = int(world_position[0] - self.entire_world_area.x) // _WALL_BUCKET_WIDTH
         y_bucket = int(world_position[1] - self.entire_world_area.y) // _WALL_BUCKET_HEIGHT
         return x_bucket, y_bucket
+
+    def get_walls_at_position(self, position: Tuple[int, int]) -> List[Wall]:
+        return [w for w in self.walls if w.world_entity.get_position() == position]

@@ -294,7 +294,7 @@ def main(map_file_name: Optional[str]):
             deleting_entities=user_state.deleting_entities,
             deleting_decorations=user_state.deleting_decorations,
             num_enemies=len(game_state.non_player_characters),
-            num_walls=len(game_state.walls),
+            num_walls=len(game_state.walls_state.walls),
             num_decorations=len(game_state.decoration_entities),
             grid_cell_size=grid_cell_size,
             mouse_screen_position=exact_mouse_screen_position)
@@ -376,16 +376,14 @@ def _add_decoration(decoration_sprite: Sprite, game_state, snapped_mouse_world_p
 
 
 def _add_wall(game_state, snapped_mouse_world_position: Tuple[int, int], wall_type: WallType):
-    already_has_wall = any([w for w in game_state.walls
-                            if w.world_entity.get_position() == snapped_mouse_world_position])
-    if not already_has_wall:
+    if len(game_state.walls_state.get_walls_at_position(snapped_mouse_world_position)) == 0:
         wall = create_wall(wall_type, snapped_mouse_world_position)
-        game_state.add_wall(wall)
+        game_state.walls_state.add_wall(wall)
 
 
 def _delete_map_entities_from_position(game_state: GameState, snapped_mouse_world_position: Tuple[int, int]):
-    for wall in [w for w in game_state.walls if w.world_entity.get_position() == snapped_mouse_world_position]:
-        game_state.remove_wall(wall)
+    for wall in game_state.walls_state.get_walls_at_position(snapped_mouse_world_position):
+        game_state.walls_state.remove_wall(wall)
     for enemy in [e for e in game_state.non_player_characters if
                   e.world_entity.get_position() == snapped_mouse_world_position]:
         game_state.non_player_characters.remove(enemy)

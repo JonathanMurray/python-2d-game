@@ -64,7 +64,7 @@ def _would_collide_with_wall(game_state: GameState, player_entity: WorldEntity, 
     partial_distance = 10
     while partial_distance < distance_jumped:
         intermediate_position = translate_in_direction(previous_position, player_entity.direction, partial_distance)
-        intersection = game_state.does_rect_intersect_with_wall(
+        intersection = game_state.walls_state.does_rect_intersect_with_wall(
             (intermediate_position[0], intermediate_position[1], player_entity.w, player_entity.h))
         if intersection:
             return True

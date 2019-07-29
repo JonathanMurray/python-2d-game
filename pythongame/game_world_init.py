@@ -39,7 +39,7 @@ class MapJson:
             "items_on_ground": [ItemJson.serialize(i) for i in game_state.items_on_ground],
             "money_piles_on_ground": [MoneyJson.serialize(m) for m in game_state.money_piles_on_ground],
             "non_player_characters": [NpcJson.serialize(npc) for npc in game_state.non_player_characters],
-            "walls": [WallJson.serialize(wall) for wall in game_state.walls],
+            "walls": [WallJson.serialize(wall) for wall in game_state.walls_state.walls],
             "entire_world_area": WorldAreaJson.serialize(game_state.entire_world_area),
             "decorations": [DecorationJson.serialize(d) for d in game_state.decoration_entities],
             "portals": [PortalJson.serialize(p) for p in game_state.portals]
