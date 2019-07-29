@@ -19,6 +19,7 @@
 * put dmg/healing/xp numbers further up for tall characters (base it on sprite size, not entity size)
 * render action text further up for tall entities
 * use transparent sprite when hero is stealthed
+* render stat bonuses with green color
 
 #### Sounds:
 * Abilities
