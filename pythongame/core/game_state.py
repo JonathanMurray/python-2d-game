@@ -13,8 +13,8 @@ from pythongame.core.math import boxes_intersect, rects_intersect, get_position_
 
 GRID_CELL_WIDTH = 25
 
-WALL_BUCKET_WIDTH = 100
-WALL_BUCKET_HEIGHT = 100
+_WALL_BUCKET_WIDTH = 100
+_WALL_BUCKET_HEIGHT = 100
 
 
 class WorldArea:
@@ -33,6 +33,9 @@ class WorldArea:
 
     def rect(self) -> Tuple[int, int, int, int]:
         return self.x, self.y, self.w, self.h
+
+    def get_bot_right_position(self) -> Tuple[int, int]:
+        return self.x + self.w, self.y + self.h
 
     def contains_position(self, position: Tuple[int, int]) -> bool:
         return self.x <= position[0] <= self.x + self.w and self.y <= position[1] <= self.y + self.h
@@ -319,9 +322,11 @@ class PlayerLostHealthEvent(Event):
         self.amount = amount
         self.npc_attacker = npc_attacker
 
+
 class PlayerWasAttackedEvent(Event):
     def __init__(self, npc_attacker: NonPlayerCharacter):
         self.npc_attacker = npc_attacker
+
 
 class PlayerDamagedEnemy(Event):
     def __init__(self, enemy_npc: NonPlayerCharacter, damage_source: Optional[str]):
@@ -479,7 +484,8 @@ class GameState:
         self.non_player_characters: List[NonPlayerCharacter] = non_player_characters
         self.walls: List[Wall] = walls
         self.entire_world_area = entire_world_area
-        self._wall_buckets = self._put_walls_in_buckets(self.entire_world_area, [w.world_entity for w in walls])
+        self._wall_buckets: Dict[int, Dict[int, List[WorldEntity]]] = {}
+        self._initialize_wall_buckets([w.world_entity for w in walls])
         self.visual_effects = []
         self.player_state: PlayerState = player_state
         self.pathfinder_wall_grid = self._setup_pathfinder_wall_grid(
@@ -621,30 +627,25 @@ class GameState:
     # Wall buckets:
     # Optimization for only checking collision with walls that are known beforehand (through use of buckets) to be
     # somewhat close to the entity
-    @staticmethod
-    def _put_walls_in_buckets(entire_world_area: WorldArea, walls: List[WorldEntity]):
-        wall_buckets = {}
-        for x_bucket in range(entire_world_area.w // WALL_BUCKET_WIDTH + 1):
-            wall_buckets[x_bucket] = {}
-            for y_bucket in range(entire_world_area.h // WALL_BUCKET_HEIGHT + 1):
-                wall_buckets[x_bucket][y_bucket] = []
+    def _initialize_wall_buckets(self, walls: List[WorldEntity]):
+        entire_world_area = self.entire_world_area
+        for x_bucket in range(entire_world_area.w // _WALL_BUCKET_WIDTH + 1):
+            self._wall_buckets[x_bucket] = {}
+            for y_bucket in range(entire_world_area.h // _WALL_BUCKET_HEIGHT + 1):
+                self._wall_buckets[x_bucket][y_bucket] = []
         for wall in walls:
-            x_bucket = int(wall.x - entire_world_area.x) // WALL_BUCKET_WIDTH
-            y_bucket = int(wall.y - entire_world_area.y) // WALL_BUCKET_HEIGHT
-            wall_buckets[x_bucket][y_bucket].append(wall)
-        return wall_buckets
+            wall_bucket = self._get_wall_bucket_from_world_position(wall.get_position())
+            wall_bucket.append(wall)
 
     def add_wall(self, wall: Wall):
         self.walls.append(wall)
-        x_bucket = int(wall.world_entity.x - self.entire_world_area.x) // WALL_BUCKET_WIDTH
-        y_bucket = int(wall.world_entity.y - self.entire_world_area.y) // WALL_BUCKET_HEIGHT
-        self._wall_buckets[x_bucket][y_bucket].append(wall.world_entity)
+        wall_bucket = self._get_wall_bucket_from_world_position(wall.world_entity.get_position())
+        wall_bucket.append(wall.world_entity)
 
     def remove_wall(self, wall: Wall):
         self.walls.remove(wall)
-        x_bucket = int(wall.world_entity.x - self.entire_world_area.x) // WALL_BUCKET_WIDTH
-        y_bucket = int(wall.world_entity.y - self.entire_world_area.y) // WALL_BUCKET_HEIGHT
-        self._wall_buckets[x_bucket][y_bucket].remove(wall.world_entity)
+        wall_bucket = self._get_wall_bucket_from_world_position(wall.world_entity.get_position())
+        wall_bucket.remove(wall.world_entity)
 
     def does_entity_intersect_with_wall(self, entity: WorldEntity):
         nearby_walls = self._get_walls_from_buckets_adjacent_to_entity(entity)
@@ -655,8 +656,7 @@ class GameState:
         return any([w for w in nearby_walls if rects_intersect((w.x, w.y, w.w, w.h), rect)])
 
     def _get_walls_from_buckets_adjacent_to_entity(self, entity: WorldEntity):
-        entity_x_bucket = int(entity.x - self.entire_world_area.x) // WALL_BUCKET_WIDTH
-        entity_y_bucket = int(entity.y - self.entire_world_area.y) // WALL_BUCKET_HEIGHT
+        entity_x_bucket, entity_y_bucket = self._get_wall_bucket_index_from_world_position(entity.get_position())
         walls = []
         for x_bucket in range(max(0, entity_x_bucket - 1), min(len(self._wall_buckets), entity_x_bucket + 2)):
             for y_bucket in range(max(0, entity_y_bucket - 1),
@@ -665,16 +665,20 @@ class GameState:
         return walls
 
     def _get_walls_from_buckets_in_camera(self):
-        x0_bucket = int(self.camera_world_area.x - self.entire_world_area.x) // WALL_BUCKET_WIDTH
-        y0_bucket = int(self.camera_world_area.y - self.entire_world_area.y) // WALL_BUCKET_HEIGHT
-        x1_bucket = int(
-            self.camera_world_area.x + self.camera_world_area.w - self.entire_world_area.x) // WALL_BUCKET_WIDTH
-        y1_bucket = int(
-            self.camera_world_area.y + self.camera_world_area.h - self.entire_world_area.y) // WALL_BUCKET_HEIGHT
+        x0_bucket, y0_bucket = self._get_wall_bucket_index_from_world_position(self.camera_world_area.get_position())
+        x1_bucket, y1_bucket = self._get_wall_bucket_index_from_world_position(
+            self.camera_world_area.get_bot_right_position())
         walls = []
         for x_bucket in range(max(0, x0_bucket), min(x1_bucket + 1, len(self._wall_buckets))):
             for y_bucket in range(max(0, y0_bucket - 1), min(y1_bucket + 1, len(self._wall_buckets[x_bucket]))):
                 walls += self._wall_buckets[x_bucket][y_bucket]
         return walls
 
-    # TODO Add helper method for finding wall bucket
+    def _get_wall_bucket_from_world_position(self, world_position: Tuple[int, int]):
+        x_bucket, y_bucket = self._get_wall_bucket_index_from_world_position(world_position)
+        return self._wall_buckets[x_bucket][y_bucket]
+
+    def _get_wall_bucket_index_from_world_position(self, world_position: Tuple[int, int]) -> Tuple[int, int]:
+        x_bucket = int(world_position[0] - self.entire_world_area.x) // _WALL_BUCKET_WIDTH
+        y_bucket = int(world_position[1] - self.entire_world_area.y) // _WALL_BUCKET_HEIGHT
+        return x_bucket, y_bucket
