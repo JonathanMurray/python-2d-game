@@ -47,7 +47,7 @@ class HasInfusedDagger(AbstractBuffEffect):
 class DamagedByInfusedDagger(AbstractBuffEffect):
 
     def __init__(self):
-        self.timer = PeriodicTimer()
+        self.timer = PeriodicTimer(Millis(750))
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         buffed_entity.add_to_speed_multiplier(-DEBUFF_SPEED_DECREASE)
