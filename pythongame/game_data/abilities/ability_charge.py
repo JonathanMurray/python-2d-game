@@ -106,7 +106,7 @@ def register_charge_ability():
                   "(Higher damage on long range)"
     register_ability_data(
         ability_type,
-        AbilityData("Charge", ui_icon_sprite, 10, Millis(5000), description, SoundId.ABILITY_CHARGE))
+        AbilityData("Charge", ui_icon_sprite, 12, Millis(5000), description, SoundId.ABILITY_CHARGE))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_charge.png")
     register_buff_effect(BUFF_TYPE_CHARGING, Charging)
     register_buff_as_channeling(BUFF_TYPE_CHARGING)

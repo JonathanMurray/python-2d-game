@@ -29,7 +29,7 @@ def register_hero_warrior():
 
 def _get_initial_player_state_warrior() -> InitialPlayerStateData:
     health = 60
-    mana = 40
+    mana = 30
     mana_regen = 2
     health_per_level = 15
     mana_per_level = 5

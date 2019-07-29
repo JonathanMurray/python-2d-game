@@ -12,7 +12,7 @@ from pythongame.core.visual_effects import VisualCircle
 COOLDOWN = Millis(25000)
 BUFF_DURATION = Millis(10000)
 BUFF_TYPE = BuffType.BLOOD_LUST
-LIFE_STEAL_BONUS_RATIO = 0.2
+LIFE_STEAL_BONUS_RATIO = 0.15
 KILL_DURATION_INCREASE_BONUS = Millis(1000)
 
 
