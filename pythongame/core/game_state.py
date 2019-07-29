@@ -415,7 +415,7 @@ class PlayerState:
         self.health_resource.gain_to_max()
         self.mana_resource.increase_max(self.level_bonus.mana)
         self.mana_resource.gain_to_max()
-        self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.4)
+        self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.5)
         self.base_damage_modifier *= 1.1
 
     def gain_ability(self, ability_type: AbilityType):
