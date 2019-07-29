@@ -1,5 +1,4 @@
 from enum import Enum
-
 from typing import NewType
 
 Millis = NewType('Millis', int)
@@ -252,6 +251,7 @@ class ItemType(Enum):
     ELITE_ARMOR = 80
     RING_OF_POWER = 81
 
+
 class ProjectileType(Enum):
     PLAYER_FIREBALL = 1
     PLAYER_MAGIC_MISSILE = 2
@@ -375,3 +375,20 @@ class PortraitIconSprite(Enum):
     HERO_WARRIOR = 11
     HERO_ROGUE = 12
     HERO_GOD = 13
+
+
+# Use to handle timing-related boilerplate for buffs, items, enemy behaviours, etc
+class PeriodicTimer:
+    def __init__(self, cooldown: Millis):
+        self.cooldown = cooldown
+        self.time_until_next_run = cooldown
+
+    # notify the timer of how much time has passed since the last call
+    # the timer checks if enough time has passed. If it has, it resets
+    # and returns True.
+    def update_and_check_if_ready(self, time_passed: Millis) -> bool:
+        self.time_until_next_run -= time_passed
+        if self.time_until_next_run <= 0:
+            self.time_until_next_run += self.cooldown
+            return True
+        return False
