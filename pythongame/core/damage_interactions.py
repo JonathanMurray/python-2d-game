@@ -20,9 +20,9 @@ def deal_player_damage_to_enemy(game_state: GameState, npc: NonPlayerCharacter, 
     amount: float = base_amount * damage_modifier
     if npc.invulnerable:
         return False
-    npc.health_resource.lose(amount)
+    health_lost_integer = npc.health_resource.lose(amount)
     game_state.player_state.notify_about_event(PlayerDamagedEnemy(npc, damage_source), game_state)
-    game_state.visual_effects.append(create_visual_damage_text(npc.world_entity, int(round(amount))))
+    game_state.visual_effects.append(create_visual_damage_text(npc.world_entity, health_lost_integer))
     health_from_life_steal = player_state.life_steal_ratio * amount
     player_receive_healing(health_from_life_steal, game_state)
     return True
@@ -35,22 +35,21 @@ def deal_damage_to_player(game_state: GameState, base_amount: float, npc_attacke
     # Armor has a random element to it. Example: 5 armor absorbs 0-5 damage
     reduction = random.randint(0, player_state.base_armor + player_state.armor_bonus)
     amount = max(0.0, base_amount - reduction)
-    health_lost = player_state.health_resource.lose(amount)
-    if health_lost > 0:
-        game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, health_lost))
+    health_lost_integer = player_state.health_resource.lose(amount)
+    if health_lost_integer > 0:
+        game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, health_lost_integer))
         play_sound(SoundId.ENEMY_ATTACK)
         if random.random() < 0.3:
             play_sound(SoundId.PLAYER_PAIN)
-        player_state.notify_about_event(PlayerLostHealthEvent(health_lost, npc_attacker), game_state)
+        player_state.notify_about_event(PlayerLostHealthEvent(health_lost_integer, npc_attacker), game_state)
     else:
         play_sound(SoundId.ENEMY_ATTACK_WAS_BLOCKED)
 
 
 def deal_npc_damage_to_npc(game_state: GameState, target: NonPlayerCharacter, amount: float):
-    target.health_resource.lose(amount)
-    rounded_amount = round(amount)
-    if rounded_amount > 0:
-        game_state.visual_effects.append(create_visual_damage_text(target.world_entity, rounded_amount))
+    health_lost_integer = target.health_resource.lose(amount)
+    if health_lost_integer > 0:
+        game_state.visual_effects.append(create_visual_damage_text(target.world_entity, health_lost_integer))
 
 
 def deal_npc_damage(damage_amount: float, game_state: GameState, attacker_entity: WorldEntity,
@@ -65,6 +64,6 @@ def deal_npc_damage(damage_amount: float, game_state: GameState, attacker_entity
 
 
 def player_receive_healing(healing_amount: float, game_state: GameState):
-    health_gained = game_state.player_state.health_resource.gain(healing_amount)
-    if health_gained > 0:
-        game_state.visual_effects.append(create_visual_healing_text(game_state.player_entity, health_gained))
+    health_gained_integer = game_state.player_state.health_resource.gain(healing_amount)
+    if health_gained_integer > 0:
+        game_state.visual_effects.append(create_visual_healing_text(game_state.player_entity, health_gained_integer))
