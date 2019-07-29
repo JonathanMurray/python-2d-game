@@ -5,6 +5,8 @@
 * Avoid storing EnemyMind and ProjectileController in game_state. That module should only depend on common
 * Simplify and generalise the handling of visual effects
 * Simplify how channeled abilities work - shouldn't need to define new buff types for that
+* Use PeriodicTimer in enemy behaviour code, to reduce time-keeping boilerplate
+* Reduce duplication between enemy behaviour code
 
 #### Game engine:
 * Use 8 directions instead of 4?
