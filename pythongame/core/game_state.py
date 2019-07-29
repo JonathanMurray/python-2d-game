@@ -519,15 +519,15 @@ class GameState:
         self.non_player_characters = [e for e in self.non_player_characters if e not in entities_to_remove]
 
     def get_all_entities_to_render(self) -> List[WorldEntity]:
-        walls = self.walls_state.get_walls_in_camera(self.camera_world_area)
-        return [self.player_entity] + \
-               [p.world_entity for p in self.consumables_on_ground] + \
-               [i.world_entity for i in self.items_on_ground] + \
-               [m.world_entity for m in self.money_piles_on_ground] + \
-               [e.world_entity for e in self.non_player_characters] + \
-               walls + \
-               [p.world_entity for p in self.projectile_entities] + \
-               [p.world_entity for p in self.portals]
+        walls_that_are_visible = self.walls_state.get_walls_in_camera(self.camera_world_area)
+        other_entities = [self.player_entity] + \
+                         [p.world_entity for p in self.consumables_on_ground] + \
+                         [i.world_entity for i in self.items_on_ground] + \
+                         [m.world_entity for m in self.money_piles_on_ground] + \
+                         [e.world_entity for e in self.non_player_characters] + \
+                         [p.world_entity for p in self.projectile_entities] + \
+                         [p.world_entity for p in self.portals]
+        return walls_that_are_visible + other_entities
 
     def get_decorations_to_render(self) -> List[DecorationEntity]:
         return self.decorations_state.get_decorations_in_camera(self.camera_world_area)
@@ -671,7 +671,7 @@ class WallsState:
         x1_bucket, y1_bucket = self._get_wall_bucket_index_from_world_position(
             camera_world_area.get_bot_right_position())
         walls = []
-        for x_bucket in range(max(0, x0_bucket), min(x1_bucket + 1, len(self._wall_buckets))):
+        for x_bucket in range(max(0, x0_bucket - 1), min(x1_bucket + 1, len(self._wall_buckets))):
             for y_bucket in range(max(0, y0_bucket - 1), min(y1_bucket + 1, len(self._wall_buckets[x_bucket]))):
                 walls += self._wall_buckets[x_bucket][y_bucket]
         return walls
