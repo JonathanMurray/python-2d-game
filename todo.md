@@ -36,14 +36,6 @@
     * builder
         * place turret on ground that shoots in all directions
         * send out mechanical minion that seeks out enemies and self detonates
-* More Rogue abilities:
-    * things to prepare from stealth
-        - place trap on ground
-            - long cast time
-            - AoE damage and slow, when some enemy collides with trap
-        - sap enemy
-            - puts enemy into a statis (like stun, but interrupted on damage)
-            - can only be used from stealth
 * Save functionality
     * save the current game_state into a JSON file and load it on startup
 * New "progress" functionality:
