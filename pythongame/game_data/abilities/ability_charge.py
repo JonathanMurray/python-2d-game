@@ -28,7 +28,7 @@ def _apply_ability(game_state: GameState) -> bool:
 class Charging(AbstractBuffEffect):
 
     def __init__(self):
-        self.graphics_timer = PeriodicTimer(40)
+        self.graphics_timer = PeriodicTimer(Millis(40))
         self.time_since_start = 0
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
