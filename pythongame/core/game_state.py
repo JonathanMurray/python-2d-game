@@ -688,8 +688,7 @@ class Buckets:
             for y_bucket in range(self.entire_world_area.h // Buckets._BUCKET_HEIGHT + 1):
                 self._buckets[x_bucket][y_bucket] = []
         for entity in entities:
-            bucket = self._bucket_for_world_position(entity.get_position())
-            bucket.append(entity)
+            self.add_entity(entity)
 
     def add_entity(self, entity: Any):
         bucket = self._bucket_for_world_position(entity.get_position())
@@ -711,8 +710,8 @@ class Buckets:
         return [entity for bucket in buckets for entity in bucket]
 
     def _buckets_between_indices(self, x0: int, x1: int, y0: int, y1: int) -> List[List[Any]]:
-        for x_bucket in range(max(0, x0), min(x1, len(self._buckets) - 1)):
-            for y_bucket in range(max(0, y0), min(y1, len(self._buckets[x_bucket]) - 1)):
+        for x_bucket in range(max(0, x0), min(x1 + 1, len(self._buckets) - 1)):
+            for y_bucket in range(max(0, y0), min(y1 + 1, len(self._buckets[x_bucket]) - 1)):
                 yield self._buckets[x_bucket][y_bucket]
 
     def _bucket_for_world_position(self, world_position: Tuple[int, int]):
