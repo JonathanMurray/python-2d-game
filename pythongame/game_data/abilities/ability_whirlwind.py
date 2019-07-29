@@ -3,7 +3,7 @@ import random
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect, register_buff_effect
 from pythongame.core.common import AbilityType, Sprite, \
-    ProjectileType, Millis, Direction, BuffType, SoundId
+    ProjectileType, Millis, Direction, BuffType, SoundId, PeriodicTimer
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, register_entity_sprite_map, SpriteSheet
@@ -34,22 +34,17 @@ def _apply_ability(game_state: GameState) -> bool:
 class ProjectileController(AbstractProjectileController):
     def __init__(self):
         super().__init__(3000)
-        self._dmg_cooldown = 500
-        self._time_since_dmg = self._dmg_cooldown
-        self._direction_change_cooldown = 250
-        self._time_since_direction_change = self._direction_change_cooldown
+        self.damage_timer = PeriodicTimer(Millis(500))
+        self.direction_change_timer = PeriodicTimer(Millis(250))
         self._relative_direction = 0
         self._stun_duration = 500
-
         self._rotation_motion = random.choice([-1, 1])
 
     def notify_time_passed(self, game_state: GameState, projectile: Projectile, time_passed: Millis):
         super().notify_time_passed(game_state, projectile, time_passed)
-        self._time_since_dmg += time_passed
-        self._time_since_direction_change += time_passed
         projectile_entity = projectile.world_entity
-        if self._time_since_dmg > self._dmg_cooldown:
-            self._time_since_dmg = 0
+
+        if self.damage_timer.update_and_check_if_ready(time_passed):
             for enemy in game_state.get_enemy_intersecting_with(projectile_entity):
                 damage_amount = 1
                 damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, damage_amount)
@@ -57,9 +52,7 @@ class ProjectileController(AbstractProjectileController):
                     if random.random() < 0.25:
                         enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(self._stun_duration))
 
-        if self._time_since_direction_change > self._direction_change_cooldown:
-            self._time_since_direction_change = 0
-
+        if self.direction_change_timer.update_and_check_if_ready(time_passed):
             should_rotate = True
             # keep going straight ahead sometimes
             if self._relative_direction == 0 and random.random() < 0.5:

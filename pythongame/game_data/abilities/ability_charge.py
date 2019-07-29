@@ -2,7 +2,7 @@ from typing import Optional
 
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
-from pythongame.core.common import BuffType, Millis, AbilityType, SoundId, HeroId, UiIconSprite
+from pythongame.core.common import BuffType, Millis, AbilityType, SoundId, HeroId, UiIconSprite, PeriodicTimer
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     HEROES, register_buff_as_channeling
@@ -28,7 +28,7 @@ def _apply_ability(game_state: GameState) -> bool:
 class Charging(AbstractBuffEffect):
 
     def __init__(self):
-        self.time_since_graphics = 0
+        self.graphics_timer = PeriodicTimer(40)
         self.time_since_start = 0
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
@@ -39,15 +39,13 @@ class Charging(AbstractBuffEffect):
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis) -> Optional[bool]:
 
-        self.time_since_graphics += time_passed
         self.time_since_start += time_passed
 
         charger_center_pos = buffed_entity.get_center_position()
 
-        if self.time_since_graphics > 40:
-            self.time_since_graphics = 0
-            game_state.visual_effects.append(VisualCircle((250, 250, 250), charger_center_pos, 15, 25, Millis(120),
-                                                          2, None))
+        if self.graphics_timer.update_and_check_if_ready(time_passed):
+            visual_circle = VisualCircle((250, 250, 250), charger_center_pos, 15, 25, Millis(120), 2, None)
+            game_state.visual_effects.append(visual_circle)
 
         rect_w = 32
         # NOTE: We assume that this ability is used by this specific hero

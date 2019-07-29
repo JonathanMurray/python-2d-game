@@ -2,7 +2,7 @@ from typing import Optional
 
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
-from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId
+from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PeriodicTimer
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text, register_buff_as_channeling
@@ -47,16 +47,14 @@ class HasInfusedDagger(AbstractBuffEffect):
 class DamagedByInfusedDagger(AbstractBuffEffect):
 
     def __init__(self):
-        self.time_since_damage = 0
+        self.timer = PeriodicTimer()
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         buffed_entity.add_to_speed_multiplier(-DEBUFF_SPEED_DECREASE)
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
-        self.time_since_damage += time_passed
-        if self.time_since_damage > 750:
-            self.time_since_damage = 0
+        if self.timer.update_and_check_if_ready(time_passed):
             deal_player_damage_to_enemy(game_state, buffed_npc, 1)
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):

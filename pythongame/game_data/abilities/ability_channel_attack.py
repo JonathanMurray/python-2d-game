@@ -1,6 +1,6 @@
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
-from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, ProjectileType, UiIconSprite
+from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, ProjectileType, UiIconSprite, PeriodicTimer
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_entity_sprite_initializer, SpriteInitializer, register_buff_as_channeling
@@ -22,7 +22,7 @@ def _apply_channel_attack(game_state: GameState) -> bool:
 
 class ChannelingMagicMissiles(AbstractBuffEffect):
     def __init__(self):
-        self._time_since_firing = 0
+        self.timer = PeriodicTimer(Millis(100))
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.add_one()
@@ -30,9 +30,7 @@ class ChannelingMagicMissiles(AbstractBuffEffect):
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
-        self._time_since_firing += time_passed
-        if self._time_since_firing > 100:
-            self._time_since_firing = 0
+        if self.timer.update_and_check_if_ready(time_passed):
             player_center_position = game_state.player_entity.get_center_position()
             projectile_pos = get_position_from_center_position(player_center_position, PROJECTILE_SIZE)
             entity = WorldEntity(projectile_pos, PROJECTILE_SIZE, Sprite.PROJECTILE_PLAYER_MAGIC_MISSILE,

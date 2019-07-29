@@ -2,7 +2,7 @@ import random
 
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
-from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId
+from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PeriodicTimer
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_as_channeling
@@ -26,7 +26,7 @@ def _apply_ability(game_state: GameState) -> bool:
 class ChannelingStomp(AbstractBuffEffect):
 
     def __init__(self):
-        self.time_since_graphics = 0
+        self.timer = PeriodicTimer(Millis(80))
         self.graphics_size = 40
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
@@ -35,11 +35,7 @@ class ChannelingStomp(AbstractBuffEffect):
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis) -> bool:
-
-        self.time_since_graphics += time_passed
-
-        if self.time_since_graphics > 80:
-            self.time_since_graphics = 0
+        if self.timer.update_and_check_if_ready(time_passed):
             visual_effect = VisualCircle(
                 (250, 250, 250), buffed_entity.get_center_position(), self.graphics_size, self.graphics_size + 10,
                 Millis(70), 2, None)

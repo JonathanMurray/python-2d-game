@@ -2,7 +2,7 @@ from typing import Optional
 
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
-from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId
+from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PeriodicTimer
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, BuffEventOutcome, \
@@ -47,13 +47,11 @@ class Sneaking(AbstractBuffEffect):
 class AfterSneaking(AbstractBuffEffect):
 
     def __init__(self):
-        self.time_since_graphics = 150
+        self.timer = PeriodicTimer(Millis(160))
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
-        self.time_since_graphics += time_passed
-        if self.time_since_graphics > 160:
-            self.time_since_graphics = 0
+        if self.timer.update_and_check_if_ready(time_passed):
             visual_effect = VisualCircle(
                 (250, 150, 250), buffed_entity.get_center_position(), 18, 25, Millis(220), 1, buffed_entity)
             game_state.visual_effects.append(visual_effect)
