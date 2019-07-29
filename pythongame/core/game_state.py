@@ -13,9 +13,6 @@ from pythongame.core.math import boxes_intersect, rects_intersect, get_position_
 
 GRID_CELL_WIDTH = 25
 
-_WALL_BUCKET_WIDTH = 100
-_WALL_BUCKET_HEIGHT = 100
-
 
 class WorldArea:
     def __init__(self, pos: Tuple[int, int], size: Tuple[int, int]):
@@ -488,7 +485,7 @@ class GameState:
         self.player_state: PlayerState = player_state
         self.pathfinder_wall_grid = self._setup_pathfinder_wall_grid(
             self.entire_world_area, [w.world_entity for w in walls])
-        self.decoration_entities = decoration_entities
+        self.decorations_state = DecorationsState(decoration_entities, entire_world_area)
         self.portals: List[Portal] = portals
 
     @staticmethod
@@ -533,7 +530,7 @@ class GameState:
                [p.world_entity for p in self.portals]
 
     def get_decorations_to_render(self) -> List[DecorationEntity]:
-        return self.decoration_entities
+        return self.decorations_state.get_decorations_in_camera(self.camera_world_area)
 
     def center_camera_on_player(self):
         new_camera_pos = get_position_from_center_position(self.player_entity.get_center_position(), self.camera_size)
@@ -624,14 +621,17 @@ class GameState:
 
 
 class WallsState:
+    # Walls are stored in 'buckets' as an optimization
+    _BUCKET_WIDTH = 100
+    _BUCKET_HEIGHT = 100
 
     def __init__(self, walls: List[Wall], entire_world_area: WorldArea):
         self._wall_buckets: Dict[int, Dict[int, List[WorldEntity]]] = {}
         self.walls: List[Wall] = walls
         self.entire_world_area = entire_world_area
-        for x_bucket in range(self.entire_world_area.w // _WALL_BUCKET_WIDTH + 1):
+        for x_bucket in range(self.entire_world_area.w // WallsState._BUCKET_WIDTH + 1):
             self._wall_buckets[x_bucket] = {}
-            for y_bucket in range(self.entire_world_area.h // _WALL_BUCKET_HEIGHT + 1):
+            for y_bucket in range(self.entire_world_area.h // WallsState._BUCKET_HEIGHT + 1):
                 self._wall_buckets[x_bucket][y_bucket] = []
         for wall_entity in [w.world_entity for w in walls]:
             wall_bucket = self._get_wall_bucket_from_world_position(wall_entity.get_position())
@@ -681,9 +681,58 @@ class WallsState:
         return self._wall_buckets[x_bucket][y_bucket]
 
     def _get_wall_bucket_index_from_world_position(self, world_position: Tuple[int, int]) -> Tuple[int, int]:
-        x_bucket = int(world_position[0] - self.entire_world_area.x) // _WALL_BUCKET_WIDTH
-        y_bucket = int(world_position[1] - self.entire_world_area.y) // _WALL_BUCKET_HEIGHT
+        x_bucket = int(world_position[0] - self.entire_world_area.x) // WallsState._BUCKET_WIDTH
+        y_bucket = int(world_position[1] - self.entire_world_area.y) // WallsState._BUCKET_HEIGHT
         return x_bucket, y_bucket
 
     def get_walls_at_position(self, position: Tuple[int, int]) -> List[Wall]:
         return [w for w in self.walls if w.world_entity.get_position() == position]
+
+
+class DecorationsState:
+    # Decorations are stored in 'buckets' as an optimization
+    _BUCKET_WIDTH = 100
+    _BUCKET_HEIGHT = 100
+
+    def __init__(self, decoration_entities: List[DecorationEntity], entire_world_area: WorldArea):
+        self._buckets: Dict[int, Dict[int, List[DecorationEntity]]] = {}
+        self.decoration_entities: List[DecorationEntity] = decoration_entities
+        self.entire_world_area = entire_world_area
+        for x_bucket in range(self.entire_world_area.w // DecorationsState._BUCKET_WIDTH + 1):
+            self._buckets[x_bucket] = {}
+            for y_bucket in range(self.entire_world_area.h // DecorationsState._BUCKET_HEIGHT + 1):
+                self._buckets[x_bucket][y_bucket] = []
+        for entity in decoration_entities:
+            bucket = self._bucket_for_world_position(entity.get_position())
+            bucket.append(entity)
+
+    def add_decoration(self, decoration: DecorationEntity):
+        self.decoration_entities.append(decoration)
+        bucket = self._bucket_for_world_position(decoration.get_position())
+        bucket.append(decoration)
+
+    def remove_decoration(self, decoration: DecorationEntity):
+        self.decoration_entities.remove(decoration)
+        bucket = self._bucket_for_world_position(decoration.get_position())
+        bucket.remove(decoration)
+
+    def get_decorations_in_camera(self, camera_world_area: WorldArea) -> List[DecorationEntity]:
+        x0_bucket, y0_bucket = self._bucket_index_for_world_position(camera_world_area.get_position())
+        x1_bucket, y1_bucket = self._bucket_index_for_world_position(camera_world_area.get_bot_right_position())
+        decorations = []
+        for x_bucket in range(max(0, x0_bucket), min(x1_bucket + 1, len(self._buckets))):
+            for y_bucket in range(max(0, y0_bucket - 1), min(y1_bucket + 1, len(self._buckets[x_bucket]))):
+                decorations += self._buckets[x_bucket][y_bucket]
+        return decorations
+
+    def _bucket_for_world_position(self, world_position: Tuple[int, int]):
+        x_bucket, y_bucket = self._bucket_index_for_world_position(world_position)
+        return self._buckets[x_bucket][y_bucket]
+
+    def _bucket_index_for_world_position(self, world_position: Tuple[int, int]) -> Tuple[int, int]:
+        x_bucket = int(world_position[0] - self.entire_world_area.x) // DecorationsState._BUCKET_WIDTH
+        y_bucket = int(world_position[1] - self.entire_world_area.y) // DecorationsState._BUCKET_HEIGHT
+        return x_bucket, y_bucket
+
+    def get_decorations_at_position(self, position: Tuple[int, int]) -> List[DecorationEntity]:
+        return [d for d in self.decoration_entities if d.get_position() == position]

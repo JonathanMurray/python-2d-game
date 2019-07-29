@@ -295,7 +295,7 @@ def main(map_file_name: Optional[str]):
             deleting_decorations=user_state.deleting_decorations,
             num_enemies=len(game_state.non_player_characters),
             num_walls=len(game_state.walls_state.walls),
-            num_decorations=len(game_state.decoration_entities),
+            num_decorations=len(game_state.decorations_state.decoration_entities),
             grid_cell_size=grid_cell_size,
             mouse_screen_position=exact_mouse_screen_position)
 
@@ -367,16 +367,14 @@ def _add_npc(npc_type, game_state: GameState, snapped_mouse_world_position):
         game_state.add_non_player_character(npc)
 
 
-def _add_decoration(decoration_sprite: Sprite, game_state, snapped_mouse_world_position):
-    already_has_decoration = any([d for d in game_state.decoration_entities
-                                  if d.get_position() == snapped_mouse_world_position])
-    if not already_has_decoration:
+def _add_decoration(decoration_sprite: Sprite, game_state: GameState, snapped_mouse_world_position):
+    if len(game_state.decorations_state.get_decorations_at_position(snapped_mouse_world_position)) == 0:
         decoration_entity = create_decoration_entity(snapped_mouse_world_position, decoration_sprite)
-        game_state.decoration_entities.append(decoration_entity)
+        game_state.decorations_state.add_decoration(decoration_entity)
 
 
 def _add_wall(game_state, snapped_mouse_world_position: Tuple[int, int], wall_type: WallType):
-    if len(game_state.walls_state.get_walls_at_position(snapped_mouse_world_position)) == 0:
+    if len(game_state.walls_state.get_decorations_at_position(snapped_mouse_world_position)) == 0:
         wall = create_wall(wall_type, snapped_mouse_world_position)
         game_state.walls_state.add_wall(wall)
 
@@ -401,6 +399,6 @@ def _delete_map_entities_from_position(game_state: GameState, snapped_mouse_worl
         game_state.portals.remove(portal)
 
 
-def _delete_map_decorations_from_position(game_state, snapped_mouse_world_position: Tuple[int, int]):
-    for d in [d for d in game_state.decoration_entities if (d.x, d.y) == snapped_mouse_world_position]:
-        game_state.decoration_entities.remove(d)
+def _delete_map_decorations_from_position(game_state: GameState, snapped_mouse_world_position: Tuple[int, int]):
+    for d in game_state.decorations_state.get_decorations_at_position(snapped_mouse_world_position):
+        game_state.decorations_state.remove_decoration(d)
