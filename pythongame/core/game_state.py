@@ -626,25 +626,25 @@ class WallsState:
     _BUCKET_HEIGHT = 100
 
     def __init__(self, walls: List[Wall], entire_world_area: WorldArea):
-        self._wall_buckets: Dict[int, Dict[int, List[WorldEntity]]] = {}
+        self._buckets: Dict[int, Dict[int, List[WorldEntity]]] = {}
         self.walls: List[Wall] = walls
         self.entire_world_area = entire_world_area
         for x_bucket in range(self.entire_world_area.w // WallsState._BUCKET_WIDTH + 1):
-            self._wall_buckets[x_bucket] = {}
+            self._buckets[x_bucket] = {}
             for y_bucket in range(self.entire_world_area.h // WallsState._BUCKET_HEIGHT + 1):
-                self._wall_buckets[x_bucket][y_bucket] = []
+                self._buckets[x_bucket][y_bucket] = []
         for wall_entity in [w.world_entity for w in walls]:
-            wall_bucket = self._get_wall_bucket_from_world_position(wall_entity.get_position())
+            wall_bucket = self._bucket_for_world_position(wall_entity.get_position())
             wall_bucket.append(wall_entity)
 
     def add_wall(self, wall: Wall):
         self.walls.append(wall)
-        wall_bucket = self._get_wall_bucket_from_world_position(wall.world_entity.get_position())
+        wall_bucket = self._bucket_for_world_position(wall.world_entity.get_position())
         wall_bucket.append(wall.world_entity)
 
     def remove_wall(self, wall: Wall):
         self.walls.remove(wall)
-        wall_bucket = self._get_wall_bucket_from_world_position(wall.world_entity.get_position())
+        wall_bucket = self._bucket_for_world_position(wall.world_entity.get_position())
         wall_bucket.remove(wall.world_entity)
 
     # TODO Use _entities_collide?
@@ -658,29 +658,28 @@ class WallsState:
         return any([w for w in nearby_walls if rects_intersect((w.x, w.y, w.w, w.h), rect)])
 
     def get_walls_close_to_position(self, position: Tuple[int, int]):
-        entity_x_bucket, entity_y_bucket = self._get_wall_bucket_index_from_world_position(position)
+        entity_x_bucket, entity_y_bucket = self._bucket_index_for_world_position(position)
         walls = []
-        for x_bucket in range(max(0, entity_x_bucket - 1), min(len(self._wall_buckets), entity_x_bucket + 2)):
+        for x_bucket in range(max(0, entity_x_bucket - 1), min(len(self._buckets), entity_x_bucket + 2)):
             for y_bucket in range(max(0, entity_y_bucket - 1),
-                                  min(len(self._wall_buckets[x_bucket]), entity_y_bucket + 2)):
-                walls += self._wall_buckets[x_bucket][y_bucket]
+                                  min(len(self._buckets[x_bucket]), entity_y_bucket + 2)):
+                walls += self._buckets[x_bucket][y_bucket]
         return walls
 
     def get_walls_in_camera(self, camera_world_area: WorldArea):
-        x0_bucket, y0_bucket = self._get_wall_bucket_index_from_world_position(camera_world_area.get_position())
-        x1_bucket, y1_bucket = self._get_wall_bucket_index_from_world_position(
-            camera_world_area.get_bot_right_position())
+        x0_bucket, y0_bucket = self._bucket_index_for_world_position(camera_world_area.get_position())
+        x1_bucket, y1_bucket = self._bucket_index_for_world_position(camera_world_area.get_bot_right_position())
         walls = []
-        for x_bucket in range(max(0, x0_bucket - 1), min(x1_bucket + 1, len(self._wall_buckets))):
-            for y_bucket in range(max(0, y0_bucket - 1), min(y1_bucket + 1, len(self._wall_buckets[x_bucket]))):
-                walls += self._wall_buckets[x_bucket][y_bucket]
+        for x_bucket in range(max(0, x0_bucket - 1), min(x1_bucket + 1, len(self._buckets))):
+            for y_bucket in range(max(0, y0_bucket - 1), min(y1_bucket + 1, len(self._buckets[x_bucket]))):
+                walls += self._buckets[x_bucket][y_bucket]
         return walls
 
-    def _get_wall_bucket_from_world_position(self, world_position: Tuple[int, int]):
-        x_bucket, y_bucket = self._get_wall_bucket_index_from_world_position(world_position)
-        return self._wall_buckets[x_bucket][y_bucket]
+    def _bucket_for_world_position(self, world_position: Tuple[int, int]):
+        x_bucket, y_bucket = self._bucket_index_for_world_position(world_position)
+        return self._buckets[x_bucket][y_bucket]
 
-    def _get_wall_bucket_index_from_world_position(self, world_position: Tuple[int, int]) -> Tuple[int, int]:
+    def _bucket_index_for_world_position(self, world_position: Tuple[int, int]) -> Tuple[int, int]:
         x_bucket = int(world_position[0] - self.entire_world_area.x) // WallsState._BUCKET_WIDTH
         y_bucket = int(world_position[1] - self.entire_world_area.y) // WallsState._BUCKET_HEIGHT
         return x_bucket, y_bucket
