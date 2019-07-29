@@ -621,31 +621,17 @@ class GameState:
 
 
 class WallsState:
-    # Walls are stored in 'buckets' as an optimization
-    _BUCKET_WIDTH = 100
-    _BUCKET_HEIGHT = 100
-
     def __init__(self, walls: List[Wall], entire_world_area: WorldArea):
-        self._buckets: Dict[int, Dict[int, List[WorldEntity]]] = {}
         self.walls: List[Wall] = walls
-        self.entire_world_area = entire_world_area
-        for x_bucket in range(self.entire_world_area.w // WallsState._BUCKET_WIDTH + 1):
-            self._buckets[x_bucket] = {}
-            for y_bucket in range(self.entire_world_area.h // WallsState._BUCKET_HEIGHT + 1):
-                self._buckets[x_bucket][y_bucket] = []
-        for wall_entity in [w.world_entity for w in walls]:
-            wall_bucket = self._bucket_for_world_position(wall_entity.get_position())
-            wall_bucket.append(wall_entity)
+        self._buckets = Buckets([w.world_entity for w in walls], entire_world_area)
 
     def add_wall(self, wall: Wall):
         self.walls.append(wall)
-        wall_bucket = self._bucket_for_world_position(wall.world_entity.get_position())
-        wall_bucket.append(wall.world_entity)
+        self._buckets.add_entity(wall.world_entity)
 
     def remove_wall(self, wall: Wall):
         self.walls.remove(wall)
-        wall_bucket = self._bucket_for_world_position(wall.world_entity.get_position())
-        wall_bucket.remove(wall.world_entity)
+        self._buckets.remove_entity(wall.world_entity)
 
     # TODO Use _entities_collide?
     def does_entity_intersect_with_wall(self, entity: WorldEntity):
@@ -657,81 +643,83 @@ class WallsState:
         nearby_walls = self.get_walls_close_to_position((rect[0], rect[1]))
         return any([w for w in nearby_walls if rects_intersect((w.x, w.y, w.w, w.h), rect)])
 
-    def get_walls_close_to_position(self, position: Tuple[int, int]):
-        entity_x_bucket, entity_y_bucket = self._bucket_index_for_world_position(position)
-        walls = []
-        for x_bucket in range(max(0, entity_x_bucket - 1), min(len(self._buckets), entity_x_bucket + 2)):
-            for y_bucket in range(max(0, entity_y_bucket - 1),
-                                  min(len(self._buckets[x_bucket]), entity_y_bucket + 2)):
-                walls += self._buckets[x_bucket][y_bucket]
-        return walls
+    def get_walls_close_to_position(self, position: Tuple[int, int]) -> List[WorldEntity]:
+        return self._buckets.get_entities_close_to_position(position)
 
-    def get_walls_in_camera(self, camera_world_area: WorldArea):
-        x0_bucket, y0_bucket = self._bucket_index_for_world_position(camera_world_area.get_position())
-        x1_bucket, y1_bucket = self._bucket_index_for_world_position(camera_world_area.get_bot_right_position())
-        walls = []
-        for x_bucket in range(max(0, x0_bucket - 1), min(x1_bucket + 1, len(self._buckets))):
-            for y_bucket in range(max(0, y0_bucket - 1), min(y1_bucket + 1, len(self._buckets[x_bucket]))):
-                walls += self._buckets[x_bucket][y_bucket]
-        return walls
-
-    def _bucket_for_world_position(self, world_position: Tuple[int, int]):
-        x_bucket, y_bucket = self._bucket_index_for_world_position(world_position)
-        return self._buckets[x_bucket][y_bucket]
-
-    def _bucket_index_for_world_position(self, world_position: Tuple[int, int]) -> Tuple[int, int]:
-        x_bucket = int(world_position[0] - self.entire_world_area.x) // WallsState._BUCKET_WIDTH
-        y_bucket = int(world_position[1] - self.entire_world_area.y) // WallsState._BUCKET_HEIGHT
-        return x_bucket, y_bucket
+    def get_walls_in_camera(self, camera_world_area: WorldArea) -> List[WorldEntity]:
+        return self._buckets.get_entitites_close_to_world_area(camera_world_area)
 
     def get_walls_at_position(self, position: Tuple[int, int]) -> List[Wall]:
         return [w for w in self.walls if w.world_entity.get_position() == position]
 
 
 class DecorationsState:
-    # Decorations are stored in 'buckets' as an optimization
-    _BUCKET_WIDTH = 100
-    _BUCKET_HEIGHT = 100
-
     def __init__(self, decoration_entities: List[DecorationEntity], entire_world_area: WorldArea):
-        self._buckets: Dict[int, Dict[int, List[DecorationEntity]]] = {}
         self.decoration_entities: List[DecorationEntity] = decoration_entities
-        self.entire_world_area = entire_world_area
-        for x_bucket in range(self.entire_world_area.w // DecorationsState._BUCKET_WIDTH + 1):
-            self._buckets[x_bucket] = {}
-            for y_bucket in range(self.entire_world_area.h // DecorationsState._BUCKET_HEIGHT + 1):
-                self._buckets[x_bucket][y_bucket] = []
-        for entity in decoration_entities:
-            bucket = self._bucket_for_world_position(entity.get_position())
-            bucket.append(entity)
+        self._buckets = Buckets(decoration_entities, entire_world_area)
 
     def add_decoration(self, decoration: DecorationEntity):
         self.decoration_entities.append(decoration)
-        bucket = self._bucket_for_world_position(decoration.get_position())
-        bucket.append(decoration)
+        self._buckets.add_entity(decoration)
 
     def remove_decoration(self, decoration: DecorationEntity):
         self.decoration_entities.remove(decoration)
-        bucket = self._bucket_for_world_position(decoration.get_position())
-        bucket.remove(decoration)
+        self._buckets.remove_entity(decoration)
 
     def get_decorations_in_camera(self, camera_world_area: WorldArea) -> List[DecorationEntity]:
-        x0_bucket, y0_bucket = self._bucket_index_for_world_position(camera_world_area.get_position())
-        x1_bucket, y1_bucket = self._bucket_index_for_world_position(camera_world_area.get_bot_right_position())
-        decorations = []
-        for x_bucket in range(max(0, x0_bucket), min(x1_bucket + 1, len(self._buckets))):
-            for y_bucket in range(max(0, y0_bucket - 1), min(y1_bucket + 1, len(self._buckets[x_bucket]))):
-                decorations += self._buckets[x_bucket][y_bucket]
-        return decorations
+        return self._buckets.get_entitites_close_to_world_area(camera_world_area)
+
+    def get_decorations_at_position(self, position: Tuple[int, int]) -> List[DecorationEntity]:
+        return [d for d in self.decoration_entities if d.get_position() == position]
+
+
+# This class provides a way to store entities based on their location in the world,
+# which improves performance mainly for collision checking and rendering
+# NOTE: it should only be used for immovable objects (such as walls and floor tiles)
+class Buckets:
+    _BUCKET_WIDTH = 100
+    _BUCKET_HEIGHT = 100
+
+    def __init__(self, entities: List[Any], entire_world_area: WorldArea):
+        self._buckets: Dict[int, Dict[int, List[Any]]] = {}
+        self.entire_world_area = entire_world_area
+        for x_bucket in range(self.entire_world_area.w // Buckets._BUCKET_WIDTH + 1):
+            self._buckets[x_bucket] = {}
+            for y_bucket in range(self.entire_world_area.h // Buckets._BUCKET_HEIGHT + 1):
+                self._buckets[x_bucket][y_bucket] = []
+        for entity in entities:
+            bucket = self._bucket_for_world_position(entity.get_position())
+            bucket.append(entity)
+
+    def add_entity(self, entity: Any):
+        bucket = self._bucket_for_world_position(entity.get_position())
+        bucket.append(entity)
+
+    def remove_entity(self, entity: Any):
+        bucket = self._bucket_for_world_position(entity.get_position())
+        bucket.remove(entity)
+
+    def get_entitites_close_to_world_area(self, world_area: WorldArea) -> List[Any]:
+        x0_bucket, y0_bucket = self._bucket_index_for_world_position(world_area.get_position())
+        x1_bucket, y1_bucket = self._bucket_index_for_world_position(world_area.get_bot_right_position())
+        buckets = self._buckets_between_indices(x0_bucket - 1, x1_bucket + 1, y0_bucket - 1, y1_bucket + 1)
+        return [entity for bucket in buckets for entity in bucket]
+
+    def get_entities_close_to_position(self, position: Tuple[int, int]) -> List[Any]:
+        x_bucket, y_bucket = self._bucket_index_for_world_position(position)
+        buckets = self._buckets_between_indices(x_bucket - 1, x_bucket + 1, y_bucket - 1, y_bucket + 1)
+        return [entity for bucket in buckets for entity in bucket]
+
+    def _buckets_between_indices(self, x0: int, x1: int, y0: int, y1: int) -> List[List[Any]]:
+        for x_bucket in range(max(0, x0), min(x1, len(self._buckets) - 1)):
+            for y_bucket in range(max(0, y0), min(y1, len(self._buckets[x_bucket]) - 1)):
+                yield self._buckets[x_bucket][y_bucket]
 
     def _bucket_for_world_position(self, world_position: Tuple[int, int]):
         x_bucket, y_bucket = self._bucket_index_for_world_position(world_position)
         return self._buckets[x_bucket][y_bucket]
 
     def _bucket_index_for_world_position(self, world_position: Tuple[int, int]) -> Tuple[int, int]:
-        x_bucket = int(world_position[0] - self.entire_world_area.x) // DecorationsState._BUCKET_WIDTH
-        y_bucket = int(world_position[1] - self.entire_world_area.y) // DecorationsState._BUCKET_HEIGHT
+        x_bucket = int(world_position[0] - self.entire_world_area.x) // Buckets._BUCKET_WIDTH
+        y_bucket = int(world_position[1] - self.entire_world_area.y) // Buckets._BUCKET_HEIGHT
         return x_bucket, y_bucket
-
-    def get_decorations_at_position(self, position: Tuple[int, int]) -> List[DecorationEntity]:
-        return [d for d in self.decoration_entities if d.get_position() == position]
