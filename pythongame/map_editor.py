@@ -374,7 +374,7 @@ def _add_decoration(decoration_sprite: Sprite, game_state: GameState, snapped_mo
 
 
 def _add_wall(game_state, snapped_mouse_world_position: Tuple[int, int], wall_type: WallType):
-    if len(game_state.walls_state.get_decorations_at_position(snapped_mouse_world_position)) == 0:
+    if len(game_state.walls_state.get_walls_at_position(snapped_mouse_world_position)) == 0:
         wall = create_wall(wall_type, snapped_mouse_world_position)
         game_state.walls_state.add_wall(wall)
 
