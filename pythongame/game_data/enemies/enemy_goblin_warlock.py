@@ -3,7 +3,7 @@ import random
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
 from pythongame.core.common import Millis, NpcType, Sprite, \
     ProjectileType, BuffType, Direction, SoundId
-from pythongame.core.damage_interactions import deal_damage_to_player, deal_npc_damage_to_npc
+from pythongame.core.damage_interactions import deal_damage_to_player, deal_npc_damage_to_npc, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import register_npc_data, NpcData, register_buff_text, SpriteSheet, \
     register_entity_sprite_map
@@ -116,7 +116,7 @@ class ProjectileController(AbstractProjectileController):
         super().__init__(2000)
 
     def apply_player_collision(self, game_state: GameState):
-        deal_damage_to_player(game_state, 1, None)
+        deal_damage_to_player(game_state, 1, DamageType.MAGIC, None)
         game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.ENEMY_GOBLIN_WARLOCK_BURNT), Millis(5000))
         game_state.visual_effects.append(VisualCircle((180, 50, 50), game_state.player_entity.get_center_position(),
                                                       25, 50, Millis(100), 0))
@@ -145,8 +145,7 @@ class Burnt(AbstractBuffEffect):
                     VisualCircle((180, 50, 50), buffed_npc.world_entity.get_center_position(), 10, 20, Millis(50), 0,
                                  buffed_entity))
             else:
-                # TODO This damage should bypass armor
-                deal_damage_to_player(game_state, 2, None)
+                deal_damage_to_player(game_state, 2, DamageType.MAGIC, None)
                 game_state.visual_effects.append(
                     VisualCircle((180, 50, 50), game_state.player_entity.get_center_position(), 10, 20, Millis(50), 0,
                                  buffed_entity))

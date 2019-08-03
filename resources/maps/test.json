@@ -210,15 +210,15 @@
     {
       "npc_type": "MUMMY",
       "position": [
-        425,
-        275
+        125,
+        225
       ]
     },
     {
-      "npc_type": "NECROMANCER",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
-        350,
-        225
+        225,
+        200
       ]
     }
   ],

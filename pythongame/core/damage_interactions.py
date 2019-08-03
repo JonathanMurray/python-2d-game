@@ -1,4 +1,5 @@
 import random
+from enum import Enum
 from typing import Optional
 
 from pythongame.core.common import SoundId, Millis
@@ -7,6 +8,11 @@ from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntit
     PlayerDamagedEnemy, PlayerWasAttackedEvent
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import create_visual_damage_text, VisualRect, create_visual_healing_text
+
+
+class DamageType(Enum):
+    PHYSICAL = 1
+    MAGIC = 2
 
 
 # Returns
@@ -28,12 +34,17 @@ def deal_player_damage_to_enemy(game_state: GameState, npc: NonPlayerCharacter, 
     return True
 
 
-def deal_damage_to_player(game_state: GameState, base_amount: float, npc_attacker: Optional[NonPlayerCharacter]):
+def deal_damage_to_player(game_state: GameState, base_amount: float, damage_type: DamageType,
+                          npc_attacker: Optional[NonPlayerCharacter]):
     player_state = game_state.player_state
     if npc_attacker:
         player_state.notify_about_event(PlayerWasAttackedEvent(npc_attacker), game_state)
-    # Armor has a random element to it. Example: 5 armor absorbs 0-5 damage
-    reduction = random.randint(0, player_state.base_armor + player_state.armor_bonus)
+    if damage_type == DamageType.PHYSICAL:
+        # Armor has a random element to it. Example: 5 armor absorbs 0-5 damage
+        reduction = random.randint(0, player_state.base_armor + player_state.armor_bonus)
+    else:
+        # Armor only reduces physical damage
+        reduction = 0
     amount = max(0.0, base_amount - reduction)
     health_lost_integer = player_state.health_resource.lose(amount)
     if health_lost_integer > 0:
@@ -52,7 +63,7 @@ def deal_npc_damage_to_npc(game_state: GameState, target: NonPlayerCharacter, am
         game_state.visual_effects.append(create_visual_damage_text(target.world_entity, health_lost_integer))
 
 
-def deal_npc_damage(damage_amount: float, game_state: GameState, attacker_entity: WorldEntity,
+def deal_npc_damage(damage_amount: float, damage_type: DamageType, game_state: GameState, attacker_entity: WorldEntity,
                     attacker_npc: NonPlayerCharacter, target: EnemyTarget):
     attacker_position = attacker_entity.get_center_position()
     game_state.visual_effects.append(
@@ -60,7 +71,7 @@ def deal_npc_damage(damage_amount: float, game_state: GameState, attacker_entity
     if target.non_enemy_npc:
         deal_npc_damage_to_npc(game_state, target.non_enemy_npc, damage_amount)
     else:
-        deal_damage_to_player(game_state, damage_amount, attacker_npc)
+        deal_damage_to_player(game_state, damage_amount, damage_type, attacker_npc)
 
 
 def player_receive_healing(healing_amount: float, game_state: GameState):

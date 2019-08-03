@@ -1,5 +1,5 @@
 from pythongame.core.common import Millis, NpcType, Sprite, Direction
-from pythongame.core.damage_interactions import deal_npc_damage
+from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
@@ -61,7 +61,7 @@ class NpcMind(AbstractNpcMind):
                 enemy_position = enemy_entity.get_center_position()
                 target_center_pos = target.entity.get_center_position()
                 if is_x_and_y_within_distance(enemy_position, target_center_pos, 80):
-                    deal_npc_damage(DAMAGE_AMOUNT, game_state, enemy_entity, npc, target)
+                    deal_npc_damage(DAMAGE_AMOUNT, DamageType.PHYSICAL, game_state, enemy_entity, npc, target)
 
 
 def _move_in_dir(enemy_entity, direction):

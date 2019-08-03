@@ -2,7 +2,7 @@ import random
 
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import Millis, NpcType, Sprite, Direction, BuffType
-from pythongame.core.damage_interactions import deal_damage_to_player
+from pythongame.core.damage_interactions import deal_damage_to_player, DamageType
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.loot import LootTable, LootEntry
@@ -75,7 +75,7 @@ class NpcMind(AbstractNpcMind):
             if not is_player_invisible:
                 player_center_pos = game_state.player_entity.get_center_position()
                 if is_x_and_y_within_distance(enemy_center_pos, player_center_pos, 160):
-                    deal_damage_to_player(game_state, 3, npc)
+                    deal_damage_to_player(game_state, 3, DamageType.MAGIC, npc)
                     game_state.visual_effects += [
                         VisualCircle((0, 0, 0), enemy_center_pos, 25, 50, Millis(200), 2, enemy_entity),
                         VisualLine((0, 100, 0), enemy_center_pos, player_center_pos, Millis(200), 2),
