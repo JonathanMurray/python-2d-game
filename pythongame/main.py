@@ -5,7 +5,7 @@ from typing import Optional
 import pygame
 
 import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis, HeroId, SoundId, ItemType, ConsumableType
+from pythongame.core.common import Millis, HeroId, SoundId, ItemType, ConsumableType, Sprite
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_engine import GameEngine
@@ -65,6 +65,7 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
     player_interactions_state = PlayerInteractionsState(view_state)
 
     if saved_player_state:
+        # TODO Move this somewhere else
         game_state.player_state.gain_exp_worth_n_levels(saved_player_state.level - 1)
         allocate_input_keys_for_abilities(game_state.player_state.abilities)
         game_state.player_state.gain_exp(saved_player_state.exp)
@@ -74,6 +75,10 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
              in saved_player_state.consumables_in_slots.items()}
         )
         game_state.player_state.money += saved_player_state.money
+        for portal in game_state.portals:
+            if portal.portal_id.name in saved_player_state.enabled_portals:
+                sprite = saved_player_state.enabled_portals[portal.portal_id.name]
+                portal.activate(Sprite[sprite])
     else:
         if hero_start_level > 1:
             game_state.player_state.gain_exp_worth_n_levels(hero_start_level - 1)
@@ -134,6 +139,7 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
                 if isinstance(action, ActionPressSpaceKey) and not is_game_over:
                     player_interactions_state.handle_user_clicked_space(game_state, game_engine)
                 if isinstance(action, ActionSaveGameState):
+                    # TODO Move this somewhere else
                     filename = "savefiles/DEBUG_" + str(datetime.datetime.now()).replace(" ", "_") + ".json"
                     saved_player_state = SavedPlayerState(
                         game_state.player_state.hero_id.name,
@@ -143,7 +149,8 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
                          in game_state.player_state.consumable_inventory.consumables_in_slots.items()},
                         [slot.get_item_type().name if not slot.is_empty() else None
                          for slot in game_state.player_state.item_inventory.slots],
-                        game_state.player_state.money
+                        game_state.player_state.money,
+                        {p.portal_id.name: p.world_entity.sprite.name for p in game_state.portals if p.is_enabled}
                     )
                     save_player_state_to_json_file(saved_player_state, filename)
                     print("Saved game state to file: " + filename)

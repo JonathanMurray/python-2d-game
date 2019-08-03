@@ -91,5 +91,5 @@ def register_portal():
     register_buff_effect(BUFF_TYPE, BeingTeleported)
 
 
-def _data(starts_enabled: bool, portal_id: PortalId, sprite: Sprite):
-    return PortalData(starts_enabled, portal_id, sprite, PORTAL_SIZE, PORTAL_DELAY)
+def _data(starts_enabled: bool, leads_to: PortalId, sprite: Sprite):
+    return PortalData(starts_enabled, leads_to, sprite, PORTAL_SIZE, PORTAL_DELAY)

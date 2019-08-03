@@ -1,18 +1,19 @@
 import random
 from typing import List, Tuple
 
+from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import *
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
     create_consumable_on_ground
 from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities, \
-    NpcCategory
+    NpcCategory, PORTALS
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
-    EnemyDiedEvent, NonPlayerCharacter
+    EnemyDiedEvent, NonPlayerCharacter, Portal
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
 from pythongame.core.loot import LootEntry
 from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vectors, \
-    get_rect_with_increased_size_in_all_directions
+    get_rect_with_increased_size_in_all_directions, translate_in_direction
 from pythongame.core.player_controls import PlayerControls
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view_state import ViewState
@@ -112,6 +113,17 @@ class GameEngine:
             self.game_state.remove_entities([consumable])
         else:
             self.view_state.set_message("No space for " + consumable_name)
+
+    def interact_with_portal(self, portal: Portal):
+        if portal.is_enabled:
+            destination_portal = [p for p in self.game_state.portals if p.portal_id == portal.leads_to][0]
+            destination_portal.activate(portal.world_entity.sprite)
+            destination = translate_in_direction(destination_portal.world_entity.get_position(), Direction.DOWN, 50)
+            teleport_buff_effect: AbstractBuffEffect = get_buff_effect(BuffType.BEING_TELEPORTED, destination)
+            delay = PORTALS[portal.portal_id].teleport_delay
+            self.game_state.player_state.gain_buff_effect(teleport_buff_effect, delay)
+        else:
+            self.view_state.set_message("Hmm... Looks suspicious!")
 
     def run_one_frame(self, time_passed: Millis):
         for npc in self.game_state.non_player_characters:

@@ -462,6 +462,10 @@ class Portal:
         self.is_enabled = is_enabled
         self.leads_to = leads_to
 
+    def activate(self, sprite: Sprite):
+        self.is_enabled = True
+        self.world_entity.sprite = sprite
+
 
 class GameState:
     def __init__(self, player_entity: WorldEntity, consumables_on_ground: List[ConsumableOnGround],

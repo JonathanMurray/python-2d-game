@@ -1,12 +1,10 @@
 import sys
 from typing import Optional, List
 
-from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect
-from pythongame.core.common import Direction, BuffType, SoundId
-from pythongame.core.game_data import PORTALS
+from pythongame.core.common import SoundId
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, LootableOnGround, Portal
-from pythongame.core.math import boxes_intersect, translate_in_direction, is_x_and_y_within_distance, \
+from pythongame.core.math import boxes_intersect, is_x_and_y_within_distance, \
     get_manhattan_distance_between_rects
 from pythongame.core.npc_behaviors import invoke_npc_action, has_npc_dialog, get_dialog_graphics, get_dialog_data
 from pythongame.core.sound_player import play_sound
@@ -71,21 +69,7 @@ class PlayerInteractionsState:
         elif self.lootable_ready_to_be_picked_up:
             game_engine.try_pick_up_loot_from_ground(self.lootable_ready_to_be_picked_up)
         elif self.portal_ready_for_interaction:
-            self._try_use_portal(self.portal_ready_for_interaction, game_state)
-
-    # TODO Delegate this logic to game_engine?
-    def _try_use_portal(self, portal: Portal, game_state: GameState):
-        if portal.is_enabled:
-            destination_portal = [p for p in game_state.portals if p.portal_id == portal.leads_to][0]
-            destination_portal.is_enabled = True
-            destination_portal.leads_to = portal.portal_id
-            destination_portal.world_entity.sprite = portal.world_entity.sprite
-            destination = translate_in_direction(destination_portal.world_entity.get_position(), Direction.DOWN, 50)
-            teleport_buff_effect: AbstractBuffEffect = get_buff_effect(BuffType.BEING_TELEPORTED, destination)
-            delay = PORTALS[portal.portal_id].teleport_delay
-            game_state.player_state.gain_buff_effect(teleport_buff_effect, delay)
-        else:
-            self.view_state.set_message("Hmm... Looks suspicious!")
+            game_engine.interact_with_portal(self.portal_ready_for_interaction)
 
     def get_action_text(self) -> Optional[EntityActionText]:
         if self.npc_ready_for_dialog:
