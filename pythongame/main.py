@@ -16,7 +16,8 @@ from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, Acti
     ActionChangeDialogOption, ActionSaveGameState
 from pythongame.core.view import View, MouseHoverEvent
 from pythongame.core.view_state import ViewState
-from pythongame.map_file import create_game_state_from_json_file, save_game_state_to_json_file
+from pythongame.map_file import create_game_state_from_json_file
+from pythongame.player_file import SavedPlayerState, save_player_state_to_json_file
 from pythongame.register_game_data import register_all_game_data
 
 SCREEN_SIZE = (700, 700)
@@ -117,7 +118,16 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
                     player_interactions_state.handle_user_clicked_space(game_state, game_engine)
                 if isinstance(action, ActionSaveGameState):
                     filename = "savefiles/DEBUG_" + str(datetime.datetime.now()).replace(" ", "_") + ".json"
-                    save_game_state_to_json_file(game_state, filename)
+                    saved_player_state = SavedPlayerState(
+                        game_state.player_state.hero_id.name,
+                        game_state.player_state.level,
+                        game_state.player_state.exp,
+                        {slot_number: [c.name for c in consumables] for (slot_number, consumables)
+                         in game_state.player_state.consumable_inventory.consumables_in_slots.items()},
+                        [slot.get_item_type().name if not slot.is_empty() else None
+                         for slot in game_state.player_state.item_inventory.slots]
+                    )
+                    save_player_state_to_json_file(saved_player_state, filename)
                     print("Saved game state to file: " + filename)
 
         # ------------------------------------
