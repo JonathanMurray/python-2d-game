@@ -189,6 +189,13 @@
         0,
         300
       ]
+    },
+    {
+      "item_type": "LEATHER_ARMOR",
+      "position": [
+        0,
+        350
+      ]
     }
   ],
   "money_piles_on_ground": [],

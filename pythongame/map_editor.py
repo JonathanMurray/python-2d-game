@@ -94,6 +94,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.WINGED_HELMET),
     MapEditorWorldEntity.item(ItemType.ELITE_ARMOR),
     MapEditorWorldEntity.item(ItemType.RING_OF_POWER),
+    MapEditorWorldEntity.item(ItemType.LEATHER_ARMOR),
 
 
     MapEditorWorldEntity.money(1),
