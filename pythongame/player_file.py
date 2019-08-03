@@ -3,13 +3,14 @@ from typing import Dict, List
 
 
 class SavedPlayerState:
-    def __init__(self, hero_id: str, level: int, exp: int, consumables_in_slots: Dict[int, List[str]],
-                 items: List[str]):
+    def __init__(self, hero_id: str, level: int, exp: int, consumables_in_slots: Dict[str, List[str]],
+                 items: List[str], money: int):
         self.hero_id = hero_id
         self.level = level
         self.exp = exp
         self.consumables_in_slots = consumables_in_slots
         self.items = items
+        self.money = money
 
 
 class PlayerStateJson:
@@ -20,7 +21,8 @@ class PlayerStateJson:
             "level": player_state.level,
             "exp": player_state.exp,
             "consumables": player_state.consumables_in_slots,
-            "items": player_state.items
+            "items": player_state.items,
+            "money":player_state.money
         }
 
     @staticmethod
@@ -30,7 +32,8 @@ class PlayerStateJson:
             data["level"],
             data["exp"],
             data["consumables"],
-            data["items"]
+            data["items"],
+            data["money"]
         )
 
 

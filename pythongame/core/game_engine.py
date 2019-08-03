@@ -89,6 +89,17 @@ class GameEngine:
         else:
             self.view_state.set_message("No space for " + item_data.name)
 
+    def set_item_inventory(self, items: List[ItemType]):
+        for slot_number, item_type in enumerate(items):
+            if item_type:
+                item_effect = get_item_effect(item_type)
+                item_data = ITEMS[item_type]
+                item_equipment_category = item_data.item_equipment_category
+                result = self.game_state.player_state.item_inventory.put_item_in_inventory_slot(
+                    item_effect, item_equipment_category, slot_number)
+                if isinstance(result, ItemWasActivated):
+                    item_effect.apply_start_effect(self.game_state)
+
     def _try_pick_up_consumable_from_ground(self, consumable: ConsumableOnGround):
         # TODO move some logic into ConsumableInventory class
         has_space = self.game_state.player_state.consumable_inventory.has_space_for_more()

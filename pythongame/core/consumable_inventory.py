@@ -4,13 +4,9 @@ from pythongame.core.common import ConsumableType
 
 
 class ConsumableInventory:
-    def __init__(self, slots: Dict[int, ConsumableType]):
-        self.consumables_in_slots: Dict[int, List[ConsumableType]] = {}
+    def __init__(self, slots: Dict[int, List[ConsumableType]]):
+        self.consumables_in_slots: Dict[int, List[ConsumableType]] = slots
         self.capacity_per_slot = 2
-        for slot_number in slots:
-            self.consumables_in_slots[slot_number] = []
-            if slots[slot_number]:
-                self.consumables_in_slots[slot_number].append(slots[slot_number])
 
     def has_space_for_more(self) -> bool:
         slots_with_space = [consumables for consumables in self.consumables_in_slots.values() if

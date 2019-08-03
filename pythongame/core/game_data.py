@@ -176,7 +176,7 @@ class PlayerLevelBonus:
 
 class InitialPlayerStateData:
     def __init__(
-            self, health: int, mana: int, mana_regen: float, consumable_slots: Dict[int, ConsumableType],
+            self, health: int, mana: int, mana_regen: float, consumable_slots: Dict[int, List[ConsumableType]],
             abilities: List[AbilityType], new_level_abilities: Dict[int, AbilityType],
             hero_id: HeroId, armor: int, level_bonus: PlayerLevelBonus):
         self.health = health

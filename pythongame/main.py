@@ -5,7 +5,8 @@ from typing import Optional
 import pygame
 
 import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis, HeroId, SoundId
+from pythongame.core.common import Millis, HeroId, SoundId, ItemType, ConsumableType
+from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.player_environment_interactions import PlayerInteractionsState
@@ -17,7 +18,7 @@ from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, Acti
 from pythongame.core.view import View, MouseHoverEvent
 from pythongame.core.view_state import ViewState
 from pythongame.map_file import create_game_state_from_json_file
-from pythongame.player_file import SavedPlayerState, save_player_state_to_json_file
+from pythongame.player_file import SavedPlayerState, save_player_state_to_json_file, load_player_state_from_json_file
 from pythongame.register_game_data import register_all_game_data
 
 SCREEN_SIZE = (700, 700)
@@ -26,10 +27,16 @@ CAMERA_SIZE = (700, 530)
 register_all_game_data()
 
 
-def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level: Optional[int],
-         start_money: Optional[int]):
+def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start_level: Optional[int],
+         start_money: Optional[int], load_from_file: Optional[str]):
     map_file_name = map_file_name or "map1.json"
-    hero_id = HeroId[hero_id] if hero_id else HeroId.MAGE
+    saved_player_state = load_player_state_from_json_file("savefiles/" + load_from_file) if load_from_file else None
+    if saved_player_state:
+        hero_id = HeroId[saved_player_state.hero_id]
+    elif chosen_hero_id:
+        hero_id = HeroId[chosen_hero_id]
+    else:
+        hero_id = HeroId.MAGE
     hero_start_level = int(hero_start_level) if hero_start_level else 1
     start_money = int(start_money) if start_money else 0
     game_state = create_game_state_from_json_file(CAMERA_SIZE, "resources/maps/" + map_file_name, hero_id)
@@ -57,12 +64,22 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
 
     player_interactions_state = PlayerInteractionsState(view_state)
 
-    if hero_start_level > 1:
-        game_state.player_state.gain_exp_worth_n_levels(hero_start_level - 1)
+    if saved_player_state:
+        game_state.player_state.gain_exp_worth_n_levels(saved_player_state.level - 1)
         allocate_input_keys_for_abilities(game_state.player_state.abilities)
-
-    if start_money > 0:
-        game_state.player_state.money += start_money
+        game_state.player_state.gain_exp(saved_player_state.exp)
+        game_engine.set_item_inventory([ItemType[item] if item else None for item in saved_player_state.items])
+        game_state.player_state.consumable_inventory = ConsumableInventory(
+            {int(slot_number): [ConsumableType[c] for c in consumables] for (slot_number, consumables)
+             in saved_player_state.consumables_in_slots.items()}
+        )
+        game_state.player_state.money += saved_player_state.money
+    else:
+        if hero_start_level > 1:
+            game_state.player_state.gain_exp_worth_n_levels(hero_start_level - 1)
+            allocate_input_keys_for_abilities(game_state.player_state.abilities)
+        if start_money > 0:
+            game_state.player_state.money += start_money
 
     while True:
 
@@ -125,7 +142,8 @@ def main(map_file_name: Optional[str], hero_id: Optional[str], hero_start_level:
                         {slot_number: [c.name for c in consumables] for (slot_number, consumables)
                          in game_state.player_state.consumable_inventory.consumables_in_slots.items()},
                         [slot.get_item_type().name if not slot.is_empty() else None
-                         for slot in game_state.player_state.item_inventory.slots]
+                         for slot in game_state.player_state.item_inventory.slots],
+                        game_state.player_state.money
                     )
                     save_player_state_to_json_file(saved_player_state, filename)
                     print("Saved game state to file: " + filename)

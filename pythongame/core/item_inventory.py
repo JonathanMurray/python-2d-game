@@ -125,6 +125,17 @@ class ItemInventory:
                 return ItemActivationStateDidNotChange(item_effect.get_item_type())
         return None
 
+    def put_item_in_inventory_slot(self, item_effect, item_equipment_category: ItemEquipmentCategory, slot_number: int):
+        item_in_slot = ItemInSlot(item_effect, item_equipment_category)
+        slot = self.slots[slot_number]
+        if not slot.is_empty():
+            raise Exception("Can't put item in non-empty slot!")
+        slot.item = item_in_slot
+        if slot.is_active():
+            return ItemWasActivated(item_effect.get_item_type())
+        else:
+            return ItemActivationStateDidNotChange(item_effect.get_item_type())
+
     def _find_empty_slot_for_item(self, item: ItemInSlot) -> Optional[int]:
         empty_slot_indices = [i for i in range(len(self.slots))
                               if self.slots[i].is_empty() and self.slots[i].can_contain_item(item)]
