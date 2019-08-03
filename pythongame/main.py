@@ -16,7 +16,7 @@ from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, Acti
     ActionChangeDialogOption, ActionSaveGameState
 from pythongame.core.view import View, MouseHoverEvent
 from pythongame.core.view_state import ViewState
-from pythongame.game_world_init import create_game_state_from_json_file, save_game_state_to_json_file
+from pythongame.map_file import create_game_state_from_json_file, save_game_state_to_json_file
 from pythongame.register_game_data import register_all_game_data
 
 SCREEN_SIZE = (700, 700)

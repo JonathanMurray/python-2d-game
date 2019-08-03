@@ -11,7 +11,7 @@ from pythongame.core.entity_creation import create_portal, create_hero_world_ent
 from pythongame.core.game_state import GameState, WorldArea
 from pythongame.core.math import sum_of_vectors
 from pythongame.core.view import View
-from pythongame.game_world_init import save_game_state_to_json_file, create_game_state_from_json_file
+from pythongame.map_file import save_game_state_to_json_file, create_game_state_from_json_file
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 from pythongame.register_game_data import register_all_game_data
 
