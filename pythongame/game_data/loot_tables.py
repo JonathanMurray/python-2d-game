@@ -10,7 +10,8 @@ LOOT_ITEMS_1 = [
     LootEntry.item(ItemType.ORB_OF_THE_MAGI_1),
     LootEntry.item(ItemType.WOODEN_SHIELD),
     LootEntry.item(ItemType.LEATHER_COWL),
-    LootEntry.item(ItemType.LEATHER_ARMOR)
+    LootEntry.item(ItemType.LEATHER_ARMOR),
+    LootEntry.item(ItemType.FREEZING_GAUNTLET)
 ]
 
 LOOT_ITEMS_2 = [

@@ -196,6 +196,13 @@
         0,
         350
       ]
+    },
+    {
+      "item_type": "FREEZING_GAUNTLET",
+      "position": [
+        0,
+        400
+      ]
     }
   ],
   "money_piles_on_ground": [],
