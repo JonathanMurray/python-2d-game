@@ -532,20 +532,6 @@
     {
       "npc_type": "RAT_1",
       "position": [
-        3125,
-        3325
-      ]
-    },
-    {
-      "npc_type": "RAT_1",
-      "position": [
-        3125,
-        3325
-      ]
-    },
-    {
-      "npc_type": "RAT_1",
-      "position": [
         3275,
         3175
       ]
@@ -1822,6 +1808,13 @@
       "position": [
         825,
         -425
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        3125,
+        3325
       ]
     }
   ],
