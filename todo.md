@@ -12,8 +12,6 @@
 * Use 8 directions instead of 4?
 * Use pygame C code for vector math
 * save game_state to file on crash
-* add ability to save state to file (if you get stuck you could manually change save file and load it)
-* add ability to start game from save file
 
 #### Visuals:
 * Render tiny buff icons above entities that have active buffs (like bloodlust icon from wc2)
