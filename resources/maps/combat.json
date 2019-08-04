@@ -41,34 +41,6 @@
       "npc_type": "GOBLIN_WORKER",
       "position": [
         -25,
-        275
-      ]
-    },
-    {
-      "npc_type": "GOBLIN_WORKER",
-      "position": [
-        -25,
-        300
-      ]
-    },
-    {
-      "npc_type": "GOBLIN_WORKER",
-      "position": [
-        -25,
-        325
-      ]
-    },
-    {
-      "npc_type": "GOBLIN_WORKER",
-      "position": [
-        0,
-        325
-      ]
-    },
-    {
-      "npc_type": "GOBLIN_WORKER",
-      "position": [
-        0,
         300
       ]
     },
@@ -77,6 +49,69 @@
       "position": [
         0,
         275
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_SPEARMAN_ELITE",
+      "position": [
+        125,
+        275
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_SPEARMAN_ELITE",
+      "position": [
+        275,
+        250
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_WARRIOR",
+      "position": [
+        300,
+        400
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_WARRIOR",
+      "position": [
+        425,
+        175
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_SPEARMAN",
+      "position": [
+        375,
+        250
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_SPEARMAN",
+      "position": [
+        250,
+        350
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_WARLOCK",
+      "position": [
+        100,
+        350
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_WARLOCK",
+      "position": [
+        350,
+        350
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_WARLOCK",
+      "position": [
+        350,
+        150
       ]
     }
   ],
