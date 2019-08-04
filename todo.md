@@ -22,6 +22,7 @@
 * render action text further up for tall entities
 * use transparent sprite when hero is stealthed
 * render stat bonuses with green color
+* show more clearly in UI, which inventory slots are storage and which ones are for equipped items
 
 #### Sounds:
 * Abilities
