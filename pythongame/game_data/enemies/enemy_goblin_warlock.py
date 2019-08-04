@@ -36,15 +36,12 @@ class NpcMind(AbstractNpcMind):
         self.next_waypoint = None
         self._reevaluate_next_waypoint_direction_interval = 1000
         self._time_since_reevaluated = self._reevaluate_next_waypoint_direction_interval
-        self._update_speech_interval()
-        self._time_since_speech = 0
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
                     is_player_invisible: bool, time_passed: Millis):
         self._time_since_attack += time_passed
         self._time_since_updated_path += time_passed
         self._time_since_reevaluated += time_passed
-        self._time_since_speech += time_passed
 
         enemy_entity = npc.world_entity
         target: EnemyTarget = get_target(enemy_entity, game_state)
@@ -88,20 +85,8 @@ class NpcMind(AbstractNpcMind):
             game_state.projectile_entities.append(projectile)
             play_sound(SoundId.ENEMY_ATTACK_GOBLIN_WARLOCK)
 
-        if self._time_since_speech > self._speech_interval:
-            self._time_since_speech = 0
-            self._update_speech_interval()
-            speech_text_pos = (enemy_entity.x - 20, enemy_entity.y - 30)
-            speech_line = random.choice(
-                ["EHEHEHE", "HOT! SO HOT!!", "I'VE GOT SOMETHING FOR YOU!", "NO SMOKE WITHOUT... FIRE!!"])
-            game_state.visual_effects.append(
-                VisualText(speech_line, COLOR_SPEECH, speech_text_pos, speech_text_pos, Millis(3500)))
-
     def _update_attack_interval(self):
         self._attack_interval = 2000 + random.random() * 4000
-
-    def _update_speech_interval(self):
-        self._speech_interval = 5000 + random.random() * 15000
 
 
 def _move_in_dir(enemy_entity, direction):

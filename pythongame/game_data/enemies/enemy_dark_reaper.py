@@ -10,7 +10,7 @@ from pythongame.core.math import get_perpendicular_directions, is_x_and_y_within
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
-from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualText
+from pythongame.core.visual_effects import VisualLine, VisualCircle
 
 BUFF_TYPE_INVULN = BuffType.INVULNERABILITY
 SPEECH_DURATION = Millis(3000)
@@ -31,8 +31,6 @@ class NpcMind(AbstractNpcMind):
         self._shield_interval = 13000
         self._shield_duration = 5000
         self._time_since_shield = 7000
-        self._speech_interval = 16000
-        self._time_since_speech = 0
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
                     is_player_invisible: bool, time_passed: Millis):
@@ -40,7 +38,6 @@ class NpcMind(AbstractNpcMind):
         self._time_since_updated_path += time_passed
         self._time_since_reevaluated += time_passed
         self._time_since_shield += time_passed
-        self._time_since_speech += time_passed
 
         enemy_entity = npc.world_entity
 
@@ -86,24 +83,11 @@ class NpcMind(AbstractNpcMind):
 
         if self._time_since_shield > self._shield_interval:
             self._time_since_shield = 0
-            speech_text_pos = (enemy_entity.x - 40, enemy_entity.y - 30)
-
-            if self._time_since_speech > SPEECH_DURATION:
-                game_state.visual_effects.append(
-                    VisualText("WHAT NOW MORTAL?", COLOR_SPEECH, speech_text_pos, speech_text_pos, SPEECH_DURATION)
-                )
 
             game_state.visual_effects.append(
                 VisualCircle((0, 0, 150), enemy_center_pos, 60, 20, Millis(self._shield_duration), 2, enemy_entity)
             )
             npc.gain_buff_effect(get_buff_effect(BUFF_TYPE_INVULN), Millis(self._shield_duration))
-
-        if self._time_since_speech > self._speech_interval and self._time_since_shield > SPEECH_DURATION:
-            self._time_since_speech = 0
-            speech_text_pos = (enemy_entity.x - 40, enemy_entity.y - 30)
-            game_state.visual_effects.append(
-                VisualText("GIVE IN TO THE DARKNESS!!", COLOR_SPEECH, speech_text_pos, speech_text_pos, SPEECH_DURATION)
-            )
 
 
 class Invuln(AbstractBuffEffect):
