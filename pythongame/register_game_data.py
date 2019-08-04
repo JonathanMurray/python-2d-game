@@ -31,6 +31,7 @@ from pythongame.game_data.enemies.enemy_goblin_spearman_elite import register_go
 from pythongame.game_data.enemies.enemy_goblin_warlock import register_goblin_warlock_enemy
 from pythongame.game_data.enemies.enemy_goblin_warrior import register_goblin_warrior_enemy
 from pythongame.game_data.enemies.enemy_goblin_worker import register_goblin_worker_enemy
+from pythongame.game_data.enemies.enemy_ice_witch import register_ice_witch_enemy
 from pythongame.game_data.enemies.enemy_mummy import register_mummy_enemy
 from pythongame.game_data.enemies.enemy_necromancer import register_necromancer_enemy
 from pythongame.game_data.enemies.enemy_rat_1 import register_rat_1_enemy
@@ -54,6 +55,7 @@ from pythongame.game_data.items.item_gold_nugget import register_gold_nugget
 from pythongame.game_data.items.item_knights_armor import register_knights_armor
 from pythongame.game_data.items.item_leather_armor import register_leather_armor_item
 from pythongame.game_data.items.item_leather_cowl import register_leather_cowl_item
+from pythongame.game_data.items.item_messengers_hat import register_messengers_hat_item
 from pythongame.game_data.items.item_molten_axe import register_molten_axe_item
 from pythongame.game_data.items.item_orb_of_the_magi import register_orb_of_the_magi_item
 from pythongame.game_data.items.item_ring_of_power import register_ring_of_power_item
@@ -64,7 +66,6 @@ from pythongame.game_data.items.item_saphire import register_saphire
 from pythongame.game_data.items.item_soldiers_helmet import register_soldiers_helmet_item
 from pythongame.game_data.items.item_staff_of_fire import register_staff_of_fire_item
 from pythongame.game_data.items.item_sword_of_leeching import register_sword_of_leeching_item
-from pythongame.game_data.items.item_messengers_hat import register_messengers_hat_item
 from pythongame.game_data.items.item_winged_helmet import register_winged_helmet_item
 from pythongame.game_data.items.item_wizards_cowl import register_wizards_cowl
 from pythongame.game_data.items.item_wooden_shield import register_wooden_shield
@@ -116,6 +117,7 @@ def register_all_game_data():
     register_mummy_enemy()
     register_warrior_enemy()
     register_veteran_enemy()
+    register_ice_witch_enemy()
     register_goblin_worker_enemy()
     register_goblin_spearman_enemy()
     register_goblin_spearman_elite_enemy()
