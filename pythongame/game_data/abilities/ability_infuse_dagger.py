@@ -12,7 +12,6 @@ from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacte
 ABILITY_TYPE = AbilityType.INFUSE_DAGGER
 BUFF_CHANNELING = BuffType.CHANNELING_INFUSE_DAGGER
 BUFF_INFUSED = BuffType.HAS_INFUSED_DAGGER
-DEBUFF_SPEED_DECREASE = 0.7
 DEBUFF = BuffType.DAMAGED_BY_INFUSED_DAGGER
 
 
@@ -47,10 +46,10 @@ class HasInfusedDagger(AbstractBuffEffect):
 class DamagedByInfusedDagger(AbstractBuffEffect):
 
     def __init__(self):
-        self.timer = PeriodicTimer(Millis(750))
+        self.timer = PeriodicTimer(Millis(500))
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        buffed_entity.add_to_speed_multiplier(-DEBUFF_SPEED_DECREASE)
+        buffed_npc.stun_status.add_one()
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
@@ -58,7 +57,7 @@ class DamagedByInfusedDagger(AbstractBuffEffect):
             deal_player_damage_to_enemy(game_state, buffed_npc, 1)
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        buffed_entity.add_to_speed_multiplier(DEBUFF_SPEED_DECREASE)
+        buffed_npc.stun_status.remove_one()
 
     def get_buff_type(self):
         return DEBUFF
@@ -68,8 +67,7 @@ def register_infuse_dagger_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_INFUSE_DAGGER
 
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    description = "Add a debuff to your next Shiv: periodic damage and " + "{:.0f}".format(
-        DEBUFF_SPEED_DECREASE * 100) + "% slow."
+    description = "Add a debuff to your next Shiv: periodic damage and stun"
     mana_cost = 35
     ability_data = AbilityData(
         "Infuse Dagger", ui_icon_sprite, mana_cost, Millis(20000), description, SoundId.ABILITY_INFUSE_DAGGER)

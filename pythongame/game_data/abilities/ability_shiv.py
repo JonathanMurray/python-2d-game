@@ -31,7 +31,7 @@ def _apply_ability(game_state: GameState) -> bool:
 
         # Note: Dependency on other rability 'infuse dagger'
         if game_state.player_state.has_active_buff(BuffType.HAS_INFUSED_DAGGER):
-            enemy.gain_buff_effect(get_buff_effect(BuffType.DAMAGED_BY_INFUSED_DAGGER), Millis(20000))
+            enemy.gain_buff_effect(get_buff_effect(BuffType.DAMAGED_BY_INFUSED_DAGGER), Millis(8000))
 
         # Note: Dependency on other rability 'sneak'
         if game_state.player_state.has_active_buff(BuffType.SNEAKING):
