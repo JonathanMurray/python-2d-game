@@ -248,6 +248,20 @@
         100,
         150
       ]
+    },
+    {
+      "npc_type": "WARRIOR",
+      "position": [
+        125,
+        0
+      ]
+    },
+    {
+      "npc_type": "VETERAN",
+      "position": [
+        200,
+        0
+      ]
     }
   ],
   "walls": [
