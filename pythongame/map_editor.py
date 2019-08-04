@@ -47,6 +47,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.npc(NpcType.RAT_1),
     MapEditorWorldEntity.npc(NpcType.RAT_2),
     MapEditorWorldEntity.npc(NpcType.GOBLIN_WARLOCK),
+    MapEditorWorldEntity.npc(NpcType.ZOMBIE),
     MapEditorWorldEntity.npc(NpcType.MUMMY),
     MapEditorWorldEntity.npc(NpcType.NECROMANCER),
     MapEditorWorldEntity.npc(NpcType.WARRIOR),
