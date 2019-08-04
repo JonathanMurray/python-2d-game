@@ -19,6 +19,7 @@ ARMOR_BONUS = 5
 
 
 def _apply_ability(game_state: GameState) -> bool:
+    game_state.player_state.force_cancel_all_buffs()
     game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_SNEAK), DURATION_SNEAK)
     return True
 
@@ -70,7 +71,8 @@ def register_sneak_ability():
     description = "Become invisible. Shiv deals 300% damage from stealth. Then, gain " + \
                   str(ARMOR_BONUS) + " armor for " + "{:.1f}".format(DURATION_POST_SNEAK / 1000) + "s"
     mana_cost = 25
-    ability_data = AbilityData("Sneak", ui_icon_sprite, mana_cost, Millis(8000), description, SoundId.ABILITY_SNEAK)
+    cooldown = Millis(6000)
+    ability_data = AbilityData("Sneak", ui_icon_sprite, mana_cost, cooldown, description, SoundId.ABILITY_SNEAK)
     register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/sneak_icon.png")
     register_buff_effect(BUFF_SNEAK, Sneaking)

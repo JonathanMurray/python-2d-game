@@ -385,6 +385,10 @@ class PlayerState:
     def has_active_buff(self, buff_type: BuffType):
         return len([b for b in self.active_buffs if b.buff_effect.get_buff_type() == buff_type]) > 0
 
+    def force_cancel_all_buffs(self):
+        for b in self.active_buffs:
+            b.force_cancel()
+
     def recharge_ability_cooldowns(self, time_passed: Millis):
         for ability_type in self.ability_cooldowns_remaining:
             if self.ability_cooldowns_remaining[ability_type] > 0:
