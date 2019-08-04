@@ -22,6 +22,7 @@ class PlayerInteractionsState:
         self.lootable_ready_to_be_picked_up: LootableOnGround = None
         self.portal_ready_for_interaction: Portal = None
         self.active_dialog_option_index = 0
+        self.is_shift_key_held_down = False
 
     def handle_interactions(self, player_entity: WorldEntity, game_state: GameState):
         player_position = player_entity.get_position()
@@ -73,17 +74,28 @@ class PlayerInteractionsState:
         elif self.portal_ready_for_interaction:
             game_engine.interact_with_portal(self.portal_ready_for_interaction)
 
+    def handle_user_pressed_shift(self):
+        self.is_shift_key_held_down = True
+
+    def handle_user_released_shift(self):
+        self.is_shift_key_held_down = False
+
     def get_action_text(self) -> Optional[EntityActionText]:
         if self.npc_ready_for_dialog:
-            return EntityActionText(self.npc_ready_for_dialog.world_entity, "[Space] ...")
+            return EntityActionText(self.npc_ready_for_dialog.world_entity, "[Space] ...", None)
         elif self.lootable_ready_to_be_picked_up:
             loot_name = _get_loot_name(self.lootable_ready_to_be_picked_up)
-            return EntityActionText(self.lootable_ready_to_be_picked_up.world_entity, "[Space] " + loot_name)
+            if self.is_shift_key_held_down:
+                loot_details = "> " + _get_loot_details(self.lootable_ready_to_be_picked_up)
+            else:
+                loot_details = None
+            return EntityActionText(self.lootable_ready_to_be_picked_up.world_entity, "[Space] " + loot_name,
+                                    loot_details)
         elif self.portal_ready_for_interaction:
             if self.portal_ready_for_interaction.is_enabled:
-                return EntityActionText(self.portal_ready_for_interaction.world_entity, "[Space] Warp")
+                return EntityActionText(self.portal_ready_for_interaction.world_entity, "[Space] Warp", None)
             else:
-                return EntityActionText(self.portal_ready_for_interaction.world_entity, "[Space] ???")
+                return EntityActionText(self.portal_ready_for_interaction.world_entity, "[Space] ???", None)
 
     def get_dialog(self) -> Optional[DialogGraphics]:
         if self.npc_active_in_dialog:
@@ -98,8 +110,15 @@ class PlayerInteractionsState:
         play_sound(SoundId.DIALOG)
 
 
-def _get_loot_name(lootable):
+def _get_loot_name(lootable: LootableOnGround) -> str:
     if isinstance(lootable, ConsumableOnGround):
         return CONSUMABLES[lootable.consumable_type].name
     if isinstance(lootable, ItemOnGround):
         return ITEMS[lootable.item_type].name
+
+
+def _get_loot_details(lootable: LootableOnGround) -> str:
+    if isinstance(lootable, ConsumableOnGround):
+        return CONSUMABLES[lootable.consumable_type].description
+    if isinstance(lootable, ItemOnGround):
+        return ITEMS[lootable.item_type].description

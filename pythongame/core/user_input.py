@@ -37,6 +37,14 @@ class ActionPressSpaceKey:
     pass
 
 
+class ActionPressShiftKey:
+    pass
+
+
+class ActionReleaseShiftKey:
+    pass
+
+
 class ActionSaveGameState:
     pass
 
@@ -134,6 +142,8 @@ def get_main_user_inputs():
                 actions.append(ActionPauseGame())
             elif event.key == pygame.K_SPACE:
                 actions.append(ActionPressSpaceKey())
+            elif event.key == pygame.K_LSHIFT:
+                actions.append(ActionPressShiftKey())
             elif event.key == pygame.K_s:
                 actions.append(ActionSaveGameState())
             else:
@@ -144,7 +154,9 @@ def get_main_user_inputs():
                         ability_keys_down.append(ability_type)
 
         if event.type == pygame.KEYUP:
-            if event.key in PYGAME_MOVEMENT_KEYS:
+            if event.key == pygame.K_LSHIFT:
+                actions.append(ActionReleaseShiftKey())
+            elif event.key in PYGAME_MOVEMENT_KEYS:
                 if event.key in movement_keys_down:
                     movement_keys_down.remove(event.key)
             else:

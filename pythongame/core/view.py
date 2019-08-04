@@ -60,9 +60,10 @@ class ImageWithRelativePosition:
 
 # Used to display some text above an NPC like "[Space] talk"
 class EntityActionText:
-    def __init__(self, entity: WorldEntity, text: str):
+    def __init__(self, entity: WorldEntity, text: str, details: Optional[str]):
         self.entity = entity
         self.text = text
+        self.details = details
 
 
 class TooltipGraphics:
@@ -501,14 +502,20 @@ class View:
             self._text(self.font_tooltip_details, line, (x_tooltip + 20, y_tooltip + 50 + i * 18), COLOR_WHITE)
 
     def _entity_action_text(self, entity_action_text: EntityActionText):
-        npc_center_pos = self._translate_world_position_to_screen(
-            entity_action_text.entity.get_center_position())
+        entity_center_pos = self._translate_world_position_to_screen(entity_action_text.entity.get_center_position())
         text = entity_action_text.text
-        rect_width = len(text) * 8 + 5
-        rect_height = 16
-        rect_pos = (npc_center_pos[0] - rect_width / 2, npc_center_pos[1] - 60)
+        detail_lines = self._split_text_into_lines(entity_action_text.details, 30) if entity_action_text.details else []
+        if detail_lines:
+            line_length = max(max([len(line) for line in detail_lines]), len(text))
+        else:
+            line_length = len(text)
+        rect_width = line_length * 8
+        rect_height = 16 + len(detail_lines) * 16
+        rect_pos = (entity_center_pos[0] - rect_width / 2, entity_center_pos[1] - 60)
         self._rect_transparent((rect_pos[0], rect_pos[1], rect_width, rect_height), 150, (0, 0, 0))
-        self._text(self.font_npc_action, text, (rect_pos[0] + 10, rect_pos[1]))
+        self._text(self.font_npc_action, text, (rect_pos[0] + 4, rect_pos[1]))
+        for i, detail_line in enumerate(detail_lines):
+            self._text(self.font_npc_action, detail_line, (rect_pos[0] + 4, rect_pos[1] + (i + 1) * 16))
 
     def render_world(self, all_entities_to_render: List[WorldEntity], decorations_to_render: List[DecorationEntity],
                      camera_world_area, non_player_characters: List[NonPlayerCharacter], is_player_invisible: bool,

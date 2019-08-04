@@ -14,7 +14,7 @@ from pythongame.core.sound_player import init_sound_player, play_sound
 from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_main_user_inputs, get_dialog_user_inputs, \
-    ActionChangeDialogOption, ActionSaveGameState
+    ActionChangeDialogOption, ActionSaveGameState, ActionPressShiftKey, ActionReleaseShiftKey
 from pythongame.core.view import View, MouseHoverEvent
 from pythongame.core.view_state import ViewState
 from pythongame.map_file import create_game_state_from_json_file
@@ -138,6 +138,10 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
                     mouse_was_just_released = True
                 if isinstance(action, ActionPressSpaceKey) and not is_game_over:
                     player_interactions_state.handle_user_clicked_space(game_state, game_engine)
+                if isinstance(action, ActionPressShiftKey) and not is_game_over:
+                    player_interactions_state.handle_user_pressed_shift()
+                if isinstance(action, ActionReleaseShiftKey) and not is_game_over:
+                    player_interactions_state.handle_user_released_shift()
                 if isinstance(action, ActionSaveGameState):
                     # TODO Move this somewhere else
                     filename = "savefiles/DEBUG_" + str(datetime.datetime.now()).replace(" ", "_") + ".json"
