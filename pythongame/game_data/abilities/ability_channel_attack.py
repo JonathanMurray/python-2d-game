@@ -22,7 +22,7 @@ def _apply_channel_attack(game_state: GameState) -> bool:
 
 class ChannelingMagicMissiles(AbstractBuffEffect):
     def __init__(self):
-        self.timer = PeriodicTimer(Millis(100))
+        self.timer = PeriodicTimer(Millis(70))
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.add_one()
@@ -66,7 +66,10 @@ def register_channel_attack_ability():
     register_ability_effect(AbilityType.CHANNEL_ATTACK, _apply_channel_attack)
     description = "Channel for " + "{:.1f}".format(CHANNEL_DURATION / 1000) + \
                   "s, firing piercing missiles in front of you that damage enemies."
-    ability_data = AbilityData("Arcane Fire", UiIconSprite.ABILITY_MAGIC_MISSILE, 35, Millis(12000), description, None)
+    mana_cost = 40
+    cooldown = Millis(14000)
+    ability_data = AbilityData("Arcane Fire", UiIconSprite.ABILITY_MAGIC_MISSILE, mana_cost, cooldown, description,
+                               None)
     register_ability_data(AbilityType.CHANNEL_ATTACK, ability_data)
 
     register_ui_icon_sprite_path(UiIconSprite.ABILITY_MAGIC_MISSILE, "resources/graphics/magic_missile.png")
