@@ -34,7 +34,7 @@ def _apply_ability(game_state: GameState) -> bool:
 class ProjectileController(AbstractProjectileController):
     def __init__(self):
         super().__init__(3000)
-        self.damage_timer = PeriodicTimer(Millis(500))
+        self.damage_timer = PeriodicTimer(Millis(450))
         self.direction_change_timer = PeriodicTimer(Millis(250))
         self._relative_direction = 0
         self._stun_duration = 500
@@ -96,7 +96,7 @@ class Stunned(AbstractBuffEffect):
 def register_whirlwind_ability():
     ability_type = AbilityType.WHIRLWIND
     ui_icon_sprite = UiIconSprite.ABILITY_WHIRLWIND
-    mana_cost = 14
+    mana_cost = 13
     cooldown = Millis(750)
 
     register_ability_effect(ability_type, _apply_ability)
