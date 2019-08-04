@@ -58,9 +58,11 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.portal(PortalId.A_BASE),
     MapEditorWorldEntity.portal(PortalId.B_BASE),
     MapEditorWorldEntity.portal(PortalId.C_BASE),
+    MapEditorWorldEntity.portal(PortalId.D_BASE),
     MapEditorWorldEntity.portal(PortalId.A_REMOTE),
     MapEditorWorldEntity.portal(PortalId.B_REMOTE),
     MapEditorWorldEntity.portal(PortalId.C_REMOTE),
+    MapEditorWorldEntity.portal(PortalId.D_REMOTE),
 
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_DWARF),
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_NOMAD),
@@ -130,7 +132,7 @@ ENTITIES_BY_CHAR: Dict[str, MapEditorWorldEntity] = dict(zip(MAP_EDITOR_INPUT_CH
 CHARS_BY_ENTITY: Dict[MapEditorWorldEntity, str] = {v: k for k, v in ENTITIES_BY_CHAR.items()}
 
 SCREEN_SIZE = (1200, 750)
-CAMERA_SIZE = (1200, 550)
+CAMERA_SIZE = (1200, 500)
 
 # The choice of hero shouldn't matter in the map editor, as we only store its position in the map file
 HERO_ID = HeroId.MAGE

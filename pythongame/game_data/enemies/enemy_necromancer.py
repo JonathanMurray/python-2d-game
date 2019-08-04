@@ -89,7 +89,7 @@ def register_necromancer_enemy():
 
     enemy_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")
     enemy_original_sprite_size = (32, 32)
-    enemy_scaled_sprite_size = (50, 60)
+    enemy_scaled_sprite_size = (48, 64)
     enemy_indices_by_dir = {
         Direction.DOWN: [(x, 0) for x in range(9, 12)],
         Direction.LEFT: [(x, 1) for x in range(9, 12)],
@@ -97,4 +97,4 @@ def register_necromancer_enemy():
         Direction.UP: [(x, 3) for x in range(9, 12)]
     }
     register_entity_sprite_map(SPRITE, enemy_sprite_sheet, enemy_original_sprite_size,
-                               enemy_scaled_sprite_size, enemy_indices_by_dir, (-7, -24))
+                               enemy_scaled_sprite_size, enemy_indices_by_dir, (-6, -28))

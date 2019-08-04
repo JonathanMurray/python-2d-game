@@ -318,6 +318,8 @@ class PortalId(Enum):
     B_REMOTE = 4
     C_BASE = 5
     C_REMOTE = 6
+    D_BASE = 7
+    D_REMOTE = 8
 
 
 class HeroId(Enum):

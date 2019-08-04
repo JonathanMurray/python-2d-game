@@ -11,7 +11,7 @@ from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.game_data.loot_tables import LOOT_TABLE_2
 
-DAMAGE_AMOUNT = 4
+DAMAGE_AMOUNT = 7
 
 
 class NpcMind(AbstractNpcMind):
@@ -79,9 +79,9 @@ def register_mummy_enemy():
     sprite = Sprite.ENEMY_MUMMY
     npc_type = NpcType.MUMMY
     movement_speed = 0.06
-    health = 12
+    health = 20
     health_regen = 1.5
-    exp_reward = 10
+    exp_reward = 15
     npc_data = NpcData.enemy(sprite, size, health, health_regen, movement_speed, exp_reward, LOOT_TABLE_2,
                              SoundId.DEATH_ZOMBIE)
     register_npc_data(npc_type, npc_data)
