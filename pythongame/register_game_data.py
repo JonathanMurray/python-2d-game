@@ -55,6 +55,8 @@ from pythongame.game_data.items.item_leather_cowl import register_leather_cowl_i
 from pythongame.game_data.items.item_orb_of_the_magi import register_orb_of_the_magi_item
 from pythongame.game_data.items.item_ring_of_power import register_ring_of_power_item
 from pythongame.game_data.items.item_rod_of_lightning import register_rod_of_lightning_item
+from pythongame.game_data.items.item_royal_dagger import register_royal_dagger_item
+from pythongame.game_data.items.item_royal_sword import register_royal_sword_item
 from pythongame.game_data.items.item_saphire import register_saphire
 from pythongame.game_data.items.item_soldiers_helmet import register_soldiers_helmet_item
 from pythongame.game_data.items.item_staff_of_fire import register_staff_of_fire_item
@@ -147,6 +149,8 @@ def register_all_game_data():
     register_ring_of_power_item()
     register_leather_armor_item()
     register_freezing_gauntlet_item()
+    register_royal_dagger_item()
+    register_royal_sword_item()
 
     register_decorations()
     register_map_editor_icons()

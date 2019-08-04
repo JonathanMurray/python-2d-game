@@ -203,6 +203,20 @@
         0,
         400
       ]
+    },
+    {
+      "item_type": "ROYAL_DAGGER",
+      "position": [
+        50,
+        50
+      ]
+    },
+    {
+      "item_type": "ROYAL_SWORD",
+      "position": [
+        50,
+        100
+      ]
     }
   ],
   "money_piles_on_ground": [],

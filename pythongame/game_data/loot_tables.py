@@ -11,7 +11,8 @@ LOOT_ITEMS_1 = [
     LootEntry.item(ItemType.WOODEN_SHIELD),
     LootEntry.item(ItemType.LEATHER_COWL),
     LootEntry.item(ItemType.LEATHER_ARMOR),
-    LootEntry.item(ItemType.FREEZING_GAUNTLET)
+    LootEntry.item(ItemType.FREEZING_GAUNTLET),
+    LootEntry.item(ItemType.ROYAL_DAGGER)
 ]
 
 LOOT_ITEMS_2 = [
@@ -30,7 +31,8 @@ LOOT_ITEMS_2 = [
     LootEntry.item(ItemType.ELVEN_ARMOR),
     LootEntry.item(ItemType.WINGED_HELMET),
     LootEntry.item(ItemType.ELITE_ARMOR),
-    LootEntry.item(ItemType.RING_OF_POWER)
+    LootEntry.item(ItemType.RING_OF_POWER),
+    LootEntry.item(ItemType.ROYAL_DAGGER)
 ]
 
 LOOT_POTIONS_1 = [
