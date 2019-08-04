@@ -32,7 +32,8 @@ LOOT_ITEMS_2 = [
     LootEntry.item(ItemType.WINGED_HELMET),
     LootEntry.item(ItemType.ELITE_ARMOR),
     LootEntry.item(ItemType.RING_OF_POWER),
-    LootEntry.item(ItemType.ROYAL_DAGGER)
+    LootEntry.item(ItemType.ROYAL_SWORD),
+    LootEntry.item(ItemType.MOLTEN_AXE)
 ]
 
 LOOT_POTIONS_1 = [

@@ -217,6 +217,13 @@
         50,
         100
       ]
+    },
+    {
+      "item_type": "MOLTEN_AXE",
+      "position": [
+        50,
+        150
+      ]
     }
   ],
   "money_piles_on_ground": [],
