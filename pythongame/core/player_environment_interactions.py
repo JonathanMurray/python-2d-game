@@ -2,8 +2,10 @@ import sys
 from typing import Optional, List
 
 from pythongame.core.common import SoundId
+from pythongame.core.game_data import CONSUMABLES, ITEMS
 from pythongame.core.game_engine import GameEngine
-from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, LootableOnGround, Portal
+from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, LootableOnGround, Portal, \
+    ConsumableOnGround, ItemOnGround
 from pythongame.core.math import boxes_intersect, is_x_and_y_within_distance, \
     get_manhattan_distance_between_rects
 from pythongame.core.npc_behaviors import invoke_npc_action, has_npc_dialog, get_dialog_graphics, get_dialog_data
@@ -75,7 +77,8 @@ class PlayerInteractionsState:
         if self.npc_ready_for_dialog:
             return EntityActionText(self.npc_ready_for_dialog.world_entity, "[Space] ...")
         elif self.lootable_ready_to_be_picked_up:
-            return EntityActionText(self.lootable_ready_to_be_picked_up.world_entity, "[Space] Loot")
+            loot_name = _get_loot_name(self.lootable_ready_to_be_picked_up)
+            return EntityActionText(self.lootable_ready_to_be_picked_up.world_entity, "[Space] " + loot_name)
         elif self.portal_ready_for_interaction:
             if self.portal_ready_for_interaction.is_enabled:
                 return EntityActionText(self.portal_ready_for_interaction.world_entity, "[Space] Warp")
@@ -93,3 +96,10 @@ class PlayerInteractionsState:
         num_options = len(get_dialog_data(self.npc_active_in_dialog.npc_type).options)
         self.active_dialog_option_index = (self.active_dialog_option_index + option_index_delta) % num_options
         play_sound(SoundId.DIALOG)
+
+
+def _get_loot_name(lootable):
+    if isinstance(lootable, ConsumableOnGround):
+        return CONSUMABLES[lootable.consumable_type].name
+    if isinstance(lootable, ItemOnGround):
+        return ITEMS[lootable.item_type].name

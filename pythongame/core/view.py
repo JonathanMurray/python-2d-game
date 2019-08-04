@@ -121,7 +121,7 @@ class View:
 
         self.font_ui_stat_bar_numbers = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_ui_money = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
-        self.font_npc_action = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 14)
+        self.font_npc_action = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_ui_headers = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 18)
         self.font_tooltip_header = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 16)
         self.font_tooltip_details = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
@@ -476,9 +476,10 @@ class View:
         self._rect_filled((100, 160, 100), (dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
     def _message(self, message):
-        x_message = self.ui_screen_area.w / 2 - 140
+        w_rect = len(message) * 9 + 10
+        x_message = self.ui_screen_area.w / 2 - w_rect / 2
         y_message = self.ui_screen_area.y - 30
-        self._rect_transparent((x_message - 10, y_message - 5, 280, 28), 85, (0, 0, 0))
+        self._rect_transparent((x_message - 10, y_message - 5, w_rect, 28), 135, (0, 0, 0))
         self._text(self.font_message, message, (x_message, y_message))
 
     def _tooltip(self, tooltip: TooltipGraphics):
@@ -502,11 +503,12 @@ class View:
     def _entity_action_text(self, entity_action_text: EntityActionText):
         npc_center_pos = self._translate_world_position_to_screen(
             entity_action_text.entity.get_center_position())
-        rect_width = 120
-        rect_height = 27
+        text = entity_action_text.text
+        rect_width = len(text) * 8 + 5
+        rect_height = 16
         rect_pos = (npc_center_pos[0] - rect_width / 2, npc_center_pos[1] - 60)
         self._rect_transparent((rect_pos[0], rect_pos[1], rect_width, rect_height), 150, (0, 0, 0))
-        self._text(self.font_npc_action, entity_action_text.text, (rect_pos[0] + 10, rect_pos[1] + 4))
+        self._text(self.font_npc_action, text, (rect_pos[0] + 10, rect_pos[1]))
 
     def render_world(self, all_entities_to_render: List[WorldEntity], decorations_to_render: List[DecorationEntity],
                      camera_world_area, non_player_characters: List[NonPlayerCharacter], is_player_invisible: bool,
