@@ -12,6 +12,7 @@
 * Use 8 directions instead of 4?
 * Use pygame C code for vector math
 * save game_state to file on crash
+* activate portal on first interaction, don't teleport
 
 #### Visuals:
 * Render tiny buff icons above entities that have active buffs (like bloodlust icon from wc2)
