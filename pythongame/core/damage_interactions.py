@@ -7,7 +7,8 @@ from pythongame.core.enemy_target_selection import EnemyTarget
 from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, PlayerLostHealthEvent, \
     PlayerDamagedEnemy, PlayerWasAttackedEvent
 from pythongame.core.sound_player import play_sound
-from pythongame.core.visual_effects import create_visual_damage_text, VisualRect, create_visual_healing_text
+from pythongame.core.visual_effects import create_visual_damage_text, VisualRect, create_visual_healing_text, \
+    create_visual_mana_text
 
 
 class DamageType(Enum):
@@ -78,3 +79,9 @@ def player_receive_healing(healing_amount: float, game_state: GameState):
     health_gained_integer = game_state.player_state.health_resource.gain(healing_amount)
     if health_gained_integer > 0:
         game_state.visual_effects.append(create_visual_healing_text(game_state.player_entity, health_gained_integer))
+
+
+def player_receive_mana(mana_amount: float, game_state: GameState):
+    mana_gained_integer = game_state.player_state.mana_resource.gain(mana_amount)
+    if mana_gained_integer > 0:
+        game_state.visual_effects.append(create_visual_mana_text(game_state.player_entity, mana_gained_integer))

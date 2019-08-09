@@ -58,17 +58,17 @@ def register_ninja_npc():
     register_npc_behavior(npc_type, NpcMind)
     # TODO Use proper icon for 'cancel' option
     dialog_options = [
-        DialogOptionData("Healing brew [3 gold]", "buy",
-                         SellConsumable(3, ConsumableType.BREW, "healing brew"),
+        DialogOptionData("Healing brew [2 gold]", "buy",
+                         SellConsumable(2, ConsumableType.BREW, "healing brew"),
                          UiIconSprite.POTION_BREW),
-        DialogOptionData("Lesser health potion [5 gold]", "buy",
-                         SellConsumable(5, ConsumableType.HEALTH_LESSER, "lesser health potion"),
+        DialogOptionData("Lesser health potion [3 gold]", "buy",
+                         SellConsumable(3, ConsumableType.HEALTH_LESSER, "lesser health potion"),
                          UiIconSprite.POTION_HEALTH_LESSER),
-        DialogOptionData("Lesser mana potion [5 gold]", "buy",
-                         SellConsumable(5, ConsumableType.MANA_LESSER, "lesser mana potion"),
+        DialogOptionData("Lesser mana potion [3 gold]", "buy",
+                         SellConsumable(3, ConsumableType.MANA_LESSER, "lesser mana potion"),
                          UiIconSprite.POTION_MANA_LESSER),
-        DialogOptionData("Speed potion [10 gold]", "buy",
-                         SellConsumable(10, ConsumableType.SPEED, "speed potion"),
+        DialogOptionData("Speed potion [5 gold]", "buy",
+                         SellConsumable(5, ConsumableType.SPEED, "speed potion"),
                          UiIconSprite.POTION_SPEED),
         DialogOptionData("\"Good bye\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
     dialog_text_body = "Ah.. You're new here, aren't you? Interested in my stock of potions?"

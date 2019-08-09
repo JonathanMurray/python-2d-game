@@ -1,4 +1,5 @@
 from pythongame.core.common import ItemType, Sprite
+from pythongame.core.damage_interactions import player_receive_mana
 from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
     register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import Event, EnemyDiedEvent, GameState
@@ -17,7 +18,7 @@ class ItemEffect(AbstractItemEffect):
 
     def item_handle_event(self, event: Event, game_state: GameState):
         if isinstance(event, EnemyDiedEvent):
-            game_state.player_state.mana_resource.gain(self.amount)
+            player_receive_mana(self.amount, game_state)
 
     def get_item_type(self):
         return self.item_type
