@@ -245,6 +245,20 @@
         50,
         300
       ]
+    },
+    {
+      "item_type": "GLADIATOR_ARMOR",
+      "position": [
+        50,
+        350
+      ]
+    },
+    {
+      "item_type": "NOBLE_DEFENDER",
+      "position": [
+        50,
+        400
+      ]
     }
   ],
   "money_piles_on_ground": [],

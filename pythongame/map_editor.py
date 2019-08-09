@@ -107,6 +107,8 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.ROYAL_SWORD),
     MapEditorWorldEntity.item(ItemType.MOLTEN_AXE),
     MapEditorWorldEntity.item(ItemType.WAND),
+    MapEditorWorldEntity.item(ItemType.GLADIATOR_ARMOR),
+    MapEditorWorldEntity.item(ItemType.NOBLE_DEFENDER),
 
 
     MapEditorWorldEntity.money(1),

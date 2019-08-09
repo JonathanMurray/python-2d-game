@@ -50,8 +50,10 @@ LOOT_ITEMS_4 = [
     LootEntry.item(ItemType.WINGED_HELMET),
     LootEntry.item(ItemType.ELVEN_ARMOR),
     LootEntry.item(ItemType.ELITE_ARMOR),
+    LootEntry.item(ItemType.GLADIATOR_ARMOR),
     LootEntry.item(ItemType.FREEZING_GAUNTLET),
     LootEntry.item(ItemType.WIZARDS_COWL),
+    LootEntry.item(ItemType.NOBLE_DEFENDER)
 ]
 
 LOOT_POTIONS_1 = [
