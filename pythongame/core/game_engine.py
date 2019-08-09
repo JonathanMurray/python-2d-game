@@ -6,9 +6,9 @@ from pythongame.core.common import *
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
     create_consumable_on_ground
 from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities, \
-    NpcCategory, PORTALS
+    NpcCategory, PORTALS, ABILITIES
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
-    EnemyDiedEvent, NonPlayerCharacter, Portal
+    EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
 from pythongame.core.loot import LootEntry
@@ -147,11 +147,15 @@ class GameEngine:
         if enemies_that_died:
             exp_gained = sum([NON_PLAYER_CHARACTERS[e.npc_type].exp_reward for e in enemies_that_died])
             self.game_state.visual_effects.append(create_visual_exp_text(self.game_state.player_entity, exp_gained))
-            did_player_level_up = self.game_state.player_state.gain_exp(exp_gained)
-            if did_player_level_up:
-                play_sound(SoundId.EVENT_PLAYER_LEVELED_UP)
-                self.view_state.set_message("You reached level " + str(self.game_state.player_state.level))
-                allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
+            gain_exp_events = self.game_state.player_state.gain_exp(exp_gained)
+            for event in gain_exp_events:
+                if isinstance(event, PlayerLeveledUp):
+                    play_sound(SoundId.EVENT_PLAYER_LEVELED_UP)
+                    self.view_state.set_message("You reached level " + str(self.game_state.player_state.level))
+                    allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
+                if isinstance(event, PlayerLearnedNewAbility):
+                    self.view_state.enqueue_message("New ability: " + ABILITIES[event.ability_type].name)
+
             for enemy_that_died in enemies_that_died:
                 if enemy_that_died.death_sound_id:
                     play_sound(enemy_that_died.death_sound_id)

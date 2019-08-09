@@ -345,6 +345,19 @@ class BuffEventOutcome:
         return BuffEventOutcome(None, True)
 
 
+class GainExpEvent:
+    pass
+
+
+class PlayerLeveledUp(GainExpEvent):
+    pass
+
+
+class PlayerLearnedNewAbility(GainExpEvent):
+    def __init__(self, ability_type: AbilityType):
+        self.ability_type = ability_type
+
+
 class PlayerState:
     def __init__(self, health_resource: HealthOrManaResource, mana_resource: HealthOrManaResource,
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
@@ -394,10 +407,11 @@ class PlayerState:
             if self.ability_cooldowns_remaining[ability_type] > 0:
                 self.ability_cooldowns_remaining[ability_type] -= time_passed
 
-    # returns True if player leveled up
-    def gain_exp(self, amount: int):
+    def gain_exp(self, amount: int) -> List[GainExpEvent]:
+        events = []
         self.exp += amount
-        did_level_up = self.exp >= self.max_exp_in_this_level
+        if self.exp >= self.max_exp_in_this_level:
+            events.append(PlayerLeveledUp())
         while self.exp >= self.max_exp_in_this_level:
             self.exp -= self.max_exp_in_this_level
             self.level += 1
@@ -405,7 +419,8 @@ class PlayerState:
             if self.level in self.new_level_abilities:
                 new_ability = self.new_level_abilities[self.level]
                 self.gain_ability(new_ability)
-        return did_level_up
+                events.append(PlayerLearnedNewAbility(new_ability))
+        return events
 
     def lose_exp_from_death(self):
         partial_exp_loss = 0.5

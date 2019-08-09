@@ -23,6 +23,7 @@ class ViewState:
 
         self.player_minimap_relative_position: Tuple[float, float] = (0, 0)
         self.message = ""
+        self._enqueued_messages = []
         self.highlighted_consumable_action: Optional[int] = None
         self.highlighted_ability_action: Optional[AbilityType] = None
 
@@ -37,9 +38,12 @@ class ViewState:
     def notify_player_entity_center_position(self, player_entity_center_position: Tuple[int, int]):
         self._player_entity_center_position = player_entity_center_position
 
-    def set_message(self, message):
+    def set_message(self, message: str):
         self.message = message
         self._ticks_since_message_updated = 0
+
+    def enqueue_message(self, message: str):
+        self._enqueued_messages.append(message)
 
     def notify_time_passed(self, time_passed: Millis):
         self._ticks_since_minimap_updated += time_passed
@@ -53,8 +57,12 @@ class ViewState:
             self.player_minimap_relative_position = (relative_x, relative_y)
 
         self._ticks_since_message_updated += time_passed
-        if self._ticks_since_message_updated > MESSAGE_DURATION:
-            self.message = ""
+        if self.message != "" and self._ticks_since_message_updated > MESSAGE_DURATION:
+            if self._enqueued_messages:
+                new_message = self._enqueued_messages.pop(0)
+                self.set_message(new_message)
+            else:
+                self.message = ""
 
         self._ticks_since_last_consumable_action += time_passed
         if self._ticks_since_last_consumable_action > HIGHLIGHT_consumable_ACTION_DURATION:
