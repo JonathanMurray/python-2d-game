@@ -30,7 +30,7 @@ def register_hero_mage():
 def _get_initial_player_state_mage() -> InitialPlayerStateData:
     health = 40
     mana = 60
-    mana_regen = 4
+    mana_regen = 3.5
     health_per_level = 5
     mana_per_level = 10
     level_bonus = PlayerLevelBonus(health_per_level, mana_per_level)
