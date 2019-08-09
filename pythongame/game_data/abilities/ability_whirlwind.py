@@ -16,7 +16,7 @@ from pythongame.core.visual_effects import VisualRect
 BUFF_TYPE = BuffType.STUNNED_BY_WHIRLWIND
 PROJECTILE_SPRITE = Sprite.PROJECTILE_PLAYER_WHIRLWIND
 PROJECTILE_TYPE = ProjectileType.PLAYER_WHIRLWIND
-PROJECTILE_SIZE = (120, 90)
+PROJECTILE_SIZE = (140, 110)
 
 
 def _apply_ability(game_state: GameState) -> bool:
@@ -111,6 +111,6 @@ def register_whirlwind_ability():
         Direction.DOWN: [(0, 0), (1, 0), (2, 0), (1, 0)]
     }
     register_entity_sprite_map(PROJECTILE_SPRITE, sprite_sheet, original_sprite_size, scaled_sprite_size,
-                               indices_by_dir, (-20, -50))
+                               indices_by_dir, (-8, -50))
     register_projectile_controller(PROJECTILE_TYPE, ProjectileController)
     register_buff_effect(BUFF_TYPE, Stunned)
