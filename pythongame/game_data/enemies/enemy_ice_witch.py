@@ -10,9 +10,9 @@ from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.visual_effects import VisualLine
-from pythongame.game_data.loot_tables import LOOT_TABLE_2
+from pythongame.game_data.loot_tables import LOOT_TABLE_4
 
-DAMAGE_AMOUNT = 13
+DAMAGE_AMOUNT = 12
 SLOW_AMOUNT = 0.35
 SLOW_BUFF_TYPE = BuffType.SLOWED_BY_ICE_WITCH
 
@@ -64,7 +64,7 @@ class NpcMind(AbstractNpcMind):
             if not is_player_invisible:
                 enemy_position = enemy_entity.get_center_position()
                 target_center_pos = target.entity.get_center_position()
-                if is_x_and_y_within_distance(enemy_position, target_center_pos, 180):
+                if is_x_and_y_within_distance(enemy_position, target_center_pos, 200):
                     deal_npc_damage(DAMAGE_AMOUNT, DamageType.PHYSICAL, game_state, enemy_entity, npc, target)
                     game_state.visual_effects += [
                         (VisualLine((100, 100, 200), enemy_position, target_center_pos, Millis(120), 3)),
@@ -95,9 +95,9 @@ def register_ice_witch_enemy():
     sprite = Sprite.ENEMY_ICE_WITCH
     npc_type = NpcType.ICE_WITCH
     movement_speed = 0.07
-    health = 60
+    health = 50
     exp_reward = 40
-    npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_2)
+    npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_4)
     register_npc_data(npc_type, npc_data)
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_ice_witch.png")

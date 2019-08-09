@@ -34,7 +34,7 @@ def _apply_ability(game_state: GameState) -> bool:
 class ProjectileController(AbstractProjectileController):
     def __init__(self):
         super().__init__(3000)
-        self.damage_timer = PeriodicTimer(Millis(450))
+        self.damage_timer = PeriodicTimer(Millis(350))
         self.direction_change_timer = PeriodicTimer(Millis(250))
         self._relative_direction = 0
         self._stun_duration = 500

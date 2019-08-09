@@ -15,8 +15,8 @@ from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
 from pythongame.core.sound_player import play_sound
-from pythongame.core.visual_effects import VisualCircle, VisualText
-from pythongame.game_data.loot_tables import LOOT_TABLE_2
+from pythongame.core.visual_effects import VisualCircle
+from pythongame.game_data.loot_tables import LOOT_TABLE_3
 
 BUFF_TYPE = BuffType.ENEMY_GOBLIN_WARLOCK_BURNT
 PROJECTILE_TYPE = ProjectileType.ENEMY_GOBLIN_WARLOCK
@@ -144,8 +144,8 @@ def register_goblin_warlock_enemy():
     enemy_sprite = Sprite.ENEMY_GOBLIN_WARLOCK
     npc_type = NpcType.GOBLIN_WARLOCK
     health = 21
-    exp_reward = 12
-    npc_data = NpcData.enemy(enemy_sprite, enemy_size, health, 0, 0.032, exp_reward, LOOT_TABLE_2)
+    exp_reward = 14
+    npc_data = NpcData.enemy(enemy_sprite, enemy_size, health, 0, 0.032, exp_reward, LOOT_TABLE_3)
     register_npc_data(npc_type, npc_data)
     register_npc_behavior(npc_type, NpcMind)
 

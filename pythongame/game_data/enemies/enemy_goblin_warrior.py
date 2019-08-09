@@ -8,7 +8,8 @@ from pythongame.core.math import is_x_and_y_within_distance
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
-from pythongame.game_data.loot_tables import LOOT_ITEMS_2, LOOT_ITEMS_1, LOOT_POTIONS_1
+from pythongame.game_data.loot_tables import LOOT_ITEMS_3, LOOT_POTIONS_1, LOOT_ITEMS_4, LOOT_ITEMS_2, \
+    LOOT_POTIONS_2, LOOT_ITEMS_1
 
 DAMAGE_AMOUNT = 12
 
@@ -77,13 +78,13 @@ def register_goblin_warrior_enemy():
     npc_type = NpcType.GOBLIN_WARRIOR
     movement_speed = 0.09
     health = 100
-    exp_reward = 40
+    exp_reward = 50
     loot_table = LootTable(
         [
-            LootGroup(1, LOOT_ITEMS_2, 1),
-            LootGroup(1, LOOT_ITEMS_1 + LOOT_POTIONS_1, 0.7),
-            LootGroup(1, LOOT_ITEMS_1 + LOOT_POTIONS_1, 0.3),
-            LootGroup(1, [LootEntry.money(1), LootEntry.money(2), LootEntry.money(3)], 0.7)
+            LootGroup(1, LOOT_ITEMS_3 + LOOT_ITEMS_4, 1),
+            LootGroup(1, LOOT_ITEMS_1 + LOOT_ITEMS_2 + LOOT_ITEMS_3, 0.7),
+            LootGroup(1, LOOT_POTIONS_1 + LOOT_POTIONS_2, 0.3),
+            LootGroup(1, [LootEntry.money(2), LootEntry.money(3), LootEntry.money(5)], 0.7)
         ]
     )
     register_npc_data(npc_type, NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, loot_table))

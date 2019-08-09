@@ -7,7 +7,7 @@ from pythongame.core.math import is_x_and_y_within_distance
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
-from pythongame.game_data.loot_tables import LOOT_TABLE_2
+from pythongame.game_data.loot_tables import LOOT_TABLE_4
 
 DAMAGE_AMOUNT = 13
 
@@ -76,8 +76,8 @@ def register_veteran_enemy():
     npc_type = NpcType.VETERAN
     movement_speed = 0.08
     health = 60
-    exp_reward = 30
-    npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_2)
+    exp_reward = 35
+    npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_4)
     register_npc_data(npc_type, npc_data)
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_veteran.png")

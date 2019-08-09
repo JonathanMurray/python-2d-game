@@ -11,7 +11,7 @@ from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.game_data.loot_tables import LOOT_TABLE_2
 
-DAMAGE_AMOUNT = 4
+DAMAGE_AMOUNT = 3
 
 
 class NpcMind(AbstractNpcMind):
