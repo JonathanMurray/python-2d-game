@@ -238,6 +238,13 @@
         50,
         250
       ]
+    },
+    {
+      "item_type": "WAND",
+      "position": [
+        50,
+        300
+      ]
     }
   ],
   "money_piles_on_ground": [],
@@ -368,20 +375,6 @@
       "position": [
         100,
         450
-      ]
-    },
-    {
-      "wall_type": "WALL_CHAIR",
-      "position": [
-        50,
-        350
-      ]
-    },
-    {
-      "wall_type": "ALTAR",
-      "position": [
-        50,
-        300
       ]
     }
   ],

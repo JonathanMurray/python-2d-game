@@ -158,6 +158,7 @@ class Sprite(Enum):
     ITEM_MOLTEN_AXE = 327
     ITEM_ORB_OF_WISDOM = 328
     ITEM_ORB_OF_LIFE = 329
+    ITEM_WAND = 330
     COINS_1 = 350
     COINS_2 = 351
     COINS_5 = 352
@@ -276,6 +277,7 @@ class ItemType(Enum):
     ROYAL_DAGGER = 84
     ROYAL_SWORD = 85
     MOLTEN_AXE = 86
+    WAND = 87
 
 
 class ProjectileType(Enum):
@@ -391,6 +393,7 @@ class UiIconSprite(Enum):
     ITEM_MOLTEN_AXE = 227
     ITEM_ORB_OF_WISDOM = 228
     ITEM_ORB_OF_LIFE = 229
+    ITEM_WAND = 230
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
     INVENTORY_TEMPLATE_HELMET = 400

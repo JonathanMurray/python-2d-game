@@ -68,6 +68,7 @@ from pythongame.game_data.items.item_saphire import register_saphire
 from pythongame.game_data.items.item_soldiers_helmet import register_soldiers_helmet_item
 from pythongame.game_data.items.item_staff_of_fire import register_staff_of_fire_item
 from pythongame.game_data.items.item_sword_of_leeching import register_sword_of_leeching_item
+from pythongame.game_data.items.item_wand import register_wand_item
 from pythongame.game_data.items.item_winged_helmet import register_winged_helmet_item
 from pythongame.game_data.items.item_wizards_cowl import register_wizards_cowl
 from pythongame.game_data.items.item_wooden_shield import register_wooden_shield
@@ -163,6 +164,7 @@ def register_all_game_data():
     register_royal_dagger_item()
     register_royal_sword_item()
     register_molten_axe_item()
+    register_wand_item()
 
     register_decorations()
     register_map_editor_icons()
