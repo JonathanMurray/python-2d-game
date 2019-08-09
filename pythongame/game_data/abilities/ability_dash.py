@@ -15,6 +15,7 @@ BUFF_DURATION = Millis(3000)
 ABILITY_TYPE = AbilityType.DASH
 BUFF_TYPE = BuffType.AFTER_DASH
 ARMOR_BOOST = 3
+HEALTH_REGEN_BOOST = 5
 DAMAGE = 5
 
 
@@ -75,9 +76,11 @@ def _would_collide_with_wall(game_state: GameState, player_entity: WorldEntity, 
 class AfterDash(AbstractBuffEffect):
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.armor_bonus += ARMOR_BOOST
+        game_state.player_state.health_resource.regen_bonus += HEALTH_REGEN_BOOST
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.armor_bonus -= ARMOR_BOOST
+        game_state.player_state.health_resource.regen_bonus -= HEALTH_REGEN_BOOST
 
     def get_buff_type(self):
         return BUFF_TYPE
@@ -86,11 +89,11 @@ class AfterDash(AbstractBuffEffect):
 def register_dash_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_DASH
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    description = "Dash forward, dealing " + str(DAMAGE) + " damage to one enemy. If an enemy was hit, gain +" + \
-                  str(ARMOR_BOOST) + " armor."
+    description = "Dash over an enemy, dealing " + str(DAMAGE) + " damage. Then, gain +" + \
+                  str(ARMOR_BOOST) + " armor and +" + str(HEALTH_REGEN_BOOST) + " health regen"
     mana_cost = 12
     ability_data = AbilityData("Dash", ui_icon_sprite, mana_cost, Millis(4000), description, SoundId.ABILITY_DASH)
     register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_ability_dash.png")
     register_buff_effect(BUFF_TYPE, AfterDash)
-    register_buff_text(BUFF_TYPE, "Increased armor")
+    register_buff_text(BUFF_TYPE, "Protected")
