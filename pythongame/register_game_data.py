@@ -57,7 +57,9 @@ from pythongame.game_data.items.item_leather_armor import register_leather_armor
 from pythongame.game_data.items.item_leather_cowl import register_leather_cowl_item
 from pythongame.game_data.items.item_messengers_hat import register_messengers_hat_item
 from pythongame.game_data.items.item_molten_axe import register_molten_axe_item
+from pythongame.game_data.items.item_orb_of_life import register_orb_of_life_item
 from pythongame.game_data.items.item_orb_of_the_magi import register_orb_of_the_magi_item
+from pythongame.game_data.items.item_orb_of_wisdom import register_orb_of_wisdom_item
 from pythongame.game_data.items.item_ring_of_power import register_ring_of_power_item
 from pythongame.game_data.items.item_rod_of_lightning import register_rod_of_lightning_item
 from pythongame.game_data.items.item_royal_dagger import register_royal_dagger_item
@@ -141,6 +143,8 @@ def register_all_game_data():
     register_staff_of_fire_item()
     register_blue_robe_item()
     register_orb_of_the_magi_item()
+    register_orb_of_wisdom_item()
+    register_orb_of_life_item()
     register_wizards_cowl()
     register_zuls_aegis()
     register_knights_armor()

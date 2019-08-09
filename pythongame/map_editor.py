@@ -86,6 +86,8 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.STAFF_OF_FIRE),
     MapEditorWorldEntity.item(ItemType.BLUE_ROBE_1),
     MapEditorWorldEntity.item(ItemType.ORB_OF_THE_MAGI_1),
+    MapEditorWorldEntity.item(ItemType.ORB_OF_WISDOM_1),
+    MapEditorWorldEntity.item(ItemType.ORB_OF_LIFE_1),
     MapEditorWorldEntity.item(ItemType.WIZARDS_COWL),
     MapEditorWorldEntity.item(ItemType.ZULS_AEGIS),
     MapEditorWorldEntity.item(ItemType.KNIGHTS_ARMOR),

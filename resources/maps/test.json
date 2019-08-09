@@ -224,6 +224,20 @@
         50,
         150
       ]
+    },
+    {
+      "item_type": "ORB_OF_WISDOM_1",
+      "position": [
+        50,
+        200
+      ]
+    },
+    {
+      "item_type": "ORB_OF_LIFE_1",
+      "position": [
+        50,
+        250
+      ]
     }
   ],
   "money_piles_on_ground": [],
