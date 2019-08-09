@@ -8,9 +8,13 @@ def print_enemies():
     enemy_types_and_data = [(npc_type, NON_PLAYER_CHARACTERS[npc_type]) for npc_type in NpcType if
                             NON_PLAYER_CHARACTERS[npc_type].npc_category == NpcCategory.ENEMY]
     enemy_types_and_data.sort(key=lambda x: x[1].exp_reward)
+    print_line("Name", "Health", "Exp", "Speed")
     for enemy_type, enemy_data in enemy_types_and_data:
-        print("{:<25}".format(enemy_type.name) + str(enemy_data.max_health) + " HP, "
-              + str(enemy_data.exp_reward) + " xp")
+        print_line(enemy_type.name, enemy_data.max_health, enemy_data.exp_reward, enemy_data.speed)
+
+
+def print_line(name, health, exp, speed):
+    print("{:<25}".format(name) + "{:<8}".format(health) + "{:<8}".format(speed) + "{:<8}".format(exp))
 
 
 register_all_game_data()
