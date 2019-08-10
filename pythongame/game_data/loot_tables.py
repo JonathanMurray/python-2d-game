@@ -91,7 +91,7 @@ LOOT_TABLE_3 = LootTable([
 LOOT_TABLE_4 = LootTable([
     LootGroup(1, [LootEntry.money(1), LootEntry.money(2)], 0.4),
     LootGroup(1, LOOT_POTIONS_1 + LOOT_POTIONS_2, 0.2),
-    LootGroup(1, LOOT_ITEMS_3 + LOOT_ITEMS_4, 0.25),
+    LootGroup(1, LOOT_ITEMS_3 + LOOT_ITEMS_4, 0.2),
     LootGroup.single(LootEntry.item(ItemType.GOLD_NUGGET), 0.1),
     LootGroup.single(LootEntry.item(ItemType.SAPHIRE), 0.02),
 ])
