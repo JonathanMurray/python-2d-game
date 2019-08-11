@@ -33,6 +33,13 @@
         250,
         50
       ]
+    },
+    {
+      "consumable_type": "WARP_STONE",
+      "position": [
+        100,
+        50
+      ]
     }
   ],
   "items_on_ground": [

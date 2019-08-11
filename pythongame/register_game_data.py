@@ -15,6 +15,7 @@ from pythongame.game_data.abilities.ability_teleport import register_teleport_ab
 from pythongame.game_data.abilities.ability_whirlwind import register_whirlwind_ability
 from pythongame.game_data.buff_recovering_after_ability import register_recovering_after_ability_buff
 from pythongame.game_data.coin import register_coin
+from pythongame.game_data.consumables.consumable_warpstone import register_warpstone_consumable
 from pythongame.game_data.consumables.potion_brew import register_brew_potion
 from pythongame.game_data.consumables.potion_health import register_health_potion
 from pythongame.game_data.consumables.potion_invis import register_invis_potion
@@ -115,6 +116,7 @@ def register_all_game_data():
     register_speed_potion()
     register_summon_scroll()
     register_brew_potion()
+    register_warpstone_consumable()
 
     register_chest_enemy()
     register_necromancer_enemy()

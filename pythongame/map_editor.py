@@ -79,6 +79,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.consumable(ConsumableType.INVISIBILITY),
     MapEditorWorldEntity.consumable(ConsumableType.SPEED),
     MapEditorWorldEntity.consumable(ConsumableType.BREW),
+    MapEditorWorldEntity.consumable(ConsumableType.WARP_STONE),
 
     MapEditorWorldEntity.item(ItemType.MESSENGERS_HAT),
     MapEditorWorldEntity.item(ItemType.SWORD_OF_LEECHING),
