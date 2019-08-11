@@ -2136,6 +2136,13 @@
         9250,
         2875
       ]
+    },
+    {
+      "npc_type": "NEUTRAL_SORCERER",
+      "position": [
+        5450,
+        2800
+      ]
     }
   ],
   "walls": [

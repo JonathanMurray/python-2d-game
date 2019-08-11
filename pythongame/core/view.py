@@ -860,7 +860,7 @@ class View:
         self._rect((160, 160, 180), (rect_portrait_pos[0], rect_portrait_pos[1], 100, 70), 2)
 
         dialog_pos = (x_left + 120, rect_dialog_container[1] + 15)
-        dialog_lines = self._split_text_into_lines(dialog_graphics.text_body, 33)
+        dialog_lines = self._split_text_into_lines(dialog_graphics.text_body, 35)
         for i, dialog_text_line in enumerate(dialog_lines):
             if i == 6:
                 print("WARN: too long dialog for NPC!")

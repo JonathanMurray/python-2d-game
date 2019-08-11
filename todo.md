@@ -33,7 +33,6 @@
 * goblin death sounds
 
 #### Features:
-* vendor should sell better health potions also
 * add scroll of town portal - it's too punishing having to go back to a statue if you run out of potions
 * give enemies 'armor'?
     * could add effects that reduce armor on enemies
