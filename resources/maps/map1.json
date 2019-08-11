@@ -2112,13 +2112,6 @@
     {
       "npc_type": "WARRIOR",
       "position": [
-        9300,
-        2850
-      ]
-    },
-    {
-      "npc_type": "WARRIOR",
-      "position": [
         9400,
         2825
       ]
@@ -2142,6 +2135,27 @@
       "position": [
         5450,
         2800
+      ]
+    },
+    {
+      "npc_type": "WARRIOR_KING",
+      "position": [
+        9325,
+        2675
+      ]
+    },
+    {
+      "npc_type": "WARRIOR",
+      "position": [
+        9225,
+        2675
+      ]
+    },
+    {
+      "npc_type": "WARRIOR",
+      "position": [
+        9400,
+        2675
       ]
     }
   ],

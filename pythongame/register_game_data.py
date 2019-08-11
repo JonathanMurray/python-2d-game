@@ -38,6 +38,7 @@ from pythongame.game_data.enemies.enemy_rat_1 import register_rat_1_enemy
 from pythongame.game_data.enemies.enemy_rat_2 import register_rat_2_enemy
 from pythongame.game_data.enemies.enemy_veteran import register_veteran_enemy
 from pythongame.game_data.enemies.enemy_warrior import register_warrior_enemy
+from pythongame.game_data.enemies.enemy_warrior_king import register_warrior_king_enemy
 from pythongame.game_data.enemies.enemy_zombie import register_zombie_enemy
 from pythongame.game_data.heroes.hero_god import register_hero_god
 from pythongame.game_data.heroes.hero_mage import register_hero_mage
@@ -124,6 +125,7 @@ def register_all_game_data():
     register_warrior_enemy()
     register_veteran_enemy()
     register_ice_witch_enemy()
+    register_warrior_king_enemy()
     register_goblin_worker_enemy()
     register_goblin_spearman_enemy()
     register_goblin_spearman_elite_enemy()
