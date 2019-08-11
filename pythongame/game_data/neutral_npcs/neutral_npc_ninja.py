@@ -57,17 +57,20 @@ def register_ninja_npc():
     register_npc_data(npc_type, NpcData.neutral(sprite, size, movement_speed))
     register_npc_behavior(npc_type, NpcMind)
     # TODO Use proper icon for 'cancel' option
+    name_formatter = "{:<25}"
+    cost_formatter = "[{} gold]"
+    buy_prompt = "> "
     dialog_options = [
-        DialogOptionData("Healing brew [2 gold]", "buy",
+        DialogOptionData(buy_prompt + name_formatter.format("Healing brew") + cost_formatter.format(2), "buy",
                          SellConsumable(2, ConsumableType.BREW, "healing brew"),
                          UiIconSprite.POTION_BREW),
-        DialogOptionData("Lesser health potion [3 gold]", "buy",
+        DialogOptionData(buy_prompt + name_formatter.format("Lesser health potion") + cost_formatter.format(3), "buy",
                          SellConsumable(3, ConsumableType.HEALTH_LESSER, "lesser health potion"),
                          UiIconSprite.POTION_HEALTH_LESSER),
-        DialogOptionData("Lesser mana potion [3 gold]", "buy",
+        DialogOptionData(buy_prompt + name_formatter.format("Lesser mana potion") + cost_formatter.format(3), "buy",
                          SellConsumable(3, ConsumableType.MANA_LESSER, "lesser mana potion"),
                          UiIconSprite.POTION_MANA_LESSER),
-        DialogOptionData("Speed potion [5 gold]", "buy",
+        DialogOptionData(buy_prompt + name_formatter.format("Speed potion") + cost_formatter.format(5), "buy",
                          SellConsumable(5, ConsumableType.SPEED, "speed potion"),
                          UiIconSprite.POTION_SPEED),
         DialogOptionData("\"Good bye\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
