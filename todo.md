@@ -14,6 +14,7 @@
 * save game_state to file on crash
 * activate portal on first interaction, don't teleport
 * fix bug where potions can't be used while doing other things. (Button click doesn't register for some reason?)
+* Make it more difficult to kite fast enemies. Enemies are too slow at attacking when they get into melee range
 
 #### Visuals:
 * Render tiny buff icons above entities that have active buffs (like bloodlust icon from wc2)
