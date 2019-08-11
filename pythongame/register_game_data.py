@@ -51,6 +51,7 @@ from pythongame.game_data.items.item_blue_robe import register_blue_robe_item
 from pythongame.game_data.items.item_elite_armor import register_elite_armor
 from pythongame.game_data.items.item_elven_armor import register_elven_armor
 from pythongame.game_data.items.item_freezing_gauntlet import register_freezing_gauntlet_item
+from pythongame.game_data.items.item_frog import register_frog_item
 from pythongame.game_data.items.item_gladiator_armor import register_gladiator_armor
 from pythongame.game_data.items.item_goats_ring import register_goats_ring
 from pythongame.game_data.items.item_gold_nugget import register_gold_nugget
@@ -81,6 +82,7 @@ from pythongame.game_data.neutral_npcs.neutral_npc_dwarf import register_dwarf_n
 from pythongame.game_data.neutral_npcs.neutral_npc_ninja import register_ninja_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_nomad import register_nomad_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_sorcerer import register_sorcerer_npc
+from pythongame.game_data.neutral_npcs.neutral_npc_young_sorceress import register_young_sorceress_npc
 from pythongame.game_data.portals import register_portal
 from pythongame.game_data.ui_icons import register_ui_icons
 from pythongame.game_data.walls import register_walls
@@ -140,6 +142,7 @@ def register_all_game_data():
     register_nomad_npc()
     register_ninja_npc()
     register_sorcerer_npc()
+    register_young_sorceress_npc()
 
     register_messengers_hat_item()
     register_amulet_of_mana_item()
@@ -173,6 +176,7 @@ def register_all_game_data():
     register_wand_item()
     register_gladiator_armor()
     register_noble_defender()
+    register_frog_item()
 
     register_decorations()
     register_map_editor_icons()
