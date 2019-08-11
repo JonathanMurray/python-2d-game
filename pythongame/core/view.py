@@ -134,7 +134,7 @@ class View:
         self.font_game_world_text = pygame.font.Font(None, 19)
         self.font_ui_icon_keys = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 12)
         self.font_level = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 11)
-        self.font_dialog = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 32)
+        self.font_dialog = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 24)
 
         self.images_by_sprite: Dict[Sprite, Dict[Direction, List[ImageWithRelativePosition]]] = {
             sprite: load_and_scale_directional_sprites(ENTITY_SPRITE_INITIALIZERS[sprite])
@@ -843,7 +843,8 @@ class View:
     def _dialog(self, dialog_graphics: DialogGraphics):
         options_margin = 10
         option_padding = 4
-        h_dialog_container = 230 + len(dialog_graphics.options) * (UI_ICON_SIZE[1] + 2 * option_padding)
+        h_option_line = 20
+        h_dialog_container = 230 + len(dialog_graphics.options) * (h_option_line + 2 * option_padding)
         rect_dialog_container = (100, 75, 500, h_dialog_container)
 
         x_left = rect_dialog_container[0]
@@ -870,31 +871,33 @@ class View:
         y_above_options = dialog_pos[1] + 150
         self._line(color_separator, (x_left, y_above_options), (x_right, y_above_options), 2)
 
+        option_image = self.images_by_ui_sprite[
+            dialog_graphics.options[dialog_graphics.active_option_index].ui_icon_sprite]
+
         for i, option in enumerate(dialog_graphics.options):
-            option_image = self.images_by_ui_sprite[option.ui_icon_sprite]
-            x_option = x_left + 20
-            y_option = y_above_options + options_margin + i * (UI_ICON_SIZE[1] + 2 * option_padding)
-            x_option_image = x_option + option_padding
-            y_option_image = y_option + option_padding
-            x_option_text = x_option_image + UI_ICON_SIZE[0] + 20
-            y_option_text = y_option_image + 4
+            x_option = x_left + 8
+            y_option = y_above_options + options_margin + i * (h_option_line + 2 * option_padding)
+            x_option_text = x_option + option_padding + 5
+            y_option_text = y_option + option_padding + 2
             color_highlight = COLOR_WHITE
 
             is_option_active = dialog_graphics.active_option_index == i
             color_option_text = COLOR_WHITE if is_option_active else (160, 160, 160)
             if is_option_active:
                 rect_highlight_active_option = (
-                    x_option, y_option, rect_dialog_container[2] - 40, UI_ICON_SIZE[1] + 2 * option_padding)
+                    x_option, y_option, rect_dialog_container[2] - 16, h_option_line + 2 * option_padding)
                 self._rect_transparent(rect_highlight_active_option, 120, COLOR_WHITE)
                 self._rect(color_highlight, rect_highlight_active_option, 1)
-            self._image(option_image, (x_option_image, y_option_image))
+            # self._image(option_image, (x_option_image, y_option_image))
             self._text(self.font_dialog, option.text_header, (x_option_text, y_option_text), color_option_text)
         y_under_options = y_above_options + 2 * options_margin \
-                          + len(dialog_graphics.options) * (UI_ICON_SIZE[1] + 2 * option_padding)
+                          + len(dialog_graphics.options) * (h_option_line + 2 * option_padding)
         self._line(color_separator, (x_left, y_under_options), (x_right, y_under_options), 2)
-        y_action_text = y_under_options + 10
+        y_action_text = y_under_options + 15
         action_text = dialog_graphics.options[dialog_graphics.active_option_index].text_detailed
-        self._text(self.font_dialog, "[Space] : " + action_text, (x_left + 20, y_action_text), COLOR_WHITE)
+        self._image(option_image, (x_left + 6, y_under_options + 7))
+        self._text(self.font_dialog, "[Space] : " + action_text, (x_left + 14 + UI_ICON_SIZE[0] + 4, y_action_text),
+                   COLOR_WHITE)
 
     @staticmethod
     def _split_text_into_lines(full_text: str, max_line_length: int):
