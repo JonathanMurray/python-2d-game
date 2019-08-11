@@ -13,6 +13,7 @@
 * Use pygame C code for vector math
 * save game_state to file on crash
 * activate portal on first interaction, don't teleport
+* fix bug where potions can't be used while doing other things. (Button click doesn't register for some reason?)
 
 #### Visuals:
 * Render tiny buff icons above entities that have active buffs (like bloodlust icon from wc2)
@@ -32,6 +33,14 @@
 * goblin death sounds
 
 #### Features:
+* vendor should sell better health potions also
+* add scroll of town portal - it's too punishing having to go back to a statue if you run out of potions
+* give enemies 'armor'?
+    * could add effects that reduce armor on enemies
+    * makes it more difficult to clear endgame content on low level
+* change rogue ability infuse dagger to be an instant ability instead of a buff - too difficult to use in its current form
+    * shiv: deals damage. x3 from stealth
+    * infuse dagger: deals damage over time. add stun from stealth
 * New heroes
     * builder
         * place turret on ground that shoots in all directions
