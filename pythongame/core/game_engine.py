@@ -24,7 +24,6 @@ class GameEngine:
 
     def __init__(self, game_state: GameState, view_state: ViewState):
         self.game_state = game_state
-        self.player_spawn_position = game_state.player_entity.get_position()
         self.view_state = view_state
 
     def try_use_ability(self, ability_type: AbilityType):
@@ -271,7 +270,7 @@ class GameEngine:
             self._spawn_player_after_death()
 
     def _spawn_player_after_death(self):
-        self.game_state.player_entity.set_position(self.player_spawn_position)
+        self.game_state.player_entity.set_position(self.game_state.player_spawn_position)
         self.game_state.player_state.health_resource.set_to_partial_of_max(0.5)
         self.game_state.player_state.lose_exp_from_death()
         self.view_state.set_message("Lost exp from dying")

@@ -1,13 +1,17 @@
-from pythongame.core.common import ConsumableType, Sprite, UiIconSprite
-from pythongame.core.consumable_effects import ConsumableFailedToBeConsumed, \
-    register_consumable_effect
+from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect
+from pythongame.core.common import ConsumableType, Sprite, UiIconSprite, BuffType, Millis
+from pythongame.core.consumable_effects import register_consumable_effect, ConsumableWasConsumed
 from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer, \
     register_ui_icon_sprite_path, register_consumable_data, ConsumableData, POTION_ENTITY_SIZE, ConsumableCategory
 from pythongame.core.game_state import GameState
 
 
-def _apply(_: GameState):
-    return ConsumableFailedToBeConsumed("Not implemented yet!")
+def _apply(game_state: GameState):
+    teleport_buff_effect: AbstractBuffEffect = get_buff_effect(
+        BuffType.BEING_TELEPORTED, game_state.player_spawn_position)
+    delay = Millis(600)
+    game_state.player_state.gain_buff_effect(teleport_buff_effect, delay)
+    return ConsumableWasConsumed()
 
 
 def register_warpstone_consumable():

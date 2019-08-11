@@ -510,6 +510,7 @@ class GameState:
             self.entire_world_area, [w.world_entity for w in walls])
         self.decorations_state = DecorationsState(decoration_entities, entire_world_area)
         self.portals: List[Portal] = portals
+        self.player_spawn_position: Tuple[int, int] = player_entity.get_position()
 
     @staticmethod
     def _setup_pathfinder_wall_grid(entire_world_area: WorldArea, walls: List[WorldEntity]):
