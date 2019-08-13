@@ -70,6 +70,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_NINJA),
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_SORCERER),
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_YOUNG_SORCERESS),
+    MapEditorWorldEntity.npc(NpcType.NEUTRAL_WARPSTONE_MERCHANT),
 
     MapEditorWorldEntity.consumable(ConsumableType.HEALTH_LESSER),
     MapEditorWorldEntity.consumable(ConsumableType.HEALTH),

@@ -5,29 +5,7 @@
       -525
     ]
   },
-  "consumables_on_ground": [
-    {
-      "consumable_type": "WARP_STONE",
-      "position": [
-        -525,
-        -550
-      ]
-    },
-    {
-      "consumable_type": "WARP_STONE",
-      "position": [
-        -400,
-        -550
-      ]
-    },
-    {
-      "consumable_type": "WARP_STONE",
-      "position": [
-        -375,
-        -600
-      ]
-    }
-  ],
+  "consumables_on_ground": [],
   "items_on_ground": [],
   "money_piles_on_ground": [],
   "non_player_characters": [
@@ -2185,6 +2163,13 @@
       "position": [
         -125,
         -525
+      ]
+    },
+    {
+      "npc_type": "NEUTRAL_WARPSTONE_MERCHANT",
+      "position": [
+        -750,
+        -875
       ]
     }
   ],

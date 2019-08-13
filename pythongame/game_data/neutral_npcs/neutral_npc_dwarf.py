@@ -52,7 +52,7 @@ def register_dwarf_npc():
     movement_speed = 0.03
     register_npc_data(npc_type, NpcData.neutral(sprite, size, movement_speed))
     register_npc_behavior(npc_type, NpcMind)
-    introdution = "Hello there. I'm always looking for treasure. If you find any, we might be able to strike a deal!"
+    introduction = "Hello there. I'm always looking for treasure. If you find any, we might be able to strike a deal!"
     name_formatter = "{:<13}"
     cost_formatter = "[{} gold]"
     sell_prompt = "> "
@@ -64,7 +64,7 @@ def register_dwarf_npc():
                          BuyTreasure(ItemType.SAPHIRE, 30, "saphire"),
                          UiIconSprite.ITEM_SAPHIRE),
         DialogOptionData("\"Good bye\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
-    dialog_data = DialogData(PortraitIconSprite.VIKING, introdution, dialog_options)
+    dialog_data = DialogData(PortraitIconSprite.VIKING, introduction, dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet.png")
     original_sprite_size = (32, 32)

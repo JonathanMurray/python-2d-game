@@ -83,6 +83,7 @@ from pythongame.game_data.neutral_npcs.neutral_npc_dwarf import register_dwarf_n
 from pythongame.game_data.neutral_npcs.neutral_npc_ninja import register_ninja_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_nomad import register_nomad_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_sorcerer import register_sorcerer_npc
+from pythongame.game_data.neutral_npcs.neutral_npc_warpstone_merchant import register_warpstone_merchant_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_young_sorceress import register_young_sorceress_npc
 from pythongame.game_data.portals import register_portal
 from pythongame.game_data.ui_icons import register_ui_icons
@@ -146,6 +147,7 @@ def register_all_game_data():
     register_ninja_npc()
     register_sorcerer_npc()
     register_young_sorceress_npc()
+    register_warpstone_merchant_npc()
 
     register_messengers_hat_item()
     register_amulet_of_mana_item()
