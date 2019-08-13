@@ -7,7 +7,7 @@ from pythongame.core.game_engine import GameEngine
 from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, LootableOnGround, Portal, \
     ConsumableOnGround, ItemOnGround, WarpPoint
 from pythongame.core.math import boxes_intersect, is_x_and_y_within_distance, \
-    get_manhattan_distance_between_rects
+    get_manhattan_distance_between_rects, get_directions_to_position
 from pythongame.core.npc_behaviors import invoke_npc_action, has_npc_dialog, get_dialog_graphics, get_dialog_data
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view import EntityActionText, DialogGraphics
@@ -67,6 +67,10 @@ class PlayerInteractionsState:
     def handle_user_clicked_space(self, game_state: GameState, game_engine: GameEngine):
         if self.npc_ready_for_dialog:
             self.npc_active_in_dialog = self.npc_ready_for_dialog
+            self.npc_active_in_dialog.world_entity.direction = get_directions_to_position(
+                self.npc_active_in_dialog.world_entity, game_state.player_entity.get_center_position())[0]
+            self.npc_active_in_dialog.world_entity.set_not_moving()
+            self.npc_active_in_dialog.stun_status.add_one()
             num_dialog_options = len(get_dialog_data(self.npc_active_in_dialog.npc_type).options)
             if self.active_dialog_option_index >= num_dialog_options:
                 # If you talk to one NPC, and leave with option 2, then start talking to an NPC that has just one option
@@ -79,6 +83,7 @@ class PlayerInteractionsState:
             message = invoke_npc_action(self.npc_active_in_dialog.npc_type, self.active_dialog_option_index, game_state)
             if message:
                 self.view_state.set_message(message)
+            self.npc_active_in_dialog.stun_status.remove_one()
             self.npc_active_in_dialog = None
         elif self.lootable_ready_to_be_picked_up:
             game_engine.try_pick_up_loot_from_ground(self.lootable_ready_to_be_picked_up)
