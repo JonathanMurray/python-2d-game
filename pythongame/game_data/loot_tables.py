@@ -64,7 +64,8 @@ LOOT_POTIONS_1 = [
 LOOT_POTIONS_2 = [
     LootEntry.consumable(ConsumableType.HEALTH),
     LootEntry.consumable(ConsumableType.MANA),
-    LootEntry.consumable(ConsumableType.SPEED)
+    LootEntry.consumable(ConsumableType.SPEED),
+    LootEntry.consumable(ConsumableType.WARP_STONE)
 ]
 
 LOOT_TABLE_1 = LootTable([
