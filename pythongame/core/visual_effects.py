@@ -141,6 +141,13 @@ def create_visual_exp_text(entity: WorldEntity, exp_amount: int):
     return VisualText(str(exp_amount), (255, 255, 255), start_position, end_position, Millis(800))
 
 
+def create_teleport_effects(effect_position: Tuple) -> List[VisualEffect]:
+    color = (140, 140, 230)
+    return [VisualCircle(color, effect_position, 17, 35, Millis(150), 1),
+            VisualRect(color, effect_position, 37, 50, Millis(150), 1),
+            VisualCircle(color, effect_position, 25, 50, Millis(300), 2)]
+
+
 def _get_entity_text_positions(entity: WorldEntity) -> Tuple[Tuple[int, int], Tuple[int, int]]:
     sprite_size = ENTITY_SPRITE_SIZES[entity.sprite]
     y_start = entity.y + entity.h - sprite_size[1]

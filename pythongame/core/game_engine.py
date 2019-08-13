@@ -17,7 +17,7 @@ from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vector
 from pythongame.core.player_controls import PlayerControls
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view_state import ViewState
-from pythongame.core.visual_effects import create_visual_exp_text, VisualCircle, VisualRect
+from pythongame.core.visual_effects import create_visual_exp_text, create_teleport_effects
 from pythongame.game_data.portals import PORTAL_DELAY
 
 
@@ -285,11 +285,7 @@ class GameEngine:
         self.game_state.player_state.lose_exp_from_death()
         self.view_state.set_message("Lost exp from dying")
         play_sound(SoundId.EVENT_PLAYER_DIED)
-        color = (140, 140, 230)
-        effect_position = self.game_state.player_entity.get_center_position()
-        self.game_state.visual_effects.append(VisualCircle(color, effect_position, 17, 35, Millis(150), 1))
-        self.game_state.visual_effects.append(VisualRect(color, effect_position, 37, 50, Millis(150), 1))
-        self.game_state.visual_effects.append(VisualCircle(color, effect_position, 25, 50, Millis(300), 2))
+        self.game_state.visual_effects += create_teleport_effects(self.game_state.player_entity.get_center_position())
 
     def _is_npc_close_to_camera(self, npc: NonPlayerCharacter):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(

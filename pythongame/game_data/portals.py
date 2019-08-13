@@ -4,7 +4,7 @@ from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effec
 from pythongame.core.common import Direction, PortalId, Millis, BuffType
 from pythongame.core.game_data import SpriteSheet, Sprite, register_entity_sprite_map, register_portal_data, PortalData
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
-from pythongame.core.visual_effects import VisualRect, VisualCircle
+from pythongame.core.visual_effects import VisualRect, VisualCircle, create_teleport_effects
 
 PORTAL_SIZE = (42, 46)
 BUFF_TYPE = BuffType.TELEPORTING_WITH_PORTAL
@@ -20,11 +20,7 @@ class BeingTeleported(AbstractBuffEffect):
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.add_one()
         game_state.player_entity.set_not_moving()
-        effect_position = buffed_entity.get_center_position()
-        color = (140, 140, 230)
-        game_state.visual_effects.append(VisualCircle(color, effect_position, 17, 35, Millis(150), 1))
-        game_state.visual_effects.append(VisualRect(color, effect_position, 37, 50, Millis(150), 1))
-        game_state.visual_effects.append(VisualCircle(color, effect_position, 25, 50, Millis(300), 2))
+        game_state.visual_effects += create_teleport_effects(buffed_entity.get_center_position())
         game_state.player_entity.visible = False
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
@@ -33,11 +29,7 @@ class BeingTeleported(AbstractBuffEffect):
         if not self.has_teleport_happened and self.time_since_start > PORTAL_DELAY / 2:
             self.has_teleport_happened = True
             game_state.player_entity.set_position(self.destination)
-            effect_position = buffed_entity.get_center_position()
-            color = (140, 140, 230)
-            game_state.visual_effects.append(VisualCircle(color, effect_position, 17, 35, Millis(150), 1))
-            game_state.visual_effects.append(VisualRect(color, effect_position, 37, 50, Millis(150), 1))
-            game_state.visual_effects.append(VisualCircle(color, effect_position, 25, 50, Millis(300), 2))
+            game_state.visual_effects += create_teleport_effects(buffed_entity.get_center_position())
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.remove_one()
