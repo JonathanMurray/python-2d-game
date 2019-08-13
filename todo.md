@@ -35,7 +35,6 @@
 * goblin death sounds
 
 #### Features:
-* add scroll of town portal - it's too punishing having to go back to a statue if you run out of potions
 * give enemies 'armor'?
     * could add effects that reduce armor on enemies
     * makes it more difficult to clear endgame content on low level
@@ -46,8 +45,6 @@
     * builder
         * place turret on ground that shoots in all directions
         * send out mechanical minion that seeks out enemies and self detonates
-* Save functionality
-    * save the current game_state into a JSON file and load it on startup
 * New "progress" functionality:
     * choosing between different abilities on level-up
     * gaining a more powerful version of an existing ability. Whirlwind could start without stun and then gain stun on upgrade
