@@ -43,11 +43,13 @@ def create_money_pile_on_ground(amount: int, pos: Tuple[int, int]) -> MoneyPileO
 
 def create_item_on_ground(item_type: ItemType, pos: Tuple[int, int]) -> ItemOnGround:
     entity = WorldEntity(pos, ITEM_ENTITY_SIZE, ITEMS[item_type].entity_sprite)
+    entity.view_z = 1 # It should be rendered below all other entities
     return ItemOnGround(entity, item_type)
 
 
 def create_consumable_on_ground(consumable_type: ConsumableType, pos: Tuple[int, int]) -> ConsumableOnGround:
     entity = WorldEntity(pos, POTION_ENTITY_SIZE, CONSUMABLES[consumable_type].entity_sprite)
+    entity.view_z = 1 # It should be rendered below all other entities
     return ConsumableOnGround(entity, consumable_type)
 
 

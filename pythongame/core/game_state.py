@@ -53,6 +53,7 @@ class WorldEntity:
         self.pygame_collision_rect = Rect(self.rect())
         self.movement_animation_progress: float = 0  # goes from 0 to 1 repeatedly
         self.visible = True  # Should only be used to control rendering
+        self.view_z = 0  # increasing Z values = moving into the screen
 
     def set_moving_in_dir(self, direction: Direction):
         if direction is None:

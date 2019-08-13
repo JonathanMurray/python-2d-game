@@ -527,7 +527,7 @@ class View:
         self.screen.fill(COLOR_BACKGROUND)
         self._world_ground(entire_world_area)
 
-        all_entities_to_render.sort(key=lambda entry: entry.y)
+        all_entities_to_render.sort(key=lambda entry: (-entry.view_z, entry.y))
 
         for decoration_entity in decorations_to_render:
             self._world_entity(decoration_entity)
