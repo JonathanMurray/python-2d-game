@@ -888,14 +888,16 @@ class View:
                     x_option, y_option, rect_dialog_container[2] - 16, h_option_line + 2 * option_padding)
                 self._rect_transparent(rect_highlight_active_option, 120, COLOR_WHITE)
                 self._rect(color_highlight, rect_highlight_active_option, 1)
-            # self._image(option_image, (x_option_image, y_option_image))
             self._text(self.font_dialog, option.text_header, (x_option_text, y_option_text), color_option_text)
         y_under_options = y_above_options + 2 * options_margin \
                           + len(dialog_graphics.options) * (h_option_line + 2 * option_padding)
         self._line(color_separator, (x_left, y_under_options), (x_right, y_under_options), 2)
         y_action_text = y_under_options + 15
         action_text = dialog_graphics.options[dialog_graphics.active_option_index].text_detailed
-        self._image(option_image, (x_left + 6, y_under_options + 7))
+        pos_option_image = (x_left + 6, y_under_options + 7)
+        rect_option_image = (pos_option_image[0], pos_option_image[1], UI_ICON_SIZE[0], UI_ICON_SIZE[1])
+        self._image(option_image, pos_option_image)
+        self._rect((150, 150, 150), rect_option_image, 1)
         self._text(self.font_dialog, "[Space] : " + action_text, (x_left + 14 + UI_ICON_SIZE[0] + 4, y_action_text),
                    COLOR_WHITE)
 
