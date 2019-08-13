@@ -3,6 +3,7 @@ from typing import Dict, Type, Optional, List
 from pythongame.core.common import *
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.sound_player import play_sound
 
 
 class DialogOptionGraphics:
@@ -42,6 +43,28 @@ class AbstractNpcAction:
     # perform action, and optionally return a message to be displayed
     def act(self, game_state: GameState) -> Optional[str]:
         pass
+
+
+class SellConsumableNpcAction(AbstractNpcAction):
+    def __init__(self, cost: int, consumable_type: ConsumableType, name: str):
+        self.cost = cost
+        self.consumable_type = consumable_type
+        self.name = name
+
+    def act(self, game_state: GameState):
+        player_state = game_state.player_state
+        can_afford = player_state.money >= self.cost
+        has_space = player_state.consumable_inventory.has_space_for_more()
+        if not can_afford:
+            play_sound(SoundId.WARNING)
+            return "Not enough gold!"
+        if not has_space:
+            play_sound(SoundId.WARNING)
+            return "Not enough space!"
+        player_state.money -= self.cost
+        player_state.consumable_inventory.add_consumable(self.consumable_type)
+        play_sound(SoundId.EVENT_PURCHASED_SOMETHING)
+        return "Bought " + self.name
 
 
 class DialogOptionData:
