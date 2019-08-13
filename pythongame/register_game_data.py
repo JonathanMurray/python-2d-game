@@ -87,6 +87,7 @@ from pythongame.game_data.neutral_npcs.neutral_npc_young_sorceress import regist
 from pythongame.game_data.portals import register_portal
 from pythongame.game_data.ui_icons import register_ui_icons
 from pythongame.game_data.walls import register_walls
+from pythongame.game_data.warp_points import register_warp_point
 
 
 def register_all_game_data():
@@ -188,3 +189,5 @@ def register_all_game_data():
     register_coin()
 
     register_portal()
+
+    register_warp_point()

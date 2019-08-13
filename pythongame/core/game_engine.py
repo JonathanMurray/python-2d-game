@@ -8,7 +8,7 @@ from pythongame.core.entity_creation import create_money_pile_on_ground, create_
 from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities, \
     NpcCategory, PORTALS, ABILITIES
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
-    EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility
+    EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
 from pythongame.core.loot import LootEntry
@@ -18,6 +18,7 @@ from pythongame.core.player_controls import PlayerControls
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view_state import ViewState
 from pythongame.core.visual_effects import create_visual_exp_text, VisualCircle, VisualRect
+from pythongame.game_data.portals import PORTAL_DELAY
 
 
 class GameEngine:
@@ -118,11 +119,18 @@ class GameEngine:
             destination_portal = [p for p in self.game_state.portals if p.portal_id == portal.leads_to][0]
             destination_portal.activate(portal.world_entity.sprite)
             destination = translate_in_direction(destination_portal.world_entity.get_position(), Direction.DOWN, 50)
-            teleport_buff_effect: AbstractBuffEffect = get_buff_effect(BuffType.BEING_TELEPORTED, destination)
+            teleport_buff_effect: AbstractBuffEffect = get_buff_effect(BuffType.TELEPORTING_WITH_PORTAL, destination)
             delay = PORTALS[portal.portal_id].teleport_delay
             self.game_state.player_state.gain_buff_effect(teleport_buff_effect, delay)
         else:
             self.view_state.set_message("Hmm... Looks suspicious!")
+
+    def use_warp_point(self, warp_point: WarpPoint):
+        destination_warp_point = [w for w in self.game_state.warp_points if w != warp_point][0]
+        # It's safe to teleport to warp point's position as hero and warp point entities are the exact same size
+        teleport_buff_effect: AbstractBuffEffect = get_buff_effect(
+            BuffType.TELEPORTING_WITH_WARP_POINT, destination_warp_point.world_entity.get_position())
+        self.game_state.player_state.gain_buff_effect(teleport_buff_effect, PORTAL_DELAY)
 
     def run_one_frame(self, time_passed: Millis):
         for npc in self.game_state.non_player_characters:
@@ -202,6 +210,8 @@ class GameEngine:
             npc.world_entity.update_movement_animation(time_passed)
         for projectile in self.game_state.projectile_entities:
             projectile.world_entity.update_movement_animation(time_passed)
+        for warp_point in self.game_state.warp_points:
+            warp_point.world_entity.update_animation(time_passed)
 
         for npc in self.game_state.non_player_characters:
             # Enemies shouldn't move towards player when they are out of sight

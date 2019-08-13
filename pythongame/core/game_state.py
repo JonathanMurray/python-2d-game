@@ -71,7 +71,10 @@ class WorldEntity:
 
     def update_movement_animation(self, time_passed: Millis):
         if self._is_moving:
-            self.movement_animation_progress = (self.movement_animation_progress + float(time_passed) / 1000) % 1
+            self.update_animation(time_passed)
+
+    def update_animation(self, time_passed):
+        self.movement_animation_progress = (self.movement_animation_progress + float(time_passed) / 1000) % 1
 
     def get_new_position_according_to_other_dir_and_speed(self, direction: Direction, time_passed: Millis) \
             -> Optional[Tuple[int, int]]:
@@ -486,6 +489,14 @@ class Portal:
         self.world_entity.sprite = sprite
 
 
+class WarpPoint:
+    def __init__(self, world_entity: WorldEntity):
+        self.world_entity = world_entity
+
+    def make_visible(self):
+        self.world_entity.visible = True
+
+
 class GameState:
     def __init__(self, player_entity: WorldEntity, consumables_on_ground: List[ConsumableOnGround],
                  items_on_ground: List[ItemOnGround], money_piles_on_ground: List[MoneyPileOnGround],
@@ -511,6 +522,7 @@ class GameState:
         self.decorations_state = DecorationsState(decoration_entities, entire_world_area)
         self.portals: List[Portal] = portals
         self.player_spawn_position: Tuple[int, int] = player_entity.get_position()
+        self.warp_points: List[WarpPoint] = []
 
     @staticmethod
     def _setup_pathfinder_wall_grid(entire_world_area: WorldArea, walls: List[WorldEntity]):
@@ -550,7 +562,8 @@ class GameState:
                          [m.world_entity for m in self.money_piles_on_ground] + \
                          [e.world_entity for e in self.non_player_characters] + \
                          [p.world_entity for p in self.projectile_entities] + \
-                         [p.world_entity for p in self.portals]
+                         [p.world_entity for p in self.portals] + \
+                         [w.world_entity for w in self.warp_points]
         return walls_that_are_visible + other_entities
 
     def get_decorations_to_render(self) -> List[DecorationEntity]:
@@ -611,7 +624,8 @@ class GameState:
         entity.set_position(new_pos_within_world)
         walls = self.walls_state.get_walls_close_to_position(entity.get_position())
         other_entities = [e.world_entity for e in self.non_player_characters] + \
-                         [self.player_entity] + walls + [p.world_entity for p in self.portals]
+                         [self.player_entity] + walls + [p.world_entity for p in self.portals] + \
+                         [w.world_entity for w in self.warp_points]
         collision = any([other for other in other_entities if self._entities_collide(entity, other)
                          and entity is not other])
         entity.set_position(old_pos)

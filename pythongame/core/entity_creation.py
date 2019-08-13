@@ -5,8 +5,9 @@ from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, ITEMS, CONSUMABLES, POTION_ENTITY_SIZE, \
     WALLS, PORTALS, HEROES, NpcData
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
-    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, HealthOrManaResource
+    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, HealthOrManaResource, WarpPoint
 from pythongame.core.item_inventory import ItemInventory, ItemInventorySlot, ItemEquipmentCategory
+from pythongame.core.math import get_position_from_center_position
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
@@ -89,3 +90,9 @@ def create_player_state(hero_id: HeroId) -> PlayerState:
     return PlayerState(
         health_resource, mana_resource, consumable_inventory, data.abilities,
         item_inventory, data.new_level_abilities, data.hero_id, data.armor, data.level_bonus)
+
+
+def create_warp_point(center_pos: Tuple[int, int], size: Tuple[int, int]) -> WarpPoint:
+    entity = WorldEntity(get_position_from_center_position(center_pos, size), size, Sprite.WARP_POINT)
+    entity.visible = False  # Warp points start out invisible and are later made visible
+    return WarpPoint(entity)

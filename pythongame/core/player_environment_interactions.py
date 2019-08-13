@@ -5,7 +5,7 @@ from pythongame.core.common import SoundId
 from pythongame.core.game_data import CONSUMABLES, ITEMS
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, LootableOnGround, Portal, \
-    ConsumableOnGround, ItemOnGround
+    ConsumableOnGround, ItemOnGround, WarpPoint
 from pythongame.core.math import boxes_intersect, is_x_and_y_within_distance, \
     get_manhattan_distance_between_rects
 from pythongame.core.npc_behaviors import invoke_npc_action, has_npc_dialog, get_dialog_graphics, get_dialog_data
@@ -21,6 +21,7 @@ class PlayerInteractionsState:
         self.npc_ready_for_dialog: NonPlayerCharacter = None
         self.lootable_ready_to_be_picked_up: LootableOnGround = None
         self.portal_ready_for_interaction: Portal = None
+        self.warp_point_ready_for_interaction: WarpPoint = None
         self.active_dialog_option_index = 0
         self.is_shift_key_held_down = False
 
@@ -29,6 +30,7 @@ class PlayerInteractionsState:
         self.npc_ready_for_dialog = None
         self.lootable_ready_to_be_picked_up = None
         self.portal_ready_for_interaction = None
+        self.warp_point_ready_for_interaction = None
         closest_distance_to_player = sys.maxsize
         for npc in game_state.non_player_characters:
             if has_npc_dialog(npc.npc_type):
@@ -52,6 +54,15 @@ class PlayerInteractionsState:
                 self.lootable_ready_to_be_picked_up = None
                 self.portal_ready_for_interaction = portal
                 closest_distance_to_player = distance
+        for warp_point in game_state.warp_points:
+            close_to_player = is_x_and_y_within_distance(player_position, warp_point.world_entity.get_position(), 75)
+            distance = get_manhattan_distance_between_rects(player_entity.rect(), warp_point.world_entity.rect())
+            if close_to_player and distance < closest_distance_to_player:
+                self.npc_ready_for_dialog = None
+                self.lootable_ready_to_be_picked_up = None
+                self.portal_ready_for_interaction = None
+                self.warp_point_ready_for_interaction = warp_point
+                closest_distance_to_player = distance
 
     def handle_user_clicked_space(self, game_state: GameState, game_engine: GameEngine):
         if self.npc_ready_for_dialog:
@@ -73,6 +84,8 @@ class PlayerInteractionsState:
             game_engine.try_pick_up_loot_from_ground(self.lootable_ready_to_be_picked_up)
         elif self.portal_ready_for_interaction:
             game_engine.interact_with_portal(self.portal_ready_for_interaction)
+        elif self.warp_point_ready_for_interaction:
+            game_engine.use_warp_point(self.warp_point_ready_for_interaction)
 
     def handle_user_pressed_shift(self):
         self.is_shift_key_held_down = True
@@ -96,6 +109,8 @@ class PlayerInteractionsState:
                 return EntityActionText(self.portal_ready_for_interaction.world_entity, "[Space] Warp", None)
             else:
                 return EntityActionText(self.portal_ready_for_interaction.world_entity, "[Space] ???", None)
+        elif self.warp_point_ready_for_interaction:
+            return EntityActionText(self.warp_point_ready_for_interaction.world_entity, "[Space] Warp", None)
 
     def get_dialog(self) -> Optional[DialogGraphics]:
         if self.npc_active_in_dialog:

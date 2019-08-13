@@ -173,7 +173,11 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
         #          RENDER EVERYTHING
         # ------------------------------------
 
-        entity_action_text = player_interactions_state.get_action_text()
+        if not game_state.player_state.stun_status.is_stunned():
+            entity_action_text = player_interactions_state.get_action_text()
+        else:
+            # Don't display any actions on screen if player is stunned. It would look weird when using warp stones
+            entity_action_text = None
 
         view.render_world(
             all_entities_to_render=game_state.get_all_entities_to_render(),

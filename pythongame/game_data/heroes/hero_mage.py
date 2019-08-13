@@ -1,4 +1,4 @@
-from pythongame.core.common import HeroId, PortraitIconSprite
+from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
@@ -22,8 +22,8 @@ def register_hero_mage():
                                scaled_sprite_size, indices_by_dir, sprite_position_relative_to_entity)
     register_portrait_icon_sprite_path(portrait_icon_sprite, 'resources/graphics/player_portrait.gif')
     entity_speed = 0.105
-    entity_size = (30, 30)
-    hero_data = HeroData(sprite, portrait_icon_sprite, _get_initial_player_state_mage(), entity_speed, entity_size)
+    hero_data = HeroData(sprite, portrait_icon_sprite, _get_initial_player_state_mage(), entity_speed,
+                         PLAYER_ENTITY_SIZE)
     register_hero_data(HeroId.MAGE, hero_data)
 
 

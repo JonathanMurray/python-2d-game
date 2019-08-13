@@ -7,7 +7,7 @@ from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacte
 from pythongame.core.visual_effects import VisualRect, VisualCircle
 
 PORTAL_SIZE = (42, 46)
-BUFF_TYPE = BuffType.BEING_TELEPORTED
+BUFF_TYPE = BuffType.TELEPORTING_WITH_PORTAL
 PORTAL_DELAY = Millis(600)
 
 

@@ -3,6 +3,8 @@ from typing import NewType
 
 Millis = NewType('Millis', int)
 
+PLAYER_ENTITY_SIZE = (30, 30)
+
 
 class Direction(Enum):
     LEFT = 1
@@ -207,6 +209,7 @@ class Sprite(Enum):
     PORTAL_GREEN = 602
     PORTAL_RED = 603
     PORTAL_DARK = 604
+    WARP_POINT = 650
     HERO_MAGE = 700
     HERO_WARRIOR = 701
     HERO_ROGUE = 702
@@ -227,7 +230,6 @@ class BuffType(Enum):
     BLOOD_LUST = 13
     CHARGING = 14
     STUNNED_FROM_CHARGE_IMPACT = 15
-    BEING_TELEPORTED = 16
     RECOVERING_AFTER_ABILITY = 17
     CHANNELING_STOMP = 18
     STUNNED_BY_STOMP = 19
@@ -243,6 +245,9 @@ class BuffType(Enum):
     DEBUFFED_BY_FREEZING_GAUNTLET = 29
     SLOWED_BY_ICE_WITCH = 30
     SLOWED_FROM_NOBLE_DEFENDER = 31
+    TELEPORTING_WITH_PORTAL = 32
+    TELEPORTING_WITH_WARP_STONE = 33
+    TELEPORTING_WITH_WARP_POINT = 34
 
 
 class ItemType(Enum):

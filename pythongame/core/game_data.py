@@ -165,6 +165,7 @@ class PortalData:
         self.leads_to = leads_to
         self.sprite = sprite
         self.entity_size = entity_size
+        # TODO remove teleport_delay (constant value is always used)
         self.teleport_delay = teleport_delay
 
 

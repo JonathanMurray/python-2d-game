@@ -1,16 +1,18 @@
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect
-from pythongame.core.common import ConsumableType, Sprite, UiIconSprite, BuffType, Millis
+from pythongame.core.common import ConsumableType, Sprite, UiIconSprite, BuffType, Direction
 from pythongame.core.consumable_effects import register_consumable_effect, ConsumableWasConsumed
 from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer, \
     register_ui_icon_sprite_path, register_consumable_data, ConsumableData, POTION_ENTITY_SIZE, ConsumableCategory
 from pythongame.core.game_state import GameState
+from pythongame.core.math import translate_in_direction
+from pythongame.game_data.portals import PORTAL_DELAY
 
 
 def _apply(game_state: GameState):
-    teleport_buff_effect: AbstractBuffEffect = get_buff_effect(
-        BuffType.BEING_TELEPORTED, game_state.player_spawn_position)
-    delay = Millis(600)
-    game_state.player_state.gain_buff_effect(teleport_buff_effect, delay)
+    # TODO Verify that the destination is clear from collisions
+    destination = translate_in_direction(game_state.player_spawn_position, Direction.DOWN, 50)
+    teleport_buff_effect: AbstractBuffEffect = get_buff_effect(BuffType.TELEPORTING_WITH_WARP_STONE, destination)
+    game_state.player_state.gain_buff_effect(teleport_buff_effect, PORTAL_DELAY)
     return ConsumableWasConsumed()
 
 
