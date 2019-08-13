@@ -15,6 +15,7 @@
 * activate portal on first interaction, don't teleport
 * fix bug where potions can't be used while doing other things. (Button click doesn't register for some reason?)
 * Make it more difficult to kite fast enemies. Enemies are too slow at attacking when they get into melee range
+* use pygame Vector instead of Tuple to improve performance
 
 #### Visuals:
 * Render tiny buff icons above entities that have active buffs (like bloodlust icon from wc2)
