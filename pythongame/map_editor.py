@@ -8,10 +8,10 @@ from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, It
 from pythongame.core.entity_creation import create_portal, create_hero_world_entity, create_npc, create_wall, \
     create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground, \
     create_player_state
-from pythongame.core.game_state import GameState
+from pythongame.core.game_state import GameState, WorldArea
 from pythongame.core.math import sum_of_vectors
 from pythongame.core.view import View
-from pythongame.game_world_init import save_game_state_to_json_file, create_game_state_from_json_file
+from pythongame.map_file import save_game_state_to_json_file, create_game_state_from_json_file
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 from pythongame.register_game_data import register_all_game_data
 
@@ -39,33 +39,50 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.wall(WallType.WALL_CHAIR),
     MapEditorWorldEntity.wall(WallType.ALTAR),
 
+    MapEditorWorldEntity.npc(NpcType.GOBLIN_WORKER),
+    MapEditorWorldEntity.npc(NpcType.GOBLIN_SPEARMAN),
+    MapEditorWorldEntity.npc(NpcType.GOBLIN_SPEARMAN_ELITE),
+    MapEditorWorldEntity.npc(NpcType.GOBLIN_WARRIOR),
     MapEditorWorldEntity.npc(NpcType.DARK_REAPER),
     MapEditorWorldEntity.npc(NpcType.RAT_1),
     MapEditorWorldEntity.npc(NpcType.RAT_2),
     MapEditorWorldEntity.npc(NpcType.GOBLIN_WARLOCK),
+    MapEditorWorldEntity.npc(NpcType.ZOMBIE),
     MapEditorWorldEntity.npc(NpcType.MUMMY),
     MapEditorWorldEntity.npc(NpcType.NECROMANCER),
     MapEditorWorldEntity.npc(NpcType.WARRIOR),
+    MapEditorWorldEntity.npc(NpcType.VETERAN),
+    MapEditorWorldEntity.npc(NpcType.ICE_WITCH),
+    MapEditorWorldEntity.npc(NpcType.WARRIOR_KING),
     MapEditorWorldEntity.npc(NpcType.CHEST),
 
     MapEditorWorldEntity.portal(PortalId.A_BASE),
     MapEditorWorldEntity.portal(PortalId.B_BASE),
     MapEditorWorldEntity.portal(PortalId.C_BASE),
+    MapEditorWorldEntity.portal(PortalId.D_BASE),
     MapEditorWorldEntity.portal(PortalId.A_REMOTE),
     MapEditorWorldEntity.portal(PortalId.B_REMOTE),
     MapEditorWorldEntity.portal(PortalId.C_REMOTE),
+    MapEditorWorldEntity.portal(PortalId.D_REMOTE),
 
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_DWARF),
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_NOMAD),
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_NINJA),
+    MapEditorWorldEntity.npc(NpcType.NEUTRAL_SORCERER),
+    MapEditorWorldEntity.npc(NpcType.NEUTRAL_YOUNG_SORCERESS),
+    MapEditorWorldEntity.npc(NpcType.NEUTRAL_WARPSTONE_MERCHANT),
 
     MapEditorWorldEntity.consumable(ConsumableType.HEALTH_LESSER),
     MapEditorWorldEntity.consumable(ConsumableType.HEALTH),
     MapEditorWorldEntity.consumable(ConsumableType.MANA_LESSER),
     MapEditorWorldEntity.consumable(ConsumableType.MANA),
-    MapEditorWorldEntity.consumable(ConsumableType.SCROLL_ABILITY_SUMMON),
+    MapEditorWorldEntity.consumable(ConsumableType.SCROLL_SUMMON_DRAGON),
+    MapEditorWorldEntity.consumable(ConsumableType.INVISIBILITY),
+    MapEditorWorldEntity.consumable(ConsumableType.SPEED),
+    MapEditorWorldEntity.consumable(ConsumableType.BREW),
+    MapEditorWorldEntity.consumable(ConsumableType.WARP_STONE),
 
-    MapEditorWorldEntity.item(ItemType.WINGED_BOOTS),
+    MapEditorWorldEntity.item(ItemType.MESSENGERS_HAT),
     MapEditorWorldEntity.item(ItemType.SWORD_OF_LEECHING),
     MapEditorWorldEntity.item(ItemType.ROD_OF_LIGHTNING),
     MapEditorWorldEntity.item(ItemType.AMULET_OF_MANA_1),
@@ -74,15 +91,45 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.STAFF_OF_FIRE),
     MapEditorWorldEntity.item(ItemType.BLUE_ROBE_1),
     MapEditorWorldEntity.item(ItemType.ORB_OF_THE_MAGI_1),
+    MapEditorWorldEntity.item(ItemType.ORB_OF_WISDOM_1),
+    MapEditorWorldEntity.item(ItemType.ORB_OF_LIFE_1),
     MapEditorWorldEntity.item(ItemType.WIZARDS_COWL),
     MapEditorWorldEntity.item(ItemType.ZULS_AEGIS),
     MapEditorWorldEntity.item(ItemType.KNIGHTS_ARMOR),
     MapEditorWorldEntity.item(ItemType.GOATS_RING),
+    MapEditorWorldEntity.item(ItemType.WOODEN_SHIELD),
+    MapEditorWorldEntity.item(ItemType.ELVEN_ARMOR),
+    MapEditorWorldEntity.item(ItemType.GOLD_NUGGET),
+    MapEditorWorldEntity.item(ItemType.SAPHIRE),
+    MapEditorWorldEntity.item(ItemType.BLOOD_AMULET),
+    MapEditorWorldEntity.item(ItemType.LEATHER_COWL),
+    MapEditorWorldEntity.item(ItemType.WINGED_HELMET),
+    MapEditorWorldEntity.item(ItemType.ELITE_ARMOR),
+    MapEditorWorldEntity.item(ItemType.RING_OF_POWER),
+    MapEditorWorldEntity.item(ItemType.LEATHER_ARMOR),
+    MapEditorWorldEntity.item(ItemType.FREEZING_GAUNTLET),
+    MapEditorWorldEntity.item(ItemType.ROYAL_DAGGER),
+    MapEditorWorldEntity.item(ItemType.ROYAL_SWORD),
+    MapEditorWorldEntity.item(ItemType.MOLTEN_AXE),
+    MapEditorWorldEntity.item(ItemType.WAND),
+    MapEditorWorldEntity.item(ItemType.GLADIATOR_ARMOR),
+    MapEditorWorldEntity.item(ItemType.NOBLE_DEFENDER),
+
 
     MapEditorWorldEntity.money(1),
 
     MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE),
-    MapEditorWorldEntity.decoration(Sprite.DECORATION_PLANT)
+    MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE_GRAY),
+    MapEditorWorldEntity.decoration(Sprite.DECORATION_PLANT),
+    MapEditorWorldEntity.wall(WallType.SHELF_EMPTY),
+    MapEditorWorldEntity.wall(WallType.SHELF_HELMETS),
+    MapEditorWorldEntity.wall(WallType.SHELF_ARMORS),
+    MapEditorWorldEntity.wall(WallType.BARREL_1),
+    MapEditorWorldEntity.wall(WallType.BARREL_2),
+    MapEditorWorldEntity.wall(WallType.BARREL_3),
+    MapEditorWorldEntity.wall(WallType.BARREL_4),
+    MapEditorWorldEntity.wall(WallType.BARREL_5),
+    MapEditorWorldEntity.wall(WallType.BARREL_6),
 ]
 
 MAP_EDITOR_INPUT_CHARS: List[str] = [
@@ -95,7 +142,7 @@ ENTITIES_BY_CHAR: Dict[str, MapEditorWorldEntity] = dict(zip(MAP_EDITOR_INPUT_CH
 CHARS_BY_ENTITY: Dict[MapEditorWorldEntity, str] = {v: k for k, v in ENTITIES_BY_CHAR.items()}
 
 SCREEN_SIZE = (1200, 750)
-CAMERA_SIZE = (1200, 600)
+CAMERA_SIZE = (1200, 500)
 
 # The choice of hero shouldn't matter in the map editor, as we only store its position in the map file
 HERO_ID = HeroId.MAGE
@@ -132,9 +179,10 @@ def main(map_file_name: Optional[str]):
         game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file_path, HERO_ID)
     else:
 
-        player_entity = create_hero_world_entity(HERO_ID, (250, 250))
+        player_entity = create_hero_world_entity(HERO_ID, (0, 0))
         player_state = create_player_state(HERO_ID)
-        game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, (500, 500), player_state, [], [])
+        game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, WorldArea((-250, -250), (500, 500)),
+                               player_state, [], [])
 
     pygame.init()
 
@@ -249,13 +297,14 @@ def main(map_file_name: Optional[str]):
             decorations_to_render=decorations_to_render,
             player_entity=game_state.player_entity,
             is_player_invisible=game_state.player_state.is_invisible,
+            player_active_buffs=game_state.player_state.active_buffs,
             camera_world_area=game_state.camera_world_area,
             non_player_characters=game_state.non_player_characters,
             visual_effects=game_state.visual_effects,
             render_hit_and_collision_boxes=True,
-            player_health=game_state.player_state.health,
-            player_max_health=game_state.player_state.max_health,
-            game_world_size=game_state.game_world_size,
+            player_health=game_state.player_state.health_resource.value,
+            player_max_health=game_state.player_state.health_resource.max_value,
+            entire_world_area=game_state.entire_world_area,
             entity_action_text=None)
 
         entity_icon_hovered_by_mouse = view.render_map_editor_ui(
@@ -265,8 +314,8 @@ def main(map_file_name: Optional[str]):
             deleting_entities=user_state.deleting_entities,
             deleting_decorations=user_state.deleting_decorations,
             num_enemies=len(game_state.non_player_characters),
-            num_walls=len(game_state.walls),
-            num_decorations=len(game_state.decoration_entities),
+            num_walls=len(game_state.walls_state.walls),
+            num_decorations=len(game_state.decorations_state.decoration_entities),
             grid_cell_size=grid_cell_size,
             mouse_screen_position=exact_mouse_screen_position)
 
@@ -338,25 +387,21 @@ def _add_npc(npc_type, game_state: GameState, snapped_mouse_world_position):
         game_state.add_non_player_character(npc)
 
 
-def _add_decoration(decoration_sprite: Sprite, game_state, snapped_mouse_world_position):
-    already_has_decoration = any([d for d in game_state.decoration_entities
-                                  if d.get_position() == snapped_mouse_world_position])
-    if not already_has_decoration:
+def _add_decoration(decoration_sprite: Sprite, game_state: GameState, snapped_mouse_world_position):
+    if len(game_state.decorations_state.get_decorations_at_position(snapped_mouse_world_position)) == 0:
         decoration_entity = create_decoration_entity(snapped_mouse_world_position, decoration_sprite)
-        game_state.decoration_entities.append(decoration_entity)
+        game_state.decorations_state.add_decoration(decoration_entity)
 
 
 def _add_wall(game_state, snapped_mouse_world_position: Tuple[int, int], wall_type: WallType):
-    already_has_wall = any([w for w in game_state.walls
-                            if w.world_entity.get_position() == snapped_mouse_world_position])
-    if not already_has_wall:
+    if len(game_state.walls_state.get_walls_at_position(snapped_mouse_world_position)) == 0:
         wall = create_wall(wall_type, snapped_mouse_world_position)
-        game_state.add_wall(wall)
+        game_state.walls_state.add_wall(wall)
 
 
 def _delete_map_entities_from_position(game_state: GameState, snapped_mouse_world_position: Tuple[int, int]):
-    for wall in [w for w in game_state.walls if w.world_entity.get_position() == snapped_mouse_world_position]:
-        game_state.remove_wall(wall)
+    for wall in game_state.walls_state.get_walls_at_position(snapped_mouse_world_position):
+        game_state.walls_state.remove_wall(wall)
     for enemy in [e for e in game_state.non_player_characters if
                   e.world_entity.get_position() == snapped_mouse_world_position]:
         game_state.non_player_characters.remove(enemy)
@@ -374,6 +419,6 @@ def _delete_map_entities_from_position(game_state: GameState, snapped_mouse_worl
         game_state.portals.remove(portal)
 
 
-def _delete_map_decorations_from_position(game_state, snapped_mouse_world_position: Tuple[int, int]):
-    for d in [d for d in game_state.decoration_entities if (d.x, d.y) == snapped_mouse_world_position]:
-        game_state.decoration_entities.remove(d)
+def _delete_map_decorations_from_position(game_state: GameState, snapped_mouse_world_position: Tuple[int, int]):
+    for d in game_state.decorations_state.get_decorations_at_position(snapped_mouse_world_position):
+        game_state.decorations_state.remove_decoration(d)

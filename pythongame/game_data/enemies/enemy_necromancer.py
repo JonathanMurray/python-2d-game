@@ -1,16 +1,16 @@
 import random
 
-from pythongame.core.common import Millis, NpcType, Sprite, Direction, ItemType
+from pythongame.core.common import Millis, NpcType, Sprite, Direction
 from pythongame.core.entity_creation import create_npc
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
     NON_PLAYER_CHARACTERS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
-from pythongame.core.loot import LootTable, LootEntry, LootGroup
 from pythongame.core.math import random_direction, get_position_from_center_position, sum_of_vectors, \
     is_x_and_y_within_distance
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.visual_effects import VisualLine, VisualCircle
+from pythongame.game_data.loot_tables import LOOT_TABLE_4
 
 SPRITE = Sprite.ENEMY_NECROMANCER
 ENEMY_TYPE = NpcType.NECROMANCER
@@ -57,11 +57,11 @@ class NpcMind(AbstractNpcMind):
                 e for e in game_state.non_player_characters
                 if e.is_enemy
                    and is_x_and_y_within_distance(necro_center_pos, e.world_entity.get_center_position(), 200)
-                   and e != npc and e.health < e.max_health
+                   and e != npc and not e.health_resource.is_at_max()
             ]
             if nearby_hurt_enemies:
                 healing_target = nearby_hurt_enemies[0]
-                healing_target.gain_health(5)
+                healing_target.health_resource.gain(5)
                 healing_target_pos = healing_target.world_entity.get_center_position()
                 visual_line = VisualLine((80, 200, 150), necro_center_pos, healing_target_pos, Millis(350), 3)
                 game_state.visual_effects.append(visual_line)
@@ -76,22 +76,15 @@ class NpcMind(AbstractNpcMind):
 
 
 def register_necromancer_enemy():
-    size = (50, 60)
-    health = 25
-    loot = LootTable([
-        LootGroup(1, [LootEntry.money(1), LootEntry.money(2), LootEntry.money(3)], 0.9),
-        LootGroup.single(LootEntry.money(1), 0.4),
-        LootGroup(
-            1,
-            [LootEntry.item(ItemType.BLESSED_SHIELD_2), LootEntry.item(ItemType.SOLDIERS_HELMET_2)],
-            0.3)
-    ])
-    register_npc_data(ENEMY_TYPE, NpcData(SPRITE, size, health, 0, 0.02, 15, True, False, None, None, loot))
+    size = (36, 36)
+    health = 40
+    exp_reward = 29
+    register_npc_data(ENEMY_TYPE, NpcData.enemy(SPRITE, size, health, 0, 0.02, exp_reward, LOOT_TABLE_4))
     register_npc_behavior(ENEMY_TYPE, NpcMind)
 
     enemy_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")
     enemy_original_sprite_size = (32, 32)
-    enemy_scaled_sprite_size = (50, 60)
+    enemy_scaled_sprite_size = (48, 64)
     enemy_indices_by_dir = {
         Direction.DOWN: [(x, 0) for x in range(9, 12)],
         Direction.LEFT: [(x, 1) for x in range(9, 12)],
@@ -99,4 +92,4 @@ def register_necromancer_enemy():
         Direction.UP: [(x, 3) for x in range(9, 12)]
     }
     register_entity_sprite_map(SPRITE, enemy_sprite_sheet, enemy_original_sprite_size,
-                               enemy_scaled_sprite_size, enemy_indices_by_dir, (0, 0))
+                               enemy_scaled_sprite_size, enemy_indices_by_dir, (-6, -28))

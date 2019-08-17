@@ -1,8 +1,27 @@
-from typing import Dict, Type, Optional
+from typing import Dict, Type, Optional, List
 
 from pythongame.core.common import *
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.sound_player import play_sound
+
+
+class DialogOptionGraphics:
+    # TODO handle option icons
+    def __init__(self, text_header: str, text_detailed: str, ui_icon_sprite: UiIconSprite):
+        self.text_header = text_header
+        self.text_detailed = text_detailed
+        self.ui_icon_sprite = ui_icon_sprite
+
+
+# Used to display dialog from an npc along with the NPC's portrait
+class DialogGraphics:
+    def __init__(self, portrait_icon_sprite: PortraitIconSprite, text_body: str, options: List[DialogOptionGraphics],
+                 active_option_index: int):
+        self.portrait_icon_sprite = portrait_icon_sprite
+        self.text_body = text_body
+        self.options = options
+        self.active_option_index = active_option_index
 
 
 class AbstractNpcMind:
@@ -26,9 +45,47 @@ class AbstractNpcAction:
         pass
 
 
+class SellConsumableNpcAction(AbstractNpcAction):
+    def __init__(self, cost: int, consumable_type: ConsumableType, name: str):
+        self.cost = cost
+        self.consumable_type = consumable_type
+        self.name = name
+
+    def act(self, game_state: GameState):
+        player_state = game_state.player_state
+        can_afford = player_state.money >= self.cost
+        has_space = player_state.consumable_inventory.has_space_for_more()
+        if not can_afford:
+            play_sound(SoundId.WARNING)
+            return "Not enough gold!"
+        if not has_space:
+            play_sound(SoundId.WARNING)
+            return "Not enough space!"
+        player_state.money -= self.cost
+        player_state.consumable_inventory.add_consumable(self.consumable_type)
+        play_sound(SoundId.EVENT_PURCHASED_SOMETHING)
+        return "Bought " + self.name
+
+
+class DialogOptionData:
+    def __init__(self, text_header: str, text_detailed: str, action: Optional[AbstractNpcAction],
+                 ui_icon_sprite: UiIconSprite):
+        self.text_header = text_header
+        self.text_detailed = text_detailed
+        self.action = action
+        self.ui_icon_sprite = ui_icon_sprite
+
+
+class DialogData:
+    def __init__(self, portrait_icon_sprite: PortraitIconSprite, text_body: str, options: List[DialogOptionData]):
+        self.portrait_icon_sprite = portrait_icon_sprite
+        self.text_body = text_body
+        self.options = options
+
+
 _npc_mind_constructors: Dict[NpcType, Type[AbstractNpcMind]] = {}
 
-_npc_actions: Dict[NpcType, AbstractNpcAction] = {}
+_npc_dialog_data: Dict[NpcType, DialogData] = {}
 
 
 def register_npc_behavior(npc_type: NpcType, mind_constructor: Type[AbstractNpcMind]):
@@ -40,10 +97,27 @@ def create_npc_mind(npc_type: NpcType, global_path_finder: GlobalPathFinder):
     return constructor(global_path_finder)
 
 
-def register_npc_action(npc_type: NpcType, action: AbstractNpcAction):
-    _npc_actions[npc_type] = action
+def register_npc_dialog_data(npc_type: NpcType, data: DialogData):
+    _npc_dialog_data[npc_type] = data
 
 
-def invoke_npc_action(npc_type: NpcType, game_state: GameState) -> Optional[str]:
-    optional_message = _npc_actions[npc_type].act(game_state)
+def invoke_npc_action(npc_type: NpcType, option_index: int, game_state: GameState) -> Optional[str]:
+    action = _npc_dialog_data[npc_type].options[option_index].action
+    if not action:
+        return None
+    optional_message = action.act(game_state)
     return optional_message
+
+
+def has_npc_dialog(npc_type: NpcType) -> bool:
+    return npc_type in _npc_dialog_data
+
+
+def get_dialog_graphics(npc_type: NpcType, active_option_index: int) -> DialogGraphics:
+    data = _npc_dialog_data[npc_type]
+    options_graphics = [DialogOptionGraphics(o.text_header, o.text_detailed, o.ui_icon_sprite) for o in data.options]
+    return DialogGraphics(data.portrait_icon_sprite, data.text_body, options_graphics, active_option_index)
+
+
+def get_dialog_data(npc_type: NpcType) -> DialogData:
+    return _npc_dialog_data[npc_type]

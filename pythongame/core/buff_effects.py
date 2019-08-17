@@ -16,7 +16,7 @@ class AbstractBuffEffect:
         pass
 
     def get_buff_type(self):
-        pass
+        raise Exception("This method needs to be overridden")
 
     def buff_handle_event(self, event: Event) -> Optional[BuffEventOutcome]:
         return None
@@ -30,7 +30,7 @@ def register_buff_effect(buff_type: BuffType, effect: Type[AbstractBuffEffect]):
 
 
 def get_buff_effect(buff_type: BuffType, args: Optional[Any] = None) -> AbstractBuffEffect:
-    if args:
+    if args is not None:
         # args passed in, assume the buff takes args in constructor
         return _buff_effects[buff_type](args)
     else:

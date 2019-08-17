@@ -14,8 +14,9 @@ from pythongame.core.projectile_controllers import create_projectile_controller,
     register_projectile_controller
 from pythongame.core.visual_effects import VisualCircle
 
-PROJECTILE_SIZE = (30, 30)
-MIN_DMG = 2
+# Note: Projectil size must be smaller than hero entity size (otherwise you get a collision when shooting next to wall)
+PROJECTILE_SIZE = (28, 28)
+MIN_DMG = 3
 MAX_DMG = 4
 
 
@@ -58,7 +59,8 @@ def _apply_ability(game_state: GameState) -> bool:
 
 def register_fireball_ability():
     register_ability_effect(AbilityType.FIREBALL, _apply_ability)
-    description = "Damages first enemy that is hit (" + str(MIN_DMG) + "-" + str(MAX_DMG) + ")"
+    description = "Shoot a fireball, dealing " + str(MIN_DMG) + "-" + str(MAX_DMG) + \
+                  " damage to the first enemy that it hits."
     register_ability_data(
         AbilityType.FIREBALL,
         AbilityData("Fireball", UiIconSprite.ABILITY_FIREBALL, 4, Millis(500), description, SoundId.ABILITY_FIREBALL))

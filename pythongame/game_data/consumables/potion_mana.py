@@ -1,21 +1,19 @@
 from pythongame.core.common import ConsumableType, Sprite, UiIconSprite
 from pythongame.core.consumable_effects import create_potion_visual_effect_at_player, ConsumableWasConsumed, \
     ConsumableFailedToBeConsumed, register_consumable_effect
+from pythongame.core.damage_interactions import player_receive_mana
 from pythongame.core.game_data import POTION_ENTITY_SIZE, ConsumableCategory
 from pythongame.core.game_data import register_ui_icon_sprite_path, register_entity_sprite_initializer, \
     SpriteInitializer, register_consumable_data, ConsumableData
 from pythongame.core.game_state import GameState
-from pythongame.core.visual_effects import create_visual_mana_text
 
-MANA_AMOUNT = 150
+MANA_AMOUNT = 100
 
 
 def _apply_mana(game_state: GameState):
-    player_state = game_state.player_state
-    if game_state.player_state.mana < game_state.player_state.max_mana:
+    if not game_state.player_state.mana_resource.is_at_max():
         create_potion_visual_effect_at_player(game_state)
-        player_state.gain_mana(MANA_AMOUNT)
-        game_state.visual_effects.append(create_visual_mana_text(game_state.player_entity, MANA_AMOUNT))
+        player_receive_mana(MANA_AMOUNT, game_state)
         return ConsumableWasConsumed()
     else:
         return ConsumableFailedToBeConsumed("Already at full mana!")

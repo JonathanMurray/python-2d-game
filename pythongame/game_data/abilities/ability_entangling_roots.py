@@ -1,7 +1,7 @@
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import register_buff_effect, AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import Sprite, ProjectileType, AbilityType, Millis, \
-    Direction, BuffType, SoundId, UiIconSprite
+    Direction, BuffType, SoundId, UiIconSprite, PeriodicTimer
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, SpriteSheet, \
     register_entity_sprite_map
@@ -19,6 +19,7 @@ ICON_SPRITE = UiIconSprite.ABILITY_ENTANGLING_ROOTS
 ABILITY_TYPE = AbilityType.ENTANGLING_ROOTS
 PROJECTILE_SIZE = (55, 55)
 ENTANGLING_ROOTS_SIZE = (50, 50)
+DEBUFF_DURATION = Millis(5000)
 
 
 class ProjectileController(AbstractProjectileController):
@@ -29,13 +30,13 @@ class ProjectileController(AbstractProjectileController):
         damage_was_dealt = deal_player_damage_to_enemy(game_state, npc, 1)
         if not damage_was_dealt:
             return False
-        debuff_duration = Millis(5000)
-        npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), debuff_duration)
+
+        npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), DEBUFF_DURATION)
         victim_center_pos = npc.world_entity.get_center_position()
         visual_effect_pos = (victim_center_pos[0] - ENTANGLING_ROOTS_SIZE[0] // 2,
                              victim_center_pos[1] - ENTANGLING_ROOTS_SIZE[1] // 2)
         debuff_visual_effect = VisualSprite(Sprite.DECORATION_ENTANGLING_ROOTS_EFFECT, visual_effect_pos,
-                                            debuff_duration, npc.world_entity)
+                                            DEBUFF_DURATION, npc.world_entity)
         game_state.visual_effects.append(debuff_visual_effect)
         return True
 
@@ -47,7 +48,7 @@ def _apply_ability(game_state: GameState) -> bool:
         get_position_from_center_position(player_entity.get_center_position(), PROJECTILE_SIZE),
         player_entity.direction,
         distance_from_player)
-    projectile_speed = 0.1
+    projectile_speed = 0.2
     entity = WorldEntity(projectile_pos, PROJECTILE_SIZE, PROJECTILE_SPRITE, player_entity.direction,
                          projectile_speed)
     projectile = Projectile(entity, create_projectile_controller(PROJECTILE_TYPE))
@@ -61,23 +62,20 @@ def _apply_ability(game_state: GameState) -> bool:
 class Rooted(AbstractBuffEffect):
 
     def __init__(self):
-        self._damage_interval = 666
-        self._time_since_damage = self._damage_interval
+        self.timer = PeriodicTimer(Millis(500))
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        buffed_npc.add_stun()
+        buffed_npc.stun_status.add_one()
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
-        self._time_since_damage += time_passed
-        if self._time_since_damage > self._damage_interval:
-            self._time_since_damage = 0
-            deal_player_damage_to_enemy(game_state, buffed_npc, 2)
+        if self.timer.update_and_check_if_ready(time_passed):
+            deal_player_damage_to_enemy(game_state, buffed_npc, 1)
             game_state.visual_effects.append(
                 VisualCircle((0, 150, 0), buffed_entity.get_center_position(), 30, 55, Millis(150), 2, buffed_entity))
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        buffed_npc.remove_stun()
+        buffed_npc.stun_status.remove_one()
 
     def get_buff_type(self):
         return BUFF_TYPE
@@ -85,10 +83,11 @@ class Rooted(AbstractBuffEffect):
 
 def register_entangling_roots_ability():
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    register_ability_data(
-        ABILITY_TYPE,
-        AbilityData("Entangling roots", ICON_SPRITE, 16, Millis(8000), "Roots an enemy and deals damage over time",
-                    SoundId.ABILITY_ENTANGLING_ROOTS))
+    description = "Root an enemy for " + "{:.0f}".format(DEBUFF_DURATION / 1000) + "s and deal periodic damage."
+    mana_cost = 22
+    ability_data = AbilityData("Entangling roots", ICON_SPRITE, mana_cost, Millis(8000), description,
+                               SoundId.ABILITY_ENTANGLING_ROOTS)
+    register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ICON_SPRITE, "resources/graphics/ability_icon_entangling_roots.png")
     register_projectile_controller(PROJECTILE_TYPE, ProjectileController)
 

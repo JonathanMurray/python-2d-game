@@ -1,9 +1,8 @@
-from typing import Dict
-
-from pythongame.core.common import ItemType, HeroId, PortraitIconSprite
+from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
+from pythongame.core.game_state import PlayerLevelBonus
 
 
 def register_hero_mage():
@@ -23,32 +22,33 @@ def register_hero_mage():
                                scaled_sprite_size, indices_by_dir, sprite_position_relative_to_entity)
     register_portrait_icon_sprite_path(portrait_icon_sprite, 'resources/graphics/player_portrait.gif')
     entity_speed = 0.105
-    entity_size = (30, 30)
-    hero_data = HeroData(sprite, portrait_icon_sprite, _get_initial_player_state_mage(), entity_speed, entity_size)
+    hero_data = HeroData(sprite, portrait_icon_sprite, _get_initial_player_state_mage(), entity_speed,
+                         PLAYER_ENTITY_SIZE)
     register_hero_data(HeroId.MAGE, hero_data)
 
 
 def _get_initial_player_state_mage() -> InitialPlayerStateData:
     health = 40
-    mana = 120
-    mana_regen = 4
+    mana = 60
+    mana_regen = 3.5
+    health_per_level = 5
+    mana_per_level = 10
+    armor_per_level = 1
+    level_bonus = PlayerLevelBonus(health_per_level, mana_per_level, armor_per_level)
+    armor = 0
     consumable_slots = {
-        1: ConsumableType.HEALTH_LESSER,
-        2: ConsumableType.MANA_LESSER,
-        3: None,
-        4: None,
-        5: None
+        1: [ConsumableType.HEALTH_LESSER],
+        2: [ConsumableType.MANA_LESSER],
+        3: [],
+        4: [],
+        5: []
     }
     abilities = [AbilityType.FIREBALL]
-    items: Dict[int, ItemType] = {
-        1: None,
-        2: None,
-        3: None
-    }
     new_level_abilities = {
         3: AbilityType.WHIRLWIND,
         5: AbilityType.ENTANGLING_ROOTS,
         7: AbilityType.CHANNEL_ATTACK
     }
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities, HeroId.MAGE, 0)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HeroId.MAGE, armor,
+        level_bonus)

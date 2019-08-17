@@ -3,8 +3,9 @@ from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path
     register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
+from pythongame.core.item_inventory import ItemEquipmentCategory
 
-ITEM_TYPE = ItemType.WINGED_BOOTS
+ITEM_TYPE = ItemType.MESSENGERS_HAT
 
 SPEED_MULTIPLIER = 0.1
 
@@ -20,14 +21,13 @@ class ItemEffect(AbstractItemEffect):
         return ITEM_TYPE
 
 
-def register_winged_boots_item():
-    ui_icon_sprite = UiIconSprite.ITEM_WINGED_BOOTS
-    sprite = Sprite.ITEM_WINGED_BOOTS
+def register_messengers_hat_item():
+    ui_icon_sprite = UiIconSprite.ITEM_MESSENGERS_HAT
+    sprite = Sprite.ITEM_MESSENGERS_HAT
     register_item_effect(ITEM_TYPE, ItemEffect())
-    register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/item_winged_boots.png")
-    register_entity_sprite_initializer(
-        sprite, SpriteInitializer("resources/graphics/item_winged_boots.png", ITEM_ENTITY_SIZE))
-    register_item_data(
-        ITEM_TYPE,
-        ItemData(ui_icon_sprite, sprite, "Winged Boots",
-                 "Grants " + str(int(SPEED_MULTIPLIER * 100)) + "% increased movement speed"))
+    image_file_path = "resources/graphics/item_messengers_hat.png"
+    register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
+    register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
+    description = "Grants " + str(int(SPEED_MULTIPLIER * 100)) + "% increased movement speed"
+    item_data = ItemData(ui_icon_sprite, sprite, "Messenger's hat", description, ItemEquipmentCategory.HEAD)
+    register_item_data(ITEM_TYPE, item_data)

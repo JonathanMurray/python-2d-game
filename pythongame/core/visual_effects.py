@@ -1,5 +1,5 @@
 import random
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List
 
 from pythongame.core.common import Millis, Sprite
 from pythongame.core.game_data import ENTITY_SPRITE_SIZES
@@ -50,6 +50,29 @@ class VisualCircle(VisualEffect):
     def update_position_if_attached_to_entity(self):
         if self.attached_to_entity:
             self.center_position = self.attached_to_entity.get_center_position()
+
+
+class VisualCross(VisualEffect):
+    def __init__(self, color: Tuple[int, int, int], center_position: Tuple[int, int], radius: int, max_age: Millis,
+                 line_width: int, attached_to_entity: WorldEntity = None):
+        super().__init__(max_age, attached_to_entity)
+        self.radius = radius
+        self.color = color
+        self.center_position = center_position
+        self.line_width = line_width
+
+    def update_position_if_attached_to_entity(self):
+        if self.attached_to_entity:
+            self.center_position = self.attached_to_entity.get_center_position()
+
+    def lines(self) -> List[Tuple[Tuple[int, int], Tuple[int, int]]]:
+        left = self.center_position[0] - self.radius
+        right = self.center_position[0] + self.radius
+        top = self.center_position[1] - self.radius
+        bot = self.center_position[1] + self.radius
+        line_1 = (left, top), (right, bot)
+        line_2 = (right, top), (left, bot)
+        return [line_1, line_2]
 
 
 class VisualRect(VisualEffect):
@@ -116,6 +139,13 @@ def create_visual_mana_text(entity: WorldEntity, healing_amount: int):
 def create_visual_exp_text(entity: WorldEntity, exp_amount: int):
     start_position, end_position = _get_entity_text_positions(entity)
     return VisualText(str(exp_amount), (255, 255, 255), start_position, end_position, Millis(800))
+
+
+def create_teleport_effects(effect_position: Tuple) -> List[VisualEffect]:
+    color = (140, 140, 230)
+    return [VisualCircle(color, effect_position, 17, 35, Millis(150), 1),
+            VisualRect(color, effect_position, 37, 50, Millis(150), 1),
+            VisualCircle(color, effect_position, 25, 50, Millis(300), 2)]
 
 
 def _get_entity_text_positions(entity: WorldEntity) -> Tuple[Tuple[int, int], Tuple[int, int]]:

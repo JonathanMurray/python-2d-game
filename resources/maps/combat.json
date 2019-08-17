@@ -1,83 +1,19 @@
 {
   "player": {
     "position": [
-      250,
-      250
+      -125,
+      300
     ]
   },
-  "consumables_on_ground": [
-    {
-      "consumable_type": "HEALTH_LESSER",
-      "position": [
-        350,
-        225
-      ]
-    }
-  ],
+  "consumables_on_ground": [],
   "items_on_ground": [],
   "money_piles_on_ground": [],
   "non_player_characters": [
     {
       "npc_type": "MUMMY",
       "position": [
-        600,
-        400
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
-        525,
-        300
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
-        800,
-        325
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
         875,
         175
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
-        500,
-        175
-      ]
-    },
-    {
-      "npc_type": "WARRIOR",
-      "position": [
-        600,
-        225
-      ]
-    },
-    {
-      "npc_type": "WARRIOR",
-      "position": [
-        725,
-        175
-      ]
-    },
-    {
-      "npc_type": "WARRIOR",
-      "position": [
-        700,
-        300
-      ]
-    },
-    {
-      "npc_type": "WARRIOR",
-      "position": [
-        775,
-        400
       ]
     },
     {
@@ -95,52 +31,87 @@
       ]
     },
     {
-      "npc_type": "MUMMY",
+      "npc_type": "GOBLIN_WARLOCK",
       "position": [
-        500,
-        250
+        475,
+        350
       ]
     },
     {
-      "npc_type": "WARRIOR",
+      "npc_type": "GOBLIN_WORKER",
       "position": [
-        450,
-        225
+        -25,
+        300
       ]
     },
     {
-      "npc_type": "WARRIOR",
+      "npc_type": "GOBLIN_WORKER",
       "position": [
-        550,
-        175
-      ]
-    },
-    {
-      "npc_type": "RAT_2",
-      "position": [
-        550,
-        250
-      ]
-    },
-    {
-      "npc_type": "RAT_2",
-      "position": [
-        600,
-        175
-      ]
-    },
-    {
-      "npc_type": "RAT_2",
-      "position": [
-        600,
+        0,
         275
       ]
     },
     {
-      "npc_type": "RAT_2",
+      "npc_type": "GOBLIN_SPEARMAN_ELITE",
       "position": [
-        650,
-        225
+        125,
+        275
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_SPEARMAN_ELITE",
+      "position": [
+        275,
+        250
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_WARRIOR",
+      "position": [
+        300,
+        400
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_WARRIOR",
+      "position": [
+        425,
+        175
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_SPEARMAN",
+      "position": [
+        375,
+        250
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_SPEARMAN",
+      "position": [
+        250,
+        350
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_WARLOCK",
+      "position": [
+        100,
+        350
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_WARLOCK",
+      "position": [
+        350,
+        350
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_WARLOCK",
+      "position": [
+        350,
+        150
       ]
     }
   ],
@@ -184,62 +155,6 @@
       "wall_type": "WALL_DIRECTIONAL_N",
       "position": [
         150,
-        200
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
-        150,
-        225
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
-        150,
-        250
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
-        150,
-        275
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
-        150,
-        300
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
-        150,
-        325
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
-        150,
-        350
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
-        150,
-        375
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
-        150,
         400
       ]
     },
@@ -1922,11 +1837,265 @@
         2075,
         775
       ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        125,
+        175
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        75,
+        175
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        50,
+        175
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        25,
+        175
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        0,
+        175
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -25,
+        175
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -50,
+        175
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -100,
+        175
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -125,
+        175
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -150,
+        175
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -175,
+        175
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -200,
+        175
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -75,
+        175
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        100,
+        175
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        125,
+        400
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        100,
+        400
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        75,
+        400
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        50,
+        400
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        25,
+        400
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        0,
+        400
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -25,
+        400
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -50,
+        400
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -75,
+        400
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -125,
+        400
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -150,
+        400
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -175,
+        400
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -200,
+        400
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -100,
+        400
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -200,
+        375
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -200,
+        350
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -200,
+        325
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -200,
+        300
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -200,
+        275
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -200,
+        250
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -200,
+        225
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        -200,
+        200
+      ]
     }
   ],
-  "game_world_size": [
-    5000,
-    5000
+  "entire_world_area": [
+    -1000,
+    -1000,
+    6000,
+    6000
   ],
   "decorations": [],
   "portals": []

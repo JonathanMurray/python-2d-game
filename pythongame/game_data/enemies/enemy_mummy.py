@@ -1,15 +1,17 @@
 import random
 
-from pythongame.core.common import Millis, NpcType, Sprite, Direction, ConsumableType
-from pythongame.core.damage_interactions import deal_npc_damage
+from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId
+from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import get_target, EnemyTarget
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
-from pythongame.core.loot import LootTable, LootGroup, LootEntry
 from pythongame.core.math import get_perpendicular_directions, is_x_and_y_within_distance
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
+from pythongame.game_data.loot_tables import LOOT_TABLE_3
+
+DAMAGE_AMOUNT = 7
 
 
 class NpcMind(AbstractNpcMind):
@@ -62,8 +64,7 @@ class NpcMind(AbstractNpcMind):
                 enemy_position = enemy_entity.get_center_position()
                 target_center_pos = target.entity.get_center_position()
                 if is_x_and_y_within_distance(enemy_position, target_center_pos, 100):
-                    damage_amount = 3
-                    deal_npc_damage(damage_amount, game_state, enemy_entity, npc, target)
+                    deal_npc_damage(DAMAGE_AMOUNT, DamageType.PHYSICAL, game_state, enemy_entity, npc, target)
 
 
 def _move_in_dir(enemy_entity, direction):
@@ -74,19 +75,16 @@ def _move_in_dir(enemy_entity, direction):
 
 
 def register_mummy_enemy():
-    size = (42, 42)  # Must not align perfectly with grid cell size (pathfinding issues)
+    size = (30, 30)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.ENEMY_MUMMY
     npc_type = NpcType.MUMMY
     movement_speed = 0.06
-    health = 12
-    health_regen = 1
-    loot = LootTable([
-        LootGroup(1, [LootEntry.money(1), LootEntry.money(2)], 0.8),
-        LootGroup(1, [LootEntry.consumable(ConsumableType.HEALTH_LESSER),
-                      LootEntry.consumable(ConsumableType.MANA_LESSER)], 0.2)
-    ])
-    register_npc_data(npc_type,
-                      NpcData(sprite, size, health, health_regen, movement_speed, 10, True, False, None, None, loot))
+    health = 20
+    health_regen = 2
+    exp_reward = 15
+    npc_data = NpcData.enemy(sprite, size, health, health_regen, movement_speed, exp_reward, LOOT_TABLE_3,
+                             SoundId.DEATH_ZOMBIE)
+    register_npc_data(npc_type, npc_data)
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")
     original_sprite_size = (32, 32)
@@ -97,4 +95,5 @@ def register_mummy_enemy():
         Direction.RIGHT: [(6, 6), (7, 6), (8, 6)],
         Direction.UP: [(6, 7), (7, 7), (8, 7)]
     }
-    register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir, (-3, -3))
+    register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir,
+                               (-9, -18))

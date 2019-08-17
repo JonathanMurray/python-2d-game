@@ -3,10 +3,11 @@ from typing import Tuple
 from pythongame.core.common import NpcType, Direction, Sprite, ItemType, ConsumableType, WallType, PortalId, HeroId
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, ITEMS, CONSUMABLES, POTION_ENTITY_SIZE, \
-    WALLS, PORTALS, HEROES
+    WALLS, PORTALS, HEROES, NpcData
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
-    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState
-from pythongame.core.item_effects import get_item_effect
+    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, HealthOrManaResource, WarpPoint
+from pythongame.core.item_inventory import ItemInventory, ItemInventorySlot, ItemEquipmentCategory
+from pythongame.core.math import get_position_from_center_position
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
@@ -21,12 +22,13 @@ def set_global_path_finder(_global_path_finder: GlobalPathFinder):
 
 
 def create_npc(npc_type: NpcType, pos: Tuple[int, int]) -> NonPlayerCharacter:
-    data = NON_PLAYER_CHARACTERS[npc_type]
+    data: NpcData = NON_PLAYER_CHARACTERS[npc_type]
     entity = WorldEntity(pos, data.size, data.sprite, Direction.LEFT, data.speed)
     npc_mind = create_npc_mind(npc_type, global_path_finder)
-    return NonPlayerCharacter(npc_type, entity, data.max_health, data.max_health, data.health_regen, npc_mind,
-                              data.is_enemy, data.is_neutral, data.dialog, data.portrait_icon_sprite,
-                              data.enemy_loot_table)
+    health_resource = HealthOrManaResource(data.max_health, data.health_regen)
+    return NonPlayerCharacter(npc_type, entity, health_resource, npc_mind,
+                              data.npc_category, data.enemy_loot_table, data.death_sound_id,
+                              data.max_distance_allowed_from_start_position)
 
 
 def create_money_pile_on_ground(amount: int, pos: Tuple[int, int]) -> MoneyPileOnGround:
@@ -41,11 +43,13 @@ def create_money_pile_on_ground(amount: int, pos: Tuple[int, int]) -> MoneyPileO
 
 def create_item_on_ground(item_type: ItemType, pos: Tuple[int, int]) -> ItemOnGround:
     entity = WorldEntity(pos, ITEM_ENTITY_SIZE, ITEMS[item_type].entity_sprite)
+    entity.view_z = 1 # It should be rendered below all other entities
     return ItemOnGround(entity, item_type)
 
 
 def create_consumable_on_ground(consumable_type: ConsumableType, pos: Tuple[int, int]) -> ConsumableOnGround:
     entity = WorldEntity(pos, POTION_ENTITY_SIZE, CONSUMABLES[consumable_type].entity_sprite)
+    entity.view_z = 1 # It should be rendered below all other entities
     return ConsumableOnGround(entity, consumable_type)
 
 
@@ -70,10 +74,27 @@ def create_decoration_entity(pos: Tuple[int, int], sprite: Sprite) -> Decoration
 
 def create_player_state(hero_id: HeroId) -> PlayerState:
     data = HEROES[hero_id].initial_player_state
-    item_slots_with_effects = {slot_number: get_item_effect(item_id) if item_id else None
-                               for (slot_number, item_id)
-                               in data.item_slots.items()}
     consumable_inventory = ConsumableInventory(data.consumable_slots)
+    item_slots = [
+        ItemInventorySlot(None, ItemEquipmentCategory.NECK),
+        ItemInventorySlot(None, ItemEquipmentCategory.HEAD),
+        ItemInventorySlot(None, ItemEquipmentCategory.RING),
+        ItemInventorySlot(None, ItemEquipmentCategory.MAIN_HAND),
+        ItemInventorySlot(None, ItemEquipmentCategory.CHEST),
+        ItemInventorySlot(None, ItemEquipmentCategory.OFF_HAND),
+        ItemInventorySlot(None, None),
+        ItemInventorySlot(None, None),
+        ItemInventorySlot(None, None)
+    ]
+    item_inventory = ItemInventory(item_slots)
+    health_resource = HealthOrManaResource(data.health, 0)
+    mana_resource = HealthOrManaResource(data.mana, data.mana_regen)
     return PlayerState(
-        data.health, data.health, data.mana, data.mana, data.mana_regen, consumable_inventory, data.abilities,
-        item_slots_with_effects, data.new_level_abilities, data.hero_id, data.armor)
+        health_resource, mana_resource, consumable_inventory, data.abilities,
+        item_inventory, data.new_level_abilities, data.hero_id, data.armor, data.level_bonus)
+
+
+def create_warp_point(center_pos: Tuple[int, int], size: Tuple[int, int]) -> WarpPoint:
+    entity = WorldEntity(get_position_from_center_position(center_pos, size), size, Sprite.WARP_POINT)
+    entity.visible = False  # Warp points start out invisible and are later made visible
+    return WarpPoint(entity)

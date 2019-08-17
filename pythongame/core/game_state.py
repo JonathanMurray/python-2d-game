@@ -4,17 +4,14 @@ from typing import List, Optional, Dict, Any, Tuple
 from pygame.rect import Rect
 
 from pythongame.core.common import *
-from pythongame.core.common import PortraitIconSprite
 from pythongame.core.consumable_inventory import ConsumableInventory
-from pythongame.core.game_data import NpcDialog
+from pythongame.core.game_data import NpcCategory, PlayerLevelBonus
+from pythongame.core.item_inventory import ItemInventory
 from pythongame.core.loot import LootTable
 from pythongame.core.math import boxes_intersect, rects_intersect, get_position_from_center_position, \
     translate_in_direction, is_x_and_y_within_distance
 
 GRID_CELL_WIDTH = 25
-
-WALL_BUCKET_WIDTH = 100
-WALL_BUCKET_HEIGHT = 100
 
 
 class WorldArea:
@@ -33,6 +30,9 @@ class WorldArea:
 
     def rect(self) -> Tuple[int, int, int, int]:
         return self.x, self.y, self.w, self.h
+
+    def get_bot_right_position(self) -> Tuple[int, int]:
+        return self.x + self.w, self.y + self.h
 
     def contains_position(self, position: Tuple[int, int]) -> bool:
         return self.x <= position[0] <= self.x + self.w and self.y <= position[1] <= self.y + self.h
@@ -53,6 +53,7 @@ class WorldEntity:
         self.pygame_collision_rect = Rect(self.rect())
         self.movement_animation_progress: float = 0  # goes from 0 to 1 repeatedly
         self.visible = True  # Should only be used to control rendering
+        self.view_z = 0  # increasing Z values = moving into the screen
 
     def set_moving_in_dir(self, direction: Direction):
         if direction is None:
@@ -71,7 +72,10 @@ class WorldEntity:
 
     def update_movement_animation(self, time_passed: Millis):
         if self._is_moving:
-            self.movement_animation_progress = (self.movement_animation_progress + float(time_passed) / 1000) % 1
+            self.update_animation(time_passed)
+
+    def update_animation(self, time_passed):
+        self.movement_animation_progress = (self.movement_animation_progress + float(time_passed) / 1000) % 1
 
     def get_new_position_according_to_other_dir_and_speed(self, direction: Direction, time_passed: Millis) \
             -> Optional[Tuple[int, int]]:
@@ -153,37 +157,103 @@ class Projectile:
         self.projectile_controller = projectile_controller
 
 
+class HealthOrManaResource:
+    def __init__(self, max_value: int, regen: float):
+        self._value_float = max_value
+        self.value = max_value
+        self.max_value = max_value
+        self.base_regen = regen
+        self.regen_bonus = 0
+
+    def gain(self, amount: float) -> int:
+        value_before = self.value
+        self._value_float = min(self._value_float + amount, self.max_value)
+        self.value = int(math.floor(self._value_float))
+        amount_gained = self.value - value_before
+        return amount_gained
+
+    def lose(self, amount: float) -> int:
+        value_before = self.value
+        self._value_float = min(self._value_float - amount, self.max_value)
+        self.value = int(math.floor(self._value_float))
+        amount_lost = value_before - self.value
+        return amount_lost
+
+    def set_zero(self):
+        self._value_float = 0
+        self.value = 0
+
+    def gain_to_max(self) -> int:
+        value_before = self.value
+        self._value_float = self.max_value
+        self.value = self.max_value
+        amount_gained = self.value - value_before
+        return amount_gained
+
+    def set_to_partial_of_max(self, partial: float):
+        self._value_float = partial * self.max_value
+        self.value = int(math.floor(self._value_float))
+
+    def regenerate(self, time_passed: Millis):
+        self.gain(self.get_effective_regen() / 1000.0 * float(time_passed))
+
+    def is_at_max(self):
+        return self.value == self.max_value
+
+    def is_at_or_below_zero(self):
+        return self.value <= 0
+
+    def increase_max(self, amount: int):
+        self.max_value += amount
+
+    def decrease_max(self, amount: int):
+        self.max_value -= amount
+        if self.value > self.max_value:
+            self._value_float = self.max_value
+            self.value = int(math.floor(self._value_float))
+
+    def get_partial(self) -> float:
+        return self.value / self.max_value
+
+    def get_effective_regen(self) -> float:
+        return self.base_regen + self.regen_bonus
+
+
+class StunStatus:
+    def __init__(self):
+        self._number_of_active_stuns = 0
+
+    def add_one(self):
+        self._number_of_active_stuns += 1
+
+    def remove_one(self):
+        self._number_of_active_stuns -= 1
+        if self._number_of_active_stuns < 0:
+            raise Exception("Number of active stuns went below 0 down to " + str(self._number_of_active_stuns))
+
+    def is_stunned(self):
+        return self._number_of_active_stuns > 0
+
+
 class NonPlayerCharacter:
-    def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health: int, max_health: int,
-                 health_regen: float, npc_mind, is_enemy: bool, is_neutral: bool, dialog: Optional[NpcDialog],
-                 portrait_icon_sprite: Optional[PortraitIconSprite], enemy_loot_table: Optional[LootTable]):
+    def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health_resource: HealthOrManaResource,
+                 npc_mind, npc_category: NpcCategory,
+                 enemy_loot_table: Optional[LootTable], death_sound_id: Optional[SoundId],
+                 max_distance_allowed_from_start_position: Optional[int]):
         self.npc_type = npc_type
         self.world_entity = world_entity
-        self._health_float = health
-        self.health = health
-        self.max_health = max_health
-        self.health_regen = health_regen
+        self.health_resource = health_resource
         self.npc_mind = npc_mind
         self.active_buffs: List[BuffWithDuration] = []
         self.invulnerable: bool = False
-        self._number_of_active_stuns = 0
-        self.is_enemy = is_enemy
-        self.is_neutral = is_neutral
-        self.dialog: Optional[NpcDialog] = dialog
-        self.portrait_icon_sprite: Optional[PortraitIconSprite] = portrait_icon_sprite
+        self.stun_status = StunStatus()
+        self.npc_category = npc_category
+        self.is_enemy = npc_category == NpcCategory.ENEMY
+        self.is_neutral = npc_category == NpcCategory.NEUTRAL
         self.enemy_loot_table = enemy_loot_table
-
-    def lose_health(self, amount: float):
-        self._health_float = min(self._health_float - amount, self.max_health)
-        self.health = int(math.floor(self._health_float))
-
-    def lose_all_health(self):
-        self._health_float = 0
-        self.health = 0
-
-    def gain_health(self, amount: float):
-        self._health_float = min(self._health_float + amount, self.max_health)
-        self.health = int(math.floor(self._health_float))
+        self.death_sound_id = death_sound_id
+        self.start_position = world_entity.get_position()  # Should never be updated
+        self.max_distance_allowed_from_start_position = max_distance_allowed_from_start_position
 
     # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):
@@ -193,20 +263,6 @@ class NonPlayerCharacter:
             existing_buffs_with_this_type[0].set_remaining_duration(duration)
         else:
             self.active_buffs.append(BuffWithDuration(buff, duration))
-
-    def regenerate_health(self, time_passed: Millis):
-        self.gain_health(self.health_regen / 1000.0 * float(time_passed))
-
-    def add_stun(self):
-        self._number_of_active_stuns += 1
-
-    def remove_stun(self):
-        self._number_of_active_stuns -= 1
-        if self._number_of_active_stuns < 0:
-            raise Exception("Number of active stuns went below 0 down to " + str(self._number_of_active_stuns))
-
-    def is_stunned(self):
-        return self._number_of_active_stuns > 0
 
 
 class Wall:
@@ -268,6 +324,11 @@ class PlayerLostHealthEvent(Event):
         self.npc_attacker = npc_attacker
 
 
+class PlayerWasAttackedEvent(Event):
+    def __init__(self, npc_attacker: NonPlayerCharacter):
+        self.npc_attacker = npc_attacker
+
+
 class PlayerDamagedEnemy(Event):
     def __init__(self, enemy_npc: NonPlayerCharacter, damage_source: Optional[str]):
         self.enemy_npc = enemy_npc
@@ -288,25 +349,33 @@ class BuffEventOutcome:
         return BuffEventOutcome(None, True)
 
 
+class GainExpEvent:
+    pass
+
+
+class PlayerLeveledUp(GainExpEvent):
+    pass
+
+
+class PlayerLearnedNewAbility(GainExpEvent):
+    def __init__(self, ability_type: AbilityType):
+        self.ability_type = ability_type
+
+
 class PlayerState:
-    def __init__(self, health: int, max_health: int, mana: int, max_mana: int, mana_regen: float,
+    def __init__(self, health_resource: HealthOrManaResource, mana_resource: HealthOrManaResource,
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
-                 item_slots: Dict[int, Any], new_level_abilities: Dict[int, AbilityType], hero_id: HeroId, armor: int):
-        self.health = health
-        self._health_float = health
-        self.max_health = max_health
-        self.health_regen: float = 0
-        self.mana = mana
-        self._mana_float = mana
-        self.max_mana = max_mana
-        self.mana_regen: float = mana_regen
+                 item_inventory: ItemInventory, new_level_abilities: Dict[int, AbilityType], hero_id: HeroId,
+                 armor: int, level_bonus: PlayerLevelBonus):
+        self.health_resource: HealthOrManaResource = health_resource
+        self.mana_resource: HealthOrManaResource = mana_resource
         self.consumable_inventory = consumable_inventory
         self.abilities: List[AbilityType] = abilities
         self.ability_cooldowns_remaining = {ability_type: 0 for ability_type in abilities}
         self.active_buffs: List[BuffWithDuration] = []
         self.is_invisible = False
-        self._number_of_active_stuns = 0
-        self.item_slots = item_slots  # Values are of type AbstractItemEffect
+        self.stun_status = StunStatus()
+        self.item_inventory = item_inventory
         self.life_steal_ratio: float = 0
         self.exp = 0
         self.level = 1
@@ -314,64 +383,12 @@ class PlayerState:
         self.fireball_dmg_boost = 0
         self.new_level_abilities: Dict[int, AbilityType] = new_level_abilities
         self.money = 0
-        self.base_damage_modifier: float = 1  # only affected by level. Changes multiplicatively
-        self.damage_modifier_bonus: float = 0  # affected by items. Only allowed to change additively
+        self.base_damage_modifier: float = 1  # only affected by level. [Changes multiplicatively]
+        self.damage_modifier_bonus: float = 0  # affected by items. [Change it additively]
         self.hero_id: HeroId = hero_id
-        self.armor: int = armor
-
-    def gain_health(self, amount: float) -> int:
-        health_before = self.health
-        self._health_float = min(self._health_float + amount, self.max_health)
-        self.health = int(math.floor(self._health_float))
-        health_gained = self.health - health_before
-        return health_gained
-
-    def lose_health(self, amount: float) -> int:
-        health_before = self.health
-        self._health_float = max(self._health_float - amount, 0)
-        self.health = int(math.floor(self._health_float))
-        health_lost = health_before - self.health
-        return health_lost
-
-    def gain_mana(self, amount: float):
-        self._mana_float = min(self._mana_float + amount, self.max_mana)
-        self.mana = int(math.floor(self._mana_float))
-
-    def lose_mana(self, amount: float):
-        self._mana_float -= amount
-        self.mana = int(math.floor(self._mana_float))
-
-    def gain_full_health(self):
-        self._health_float = self.max_health
-        self.health = self.max_health
-
-    def gain_full_mana(self):
-        self._mana_float = self.max_mana
-        self.mana = self.max_mana
-
-    def gain_max_mana(self, amount: int):
-        self.max_mana += amount
-
-    def lose_max_mana(self, amount: int):
-        self.max_mana -= amount
-        if self.mana > self.max_mana:
-            self._mana_float = self.max_mana
-            self.mana = int(math.floor(self._mana_float))
-
-    def gain_max_health(self, amount: int):
-        self.max_health += amount
-
-    def lose_max_health(self, amount: int):
-        self.max_health -= amount
-        if self.health > self.max_health:
-            self._health_float = self.max_health
-            self.health = int(math.floor(self._health_float))
-
-    def find_first_empty_item_slot(self) -> Optional[int]:
-        empty_slots = [slot for slot in self.item_slots if not self.item_slots[slot]]
-        if empty_slots:
-            return empty_slots[0]
-        return None
+        self.base_armor: int = armor  # depends on which hero is being played
+        self.armor_bonus: int = 0  # affected by items/buffs. [Change it additively]
+        self.level_bonus = level_bonus
 
     # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):
@@ -382,24 +399,23 @@ class PlayerState:
         else:
             self.active_buffs.append(BuffWithDuration(buff, duration))
 
-    def regenerate_health_and_mana(self, time_passed: Millis):
-        self.gain_mana(self.mana_regen / 1000.0 * float(time_passed))
-        self.gain_health(self.health_regen / 1000.0 * float(time_passed))
+    def has_active_buff(self, buff_type: BuffType):
+        return len([b for b in self.active_buffs if b.buff_effect.get_buff_type() == buff_type]) > 0
+
+    def force_cancel_all_buffs(self):
+        for b in self.active_buffs:
+            b.force_cancel()
 
     def recharge_ability_cooldowns(self, time_passed: Millis):
         for ability_type in self.ability_cooldowns_remaining:
             if self.ability_cooldowns_remaining[ability_type] > 0:
                 self.ability_cooldowns_remaining[ability_type] -= time_passed
 
-    def switch_item_slots(self, slot_1: int, slot_2: int):
-        item_type_1 = self.item_slots[slot_1]
-        self.item_slots[slot_1] = self.item_slots[slot_2]
-        self.item_slots[slot_2] = item_type_1
-
-    # returns True if player leveled up
-    def gain_exp(self, amount: int):
+    def gain_exp(self, amount: int) -> List[GainExpEvent]:
+        events = []
         self.exp += amount
-        did_level_up = self.exp >= self.max_exp_in_this_level
+        if self.exp >= self.max_exp_in_this_level:
+            events.append(PlayerLeveledUp())
         while self.exp >= self.max_exp_in_this_level:
             self.exp -= self.max_exp_in_this_level
             self.level += 1
@@ -407,7 +423,12 @@ class PlayerState:
             if self.level in self.new_level_abilities:
                 new_ability = self.new_level_abilities[self.level]
                 self.gain_ability(new_ability)
-        return did_level_up
+                events.append(PlayerLearnedNewAbility(new_ability))
+        return events
+
+    def lose_exp_from_death(self):
+        partial_exp_loss = 0.5
+        self.exp = max(0, self.exp - int(self.max_exp_in_this_level * partial_exp_loss))
 
     def gain_exp_worth_n_levels(self, num_levels: int):
         for i in range(num_levels):
@@ -415,29 +436,19 @@ class PlayerState:
             self.gain_exp(amount)
 
     def update_stats_for_new_level(self):
-        self.max_health += 7
-        self.max_mana += 5
-        self.gain_full_health()
-        self.gain_full_mana()
-        self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.4)
+        self.health_resource.increase_max(self.level_bonus.health)
+        self.health_resource.gain_to_max()
+        self.mana_resource.increase_max(self.level_bonus.mana)
+        self.mana_resource.gain_to_max()
+        self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.6)
         self.base_damage_modifier *= 1.1
+        self.base_armor += self.level_bonus.armor
 
     def gain_ability(self, ability_type: AbilityType):
         self.ability_cooldowns_remaining[ability_type] = 0
         self.abilities.append(ability_type)
 
-    def add_stun(self):
-        self._number_of_active_stuns += 1
-
-    def remove_stun(self):
-        self._number_of_active_stuns -= 1
-        if self._number_of_active_stuns < 0:
-            raise Exception("Number of active stuns went below 0 down to " + str(self._number_of_active_stuns))
-
-    def is_stunned(self):
-        return self._number_of_active_stuns > 0
-
-    def notify_about_event(self, event: Event):
+    def notify_about_event(self, event: Event, game_state):
         for buff in self.active_buffs:
             outcome: Optional[BuffEventOutcome] = buff.buff_effect.buff_handle_event(event)
             if outcome:
@@ -445,9 +456,8 @@ class PlayerState:
                     buff.change_remaining_duration(outcome.change_remaining_duration)
                 if outcome.cancel_effect:
                     buff.force_cancel()
-        for item_effect in self.item_slots.values():
-            if item_effect:
-                item_effect.item_handle_event(event, self)
+        for item_effect in self.item_inventory.get_all_active_item_effects():
+            item_effect.item_handle_event(event, game_state)
 
 
 # TODO Is there a way to handle this better in the view module? This class shouldn't need to masquerade as a WorldEntity
@@ -476,12 +486,24 @@ class Portal:
         self.is_enabled = is_enabled
         self.leads_to = leads_to
 
+    def activate(self, sprite: Sprite):
+        self.is_enabled = True
+        self.world_entity.sprite = sprite
+
+
+class WarpPoint:
+    def __init__(self, world_entity: WorldEntity):
+        self.world_entity = world_entity
+
+    def make_visible(self):
+        self.world_entity.visible = True
+
 
 class GameState:
     def __init__(self, player_entity: WorldEntity, consumables_on_ground: List[ConsumableOnGround],
                  items_on_ground: List[ItemOnGround], money_piles_on_ground: List[MoneyPileOnGround],
                  non_player_characters: List[NonPlayerCharacter], walls: List[Wall], camera_size: Tuple[int, int],
-                 game_world_size: Tuple[int, int], player_state: PlayerState,
+                 entire_world_area: WorldArea, player_state: PlayerState,
                  decoration_entities: List[DecorationEntity], portals: List[Portal]):
         self.camera_size = camera_size
         self.camera_world_area = WorldArea((0, 0), self.camera_size)
@@ -493,42 +515,37 @@ class GameState:
         self.items_on_ground: List[ItemOnGround] = items_on_ground
         self.money_piles_on_ground: List[MoneyPileOnGround] = money_piles_on_ground
         self.non_player_characters: List[NonPlayerCharacter] = non_player_characters
-        # overlaps with non_player_characters
-        self.non_enemy_npcs: List[NonPlayerCharacter] = [npc for npc in non_player_characters if not npc.is_enemy]
-        self.walls: List[Wall] = walls
-        self._wall_buckets = self._put_walls_in_buckets(game_world_size, [w.world_entity for w in walls])
+        self.entire_world_area = entire_world_area
+        self.walls_state = WallsState(walls, entire_world_area)
         self.visual_effects = []
         self.player_state: PlayerState = player_state
-        self.game_world_size = game_world_size
-        self.entire_world_area = WorldArea((0, 0), self.game_world_size)
-        self.grid = self._setup_grid(game_world_size, [w.world_entity for w in walls])
-        self.decoration_entities = decoration_entities
+        self.pathfinder_wall_grid = self._setup_pathfinder_wall_grid(
+            self.entire_world_area, [w.world_entity for w in walls])
+        self.decorations_state = DecorationsState(decoration_entities, entire_world_area)
         self.portals: List[Portal] = portals
+        self.player_spawn_position: Tuple[int, int] = player_entity.get_position()
+        self.warp_points: List[WarpPoint] = []
 
     @staticmethod
-    def _setup_grid(game_world_size: Tuple[int, int], walls: List[WorldEntity]):
-        world_w = game_world_size[0]
-        world_h = game_world_size[1]
-        grid_width = world_w // GRID_CELL_WIDTH
-        grid_height = world_h // GRID_CELL_WIDTH
+    def _setup_pathfinder_wall_grid(entire_world_area: WorldArea, walls: List[WorldEntity]):
+        # TODO extract world area arithmetic
+        grid_width = entire_world_area.w // GRID_CELL_WIDTH
+        grid_height = entire_world_area.h // GRID_CELL_WIDTH
         grid = []
         for x in range(grid_width + 1):
             grid.append((grid_height + 1) * [0])
         for w in walls:
-            cell_x = w.x // GRID_CELL_WIDTH
-            cell_y = w.y // GRID_CELL_WIDTH
+            cell_x = (w.x - entire_world_area.x) // GRID_CELL_WIDTH
+            cell_y = (w.y - entire_world_area.y) // GRID_CELL_WIDTH
             grid[cell_x][cell_y] = 1
-
         return grid
 
     def add_non_player_character(self, npc: NonPlayerCharacter):
         self.non_player_characters.append(npc)
-        if not npc.is_enemy:
-            self.non_enemy_npcs.append(npc)
 
-    def remove_all_non_enemy_npcs(self):
-        self.non_player_characters = [npc for npc in self.non_player_characters if npc not in self.non_enemy_npcs]
-        self.non_enemy_npcs = []
+    def remove_all_player_summons(self):
+        self.non_player_characters = [npc for npc in self.non_player_characters
+                                      if npc.npc_category != NpcCategory.PLAYER_SUMMON]
 
     # TODO clarify how this method should be used.
     # entities_to_remove aren't necessarily of the class WorldEntity
@@ -540,18 +557,19 @@ class GameState:
         self.non_player_characters = [e for e in self.non_player_characters if e not in entities_to_remove]
 
     def get_all_entities_to_render(self) -> List[WorldEntity]:
-        walls = self._get_walls_from_buckets_in_camera()
-        return [self.player_entity] + \
-               [p.world_entity for p in self.consumables_on_ground] + \
-               [i.world_entity for i in self.items_on_ground] + \
-               [m.world_entity for m in self.money_piles_on_ground] + \
-               [e.world_entity for e in self.non_player_characters] + \
-               walls + \
-               [p.world_entity for p in self.projectile_entities] + \
-               [p.world_entity for p in self.portals]
+        walls_that_are_visible = self.walls_state.get_walls_in_camera(self.camera_world_area)
+        other_entities = [self.player_entity] + \
+                         [p.world_entity for p in self.consumables_on_ground] + \
+                         [i.world_entity for i in self.items_on_ground] + \
+                         [m.world_entity for m in self.money_piles_on_ground] + \
+                         [e.world_entity for e in self.non_player_characters] + \
+                         [p.world_entity for p in self.projectile_entities] + \
+                         [p.world_entity for p in self.portals] + \
+                         [w.world_entity for w in self.warp_points]
+        return walls_that_are_visible + other_entities
 
     def get_decorations_to_render(self) -> List[DecorationEntity]:
-        return self.decoration_entities
+        return self.decorations_state.get_decorations_in_camera(self.camera_world_area)
 
     def center_camera_on_player(self):
         new_camera_pos = get_position_from_center_position(self.player_entity.get_center_position(), self.camera_size)
@@ -570,7 +588,7 @@ class GameState:
     def get_enemy_intersecting_with(self, entity: WorldEntity) -> List[NonPlayerCharacter]:
         return [e for e in self.non_player_characters if e.is_enemy and boxes_intersect(e.world_entity, entity)]
 
-    def get_enemy_intersecting_rect(self, rect: Tuple[int, int, int, int]):
+    def get_enemy_intersecting_rect(self, rect: Tuple[int, int, int, int]) -> List[NonPlayerCharacter]:
         return [e for e in self.non_player_characters if e.is_enemy and rects_intersect(e.world_entity.rect(), rect)]
 
     def get_enemies_within_x_y_distance_of(self, distance: int, position: Tuple[int, int]):
@@ -586,23 +604,40 @@ class GameState:
             if not self.would_entity_collide_if_new_pos(entity, new_pos_within_world):
                 entity.set_position(new_pos_within_world)
 
+    # NOTE: Very naive brute-force collision checking
+    def update_npc_position_within_game_world(self, npc: NonPlayerCharacter, time_passed: Millis):
+        entity = npc.world_entity
+        new_position = entity.get_new_position_according_to_dir_and_speed(time_passed)
+        if new_position:
+            if npc.max_distance_allowed_from_start_position:
+                is_close_to_start_position = is_x_and_y_within_distance(
+                    npc.start_position, new_position, npc.max_distance_allowed_from_start_position)
+                if not is_close_to_start_position:
+                    return
+            new_pos_within_world = self.get_within_world(new_position, (entity.w, entity.h))
+            if not self.would_entity_collide_if_new_pos(entity, new_pos_within_world):
+                entity.set_position(new_pos_within_world)
+
     # TODO Improve the interaction between functions in here
     def would_entity_collide_if_new_pos(self, entity, new_pos_within_world):
         if not self.is_position_within_game_world(new_pos_within_world):
             raise Exception("not within game-world: " + str(new_pos_within_world))
         old_pos = entity.x, entity.y
         entity.set_position(new_pos_within_world)
-        walls = self._get_walls_from_buckets_adjacent_to_entity(entity)
+        walls = self.walls_state.get_walls_close_to_position(entity.get_position())
         other_entities = [e.world_entity for e in self.non_player_characters] + \
-                         [self.player_entity] + walls + [p.world_entity for p in self.portals]
+                         [self.player_entity] + walls + [p.world_entity for p in self.portals] + \
+                         [w.world_entity for w in self.warp_points]
         collision = any([other for other in other_entities if self._entities_collide(entity, other)
                          and entity is not other])
         entity.set_position(old_pos)
         return collision
 
-    def get_within_world(self, pos, size):
-        return (max(0, min(self.game_world_size[0] - size[0], pos[0])),
-                max(0, min(self.game_world_size[1] - size[1], pos[1])))
+    def get_within_world(self, pos: Tuple[int, int], size: Tuple[int, int]):
+        # TODO extract world area arithmetic
+        x = max(self.entire_world_area.x, min(self.entire_world_area.x + self.entire_world_area.w - size[0], pos[0]))
+        y = max(self.entire_world_area.y, min(self.entire_world_area.y + self.entire_world_area.h - size[1], pos[1]))
+        return x, y
 
     def is_position_within_game_world(self, position: Tuple[int, int]) -> bool:
         return self.entire_world_area.contains_position(position)
@@ -611,9 +646,9 @@ class GameState:
         self.projectile_entities = [p for p in self.projectile_entities if not p.has_expired]
 
     def remove_dead_npcs(self) -> List[NonPlayerCharacter]:
-        npcs_that_died = [e for e in self.non_player_characters if e.health <= 0]
-        self.non_enemy_npcs = [npc for npc in self.non_enemy_npcs if npc.health > 0]
-        self.non_player_characters = [e for e in self.non_player_characters if e.health > 0]
+        npcs_that_died = [npc for npc in self.non_player_characters if npc.health_resource.is_at_or_below_zero()]
+        self.non_player_characters = [npc for npc in self.non_player_characters if
+                                      not npc.health_resource.is_at_or_below_zero()]
         return npcs_that_died
 
     def remove_expired_visual_effects(self):
@@ -624,55 +659,106 @@ class GameState:
         # Optimization: collision checking done with C-code from Pygame
         return a.pygame_collision_rect.colliderect(b.pygame_collision_rect)
 
-    # Wall buckets:
-    # Optimization for only checking collision with walls that are known beforehand (through use of buckets) to be
-    # somewhat close to the entity
-    @staticmethod
-    def _put_walls_in_buckets(game_world_size: Tuple[int, int], walls: List[WorldEntity]):
-        wall_buckets = {}
-        for x_bucket in range(game_world_size[0] // WALL_BUCKET_WIDTH + 1):
-            wall_buckets[x_bucket] = {}
-            for y_bucket in range(game_world_size[1] // WALL_BUCKET_HEIGHT + 1):
-                wall_buckets[x_bucket][y_bucket] = []
-        for w in walls:
-            x_bucket = int(w.x) // WALL_BUCKET_WIDTH
-            y_bucket = int(w.y) // WALL_BUCKET_HEIGHT
-            wall_buckets[x_bucket][y_bucket].append(w)
-        return wall_buckets
+
+class WallsState:
+    def __init__(self, walls: List[Wall], entire_world_area: WorldArea):
+        self.walls: List[Wall] = walls
+        self._buckets = Buckets([w.world_entity for w in walls], entire_world_area)
 
     def add_wall(self, wall: Wall):
         self.walls.append(wall)
-        x_bucket = int(wall.world_entity.x) // WALL_BUCKET_WIDTH
-        y_bucket = int(wall.world_entity.y) // WALL_BUCKET_HEIGHT
-        self._wall_buckets[x_bucket][y_bucket].append(wall.world_entity)
+        self._buckets.add_entity(wall.world_entity)
 
     def remove_wall(self, wall: Wall):
         self.walls.remove(wall)
-        x_bucket = int(wall.world_entity.x) // WALL_BUCKET_WIDTH
-        y_bucket = int(wall.world_entity.y) // WALL_BUCKET_HEIGHT
-        self._wall_buckets[x_bucket][y_bucket].remove(wall.world_entity)
+        self._buckets.remove_entity(wall.world_entity)
 
+    # TODO Use _entities_collide?
     def does_entity_intersect_with_wall(self, entity: WorldEntity):
-        nearby_walls = self._get_walls_from_buckets_adjacent_to_entity(entity)
+        nearby_walls = self.get_walls_close_to_position(entity.get_position())
         return any([w for w in nearby_walls if boxes_intersect(w, entity)])
 
-    def _get_walls_from_buckets_adjacent_to_entity(self, entity: WorldEntity):
-        entity_x_bucket = int(entity.x) // WALL_BUCKET_WIDTH
-        entity_y_bucket = int(entity.y) // WALL_BUCKET_HEIGHT
-        walls = []
-        for x_bucket in range(max(0, entity_x_bucket - 1), min(len(self._wall_buckets), entity_x_bucket + 2)):
-            for y_bucket in range(max(0, entity_y_bucket - 1),
-                                  min(len(self._wall_buckets[x_bucket]), entity_y_bucket + 2)):
-                walls += self._wall_buckets[x_bucket][y_bucket]
-        return walls
+    # TODO Use _entities_collide?
+    def does_rect_intersect_with_wall(self, rect: Tuple[int, int, int, int]):
+        nearby_walls = self.get_walls_close_to_position((rect[0], rect[1]))
+        return any([w for w in nearby_walls if rects_intersect((w.x, w.y, w.w, w.h), rect)])
 
-    def _get_walls_from_buckets_in_camera(self):
-        x0_bucket = int(self.camera_world_area.x) // WALL_BUCKET_WIDTH
-        y0_bucket = int(self.camera_world_area.y) // WALL_BUCKET_HEIGHT
-        x1_bucket = int(self.camera_world_area.x + self.camera_world_area.w) // WALL_BUCKET_WIDTH
-        y1_bucket = int(self.camera_world_area.y + self.camera_world_area.h) // WALL_BUCKET_HEIGHT
-        walls = []
-        for x_bucket in range(max(0, x0_bucket), min(x1_bucket + 1, len(self._wall_buckets))):
-            for y_bucket in range(max(0, y0_bucket - 1), min(y1_bucket + 1, len(self._wall_buckets[x_bucket]))):
-                walls += self._wall_buckets[x_bucket][y_bucket]
-        return walls
+    def get_walls_close_to_position(self, position: Tuple[int, int]) -> List[WorldEntity]:
+        return self._buckets.get_entities_close_to_position(position)
+
+    def get_walls_in_camera(self, camera_world_area: WorldArea) -> List[WorldEntity]:
+        return self._buckets.get_entitites_close_to_world_area(camera_world_area)
+
+    def get_walls_at_position(self, position: Tuple[int, int]) -> List[Wall]:
+        return [w for w in self.walls if w.world_entity.get_position() == position]
+
+
+class DecorationsState:
+    def __init__(self, decoration_entities: List[DecorationEntity], entire_world_area: WorldArea):
+        self.decoration_entities: List[DecorationEntity] = decoration_entities
+        self._buckets = Buckets(decoration_entities, entire_world_area)
+
+    def add_decoration(self, decoration: DecorationEntity):
+        self.decoration_entities.append(decoration)
+        self._buckets.add_entity(decoration)
+
+    def remove_decoration(self, decoration: DecorationEntity):
+        self.decoration_entities.remove(decoration)
+        self._buckets.remove_entity(decoration)
+
+    def get_decorations_in_camera(self, camera_world_area: WorldArea) -> List[DecorationEntity]:
+        return self._buckets.get_entitites_close_to_world_area(camera_world_area)
+
+    def get_decorations_at_position(self, position: Tuple[int, int]) -> List[DecorationEntity]:
+        return [d for d in self.decoration_entities if d.get_position() == position]
+
+
+# This class provides a way to store entities based on their location in the world,
+# which improves performance mainly for collision checking and rendering
+# NOTE: it should only be used for immovable objects (such as walls and floor tiles)
+class Buckets:
+    _BUCKET_WIDTH = 100
+    _BUCKET_HEIGHT = 100
+
+    def __init__(self, entities: List[Any], entire_world_area: WorldArea):
+        self._buckets: Dict[int, Dict[int, List[Any]]] = {}
+        self.entire_world_area = entire_world_area
+        for x_bucket in range(self.entire_world_area.w // Buckets._BUCKET_WIDTH + 1):
+            self._buckets[x_bucket] = {}
+            for y_bucket in range(self.entire_world_area.h // Buckets._BUCKET_HEIGHT + 1):
+                self._buckets[x_bucket][y_bucket] = []
+        for entity in entities:
+            self.add_entity(entity)
+
+    def add_entity(self, entity: Any):
+        bucket = self._bucket_for_world_position(entity.get_position())
+        bucket.append(entity)
+
+    def remove_entity(self, entity: Any):
+        bucket = self._bucket_for_world_position(entity.get_position())
+        bucket.remove(entity)
+
+    def get_entitites_close_to_world_area(self, world_area: WorldArea) -> List[Any]:
+        x0_bucket, y0_bucket = self._bucket_index_for_world_position(world_area.get_position())
+        x1_bucket, y1_bucket = self._bucket_index_for_world_position(world_area.get_bot_right_position())
+        buckets = self._buckets_between_indices(x0_bucket - 1, x1_bucket + 1, y0_bucket - 1, y1_bucket + 1)
+        return [entity for bucket in buckets for entity in bucket]
+
+    def get_entities_close_to_position(self, position: Tuple[int, int]) -> List[Any]:
+        x_bucket, y_bucket = self._bucket_index_for_world_position(position)
+        buckets = self._buckets_between_indices(x_bucket - 1, x_bucket + 1, y_bucket - 1, y_bucket + 1)
+        return [entity for bucket in buckets for entity in bucket]
+
+    def _buckets_between_indices(self, x0: int, x1: int, y0: int, y1: int) -> List[List[Any]]:
+        for x_bucket in range(max(0, x0), min(x1 + 1, len(self._buckets) - 1)):
+            for y_bucket in range(max(0, y0), min(y1 + 1, len(self._buckets[x_bucket]) - 1)):
+                yield self._buckets[x_bucket][y_bucket]
+
+    def _bucket_for_world_position(self, world_position: Tuple[int, int]):
+        x_bucket, y_bucket = self._bucket_index_for_world_position(world_position)
+        return self._buckets[x_bucket][y_bucket]
+
+    def _bucket_index_for_world_position(self, world_position: Tuple[int, int]) -> Tuple[int, int]:
+        x_bucket = int(world_position[0] - self.entire_world_area.x) // Buckets._BUCKET_WIDTH
+        y_bucket = int(world_position[1] - self.entire_world_area.y) // Buckets._BUCKET_HEIGHT
+        return x_bucket, y_bucket

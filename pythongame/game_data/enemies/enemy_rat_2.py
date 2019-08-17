@@ -1,21 +1,23 @@
 import random
 
-from pythongame.core.common import Millis, NpcType, Sprite, Direction
-from pythongame.core.damage_interactions import deal_npc_damage
+from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId
+from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
-from pythongame.core.loot import LootTable, LootEntry
 from pythongame.core.math import get_perpendicular_directions, is_x_and_y_within_distance
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
+from pythongame.game_data.loot_tables import LOOT_TABLE_1
+
+DAMAGE_AMOUNT = 2
 
 
 class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
-        self._attack_interval = 1000
+        self._attack_interval = 1500
         self._time_since_attack = self._attack_interval
         self._update_path_interval = 900
         self._time_since_updated_path = random.randint(0, self._update_path_interval)
@@ -62,7 +64,7 @@ class NpcMind(AbstractNpcMind):
                 enemy_position = enemy_entity.get_center_position()
                 target_center_pos = target.entity.get_center_position()
                 if is_x_and_y_within_distance(enemy_position, target_center_pos, 80):
-                    deal_npc_damage(1, game_state, enemy_entity, npc, target)
+                    deal_npc_damage(DAMAGE_AMOUNT, DamageType.PHYSICAL, game_state, enemy_entity, npc, target)
 
 
 def _move_in_dir(enemy_entity, direction):
@@ -78,8 +80,9 @@ def register_rat_2_enemy():
     npc_type = NpcType.RAT_2
     movement_speed = 0.08
     health = 11
-    loot = LootTable.single(LootEntry.money(1), 0.1)
-    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 8, True, False, None, None, loot))
+    exp_reward = 8
+    npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_1, SoundId.DEATH_RAT)
+    register_npc_data(npc_type, npc_data)
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/gray_rat.png")
     original_sprite_size = (32, 32)

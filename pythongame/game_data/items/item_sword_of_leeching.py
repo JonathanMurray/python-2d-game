@@ -3,6 +3,7 @@ from pythongame.core.game_data import register_ui_icon_sprite_path, register_ite
     register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
+from pythongame.core.item_inventory import ItemEquipmentCategory
 
 ITEM_TYPE = ItemType.SWORD_OF_LEECHING
 LIFE_STEAL_BOOST = 0.1
@@ -27,4 +28,5 @@ def register_sword_of_leeching_item():
     register_entity_sprite_initializer(
         sprite, SpriteInitializer("resources/graphics/item_sword_of_leeching.png", ITEM_ENTITY_SIZE))
     description = "Grants lifesteal (" + str(int(LIFE_STEAL_BOOST * 100)) + "%)"
-    register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, sprite, "Sword of Leeching", description))
+    item_data = ItemData(ui_icon_sprite, sprite, "Sword of Leeching", description, ItemEquipmentCategory.MAIN_HAND)
+    register_item_data(ITEM_TYPE, item_data)

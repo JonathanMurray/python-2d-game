@@ -5,6 +5,7 @@ import pygame
 
 from pythongame.core.common import *
 from pythongame.core.common import UiIconSprite, PortraitIconSprite
+from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.loot import LootTable
 
 ITEM_ENTITY_SIZE = (30, 30)
@@ -31,7 +32,7 @@ class SpriteSheet(object):
 
         rect = pygame.Rect(rectangle)
         # noinspection PyArgumentList
-        image = pygame.Surface(rect.size).convert()
+        image = pygame.Surface(rect.size, pygame.SRCALPHA)
         destination_in_image = (0, 0)
         image.blit(self.sheet, destination_in_image, rect)
         transparent_color_in_image = (0, 0, 0)
@@ -66,6 +67,9 @@ class AbilityData:
         self.icon_sprite = icon_sprite
         self.mana_cost = mana_cost
         self.cooldown = cooldown
+        if len(description) > 84:
+            # in view.py, one line fits 42 characters, and the tooltip fits 2 rows
+            print("WARN: Ability description is too long for " + str(name) + ": " + description)
         self.description = description
         self.sound_id = sound_id
 
@@ -83,27 +87,43 @@ user_ability_keys = [UserAbilityKey("Q", pygame.K_q),
                      UserAbilityKey("T", pygame.K_t)]
 
 
-class NpcDialog:
-    def __init__(self, body: str, action: str):
-        self.body = body
-        self.action = action
+class NpcCategory(Enum):
+    ENEMY = 1
+    PLAYER_SUMMON = 2
+    NEUTRAL = 3
 
 
 class NpcData:
     def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
-                 exp_reward: int, is_enemy: bool, is_neutral: bool, dialog: Optional[NpcDialog],
-                 portrait_icon_sprite: Optional[PortraitIconSprite], enemy_loot_table: Optional[LootTable]):
+                 exp_reward: int, npc_category: NpcCategory, enemy_loot_table: Optional[LootTable],
+                 death_sound_id: Optional[SoundId], max_distance_allowed_from_start_position: Optional[int]):
         self.sprite = sprite
         self.size = size
         self.max_health = max_health
         self.health_regen = health_regen
         self.speed = speed
         self.exp_reward = exp_reward
-        self.is_enemy = is_enemy
-        self.is_neutral = is_neutral  # a neutral NPC can't take damage from enemies or player. It may have dialog.
-        self.dialog: Optional[str] = dialog
-        self.portrait_icon_sprite: Optional[PortraitIconSprite] = portrait_icon_sprite
+        self.npc_category = npc_category
         self.enemy_loot_table: LootTable = enemy_loot_table
+        self.death_sound_id: Optional[SoundId] = death_sound_id
+        self.max_distance_allowed_from_start_position = max_distance_allowed_from_start_position
+
+    @staticmethod
+    def enemy(sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
+              exp_reward: int, enemy_loot_table: Optional[LootTable], death_sound_id: Optional[SoundId] = None):
+        return NpcData(sprite, size, max_health, health_regen, speed, exp_reward, NpcCategory.ENEMY, enemy_loot_table,
+                       death_sound_id, None)
+
+    @staticmethod
+    def player_summon(sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float):
+        return NpcData(sprite, size, max_health, health_regen, speed, 0, NpcCategory.PLAYER_SUMMON, None, None, None)
+
+    @staticmethod
+    def neutral(sprite: Sprite, size: Tuple[int, int], speed: float):
+        # Neutral NPC's shouldn't wander off from their start location
+        max_distance_allowed_from_start_position = 40
+        return NpcData(sprite, size, 5, 0, speed, 0, NpcCategory.NEUTRAL, None, None,
+                       max_distance_allowed_from_start_position)
 
 
 class ConsumableCategory(Enum):
@@ -123,11 +143,13 @@ class ConsumableData:
 
 
 class ItemData:
-    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Sprite, name: str, description: str):
+    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Sprite, name: str, description: str,
+                 item_equipment_category: Optional[ItemEquipmentCategory] = None):
         self.icon_sprite = icon_sprite
         self.entity_sprite = entity_sprite
         self.name = name
         self.description = description
+        self.item_equipment_category = item_equipment_category
 
 
 class WallData:
@@ -143,23 +165,31 @@ class PortalData:
         self.leads_to = leads_to
         self.sprite = sprite
         self.entity_size = entity_size
+        # TODO remove teleport_delay (constant value is always used)
         self.teleport_delay = teleport_delay
+
+
+class PlayerLevelBonus:
+    def __init__(self, health: int, mana: int, armor: float):
+        self.health = health
+        self.mana = mana
+        self.armor = armor
 
 
 class InitialPlayerStateData:
     def __init__(
-            self, health: int, mana: int, mana_regen: float, consumable_slots: Dict[int, ConsumableType],
-            abilities: List[AbilityType], item_slots: Dict[int, ItemType], new_level_abilities: Dict[int, AbilityType],
-            hero_id: HeroId, armor: int):
+            self, health: int, mana: int, mana_regen: float, consumable_slots: Dict[int, List[ConsumableType]],
+            abilities: List[AbilityType], new_level_abilities: Dict[int, AbilityType],
+            hero_id: HeroId, armor: int, level_bonus: PlayerLevelBonus):
         self.health = health
         self.mana = mana
         self.mana_regen = mana_regen
         self.consumable_slots = consumable_slots
         self.abilities = abilities
-        self.item_slots = item_slots
         self.new_level_abilities = new_level_abilities
         self.hero_id = hero_id
         self.armor = armor
+        self.level_bonus = level_bonus
 
 
 class HeroData:
@@ -193,6 +223,8 @@ ABILITIES: Dict[AbilityType, AbilityData] = {}
 KEYS_BY_ABILITY_TYPE: Dict[AbilityType, UserAbilityKey] = {}
 
 BUFF_TEXTS: Dict[BuffType, str] = {}
+
+CHANNELING_BUFFS: List[BuffType] = []
 
 PORTALS: Dict[PortalId, PortalData] = {}
 
@@ -253,6 +285,12 @@ def register_entity_sprite_map(
 
 def register_buff_text(buff_type: BuffType, text: str):
     BUFF_TEXTS[buff_type] = text
+
+
+# Indicates that this buff should be visualized with a "channeling bar" in the UI,
+# rather than a decreasing buff bar as other buffs
+def register_buff_as_channeling(buff_type: BuffType):
+    CHANNELING_BUFFS.append(buff_type)
 
 
 def register_consumable_data(consumable_type: ConsumableType, data: ConsumableData):

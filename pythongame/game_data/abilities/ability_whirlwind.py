@@ -3,7 +3,7 @@ import random
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect, register_buff_effect
 from pythongame.core.common import AbilityType, Sprite, \
-    ProjectileType, Millis, Direction, BuffType, SoundId
+    ProjectileType, Millis, Direction, BuffType, SoundId, PeriodicTimer
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, register_entity_sprite_map, SpriteSheet
@@ -16,7 +16,7 @@ from pythongame.core.visual_effects import VisualRect
 BUFF_TYPE = BuffType.STUNNED_BY_WHIRLWIND
 PROJECTILE_SPRITE = Sprite.PROJECTILE_PLAYER_WHIRLWIND
 PROJECTILE_TYPE = ProjectileType.PLAYER_WHIRLWIND
-PROJECTILE_SIZE = (120, 90)
+PROJECTILE_SIZE = (140, 110)
 
 
 def _apply_ability(game_state: GameState) -> bool:
@@ -34,22 +34,17 @@ def _apply_ability(game_state: GameState) -> bool:
 class ProjectileController(AbstractProjectileController):
     def __init__(self):
         super().__init__(3000)
-        self._dmg_cooldown = 500
-        self._time_since_dmg = self._dmg_cooldown
-        self._direction_change_cooldown = 250
-        self._time_since_direction_change = self._direction_change_cooldown
+        self.damage_timer = PeriodicTimer(Millis(350))
+        self.direction_change_timer = PeriodicTimer(Millis(250))
         self._relative_direction = 0
         self._stun_duration = 500
-
         self._rotation_motion = random.choice([-1, 1])
 
     def notify_time_passed(self, game_state: GameState, projectile: Projectile, time_passed: Millis):
         super().notify_time_passed(game_state, projectile, time_passed)
-        self._time_since_dmg += time_passed
-        self._time_since_direction_change += time_passed
         projectile_entity = projectile.world_entity
-        if self._time_since_dmg > self._dmg_cooldown:
-            self._time_since_dmg = 0
+
+        if self.damage_timer.update_and_check_if_ready(time_passed):
             for enemy in game_state.get_enemy_intersecting_with(projectile_entity):
                 damage_amount = 1
                 damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, damage_amount)
@@ -57,9 +52,7 @@ class ProjectileController(AbstractProjectileController):
                     if random.random() < 0.25:
                         enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(self._stun_duration))
 
-        if self._time_since_direction_change > self._direction_change_cooldown:
-            self._time_since_direction_change = 0
-
+        if self.direction_change_timer.update_and_check_if_ready(time_passed):
             should_rotate = True
             # keep going straight ahead sometimes
             if self._relative_direction == 0 and random.random() < 0.5:
@@ -84,7 +77,7 @@ class Stunned(AbstractBuffEffect):
         pass
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        buffed_npc.add_stun()
+        buffed_npc.stun_status.add_one()
         effect_position = buffed_entity.get_center_position()
         game_state.visual_effects.append(
             VisualRect((250, 250, 50), effect_position, 30, 40, Millis(100), 1, buffed_entity))
@@ -94,7 +87,7 @@ class Stunned(AbstractBuffEffect):
         pass
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        buffed_npc.remove_stun()
+        buffed_npc.stun_status.remove_one()
 
     def get_buff_type(self):
         return BUFF_TYPE
@@ -103,14 +96,13 @@ class Stunned(AbstractBuffEffect):
 def register_whirlwind_ability():
     ability_type = AbilityType.WHIRLWIND
     ui_icon_sprite = UiIconSprite.ABILITY_WHIRLWIND
-    mana_cost = 14
+    mana_cost = 13
     cooldown = Millis(750)
 
     register_ability_effect(ability_type, _apply_ability)
-    register_ability_data(
-        ability_type,
-        AbilityData("Whirlwind", ui_icon_sprite, mana_cost, cooldown, "Deals damage to all enemies along its path",
-                    SoundId.ABILITY_WHIRLWIND))
+    description = "Summon a whirlwind that deals damage and has a chance to stun enemies that are hit."
+    ability_data = AbilityData("Whirlwind", ui_icon_sprite, mana_cost, cooldown, description, SoundId.ABILITY_WHIRLWIND)
+    register_ability_data(ability_type, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/whirlwind.png")
     sprite_sheet = SpriteSheet("resources/graphics/ability_whirlwind_transparent_spritemap.png")
     original_sprite_size = (94, 111)
@@ -119,6 +111,6 @@ def register_whirlwind_ability():
         Direction.DOWN: [(0, 0), (1, 0), (2, 0), (1, 0)]
     }
     register_entity_sprite_map(PROJECTILE_SPRITE, sprite_sheet, original_sprite_size, scaled_sprite_size,
-                               indices_by_dir, (-20, -50))
+                               indices_by_dir, (-8, -50))
     register_projectile_controller(PROJECTILE_TYPE, ProjectileController)
     register_buff_effect(BUFF_TYPE, Stunned)

@@ -1,4 +1,4 @@
-from typing import Tuple, Dict
+from typing import Tuple, Dict, List, Any, Optional
 
 from pythongame.core.pathfinding.astar import AStar
 
@@ -80,7 +80,9 @@ class GlobalPathFinder:
         if not size in self.astars_by_entity_size:
             self.astars_by_entity_size[size] = GridBasedAStar(self.grid, size)
 
-    def run(self, entity_size: Tuple[int, int], start_cell: Tuple[int, int], goal_cell: Tuple[int, int]):
+
+    def run(self, entity_size: Tuple[int, int], start_cell: Tuple[int, int], goal_cell: Tuple[int, int]) \
+            -> Optional[List[Any]]:
 
         astar = self.astars_by_entity_size[entity_size]
         path_max_distance_from_start = 20

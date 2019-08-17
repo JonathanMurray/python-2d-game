@@ -1,9 +1,8 @@
-from typing import Dict
-
-from pythongame.core.common import ItemType, HeroId, PortraitIconSprite
+from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
+from pythongame.core.game_state import PlayerLevelBonus
 
 HERO_ID = HeroId.ROGUE
 
@@ -14,7 +13,7 @@ def register_hero_rogue():
     player_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")
     original_sprite_size = (32, 32)
     scaled_sprite_size = (48, 48)
-    x = 3
+    x = 0
     indices_by_dir = {
         Direction.DOWN: [(x + i, 4) for i in range(3)],
         Direction.LEFT: [(x + i, 5) for i in range(3)],
@@ -24,30 +23,34 @@ def register_hero_rogue():
     sprite_position_relative_to_entity = (-8, -16)
     register_entity_sprite_map(sprite, player_sprite_sheet, original_sprite_size,
                                scaled_sprite_size, indices_by_dir, sprite_position_relative_to_entity)
-    register_portrait_icon_sprite_path(portrait_icon_sprite, 'resources/graphics/hero2_portrait.png')
+    register_portrait_icon_sprite_path(portrait_icon_sprite, 'resources/graphics/portrait_rogue_hero.png')
     entity_speed = 0.105
-    entity_size = (30, 30)
-    hero_data = HeroData(sprite, portrait_icon_sprite, _get_initial_player_state_rogue(), entity_speed, entity_size)
+    hero_data = HeroData(sprite, portrait_icon_sprite, _get_initial_player_state_rogue(), entity_speed,
+                         PLAYER_ENTITY_SIZE)
     register_hero_data(HERO_ID, hero_data)
 
 
 def _get_initial_player_state_rogue() -> InitialPlayerStateData:
-    health = 40
+    health = 50
     mana = 50
-    mana_regen = 1
+    mana_regen = 2.5
+    health_per_level = 10
+    mana_per_level = 10
+    armor_per_level = 2
+    level_bonus = PlayerLevelBonus(health_per_level, mana_per_level, armor_per_level)
+    armor = 2
     consumable_slots = {
-        1: ConsumableType.HEALTH_LESSER,
-        2: ConsumableType.HEALTH_LESSER,
-        3: None,
-        4: None,
-        5: None
+        1: [ConsumableType.HEALTH_LESSER],
+        2: [ConsumableType.HEALTH_LESSER],
+        3: [],
+        4: [],
+        5: []
     }
-    abilities = [AbilityType.SHIV, AbilityType.SNEAK]
-    items: Dict[int, ItemType] = {
-        1: None,
-        2: None,
-        3: None
+    abilities = [AbilityType.SHIV]
+    new_level_abilities = {
+        3: AbilityType.SNEAK,
+        5: AbilityType.DASH,
+        7: AbilityType.INFUSE_DAGGER
     }
-    new_level_abilities = {}
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, items, new_level_abilities, HERO_ID, 1)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus)

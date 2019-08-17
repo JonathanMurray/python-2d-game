@@ -1,11 +1,13 @@
 import random
 from typing import Optional
 
-from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite
+from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
+    UiIconSprite, PeriodicTimer
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
-    NpcDialog, register_portrait_icon_sprite_path
+    register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
-from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, register_npc_action
+from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
+    register_npc_dialog_data, DialogData, DialogOptionData
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.visual_effects import create_visual_healing_text
 
@@ -13,14 +15,11 @@ from pythongame.core.visual_effects import create_visual_healing_text
 class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
-        self._update_path_interval = 900
-        self._time_since_updated_path = self._update_path_interval
+        self.timer = PeriodicTimer(Millis(500))
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
                     is_player_invisible: bool, time_passed: Millis):
-        self._time_since_updated_path += time_passed
-        if self._time_since_updated_path > self._update_path_interval:
-            self._time_since_updated_path = 0
+        if self.timer.update_and_check_if_ready(time_passed):
             if random.random() < 0.8:
                 npc.world_entity.set_not_moving()
             else:
@@ -31,10 +30,9 @@ class NpcMind(AbstractNpcMind):
 class NpcAction(AbstractNpcAction):
 
     def act(self, game_state: GameState) -> Optional[str]:
-        missing_health = game_state.player_state.max_health - game_state.player_state.health
-        if missing_health > 0:
-            game_state.visual_effects.append(create_visual_healing_text(game_state.player_entity, missing_health))
-            game_state.player_state.gain_full_health()
+        if not game_state.player_state.health_resource.is_at_max():
+            health_gained = game_state.player_state.health_resource.gain_to_max()
+            game_state.visual_effects.append(create_visual_healing_text(game_state.player_entity, health_gained))
             return "You feel healthy again!"
         return "Nice..."
 
@@ -44,12 +42,14 @@ def register_nomad_npc():
     sprite = Sprite.NEUTRAL_NPC_NOMAD
     npc_type = NpcType.NEUTRAL_NOMAD
     movement_speed = 0.03
-    health = 6
-    dialog = NpcDialog("Blessings to you fellow traveler.", "Receive the nomad's blessing")
-    register_npc_data(npc_type, NpcData(sprite, size, health, 0, movement_speed, 4, False, True, dialog,
-                                        PortraitIconSprite.NOMAD, None))
+    register_npc_data(npc_type, NpcData.neutral(sprite, size, movement_speed))
     register_npc_behavior(npc_type, NpcMind)
-    register_npc_action(npc_type, NpcAction())
+    # TODO Use proper icon for 'cancel' option
+    dialog_options = [
+        DialogOptionData("Accept blessing", "gain full health", NpcAction(), UiIconSprite.POTION_HEALTH),
+        DialogOptionData("\"Good bye\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
+    dialog_data = DialogData(PortraitIconSprite.NOMAD, "Blessings to you fellow traveler.", dialog_options)
+    register_npc_dialog_data(npc_type, dialog_data)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")
     original_sprite_size = (32, 32)
     scaled_sprite_size = (48, 48)

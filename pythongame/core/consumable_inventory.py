@@ -4,13 +4,9 @@ from pythongame.core.common import ConsumableType
 
 
 class ConsumableInventory:
-    def __init__(self, slots: Dict[int, ConsumableType]):
-        self.consumables_in_slots: Dict[int, List[ConsumableType]] = {}
+    def __init__(self, slots: Dict[int, List[ConsumableType]]):
+        self.consumables_in_slots: Dict[int, List[ConsumableType]] = slots
         self.capacity_per_slot = 2
-        for slot_number in slots:
-            self.consumables_in_slots[slot_number] = []
-            if slots[slot_number]:
-                self.consumables_in_slots[slot_number].append(slots[slot_number])
 
     def has_space_for_more(self) -> bool:
         slots_with_space = [consumables for consumables in self.consumables_in_slots.values() if
@@ -34,7 +30,7 @@ class ConsumableInventory:
                 return
         raise Exception("No space for consumable!")
 
-    def drag_consumable_between_slots(self, from_slot: int, to_slot: int):
+    def drag_consumable_between_inventory_slots(self, from_slot: int, to_slot: int):
         consumable_type_1 = self.remove_consumable_from_slot(from_slot)
         if len(self.consumables_in_slots[to_slot]) < self.capacity_per_slot:
             self.consumables_in_slots[to_slot].insert(0, consumable_type_1)
@@ -50,4 +46,4 @@ class ConsumableInventory:
             return None
 
     def get_consumable_at_slot(self, slot_number: int) -> Optional[ConsumableType]:
-        return self.consumables_in_slots[slot_number][0] if len(self.consumables_in_slots) > 1 else None
+        return self.consumables_in_slots[slot_number][0] if len(self.consumables_in_slots[slot_number]) > 0 else None

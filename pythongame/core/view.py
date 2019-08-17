@@ -2,14 +2,17 @@ from typing import Dict, Any, List, Tuple, Optional, Union
 
 import pygame
 
-from pythongame.core.common import Direction, Sprite, ConsumableType, ItemType, HeroId, UiIconSprite, PortraitIconSprite
+from pythongame.core.common import Direction, Sprite, ConsumableType, ItemType, HeroId, UiIconSprite
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
-    ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, PORTRAIT_ICON_SPRITE_PATHS, NpcDialog, \
-    HEROES, ConsumableCategory
-from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration
-from pythongame.core.item_effects import AbstractItemEffect
+    ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, PORTRAIT_ICON_SPRITE_PATHS, \
+    HEROES, ConsumableCategory, CHANNELING_BUFFS
+from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration, WorldArea, \
+    PlayerState
+from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory
 from pythongame.core.math import is_point_in_rect, sum_of_vectors
-from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite
+from pythongame.core.npc_behaviors import DialogGraphics
+from pythongame.core.view_state import ViewState
+from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite, VisualCross
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 
 COLOR_BACKGROUND = (88 + 30, 72 + 30, 40 + 30)
@@ -55,18 +58,19 @@ class ImageWithRelativePosition:
         self.position_relative_to_entity = position_relative_to_entity
 
 
-# Used to display dialog from an npc along with the NPC's portrait
-class DialogGraphics:
-    def __init__(self, portrait_icon_sprite: PortraitIconSprite, npc_dialog: NpcDialog):
-        self.portrait_icon_sprite = portrait_icon_sprite
-        self.npc_dialog = npc_dialog
-
-
 # Used to display some text above an NPC like "[Space] talk"
 class EntityActionText:
-    def __init__(self, entity: WorldEntity, text: str):
+    def __init__(self, entity: WorldEntity, text: str, details: Optional[str]):
         self.entity = entity
         self.text = text
+        self.details = details
+
+
+class TooltipGraphics:
+    def __init__(self, title: str, details: List[str], bottom_left_corner: Tuple[int, int]):
+        self.title = title
+        self.details = details
+        self.bottom_left_corner = bottom_left_corner
 
 
 def load_and_scale_sprite(sprite_initializer: SpriteInitializer):
@@ -118,7 +122,7 @@ class View:
 
         self.font_ui_stat_bar_numbers = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_ui_money = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
-        self.font_npc_action = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 14)
+        self.font_npc_action = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_ui_headers = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 18)
         self.font_tooltip_header = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 16)
         self.font_tooltip_details = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
@@ -130,7 +134,7 @@ class View:
         self.font_game_world_text = pygame.font.Font(None, 19)
         self.font_ui_icon_keys = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 12)
         self.font_level = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 11)
-        self.font_dialog = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 32)
+        self.font_dialog = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 24)
 
         self.images_by_sprite: Dict[Sprite, Dict[Direction, List[ImageWithRelativePosition]]] = {
             sprite: load_and_scale_directional_sprites(ENTITY_SPRITE_INITIALIZERS[sprite])
@@ -216,34 +220,34 @@ class View:
     #       DRAWING THE GAME WORLD
     # ------------------------------------
 
-    def _world_ground(self, game_world_size):
+    def _world_ground(self, entire_world_area: WorldArea):
         grid_width = 35
         # TODO num squares should depend on map size. Ideally this dumb looping logic should change.
         num_squares = 200
-        column_screen_y_0 = self._translate_world_y_to_screen(max(0, self.camera_world_area.y))
+        column_screen_y_0 = self._translate_world_y_to_screen(self.camera_world_area.y)
         column_screen_y_1 = self._translate_world_y_to_screen(
-            min(game_world_size[1], self.camera_world_area.y + self.camera_world_area.h))
-        for col in range(num_squares):
-            world_x = col * grid_width
-            if 0 < world_x < game_world_size[0]:
+            min(entire_world_area.y + entire_world_area.h, self.camera_world_area.y + self.camera_world_area.h))
+        for i_col in range(num_squares):
+            world_x = entire_world_area.x + i_col * grid_width
+            if entire_world_area.x < world_x < entire_world_area.x + entire_world_area.w:
                 screen_x = self._translate_world_x_to_screen(world_x)
                 self._line(COLOR_BACKGROUND_LINES, (screen_x, column_screen_y_0), (screen_x, column_screen_y_1), 1)
-        row_screen_x_0 = self._translate_world_x_to_screen(max(0, self.camera_world_area.x))
+        row_screen_x_0 = self._translate_world_x_to_screen(self.camera_world_area.x)
         row_screen_x_1 = self._translate_world_x_to_screen(
-            min(game_world_size[0], self.camera_world_area.x + self.camera_world_area.w))
-        for row in range(num_squares):
-            world_y = row * grid_width
-            if 0 < world_y < game_world_size[1]:
+            min(entire_world_area.x + entire_world_area.w, self.camera_world_area.x + self.camera_world_area.w))
+        for i_row in range(num_squares):
+            world_y = entire_world_area.y + i_row * grid_width
+            if entire_world_area.y < world_y < entire_world_area.y + entire_world_area.h:
                 screen_y = self._translate_world_y_to_screen(world_y)
                 self._line(COLOR_BACKGROUND_LINES, (row_screen_x_0, screen_y), (row_screen_x_1, screen_y), 1)
 
         if RENDER_WORLD_COORDINATES:
-            for col in range(num_squares):
-                for row in range(num_squares):
-                    if col % 4 == 0 and row % 4 == 0:
-                        world_x = col * grid_width
+            for i_col in range(num_squares):
+                for i_row in range(num_squares):
+                    if i_col % 4 == 0 and i_row % 4 == 0:
+                        world_x = entire_world_area.x + i_col * grid_width
                         screen_x = self._translate_world_x_to_screen(world_x)
-                        world_y = row * grid_width
+                        world_y = entire_world_area.y + i_row * grid_width
                         screen_y = self._translate_world_y_to_screen(world_y)
                         self._text(self.font_debug_info, str(world_x) + "," + str(world_y), (screen_x, screen_y),
                                    (250, 250, 250))
@@ -251,6 +255,12 @@ class View:
     def _world_rect(self, color, world_rect, line_width=0):
         translated_pos = self._translate_world_position_to_screen((world_rect[0], world_rect[1]))
         self._rect(color, (translated_pos[0], translated_pos[1], world_rect[2], world_rect[3]), line_width)
+
+    def _world_line(self, color: Tuple[int, int, int], start_pos: Tuple[int, int], end_pos: Tuple[int, int],
+                    line_width: int):
+        start_position = self._translate_world_position_to_screen(start_pos)
+        end_position = self._translate_world_position_to_screen(end_pos)
+        self._line(color, start_position, end_position, line_width)
 
     def _world_entity(self, entity: Union[WorldEntity, DecorationEntity]):
         if not entity.visible:
@@ -285,6 +295,8 @@ class View:
             self._visual_circle(visual_effect)
         elif isinstance(visual_effect, VisualRect):
             self._visual_rect(visual_effect)
+        elif isinstance(visual_effect, VisualCross):
+            self._visual_cross(visual_effect)
         elif isinstance(visual_effect, VisualText):
             self._visual_text(visual_effect)
         elif isinstance(visual_effect, VisualSprite):
@@ -293,9 +305,7 @@ class View:
             raise Exception("Unhandled visual effect: " + str(visual_effect))
 
     def _visual_line(self, line: VisualLine):
-        start_position = self._translate_world_position_to_screen(line.start_position)
-        end_position = self._translate_world_position_to_screen(line.end_position)
-        self._line(line.color, start_position, end_position, line.line_width)
+        self._world_line(line.color, line.start_position, line.end_position, line.line_width)
 
     def _visual_circle(self, visual_circle: VisualCircle):
         position = visual_circle.circle()[0]
@@ -305,6 +315,10 @@ class View:
 
     def _visual_rect(self, visual_rect: VisualRect):
         self._world_rect(visual_rect.color, visual_rect.rect(), visual_rect.line_width)
+
+    def _visual_cross(self, visual_cross: VisualCross):
+        for start_pos, end_pos in visual_cross.lines():
+            self._world_line(visual_cross.color, start_pos, end_pos, visual_cross.line_width)
 
     def _visual_text(self, visual_text: VisualText):
         position = visual_text.position()
@@ -387,15 +401,35 @@ class View:
             self._rect_filled((100, 30, 30), cooldown_rect)
             self._rect((180, 30, 30), icon_rect, 2)
 
-    def _item_icon_in_ui(self, x_in_ui, y_in_ui, size, item_type: ItemType):
+    def _item_icon_in_ui(self, x_in_ui, y_in_ui, size, item_type: ItemType,
+                         slot_equipment_category: ItemEquipmentCategory):
         w = size[0]
         h = size[1]
         x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
         self._rect_filled((40, 40, 50), (x, y, w, h))
         if item_type:
+            if slot_equipment_category:
+                self._rect_filled((40, 40, 70), (x, y, w, h))
             ui_icon_sprite = ITEMS[item_type].icon_sprite
             self._image(self.images_by_ui_sprite[ui_icon_sprite], (x, y))
-        self._rect((150, 150, 190), (x, y, w, h), 1)
+        elif slot_equipment_category:
+            if slot_equipment_category == ItemEquipmentCategory.HEAD:
+                self._image(self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_HELMET], (x, y))
+            elif slot_equipment_category == ItemEquipmentCategory.CHEST:
+                self._image(self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_CHEST], (x, y))
+            elif slot_equipment_category == ItemEquipmentCategory.MAIN_HAND:
+                self._image(self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_MAINHAND], (x, y))
+            elif slot_equipment_category == ItemEquipmentCategory.OFF_HAND:
+                self._image(self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_OFFHAND], (x, y))
+            elif slot_equipment_category == ItemEquipmentCategory.NECK:
+                self._image(self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_NECK], (x, y))
+            elif slot_equipment_category == ItemEquipmentCategory.RING:
+                self._image(self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_RING], (x, y))
+        if item_type and slot_equipment_category:
+            color_outline = (250, 250, 250)
+        else:
+            color_outline = (100, 100, 140)
+        self._rect(color_outline, (x, y, w, h), 1)
 
     def _map_editor_icon_in_ui(self, x_in_ui, y_in_ui, size: Tuple[int, int], highlighted: bool, user_input_key: str,
                                sprite: Optional[Sprite], ui_icon_sprite: Optional[UiIconSprite]):
@@ -443,44 +477,57 @@ class View:
         self._rect_filled((100, 160, 100), (dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
     def _message(self, message):
-        x_message = self.ui_screen_area.w / 2 - 140
+        w_rect = len(message) * 9 + 10
+        x_message = self.ui_screen_area.w / 2 - w_rect / 2
         y_message = self.ui_screen_area.y - 30
-        self._rect_transparent((x_message - 10, y_message - 5, 280, 28), 85, (0, 0, 0))
+        self._rect_transparent((x_message - 10, y_message - 5, w_rect, 28), 135, (0, 0, 0))
         self._text(self.font_message, message, (x_message, y_message))
 
-    def _tooltip(self, title: str, details: List[str], position_bottom_left: Tuple[int, int]):
+    def _tooltip(self, tooltip: TooltipGraphics):
         w_tooltip = 320
         h_tooltip = 130
-        x_tooltip = position_bottom_left[0]
-        y_tooltip = position_bottom_left[1] - h_tooltip
+        x_tooltip = tooltip.bottom_left_corner[0]
+        y_tooltip = tooltip.bottom_left_corner[1] - h_tooltip
         rect_tooltip = (x_tooltip, y_tooltip, w_tooltip, h_tooltip)
-        self._rect_transparent((x_tooltip, y_tooltip, w_tooltip, h_tooltip), 240, (0, 0, 30))
+        self._rect_transparent((x_tooltip, y_tooltip, w_tooltip, h_tooltip), 200, (0, 0, 30))
         self._rect(COLOR_WHITE, rect_tooltip, 2)
-        self._text(self.font_tooltip_header, title, (x_tooltip + 20, y_tooltip + 15), COLOR_WHITE)
+        self._text(self.font_tooltip_header, tooltip.title, (x_tooltip + 20, y_tooltip + 15), COLOR_WHITE)
         y_separator = y_tooltip + 40
         self._line(COLOR_WHITE, (x_tooltip + 10, y_separator), (x_tooltip + w_tooltip - 10, y_separator), 1)
-        for i, detail in enumerate(details):
-            self._text(self.font_tooltip_details, detail, (x_tooltip + 20, y_tooltip + 50 + i * 20), COLOR_WHITE)
+        detail_lines = []
+        detail_max_line_length = 42
+        for detail in tooltip.details:
+            detail_lines += self._split_text_into_lines(detail, detail_max_line_length)
+        for i, line in enumerate(detail_lines):
+            self._text(self.font_tooltip_details, line, (x_tooltip + 20, y_tooltip + 50 + i * 18), COLOR_WHITE)
 
     def _entity_action_text(self, entity_action_text: EntityActionText):
-        npc_center_pos = self._translate_world_position_to_screen(
-            entity_action_text.entity.get_center_position())
-        rect_width = 120
-        rect_height = 27
-        rect_pos = (npc_center_pos[0] - rect_width / 2, npc_center_pos[1] - 60)
+        entity_center_pos = self._translate_world_position_to_screen(entity_action_text.entity.get_center_position())
+        text = entity_action_text.text
+        detail_lines = self._split_text_into_lines(entity_action_text.details, 30) if entity_action_text.details else []
+        if detail_lines:
+            line_length = max(max([len(line) for line in detail_lines]), len(text))
+        else:
+            line_length = len(text)
+        rect_width = line_length * 8
+        rect_height = 16 + len(detail_lines) * 16
+        rect_pos = (entity_center_pos[0] - rect_width / 2, entity_center_pos[1] - 60)
         self._rect_transparent((rect_pos[0], rect_pos[1], rect_width, rect_height), 150, (0, 0, 0))
-        self._text(self.font_npc_action, entity_action_text.text, (rect_pos[0] + 10, rect_pos[1] + 4))
+        self._text(self.font_npc_action, text, (rect_pos[0] + 4, rect_pos[1]))
+        for i, detail_line in enumerate(detail_lines):
+            self._text(self.font_npc_action, detail_line, (rect_pos[0] + 4, rect_pos[1] + (i + 1) * 16))
 
     def render_world(self, all_entities_to_render: List[WorldEntity], decorations_to_render: List[DecorationEntity],
                      camera_world_area, non_player_characters: List[NonPlayerCharacter], is_player_invisible: bool,
-                     player_entity, visual_effects, render_hit_and_collision_boxes, player_health, player_max_health,
-                     game_world_size, entity_action_text: Optional[EntityActionText]):
+                     player_active_buffs: List[BuffWithDuration],
+                     player_entity: WorldEntity, visual_effects, render_hit_and_collision_boxes, player_health,
+                     player_max_health, entire_world_area: WorldArea, entity_action_text: Optional[EntityActionText]):
         self.camera_world_area = camera_world_area
 
         self.screen.fill(COLOR_BACKGROUND)
-        self._world_ground(game_world_size)
+        self._world_ground(entire_world_area)
 
-        all_entities_to_render.sort(key=lambda entry: entry.y)
+        all_entities_to_render.sort(key=lambda entry: (-entry.view_z, entry.y))
 
         for decoration_entity in decorations_to_render:
             self._world_entity(decoration_entity)
@@ -490,7 +537,17 @@ class View:
             if entity == player_entity and is_player_invisible:
                 self._world_rect((200, 100, 250), player_entity.rect(), 2)
 
-        self._stat_bar_for_world_entity(player_entity, 5, -35, player_health / player_max_health, (100, 200, 0))
+        player_sprite_y_relative_to_entity = \
+            ENTITY_SPRITE_INITIALIZERS[player_entity.sprite][Direction.DOWN].position_relative_to_entity[1]
+        self._stat_bar_for_world_entity(player_entity, 5, player_sprite_y_relative_to_entity - 5,
+                                        player_health / player_max_health, (100, 200, 0))
+
+        # Buffs related to channeling something are rendered above player's head with progress from left to right
+        for buff in player_active_buffs:
+            if buff.buff_effect.get_buff_type() in CHANNELING_BUFFS:
+                ratio = 1 - buff.get_ratio_duration_remaining()
+                self._stat_bar_for_world_entity(player_entity, 3, player_sprite_y_relative_to_entity - 11, ratio,
+                                                (150, 150, 250))
 
         if render_hit_and_collision_boxes:
             for entity in all_entities_to_render:
@@ -498,30 +555,54 @@ class View:
                 self._world_rect((250, 250, 250), entity.rect(), 1)
 
         for npc in non_player_characters:
-            color = COLOR_RED if npc.is_enemy else (250, 250, 0)
+            healthbar_color = COLOR_RED if npc.is_enemy else (250, 250, 0)
+            npc_sprite_y_relative_to_entity = \
+                ENTITY_SPRITE_INITIALIZERS[npc.world_entity.sprite][Direction.DOWN].position_relative_to_entity[1]
             if not npc.is_neutral:
-                self._stat_bar_for_world_entity(npc.world_entity, 5, -10, npc.health / npc.max_health, color)
+                self._stat_bar_for_world_entity(npc.world_entity, 3, npc_sprite_y_relative_to_entity - 5,
+                                                npc.health_resource.get_partial(), healthbar_color)
             if npc.active_buffs:
                 buff = npc.active_buffs[0]
                 if buff.should_duration_be_visualized_on_enemies():
-                    self._stat_bar_for_world_entity(npc.world_entity, 2, -14, buff.get_ratio_duration_remaining(),
-                                                    (250, 250, 250))
+                    self._stat_bar_for_world_entity(npc.world_entity, 2, npc_sprite_y_relative_to_entity - 9,
+                                                    buff.get_ratio_duration_remaining(), (250, 250, 250))
         for visual_effect in visual_effects:
             self._visual_effect(visual_effect)
 
         if entity_action_text:
             self._entity_action_text(entity_action_text)
 
-    def render_ui(self, fps_string, is_paused, is_game_over, abilities, ability_cooldowns_remaining,
-                  highlighted_ability_action, highlighted_consumable_action, message: str, player_armor: int,
-                  player_active_buffs: List[BuffWithDuration],
-                  player_health, player_mana, player_max_health, player_max_mana, player_health_regen: float,
-                  player_mana_regen: float, player_speed_multiplier: float, player_life_steal: float,
-                  player_minimap_relative_position, consumable_slots: Dict[int, List[ConsumableType]],
-                  item_slots: Dict[int, AbstractItemEffect],
-                  player_level: int, mouse_screen_position: Tuple[int, int], player_exp: int,
-                  player_max_exp_in_this_level: int, dialog: Optional[DialogGraphics], player_money: int,
-                  player_damage_modifier: float, hero_id: HeroId) -> MouseHoverEvent:
+    def render_ui(
+            self,
+            player_state: PlayerState,
+            view_state: ViewState,
+            fps_string: str,
+            is_paused: bool,
+            is_game_over: bool,
+            player_speed_multiplier: float,
+            mouse_screen_position: Tuple[int, int],
+            dialog: Optional[DialogGraphics]) -> MouseHoverEvent:
+
+        player_health = player_state.health_resource.value
+        player_max_health = player_state.health_resource.max_value
+        player_max_mana = player_state.mana_resource.max_value
+        player_mana = player_state.mana_resource.value
+        player_life_steal = player_state.life_steal_ratio
+        player_active_buffs = player_state.active_buffs
+        consumable_slots = player_state.consumable_inventory.consumables_in_slots
+        ability_cooldowns_remaining = player_state.ability_cooldowns_remaining
+        abilities = player_state.abilities
+        item_slots: List[ItemInventorySlot] = player_state.item_inventory.slots
+        player_exp = player_state.exp
+        player_max_exp_in_this_level = player_state.max_exp_in_this_level
+        player_level = player_state.level
+        player_money = player_state.money
+        hero_id = player_state.hero_id
+
+        player_minimap_relative_position = view_state.player_minimap_relative_position
+        message = view_state.message
+        highlighted_consumable_action = view_state.highlighted_consumable_action
+        highlighted_ability_action = view_state.highlighted_ability_action
 
         hovered_item_slot_number = None
         hovered_consumable_slot_number = None
@@ -530,10 +611,7 @@ class View:
             (self.ui_screen_area.x, self.ui_screen_area.y, self.ui_screen_area.w, self.ui_screen_area.h))
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
-        tooltip_title = ""
-        tooltip_details = []
-        tooltip_bottom_left_position = (175, 450)
-
+        tooltip: Optional[TooltipGraphics] = None
         self._rect(COLOR_BORDER, (0, 0, self.camera_size[0], self.camera_size[1]), 1)
         self._rect_filled((20, 10, 0), (0, self.camera_size[1], self.screen_size[0],
                                         self.screen_size[1] - self.camera_size[1]))
@@ -560,10 +638,10 @@ class View:
         self._stat_bar_in_ui((rect_healthbar[0], rect_healthbar[1]), rect_healthbar[2], rect_healthbar[3],
                              player_health / player_max_health, (200, 0, 50), True)
         if is_point_in_rect(mouse_ui_position, rect_healthbar):
-            tooltip_title = "Health"
-            tooltip_details = ["regeneration: " + "{:.1f}".format(player_health_regen) + "/s"]
-            tooltip_details += ["damage bonus: +" + str(int(round((player_damage_modifier - 1) * 100))) + "%"]
+            tooltip_details = [
+                "regeneration: " + "{:.1f}".format(player_state.health_resource.get_effective_regen()) + "/s"]
             tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_healthbar[0], rect_healthbar[1]))
+            tooltip = TooltipGraphics("Health", tooltip_details, tooltip_bottom_left_position)
         health_text = str(player_health) + "/" + str(player_max_health)
         self._text_in_ui(self.font_ui_stat_bar_numbers, health_text, (x_0 + 20, y_4 - 1))
 
@@ -571,9 +649,10 @@ class View:
         self._stat_bar_in_ui((rect_manabar[0], rect_manabar[1]), rect_manabar[2], rect_manabar[3],
                              player_mana / player_max_mana, (50, 0, 200), True)
         if is_point_in_rect(mouse_ui_position, rect_manabar):
-            tooltip_title = "Mana"
-            tooltip_details = ["regeneration: " + "{:.1f}".format(player_mana_regen) + "/s"]
+            tooltip_details = [
+                "regeneration: " + "{:.1f}".format(player_state.mana_resource.get_effective_regen()) + "/s"]
             tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_manabar[0], rect_manabar[1]))
+            tooltip = TooltipGraphics("Mana", tooltip_details, tooltip_bottom_left_position)
         mana_text = str(player_mana) + "/" + str(player_max_mana)
         self._text_in_ui(self.font_ui_stat_bar_numbers, mana_text, (x_0 + 20, y_4 + 20))
 
@@ -599,6 +678,7 @@ class View:
                     tooltip_title = CONSUMABLES[consumable_type].name
                     tooltip_details = [CONSUMABLES[consumable_type].description]
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
+                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, tooltip_bottom_left_position)
             self._consumable_icon_in_ui(x, y, UI_ICON_SIZE, slot_number, consumable_types,
                                         highlighted_consumable_action)
 
@@ -621,29 +701,43 @@ class View:
                     mana_cost = str(ability_data.mana_cost)
                     tooltip_details = ["Cooldown: " + cooldown + " s", "Mana: " + mana_cost, ability_data.description]
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
+                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, tooltip_bottom_left_position)
             self._ability_icon_in_ui(x, y, UI_ICON_SIZE, ability_type,
                                      highlighted_ability_action, ability_cooldowns_remaining)
 
         # ITEMS
-        x_2 = 326
+        x_2 = 325
         items_rect_pos = self._translate_ui_position_to_screen((x_2 - icon_rect_padding, y_2 - icon_rect_padding))
+        num_item_slot_rows = 3
+        num_slots_per_row = 3
         items_rect = (
             items_rect_pos[0], items_rect_pos[1],
-            (UI_ICON_SIZE[0] + icon_space) * len(item_slots) - icon_space + icon_rect_padding * 2,
-            UI_ICON_SIZE[1] + icon_rect_padding * 2)
+            (UI_ICON_SIZE[0] + icon_space) * num_slots_per_row - icon_space + icon_rect_padding * 2,
+            num_item_slot_rows * UI_ICON_SIZE[1] + (num_item_slot_rows - 1) * icon_space + icon_rect_padding * 2)
         self._rect_filled((60, 60, 80), items_rect)
-        for i, item_slot_number in enumerate(item_slots.keys()):
-            x = x_2 + i * (UI_ICON_SIZE[0] + icon_space)
-            y = y_2
-            item_effect = item_slots[item_slot_number]
-            item_type = item_effect.get_item_type() if item_effect else None
+        for i in range(len(item_slots)):
+            x = x_2 + (i % num_slots_per_row) * (UI_ICON_SIZE[0] + icon_space)
+            y = y_2 + (i // num_slots_per_row) * (UI_ICON_SIZE[1] + icon_space)
+            slot: ItemInventorySlot = item_slots[i]
+            item_type = slot.get_item_type() if not slot.is_empty() else None
+            slot_equipment_category = slot.enforced_equipment_category
             if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
-                hovered_item_slot_number = item_slot_number
+                hovered_item_slot_number = i
                 if item_type:
-                    tooltip_title = ITEMS[item_type].name
-                    tooltip_details = [ITEMS[item_type].description]
+                    item_data = ITEMS[item_type]
+                    tooltip_title = item_data.name
+                    tooltip_details = []
+                    if item_data.item_equipment_category:
+                        tooltip_details.append("[" + item_data.item_equipment_category.name + "]")
+                    tooltip_details.append(item_data.description)
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
-            self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type)
+                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, tooltip_bottom_left_position)
+                elif slot_equipment_category:
+                    tooltip_title = "[" + slot_equipment_category.name + "]"
+                    tooltip_details = ["Nothing equipped"]
+                    tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
+                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, tooltip_bottom_left_position)
+            self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type, slot_equipment_category)
 
         # MINIMAP
         x_3 = 440
@@ -656,7 +750,7 @@ class View:
             self._dialog(dialog)
 
         # BUFFS
-        x_buffs = 22
+        x_buffs = 10
         buff_texts = []
         buff_duration_ratios_remaining = []
         for active_buff in player_active_buffs:
@@ -666,27 +760,50 @@ class View:
             if buff_type in BUFF_TEXTS:
                 buff_texts.append(BUFF_TEXTS[buff_type])
                 buff_duration_ratios_remaining.append(active_buff.get_ratio_duration_remaining())
+        num_buffs_to_render = len(buff_texts)
+        y_buffs = -35 - (num_buffs_to_render - 1) * 25
+        buffs_screen_position = self._translate_ui_position_to_screen((x_buffs, y_buffs))
+        if num_buffs_to_render:
+            rect_padding = 5
+            # Note: The width of this rect is hard-coded so long buff descriptions aren't well supported
+            buffs_background_rect = (
+                buffs_screen_position[0] - rect_padding,
+                buffs_screen_position[1] - rect_padding,
+                140 + rect_padding * 2,
+                num_buffs_to_render * 25 + rect_padding * 2)
+            self._rect_transparent(buffs_background_rect, 125, COLOR_BLACK)
         for i, text in enumerate(buff_texts):
-            y_offset_buff = -i * 25
-            self._text_in_ui(self.font_buff_texts, text, (x_buffs, -40 + y_offset_buff))
-            self._stat_bar_in_ui((x_buffs, -20 + y_offset_buff), 60, 2, buff_duration_ratios_remaining[i],
+            y_offset_buff = i * 25
+            y = y_buffs + y_offset_buff
+            self._text_in_ui(self.font_buff_texts, text, (x_buffs, y))
+            self._stat_bar_in_ui((x_buffs, y + 20), 60, 2, buff_duration_ratios_remaining[i],
                                  (250, 250, 0), False)
 
         # STATS
         x_stats = 555
         health_regen_text = \
-            "health reg: " + "{:.1f}".format(player_health_regen) + "/s"
+            "  health reg: " + "{:.1f}".format(player_state.health_resource.base_regen)
+        if player_state.health_resource.regen_bonus > 0:
+            health_regen_text += " +" + "{:.1f}".format(player_state.health_resource.regen_bonus)
         mana_regen_text = \
-            "  mana reg: " + "{:.1f}".format(player_mana_regen) + "/s"
+            "    mana reg: " + "{:.1f}".format(player_state.mana_resource.base_regen)
+        if player_state.mana_resource.regen_bonus > 0:
+            mana_regen_text += " +" + "{:.1f}".format(player_state.mana_resource.regen_bonus)
         damage_stat_text = \
-            "    damage: +" + str(int(round((player_damage_modifier - 1) * 100))) + "%"
+            "    % damage: " + str(int(round(player_state.base_damage_modifier * 100)))
+        if player_state.damage_modifier_bonus > 0:
+            damage_stat_text += " +" + str(int(round(player_state.damage_modifier_bonus * 100)))
         speed_stat_text = \
-            "     speed: " + ("+" if player_speed_multiplier >= 1 else "") \
-            + str(int(round((player_speed_multiplier - 1) * 100))) + "%"
+            "     % speed: " + ("+" if player_speed_multiplier >= 1 else "") \
+            + str(int(round((player_speed_multiplier - 1) * 100)))
         lifesteal_stat_text = \
-            "life steal: " + str(int(round(player_life_steal * 100))) + "%"
+            "% life steal: " + str(int(round(player_life_steal * 100)))
         armor_stat_text = \
-            "     armor: " + str(player_armor)
+            "       armor: " + str(player_state.base_armor)
+        if player_state.armor_bonus > 0:
+            armor_stat_text += " +" + str(player_state.armor_bonus)
+        elif player_state.armor_bonus < 0:
+            armor_stat_text += " " + str(player_state.armor_bonus)
         self._text_in_ui(self.font_stats, health_regen_text, (x_stats, y_1), COLOR_WHITE)
         self._text_in_ui(self.font_stats, mana_regen_text, (x_stats, y_1 + 20), COLOR_WHITE)
         self._text_in_ui(self.font_stats, damage_stat_text, (x_stats, y_1 + 40), COLOR_WHITE)
@@ -702,8 +819,8 @@ class View:
         if message:
             self._message(message)
 
-        if tooltip_title:
-            self._tooltip(tooltip_title, tooltip_details, tooltip_bottom_left_position)
+        if tooltip:
+            self._tooltip(tooltip)
 
         if is_game_over:
             self._splash_screen_text("You died!", self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50)
@@ -724,27 +841,64 @@ class View:
         self._rect((160, 160, 180), (rect_portrait_pos[0], rect_portrait_pos[1], 100, 70), 2)
 
     def _dialog(self, dialog_graphics: DialogGraphics):
-        rect_dialog_container = (100, 75, 500, 250)
+        options_margin = 10
+        option_padding = 4
+        h_option_line = 20
+        h_dialog_container = 230 + len(dialog_graphics.options) * (h_option_line + 2 * option_padding)
+        rect_dialog_container = (100, 75, 500, h_dialog_container)
+
+        x_left = rect_dialog_container[0]
+        x_right = rect_dialog_container[0] + rect_dialog_container[2]
         self._rect((210, 180, 60), rect_dialog_container, 5)
-        self._rect_transparent(rect_dialog_container, 180, COLOR_BLACK)
-        lower_boundary_y = 280
-        self._line((170, 140, 20), (100, lower_boundary_y), (600, lower_boundary_y), 2)
+        self._rect_transparent(rect_dialog_container, 200, COLOR_BLACK)
+        color_separator = (170, 140, 20)
         dialog_container_portrait_padding = 10
-        rect_portrait_pos = (rect_dialog_container[0] + dialog_container_portrait_padding,
+        rect_portrait_pos = (x_left + dialog_container_portrait_padding,
                              rect_dialog_container[1] + dialog_container_portrait_padding)
         dialog_image = self.images_by_portrait_sprite[dialog_graphics.portrait_icon_sprite]
         self._image(dialog_image, rect_portrait_pos)
         self._rect((160, 160, 180), (rect_portrait_pos[0], rect_portrait_pos[1], 100, 70), 2)
-        dialog_pos = (rect_dialog_container[0] + 120, rect_dialog_container[1] + 15)
-        dialog_lines = self._split_text_into_lines(dialog_graphics.npc_dialog.body, 33)
+
+        dialog_pos = (x_left + 120, rect_dialog_container[1] + 15)
+        dialog_lines = self._split_text_into_lines(dialog_graphics.text_body, 35)
         for i, dialog_text_line in enumerate(dialog_lines):
             if i == 6:
                 print("WARN: too long dialog for NPC!")
                 break
             self._text(self.font_dialog, dialog_text_line, (dialog_pos[0] + 5, dialog_pos[1] + 32 * i),
                        COLOR_WHITE)
-        self._text(self.font_dialog, "[Space] " + dialog_graphics.npc_dialog.action,
-                   (rect_dialog_container[0] + 65, dialog_pos[1] + 202),
+
+        y_above_options = dialog_pos[1] + 150
+        self._line(color_separator, (x_left, y_above_options), (x_right, y_above_options), 2)
+
+        option_image = self.images_by_ui_sprite[
+            dialog_graphics.options[dialog_graphics.active_option_index].ui_icon_sprite]
+
+        for i, option in enumerate(dialog_graphics.options):
+            x_option = x_left + 8
+            y_option = y_above_options + options_margin + i * (h_option_line + 2 * option_padding)
+            x_option_text = x_option + option_padding + 5
+            y_option_text = y_option + option_padding + 2
+            color_highlight = COLOR_WHITE
+
+            is_option_active = dialog_graphics.active_option_index == i
+            color_option_text = COLOR_WHITE if is_option_active else (160, 160, 160)
+            if is_option_active:
+                rect_highlight_active_option = (
+                    x_option, y_option, rect_dialog_container[2] - 16, h_option_line + 2 * option_padding)
+                self._rect_transparent(rect_highlight_active_option, 120, COLOR_WHITE)
+                self._rect(color_highlight, rect_highlight_active_option, 1)
+            self._text(self.font_dialog, option.text_header, (x_option_text, y_option_text), color_option_text)
+        y_under_options = y_above_options + 2 * options_margin \
+                          + len(dialog_graphics.options) * (h_option_line + 2 * option_padding)
+        self._line(color_separator, (x_left, y_under_options), (x_right, y_under_options), 2)
+        y_action_text = y_under_options + 15
+        action_text = dialog_graphics.options[dialog_graphics.active_option_index].text_detailed
+        pos_option_image = (x_left + 6, y_under_options + 7)
+        rect_option_image = (pos_option_image[0], pos_option_image[1], UI_ICON_SIZE[0], UI_ICON_SIZE[1])
+        self._image(option_image, pos_option_image)
+        self._rect((150, 150, 150), rect_option_image, 1)
+        self._text(self.font_dialog, "[Space] : " + action_text, (x_left + 14 + UI_ICON_SIZE[0] + 4, y_action_text),
                    COLOR_WHITE)
 
     @staticmethod
@@ -793,7 +947,6 @@ class View:
 
         y_1 = 17
         y_2 = y_1 + 22
-        y_3 = y_2 + MAP_EDITOR_UI_ICON_SIZE[1] + 25
 
         x_0 = 20
         self._map_editor_icon_in_ui(x_0, y_2, MAP_EDITOR_UI_ICON_SIZE, deleting_entities, 'Q', None,
@@ -811,7 +964,8 @@ class View:
                 char = ''
             is_this_entity_being_placed = entity is placing_entity
             x = x_1 + (i % num_icons_per_row) * (MAP_EDITOR_UI_ICON_SIZE[0] + icon_space)
-            y = y_2 if i < num_icons_per_row else y_3
+            row_index = (i // num_icons_per_row)
+            y = y_2 + row_index * (MAP_EDITOR_UI_ICON_SIZE[1] + 25)
             if is_point_in_rect(mouse_ui_position, (x, y, MAP_EDITOR_UI_ICON_SIZE[0], MAP_EDITOR_UI_ICON_SIZE[1])):
                 hovered_by_mouse = entity
             self._map_editor_icon_in_ui(
