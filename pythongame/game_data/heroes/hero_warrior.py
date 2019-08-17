@@ -8,19 +8,20 @@ from pythongame.core.game_state import PlayerLevelBonus
 def register_hero_warrior():
     sprite = Sprite.HERO_WARRIOR
     portrait_icon_sprite = PortraitIconSprite.HERO_WARRIOR
-    player_sprite_sheet = SpriteSheet("resources/graphics/hero2.png")
-    original_sprite_size = (24, 49)
-    scaled_sprite_size = (46, 75)
+    player_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")
+    original_sprite_size = (32, 32)
+    scaled_sprite_size = (48, 48)
+    x = 6
     indices_by_dir = {
-        Direction.DOWN: [(0, 0), (1, 0), (2, 0), (1, 0)],
-        Direction.UP: [(0, 1), (1, 1), (2, 1), (1, 1)],
-        Direction.LEFT: [(0, 2), (1, 2), (2, 2), (1, 2)],
-        Direction.RIGHT: [(0, 3), (1, 3), (2, 3), (1, 3)]
+        Direction.DOWN: [(x + i, 4) for i in range(3)],
+        Direction.LEFT: [(x + i, 5) for i in range(3)],
+        Direction.RIGHT: [(x + i, 6) for i in range(3)],
+        Direction.UP: [(x + i, 7) for i in range(3)]
     }
-    sprite_position_relative_to_entity = (-8, -45)
+    sprite_position_relative_to_entity = (-8, -16)
     register_entity_sprite_map(sprite, player_sprite_sheet, original_sprite_size,
                                scaled_sprite_size, indices_by_dir, sprite_position_relative_to_entity)
-    register_portrait_icon_sprite_path(portrait_icon_sprite, 'resources/graphics/hero2_portrait.png')
+    register_portrait_icon_sprite_path(portrait_icon_sprite, 'resources/graphics/portrait_warrior_hero.png')
     entity_speed = 0.105
     hero_data = HeroData(sprite, portrait_icon_sprite, _get_initial_player_state_warrior(), entity_speed,
                          PLAYER_ENTITY_SIZE)
