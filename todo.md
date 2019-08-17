@@ -38,9 +38,6 @@
 * give enemies 'armor'?
     * could add effects that reduce armor on enemies
     * makes it more difficult to clear endgame content on low level
-* change rogue ability infuse dagger to be an instant ability instead of a buff - too difficult to use in its current form
-    * shiv: deals damage. x3 from stealth
-    * infuse dagger: deals damage over time. add stun from stealth
 * New heroes
     * builder
         * place turret on ground that shoots in all directions
