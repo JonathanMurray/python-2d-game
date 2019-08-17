@@ -67,7 +67,7 @@ def register_channel_attack_ability():
     description = "Channel for " + "{:.1f}".format(CHANNEL_DURATION / 1000) + \
                   "s, firing piercing missiles in front of you that damage enemies."
     mana_cost = 40
-    cooldown = Millis(14000)
+    cooldown = Millis(30000)
     ability_data = AbilityData("Arcane Fire", UiIconSprite.ABILITY_MAGIC_MISSILE, mana_cost, cooldown, description,
                                None)
     register_ability_data(AbilityType.CHANNEL_ATTACK, ability_data)

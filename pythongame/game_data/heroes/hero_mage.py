@@ -35,7 +35,7 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
     mana_per_level = 10
     armor_per_level = 1
     level_bonus = PlayerLevelBonus(health_per_level, mana_per_level, armor_per_level)
-    armor = 1
+    armor = 0
     consumable_slots = {
         1: [ConsumableType.HEALTH_LESSER],
         2: [ConsumableType.MANA_LESSER],
