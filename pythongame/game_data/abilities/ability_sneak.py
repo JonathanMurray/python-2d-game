@@ -39,9 +39,9 @@ class Sneaking(AbstractBuffEffect):
         return BUFF_SNEAK
 
     def buff_handle_event(self, event: Event) -> Optional[BuffEventOutcome]:
-        used_shiv_ability = isinstance(event, PlayerUsedAbilityEvent) and event.ability == AbilityType.SHIV
+        used_ability = isinstance(event, PlayerUsedAbilityEvent) and event.ability != AbilityType.SNEAK
         player_lost_health = isinstance(event, PlayerLostHealthEvent)
-        if used_shiv_ability or player_lost_health:
+        if used_ability or player_lost_health:
             return BuffEventOutcome.cancel_effect()
 
 
@@ -68,14 +68,14 @@ def register_sneak_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_SNEAK
 
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    description = "Become invisible. Shiv deals 300% damage from stealth. Then, gain " + \
+    description = "Become invisible to enemies. After effect ends, gain " + \
                   str(ARMOR_BONUS) + " armor for " + "{:.1f}".format(DURATION_POST_SNEAK / 1000) + "s"
     mana_cost = 25
     cooldown = Millis(6000)
-    ability_data = AbilityData("Sneak", ui_icon_sprite, mana_cost, cooldown, description, SoundId.ABILITY_SNEAK)
+    ability_data = AbilityData("Stealth", ui_icon_sprite, mana_cost, cooldown, description, SoundId.ABILITY_SNEAK)
     register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/sneak_icon.png")
     register_buff_effect(BUFF_SNEAK, Sneaking)
-    register_buff_text(BUFF_SNEAK, "Sneaking")
+    register_buff_text(BUFF_SNEAK, "Stealthed")
     register_buff_effect(BUFF_POST_SNEAK, AfterSneaking)
     register_buff_text(BUFF_POST_SNEAK, "Element of surprise")

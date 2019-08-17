@@ -1,63 +1,67 @@
-from typing import Optional
-
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
-from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PeriodicTimer
+from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PeriodicTimer, \
+    PLAYER_ENTITY_SIZE
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
-from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
-    register_buff_text, register_buff_as_channeling
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, PlayerUsedAbilityEvent, \
-    BuffEventOutcome
+from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path
+from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.math import translate_in_direction
+from pythongame.core.visual_effects import VisualRect, VisualCross
 
 ABILITY_TYPE = AbilityType.INFUSE_DAGGER
-BUFF_CHANNELING = BuffType.CHANNELING_INFUSE_DAGGER
-BUFF_INFUSED = BuffType.HAS_INFUSED_DAGGER
 DEBUFF = BuffType.DAMAGED_BY_INFUSED_DAGGER
+DAMAGE_PER_TICK = 1
+DAMAGE_TICK_INTERVAL = Millis(500)
+DEBUFF_DURATION = Millis(8000)
+TOTAL_DOT_DAMAGE = DEBUFF_DURATION // DAMAGE_TICK_INTERVAL * DAMAGE_PER_TICK
 
 
 def _apply_ability(game_state: GameState) -> bool:
-    game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_CHANNELING), Millis(3000))
+    player_entity = game_state.player_entity
+    rect_w = 28
+    slash_center_pos = translate_in_direction(
+        player_entity.get_center_position(),
+        player_entity.direction,
+        rect_w / 2 + PLAYER_ENTITY_SIZE[0] * 0.25)
+    slash_rect = (int(slash_center_pos[0] - rect_w / 2), int(slash_center_pos[1] - rect_w / 2), rect_w, rect_w)
+    affected_enemies = game_state.get_enemy_intersecting_rect(slash_rect)
+    if not affected_enemies:
+        return False
+
+    # Note: Dependency on other ability 'sneak'
+    used_from_stealth = game_state.player_state.has_active_buff(BuffType.SNEAKING)
+    buff_effect = get_buff_effect(DEBUFF, used_from_stealth)
+    affected_enemies[0].gain_buff_effect(buff_effect, DEBUFF_DURATION)
+
+    game_state.visual_effects.append(
+        VisualRect((150, 150, 75), slash_center_pos, rect_w, int(rect_w * 0.7), Millis(200), 2, None))
+    game_state.visual_effects.append(VisualCross((100, 100, 70), slash_center_pos, 6, Millis(100), 2))
+    game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(250))
     return True
-
-
-class ChannelingInfuseDagger(AbstractBuffEffect):
-    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.stun_status.add_one()
-        game_state.player_entity.set_not_moving()
-
-    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.stun_status.remove_one()
-        game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_INFUSED), Millis(60000))
-
-    def get_buff_type(self):
-        return BUFF_CHANNELING
-
-
-class HasInfusedDagger(AbstractBuffEffect):
-    def buff_handle_event(self, event: Event) -> Optional[BuffEventOutcome]:
-        if isinstance(event, PlayerUsedAbilityEvent):
-            if event.ability == AbilityType.SHIV:
-                return BuffEventOutcome.cancel_effect()
-
-    def get_buff_type(self):
-        return BUFF_INFUSED
 
 
 class DamagedByInfusedDagger(AbstractBuffEffect):
 
-    def __init__(self):
-        self.timer = PeriodicTimer(Millis(500))
+    def __init__(self, should_stun: bool):
+        self.timer = PeriodicTimer(DAMAGE_TICK_INTERVAL)
+        self.should_stun = should_stun
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        buffed_npc.stun_status.add_one()
+        if self.should_stun:
+            buffed_npc.stun_status.add_one()
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         if self.timer.update_and_check_if_ready(time_passed):
-            deal_player_damage_to_enemy(game_state, buffed_npc, 1)
+            deal_player_damage_to_enemy(game_state, buffed_npc, DAMAGE_PER_TICK)
+            if self.should_stun:
+                effect_position = buffed_entity.get_center_position()
+                game_state.visual_effects.append(
+                    VisualRect((250, 250, 50), effect_position, 30, 40, Millis(100), 1, buffed_entity))
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        buffed_npc.stun_status.remove_one()
+        if self.should_stun:
+            buffed_npc.stun_status.remove_one()
 
     def get_buff_type(self):
         return DEBUFF
@@ -67,16 +71,12 @@ def register_infuse_dagger_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_INFUSE_DAGGER
 
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    description = "Add a debuff to your next Shiv: periodic damage and stun"
-    mana_cost = 35
+    description = "Poison an enemy, dealing " + str(TOTAL_DOT_DAMAGE) + " damage over " + \
+                  "{:.0f}".format(DEBUFF_DURATION / 1000) + "s. [from stealth: stun for full duration]"
+    mana_cost = 18
     ability_data = AbilityData(
-        "Infuse Dagger", ui_icon_sprite, mana_cost, Millis(20000), description, SoundId.ABILITY_INFUSE_DAGGER)
+        "Infuse Dagger", ui_icon_sprite, mana_cost, Millis(10000), description, SoundId.ABILITY_INFUSE_DAGGER)
     register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/ability_infuse_dagger.png")
-    register_buff_effect(BUFF_CHANNELING, ChannelingInfuseDagger)
-    register_buff_as_channeling(BUFF_CHANNELING)
-
-    register_buff_effect(BUFF_INFUSED, HasInfusedDagger)
-    register_buff_text(BUFF_INFUSED, "Infused dagger")
 
     register_buff_effect(DEBUFF, DamagedByInfusedDagger)

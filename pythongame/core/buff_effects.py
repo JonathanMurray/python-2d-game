@@ -30,7 +30,7 @@ def register_buff_effect(buff_type: BuffType, effect: Type[AbstractBuffEffect]):
 
 
 def get_buff_effect(buff_type: BuffType, args: Optional[Any] = None) -> AbstractBuffEffect:
-    if args:
+    if args is not None:
         # args passed in, assume the buff takes args in constructor
         return _buff_effects[buff_type](args)
     else:
