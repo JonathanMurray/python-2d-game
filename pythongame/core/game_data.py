@@ -170,9 +170,10 @@ class PortalData:
 
 
 class PlayerLevelBonus:
-    def __init__(self, health: int, mana: int):
+    def __init__(self, health: int, mana: int, armor: float):
         self.health = health
         self.mana = mana
+        self.armor = armor
 
 
 class InitialPlayerStateData:

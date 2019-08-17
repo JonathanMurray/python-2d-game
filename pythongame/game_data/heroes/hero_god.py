@@ -35,7 +35,7 @@ def _get_initial_player_state_god() -> InitialPlayerStateData:
     health = 9999
     mana = 9999
     mana_regen = 100
-    level_bonus = PlayerLevelBonus(0, 0)
+    level_bonus = PlayerLevelBonus(0, 0, 0)
     armor = 99
     consumable_slots = {
         1: [ConsumableType.HEALTH_LESSER],

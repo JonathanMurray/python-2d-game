@@ -36,7 +36,8 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
     mana_regen = 2.5
     health_per_level = 10
     mana_per_level = 10
-    level_bonus = PlayerLevelBonus(health_per_level, mana_per_level)
+    armor_per_level = 2
+    level_bonus = PlayerLevelBonus(health_per_level, mana_per_level, armor_per_level)
     armor = 2
     consumable_slots = {
         1: [ConsumableType.HEALTH_LESSER],

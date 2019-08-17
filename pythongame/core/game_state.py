@@ -442,6 +442,7 @@ class PlayerState:
         self.mana_resource.gain_to_max()
         self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.6)
         self.base_damage_modifier *= 1.1
+        self.base_armor += self.level_bonus.armor
 
     def gain_ability(self, ability_type: AbilityType):
         self.ability_cooldowns_remaining[ability_type] = 0
