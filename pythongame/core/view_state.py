@@ -1,7 +1,8 @@
 from typing import Tuple, Optional
 
+from pygame.rect import Rect
+
 from pythongame.core.common import AbilityType, Millis
-from pythongame.core.game_state import WorldArea
 
 MINIMAP_UPDATE_INTERVAL = 1000
 MESSAGE_DURATION = 2500
@@ -13,7 +14,7 @@ HIGHLIGHT_ABILITY_ACTION_DURATION = 120
 # the UI, it should be highlighted but only for a while. Keeping that logic here lets main.py be free from UI details
 # and it lets view.py be stateless.
 class ViewState:
-    def __init__(self, entire_world_area: WorldArea):
+    def __init__(self, entire_world_area: Rect):
         self._entire_world_area = entire_world_area
         self._player_entity_center_position = (0, 0)
         self._ticks_since_minimap_updated = MINIMAP_UPDATE_INTERVAL

@@ -1,12 +1,14 @@
 import json
 from typing import Tuple
 
+from pygame.rect import Rect
+
 from pythongame.core.common import *
 from pythongame.core.entity_creation import create_npc, set_global_path_finder, create_money_pile_on_ground, \
     create_consumable_on_ground, create_portal, create_wall, create_hero_world_entity, \
     create_decoration_entity, create_item_on_ground, create_player_state
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Wall, Portal, DecorationEntity, \
-    MoneyPileOnGround, ItemOnGround, ConsumableOnGround, PlayerState, WorldArea
+    MoneyPileOnGround, ItemOnGround, ConsumableOnGround, PlayerState
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
 
@@ -141,11 +143,12 @@ class ConsumableJson:
     def deserialize(data) -> ConsumableOnGround:
         return create_consumable_on_ground(ConsumableType[data["consumable_type"]], data["position"])
 
+
 class WorldAreaJson:
     @staticmethod
-    def serialize(game_world_area: WorldArea):
+    def serialize(game_world_area: Rect):
         return [game_world_area.x, game_world_area.y, game_world_area.w, game_world_area.h]
 
     @staticmethod
-    def deserialize(data) -> WorldArea:
-        return WorldArea((data[0], data[1]), (data[2], data[3]))
+    def deserialize(data) -> Rect:
+        return Rect(data[0], data[1], data[2], data[3])

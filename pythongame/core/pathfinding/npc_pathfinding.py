@@ -1,7 +1,9 @@
 from typing import Tuple, Any, Optional, List
 
+from pygame.rect import Rect
+
 from pythongame.core.common import Millis, Direction
-from pythongame.core.game_state import GRID_CELL_WIDTH, GameState, WorldEntity, WorldArea
+from pythongame.core.game_state import GRID_CELL_WIDTH, GameState, WorldEntity
 from pythongame.core.math import get_directions_to_position, get_opposite_direction, is_x_and_y_within_distance
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.visual_effects import VisualLine, VisualRect
@@ -128,11 +130,11 @@ def _would_collide_with_dir(direction: Direction, agent_entity: WorldEntity, gam
     return would_collide
 
 
-def _translate_world_position_to_cell(position: Tuple[int, int], entire_world_area: WorldArea) -> Tuple[int, int]:
+def _translate_world_position_to_cell(position: Tuple[int, int], entire_world_area: Rect) -> Tuple[int, int]:
     return (int((position[0] - entire_world_area.x + GRID_CELL_WIDTH / 2) // GRID_CELL_WIDTH),
             int((position[1] - entire_world_area.y + GRID_CELL_WIDTH / 2) // GRID_CELL_WIDTH))
 
 
-def _translate_cell_to_world_position(cell: Tuple[int, int], entire_world_area: WorldArea) -> Tuple[int, int]:
+def _translate_cell_to_world_position(cell: Tuple[int, int], entire_world_area: Rect) -> Tuple[int, int]:
     return (cell[0] * GRID_CELL_WIDTH + entire_world_area.x,
             cell[1] * GRID_CELL_WIDTH + entire_world_area.y)

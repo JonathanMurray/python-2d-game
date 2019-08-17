@@ -2,6 +2,7 @@ from typing import Dict, List, Optional, Tuple
 
 # We should probably not load image files in here!
 import pygame
+from pygame.rect import Rect
 
 from pythongame.core.common import *
 from pythongame.core.common import UiIconSprite, PortraitIconSprite
@@ -26,11 +27,10 @@ class SpriteSheet(object):
     def _load_sheet(self):
         self.sheet = pygame.image.load(self.file_path).convert_alpha()
 
-    def image_at(self, rectangle: Tuple[int, int, int, int]):
+    def image_at(self, rect: Rect):
         if self.sheet is None:
             self._load_sheet()
 
-        rect = pygame.Rect(rectangle)
         # noinspection PyArgumentList
         image = pygame.Surface(rect.size, pygame.SRCALPHA)
         destination_in_image = (0, 0)

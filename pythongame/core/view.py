@@ -1,12 +1,13 @@
 from typing import Dict, Any, List, Tuple, Optional, Union
 
 import pygame
+from pygame.rect import Rect
 
 from pythongame.core.common import Direction, Sprite, ConsumableType, ItemType, HeroId, UiIconSprite
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
     ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, PORTRAIT_ICON_SPRITE_PATHS, \
     HEROES, ConsumableCategory, CHANNELING_BUFFS
-from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration, WorldArea, \
+from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration, \
     PlayerState
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory
 from pythongame.core.math import is_point_in_rect, sum_of_vectors
@@ -39,17 +40,6 @@ class MouseHoverEvent:
         self.item_slot_number = item_slot_number
         self.consumable_slot_number = consumable_slot_number
         self.game_world_position = game_world_position
-
-
-class ScreenArea:
-    def __init__(self, pos, size):
-        self.x = pos[0]
-        self.y = pos[1]
-        self.w = size[0]
-        self.h = size[1]
-
-    def rect(self):
-        return self.x, self.y, self.w, self.h
 
 
 class ImageWithRelativePosition:
@@ -96,10 +86,10 @@ def load_and_scale_directional_sprites(
                 sprite_sheet = sprite_map_init.sprite_sheet
                 index_position_within_map = sprite_map_init.index_position_within_map
                 original_sprite_size = sprite_map_init.original_sprite_size
-                rectangle = (index_position_within_map[0] * original_sprite_size[0],
-                             index_position_within_map[1] * original_sprite_size[1],
-                             original_sprite_size[0],
-                             original_sprite_size[1])
+                rectangle = Rect(index_position_within_map[0] * original_sprite_size[0],
+                                 index_position_within_map[1] * original_sprite_size[1],
+                                 original_sprite_size[0],
+                                 original_sprite_size[1])
                 image = sprite_sheet.image_at(rectangle)
                 scaled_image = pygame.transform.scale(image, sprite_map_init.scaling_size)
                 images_for_dir.append(ImageWithRelativePosition(scaled_image, animation.position_relative_to_entity))
@@ -114,7 +104,7 @@ class View:
     def __init__(self, camera_size, screen_size):
         pygame.font.init()
         self.screen = pygame.display.set_mode(screen_size)
-        self.ui_screen_area = ScreenArea((0, camera_size[1]), (screen_size[0], screen_size[1] - camera_size[1]))
+        self.ui_screen_area = Rect(0, camera_size[1], screen_size[0], screen_size[1] - camera_size[1])
         self.camera_size = camera_size
         self.screen_size = screen_size
 
@@ -220,7 +210,7 @@ class View:
     #       DRAWING THE GAME WORLD
     # ------------------------------------
 
-    def _world_ground(self, entire_world_area: WorldArea):
+    def _world_ground(self, entire_world_area: Rect):
         grid_width = 35
         # TODO num squares should depend on map size. Ideally this dumb looping logic should change.
         num_squares = 200
@@ -521,7 +511,7 @@ class View:
                      camera_world_area, non_player_characters: List[NonPlayerCharacter], is_player_invisible: bool,
                      player_active_buffs: List[BuffWithDuration],
                      player_entity: WorldEntity, visual_effects, render_hit_and_collision_boxes, player_health,
-                     player_max_health, entire_world_area: WorldArea, entity_action_text: Optional[EntityActionText]):
+                     player_max_health, entire_world_area: Rect, entity_action_text: Optional[EntityActionText]):
         self.camera_world_area = camera_world_area
 
         self.screen.fill(COLOR_BACKGROUND)
@@ -606,9 +596,7 @@ class View:
 
         hovered_item_slot_number = None
         hovered_consumable_slot_number = None
-        is_mouse_hovering_ui = is_point_in_rect(
-            mouse_screen_position,
-            (self.ui_screen_area.x, self.ui_screen_area.y, self.ui_screen_area.w, self.ui_screen_area.h))
+        is_mouse_hovering_ui = is_point_in_rect(mouse_screen_position, self.ui_screen_area)
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
         tooltip: Optional[TooltipGraphics] = None
@@ -634,7 +622,7 @@ class View:
 
         self._player_portrait(hero_id, (x_0, y_0 + 13))
 
-        rect_healthbar = (x_0, y_4 - 1, 100, 14)
+        rect_healthbar = Rect(x_0, y_4 - 1, 100, 14)
         self._stat_bar_in_ui((rect_healthbar[0], rect_healthbar[1]), rect_healthbar[2], rect_healthbar[3],
                              player_health / player_max_health, (200, 0, 50), True)
         if is_point_in_rect(mouse_ui_position, rect_healthbar):
@@ -645,7 +633,7 @@ class View:
         health_text = str(player_health) + "/" + str(player_max_health)
         self._text_in_ui(self.font_ui_stat_bar_numbers, health_text, (x_0 + 20, y_4 - 1))
 
-        rect_manabar = (x_0, y_4 + 20, 100, 14)
+        rect_manabar = Rect(x_0, y_4 + 20, 100, 14)
         self._stat_bar_in_ui((rect_manabar[0], rect_manabar[1]), rect_manabar[2], rect_manabar[3],
                              player_mana / player_max_mana, (50, 0, 200), True)
         if is_point_in_rect(mouse_ui_position, rect_manabar):
@@ -672,7 +660,7 @@ class View:
             y = y_2
             consumable_types = consumable_slots[slot_number]
             consumable_type = consumable_types[0] if consumable_types else None
-            if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
+            if is_point_in_rect(mouse_ui_position, Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
                 hovered_consumable_slot_number = slot_number
                 if consumable_type:
                     tooltip_title = CONSUMABLES[consumable_type].name
@@ -693,7 +681,7 @@ class View:
         for i, ability_type in enumerate(abilities):
             x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_4
-            if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
+            if is_point_in_rect(mouse_ui_position, Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
                 if ability_type:
                     ability_data = ABILITIES[ability_type]
                     tooltip_title = ability_data.name
@@ -721,7 +709,7 @@ class View:
             slot: ItemInventorySlot = item_slots[i]
             item_type = slot.get_item_type() if not slot.is_empty() else None
             slot_equipment_category = slot.enforced_equipment_category
-            if is_point_in_rect(mouse_ui_position, (x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
+            if is_point_in_rect(mouse_ui_position, Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
                 hovered_item_slot_number = i
                 if item_type:
                     item_data = ITEMS[item_type]
@@ -811,7 +799,7 @@ class View:
         self._text_in_ui(self.font_stats, lifesteal_stat_text, (x_stats, y_1 + 80), COLOR_WHITE)
         self._text_in_ui(self.font_stats, armor_stat_text, (x_stats, y_1 + 100), COLOR_WHITE)
 
-        self._rect(COLOR_BORDER, self.ui_screen_area.rect(), 1)
+        self._rect(COLOR_BORDER, self.ui_screen_area, 1)
 
         self._rect_transparent((0, 0, 50, 20), 100, COLOR_BLACK)
         self._text(self.font_debug_info, fps_string + " fps", (5, 3))
@@ -966,12 +954,12 @@ class View:
             x = x_1 + (i % num_icons_per_row) * (MAP_EDITOR_UI_ICON_SIZE[0] + icon_space)
             row_index = (i // num_icons_per_row)
             y = y_2 + row_index * (MAP_EDITOR_UI_ICON_SIZE[1] + 25)
-            if is_point_in_rect(mouse_ui_position, (x, y, MAP_EDITOR_UI_ICON_SIZE[0], MAP_EDITOR_UI_ICON_SIZE[1])):
+            if is_point_in_rect(mouse_ui_position, Rect(x, y, MAP_EDITOR_UI_ICON_SIZE[0], MAP_EDITOR_UI_ICON_SIZE[1])):
                 hovered_by_mouse = entity
             self._map_editor_icon_in_ui(
                 x, y, MAP_EDITOR_UI_ICON_SIZE, is_this_entity_being_placed, char, entity.sprite, None)
 
-        self._rect(COLOR_WHITE, self.ui_screen_area.rect(), 1)
+        self._rect(COLOR_WHITE, self.ui_screen_area, 1)
 
         self._rect_transparent((0, 0, 150, 80), 100, COLOR_BLACK)
         self._text(self.font_debug_info, "# enemies: " + str(num_enemies), (5, 3))
@@ -981,8 +969,7 @@ class View:
 
         return hovered_by_mouse
 
-    def render_map_editor_mouse_rect(self, color: Tuple[int, int, int],
-                                     map_editor_mouse_rect: Tuple[int, int, int, int]):
+    def render_map_editor_mouse_rect(self, color: Tuple[int, int, int], map_editor_mouse_rect: Rect):
         self._rect(color, map_editor_mouse_rect, 3)
 
     def render_map_editor_world_entity_at_position(self, sprite: Sprite, entity_size: Tuple[int, int],

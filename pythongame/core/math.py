@@ -1,29 +1,22 @@
 import random
 from typing import Tuple, List
 
+from pygame.rect import Rect
+
 from pythongame.core.common import Direction
 
 
-def is_point_in_rect(point: Tuple[int, int], rect: Tuple[int, int, int, int]):
-    rect_left = rect[0]
-    rect_right = rect[0] + rect[2]
-    rect_top = rect[1]
-    rect_bot = rect[1] + rect[3]
-    return rect_left <= point[0] <= rect_right and rect_top <= point[1] <= rect_bot
+# deprecated - only used by view
+def is_point_in_rect(point: Tuple[int, int], rect: Rect):
+    return rect.collidepoint(point[0], point[1])
 
 
-def _ranges_overlap(a_min: int, a_max: int, b_min: int, b_max: int):
-    return (a_min <= b_max) and (b_min <= a_max)
+def boxes_intersect(r1: Rect, r2: Rect):
+    return r1.colliderect(r2)
 
 
-def boxes_intersect(r1, r2):
-    return _ranges_overlap(r1.x, r1.x + r1.w, r2.x, r2.x + r2.w) \
-           and _ranges_overlap(r1.y, r1.y + r1.h, r2.y, r2.y + r2.h)
-
-
-def rects_intersect(r1: Tuple[int, int, int, int], r2: Tuple[int, int, int, int]):
-    return _ranges_overlap(r1[0], r1[0] + r1[2], r2[0], r2[0] + r2[2]) \
-           and _ranges_overlap(r1[1], r1[1] + r1[3], r2[1], r2[1] + r2[3])
+def rects_intersect(r1: Rect, r2: Rect):
+    return r1.colliderect(r2)
 
 
 def random_direction():
@@ -95,19 +88,23 @@ def translate_in_direction(position: Tuple[int, int], direction: Direction, amou
         raise Exception("Unhandled direction: " + str(direction))
 
 
+# TODO use Vector2
 def sum_of_vectors(v1: Tuple[int, int], v2: Tuple[int, int]) -> Tuple[int, int]:
     return v1[0] + v2[0], v1[1] + v2[1]
 
 
+# TODO use Vector2
 def is_x_and_y_within_distance(a: Tuple[int, int], b: Tuple[int, int], distance: int):
     return abs(a[0] - b[0]) < distance and abs(a[1] - b[1]) < distance
 
 
+# TODO use Vector2
 def get_manhattan_distance(a: Tuple[int, int], b: Tuple[int, int]) -> int:
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 
-def get_manhattan_distance_between_rects(a: Tuple[int, int, int, int], b: Tuple[int, int, int, int]) -> int:
+# TODO use Vector2
+def get_manhattan_distance_between_rects(a: Rect, b: Rect) -> int:
     a_left = a[0]
     a_right = a[0] + a[2]
     a_top = a[1]
@@ -136,5 +133,6 @@ def get_rect_with_increased_size_in_all_directions(rect, increased_amount):
             rect[3] + increased_amount * 2)
 
 
+# TODO use Vector2
 def get_middle_point(pos_1: Tuple[int, int], pos_2: Tuple[int, int]) -> Tuple[int, int]:
     return int((pos_1[0] + pos_2[0]) / 2), int((pos_1[1] + pos_2[1]) / 2)

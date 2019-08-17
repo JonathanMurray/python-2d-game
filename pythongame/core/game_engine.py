@@ -237,7 +237,7 @@ class GameEngine:
 
         entities_to_remove = []
         for money_pile in self.game_state.money_piles_on_ground:
-            if boxes_intersect(self.game_state.player_entity, money_pile.world_entity):
+            if boxes_intersect(self.game_state.player_entity.rect(), money_pile.world_entity.rect()):
                 play_sound(SoundId.EVENT_PICKED_UP_MONEY)
                 entities_to_remove.append(money_pile)
                 self.game_state.player_state.money += money_pile.amount
@@ -289,7 +289,7 @@ class GameEngine:
 
     def _is_npc_close_to_camera(self, npc: NonPlayerCharacter):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(
-            self.game_state.camera_world_area.rect(), 100)
+            self.game_state.camera_world_area, 100)
         return rects_intersect(npc.world_entity.rect(), camera_rect_with_margin)
 
     def _put_loot_on_ground(self, enemy_death_position: Tuple[int, int], loot: List[LootEntry]):

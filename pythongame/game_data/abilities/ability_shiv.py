@@ -1,5 +1,7 @@
 import random
 
+from pygame.rect import Rect
+
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import get_buff_effect
 from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PLAYER_ENTITY_SIZE
@@ -21,7 +23,7 @@ def _apply_ability(game_state: GameState) -> bool:
         player_entity.direction,
         rect_w / 2 + PLAYER_ENTITY_SIZE[0] * 0.25)
 
-    slash_rect = (int(slash_center_pos[0] - rect_w / 2), int(slash_center_pos[1] - rect_w / 2), rect_w, rect_w)
+    slash_rect = Rect(int(slash_center_pos[0] - rect_w / 2), int(slash_center_pos[1] - rect_w / 2), rect_w, rect_w)
     affected_enemies = game_state.get_enemy_intersecting_rect(slash_rect)
     for enemy in affected_enemies:
         damage: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
