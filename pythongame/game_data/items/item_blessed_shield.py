@@ -9,8 +9,8 @@ from pythongame.core.item_effects import register_item_effect, AbstractItemEffec
 from pythongame.core.item_inventory import ItemEquipmentCategory
 
 ITEM_TYPES = [ItemType.BLESSED_SHIELD_1, ItemType.BLESSED_SHIELD_2, ItemType.BLESSED_SHIELD_3]
-PROC_CHANCES = [0.4, 0.6, 0.8]
-ARMOR_BOOST = 1
+PROC_CHANCES = [0.3, 0.4, 0.5]
+ARMOR_BOOST = 2
 
 
 class ItemEffect(AbstractItemEffect):

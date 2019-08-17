@@ -8,7 +8,7 @@ from pythongame.core.item_inventory import ItemEquipmentCategory
 ITEM_TYPE = ItemType.WINGED_HELMET
 
 SPEED_MULTIPLIER = 0.1
-ARMOR_BOOST = 1
+ARMOR_BOOST = 2
 
 
 class ItemEffect(AbstractItemEffect):

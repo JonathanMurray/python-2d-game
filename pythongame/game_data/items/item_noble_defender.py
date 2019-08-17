@@ -9,8 +9,8 @@ from pythongame.core.item_inventory import ItemEquipmentCategory
 
 ITEM_TYPE = ItemType.NOBLE_DEFENDER
 BUFF_TYPE_SLOWED = BuffType.SLOWED_FROM_NOBLE_DEFENDER
-ARMOR_BOOST = 3
-SLOW_AMOUNT = 0.5
+ARMOR_BOOST = 4
+SLOW_AMOUNT = 0.3
 SLOW_DURATION = Millis(1500)
 
 

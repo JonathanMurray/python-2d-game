@@ -7,7 +7,7 @@ from pythongame.core.item_inventory import ItemEquipmentCategory
 
 ITEM_TYPES = [ItemType.SOLDIERS_HELMET_1, ItemType.SOLDIERS_HELMET_2, ItemType.SOLDIERS_HELMET_3]
 HEALTH_AMOUNTS = [10, 15, 20]
-ARMOR_BOOST = 1
+ARMOR_BOOST = 2
 
 class ItemEffect(AbstractItemEffect):
 
