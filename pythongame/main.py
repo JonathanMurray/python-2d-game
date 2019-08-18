@@ -9,6 +9,7 @@ from pythongame.core.common import Millis, HeroId, SoundId, ItemType, Consumable
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_engine import GameEngine
+from pythongame.core.game_state import GameState
 from pythongame.core.player_environment_interactions import PlayerInteractionsState
 from pythongame.core.sound_player import init_sound_player, play_sound
 from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
@@ -143,21 +144,7 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
                 if isinstance(action, ActionReleaseShiftKey) and not is_game_over:
                     player_interactions_state.handle_user_released_shift()
                 if isinstance(action, ActionSaveGameState):
-                    # TODO Move this somewhere else
-                    filename = "savefiles/DEBUG_" + str(datetime.datetime.now()).replace(" ", "_") + ".json"
-                    saved_player_state = SavedPlayerState(
-                        game_state.player_state.hero_id.name,
-                        game_state.player_state.level,
-                        game_state.player_state.exp,
-                        {slot_number: [c.name for c in consumables] for (slot_number, consumables)
-                         in game_state.player_state.consumable_inventory.consumables_in_slots.items()},
-                        [slot.get_item_type().name if not slot.is_empty() else None
-                         for slot in game_state.player_state.item_inventory.slots],
-                        game_state.player_state.money,
-                        {p.portal_id.name: p.world_entity.sprite.name for p in game_state.portals if p.is_enabled}
-                    )
-                    save_player_state_to_json_file(saved_player_state, filename)
-                    print("Saved game state to file: " + filename)
+                    save_to_file(game_state)
 
         # ------------------------------------
         #     UPDATE STATE BASED ON CLOCK
@@ -261,3 +248,20 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
             consumable_slot_being_dragged = None
 
         view.update_display()
+
+
+def save_to_file(game_state: GameState):
+    filename = "savefiles/DEBUG_" + str(datetime.datetime.now()).replace(" ", "_") + ".json"
+    saved_player_state = SavedPlayerState(
+        game_state.player_state.hero_id.name,
+        game_state.player_state.level,
+        game_state.player_state.exp,
+        {slot_number: [c.name for c in consumables] for (slot_number, consumables)
+         in game_state.player_state.consumable_inventory.consumables_in_slots.items()},
+        [slot.get_item_type().name if not slot.is_empty() else None
+         for slot in game_state.player_state.item_inventory.slots],
+        game_state.player_state.money,
+        {p.portal_id.name: p.world_entity.sprite.name for p in game_state.portals if p.is_enabled}
+    )
+    save_player_state_to_json_file(saved_player_state, filename)
+    print("Saved game state to file: " + filename)
