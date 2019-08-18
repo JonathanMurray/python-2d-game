@@ -1,4 +1,4 @@
-from typing import Tuple, Any, Optional, List
+from typing import Tuple, Optional, List
 
 from pygame.rect import Rect
 
@@ -34,7 +34,7 @@ class NpcPathfinder:
         else:
             self.path = None
 
-    def get_next_waypoint_along_path(self, agent_entity: WorldEntity) -> Optional[Any]:
+    def get_next_waypoint_along_path(self, agent_entity: WorldEntity) -> Optional[Tuple[int, int]]:
         if self.path:
             # -----------------------------------------------
             # 1: Remove first waypoint if close enough to it

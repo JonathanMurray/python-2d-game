@@ -22,10 +22,10 @@ def rects_intersect(r1: Rect, r2: Rect):
 def random_direction():
     return random.choice([Direction.LEFT, Direction.RIGHT, Direction.UP, Direction.DOWN])
 
-
-def get_direction_between(from_entity, to_entity):
-    dx = to_entity.x - from_entity.x
-    dy = to_entity.y - from_entity.y
+# TODO: is this method needed?
+def get_direction_between(from_pos: Tuple[int, int], to_pos: Tuple[int, int]):
+    dx = to_pos[0] - from_pos[0]
+    dy = to_pos[1] - from_pos[1]
     if abs(dx) > abs(dy):
         if dx > 0:
             direction = Direction.RIGHT

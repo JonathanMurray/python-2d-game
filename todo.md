@@ -7,6 +7,7 @@
 * Simplify how channeled abilities work - shouldn't need to define new buff types for that
 * Use PeriodicTimer in enemy behaviour code, to reduce time-keeping boilerplate
 * Reduce duplication between enemy behaviour code
+* Clean up enemy movement/attack logic - model as FSM?
 
 #### Game engine:
 * Use 8 directions instead of 4?
@@ -34,6 +35,7 @@
 * goblin death sounds
 
 #### Features:
+* many projectiles can hit several targets, but should only be able to hit one (fireball, entangling roots)
 * give enemies 'armor'?
     * could add effects that reduce armor on enemies
     * makes it more difficult to clear endgame content on low level
