@@ -47,22 +47,21 @@ class PlayerControls:
     @staticmethod
     def try_use_consumable(slot_number: int, game_state: GameState, view_state: ViewState):
 
-        if not game_state.player_state.stun_status.is_stunned():
-            view_state.notify_consumable_was_clicked(slot_number)
-            consumable_type_in_this_slot = \
-                game_state.player_state.consumable_inventory.get_consumable_at_slot(slot_number)
-            if consumable_type_in_this_slot:
-                result = try_consume_consumable(consumable_type_in_this_slot, game_state)
-                if isinstance(result, ConsumableWasConsumed):
-                    game_state.player_state.consumable_inventory.remove_consumable_from_slot(slot_number)
-                    if result.message:
-                        view_state.set_message(result.message)
-                    play_sound(SoundId.POTION)
-                elif isinstance(result, ConsumableFailedToBeConsumed):
-                    play_sound(SoundId.INVALID_ACTION)
-                    view_state.set_message(result.reason)
-            else:
+        view_state.notify_consumable_was_clicked(slot_number)
+        consumable_type_in_this_slot = \
+            game_state.player_state.consumable_inventory.get_consumable_at_slot(slot_number)
+        if consumable_type_in_this_slot:
+            result = try_consume_consumable(consumable_type_in_this_slot, game_state)
+            if isinstance(result, ConsumableWasConsumed):
+                game_state.player_state.consumable_inventory.remove_consumable_from_slot(slot_number)
+                if result.message:
+                    view_state.set_message(result.message)
+                play_sound(SoundId.POTION)
+            elif isinstance(result, ConsumableFailedToBeConsumed):
                 play_sound(SoundId.INVALID_ACTION)
-                view_state.set_message("Nothing to use!")
+                view_state.set_message(result.reason)
+        else:
+            play_sound(SoundId.INVALID_ACTION)
+            view_state.set_message("Nothing to use!")
 
     # TODO Move more player controls into this package?
