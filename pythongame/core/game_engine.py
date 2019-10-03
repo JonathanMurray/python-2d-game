@@ -283,6 +283,7 @@ class GameEngine:
         self.game_state.player_entity.set_position(self.game_state.player_spawn_position)
         self.game_state.player_state.health_resource.set_to_partial_of_max(0.5)
         self.game_state.player_state.lose_exp_from_death()
+        self.game_state.player_state.force_cancel_all_buffs()
         self.view_state.set_message("Lost exp from dying")
         play_sound(SoundId.EVENT_PLAYER_DIED)
         self.game_state.visual_effects += create_teleport_effects(self.game_state.player_entity.get_center_position())

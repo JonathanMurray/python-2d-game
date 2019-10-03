@@ -1,7 +1,6 @@
 ## TODO
 
 #### Bugs:
-* Hero should lose negative (or all?) buffs upon dying!
 * many projectiles can hit several targets, but should only be able to hit one (fireball, entangling roots)
 
 #### Refactorings:
