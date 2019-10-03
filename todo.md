@@ -1,5 +1,9 @@
 ## TODO
 
+#### Bugs:
+* Hero should lose negative (or all?) buffs upon dying!
+* many projectiles can hit several targets, but should only be able to hit one (fireball, entangling roots)
+
 #### Refactorings:
 * Move non-trivial logic from game_state. Prefer to have game-logic elsewhere.
 * Avoid storing EnemyMind and ProjectileController in game_state. That module should only depend on common
@@ -18,6 +22,7 @@
 * use pygame Vector instead of Tuple to improve performance
 
 #### Visuals:
+* Show item description when browsing throuhg items in vendor
 * Render tiny buff icons above entities that have active buffs (like bloodlust icon from wc2)
 * gray out ability icon when player doesn't have enough mana for it
 * put dmg/healing/xp numbers further up for tall characters (base it on sprite size, not entity size)
@@ -35,7 +40,7 @@
 * goblin death sounds
 
 #### Features:
-* many projectiles can hit several targets, but should only be able to hit one (fireball, entangling roots)
+* give player hints somehow (example: "hold shift to see description of loot on ground")
 * give enemies 'armor'?
     * could add effects that reduce armor on enemies
     * makes it more difficult to clear endgame content on low level
