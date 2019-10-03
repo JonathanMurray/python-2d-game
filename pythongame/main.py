@@ -55,9 +55,6 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
 
     is_paused = False
 
-    # TODO Is this flag needed, now that player re-spawns upon death?
-    is_game_over = False
-
     render_hit_and_collision_boxes = False
     mouse_screen_position = (0, 0)
 
@@ -110,7 +107,7 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
                     sys.exit()
                 if isinstance(action, ActionChangeDialogOption):
                     player_interactions_state.change_dialog_option(action.index_delta)
-                if isinstance(action, ActionPressSpaceKey) and not is_game_over:
+                if isinstance(action, ActionPressSpaceKey):
                     player_interactions_state.handle_user_clicked_space(game_state, game_engine)
         else:
             user_actions = get_main_user_inputs()
@@ -123,7 +120,7 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
                     # TODO: Handle this better than accessing a global variable from here
                     pythongame.core.pathfinding.npc_pathfinding.DEBUG_RENDER_PATHFINDING = \
                         not pythongame.core.pathfinding.npc_pathfinding.DEBUG_RENDER_PATHFINDING
-                if not is_paused and not is_game_over:
+                if not is_paused:
                     if isinstance(action, ActionTryUseAbility):
                         game_engine.try_use_ability(action.ability_type)
                     elif isinstance(action, ActionTryUsePotion):
@@ -140,11 +137,11 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
                     mouse_was_just_clicked = True
                 if isinstance(action, ActionMouseReleased):
                     mouse_was_just_released = True
-                if isinstance(action, ActionPressSpaceKey) and not is_game_over:
+                if isinstance(action, ActionPressSpaceKey):
                     player_interactions_state.handle_user_clicked_space(game_state, game_engine)
-                if isinstance(action, ActionPressShiftKey) and not is_game_over:
+                if isinstance(action, ActionPressShiftKey):
                     player_interactions_state.handle_user_pressed_shift()
-                if isinstance(action, ActionReleaseShiftKey) and not is_game_over:
+                if isinstance(action, ActionReleaseShiftKey):
                     player_interactions_state.handle_user_released_shift()
                 if isinstance(action, ActionSaveGameState):
                     save_to_file(game_state)
@@ -156,7 +153,7 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
         clock.tick()
         time_passed = Millis(clock.get_time())
 
-        if not is_paused and not is_game_over:
+        if not is_paused:
             game_engine.run_one_frame(time_passed)
 
         # ------------------------------------
@@ -194,7 +191,6 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
             player_speed_multiplier=game_state.player_entity.speed_multiplier,
             fps_string=str(int(clock.get_fps())),
             is_paused=is_paused,
-            is_game_over=is_game_over,
             mouse_screen_position=mouse_screen_position,
             dialog=dialog)
 
