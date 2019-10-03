@@ -5,6 +5,8 @@ import pygame
 from pythongame.core.common import *
 from pythongame.core.game_data import KEYS_BY_ABILITY_TYPE
 
+EXIT_ON_ESCAPE = False
+
 
 class ActionExitGame:
     pass
@@ -94,7 +96,7 @@ def get_dialog_user_inputs():
         if event.type == pygame.QUIT:
             actions.append(ActionExitGame())
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
+            if event.key == pygame.K_ESCAPE and EXIT_ON_ESCAPE:
                 actions.append(ActionExitGame())
             elif event.key == pygame.K_LEFT or event.key == pygame.K_UP:
                 actions.append(ActionChangeDialogOption(-1))
@@ -136,7 +138,7 @@ def get_main_user_inputs():
                 actions.append(ActionTryUsePotion(5))
             elif event.key == pygame.K_0:
                 actions.append(ActionToggleRenderDebugging())
-            elif event.key == pygame.K_ESCAPE:
+            elif event.key == pygame.K_ESCAPE and EXIT_ON_ESCAPE:
                 actions.append(ActionExitGame())
             elif event.key == pygame.K_RETURN:
                 actions.append(ActionPauseGame())
