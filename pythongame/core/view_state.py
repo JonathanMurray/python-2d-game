@@ -5,7 +5,7 @@ from pygame.rect import Rect
 from pythongame.core.common import AbilityType, Millis
 
 MINIMAP_UPDATE_INTERVAL = 1000
-MESSAGE_DURATION = 2500
+MESSAGE_DURATION = 3500
 HIGHLIGHT_consumable_ACTION_DURATION = 120
 HIGHLIGHT_ABILITY_ACTION_DURATION = 120
 

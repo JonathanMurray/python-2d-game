@@ -40,7 +40,6 @@
 * goblin death sounds
 
 #### Features:
-* give player hints somehow (example: "hold shift to see description of loot on ground")
 * give enemies 'armor'?
     * could add effects that reduce armor on enemies
     * makes it more difficult to clear endgame content on low level

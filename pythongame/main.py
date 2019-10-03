@@ -1,4 +1,5 @@
 import datetime
+import random
 import sys
 from typing import Optional
 
@@ -86,6 +87,8 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
             allocate_input_keys_for_abilities(game_state.player_state.abilities)
         if start_money > 0:
             game_state.player_state.money += start_money
+
+    view_state.set_message("Hint: " + get_random_hint())
 
     while True:
 
@@ -265,3 +268,14 @@ def save_to_file(game_state: GameState):
     )
     save_player_state_to_json_file(saved_player_state, filename)
     print("Saved game state to file: " + filename)
+
+
+def get_random_hint():
+    hints = [
+        "Hold Shift to see more info about lootable items",
+        "Press Space to interact with NPCs and objects",
+        "Reaching certain levels unlocks new abilities",
+        "Use the number keys for potions and other consumables",
+        "Gold coins are looted by simply walking over them"
+    ]
+    return random.choice(hints)
