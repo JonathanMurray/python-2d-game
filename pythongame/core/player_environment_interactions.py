@@ -42,7 +42,7 @@ class PlayerInteractionsState:
         lootables_on_ground: List[LootableOnGround] = \
             game_state.items_on_ground + game_state.consumables_on_ground
         for lootable in lootables_on_ground:
-            if boxes_intersect(player_entity, lootable.world_entity):
+            if boxes_intersect(player_entity.rect(), lootable.world_entity.rect()):
                 self.npc_ready_for_dialog = None
                 self.lootable_ready_to_be_picked_up = lootable
                 closest_distance_to_player = 0

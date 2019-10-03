@@ -29,7 +29,7 @@ class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
         self._update_attack_interval()
-        self._time_since_attack = self._attack_interval
+        self._time_since_attack = 0
         self._update_path_interval = 900
         self._time_since_updated_path = random.randint(0, self._update_path_interval)
         self.pathfinder = NpcPathfinder(global_path_finder)
@@ -78,7 +78,7 @@ class NpcMind(AbstractNpcMind):
             projectile_pos = translate_in_direction(
                 get_position_from_center_position(center_position, PROJECTILE_SIZE),
                 npc.world_entity.direction, distance_from_enemy)
-            projectile_speed = 0.07
+            projectile_speed = 0.09
             projectile_entity = WorldEntity(projectile_pos, PROJECTILE_SIZE, PROJECTILE_SPRITE,
                                             npc.world_entity.direction, projectile_speed)
             projectile = Projectile(projectile_entity, create_projectile_controller(PROJECTILE_TYPE))
@@ -86,7 +86,7 @@ class NpcMind(AbstractNpcMind):
             play_sound(SoundId.ENEMY_ATTACK_GOBLIN_WARLOCK)
 
     def _update_attack_interval(self):
-        self._attack_interval = 2000 + random.random() * 4000
+        self._attack_interval = 1000 + random.random() * 5000
 
 
 def _move_in_dir(enemy_entity, direction):

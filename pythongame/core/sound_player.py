@@ -60,5 +60,5 @@ def play_sound(sound_id: SoundId):
 def load_sound_file(*filenames, volume: float = 1):
     sounds = [pygame.mixer.Sound('./resources/sound/' + filename) for filename in filenames]
     for sound in sounds:
-        sound.set_volume(0.3 * volume)
+        sound.set_volume(0.1 * volume)
     return sounds

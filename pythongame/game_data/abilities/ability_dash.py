@@ -1,5 +1,7 @@
 from typing import Optional
 
+from pygame.rect import Rect
+
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import register_buff_effect, AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import AbilityType, Millis, UiIconSprite, SoundId, BuffType
@@ -53,7 +55,7 @@ def _get_enemy_that_was_hit(game_state: GameState, player_entity: WorldEntity, d
     while partial_distance < distance_jumped:
         intermediate_position = translate_in_direction(previous_position, player_entity.direction, partial_distance)
         enemies_hit = game_state.get_enemy_intersecting_rect(
-            (intermediate_position[0], intermediate_position[1], player_entity.w, player_entity.h))
+            Rect(intermediate_position[0], intermediate_position[1], player_entity.w, player_entity.h))
         if enemies_hit:
             return enemies_hit[0]
         partial_distance += 10

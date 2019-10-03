@@ -1,5 +1,7 @@
 from typing import Optional
 
+from pygame.rect import Rect
+
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, AbilityType, SoundId, HeroId, UiIconSprite, PeriodicTimer
@@ -53,7 +55,7 @@ class Charging(AbstractBuffEffect):
         impact_pos = translate_in_direction(
             charger_center_pos, buffed_entity.direction, rect_w / 2 + hero_entity_size[0] / 2)
 
-        impact_rect = (int(impact_pos[0] - rect_w / 2), int(impact_pos[1] - rect_w / 2), rect_w, rect_w)
+        impact_rect = Rect(int(impact_pos[0] - rect_w / 2), int(impact_pos[1] - rect_w / 2), rect_w, rect_w)
         affected_enemies = game_state.get_enemy_intersecting_rect(impact_rect)
         for enemy in affected_enemies:
             visual_impact_pos = get_middle_point(charger_center_pos, enemy.world_entity.get_center_position())

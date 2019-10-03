@@ -4,7 +4,7 @@ from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effec
 from pythongame.core.common import Direction, PortalId, Millis, BuffType
 from pythongame.core.game_data import SpriteSheet, Sprite, register_entity_sprite_map, register_portal_data, PortalData
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
-from pythongame.core.visual_effects import VisualRect, VisualCircle, create_teleport_effects
+from pythongame.core.visual_effects import create_teleport_effects
 
 PORTAL_SIZE = (42, 46)
 BUFF_TYPE = BuffType.TELEPORTING_WITH_PORTAL

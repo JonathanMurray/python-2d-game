@@ -1,5 +1,9 @@
 ## TODO
 
+#### Bugs:
+* Hero should lose negative (or all?) buffs upon dying!
+* many projectiles can hit several targets, but should only be able to hit one (fireball, entangling roots)
+
 #### Refactorings:
 * Move non-trivial logic from game_state. Prefer to have game-logic elsewhere.
 * Avoid storing EnemyMind and ProjectileController in game_state. That module should only depend on common
@@ -7,17 +11,18 @@
 * Simplify how channeled abilities work - shouldn't need to define new buff types for that
 * Use PeriodicTimer in enemy behaviour code, to reduce time-keeping boilerplate
 * Reduce duplication between enemy behaviour code
+* Clean up enemy movement/attack logic - model as FSM?
 
 #### Game engine:
 * Use 8 directions instead of 4?
 * Use pygame C code for vector math
 * save game_state to file on crash
 * activate portal on first interaction, don't teleport
-* fix bug where potions can't be used while doing other things. (Button click doesn't register for some reason?)
 * Make it more difficult to kite fast enemies. Enemies are too slow at attacking when they get into melee range
 * use pygame Vector instead of Tuple to improve performance
 
 #### Visuals:
+* Show item description when browsing throuhg items in vendor
 * Render tiny buff icons above entities that have active buffs (like bloodlust icon from wc2)
 * gray out ability icon when player doesn't have enough mana for it
 * put dmg/healing/xp numbers further up for tall characters (base it on sprite size, not entity size)
@@ -35,12 +40,10 @@
 * goblin death sounds
 
 #### Features:
+* give player hints somehow (example: "hold shift to see description of loot on ground")
 * give enemies 'armor'?
     * could add effects that reduce armor on enemies
     * makes it more difficult to clear endgame content on low level
-* change rogue ability infuse dagger to be an instant ability instead of a buff - too difficult to use in its current form
-    * shiv: deals damage. x3 from stealth
-    * infuse dagger: deals damage over time. add stun from stealth
 * New heroes
     * builder
         * place turret on ground that shoots in all directions

@@ -1,8 +1,13 @@
+import random
 from typing import Dict, Type, Optional, List
 
 from pythongame.core.common import *
+from pythongame.core.damage_interactions import deal_npc_damage, DamageType
+from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.math import is_x_and_y_within_distance, get_perpendicular_directions
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.sound_player import play_sound
 
 
@@ -36,6 +41,71 @@ class AbstractNpcMind:
                     is_player_invisible: bool,
                     time_passed: Millis):
         pass
+
+
+class MeleeEnemyNpcMind(AbstractNpcMind):
+    def __init__(self, global_path_finder: GlobalPathFinder, attack_interval: Millis, damage_amount: int,
+                 chance_to_stray_from_path: float, update_path_interval: Millis):
+        super().__init__(global_path_finder)
+        self._attack_interval = attack_interval
+        self._time_since_attack = self._attack_interval
+        self._update_path_interval = update_path_interval
+        self._time_since_updated_path = self._update_path_interval
+        self.pathfinder = NpcPathfinder(global_path_finder)
+        self.next_waypoint = None
+        self._reevaluate_next_waypoint_direction_interval = 1000
+        self._time_since_reevaluated = self._reevaluate_next_waypoint_direction_interval
+        self.damage_amount = damage_amount
+        self.chance_to_stray_from_path = chance_to_stray_from_path
+        self._is_in_melee_with_target = False
+
+    def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
+                    is_player_invisible: bool, time_passed: Millis):
+        self._time_since_attack += time_passed
+        self._time_since_updated_path += time_passed
+        self._time_since_reevaluated += time_passed
+
+        enemy_entity = npc.world_entity
+        target: EnemyTarget = get_target(enemy_entity, game_state)
+
+        if self._time_since_updated_path > self._update_path_interval:
+            self._time_since_updated_path = 0
+            if not is_player_invisible:
+                self.pathfinder.update_path_towards_target(enemy_entity, game_state, target.entity)
+
+        new_next_waypoint = self.pathfinder.get_next_waypoint_along_path(enemy_entity)
+
+        should_update_waypoint = self.next_waypoint != new_next_waypoint
+        if self._time_since_reevaluated > self._reevaluate_next_waypoint_direction_interval:
+            self._time_since_reevaluated = 0
+            should_update_waypoint = True
+
+        if should_update_waypoint:
+            self.next_waypoint = new_next_waypoint
+            if self.next_waypoint:
+                direction = self.pathfinder.get_dir_towards_considering_collisions(
+                    game_state, enemy_entity, self.next_waypoint)
+                if random.random() < self.chance_to_stray_from_path and direction:
+                    direction = random.choice(get_perpendicular_directions(direction))
+                _move_in_dir(enemy_entity, direction)
+            else:
+                enemy_entity.set_not_moving()
+
+        if self._time_since_attack > self._attack_interval:
+            # TODO Only reset attack cooldown when enemy was in range to actually attack
+            self._time_since_attack = 0
+            if not is_player_invisible:
+                enemy_position = enemy_entity.get_center_position()
+                target_center_pos = target.entity.get_center_position()
+                if is_x_and_y_within_distance(enemy_position, target_center_pos, 80):
+                    deal_npc_damage(self.damage_amount, DamageType.PHYSICAL, game_state, enemy_entity, npc, target)
+
+
+def _move_in_dir(enemy_entity, direction):
+    if direction:
+        enemy_entity.set_moving_in_dir(direction)
+    else:
+        enemy_entity.set_not_moving()
 
 
 class AbstractNpcAction:

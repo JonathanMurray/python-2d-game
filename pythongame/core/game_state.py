@@ -14,30 +14,6 @@ from pythongame.core.math import boxes_intersect, rects_intersect, get_position_
 GRID_CELL_WIDTH = 25
 
 
-class WorldArea:
-    def __init__(self, pos: Tuple[int, int], size: Tuple[int, int]):
-        self.x = pos[0]
-        self.y = pos[1]
-        self.w = size[0]
-        self.h = size[1]
-
-    def get_position(self) -> Tuple[int, int]:
-        return self.x, self.y
-
-    def set_position(self, new_position):
-        self.x = new_position[0]
-        self.y = new_position[1]
-
-    def rect(self) -> Tuple[int, int, int, int]:
-        return self.x, self.y, self.w, self.h
-
-    def get_bot_right_position(self) -> Tuple[int, int]:
-        return self.x + self.w, self.y + self.h
-
-    def contains_position(self, position: Tuple[int, int]) -> bool:
-        return self.x <= position[0] <= self.x + self.w and self.y <= position[1] <= self.y + self.h
-
-
 class WorldEntity:
     def __init__(self, pos: Tuple[int, int], size: Tuple[int, int], sprite: Sprite, direction=Direction.LEFT, speed=0):
         self.x: int = pos[0]
@@ -50,7 +26,7 @@ class WorldEntity:
         self.speed_multiplier = 1
         self._effective_speed = speed
         self._is_moving = True
-        self.pygame_collision_rect = Rect(self.rect())
+        self.pygame_collision_rect: Rect = Rect(self.x, self.y, self.w, self.h)
         self.movement_animation_progress: float = 0  # goes from 0 to 1 repeatedly
         self.visible = True  # Should only be used to control rendering
         self.view_z = 0  # increasing Z values = moving into the screen
@@ -83,7 +59,7 @@ class WorldEntity:
         return translate_in_direction((self.x, self.y), direction, distance)
 
     def get_center_position(self) -> Tuple[int, int]:
-        return int(self.x + self.w / 2), int(self.y + self.h / 2)
+        return self.pygame_collision_rect.center
 
     def get_position(self) -> Tuple[int, int]:
         return int(self.x), int(self.y)
@@ -93,8 +69,8 @@ class WorldEntity:
         self._effective_speed = self.speed_multiplier * self._speed
 
     # TODO use more
-    def rect(self) -> Tuple[int, int, int, int]:
-        return self.x, self.y, self.w, self.h
+    def rect(self) -> Rect:
+        return self.pygame_collision_rect
 
     def translate_x(self, amount):
         self.set_position((self.x + amount, self.y))
@@ -105,7 +81,7 @@ class WorldEntity:
     def set_position(self, new_position: Tuple[int, int]):
         self.x = new_position[0]
         self.y = new_position[1]
-        self.pygame_collision_rect = Rect(self.rect())
+        self.pygame_collision_rect = Rect(self.x, self.y, self.w, self.h)
 
     def rotate_right(self):
         dirs = {
@@ -503,10 +479,10 @@ class GameState:
     def __init__(self, player_entity: WorldEntity, consumables_on_ground: List[ConsumableOnGround],
                  items_on_ground: List[ItemOnGround], money_piles_on_ground: List[MoneyPileOnGround],
                  non_player_characters: List[NonPlayerCharacter], walls: List[Wall], camera_size: Tuple[int, int],
-                 entire_world_area: WorldArea, player_state: PlayerState,
+                 entire_world_area: Rect, player_state: PlayerState,
                  decoration_entities: List[DecorationEntity], portals: List[Portal]):
         self.camera_size = camera_size
-        self.camera_world_area = WorldArea((0, 0), self.camera_size)
+        self.camera_world_area = Rect((0, 0), self.camera_size)
         self.player_entity = player_entity
         self.projectile_entities: List[Projectile] = []
         # TODO: unify code for picking up stuff from the ground. The way they are rendered and picked up are similar,
@@ -527,7 +503,7 @@ class GameState:
         self.warp_points: List[WarpPoint] = []
 
     @staticmethod
-    def _setup_pathfinder_wall_grid(entire_world_area: WorldArea, walls: List[WorldEntity]):
+    def _setup_pathfinder_wall_grid(entire_world_area: Rect, walls: List[WorldEntity]):
         # TODO extract world area arithmetic
         grid_width = entire_world_area.w // GRID_CELL_WIDTH
         grid_height = entire_world_area.h // GRID_CELL_WIDTH
@@ -574,21 +550,22 @@ class GameState:
     def center_camera_on_player(self):
         new_camera_pos = get_position_from_center_position(self.player_entity.get_center_position(), self.camera_size)
         new_camera_pos_within_world = self.get_within_world(new_camera_pos, (self.camera_size[0], self.camera_size[1]))
-        self.camera_world_area.set_position(new_camera_pos_within_world)
+        self.camera_world_area.topleft = new_camera_pos_within_world
 
     def translate_camera_position(self, translation_vector: Tuple[int, int]):
         new_camera_pos = (self.camera_world_area.x + translation_vector[0],
                           self.camera_world_area.y + translation_vector[1])
         new_camera_pos_within_world = self.get_within_world(new_camera_pos, (self.camera_size[0], self.camera_size[1]))
-        self.camera_world_area.set_position(new_camera_pos_within_world)
+        self.camera_world_area.topleft = new_camera_pos_within_world
 
     def get_projectiles_intersecting_with(self, entity: WorldEntity) -> List[Projectile]:
-        return [p for p in self.projectile_entities if boxes_intersect(entity, p.world_entity)]
+        return [p for p in self.projectile_entities if boxes_intersect(entity.rect(), p.world_entity.rect())]
 
     def get_enemy_intersecting_with(self, entity: WorldEntity) -> List[NonPlayerCharacter]:
-        return [e for e in self.non_player_characters if e.is_enemy and boxes_intersect(e.world_entity, entity)]
+        return [e for e in self.non_player_characters if
+                e.is_enemy and boxes_intersect(e.world_entity.rect(), entity.rect())]
 
-    def get_enemy_intersecting_rect(self, rect: Tuple[int, int, int, int]) -> List[NonPlayerCharacter]:
+    def get_enemy_intersecting_rect(self, rect: Rect) -> List[NonPlayerCharacter]:
         return [e for e in self.non_player_characters if e.is_enemy and rects_intersect(e.world_entity.rect(), rect)]
 
     def get_enemies_within_x_y_distance_of(self, distance: int, position: Tuple[int, int]):
@@ -635,12 +612,13 @@ class GameState:
 
     def get_within_world(self, pos: Tuple[int, int], size: Tuple[int, int]):
         # TODO extract world area arithmetic
-        x = max(self.entire_world_area.x, min(self.entire_world_area.x + self.entire_world_area.w - size[0], pos[0]))
+        x = max(self.entire_world_area.x,
+                min(self.entire_world_area.x + self.entire_world_area.w - size[0], pos[0]))
         y = max(self.entire_world_area.y, min(self.entire_world_area.y + self.entire_world_area.h - size[1], pos[1]))
         return x, y
 
     def is_position_within_game_world(self, position: Tuple[int, int]) -> bool:
-        return self.entire_world_area.contains_position(position)
+        return self.entire_world_area.collidepoint(position[0], position[1])
 
     def remove_expired_projectiles(self):
         self.projectile_entities = [p for p in self.projectile_entities if not p.has_expired]
@@ -661,7 +639,7 @@ class GameState:
 
 
 class WallsState:
-    def __init__(self, walls: List[Wall], entire_world_area: WorldArea):
+    def __init__(self, walls: List[Wall], entire_world_area: Rect):
         self.walls: List[Wall] = walls
         self._buckets = Buckets([w.world_entity for w in walls], entire_world_area)
 
@@ -676,17 +654,17 @@ class WallsState:
     # TODO Use _entities_collide?
     def does_entity_intersect_with_wall(self, entity: WorldEntity):
         nearby_walls = self.get_walls_close_to_position(entity.get_position())
-        return any([w for w in nearby_walls if boxes_intersect(w, entity)])
+        return any([w for w in nearby_walls if boxes_intersect(w.rect(), entity.rect())])
 
     # TODO Use _entities_collide?
-    def does_rect_intersect_with_wall(self, rect: Tuple[int, int, int, int]):
+    def does_rect_intersect_with_wall(self, rect: Rect):
         nearby_walls = self.get_walls_close_to_position((rect[0], rect[1]))
-        return any([w for w in nearby_walls if rects_intersect((w.x, w.y, w.w, w.h), rect)])
+        return any([w for w in nearby_walls if rects_intersect(w.rect(), rect)])
 
     def get_walls_close_to_position(self, position: Tuple[int, int]) -> List[WorldEntity]:
         return self._buckets.get_entities_close_to_position(position)
 
-    def get_walls_in_camera(self, camera_world_area: WorldArea) -> List[WorldEntity]:
+    def get_walls_in_camera(self, camera_world_area: Rect) -> List[WorldEntity]:
         return self._buckets.get_entitites_close_to_world_area(camera_world_area)
 
     def get_walls_at_position(self, position: Tuple[int, int]) -> List[Wall]:
@@ -694,7 +672,7 @@ class WallsState:
 
 
 class DecorationsState:
-    def __init__(self, decoration_entities: List[DecorationEntity], entire_world_area: WorldArea):
+    def __init__(self, decoration_entities: List[DecorationEntity], entire_world_area: Rect):
         self.decoration_entities: List[DecorationEntity] = decoration_entities
         self._buckets = Buckets(decoration_entities, entire_world_area)
 
@@ -706,7 +684,7 @@ class DecorationsState:
         self.decoration_entities.remove(decoration)
         self._buckets.remove_entity(decoration)
 
-    def get_decorations_in_camera(self, camera_world_area: WorldArea) -> List[DecorationEntity]:
+    def get_decorations_in_camera(self, camera_world_area: Rect) -> List[DecorationEntity]:
         return self._buckets.get_entitites_close_to_world_area(camera_world_area)
 
     def get_decorations_at_position(self, position: Tuple[int, int]) -> List[DecorationEntity]:
@@ -720,7 +698,7 @@ class Buckets:
     _BUCKET_WIDTH = 100
     _BUCKET_HEIGHT = 100
 
-    def __init__(self, entities: List[Any], entire_world_area: WorldArea):
+    def __init__(self, entities: List[Any], entire_world_area: Rect):
         self._buckets: Dict[int, Dict[int, List[Any]]] = {}
         self.entire_world_area = entire_world_area
         for x_bucket in range(self.entire_world_area.w // Buckets._BUCKET_WIDTH + 1):
@@ -738,9 +716,9 @@ class Buckets:
         bucket = self._bucket_for_world_position(entity.get_position())
         bucket.remove(entity)
 
-    def get_entitites_close_to_world_area(self, world_area: WorldArea) -> List[Any]:
-        x0_bucket, y0_bucket = self._bucket_index_for_world_position(world_area.get_position())
-        x1_bucket, y1_bucket = self._bucket_index_for_world_position(world_area.get_bot_right_position())
+    def get_entitites_close_to_world_area(self, world_area: Rect) -> List[Any]:
+        x0_bucket, y0_bucket = self._bucket_index_for_world_position(world_area.topleft)
+        x1_bucket, y1_bucket = self._bucket_index_for_world_position(world_area.bottomright)
         buckets = self._buckets_between_indices(x0_bucket - 1, x1_bucket + 1, y0_bucket - 1, y1_bucket + 1)
         return [entity for bucket in buckets for entity in bucket]
 
