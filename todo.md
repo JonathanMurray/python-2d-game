@@ -39,6 +39,11 @@
 * goblin death sounds
 
 #### Features:
+* Turn main code into a state machine:
+    * "Setup": Choosing hero and map - this is the initial state unless flags are passed in
+    * "Main": main game loop is run - current main.py minus the handling of "pause"
+    * "Paused": gameplay is paused, and maybe some info is shown
+    * "Game over": player has completed the main objective. This is the final state
 * give enemies 'armor'?
     * could add effects that reduce armor on enemies
     * makes it more difficult to clear endgame content on low level
