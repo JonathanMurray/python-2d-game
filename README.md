@@ -3,18 +3,25 @@
 This is a simple 2D game that lets you control a character and fight against 
 different monsters, using potions and abilities to your advantage.
 
-screenshot:
-![gameplay](https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/gameplay.png)
+#### Screenshots:
 
-Master different abilities:
-![abilities](https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/ability.png)
+<img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/gameplay.png" height="300" />
+<br/>
 
-Equip powerful items:
-![abilities](https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/item.png)
+_Master different abilities:_
 
-Interact with NPCs:
-![abilities](https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/dialog.png)
+<img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/ability.png" height="300" />
+<br/>
 
+_Equip powerful items:_
+
+<img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/item.png" height="300" />
+<br/>
+
+_Interact with NPCs:_
+
+<img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/dialog.png" height="300" />
+<br/>
 
 Look [here](todo.md) for future changes!
 
