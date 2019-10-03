@@ -1,6 +1,6 @@
 # python-2d-game
 
-This is a simple 2D game that lets you control a character and fight against 
+This is a simple 2D action RPG game that lets you control a character and fight against 
 different monsters, using potions and abilities to your advantage.
 
 #### Screenshots:
@@ -42,10 +42,6 @@ Simply run
 ```
 ./run.py
 ```
-or to play a specific map
-```
-./run.py resources/maps/demo.txt
-```
 
 ## Launching the map editor
 
@@ -55,12 +51,28 @@ Simply run
 ```
 or to edit a specific map
 ```
-./map_editor.py resources/maps/demo.txt
+./map_editor.py --map test.json
 ```
 
 ## Gameplay basics
 
-* Movement: use arrow keys
-* Potions and abilities: use keys shown in the UI
-* Pause game: press Enter
-* Quit game: press Esc
+* Use arrow keys to move
+* Use keys shown in UI to use abilities and consumables
+* Use spacebar to interact with NPCs and other entities in the environment
+* Press 'Enter' to pause the game
+* Press 'S' to save your progress
+
+### Advanced usage
+To play a specific map, run
+```
+./run.py --map test.json
+```
+
+or with a specific hero
+```
+./run.py --hero MAGE
+./run.py --hero ROGUE
+./run.py --hero WARRIOR
+```
+
+There may be more flags to use for debugging purposes.
