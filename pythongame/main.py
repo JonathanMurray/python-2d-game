@@ -1,6 +1,7 @@
 import datetime
 import random
 import sys
+from enum import Enum
 from typing import Optional
 
 import pygame
@@ -29,6 +30,11 @@ CAMERA_SIZE = (700, 530)
 register_all_game_data()
 
 
+class State(Enum):
+    PLAYING = 1
+    PAUSED = 2
+
+
 def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start_level: Optional[int],
          start_money: Optional[int], load_from_file: Optional[str]):
     map_file_name = map_file_name or "map1.json"
@@ -53,7 +59,7 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
 
     game_engine = GameEngine(game_state, view_state)
 
-    is_paused = False
+    state: State = State.PLAYING
 
     render_hit_and_collision_boxes = False
     mouse_screen_position = (0, 0)
@@ -120,7 +126,7 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
                     # TODO: Handle this better than accessing a global variable from here
                     pythongame.core.pathfinding.npc_pathfinding.DEBUG_RENDER_PATHFINDING = \
                         not pythongame.core.pathfinding.npc_pathfinding.DEBUG_RENDER_PATHFINDING
-                if not is_paused:
+                if state == State.PLAYING:
                     if isinstance(action, ActionTryUseAbility):
                         game_engine.try_use_ability(action.ability_type)
                     elif isinstance(action, ActionTryUsePotion):
@@ -130,7 +136,7 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
                     elif isinstance(action, ActionStopMoving):
                         game_engine.stop_moving()
                 if isinstance(action, ActionPauseGame):
-                    is_paused = not is_paused
+                    state = State.PLAYING if state == state.PAUSED else State.PAUSED
                 if isinstance(action, ActionMouseMovement):
                     mouse_screen_position = action.mouse_screen_position
                 if isinstance(action, ActionMouseClicked):
@@ -153,7 +159,7 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
         clock.tick()
         time_passed = Millis(clock.get_time())
 
-        if not is_paused:
+        if state == State.PLAYING:
             game_engine.run_one_frame(time_passed)
 
         # ------------------------------------
@@ -190,7 +196,7 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
             view_state=view_state,
             player_speed_multiplier=game_state.player_entity.speed_multiplier,
             fps_string=str(int(clock.get_fps())),
-            is_paused=is_paused,
+            is_paused=state == State.PAUSED,
             mouse_screen_position=mouse_screen_position,
             dialog=dialog)
 
