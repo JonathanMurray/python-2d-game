@@ -1,38 +1,26 @@
-import datetime
 import random
-import sys
-from enum import Enum
 from typing import Optional
 
 import pygame
 
-import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis, HeroId, SoundId, ItemType, ConsumableType, Sprite
+from pythongame.core.common import HeroId, ItemType, ConsumableType, Sprite, SceneId
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_engine import GameEngine
-from pythongame.core.game_state import GameState
 from pythongame.core.player_environment_interactions import PlayerInteractionsState
-from pythongame.core.sound_player import init_sound_player, play_sound
-from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
-    ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
-    ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_main_user_inputs, get_dialog_user_inputs, \
-    ActionChangeDialogOption, ActionSaveGameState, ActionPressShiftKey, ActionReleaseShiftKey
-from pythongame.core.view import View, MouseHoverEvent
+from pythongame.core.sound_player import init_sound_player
+from pythongame.core.view import View
 from pythongame.core.view_state import ViewState
 from pythongame.map_file import create_game_state_from_json_file
-from pythongame.player_file import SavedPlayerState, save_player_state_to_json_file, load_player_state_from_json_file
+from pythongame.player_file import load_player_state_from_json_file
 from pythongame.register_game_data import register_all_game_data
+from pythongame.scene_paused import PausedScene
+from pythongame.scene_playing import PlayingScene
 
 SCREEN_SIZE = (700, 700)
 CAMERA_SIZE = (700, 530)
 
 register_all_game_data()
-
-
-class State(Enum):
-    PLAYING = 1
-    PAUSED = 2
 
 
 def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start_level: Optional[int],
@@ -59,15 +47,19 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
 
     game_engine = GameEngine(game_state, view_state)
 
-    state: State = State.PLAYING
-
-    render_hit_and_collision_boxes = False
-    mouse_screen_position = (0, 0)
-
-    item_slot_being_dragged: Optional[int] = None
-    consumable_slot_being_dragged: Optional[int] = None
+    scene_id: SceneId = SceneId.PLAYING
 
     player_interactions_state = PlayerInteractionsState(view_state)
+
+    playing_state = PlayingScene(
+        player_interactions_state,
+        game_state,
+        game_engine,
+        clock,
+        view,
+        view_state)
+
+    paused_state = PausedScene(game_state, view, view_state)
 
     if saved_player_state:
         # TODO Move this somewhere else
@@ -95,181 +87,13 @@ def main(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start
 
     while True:
 
-        player_interactions_state.handle_interactions(game_state.player_entity, game_state)
-
-        mouse_was_just_clicked = False
-        mouse_was_just_released = False
-
-        # ------------------------------------
-        #         HANDLE USER INPUT
-        # ------------------------------------
-
-        if player_interactions_state.is_player_in_dialog():
-            game_state.player_entity.set_not_moving()
-            user_actions = get_dialog_user_inputs()
-            for action in user_actions:
-                if isinstance(action, ActionExitGame):
-                    pygame.quit()
-                    sys.exit()
-                if isinstance(action, ActionChangeDialogOption):
-                    player_interactions_state.change_dialog_option(action.index_delta)
-                if isinstance(action, ActionPressSpaceKey):
-                    player_interactions_state.handle_user_clicked_space(game_state, game_engine)
+        if scene_id == SceneId.PLAYING:
+            scene_transition = playing_state.run_one_frame()
         else:
-            user_actions = get_main_user_inputs()
-            for action in user_actions:
-                if isinstance(action, ActionExitGame):
-                    pygame.quit()
-                    sys.exit()
-                if isinstance(action, ActionToggleRenderDebugging):
-                    render_hit_and_collision_boxes = not render_hit_and_collision_boxes
-                    # TODO: Handle this better than accessing a global variable from here
-                    pythongame.core.pathfinding.npc_pathfinding.DEBUG_RENDER_PATHFINDING = \
-                        not pythongame.core.pathfinding.npc_pathfinding.DEBUG_RENDER_PATHFINDING
-                if state == State.PLAYING:
-                    if isinstance(action, ActionTryUseAbility):
-                        game_engine.try_use_ability(action.ability_type)
-                    elif isinstance(action, ActionTryUsePotion):
-                        game_engine.try_use_consumable(action.slot_number)
-                    elif isinstance(action, ActionMoveInDirection):
-                        game_engine.move_in_direction(action.direction)
-                    elif isinstance(action, ActionStopMoving):
-                        game_engine.stop_moving()
-                if isinstance(action, ActionPauseGame):
-                    state = State.PLAYING if state == state.PAUSED else State.PAUSED
-                if isinstance(action, ActionMouseMovement):
-                    mouse_screen_position = action.mouse_screen_position
-                if isinstance(action, ActionMouseClicked):
-                    mouse_was_just_clicked = True
-                if isinstance(action, ActionMouseReleased):
-                    mouse_was_just_released = True
-                if isinstance(action, ActionPressSpaceKey):
-                    player_interactions_state.handle_user_clicked_space(game_state, game_engine)
-                if isinstance(action, ActionPressShiftKey):
-                    player_interactions_state.handle_user_pressed_shift()
-                if isinstance(action, ActionReleaseShiftKey):
-                    player_interactions_state.handle_user_released_shift()
-                if isinstance(action, ActionSaveGameState):
-                    save_to_file(game_state)
+            scene_transition = paused_state.run_one_frame()
 
-        # ------------------------------------
-        #     UPDATE STATE BASED ON CLOCK
-        # ------------------------------------
-
-        clock.tick()
-        time_passed = Millis(clock.get_time())
-
-        if state == State.PLAYING:
-            game_engine.run_one_frame(time_passed)
-
-        # ------------------------------------
-        #          RENDER EVERYTHING
-        # ------------------------------------
-
-        if not game_state.player_state.stun_status.is_stunned():
-            entity_action_text = player_interactions_state.get_action_text()
-        else:
-            # Don't display any actions on screen if player is stunned. It would look weird when using warp stones
-            entity_action_text = None
-
-        view.render_world(
-            all_entities_to_render=game_state.get_all_entities_to_render(),
-            decorations_to_render=game_state.get_decorations_to_render(),
-            player_entity=game_state.player_entity,
-            is_player_invisible=game_state.player_state.is_invisible,
-            player_active_buffs=game_state.player_state.active_buffs,
-            camera_world_area=game_state.camera_world_area,
-            non_player_characters=game_state.non_player_characters,
-            visual_effects=game_state.visual_effects,
-            render_hit_and_collision_boxes=render_hit_and_collision_boxes,
-            player_health=game_state.player_state.health_resource.value,
-            player_max_health=game_state.player_state.health_resource.max_value,
-            entire_world_area=game_state.entire_world_area,
-            entity_action_text=entity_action_text)
-
-        dialog = player_interactions_state.get_dialog()
-
-        # TODO If dragging an item, highlight the inventory slots that are valid for the item?
-
-        mouse_hover_event: MouseHoverEvent = view.render_ui(
-            player_state=game_state.player_state,
-            view_state=view_state,
-            player_speed_multiplier=game_state.player_entity.speed_multiplier,
-            fps_string=str(int(clock.get_fps())),
-            is_paused=state == State.PAUSED,
-            mouse_screen_position=mouse_screen_position,
-            dialog=dialog)
-
-        # TODO There is a lot of details here about UI state (dragging items). Move that elsewhere.
-
-        # DRAGGING ITEMS
-
-        hovered_item_slot_number = mouse_hover_event.item_slot_number
-
-        if mouse_was_just_clicked and hovered_item_slot_number is not None:
-            if not game_state.player_state.item_inventory.is_slot_empty(hovered_item_slot_number):
-                item_slot_being_dragged = hovered_item_slot_number
-                play_sound(SoundId.UI_START_DRAGGING_ITEM)
-
-        if item_slot_being_dragged is not None:
-            item_type = game_state.player_state.item_inventory.get_item_type_in_slot(item_slot_being_dragged)
-            view.render_item_being_dragged(item_type, mouse_screen_position)
-
-        if mouse_was_just_released and item_slot_being_dragged is not None:
-            if hovered_item_slot_number is not None and item_slot_being_dragged != hovered_item_slot_number:
-                did_switch_succeed = game_engine.drag_item_between_inventory_slots(
-                    item_slot_being_dragged, hovered_item_slot_number)
-                if did_switch_succeed:
-                    play_sound(SoundId.UI_ITEM_WAS_MOVED)
-                else:
-                    play_sound(SoundId.INVALID_ACTION)
-            if mouse_hover_event.game_world_position:
-                game_engine.drop_inventory_item_on_ground(item_slot_being_dragged,
-                                                          mouse_hover_event.game_world_position)
-            item_slot_being_dragged = None
-
-        # DRAGGING CONSUMABLES
-
-        hovered_consumable_slot_number = mouse_hover_event.consumable_slot_number
-
-        if mouse_was_just_clicked and hovered_consumable_slot_number is not None:
-            if game_state.player_state.consumable_inventory.consumables_in_slots[hovered_consumable_slot_number]:
-                consumable_slot_being_dragged = hovered_consumable_slot_number
-                play_sound(SoundId.UI_START_DRAGGING_ITEM)
-
-        if consumable_slot_being_dragged is not None:
-            consumable_type = game_state.player_state.consumable_inventory.consumables_in_slots[
-                consumable_slot_being_dragged][0]
-            view.render_consumable_being_dragged(consumable_type, mouse_screen_position)
-
-        if mouse_was_just_released and consumable_slot_being_dragged is not None:
-            if hovered_consumable_slot_number is not None and consumable_slot_being_dragged != hovered_consumable_slot_number:
-                game_engine.drag_consumable_between_inventory_slots(
-                    consumable_slot_being_dragged, hovered_consumable_slot_number)
-                play_sound(SoundId.UI_ITEM_WAS_MOVED)
-            if mouse_hover_event.game_world_position:
-                game_engine.drop_consumable_on_ground(consumable_slot_being_dragged,
-                                                      mouse_hover_event.game_world_position)
-            consumable_slot_being_dragged = None
-
-        view.update_display()
-
-
-def save_to_file(game_state: GameState):
-    filename = "savefiles/DEBUG_" + str(datetime.datetime.now()).replace(" ", "_") + ".json"
-    saved_player_state = SavedPlayerState(
-        game_state.player_state.hero_id.name,
-        game_state.player_state.level,
-        game_state.player_state.exp,
-        {slot_number: [c.name for c in consumables] for (slot_number, consumables)
-         in game_state.player_state.consumable_inventory.consumables_in_slots.items()},
-        [slot.get_item_type().name if not slot.is_empty() else None
-         for slot in game_state.player_state.item_inventory.slots],
-        game_state.player_state.money,
-        {p.portal_id.name: p.world_entity.sprite.name for p in game_state.portals if p.is_enabled}
-    )
-    save_player_state_to_json_file(saved_player_state, filename)
-    print("Saved game state to file: " + filename)
+        if scene_transition is not None:
+            scene_id = scene_transition
 
 
 def get_random_hint():

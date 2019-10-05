@@ -6,6 +6,11 @@ Millis = NewType('Millis', int)
 PLAYER_ENTITY_SIZE = (30, 30)
 
 
+class SceneId(Enum):
+    PLAYING = 1
+    PAUSED = 2
+
+
 class Direction(Enum):
     LEFT = 1
     RIGHT = 2
