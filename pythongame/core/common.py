@@ -7,8 +7,9 @@ PLAYER_ENTITY_SIZE = (30, 30)
 
 
 class SceneId(Enum):
-    PLAYING = 1
-    PAUSED = 2
+    PICKING_HERO = 1
+    PLAYING = 2
+    PAUSED = 3
 
 
 class Direction(Enum):

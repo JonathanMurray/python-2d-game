@@ -77,6 +77,11 @@ class ActionChangeDialogOption:
         self.index_delta = index_delta
 
 
+class ActionPickHero:
+    def __init__(self, number: int):
+        self.number = number
+
+
 PYGAME_MOVEMENT_KEYS = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
 DIRECTION_BY_PYGAME_MOVEMENT_KEY = {
     pygame.K_LEFT: Direction.LEFT,
@@ -187,3 +192,16 @@ def get_main_user_inputs():
         actions.append(ActionTryUseAbility(ability_type))
 
     return actions
+
+
+def get_picking_hero_user_input():
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            return ActionExitGame()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_1:
+                return ActionPickHero(1)
+            elif event.key == pygame.K_2:
+                return ActionPickHero(2)
+            elif event.key == pygame.K_3:
+                return ActionPickHero(3)

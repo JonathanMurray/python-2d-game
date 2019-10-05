@@ -984,3 +984,7 @@ class View:
     def is_screen_position_within_ui(self, screen_position: Tuple[int, int]):
         ui_position = self._translate_screen_position_to_ui(screen_position)
         return ui_position[1] >= 0
+
+    def render_picking_hero_ui(self):
+        self.screen.fill(COLOR_BLACK)
+        self._text(self.font_dialog, "Type a number to pick your hero (1: mage, 2: warrior, 3: rogue)", (50, 400))

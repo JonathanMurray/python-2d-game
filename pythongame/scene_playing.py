@@ -6,7 +6,7 @@ import pygame
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis, SoundId, SceneId
+from pythongame.core.common import Millis, SoundId
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.game_state import GameState
 from pythongame.core.player_environment_interactions import PlayerInteractionsState
@@ -26,13 +26,11 @@ class PlayingScene:
             player_interactions_state: PlayerInteractionsState,
             game_state: GameState,
             game_engine: GameEngine,
-            clock,
             view: View,
             view_state: ViewState):
         self.player_interactions_state = player_interactions_state
         self.game_state = game_state
         self.game_engine = game_engine
-        self.clock = clock
         self.view = view
         self.view_state = view_state
         self.render_hit_and_collision_boxes = False
@@ -40,8 +38,9 @@ class PlayingScene:
         self.item_slot_being_dragged: Optional[int] = None
         self.consumable_slot_being_dragged: Optional[int] = None
 
-    def run_one_frame(self):
-        scene_transition = None
+    def run_one_frame(self, time_passed: Millis, fps_string: str) -> bool:
+
+        transition_to_pause = False
 
         self.player_interactions_state.handle_interactions(self.game_state.player_entity, self.game_state)
 
@@ -83,7 +82,7 @@ class PlayingScene:
                 elif isinstance(action, ActionStopMoving):
                     self.game_engine.stop_moving()
                 if isinstance(action, ActionPauseGame):
-                    scene_transition = SceneId.PAUSED
+                    transition_to_pause = True
                 if isinstance(action, ActionMouseMovement):
                     self.mouse_screen_position = action.mouse_screen_position
                 if isinstance(action, ActionMouseClicked):
@@ -102,9 +101,6 @@ class PlayingScene:
         # ------------------------------------
         #     UPDATE STATE BASED ON CLOCK
         # ------------------------------------
-
-        self.clock.tick()
-        time_passed = Millis(self.clock.get_time())
 
         self.game_engine.run_one_frame(time_passed)
 
@@ -141,7 +137,7 @@ class PlayingScene:
             player_state=self.game_state.player_state,
             view_state=self.view_state,
             player_speed_multiplier=self.game_state.player_entity.speed_multiplier,
-            fps_string=str(int(self.clock.get_fps())),
+            fps_string=fps_string,
             is_paused=False,
             mouse_screen_position=self.mouse_screen_position,
             dialog=dialog)
@@ -200,4 +196,4 @@ class PlayingScene:
 
         self.view.update_display()
 
-        return scene_transition
+        return transition_to_pause
