@@ -985,6 +985,25 @@ class View:
         ui_position = self._translate_screen_position_to_ui(screen_position)
         return ui_position[1] >= 0
 
-    def render_picking_hero_ui(self):
+    def render_picking_hero_ui(self, heroes: List[HeroId], selected_index: int):
         self.screen.fill(COLOR_BLACK)
-        self._text(self.font_dialog, "Type a number to pick your hero (1: mage, 2: warrior, 3: rogue)", (50, 400))
+        x_base = 170
+        y_0 = 200
+        for i, hero in enumerate(heroes):
+            hero_data = HEROES[hero]
+            sprite = hero_data.portrait_icon_sprite
+            image = self.images_by_portrait_sprite[sprite]
+            x = x_base + i * (PORTRAIT_ICON_SIZE[0] + 20)
+            self._image(image, (x, y_0))
+            if i == selected_index:
+                self._rect(COLOR_HIGHLIGHTED_ICON, (x, y_0, PORTRAIT_ICON_SIZE[0], PORTRAIT_ICON_SIZE[1]), 3)
+            else:
+                self._rect(COLOR_WHITE, (x, y_0, PORTRAIT_ICON_SIZE[0], PORTRAIT_ICON_SIZE[1]), 1)
+            self._text(self.font_dialog, hero.name, (x, y_0 + PORTRAIT_ICON_SIZE[1] + 10))
+        description = HEROES[heroes[selected_index]].description
+        description_lines = self._split_text_into_lines(description, 40)
+        y_1 = 350
+        for i, description_line in enumerate(description_lines):
+            self._text(self.font_dialog, description_line, (x_base, y_1 + i * 20))
+        y_2 = 500
+        self._text(self.font_dialog, "SELECT YOUR HERO (Space to confirm)", (x_base, y_2))

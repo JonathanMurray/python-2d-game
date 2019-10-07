@@ -26,7 +26,7 @@ def register_hero_god():
     register_portrait_icon_sprite_path(portrait_icon_sprite, 'resources/graphics/player_portrait.gif')
     entity_speed = 0.5
     hero_data = HeroData(sprite, portrait_icon_sprite, _get_initial_player_state_god(), entity_speed,
-                         PLAYER_ENTITY_SIZE)
+                         PLAYER_ENTITY_SIZE, "God mode...")
     register_hero_data(HERO_ID, hero_data)
     _register_kill_everything_ability()
 

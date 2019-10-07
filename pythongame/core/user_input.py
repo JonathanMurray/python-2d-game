@@ -77,9 +77,12 @@ class ActionChangeDialogOption:
         self.index_delta = index_delta
 
 
-class ActionPickHero:
-    def __init__(self, number: int):
-        self.number = number
+class ActionPickHeroChange:
+    def __init__(self, delta: int):
+        self.delta = delta
+
+class ActionPickHeroAccept:
+    pass
 
 
 PYGAME_MOVEMENT_KEYS = [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]
@@ -199,9 +202,9 @@ def get_picking_hero_user_input():
         if event.type == pygame.QUIT:
             return ActionExitGame()
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_1:
-                return ActionPickHero(1)
-            elif event.key == pygame.K_2:
-                return ActionPickHero(2)
-            elif event.key == pygame.K_3:
-                return ActionPickHero(3)
+            if event.key == pygame.K_LEFT or event.key == pygame.K_UP:
+                return ActionPickHeroChange(-1)
+            elif event.key == pygame.K_RIGHT or event.key == pygame.K_DOWN:
+                return ActionPickHeroChange(1)
+            elif event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
+                return ActionPickHeroAccept()

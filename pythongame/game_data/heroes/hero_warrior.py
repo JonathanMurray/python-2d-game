@@ -23,8 +23,10 @@ def register_hero_warrior():
                                scaled_sprite_size, indices_by_dir, sprite_position_relative_to_entity)
     register_portrait_icon_sprite_path(portrait_icon_sprite, 'resources/graphics/portrait_warrior_hero.png')
     entity_speed = 0.105
+    description = "A sturdy melee fighter, the warrior can stand his ground against any foe, and thrives when there " \
+                  "are enemies all around."
     hero_data = HeroData(sprite, portrait_icon_sprite, _get_initial_player_state_warrior(), entity_speed,
-                         PLAYER_ENTITY_SIZE)
+                         PLAYER_ENTITY_SIZE, description)
     register_hero_data(HeroId.WARRIOR, hero_data)
 
 
