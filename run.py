@@ -12,4 +12,4 @@ parser.add_argument('--money')
 parser.add_argument('--load')
 args = parser.parse_args()
 
-main.main(args.map, args.hero, args.level, args.money, args.load)
+main.start(args.map, args.hero, args.level, args.money, args.load)

@@ -25,8 +25,10 @@ def register_hero_rogue():
                                scaled_sprite_size, indices_by_dir, sprite_position_relative_to_entity)
     register_portrait_icon_sprite_path(portrait_icon_sprite, 'resources/graphics/portrait_rogue_hero.png')
     entity_speed = 0.105
+    description = "A flexible melee assassin, the rogue can dish out large amounts of damage and is especially " \
+                  "effective at singling out powerful enemies."
     hero_data = HeroData(sprite, portrait_icon_sprite, _get_initial_player_state_rogue(), entity_speed,
-                         PLAYER_ENTITY_SIZE)
+                         PLAYER_ENTITY_SIZE, description)
     register_hero_data(HERO_ID, hero_data)
 
 
