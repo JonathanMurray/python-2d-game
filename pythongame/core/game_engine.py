@@ -286,7 +286,7 @@ class GameEngine:
         self.game_state.player_state.force_cancel_all_buffs()
         self.view_state.set_message("Lost exp from dying")
         play_sound(SoundId.EVENT_PLAYER_DIED)
-        self.game_state.visual_effects += create_teleport_effects(self.game_state.player_entity.get_center_position())
+        self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
 
     def _is_npc_close_to_camera(self, npc: NonPlayerCharacter):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(

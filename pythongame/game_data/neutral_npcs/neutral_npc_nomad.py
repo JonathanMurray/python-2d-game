@@ -2,7 +2,7 @@ import random
 from typing import Optional
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
-    UiIconSprite, PeriodicTimer
+    UiIconSprite, PeriodicTimer, get_random_hint
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
@@ -27,14 +27,20 @@ class NpcMind(AbstractNpcMind):
                 npc.world_entity.set_moving_in_dir(direction)
 
 
-class NpcAction(AbstractNpcAction):
+class HealAction(AbstractNpcAction):
 
     def act(self, game_state: GameState) -> Optional[str]:
         if not game_state.player_state.health_resource.is_at_max():
             health_gained = game_state.player_state.health_resource.gain_to_max()
             game_state.visual_effects.append(create_visual_healing_text(game_state.player_entity, health_gained))
             return "You feel healthy again!"
-        return "Nice..."
+        return "Already at full health!"
+
+
+class HintAction(AbstractNpcAction):
+
+    def act(self, game_state: GameState) -> Optional[str]:
+        return get_random_hint()
 
 
 def register_nomad_npc():
@@ -45,10 +51,12 @@ def register_nomad_npc():
     register_npc_data(npc_type, NpcData.neutral(sprite, size, movement_speed))
     register_npc_behavior(npc_type, NpcMind)
     # TODO Use proper icon for 'cancel' option
+    text_body = "Greetings. I am here only to serve. Seek me out when you are wounded or need guidance!"
     dialog_options = [
-        DialogOptionData("Accept blessing", "gain full health", NpcAction(), UiIconSprite.POTION_HEALTH),
+        DialogOptionData("Receive blessing", "gain full health", HealAction(), UiIconSprite.POTION_HEALTH),
+        DialogOptionData("Ask for advice", "see random hint", HintAction(), UiIconSprite.ITEM_MESSENGERS_HAT),
         DialogOptionData("\"Good bye\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
-    dialog_data = DialogData(PortraitIconSprite.NOMAD, "Blessings to you fellow traveler.", dialog_options)
+    dialog_data = DialogData(PortraitIconSprite.NOMAD, text_body, dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")
     original_sprite_size = (32, 32)

@@ -1,3 +1,4 @@
+import random
 from enum import Enum
 from typing import NewType
 
@@ -254,6 +255,7 @@ class BuffType(Enum):
     TELEPORTING_WITH_PORTAL = 32
     TELEPORTING_WITH_WARP_STONE = 33
     TELEPORTING_WITH_WARP_POINT = 34
+    BEING_SPAWNED = 35
 
 
 class ItemType(Enum):
@@ -463,3 +465,19 @@ class PeriodicTimer:
             self.time_until_next_run += self.cooldown
             return True
         return False
+
+
+def get_random_hint():
+    hints = [
+        "Hold Shift to see more info about lootable items",
+        "Press Space to interact with NPCs and objects",
+        "Reaching certain levels unlocks new abilities",
+        "Use the number keys for potions and other consumables",
+        "Gold coins are looted by simply walking over them",
+        "If you die, you'll respawn but lose exp points",
+        "Use magic statues and warpstones to teleport long distances",
+        "Hover over things with the mouse cursor to get more info",
+        "Drag inventory items and consumables with the mouse cursor",
+        "Equip items by dragging them to the appropriate inventory slot"
+    ]
+    return random.choice(hints)
