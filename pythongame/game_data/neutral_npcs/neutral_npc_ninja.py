@@ -51,7 +51,8 @@ def register_ninja_npc():
                          SellConsumableNpcAction(5, ConsumableType.SPEED, "speed potion"),
                          UiIconSprite.POTION_SPEED),
         DialogOptionData("\"Good bye\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
-    dialog_text_body = "Ah.. You're new here, aren't you? Interested in my stock of potions?"
+    dialog_text_body = "Ah.. You're new here, aren't you? Interested in my stock of potions? " \
+                       "They come at a price of course..."
     dialog_data = DialogData(portrait_icon_sprite, dialog_text_body, dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")

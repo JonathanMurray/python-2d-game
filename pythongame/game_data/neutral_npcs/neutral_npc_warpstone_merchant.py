@@ -33,8 +33,8 @@ def register_warpstone_merchant_npc():
     movement_speed = 0.03
     register_npc_data(npc_type, NpcData.neutral(sprite, size, movement_speed))
     register_npc_behavior(npc_type, NpcMind)
-    introduction = "I managed to infuse the statues' teleporting powers into these stones. You can carry them with " \
-                   "you and use them any time you want to return to this place!"
+    introduction = "Hah! I managed to infuse the statues' teleporting powers into these stones. " \
+                   "You can carry them with you and use them any time you want to return to this place!"
     name_formatter = "{:<25}"
     cost_formatter = "[{} gold]"
     buy_prompt = "> "
