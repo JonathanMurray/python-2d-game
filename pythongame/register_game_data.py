@@ -13,6 +13,7 @@ from pythongame.game_data.abilities.ability_stomp import register_stomp_ability
 from pythongame.game_data.abilities.ability_sword_slash import register_sword_slash_ability
 from pythongame.game_data.abilities.ability_teleport import register_teleport_ability
 from pythongame.game_data.abilities.ability_whirlwind import register_whirlwind_ability
+from pythongame.game_data.buff_hero_spawning import register_spawn_buff
 from pythongame.game_data.buff_recovering_after_ability import register_recovering_after_ability_buff
 from pythongame.game_data.coin import register_coin
 from pythongame.game_data.consumables.consumable_warpstone import register_warpstone_consumable
@@ -109,6 +110,7 @@ def register_all_game_data():
     register_dash_ability()
 
     register_recovering_after_ability_buff()
+    register_spawn_buff()
 
     register_lesser_health_potion()
     register_health_potion()

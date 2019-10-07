@@ -529,8 +529,9 @@ class View:
 
         player_sprite_y_relative_to_entity = \
             ENTITY_SPRITE_INITIALIZERS[player_entity.sprite][Direction.DOWN].position_relative_to_entity[1]
-        self._stat_bar_for_world_entity(player_entity, 5, player_sprite_y_relative_to_entity - 5,
-                                        player_health / player_max_health, (100, 200, 0))
+        if player_entity.visible:
+            self._stat_bar_for_world_entity(player_entity, 5, player_sprite_y_relative_to_entity - 5,
+                                            player_health / player_max_health, (100, 200, 0))
 
         # Buffs related to channeling something are rendered above player's head with progress from left to right
         for buff in player_active_buffs:

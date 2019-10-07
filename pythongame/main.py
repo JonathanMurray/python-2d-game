@@ -3,7 +3,8 @@ from typing import Optional
 
 import pygame
 
-from pythongame.core.common import SceneId, Millis, HeroId, ItemType, ConsumableType, Sprite
+from pythongame.core.buff_effects import get_buff_effect
+from pythongame.core.common import SceneId, Millis, HeroId, ItemType, ConsumableType, Sprite, BuffType
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_engine import GameEngine
@@ -126,6 +127,8 @@ class Main:
                 self.game_state.player_state.money += start_money
 
         allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
+
+        self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
 
 
 def start(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start_level: Optional[int],
