@@ -1,10 +1,9 @@
-import random
 from typing import Optional
 
 import pygame
 
 from pythongame.core.buff_effects import get_buff_effect
-from pythongame.core.common import SceneId, Millis, HeroId, ItemType, ConsumableType, Sprite, BuffType
+from pythongame.core.common import SceneId, Millis, HeroId, ItemType, ConsumableType, Sprite, BuffType, get_random_hint
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_engine import GameEngine
@@ -135,15 +134,3 @@ def start(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_star
           start_money: Optional[int], load_from_file: Optional[str]):
     main = Main(map_file_name, chosen_hero_id, hero_start_level, start_money, load_from_file)
     main.main_loop()
-
-
-def get_random_hint():
-    hints = [
-        "Hold Shift to see more info about lootable items",
-        "Press Space to interact with NPCs and objects",
-        "Reaching certain levels unlocks new abilities",
-        "Use the number keys for potions and other consumables",
-        "Gold coins are looted by simply walking over them",
-        "If you die, you'll respawn but lose exp points"
-    ]
-    return random.choice(hints)

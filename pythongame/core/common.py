@@ -1,3 +1,4 @@
+import random
 from enum import Enum
 from typing import NewType
 
@@ -464,3 +465,14 @@ class PeriodicTimer:
             self.time_until_next_run += self.cooldown
             return True
         return False
+
+def get_random_hint():
+    hints = [
+        "Hold Shift to see more info about lootable items",
+        "Press Space to interact with NPCs and objects",
+        "Reaching certain levels unlocks new abilities",
+        "Use the number keys for potions and other consumables",
+        "Gold coins are looted by simply walking over them",
+        "If you die, you'll respawn but lose exp points"
+    ]
+    return random.choice(hints)
