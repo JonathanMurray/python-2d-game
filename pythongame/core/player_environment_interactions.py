@@ -1,23 +1,20 @@
 import sys
 from typing import Optional, List
 
-from pythongame.core.common import SoundId
 from pythongame.core.game_data import CONSUMABLES, ITEMS
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, LootableOnGround, Portal, \
     ConsumableOnGround, ItemOnGround, WarpPoint
 from pythongame.core.math import boxes_intersect, is_x_and_y_within_distance, \
-    get_manhattan_distance_between_rects, get_directions_to_position
-from pythongame.core.npc_behaviors import invoke_npc_action, has_npc_dialog, get_dialog_graphics, get_dialog_data
-from pythongame.core.sound_player import play_sound
-from pythongame.core.view import EntityActionText, DialogGraphics
+    get_manhattan_distance_between_rects
+from pythongame.core.npc_behaviors import has_npc_dialog
+from pythongame.core.view import EntityActionText
 from pythongame.core.view_state import ViewState
 
 
 class PlayerInteractionsState:
     def __init__(self, view_state: ViewState):
         self.view_state = view_state
-        self.npc_active_in_dialog: NonPlayerCharacter = None
         self.npc_ready_for_dialog: NonPlayerCharacter = None
         self.lootable_ready_to_be_picked_up: LootableOnGround = None
         self.portal_ready_for_interaction: Portal = None
@@ -36,7 +33,7 @@ class PlayerInteractionsState:
             if has_npc_dialog(npc.npc_type):
                 close_to_player = is_x_and_y_within_distance(player_position, npc.world_entity.get_position(), 75)
                 distance = get_manhattan_distance_between_rects(player_entity.rect(), npc.world_entity.rect())
-                if close_to_player and distance < closest_distance_to_player and not self.npc_active_in_dialog:
+                if close_to_player and distance < closest_distance_to_player:
                     self.npc_ready_for_dialog = npc
                     closest_distance_to_player = distance
         lootables_on_ground: List[LootableOnGround] = \
@@ -67,27 +64,11 @@ class PlayerInteractionsState:
                 self.warp_point_ready_for_interaction = warp_point
                 closest_distance_to_player = distance
 
-    def handle_user_clicked_space(self, game_state: GameState, game_engine: GameEngine):
+    def handle_user_clicked_space(self, game_engine: GameEngine) -> Optional[NonPlayerCharacter]:
         if self.npc_ready_for_dialog:
-            self.npc_active_in_dialog = self.npc_ready_for_dialog
-            self.npc_active_in_dialog.world_entity.direction = get_directions_to_position(
-                self.npc_active_in_dialog.world_entity, game_state.player_entity.get_center_position())[0]
-            self.npc_active_in_dialog.world_entity.set_not_moving()
-            self.npc_active_in_dialog.stun_status.add_one()
-            num_dialog_options = len(get_dialog_data(self.npc_active_in_dialog.npc_type).options)
-            if self.active_dialog_option_index >= num_dialog_options:
-                # If you talk to one NPC, and leave with option 2, then start talking to an NPC that has just one option
-                # we'd get an IndexError if we don't clear the index here. Still, it's useful to keep the index in the
-                # case that you want to talk to the same NPC rapidly over and over (to buy potions for example)
-                self.active_dialog_option_index = 0
+            npc = self.npc_ready_for_dialog
             self.npc_ready_for_dialog = None
-            play_sound(SoundId.DIALOG)
-        elif self.npc_active_in_dialog:
-            message = invoke_npc_action(self.npc_active_in_dialog.npc_type, self.active_dialog_option_index, game_state)
-            if message:
-                self.view_state.set_message(message)
-            self.npc_active_in_dialog.stun_status.remove_one()
-            self.npc_active_in_dialog = None
+            return npc
         elif self.lootable_ready_to_be_picked_up:
             game_engine.try_pick_up_loot_from_ground(self.lootable_ready_to_be_picked_up)
         elif self.portal_ready_for_interaction:
@@ -119,18 +100,6 @@ class PlayerInteractionsState:
                 return EntityActionText(self.portal_ready_for_interaction.world_entity, "[Space] ???", None)
         elif self.warp_point_ready_for_interaction:
             return EntityActionText(self.warp_point_ready_for_interaction.world_entity, "[Space] Warp", None)
-
-    def get_dialog(self) -> Optional[DialogGraphics]:
-        if self.npc_active_in_dialog:
-            return get_dialog_graphics(self.npc_active_in_dialog.npc_type, self.active_dialog_option_index)
-
-    def is_player_in_dialog(self) -> bool:
-        return self.npc_active_in_dialog is not None
-
-    def change_dialog_option(self, option_index_delta: int):
-        num_options = len(get_dialog_data(self.npc_active_in_dialog.npc_type).options)
-        self.active_dialog_option_index = (self.active_dialog_option_index + option_index_delta) % num_options
-        play_sound(SoundId.DIALOG)
 
 
 def _get_loot_name(lootable: LootableOnGround) -> str:

@@ -8,7 +8,9 @@ import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 from pythongame.core.common import Millis, SoundId
 from pythongame.core.game_engine import GameEngine
-from pythongame.core.game_state import GameState
+from pythongame.core.game_state import GameState, NonPlayerCharacter
+from pythongame.core.math import get_directions_to_position
+from pythongame.core.npc_behaviors import get_dialog_data, invoke_npc_action, get_dialog_graphics, DialogGraphics
 from pythongame.core.player_environment_interactions import PlayerInteractionsState
 from pythongame.core.sound_player import play_sound
 from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
@@ -18,6 +20,47 @@ from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, Acti
 from pythongame.core.view import MouseHoverEvent, View
 from pythongame.core.view_state import ViewState
 from pythongame.player_file import save_to_file
+
+
+class DialogHandler:
+    def __init__(self):
+        self.npc_active_in_dialog: NonPlayerCharacter = None
+        self.active_dialog_option_index: int = 0
+
+    def change_dialog_option(self, delta: int):
+        num_options = len(get_dialog_data(self.npc_active_in_dialog.npc_type).options)
+        self.active_dialog_option_index = (self.active_dialog_option_index + delta) % num_options
+        play_sound(SoundId.DIALOG)
+
+    def handle_user_clicked_space(self, game_state: GameState, view_state: ViewState):
+        message = invoke_npc_action(self.npc_active_in_dialog.npc_type, self.active_dialog_option_index,
+                                    game_state)
+        if message:
+            view_state.set_message(message)
+        self.npc_active_in_dialog.stun_status.remove_one()
+        self.npc_active_in_dialog = None
+
+    def is_player_in_dialog(self) -> bool:
+        return self.npc_active_in_dialog is not None
+
+    def start_dialog_with_npc(self, npc: NonPlayerCharacter, game_state: GameState):
+        self.npc_active_in_dialog = npc
+        self.npc_active_in_dialog.world_entity.direction = get_directions_to_position(
+            self.npc_active_in_dialog.world_entity,
+            game_state.player_entity.get_center_position())[0]
+        self.npc_active_in_dialog.world_entity.set_not_moving()
+        self.npc_active_in_dialog.stun_status.add_one()
+        num_dialog_options = len(get_dialog_data(self.npc_active_in_dialog.npc_type).options)
+        if self.active_dialog_option_index >= num_dialog_options:
+            # If you talk to one NPC, and leave with option 2, then start talking to an NPC that has just one option
+            # we'd get an IndexError if we don't clear the index here. Still, it's useful to keep the index in the
+            # case that you want to talk to the same NPC rapidly over and over (to buy potions for example)
+            self.active_dialog_option_index = 0
+        play_sound(SoundId.DIALOG)
+
+    def get_dialog_graphics(self) -> Optional[DialogGraphics]:
+        if self.npc_active_in_dialog:
+            return get_dialog_graphics(self.npc_active_in_dialog.npc_type, self.active_dialog_option_index)
 
 
 class PlayingScene:
@@ -37,13 +80,15 @@ class PlayingScene:
         self.mouse_screen_position = (0, 0)
         self.item_slot_being_dragged: Optional[int] = None
         self.consumable_slot_being_dragged: Optional[int] = None
+        self.dialog_handler = DialogHandler()
 
     def run_one_frame(self, time_passed: Millis, fps_string: str) -> bool:
 
         transition_to_pause = False
 
-        self.player_interactions_state.handle_interactions(self.game_state.player_entity, self.game_state,
-                                                           self.game_engine)
+        if not self.dialog_handler.is_player_in_dialog():
+            self.player_interactions_state.handle_interactions(self.game_state.player_entity, self.game_state,
+                                                               self.game_engine)
 
         mouse_was_just_clicked = False
         mouse_was_just_released = False
@@ -52,7 +97,7 @@ class PlayingScene:
         #         HANDLE USER INPUT
         # ------------------------------------
 
-        if self.player_interactions_state.is_player_in_dialog():
+        if self.dialog_handler.is_player_in_dialog():
             self.game_state.player_entity.set_not_moving()
             user_actions = get_dialog_user_inputs()
             for action in user_actions:
@@ -60,9 +105,9 @@ class PlayingScene:
                     pygame.quit()
                     sys.exit()
                 if isinstance(action, ActionChangeDialogOption):
-                    self.player_interactions_state.change_dialog_option(action.index_delta)
+                    self.dialog_handler.change_dialog_option(action.index_delta)
                 if isinstance(action, ActionPressSpaceKey):
-                    self.player_interactions_state.handle_user_clicked_space(self.game_state, self.game_engine)
+                    self.dialog_handler.handle_user_clicked_space(self.game_state, self.view_state)
         else:
             user_actions = get_main_user_inputs()
             for action in user_actions:
@@ -91,7 +136,9 @@ class PlayingScene:
                 if isinstance(action, ActionMouseReleased):
                     mouse_was_just_released = True
                 if isinstance(action, ActionPressSpaceKey):
-                    self.player_interactions_state.handle_user_clicked_space(self.game_state, self.game_engine)
+                    npc_in_dialog = self.player_interactions_state.handle_user_clicked_space(self.game_engine)
+                    if npc_in_dialog is not None:
+                        self.dialog_handler.start_dialog_with_npc(npc_in_dialog, self.game_state)
                 if isinstance(action, ActionPressShiftKey):
                     self.player_interactions_state.handle_user_pressed_shift()
                 if isinstance(action, ActionReleaseShiftKey):
@@ -130,7 +177,7 @@ class PlayingScene:
             entire_world_area=self.game_state.entire_world_area,
             entity_action_text=entity_action_text)
 
-        dialog = self.player_interactions_state.get_dialog()
+        dialog = self.dialog_handler.get_dialog_graphics()
 
         # TODO If dragging an item, highlight the inventory slots that are valid for the item?
 
