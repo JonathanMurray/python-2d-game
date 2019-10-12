@@ -1,9 +1,9 @@
-import random
 from typing import Dict, Type, Optional, List
 
 from pythongame.core.common import *
 from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
+from pythongame.core.game_data import CONSUMABLES, ITEMS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.math import is_x_and_y_within_distance, get_perpendicular_directions
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
@@ -12,11 +12,13 @@ from pythongame.core.sound_player import play_sound
 
 
 class DialogOptionGraphics:
-    # TODO handle option icons
-    def __init__(self, text_header: str, text_detailed: str, ui_icon_sprite: UiIconSprite):
-        self.text_header = text_header
-        self.text_detailed = text_detailed
-        self.ui_icon_sprite = ui_icon_sprite
+    def __init__(self, summary: str, detail_action_text: str, detail_ui_icon_sprite: Optional[UiIconSprite],
+                 detail_header: Optional[str] = None, detail_body: Optional[str] = None):
+        self.summary = summary
+        self.detail_action_text = detail_action_text
+        self.detail_ui_icon_sprite = detail_ui_icon_sprite
+        self.detail_header = detail_header
+        self.detail_body = detail_body
 
 
 # Used to display dialog from an npc along with the NPC's portrait
@@ -137,13 +139,33 @@ class SellConsumableNpcAction(AbstractNpcAction):
         return "Bought " + self.name
 
 
+class BuyItemNpcAction(AbstractNpcAction):
+
+    def __init__(self, item_type: ItemType, price: int, name: str):
+        self.item_type = item_type
+        self.price = price
+        self.name = name
+
+    def act(self, game_state: GameState) -> Optional[str]:
+        player_has_it = game_state.player_state.item_inventory.has_item_in_inventory(self.item_type)
+        if player_has_it:
+            game_state.player_state.item_inventory.lose_item_from_inventory(self.item_type)
+            game_state.player_state.money += self.price
+            return "Sold " + self.name
+        else:
+            return "You don't have that!"
+
+
 class DialogOptionData:
-    def __init__(self, text_header: str, text_detailed: str, action: Optional[AbstractNpcAction],
-                 ui_icon_sprite: UiIconSprite):
-        self.text_header = text_header
-        self.text_detailed = text_detailed
+    def __init__(self, summary: str, action_text: str, action: Optional[AbstractNpcAction],
+                 ui_icon_sprite: Optional[UiIconSprite] = None, detail_header: Optional[str] = None,
+                 detail_body: Optional[str] = None):
+        self.summary = summary
+        self.action_text = action_text
         self.action = action
         self.ui_icon_sprite = ui_icon_sprite
+        self.detail_header = detail_header
+        self.detail_body = detail_body
 
 
 class DialogData:
@@ -185,9 +207,33 @@ def has_npc_dialog(npc_type: NpcType) -> bool:
 
 def get_dialog_graphics(npc_type: NpcType, active_option_index: int) -> DialogGraphics:
     data = _npc_dialog_data[npc_type]
-    options_graphics = [DialogOptionGraphics(o.text_header, o.text_detailed, o.ui_icon_sprite) for o in data.options]
+    options_graphics = [DialogOptionGraphics(o.summary, o.action_text, o.ui_icon_sprite, o.detail_header, o.detail_body)
+                        for o in data.options]
     return DialogGraphics(data.portrait_icon_sprite, data.text_body, options_graphics, active_option_index)
 
 
 def get_dialog_data(npc_type: NpcType) -> DialogData:
     return _npc_dialog_data[npc_type]
+
+
+def buy_consumable_option(consumable_type: ConsumableType, cost: int):
+    data = CONSUMABLES[consumable_type]
+    name_formatter = "{:<25}"
+    buy_prompt = "> "
+    cost_formatter = "[{} gold]"
+    return DialogOptionData(buy_prompt + name_formatter.format(data.name) + cost_formatter.format(cost),
+                            "buy",
+                            SellConsumableNpcAction(cost, consumable_type, data.name.lower()),
+                            data.icon_sprite,
+                            data.name,
+                            data.description)
+
+
+def sell_item_option(item_type: ItemType, price: int, detail_body: str):
+    name_formatter = "{:<13}"
+    cost_formatter = "[{} gold]"
+    sell_prompt = "> "
+    data = ITEMS[item_type]
+    return DialogOptionData(sell_prompt + name_formatter.format(data.name) + cost_formatter.format(price), "sell",
+                            BuyItemNpcAction(item_type, price, data.name.lower()),
+                            data.icon_sprite, data.name, detail_body)
