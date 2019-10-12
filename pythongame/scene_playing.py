@@ -102,8 +102,7 @@ class PlayingScene:
             user_actions = get_dialog_user_inputs()
             for action in user_actions:
                 if isinstance(action, ActionExitGame):
-                    pygame.quit()
-                    sys.exit()
+                    exit_game()
                 if isinstance(action, ActionChangeDialogOption):
                     self.dialog_handler.change_dialog_option(action.index_delta)
                 if isinstance(action, ActionPressSpaceKey):
@@ -112,8 +111,7 @@ class PlayingScene:
             user_actions = get_main_user_inputs()
             for action in user_actions:
                 if isinstance(action, ActionExitGame):
-                    pygame.quit()
-                    sys.exit()
+                    exit_game()
                 if isinstance(action, ActionToggleRenderDebugging):
                     self.render_hit_and_collision_boxes = not self.render_hit_and_collision_boxes
                     # TODO: Handle this better than accessing a global variable from here
@@ -245,3 +243,8 @@ class PlayingScene:
         self.view.update_display()
 
         return transition_to_pause
+
+
+def exit_game():
+    pygame.quit()
+    sys.exit()
