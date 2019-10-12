@@ -10,7 +10,7 @@ from pythongame.core.common import Millis, SoundId
 from pythongame.core.game_data import CONSUMABLES, ITEMS
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
-    ConsumableOnGround, ItemOnGround
+    ConsumableOnGround, ItemOnGround, Chest
 from pythongame.core.math import get_directions_to_position
 from pythongame.core.npc_behaviors import get_dialog_data, invoke_npc_action, get_dialog_graphics, DialogGraphics
 from pythongame.core.player_environment_interactions import PlayerInteractionsState
@@ -146,6 +146,10 @@ class PlayingScene:
                             self.game_engine.interact_with_portal(ready_entity)
                         elif isinstance(ready_entity, WarpPoint):
                             self.game_engine.use_warp_point(ready_entity)
+                        elif isinstance(ready_entity, Chest):
+                            self.game_engine.open_chest(ready_entity)
+                        else:
+                            raise Exception("Unhandled entity: " + str(ready_entity))
                 if isinstance(action, ActionPressShiftKey):
                     self.is_shift_key_held_down = True
                 if isinstance(action, ActionReleaseShiftKey):
@@ -272,6 +276,10 @@ def get_entity_action_text(ready_entity: Any, is_shift_key_held_down: bool) -> E
             return EntityActionText(ready_entity.world_entity, "[Space] ???", None)
     elif isinstance(ready_entity, WarpPoint):
         return EntityActionText(ready_entity.world_entity, "[Space] Warp", None)
+    elif isinstance(ready_entity, Chest):
+        return EntityActionText(ready_entity.world_entity, "[Space] Open", None)
+    else:
+        raise Exception("Unhandled entity: " + str(ready_entity))
 
 
 def _get_loot_name(lootable: LootableOnGround) -> str:

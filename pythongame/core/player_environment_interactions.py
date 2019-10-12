@@ -13,6 +13,7 @@ class PlayerInteractionsState:
         self.entity_to_interact_with: Any = None
 
     def handle_nearby_entities(self, player_entity: WorldEntity, game_state: GameState, game_engine: GameEngine):
+        self.entity_to_interact_with = None
         player_position = player_entity.get_position()
         distance_to_closest_entity = sys.maxsize
 
@@ -45,6 +46,13 @@ class PlayerInteractionsState:
             distance = get_manhattan_distance_between_rects(player_entity.rect(), warp_point.world_entity.rect())
             if close_to_player and distance < distance_to_closest_entity:
                 self.entity_to_interact_with = warp_point
+                distance_to_closest_entity = distance
+
+        for chest in game_state.chests:
+            close_to_player = is_x_and_y_within_distance(player_position, chest.world_entity.get_position(), 75)
+            distance = get_manhattan_distance_between_rects(player_entity.rect(), chest.world_entity.rect())
+            if close_to_player and distance < distance_to_closest_entity:
+                self.entity_to_interact_with = chest
                 distance_to_closest_entity = distance
 
     def get_entity_to_interact_with(self):

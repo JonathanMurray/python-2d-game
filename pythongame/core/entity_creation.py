@@ -5,14 +5,14 @@ from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, ITEMS, CONSUMABLES, POTION_ENTITY_SIZE, \
     WALLS, PORTALS, HEROES, NpcData
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
-    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, HealthOrManaResource, WarpPoint
+    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, HealthOrManaResource, WarpPoint, Chest
 from pythongame.core.item_inventory import ItemInventory, ItemInventorySlot, ItemEquipmentCategory
 from pythongame.core.math import get_position_from_center_position
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.game_data.enemies.enemy_chest import CHEST_ENTITY_SIZE, CHEST_LOOT
 
 # TODO handle this (global path finder) in a better way!
-
 global_path_finder: GlobalPathFinder = None
 
 
@@ -43,19 +43,24 @@ def create_money_pile_on_ground(amount: int, pos: Tuple[int, int]) -> MoneyPileO
 
 def create_item_on_ground(item_type: ItemType, pos: Tuple[int, int]) -> ItemOnGround:
     entity = WorldEntity(pos, ITEM_ENTITY_SIZE, ITEMS[item_type].entity_sprite)
-    entity.view_z = 1 # It should be rendered below all other entities
+    entity.view_z = 1  # It should be rendered below all other entities
     return ItemOnGround(entity, item_type)
 
 
 def create_consumable_on_ground(consumable_type: ConsumableType, pos: Tuple[int, int]) -> ConsumableOnGround:
     entity = WorldEntity(pos, POTION_ENTITY_SIZE, CONSUMABLES[consumable_type].entity_sprite)
-    entity.view_z = 1 # It should be rendered below all other entities
+    entity.view_z = 1  # It should be rendered below all other entities
     return ConsumableOnGround(entity, consumable_type)
 
 
 def create_portal(portal_id: PortalId, pos: Tuple[int, int]) -> Portal:
     data = PORTALS[portal_id]
     return Portal(WorldEntity(pos, data.entity_size, data.sprite), portal_id, data.starts_enabled, data.leads_to)
+
+
+def create_chest(pos: Tuple[int, int]) -> Chest:
+    # TODO Allow for other loot in chests (Currently all chests are equal)
+    return Chest(WorldEntity(pos, CHEST_ENTITY_SIZE, Sprite.ENEMY_CHEST), CHEST_LOOT)
 
 
 def create_wall(wall_type: WallType, pos: Tuple[int, int]) -> Wall:

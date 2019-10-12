@@ -8,7 +8,7 @@ from pygame.rect import Rect
 from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, ItemType, PortalId, HeroId
 from pythongame.core.entity_creation import create_portal, create_hero_world_entity, create_npc, create_wall, \
     create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground, \
-    create_player_state
+    create_player_state, create_chest
 from pythongame.core.game_state import GameState
 from pythongame.core.math import sum_of_vectors
 from pythongame.core.view import View
@@ -65,6 +65,8 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.portal(PortalId.B_REMOTE),
     MapEditorWorldEntity.portal(PortalId.C_REMOTE),
     MapEditorWorldEntity.portal(PortalId.D_REMOTE),
+
+    MapEditorWorldEntity.chest(),
 
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_DWARF),
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_NOMAD),
@@ -182,7 +184,7 @@ def main(map_file_name: Optional[str]):
         player_entity = create_hero_world_entity(HERO_ID, (0, 0))
         player_state = create_player_state(HERO_ID)
         game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, Rect(-250, -250, 500, 500),
-                               player_state, [], [])
+                               player_state, [], [], [])
 
     pygame.init()
 
@@ -280,6 +282,8 @@ def main(map_file_name: Optional[str]):
                             _add_money(entity_being_placed.money_amount, game_state, snapped_mouse_world_position)
                         elif entity_being_placed.portal_id:
                             _add_portal(entity_being_placed.portal_id, game_state, snapped_mouse_world_position)
+                        elif entity_being_placed.is_chest:
+                            _add_chest(game_state, snapped_mouse_world_position)
                         else:
                             raise Exception("Unknown entity: " + str(entity_being_placed))
                 elif user_state.deleting_entities:
@@ -361,6 +365,14 @@ def _add_portal(portal_id: PortalId, game_state, snapped_mouse_world_position):
     if not already_has_portal:
         portal = create_portal(portal_id, snapped_mouse_world_position)
         game_state.portals.append(portal)
+
+
+def _add_chest(game_state: GameState, snapped_mouse_world_position):
+    already_has_chest = any([x for x in game_state.chests
+                             if x.world_entity.get_position() == snapped_mouse_world_position])
+    if not already_has_chest:
+        chest = create_chest(snapped_mouse_world_position)
+        game_state.chests.append(chest)
 
 
 def _add_item(item_type: ItemType, game_state, snapped_mouse_world_position):

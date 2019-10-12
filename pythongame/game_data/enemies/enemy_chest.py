@@ -6,6 +6,11 @@ from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.game_data.loot_tables import LOOT_ITEMS_1, LOOT_ITEMS_2
 
+CHEST_ENTITY_SIZE = (30, 30)  # Must not align perfectly with grid cell size (pathfinding issues)
+CHEST_LOOT = LootTable([LootGroup(1, LOOT_ITEMS_1 + LOOT_ITEMS_2, 1)])
+
+
+# TODO Remove chest enemy type (it's first-class entity now, not an enemy)
 
 class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
@@ -17,12 +22,10 @@ class NpcMind(AbstractNpcMind):
 
 
 def register_chest_enemy():
-    size = (30, 30)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.ENEMY_CHEST
     npc_type = NpcType.CHEST
     health = 1
-    loot = LootTable([LootGroup(1, LOOT_ITEMS_1 + LOOT_ITEMS_2, 1)])
-    register_npc_data(npc_type, NpcData.enemy(sprite, size, health, 0, 0, 0, loot))
+    register_npc_data(npc_type, NpcData.enemy(sprite, CHEST_ENTITY_SIZE, health, 0, 0, 0, CHEST_LOOT))
     register_npc_behavior(npc_type, NpcMind)
 
     sprite_sheet = SpriteSheet("resources/graphics/human_tileset.png")

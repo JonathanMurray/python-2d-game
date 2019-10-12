@@ -6,9 +6,9 @@ from pygame.rect import Rect
 from pythongame.core.common import *
 from pythongame.core.entity_creation import create_npc, set_global_path_finder, create_money_pile_on_ground, \
     create_consumable_on_ground, create_portal, create_wall, create_hero_world_entity, \
-    create_decoration_entity, create_item_on_ground, create_player_state
+    create_decoration_entity, create_item_on_ground, create_player_state, create_chest
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Wall, Portal, DecorationEntity, \
-    MoneyPileOnGround, ItemOnGround, ConsumableOnGround, PlayerState
+    MoneyPileOnGround, ItemOnGround, ConsumableOnGround, PlayerState, Chest
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
 
@@ -44,7 +44,8 @@ class MapJson:
             "walls": [WallJson.serialize(wall) for wall in game_state.walls_state.walls],
             "entire_world_area": WorldAreaJson.serialize(game_state.entire_world_area),
             "decorations": [DecorationJson.serialize(d) for d in game_state.decorations_state.decoration_entities],
-            "portals": [PortalJson.serialize(p) for p in game_state.portals]
+            "portals": [PortalJson.serialize(p) for p in game_state.portals],
+            "chests": [ChestJson.serialize(c) for c in game_state.chests]
         }
 
     @staticmethod
@@ -60,7 +61,8 @@ class MapJson:
             entire_world_area=WorldAreaJson.deserialize(data["entire_world_area"]),
             player_state=player_state,
             decoration_entities=[DecorationJson.deserialize(d) for d in data.get("decorations", [])],
-            portals=[PortalJson.deserialize(p) for p in data.get("portals", [])]
+            portals=[PortalJson.deserialize(p) for p in data.get("portals", [])],
+            chests=[ChestJson.deserialize(c) for c in data.get("chests", [])]
         )
 
 
@@ -102,6 +104,16 @@ class PortalJson:
     @staticmethod
     def deserialize(data) -> Portal:
         return create_portal(PortalId[data["portal_id"]], data["position"])
+
+
+class ChestJson:
+    @staticmethod
+    def serialize(chest: Chest):
+        return {"position": chest.world_entity.get_position()}
+
+    @staticmethod
+    def deserialize(data) -> Chest:
+        return create_chest(data["position"])
 
 
 class DecorationJson:
