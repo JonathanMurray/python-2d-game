@@ -55,7 +55,6 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.npc(NpcType.VETERAN),
     MapEditorWorldEntity.npc(NpcType.ICE_WITCH),
     MapEditorWorldEntity.npc(NpcType.WARRIOR_KING),
-    MapEditorWorldEntity.npc(NpcType.CHEST),
 
     MapEditorWorldEntity.portal(PortalId.A_BASE),
     MapEditorWorldEntity.portal(PortalId.B_BASE),

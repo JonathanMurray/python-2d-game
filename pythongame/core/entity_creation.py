@@ -60,7 +60,7 @@ def create_portal(portal_id: PortalId, pos: Tuple[int, int]) -> Portal:
 
 def create_chest(pos: Tuple[int, int]) -> Chest:
     # TODO Allow for other loot in chests (Currently all chests are equal)
-    return Chest(WorldEntity(pos, CHEST_ENTITY_SIZE, Sprite.ENEMY_CHEST), CHEST_LOOT)
+    return Chest(WorldEntity(pos, CHEST_ENTITY_SIZE, Sprite.CHEST), CHEST_LOOT)
 
 
 def create_wall(wall_type: WallType, pos: Tuple[int, int]) -> Wall:
