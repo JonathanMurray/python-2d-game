@@ -1,5 +1,5 @@
 import sys
-from typing import Optional
+from typing import Optional, Any
 
 import pygame
 
@@ -7,8 +7,10 @@ import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 from pythongame.core.common import Millis, SoundId
+from pythongame.core.game_data import CONSUMABLES, ITEMS
 from pythongame.core.game_engine import GameEngine
-from pythongame.core.game_state import GameState, NonPlayerCharacter
+from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
+    ConsumableOnGround, ItemOnGround
 from pythongame.core.math import get_directions_to_position
 from pythongame.core.npc_behaviors import get_dialog_data, invoke_npc_action, get_dialog_graphics, DialogGraphics
 from pythongame.core.player_environment_interactions import PlayerInteractionsState
@@ -17,7 +19,7 @@ from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, Acti
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_main_user_inputs, get_dialog_user_inputs, \
     ActionChangeDialogOption, ActionSaveGameState, ActionPressShiftKey, ActionReleaseShiftKey
-from pythongame.core.view import MouseHoverEvent, View
+from pythongame.core.view import MouseHoverEvent, View, EntityActionText
 from pythongame.core.view_state import ViewState
 from pythongame.player_file import save_to_file
 
@@ -80,14 +82,15 @@ class PlayingScene:
         self.item_slot_being_dragged: Optional[int] = None
         self.consumable_slot_being_dragged: Optional[int] = None
         self.dialog_handler = DialogHandler()
+        self.is_shift_key_held_down = False
 
     def run_one_frame(self, time_passed: Millis, fps_string: str) -> bool:
 
         transition_to_pause = False
 
         if not self.dialog_handler.is_player_in_dialog():
-            self.player_interactions_state.handle_interactions(self.game_state.player_entity, self.game_state,
-                                                               self.game_engine)
+            self.player_interactions_state.handle_nearby_entities(
+                self.game_state.player_entity, self.game_state, self.game_engine)
 
         mouse_was_just_clicked = False
         mouse_was_just_released = False
@@ -133,13 +136,20 @@ class PlayingScene:
                 if isinstance(action, ActionMouseReleased):
                     mouse_was_just_released = True
                 if isinstance(action, ActionPressSpaceKey):
-                    npc_in_dialog = self.player_interactions_state.handle_user_clicked_space(self.game_engine)
-                    if npc_in_dialog is not None:
-                        self.dialog_handler.start_dialog_with_npc(npc_in_dialog, self.game_state)
+                    ready_entity = self.player_interactions_state.get_entity_to_interact_with()
+                    if ready_entity is not None:
+                        if isinstance(ready_entity, NonPlayerCharacter):
+                            self.dialog_handler.start_dialog_with_npc(ready_entity, self.game_state)
+                        elif isinstance(ready_entity, LootableOnGround):
+                            self.game_engine.try_pick_up_loot_from_ground(ready_entity)
+                        elif isinstance(ready_entity, Portal):
+                            self.game_engine.interact_with_portal(ready_entity)
+                        elif isinstance(ready_entity, WarpPoint):
+                            self.game_engine.use_warp_point(ready_entity)
                 if isinstance(action, ActionPressShiftKey):
-                    self.player_interactions_state.handle_user_pressed_shift()
+                    self.is_shift_key_held_down = True
                 if isinstance(action, ActionReleaseShiftKey):
-                    self.player_interactions_state.handle_user_released_shift()
+                    self.is_shift_key_held_down = False
                 if isinstance(action, ActionSaveGameState):
                     save_to_file(self.game_state)
 
@@ -153,11 +163,12 @@ class PlayingScene:
         #          RENDER EVERYTHING
         # ------------------------------------
 
+        entity_action_text = None
+        # Don't display any actions on screen if player is stunned. It would look weird when using warp stones
         if not self.game_state.player_state.stun_status.is_stunned():
-            entity_action_text = self.player_interactions_state.get_action_text()
-        else:
-            # Don't display any actions on screen if player is stunned. It would look weird when using warp stones
-            entity_action_text = None
+            ready_entity = self.player_interactions_state.get_entity_to_interact_with()
+            if ready_entity is not None:
+                entity_action_text = get_entity_action_text(ready_entity, self.is_shift_key_held_down)
 
         self.view.render_world(
             all_entities_to_render=self.game_state.get_all_entities_to_render(),
@@ -242,6 +253,39 @@ class PlayingScene:
         self.view.update_display()
 
         return transition_to_pause
+
+
+def get_entity_action_text(ready_entity: Any, is_shift_key_held_down: bool) -> EntityActionText:
+    if isinstance(ready_entity, NonPlayerCharacter):
+        return EntityActionText(ready_entity.world_entity, "[Space] ...", None)
+    elif isinstance(ready_entity, LootableOnGround):
+        loot_name = _get_loot_name(ready_entity)
+        if is_shift_key_held_down:
+            loot_details = "> " + _get_loot_details(ready_entity)
+        else:
+            loot_details = None
+        return EntityActionText(ready_entity.world_entity, "[Space] " + loot_name, loot_details)
+    elif isinstance(ready_entity, Portal):
+        if ready_entity.is_enabled:
+            return EntityActionText(ready_entity.world_entity, "[Space] Warp", None)
+        else:
+            return EntityActionText(ready_entity.world_entity, "[Space] ???", None)
+    elif isinstance(ready_entity, WarpPoint):
+        return EntityActionText(ready_entity.world_entity, "[Space] Warp", None)
+
+
+def _get_loot_name(lootable: LootableOnGround) -> str:
+    if isinstance(lootable, ConsumableOnGround):
+        return CONSUMABLES[lootable.consumable_type].name
+    if isinstance(lootable, ItemOnGround):
+        return ITEMS[lootable.item_type].name
+
+
+def _get_loot_details(lootable: LootableOnGround) -> str:
+    if isinstance(lootable, ConsumableOnGround):
+        return CONSUMABLES[lootable.consumable_type].description
+    if isinstance(lootable, ItemOnGround):
+        return ITEMS[lootable.item_type].description
 
 
 def exit_game():
