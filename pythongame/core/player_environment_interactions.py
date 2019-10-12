@@ -9,17 +9,14 @@ from pythongame.core.math import boxes_intersect, is_x_and_y_within_distance, \
     get_manhattan_distance_between_rects
 from pythongame.core.npc_behaviors import has_npc_dialog
 from pythongame.core.view import EntityActionText
-from pythongame.core.view_state import ViewState
 
 
 class PlayerInteractionsState:
-    def __init__(self, view_state: ViewState):
-        self.view_state = view_state
+    def __init__(self):
         self.npc_ready_for_dialog: NonPlayerCharacter = None
         self.lootable_ready_to_be_picked_up: LootableOnGround = None
         self.portal_ready_for_interaction: Portal = None
         self.warp_point_ready_for_interaction: WarpPoint = None
-        self.active_dialog_option_index = 0
         self.is_shift_key_held_down = False
 
     def handle_interactions(self, player_entity: WorldEntity, game_state: GameState, game_engine: GameEngine):

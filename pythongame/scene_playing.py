@@ -66,12 +66,11 @@ class DialogHandler:
 class PlayingScene:
     def __init__(
             self,
-            player_interactions_state: PlayerInteractionsState,
             game_state: GameState,
             game_engine: GameEngine,
             view: View,
             view_state: ViewState):
-        self.player_interactions_state = player_interactions_state
+        self.player_interactions_state = PlayerInteractionsState()
         self.game_state = game_state
         self.game_engine = game_engine
         self.view = view

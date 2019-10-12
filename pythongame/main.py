@@ -96,9 +96,8 @@ class Main:
         self.game_state = create_game_state_from_json_file(CAMERA_SIZE, self.map_file_path, picked_hero)
         self.view_state = ViewState(self.game_state.entire_world_area)
         self.game_engine = GameEngine(self.game_state, self.view_state)
-        self.player_interactions_state = PlayerInteractionsState(self.view_state)
+        self.player_interactions_state = PlayerInteractionsState()
         self.playing_scene = PlayingScene(
-            self.player_interactions_state,
             self.game_state,
             self.game_engine,
             self.view,
