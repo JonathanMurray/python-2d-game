@@ -43,6 +43,7 @@ def init_sound_player():
         SoundId.UI_ITEM_WAS_MOVED: load_sound_file('UI04.ogg'),
         SoundId.UI_START_DRAGGING_ITEM: load_sound_file('drag.ogg'),
         SoundId.DIALOG: load_sound_file('UI04.ogg'),
+        SoundId.EVENT_PORTAL_ACTIVATED: load_sound_file('UI06.wav')
     }
 
 

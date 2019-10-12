@@ -42,7 +42,8 @@ class PlayingScene:
 
         transition_to_pause = False
 
-        self.player_interactions_state.handle_interactions(self.game_state.player_entity, self.game_state)
+        self.player_interactions_state.handle_interactions(self.game_state.player_entity, self.game_state,
+                                                           self.game_engine)
 
         mouse_was_just_clicked = False
         mouse_was_just_released = False

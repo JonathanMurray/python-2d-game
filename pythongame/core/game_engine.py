@@ -125,6 +125,17 @@ class GameEngine:
         else:
             self.view_state.set_message("Hmm... Looks suspicious!")
 
+    def handle_being_close_to_portal(self, portal: Portal):
+        # When finding a new portal out on the map, it's enough to walk close to it, to activate its sibling
+        if portal.is_enabled:
+            destination_portal = [p for p in self.game_state.portals if p.portal_id == portal.leads_to][0]
+            if not destination_portal.is_enabled:
+                play_sound(SoundId.EVENT_PORTAL_ACTIVATED)
+                self.view_state.set_message("Portal was activated")
+                destination_portal.activate(portal.world_entity.sprite)
+                self.game_state.visual_effects += create_teleport_effects(portal.world_entity.get_center_position())
+
+
     def use_warp_point(self, warp_point: WarpPoint):
         destination_warp_point = [w for w in self.game_state.warp_points if w != warp_point][0]
         # It's safe to teleport to warp point's position as hero and warp point entities are the exact same size

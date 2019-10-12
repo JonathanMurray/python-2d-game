@@ -25,7 +25,7 @@ class PlayerInteractionsState:
         self.active_dialog_option_index = 0
         self.is_shift_key_held_down = False
 
-    def handle_interactions(self, player_entity: WorldEntity, game_state: GameState):
+    def handle_interactions(self, player_entity: WorldEntity, game_state: GameState, game_engine: GameEngine):
         player_position = player_entity.get_position()
         self.npc_ready_for_dialog = None
         self.lootable_ready_to_be_picked_up = None
@@ -49,6 +49,9 @@ class PlayerInteractionsState:
         for portal in game_state.portals:
             close_to_player = is_x_and_y_within_distance(player_position, portal.world_entity.get_position(), 75)
             distance = get_manhattan_distance_between_rects(player_entity.rect(), portal.world_entity.rect())
+
+            if close_to_player:
+                game_engine.handle_being_close_to_portal(portal)
             if close_to_player and distance < closest_distance_to_player:
                 self.npc_ready_for_dialog = None
                 self.lootable_ready_to_be_picked_up = None
