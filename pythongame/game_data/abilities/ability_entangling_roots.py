@@ -26,19 +26,17 @@ class ProjectileController(AbstractProjectileController):
     def __init__(self):
         super().__init__(1500)
 
-    def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState):
+    def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState, projectile: Projectile):
         damage_was_dealt = deal_player_damage_to_enemy(game_state, npc, 1)
-        if not damage_was_dealt:
-            return False
-
-        npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), DEBUFF_DURATION)
-        victim_center_pos = npc.world_entity.get_center_position()
-        visual_effect_pos = (victim_center_pos[0] - ENTANGLING_ROOTS_SIZE[0] // 2,
-                             victim_center_pos[1] - ENTANGLING_ROOTS_SIZE[1] // 2)
-        debuff_visual_effect = VisualSprite(Sprite.DECORATION_ENTANGLING_ROOTS_EFFECT, visual_effect_pos,
-                                            DEBUFF_DURATION, npc.world_entity)
-        game_state.visual_effects.append(debuff_visual_effect)
-        return True
+        if damage_was_dealt:
+            npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), DEBUFF_DURATION)
+            victim_center_pos = npc.world_entity.get_center_position()
+            visual_effect_pos = (victim_center_pos[0] - ENTANGLING_ROOTS_SIZE[0] // 2,
+                                 victim_center_pos[1] - ENTANGLING_ROOTS_SIZE[1] // 2)
+            debuff_visual_effect = VisualSprite(Sprite.DECORATION_ENTANGLING_ROOTS_EFFECT, visual_effect_pos,
+                                                DEBUFF_DURATION, npc.world_entity)
+            game_state.visual_effects.append(debuff_visual_effect)
+        projectile.has_collided_and_should_be_removed = True
 
 
 def _apply_ability(game_state: GameState) -> bool:

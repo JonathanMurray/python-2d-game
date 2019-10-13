@@ -1,8 +1,5 @@
 ## TODO
 
-#### Bugs:
-* many projectiles can hit several targets, but should only be able to hit one (fireball, entangling roots)
-
 #### Refactorings:
 * Move non-trivial logic from game_state. Prefer to have game-logic elsewhere.
 * Avoid storing EnemyMind and ProjectileController in game_state. That module should only depend on common

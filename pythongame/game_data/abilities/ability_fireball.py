@@ -24,18 +24,16 @@ class ProjectileController(AbstractProjectileController):
     def __init__(self):
         super().__init__(1500)
 
-    def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState):
+    def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState, projectile: Projectile):
         base_damage: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
         damage_amount = base_damage + game_state.player_state.fireball_dmg_boost
-        damage_was_dealt = deal_player_damage_to_enemy(game_state, npc, damage_amount)
-        if not damage_was_dealt:
-            return False
+        deal_player_damage_to_enemy(game_state, npc, damage_amount)
         game_state.visual_effects.append(
             VisualCircle((250, 100, 50), npc.world_entity.get_center_position(), 22, 45, Millis(100), 0))
-        return True
+        projectile.has_collided_and_should_be_removed = True
 
-    def apply_wall_collision(self, _game_state: GameState):
-        return True
+    def apply_wall_collision(self, _game_state: GameState, projectile: Projectile):
+        projectile.has_collided_and_should_be_removed = True
 
 
 def _apply_ability(game_state: GameState) -> bool:

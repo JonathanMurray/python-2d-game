@@ -100,19 +100,19 @@ class ProjectileController(AbstractProjectileController):
     def __init__(self):
         super().__init__(2000)
 
-    def apply_player_collision(self, game_state: GameState):
+    def apply_player_collision(self, game_state: GameState, projectile: Projectile):
         deal_damage_to_player(game_state, 1, DamageType.MAGIC, None)
         game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.ENEMY_GOBLIN_WARLOCK_BURNT), Millis(5000))
         game_state.visual_effects.append(VisualCircle((180, 50, 50), game_state.player_entity.get_center_position(),
                                                       25, 50, Millis(100), 0))
-        return True
+        projectile.has_collided_and_should_be_removed = True
 
-    def apply_player_summon_collision(self, npc: NonPlayerCharacter, game_state: GameState):
+    def apply_player_summon_collision(self, npc: NonPlayerCharacter, game_state: GameState, projectile: Projectile):
         deal_npc_damage_to_npc(game_state, npc, 1)
         npc.gain_buff_effect(get_buff_effect(BuffType.ENEMY_GOBLIN_WARLOCK_BURNT), Millis(5000))
         game_state.visual_effects.append(
             VisualCircle((180, 50, 50), npc.world_entity.get_center_position(), 25, 50, Millis(100), 0))
-        return True
+        projectile.has_collided_and_should_be_removed = True
 
 
 class Burnt(AbstractBuffEffect):

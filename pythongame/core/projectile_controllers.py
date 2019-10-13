@@ -17,18 +17,18 @@ class AbstractProjectileController:
     # Collision callbacks return a boolean that indicates whether or not the projectile should be removed.
 
     # Example: player's ability hits an enemy
-    def apply_enemy_collision(self, _npc: NonPlayerCharacter, _game_state: GameState):
-        return False
+    def apply_enemy_collision(self, _npc: NonPlayerCharacter, _game_state: GameState, _projectile: Projectile):
+        pass
 
-    def apply_player_summon_collision(self, _npc: NonPlayerCharacter, _game_state: GameState):
-        return False
+    def apply_player_summon_collision(self, _npc: NonPlayerCharacter, _game_state: GameState, _projectile: Projectile):
+        pass
 
     # Example: enemy's ability hits player
-    def apply_player_collision(self, _game_state: GameState):
-        return False
+    def apply_player_collision(self, _game_state: GameState, _projectile: Projectile):
+        pass
 
-    def apply_wall_collision(self, _game_state: GameState):
-        return False
+    def apply_wall_collision(self, _game_state: GameState, _projectile: Projectile):
+        pass
 
 
 _projectile_controllers: Dict[ProjectileType, Type[AbstractProjectileController]] = {}

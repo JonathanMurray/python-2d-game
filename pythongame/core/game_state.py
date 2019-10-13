@@ -123,6 +123,7 @@ class MoneyPileOnGround:
     def __init__(self, world_entity: WorldEntity, amount: int):
         self.world_entity = world_entity
         self.amount = amount
+        self.has_been_picked_up_and_should_be_removed = False
 
 
 # TODO There is a cyclic dependency here between game_state and projectile_controllers
@@ -131,6 +132,7 @@ class Projectile:
         self.world_entity = world_entity
         self.has_expired = False
         self.projectile_controller = projectile_controller
+        self.has_collided_and_should_be_removed = False
 
 
 class HealthOrManaResource:
@@ -531,15 +533,6 @@ class GameState:
         self.non_player_characters = [npc for npc in self.non_player_characters
                                       if npc.npc_category != NpcCategory.PLAYER_SUMMON]
 
-    # TODO clarify how this method should be used.
-    # entities_to_remove aren't necessarily of the class WorldEntity
-    def remove_entities(self, entities_to_remove: List):
-        self.projectile_entities = [p for p in self.projectile_entities if p not in entities_to_remove]
-        self.consumables_on_ground = [p for p in self.consumables_on_ground if p not in entities_to_remove]
-        self.items_on_ground = [i for i in self.items_on_ground if i not in entities_to_remove]
-        self.money_piles_on_ground = [m for m in self.money_piles_on_ground if m not in entities_to_remove]
-        self.non_player_characters = [e for e in self.non_player_characters if e not in entities_to_remove]
-
     def get_all_entities_to_render(self) -> List[WorldEntity]:
         walls_that_are_visible = self.walls_state.get_walls_in_camera(self.camera_world_area)
         other_entities = [self.player_entity] + \
@@ -643,6 +636,14 @@ class GameState:
 
     def remove_opened_chests(self):
         self.chests: List[Chest] = [c for c in self.chests if not c.has_been_opened]
+
+    def remove_projectiles_that_have_been_destroyed(self):
+        self.projectile_entities: List[Projectile] = [p for p in self.projectile_entities
+                                                      if not p.has_collided_and_should_be_removed]
+
+    def remove_money_piles_that_have_been_picked_up(self):
+        self.money_piles_on_ground: List[MoneyPileOnGround] = [m for m in self.money_piles_on_ground
+                                                               if not m.has_been_picked_up_and_should_be_removed]
 
     @staticmethod
     def _entities_collide(a: WorldEntity, b: WorldEntity):

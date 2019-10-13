@@ -51,15 +51,14 @@ class PlayerMagicMissileProjectileController(AbstractProjectileController):
         super().__init__(500)
         self._enemies_hit = []
 
-    def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState):
+    def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState, projectile: Projectile):
         if npc not in self._enemies_hit:
             damage = 1
             deal_player_damage_to_enemy(game_state, npc, damage)
             game_state.visual_effects.append(
                 VisualCircle((250, 100, 250), npc.world_entity.get_center_position(), 15, 25, Millis(100), 0))
             self._enemies_hit.append(npc)
-        # Projectile pierces enemies
-        return False
+        # Projectile pierces enemies (so we don't mark projectile as destroyed)
 
 
 def register_channel_attack_ability():
