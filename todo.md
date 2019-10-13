@@ -17,7 +17,6 @@
 * Make it more difficult to kite fast enemies. Enemies are too slow at attacking when they get into melee range
 
 #### Visuals:
-* Show item description when browsing throuhg items in vendor
 * Render tiny buff icons above entities that have active buffs (like bloodlust icon from wc2)
 * gray out ability icon when player doesn't have enough mana for it
 * put dmg/healing/xp numbers further up for tall characters (base it on sprite size, not entity size)
@@ -35,6 +34,8 @@
 * goblin death sounds
 
 #### Features:
+* right click items to swap them between inventory and equipped
+* allow some type of items to be stacked in inventory (gold nugget and sapphire)
 * give enemies 'armor'?
     * could add effects that reduce armor on enemies
     * makes it more difficult to clear endgame content on low level
