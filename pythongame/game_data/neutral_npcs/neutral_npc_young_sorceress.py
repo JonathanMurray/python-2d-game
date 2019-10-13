@@ -74,9 +74,10 @@ def register_young_sorceress_npc():
     introduction = "Hey you! Have you seen my pet frog? I bet it was that old green mean goblin king that took it! " \
                   "If you help me get it back, I'll give you something in return!"
     prompt = "> "
+    frog_data = ITEMS[ItemType.FROG]
     dialog_options = [
-        DialogOptionData(prompt + "Frog", "give", AcceptFrog(), UiIconSprite.ITEM_FROG),
-        DialogOptionData("\"Good bye\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
+        DialogOptionData(prompt + frog_data.name, "give", AcceptFrog(), UiIconSprite.ITEM_FROG, frog_data.name),
+        DialogOptionData("\"Good bye\"", "cancel", None)]
     dialog_data = DialogData(ui_icon_sprite, introduction, dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)
     sprite_sheet = SpriteSheet("resources/graphics/manga_spritesheet.png")

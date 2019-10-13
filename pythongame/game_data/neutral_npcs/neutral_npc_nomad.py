@@ -2,7 +2,7 @@ import random
 from typing import Optional
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
-    UiIconSprite, PeriodicTimer, get_random_hint
+    PeriodicTimer, get_random_hint
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
@@ -50,12 +50,11 @@ def register_nomad_npc():
     movement_speed = 0.03
     register_npc_data(npc_type, NpcData.neutral(sprite, size, movement_speed))
     register_npc_behavior(npc_type, NpcMind)
-    # TODO Use proper icon for 'cancel' option
     text_body = "Greetings. I am here only to serve. Seek me out when you are wounded or need guidance!"
     dialog_options = [
-        DialogOptionData("Receive blessing", "gain full health", HealAction(), UiIconSprite.POTION_HEALTH),
-        DialogOptionData("Ask for advice", "see random hint", HintAction(), UiIconSprite.ITEM_MESSENGERS_HAT),
-        DialogOptionData("\"Good bye\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
+        DialogOptionData("Receive blessing", "gain full health", HealAction()),
+        DialogOptionData("Ask for advice", "see random hint", HintAction()),
+        DialogOptionData("\"Good bye\"", "cancel", None)]
     dialog_data = DialogData(PortraitIconSprite.NOMAD, text_body, dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")

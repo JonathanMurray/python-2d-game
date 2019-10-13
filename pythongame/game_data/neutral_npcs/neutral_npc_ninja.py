@@ -1,12 +1,12 @@
 import random
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, ConsumableType, \
-    PortraitIconSprite, UiIconSprite, PeriodicTimer
+    PortraitIconSprite, PeriodicTimer
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, register_npc_dialog_data, DialogData, \
-    DialogOptionData, SellConsumableNpcAction
+    DialogOptionData, buy_consumable_option
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
 
@@ -33,24 +33,13 @@ def register_ninja_npc():
     movement_speed = 0.03
     register_npc_data(npc_type, NpcData.neutral(sprite, size, movement_speed))
     register_npc_behavior(npc_type, NpcMind)
-    # TODO Use proper icon for 'cancel' option
-    name_formatter = "{:<25}"
-    cost_formatter = "[{} gold]"
-    buy_prompt = "> "
+
     dialog_options = [
-        DialogOptionData(buy_prompt + name_formatter.format("Healing brew") + cost_formatter.format(2), "buy",
-                         SellConsumableNpcAction(2, ConsumableType.BREW, "healing brew"),
-                         UiIconSprite.POTION_BREW),
-        DialogOptionData(buy_prompt + name_formatter.format("Lesser health potion") + cost_formatter.format(3), "buy",
-                         SellConsumableNpcAction(3, ConsumableType.HEALTH_LESSER, "lesser health potion"),
-                         UiIconSprite.POTION_HEALTH_LESSER),
-        DialogOptionData(buy_prompt + name_formatter.format("Lesser mana potion") + cost_formatter.format(3), "buy",
-                         SellConsumableNpcAction(3, ConsumableType.MANA_LESSER, "lesser mana potion"),
-                         UiIconSprite.POTION_MANA_LESSER),
-        DialogOptionData(buy_prompt + name_formatter.format("Speed potion") + cost_formatter.format(5), "buy",
-                         SellConsumableNpcAction(5, ConsumableType.SPEED, "speed potion"),
-                         UiIconSprite.POTION_SPEED),
-        DialogOptionData("\"Good bye\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
+        buy_consumable_option(ConsumableType.BREW, 2),
+        buy_consumable_option(ConsumableType.HEALTH_LESSER, 3),
+        buy_consumable_option(ConsumableType.MANA_LESSER, 3),
+        buy_consumable_option(ConsumableType.SPEED, 5),
+        DialogOptionData("\"Good bye\"", "cancel", None)]
     dialog_text_body = "Ah.. You're new here, aren't you? Interested in my stock of potions? " \
                        "They come at a price of course..."
     dialog_data = DialogData(portrait_icon_sprite, dialog_text_body, dialog_options)

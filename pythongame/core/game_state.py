@@ -355,7 +355,7 @@ class PlayerState:
         self.life_steal_ratio: float = 0
         self.exp = 0
         self.level = 1
-        self.max_exp_in_this_level = 60
+        self.max_exp_in_this_level = 50
         self.fireball_dmg_boost = 0
         self.new_level_abilities: Dict[int, AbilityType] = new_level_abilities
         self.money = 0
@@ -467,6 +467,13 @@ class Portal:
         self.world_entity.sprite = sprite
 
 
+class Chest:
+    def __init__(self, world_entity: WorldEntity, loot_table: LootTable):
+        self.world_entity = world_entity
+        self.loot_table = loot_table
+        self.has_been_opened = False
+
+
 class WarpPoint:
     def __init__(self, world_entity: WorldEntity):
         self.world_entity = world_entity
@@ -480,7 +487,7 @@ class GameState:
                  items_on_ground: List[ItemOnGround], money_piles_on_ground: List[MoneyPileOnGround],
                  non_player_characters: List[NonPlayerCharacter], walls: List[Wall], camera_size: Tuple[int, int],
                  entire_world_area: Rect, player_state: PlayerState,
-                 decoration_entities: List[DecorationEntity], portals: List[Portal]):
+                 decoration_entities: List[DecorationEntity], portals: List[Portal], chests: List[Chest]):
         self.camera_size = camera_size
         self.camera_world_area = Rect((0, 0), self.camera_size)
         self.player_entity = player_entity
@@ -501,6 +508,7 @@ class GameState:
         self.portals: List[Portal] = portals
         self.player_spawn_position: Tuple[int, int] = player_entity.get_position()
         self.warp_points: List[WarpPoint] = []
+        self.chests: List[Chest] = chests
 
     @staticmethod
     def _setup_pathfinder_wall_grid(entire_world_area: Rect, walls: List[WorldEntity]):
@@ -541,7 +549,8 @@ class GameState:
                          [e.world_entity for e in self.non_player_characters] + \
                          [p.world_entity for p in self.projectile_entities] + \
                          [p.world_entity for p in self.portals] + \
-                         [w.world_entity for w in self.warp_points]
+                         [w.world_entity for w in self.warp_points] + \
+                         [c.world_entity for c in self.chests]
         return walls_that_are_visible + other_entities
 
     def get_decorations_to_render(self) -> List[DecorationEntity]:
@@ -604,7 +613,7 @@ class GameState:
         walls = self.walls_state.get_walls_close_to_position(entity.get_position())
         other_entities = [e.world_entity for e in self.non_player_characters] + \
                          [self.player_entity] + walls + [p.world_entity for p in self.portals] + \
-                         [w.world_entity for w in self.warp_points]
+                         [w.world_entity for w in self.warp_points] + [c.world_entity for c in self.chests]
         collision = any([other for other in other_entities if self._entities_collide(entity, other)
                          and entity is not other])
         entity.set_position(old_pos)
@@ -631,6 +640,9 @@ class GameState:
 
     def remove_expired_visual_effects(self):
         self.visual_effects = [v for v in self.visual_effects if not v.has_expired]
+
+    def remove_opened_chests(self):
+        self.chests: List[Chest] = [c for c in self.chests if not c.has_been_opened]
 
     @staticmethod
     def _entities_collide(a: WorldEntity, b: WorldEntity):

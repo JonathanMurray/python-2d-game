@@ -9,19 +9,14 @@
 * Simplify and generalise the handling of visual effects
 * Simplify how channeled abilities work - shouldn't need to define new buff types for that
 * Use PeriodicTimer in enemy behaviour code, to reduce time-keeping boilerplate
-* Reduce duplication between enemy behaviour code
 * Clean up enemy movement/attack logic - model as FSM?
 
 #### Game engine:
 * Use 8 directions instead of 4?
-* Use pygame C code for vector math
 * save game_state to file on crash
-* activate portal on first interaction, don't teleport
 * Make it more difficult to kite fast enemies. Enemies are too slow at attacking when they get into melee range
-* use pygame Vector instead of Tuple to improve performance
 
 #### Visuals:
-* Show item description when browsing throuhg items in vendor
 * Render tiny buff icons above entities that have active buffs (like bloodlust icon from wc2)
 * gray out ability icon when player doesn't have enough mana for it
 * put dmg/healing/xp numbers further up for tall characters (base it on sprite size, not entity size)
@@ -39,11 +34,8 @@
 * goblin death sounds
 
 #### Features:
-* Turn main code into a state machine:
-    * "Setup": Choosing hero and map - this is the initial state unless flags are passed in
-    * "Main": main game loop is run - current main.py minus the handling of "pause"
-    * "Paused": gameplay is paused, and maybe some info is shown
-    * "Game over": player has completed the main objective. This is the final state
+* right click items to swap them between inventory and equipped
+* allow some type of items to be stacked in inventory (gold nugget and sapphire)
 * give enemies 'armor'?
     * could add effects that reduce armor on enemies
     * makes it more difficult to clear endgame content on low level

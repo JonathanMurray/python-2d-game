@@ -144,13 +144,6 @@ def register_all_game_data():
     register_hero_rogue()
     register_hero_god()
 
-    register_dwarf_npc()
-    register_nomad_npc()
-    register_ninja_npc()
-    register_sorcerer_npc()
-    register_young_sorceress_npc()
-    register_warpstone_merchant_npc()
-
     register_messengers_hat_item()
     register_amulet_of_mana_item()
     register_sword_of_leeching_item()
@@ -184,6 +177,15 @@ def register_all_game_data():
     register_gladiator_armor()
     register_noble_defender()
     register_frog_item()
+
+    # Register items before NPCs as vendors may rely on item data
+
+    register_dwarf_npc()
+    register_nomad_npc()
+    register_ninja_npc()
+    register_sorcerer_npc()
+    register_young_sorceress_npc()
+    register_warpstone_merchant_npc()
 
     register_decorations()
     register_map_editor_icons()

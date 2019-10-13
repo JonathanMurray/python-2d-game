@@ -521,20 +521,6 @@
       ]
     },
     {
-      "npc_type": "CHEST",
-      "position": [
-        1825,
-        175
-      ]
-    },
-    {
-      "npc_type": "CHEST",
-      "position": [
-        50,
-        1875
-      ]
-    },
-    {
       "npc_type": "RAT_1",
       "position": [
         -850,
@@ -68136,6 +68122,20 @@
       "position": [
         5300,
         2775
+      ]
+    }
+  ],
+  "chests": [
+    {
+      "position": [
+        1825,
+        200
+      ]
+    },
+    {
+      "position": [
+        50,
+        1875
       ]
     }
   ]

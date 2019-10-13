@@ -1,13 +1,12 @@
 import random
-from typing import Optional
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
-    UiIconSprite, ItemType, PeriodicTimer
+    ItemType, PeriodicTimer
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
-from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
-    register_npc_dialog_data, DialogData, DialogOptionData
+from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, register_npc_dialog_data, DialogData, \
+    DialogOptionData, sell_item_option
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
 ITEM_TYPE_GOLD = ItemType.GOLD_NUGGET
@@ -28,23 +27,6 @@ class NpcMind(AbstractNpcMind):
                 npc.world_entity.set_moving_in_dir(direction)
 
 
-class BuyTreasure(AbstractNpcAction):
-
-    def __init__(self, item_type: ItemType, price: int, name: str):
-        self.item_type = item_type
-        self.price = price
-        self.name = name
-
-    def act(self, game_state: GameState) -> Optional[str]:
-        player_has_it = game_state.player_state.item_inventory.has_item_in_inventory(self.item_type)
-        if player_has_it:
-            game_state.player_state.item_inventory.lose_item_from_inventory(self.item_type)
-            game_state.player_state.money += self.price
-            return "Sold " + self.name
-        else:
-            return "You don't have that!"
-
-
 def register_dwarf_npc():
     size = (30, 30)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.NEUTRAL_NPC_DWARF
@@ -53,17 +35,10 @@ def register_dwarf_npc():
     register_npc_data(npc_type, NpcData.neutral(sprite, size, movement_speed))
     register_npc_behavior(npc_type, NpcMind)
     introduction = "Hello there. I'm always looking for treasure. If you find any, we might be able to strike a deal!"
-    name_formatter = "{:<13}"
-    cost_formatter = "[{} gold]"
-    sell_prompt = "> "
     dialog_options = [
-        DialogOptionData(sell_prompt + name_formatter.format("Gold nugget") + cost_formatter.format(20), "sell",
-                         BuyTreasure(ItemType.GOLD_NUGGET, 20, "gold nugget"),
-                         UiIconSprite.ITEM_GOLD_NUGGET),
-        DialogOptionData(sell_prompt + name_formatter.format("Saphire") + cost_formatter.format(30), "sell",
-                         BuyTreasure(ItemType.SAPHIRE, 30, "saphire"),
-                         UiIconSprite.ITEM_SAPHIRE),
-        DialogOptionData("\"Good bye\"", "cancel", None, UiIconSprite.MAP_EDITOR_TRASHCAN)]
+        sell_item_option(ItemType.GOLD_NUGGET, 20, "I'll give you good money for a nugget of pure gold!"),
+        sell_item_option(ItemType.SAPHIRE, 30, "If you find a saphire I can make you real rich!"),
+        DialogOptionData("\"Good bye\"", "cancel", None)]
     dialog_data = DialogData(PortraitIconSprite.VIKING, introduction, dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet.png")

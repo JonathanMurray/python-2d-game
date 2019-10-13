@@ -1,4 +1,3 @@
-import random
 from typing import List, Tuple
 
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect
@@ -8,7 +7,7 @@ from pythongame.core.entity_creation import create_money_pile_on_ground, create_
 from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities, \
     NpcCategory, PORTALS, ABILITIES
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
-    EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint
+    EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
 from pythongame.core.loot import LootEntry
@@ -17,7 +16,7 @@ from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vector
 from pythongame.core.player_controls import PlayerControls
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view_state import ViewState
-from pythongame.core.visual_effects import create_visual_exp_text, create_teleport_effects
+from pythongame.core.visual_effects import create_visual_exp_text, create_teleport_effects, VisualRect
 from pythongame.game_data.portals import PORTAL_DELAY
 
 
@@ -125,12 +124,33 @@ class GameEngine:
         else:
             self.view_state.set_message("Hmm... Looks suspicious!")
 
+    def handle_being_close_to_portal(self, portal: Portal):
+        # When finding a new portal out on the map, it's enough to walk close to it, to activate its sibling
+        if portal.is_enabled:
+            destination_portal = [p for p in self.game_state.portals if p.portal_id == portal.leads_to][0]
+            if not destination_portal.is_enabled:
+                play_sound(SoundId.EVENT_PORTAL_ACTIVATED)
+                self.view_state.set_message("Portal was activated")
+                destination_portal.activate(portal.world_entity.sprite)
+                self.game_state.visual_effects += create_teleport_effects(portal.world_entity.get_center_position())
+
     def use_warp_point(self, warp_point: WarpPoint):
         destination_warp_point = [w for w in self.game_state.warp_points if w != warp_point][0]
         # It's safe to teleport to warp point's position as hero and warp point entities are the exact same size
         teleport_buff_effect: AbstractBuffEffect = get_buff_effect(
             BuffType.TELEPORTING_WITH_WARP_POINT, destination_warp_point.world_entity.get_position())
         self.game_state.player_state.gain_buff_effect(teleport_buff_effect, PORTAL_DELAY)
+
+    def open_chest(self, chest: Chest):
+        loot = chest.loot_table.generate_loot()
+        chest_position = chest.world_entity.get_position()
+        self._put_loot_on_ground(chest_position, loot)
+        chest.has_been_opened = True
+        visual_effects = [
+            VisualRect((200, 0, 200), chest.world_entity.get_center_position(), 50, 100, Millis(100), 2),
+            VisualRect((200, 0, 200), chest.world_entity.get_center_position(), 50, 100, Millis(180), 3)
+        ]
+        self.game_state.visual_effects += visual_effects
 
     def run_one_frame(self, time_passed: Millis):
         for npc in self.game_state.non_player_characters:
@@ -175,6 +195,7 @@ class GameEngine:
 
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_effects()
+        self.game_state.remove_opened_chests()
 
         player_buffs_update = handle_buffs(self.game_state.player_state.active_buffs, time_passed)
         for buff in player_buffs_update.buffs_that_started:

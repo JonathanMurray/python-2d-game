@@ -37,7 +37,6 @@ class ConsumableType(Enum):
 
 
 class NpcType(Enum):
-    CHEST = 1
     NECROMANCER = 3
     WARRIOR = 4
     RAT_1 = 5
@@ -132,7 +131,6 @@ class Sprite(Enum):
     ENEMY_GOBLIN_WARLOCK = 205
     ENEMY_MUMMY = 206
     ENEMY_WARRIOR = 207
-    ENEMY_CHEST = 208
     ENEMY_GOBLIN_WORKER = 209
     ENEMY_GOBLIN_SPEARMAN = 210
     ENEMY_GOBLIN_SPEARMAN_ELITE = 211
@@ -223,6 +221,7 @@ class Sprite(Enum):
     HERO_WARRIOR = 701
     HERO_ROGUE = 702
     HERO_GOD = 703
+    CHEST = 800
 
 
 class BuffType(Enum):
@@ -336,6 +335,7 @@ class SoundId(Enum):
     EVENT_ENEMY_DIED = 103
     EVENT_PICKED_UP_MONEY = 104
     EVENT_PURCHASED_SOMETHING = 105
+    EVENT_PORTAL_ACTIVATED = 106
     WARNING = 200
     INVALID_ACTION = 201
     PLAYER_PAIN = 300
