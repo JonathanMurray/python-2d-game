@@ -722,8 +722,9 @@ class View:
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
                     tooltip = TooltipGraphics(tooltip_title, tooltip_details, tooltip_bottom_left_position)
                 elif slot_equipment_category:
-                    tooltip_title = "[" + slot_equipment_category.name + "]"
-                    tooltip_details = ["Nothing equipped"]
+                    tooltip_title = "..."  # "[" + slot_equipment_category.name + "]"
+                    tooltip_details = ["[" + slot_equipment_category.name + "]",
+                                       "You have nothing equipped. Drag an item here to equip it!"]
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
                     tooltip = TooltipGraphics(tooltip_title, tooltip_details, tooltip_bottom_left_position)
             self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type, slot_equipment_category)
