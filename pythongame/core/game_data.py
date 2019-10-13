@@ -149,7 +149,7 @@ class ItemData:
         self.entity_sprite = entity_sprite
         self.name = name
         self.description = description
-        self.item_equipment_category = item_equipment_category
+        self.item_equipment_category = item_equipment_category  # If category is None, the item can't be equipped
 
 
 class WallData:
