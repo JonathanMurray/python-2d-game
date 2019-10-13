@@ -9,6 +9,7 @@ ITEM_TYPES = [ItemType.SOLDIERS_HELMET_1, ItemType.SOLDIERS_HELMET_2, ItemType.S
 HEALTH_AMOUNTS = [10, 15, 20]
 ARMOR_BOOST = 2
 
+
 class ItemEffect(AbstractItemEffect):
 
     def __init__(self, health_amount: int, item_type: ItemType):

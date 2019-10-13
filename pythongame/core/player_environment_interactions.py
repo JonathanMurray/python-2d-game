@@ -25,8 +25,8 @@ class PlayerInteractionsState:
                     self.entity_to_interact_with = npc
                     distance_to_closest_entity = distance
 
-        lootables_on_ground: List[LootableOnGround] = \
-            game_state.items_on_ground + game_state.consumables_on_ground
+        lootables_on_ground: List[LootableOnGround] = list(game_state.items_on_ground)
+        lootables_on_ground += game_state.consumables_on_ground
         for lootable in lootables_on_ground:
             if boxes_intersect(player_entity.rect(), lootable.world_entity.rect()):
                 self.entity_to_interact_with = lootable

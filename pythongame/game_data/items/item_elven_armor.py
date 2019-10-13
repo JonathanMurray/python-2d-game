@@ -35,6 +35,7 @@ def register_elven_armor():
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
     register_item_effect(ITEM_TYPE, ItemEffect())
     name = "Elven Armor"
-    description = "Grants +" + str(ARMOR_BOOST) + " armor, " + str(MANA_REGEN_BOOST) + " mana regeneration, and +" + str(MANA_BOOST) + " max mana"
+    description = "Grants +" + str(ARMOR_BOOST) + " armor, " + str(
+        MANA_REGEN_BOOST) + " mana regeneration, and +" + str(MANA_BOOST) + " max mana"
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.CHEST)
     register_item_data(ITEM_TYPE, item_data)

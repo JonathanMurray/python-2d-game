@@ -81,6 +81,7 @@ class ActionPickHeroChange:
     def __init__(self, delta: int):
         self.delta = delta
 
+
 class ActionPickHeroAccept:
     pass
 
