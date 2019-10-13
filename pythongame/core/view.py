@@ -830,10 +830,21 @@ class View:
                    (rect_portrait_pos[0], rect_portrait_pos[1], PORTRAIT_ICON_SIZE[0], PORTRAIT_ICON_SIZE[1]), 2)
 
     def _dialog(self, dialog_graphics: DialogGraphics):
+
+        tall_detail_section = any(
+            [o.detail_body is not None or o.detail_header is not None or o.detail_ui_icon_sprite is not None
+             for o in dialog_graphics.options])
+
+        h_detail_section_expansion = 82
+
         options_margin = 10
         option_padding = 4
         h_option_line = 20
-        h_dialog_container = 310 + len(dialog_graphics.options) * (h_option_line + 2 * option_padding)
+        if tall_detail_section:
+            h_dialog_container = 310 + len(dialog_graphics.options) * (h_option_line + 2 * option_padding)
+        else:
+            h_dialog_container = 310 + len(dialog_graphics.options) * (h_option_line + 2 * option_padding) \
+                                 - h_detail_section_expansion
         rect_dialog_container = (100, 35, 500, h_dialog_container)
 
         x_left = rect_dialog_container[0]
@@ -881,20 +892,29 @@ class View:
         y_under_options = y_above_options + 2 * options_margin \
                           + len(dialog_graphics.options) * (h_option_line + 2 * option_padding)
         self._line(color_separator, (x_left, y_under_options), (x_right, y_under_options), 2)
-        y_action_text = y_under_options + 15
+
+        if tall_detail_section:
+            y_action_text = y_under_options + 15 + h_detail_section_expansion
+        else:
+            y_action_text = y_under_options + 15
+
+        if tall_detail_section:
+            if active_option.detail_ui_icon_sprite is not None:
+                active_option_image = self.images_by_ui_sprite[active_option.detail_ui_icon_sprite]
+                pos_option_image = (x_left + 6, y_under_options + 7)
+                self._image(active_option_image, pos_option_image)
+                rect_option_image = (pos_option_image[0], pos_option_image[1], UI_ICON_SIZE[0], UI_ICON_SIZE[1])
+                self._rect((150, 150, 150), rect_option_image, 1)
+            if active_option.detail_header is not None:
+                self._text(self.font_dialog, active_option.detail_header,
+                           (x_left + 14 + UI_ICON_SIZE[0] + 4, y_action_text - h_detail_section_expansion))
+            if active_option.detail_body is not None:
+                detail_body_lines = self._split_text_into_lines(active_option.detail_body, 70)
+                for i, line in enumerate(detail_body_lines):
+                    line_pos = (x_left + 10, y_action_text - h_detail_section_expansion + 35 + 20 * i)
+                    self._text(self.font_dialog_option_detail_body, line, line_pos)
         action_text = active_option.detail_action_text
-        if active_option.detail_ui_icon_sprite is not None:
-            active_option_image = self.images_by_ui_sprite[active_option.detail_ui_icon_sprite]
-            pos_option_image = (x_left + 6, y_under_options + 7)
-            self._image(active_option_image, pos_option_image)
-            rect_option_image = (pos_option_image[0], pos_option_image[1], UI_ICON_SIZE[0], UI_ICON_SIZE[1])
-            self._rect((150, 150, 150), rect_option_image, 1)
-        self._text(self.font_dialog, active_option.detail_header, (x_left + 14 + UI_ICON_SIZE[0] + 4, y_action_text))
-        if active_option.detail_body is not None:
-            detail_body_lines = self._split_text_into_lines(active_option.detail_body, 70)
-            for i, line in enumerate(detail_body_lines):
-                self._text(self.font_dialog_option_detail_body, line, (x_left + 10, y_action_text + 35 + 20 * i))
-        self._text(self.font_dialog, "[Space] : " + action_text, (x_left + 10, y_action_text + 82))
+        self._text(self.font_dialog, "[Space] : " + action_text, (x_left + 10, y_action_text))
 
     @staticmethod
     def _split_text_into_lines(full_text: str, max_line_length: int) -> List[str]:
