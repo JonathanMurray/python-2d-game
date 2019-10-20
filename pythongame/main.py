@@ -15,7 +15,7 @@ from pythongame.map_file import create_game_state_from_json_file
 from pythongame.player_file import SavedPlayerState, load_player_state_from_json_file
 from pythongame.register_game_data import register_all_game_data
 from pythongame.scene_paused import PausedScene
-from pythongame.scene_picking_hero import PickingHeroScene
+from pythongame.scene_picking_hero.scene_picking_hero import PickingHeroScene
 from pythongame.scene_playing import PlayingScene
 
 SCREEN_SIZE = (700, 700)
