@@ -1,6 +1,7 @@
 ## TODO
 
 #### Refactorings:
+* Separate code for different views (picking hero, game, paused, game editor, etc)
 * Move non-trivial logic from game_state. Prefer to have game-logic elsewhere.
 * Avoid storing EnemyMind and ProjectileController in game_state. That module should only depend on common
 * Simplify and generalise the handling of visual effects
