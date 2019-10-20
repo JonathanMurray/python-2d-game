@@ -12,7 +12,7 @@ from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerC
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory
 from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.npc_behaviors import DialogGraphics
-from pythongame.core.view_state import ViewState
+from pythongame.core.view_state import ViewState, UiToggle
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite, VisualCross
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 
@@ -36,10 +36,11 @@ DIR_FONTS = './resources/fonts/'
 
 class MouseHoverEvent:
     def __init__(self, item_slot_number: Optional[int], consumable_slot_number: Optional[int],
-                 game_world_position: Optional[Tuple[int, int]]):
+                 game_world_position: Optional[Tuple[int, int]], ui_toggle: Optional[UiToggle]):
         self.item_slot_number = item_slot_number
         self.consumable_slot_number = consumable_slot_number
         self.game_world_position = game_world_position
+        self.ui_toggle = ui_toggle
 
 
 class ImageWithRelativePosition:
@@ -182,7 +183,7 @@ class View:
     def _rect_filled(self, color, rect):
         pygame.draw.rect(self.screen, color, rect)
 
-    def _rect_transparent(self, rect, alpha, color):
+    def _rect_transparent(self, rect, alpha: int, color):
         # Using a separate surface is the only way to render a transparent rectangle
         surface = pygame.Surface((rect[2], rect[3]))
         surface.set_alpha(alpha)
@@ -450,6 +451,16 @@ class View:
                            rect[2], rect[3])
         self._rect(color, translated_rect, line_width)
 
+    def _rect_filled_in_ui(self, color, rect):
+        translated_rect = (self._translate_ui_x_to_screen(rect[0]), self._translate_ui_y_to_screen(rect[1]),
+                           rect[2], rect[3])
+        self._rect_filled(color, translated_rect)
+
+    def _rect_transparent_in_ui(self, rect, alpha: int, color):
+        translated_rect = (self._translate_ui_x_to_screen(rect[0]), self._translate_ui_y_to_screen(rect[1]),
+                           rect[2], rect[3])
+        self._rect_transparent(translated_rect, alpha, color)
+
     def _image_in_ui(self, image, position):
         self._image(image, self._translate_ui_position_to_screen(position))
 
@@ -596,6 +607,7 @@ class View:
 
         hovered_item_slot_number = None
         hovered_consumable_slot_number = None
+        hovered_ui_toggle = None
         is_mouse_hovering_ui = is_point_in_rect(mouse_screen_position, self.ui_screen_area)
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
@@ -770,7 +782,16 @@ class View:
 
         # STATS
         x_stats = 555
-        self._render_stats(player_speed_multiplier, player_state, x_stats, y_1)
+        if view_state.toggle_enabled == UiToggle.STATS:
+            self._render_stats(player_speed_multiplier, player_state, x_stats, -150)
+        is_mouse_hovering_stats_toggle = self._toggle_in_ui(
+            x_stats, y_1, "STATS", view_state.toggle_enabled == UiToggle.STATS, mouse_ui_position)
+        is_mouse_hovering_talents_toggle = self._toggle_in_ui(
+            x_stats, y_1 + 30, "TALENTS", view_state.toggle_enabled == UiToggle.TALENTS, mouse_ui_position)
+        if is_mouse_hovering_stats_toggle:
+            hovered_ui_toggle = UiToggle.STATS
+        elif is_mouse_hovering_talents_toggle:
+            hovered_ui_toggle = UiToggle.TALENTS
 
         self._rect(COLOR_BORDER, self.ui_screen_area, 1)
 
@@ -790,9 +811,19 @@ class View:
         mouse_game_world_position = None
         if not is_mouse_hovering_ui:
             mouse_game_world_position = self._translate_screen_position_to_world(mouse_screen_position)
-        return MouseHoverEvent(hovered_item_slot_number, hovered_consumable_slot_number, mouse_game_world_position)
+        return MouseHoverEvent(hovered_item_slot_number, hovered_consumable_slot_number, mouse_game_world_position,
+                               hovered_ui_toggle)
 
-    def _render_stats(self, player_speed_multiplier: float, player_state: PlayerState, x: int, y: int):
+    def _toggle_in_ui(self, x: int, y: int, text: str, enabled: bool, mouse_ui_position: Tuple[int, int]) -> bool:
+        rect = Rect(x, y, 120, 20)
+        if enabled:
+            self._rect_filled_in_ui((50, 50, 150), rect)
+        self._rect_in_ui(COLOR_WHITE, rect, 1)
+        self._text_in_ui(self.font_tooltip_details, text, (x + 20, y + 2))
+        return is_point_in_rect(mouse_ui_position, rect)
+
+    def _render_stats(self, player_speed_multiplier: float, player_state: PlayerState, x_in_ui: int, y_in_ui: int):
+        self._rect_transparent_in_ui((x_in_ui, y_in_ui, 130, 140), 120, COLOR_BLACK)
         player_life_steal = player_state.life_steal_ratio
         health_regen_text = \
             "  health reg: " + "{:.1f}".format(player_state.health_resource.base_regen)
@@ -817,12 +848,14 @@ class View:
             armor_stat_text += " +" + str(player_state.armor_bonus)
         elif player_state.armor_bonus < 0:
             armor_stat_text += " " + str(player_state.armor_bonus)
-        self._text_in_ui(self.font_stats, health_regen_text, (x, y), COLOR_WHITE)
-        self._text_in_ui(self.font_stats, mana_regen_text, (x, y + 20), COLOR_WHITE)
-        self._text_in_ui(self.font_stats, damage_stat_text, (x, y + 40), COLOR_WHITE)
-        self._text_in_ui(self.font_stats, speed_stat_text, (x, y + 60), COLOR_WHITE)
-        self._text_in_ui(self.font_stats, lifesteal_stat_text, (x, y + 80), COLOR_WHITE)
-        self._text_in_ui(self.font_stats, armor_stat_text, (x, y + 100), COLOR_WHITE)
+        x_text = x_in_ui + 5
+        y_0 = y_in_ui + 15
+        self._text_in_ui(self.font_stats, health_regen_text, (x_text, y_0), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, mana_regen_text, (x_text, y_0 + 20), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, damage_stat_text, (x_text, y_0 + 40), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, speed_stat_text, (x_text, y_0 + 60), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, lifesteal_stat_text, (x_text, y_0 + 80), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, armor_stat_text, (x_text, y_0 + 100), COLOR_WHITE)
 
     def _player_portrait(self, hero_id: HeroId, ui_position: Tuple[int, int]):
         rect_portrait_pos = self._translate_ui_position_to_screen(ui_position)

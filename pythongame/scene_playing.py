@@ -254,6 +254,9 @@ class PlayingScene:
                                                            mouse_hover_event.game_world_position)
             self.consumable_slot_being_dragged = None
 
+        if mouse_was_just_clicked and mouse_hover_event.ui_toggle is not None:
+            self.view_state.notify_toggle_was_clicked(mouse_hover_event.ui_toggle)
+
         self.view.update_display()
 
         return transition_to_pause
