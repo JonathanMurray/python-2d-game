@@ -578,7 +578,6 @@ class View:
         player_max_health = player_state.health_resource.max_value
         player_max_mana = player_state.mana_resource.max_value
         player_mana = player_state.mana_resource.value
-        player_life_steal = player_state.life_steal_ratio
         player_active_buffs = player_state.active_buffs
         consumable_slots = player_state.consumable_inventory.consumables_in_slots
         ability_cooldowns_remaining = player_state.ability_cooldowns_remaining
@@ -771,6 +770,30 @@ class View:
 
         # STATS
         x_stats = 555
+        self._render_stats(player_speed_multiplier, player_state, x_stats, y_1)
+
+        self._rect(COLOR_BORDER, self.ui_screen_area, 1)
+
+        self._rect_transparent((0, 0, 50, 20), 100, COLOR_BLACK)
+        self._text(self.font_debug_info, fps_string + " fps", (5, 3))
+
+        if message:
+            self._message(message)
+
+        if tooltip:
+            self._tooltip(tooltip)
+
+        if is_paused:
+            self._rect_transparent((0, 0, self.screen_size[0], self.screen_size[1]), 140, COLOR_BLACK)
+            self._splash_screen_text("PAUSED", self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50)
+
+        mouse_game_world_position = None
+        if not is_mouse_hovering_ui:
+            mouse_game_world_position = self._translate_screen_position_to_world(mouse_screen_position)
+        return MouseHoverEvent(hovered_item_slot_number, hovered_consumable_slot_number, mouse_game_world_position)
+
+    def _render_stats(self, player_speed_multiplier: float, player_state: PlayerState, x: int, y: int):
+        player_life_steal = player_state.life_steal_ratio
         health_regen_text = \
             "  health reg: " + "{:.1f}".format(player_state.health_resource.base_regen)
         if player_state.health_resource.regen_bonus > 0:
@@ -794,32 +817,12 @@ class View:
             armor_stat_text += " +" + str(player_state.armor_bonus)
         elif player_state.armor_bonus < 0:
             armor_stat_text += " " + str(player_state.armor_bonus)
-        self._text_in_ui(self.font_stats, health_regen_text, (x_stats, y_1), COLOR_WHITE)
-        self._text_in_ui(self.font_stats, mana_regen_text, (x_stats, y_1 + 20), COLOR_WHITE)
-        self._text_in_ui(self.font_stats, damage_stat_text, (x_stats, y_1 + 40), COLOR_WHITE)
-        self._text_in_ui(self.font_stats, speed_stat_text, (x_stats, y_1 + 60), COLOR_WHITE)
-        self._text_in_ui(self.font_stats, lifesteal_stat_text, (x_stats, y_1 + 80), COLOR_WHITE)
-        self._text_in_ui(self.font_stats, armor_stat_text, (x_stats, y_1 + 100), COLOR_WHITE)
-
-        self._rect(COLOR_BORDER, self.ui_screen_area, 1)
-
-        self._rect_transparent((0, 0, 50, 20), 100, COLOR_BLACK)
-        self._text(self.font_debug_info, fps_string + " fps", (5, 3))
-
-        if message:
-            self._message(message)
-
-        if tooltip:
-            self._tooltip(tooltip)
-
-        if is_paused:
-            self._rect_transparent((0, 0, self.screen_size[0], self.screen_size[1]), 140, COLOR_BLACK)
-            self._splash_screen_text("PAUSED", self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50)
-
-        mouse_game_world_position = None
-        if not is_mouse_hovering_ui:
-            mouse_game_world_position = self._translate_screen_position_to_world(mouse_screen_position)
-        return MouseHoverEvent(hovered_item_slot_number, hovered_consumable_slot_number, mouse_game_world_position)
+        self._text_in_ui(self.font_stats, health_regen_text, (x, y), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, mana_regen_text, (x, y + 20), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, damage_stat_text, (x, y + 40), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, speed_stat_text, (x, y + 60), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, lifesteal_stat_text, (x, y + 80), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, armor_stat_text, (x, y + 100), COLOR_WHITE)
 
     def _player_portrait(self, hero_id: HeroId, ui_position: Tuple[int, int]):
         rect_portrait_pos = self._translate_ui_position_to_screen(ui_position)
