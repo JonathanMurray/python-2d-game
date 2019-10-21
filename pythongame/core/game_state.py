@@ -340,6 +340,7 @@ class PlayerLearnedNewAbility(GainExpEvent):
     def __init__(self, ability_type: AbilityType):
         self.ability_type = ability_type
 
+
 class PlayerUnlockedNewTalent(GainExpEvent):
     pass
 
@@ -373,6 +374,7 @@ class PlayerState:
         self.level_bonus = level_bonus
         self.talents_state: TalentsState = talents_state
         self.chosen_talent_option_indices: List[int] = []
+        self.upgrades: List[HeroUpgrade] = []
 
     # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):
@@ -463,7 +465,11 @@ class PlayerState:
             self.damage_modifier_bonus += 0.1
         else:
             print("DEBUG: No immediate effect from upgrade: " + str(upgrade))
+        self.upgrades.append(upgrade)
         return option.name
+
+    def has_upgrade(self, upgrade: HeroUpgrade) -> bool:
+        return upgrade in self.upgrades
 
 
 # TODO Is there a way to handle this better in the view module? This class shouldn't need to masquerade as a WorldEntity

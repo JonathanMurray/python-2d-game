@@ -1,9 +1,9 @@
 import random
 
 from pythongame.core.ability_effects import register_ability_effect
-from pythongame.core.buff_effects import get_buff_effect
+from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
 from pythongame.core.common import Sprite, ProjectileType, AbilityType, Millis, \
-    Direction, SoundId, BuffType
+    Direction, SoundId, BuffType, PeriodicTimer, HeroUpgrade
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, SpriteSheet, \
@@ -14,10 +14,12 @@ from pythongame.core.projectile_controllers import create_projectile_controller,
     register_projectile_controller
 from pythongame.core.visual_effects import VisualCircle
 
-# Note: Projectil size must be smaller than hero entity size (otherwise you get a collision when shooting next to wall)
+# Note: Projectile size must be smaller than hero entity size (otherwise you get a collision when shooting next to wall)
 PROJECTILE_SIZE = (28, 28)
 MIN_DMG = 3
 MAX_DMG = 4
+
+BUFF_TYPE = BuffType.BURNT_BY_FIREBALL
 
 
 class ProjectileController(AbstractProjectileController):
@@ -30,10 +32,29 @@ class ProjectileController(AbstractProjectileController):
         deal_player_damage_to_enemy(game_state, npc, damage_amount)
         game_state.visual_effects.append(
             VisualCircle((250, 100, 50), npc.world_entity.get_center_position(), 22, 45, Millis(100), 0))
+        has_burn_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_FIREBALL_BURN)
+        if has_burn_upgrade:
+            npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(2500))
         projectile.has_collided_and_should_be_removed = True
 
     def apply_wall_collision(self, _game_state: GameState, projectile: Projectile):
         projectile.has_collided_and_should_be_removed = True
+
+
+class BurntByFireball(AbstractBuffEffect):
+    def __init__(self):
+        self.timer = PeriodicTimer(Millis(500))
+
+    def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
+                            time_passed: Millis):
+        if self.timer.update_and_check_if_ready(time_passed):
+            deal_player_damage_to_enemy(game_state, buffed_npc, 1)
+            game_state.visual_effects.append(
+                VisualCircle((180, 50, 50), buffed_npc.world_entity.get_center_position(), 10, 20, Millis(50), 0,
+                             buffed_entity))
+
+    def get_buff_type(self):
+        return BUFF_TYPE
 
 
 def _apply_ability(game_state: GameState) -> bool:
@@ -76,3 +97,4 @@ def register_fireball_ability():
     scaled_sprite_size = (48, 48)
     register_entity_sprite_map(Sprite.PROJECTILE_PLAYER_FIREBALL, sprite_sheet, original_sprite_size,
                                scaled_sprite_size, indices_by_dir, (-9, -9))
+    register_buff_effect(BUFF_TYPE, BurntByFireball)

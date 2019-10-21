@@ -57,7 +57,9 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
     # TODO Add more talents (unique to this hero)
     talents_state = TalentsState({
         2: TalentChoice(TalentChoiceOption("Armor", HeroUpgrade.ARMOR),
-                        TalentChoiceOption("Damage", HeroUpgrade.DAMAGE))
+                        TalentChoiceOption("Damage", HeroUpgrade.DAMAGE)),
+        4: TalentChoice(TalentChoiceOption("Burn", HeroUpgrade.ABILITY_FIREBALL_BURN),
+                        TalentChoiceOption("Stun", HeroUpgrade.ABILITY_WHIRLWIND_STUN))
     })
     return InitialPlayerStateData(
         health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor,

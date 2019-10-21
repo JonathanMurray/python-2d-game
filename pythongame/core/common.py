@@ -27,6 +27,8 @@ def get_all_directions():
 class HeroUpgrade:
     ARMOR = 1
     DAMAGE = 2
+    ABILITY_WHIRLWIND_STUN = 10
+    ABILITY_FIREBALL_BURN = 11
 
 
 class ConsumableType(Enum):
@@ -260,6 +262,7 @@ class BuffType(Enum):
     TELEPORTING_WITH_WARP_STONE = 33
     TELEPORTING_WITH_WARP_POINT = 34
     BEING_SPAWNED = 35
+    BURNT_BY_FIREBALL = 36
 
 
 class ItemType(Enum):

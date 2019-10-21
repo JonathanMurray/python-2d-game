@@ -3,7 +3,7 @@ import random
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect, register_buff_effect
 from pythongame.core.common import AbilityType, Sprite, \
-    ProjectileType, Millis, Direction, BuffType, SoundId, PeriodicTimer
+    ProjectileType, Millis, Direction, BuffType, SoundId, PeriodicTimer, HeroUpgrade
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, register_entity_sprite_map, SpriteSheet
@@ -49,7 +49,8 @@ class ProjectileController(AbstractProjectileController):
                 damage_amount = 1
                 damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, damage_amount)
                 if damage_was_dealt:
-                    if random.random() < 0.25:
+                    has_stun_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_WHIRLWIND_STUN)
+                    if has_stun_upgrade and random.random() < 0.25:
                         enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(self._stun_duration))
 
         if self.direction_change_timer.update_and_check_if_ready(time_passed):
@@ -100,7 +101,7 @@ def register_whirlwind_ability():
     cooldown = Millis(750)
 
     register_ability_effect(ability_type, _apply_ability)
-    description = "Summon a whirlwind that deals damage and has a chance to stun enemies that are hit."
+    description = "Summon a whirlwind that deals damage to enemies in its path."
     ability_data = AbilityData("Whirlwind", ui_icon_sprite, mana_cost, cooldown, description, SoundId.ABILITY_WHIRLWIND)
     register_ability_data(ability_type, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/whirlwind.png")
