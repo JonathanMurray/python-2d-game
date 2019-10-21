@@ -1,8 +1,9 @@
-from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE
+from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgrade
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
 from pythongame.core.game_state import PlayerLevelBonus
+from pythongame.core.talents import TalentsState, TalentChoice, TalentChoiceOption
 
 HERO_ID = HeroId.ROGUE
 
@@ -54,5 +55,11 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
         5: AbilityType.DASH,
         7: AbilityType.INFUSE_DAGGER
     }
+    # TODO Add more talents (unique to this hero)
+    talents_state = TalentsState({
+        2: TalentChoice(TalentChoiceOption("Armor", HeroUpgrade.ARMOR),
+                        TalentChoiceOption("Damage", HeroUpgrade.DAMAGE))
+    })
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus,
+        talents_state)

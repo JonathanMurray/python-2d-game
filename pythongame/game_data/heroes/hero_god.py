@@ -1,9 +1,10 @@
 from pythongame.core.ability_effects import register_ability_effect
-from pythongame.core.common import HeroId, PortraitIconSprite, UiIconSprite, Millis, PLAYER_ENTITY_SIZE
+from pythongame.core.common import HeroId, PortraitIconSprite, UiIconSprite, Millis, PLAYER_ENTITY_SIZE, HeroUpgrade
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData, AbilityData, register_ability_data, register_ui_icon_sprite_path
 from pythongame.core.game_state import PlayerLevelBonus, GameState
+from pythongame.core.talents import TalentsState, TalentChoiceOption, TalentChoice
 
 HERO_ID = HeroId.GOD
 
@@ -46,8 +47,13 @@ def _get_initial_player_state_god() -> InitialPlayerStateData:
     }
     abilities = [AbilityType.KILL_EVERYTHING, AbilityType.TELEPORT]
     new_level_abilities = {}
+    talents_state = TalentsState({
+        2: TalentChoice(TalentChoiceOption("Armor", HeroUpgrade.ARMOR),
+                        TalentChoiceOption("Damage", HeroUpgrade.DAMAGE))
+    })
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus,
+        talents_state)
 
 
 def _apply_ability(game_state: GameState) -> bool:

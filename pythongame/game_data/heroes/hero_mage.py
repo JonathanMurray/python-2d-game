@@ -1,8 +1,11 @@
-from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE
+from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgrade
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
 from pythongame.core.game_state import PlayerLevelBonus
+from pythongame.core.talents import TalentsState, TalentChoice, TalentChoiceOption
+
+HERO_ID = HeroId.MAGE
 
 
 def register_hero_mage():
@@ -26,7 +29,7 @@ def register_hero_mage():
                   "large groups of enemies effectively, as long as she can keep her distance..."
     hero_data = HeroData(sprite, portrait_icon_sprite, _get_initial_player_state_mage(), entity_speed,
                          PLAYER_ENTITY_SIZE, description)
-    register_hero_data(HeroId.MAGE, hero_data)
+    register_hero_data(HERO_ID, hero_data)
 
 
 def _get_initial_player_state_mage() -> InitialPlayerStateData:
@@ -51,6 +54,11 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
         5: AbilityType.ENTANGLING_ROOTS,
         7: AbilityType.CHANNEL_ATTACK
     }
+    # TODO Add more talents (unique to this hero)
+    talents_state = TalentsState({
+        2: TalentChoice(TalentChoiceOption("Armor", HeroUpgrade.ARMOR),
+                        TalentChoiceOption("Damage", HeroUpgrade.DAMAGE))
+    })
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HeroId.MAGE, armor,
-        level_bonus)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor,
+        level_bonus, talents_state)
