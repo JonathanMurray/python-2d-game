@@ -7,7 +7,8 @@ from pythongame.core.entity_creation import create_money_pile_on_ground, create_
 from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities, \
     NpcCategory, PORTALS, ABILITIES
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
-    EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest
+    EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest, \
+    PlayerUnlockedNewTalent
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
 from pythongame.core.loot import LootEntry
@@ -182,6 +183,8 @@ class GameEngine:
                     allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
                 if isinstance(event, PlayerLearnedNewAbility):
                     self.view_state.enqueue_message("New ability: " + ABILITIES[event.ability_type].name)
+                if isinstance(event, PlayerUnlockedNewTalent):
+                    self.view_state.enqueue_message("You can pick a talent!")
 
             for enemy_that_died in enemies_that_died:
                 if enemy_that_died.death_sound_id:

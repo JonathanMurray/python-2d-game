@@ -4,6 +4,7 @@ import pygame
 
 from pythongame.core.common import SceneId
 from pythongame.core.game_state import GameState
+from pythongame.core.talents import talents_graphics_from_state
 from pythongame.core.user_input import ActionExitGame, ActionPauseGame, get_main_user_inputs, ActionSaveGameState
 from pythongame.core.view import View
 from pythongame.core.view_state import ViewState
@@ -48,6 +49,10 @@ class PausedScene:
             entire_world_area=self.game_state.entire_world_area,
             entity_action_text=None)
 
+        talents_graphics = talents_graphics_from_state(
+            self.game_state.player_state.talents_state, self.game_state.player_state.level,
+            self.game_state.player_state.chosen_talent_option_indices)
+
         self.view.render_ui(
             player_state=self.game_state.player_state,
             view_state=self.view_state,
@@ -55,7 +60,8 @@ class PausedScene:
             fps_string="...",
             is_paused=True,
             mouse_screen_position=(0, 0),  # We don't bother to show tooltips etc when game is paused
-            dialog=None)  # We don't bother to show dialog etc when game is paused
+            dialog=None,  # We don't bother to show dialog etc when game is paused
+            talents=talents_graphics)
 
         self.view.update_display()
 

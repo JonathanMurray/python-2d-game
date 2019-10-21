@@ -12,6 +12,7 @@ from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerC
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory
 from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.npc_behaviors import DialogGraphics
+from pythongame.core.talents import TalentsGraphics
 from pythongame.core.view_state import ViewState, UiToggle
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite, VisualCross
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
@@ -36,11 +37,13 @@ DIR_FONTS = './resources/fonts/'
 
 class MouseHoverEvent:
     def __init__(self, item_slot_number: Optional[int], consumable_slot_number: Optional[int],
-                 game_world_position: Optional[Tuple[int, int]], ui_toggle: Optional[UiToggle]):
+                 game_world_position: Optional[Tuple[int, int]], ui_toggle: Optional[UiToggle],
+                 talent_choice_option: Optional[Tuple[int, int]]):
         self.item_slot_number = item_slot_number
         self.consumable_slot_number = consumable_slot_number
         self.game_world_position = game_world_position
         self.ui_toggle = ui_toggle
+        self.talent_choice_option = talent_choice_option  # (choice_index, option_index)
 
 
 class ImageWithRelativePosition:
@@ -583,7 +586,8 @@ class View:
             is_paused: bool,
             player_speed_multiplier: float,
             mouse_screen_position: Tuple[int, int],
-            dialog: Optional[DialogGraphics]) -> MouseHoverEvent:
+            dialog: Optional[DialogGraphics],
+            talents: TalentsGraphics) -> MouseHoverEvent:
 
         player_health = player_state.health_resource.value
         player_max_health = player_state.health_resource.max_value
@@ -608,6 +612,7 @@ class View:
         hovered_item_slot_number = None
         hovered_consumable_slot_number = None
         hovered_ui_toggle = None
+        hovered_talent_option: Optional[Tuple[int, int]] = None
         is_mouse_hovering_ui = is_point_in_rect(mouse_screen_position, self.ui_screen_area)
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
@@ -780,14 +785,18 @@ class View:
             self._stat_bar_in_ui((x_buffs, y + 20), 60, 2, buff_duration_ratios_remaining[i],
                                  (250, 250, 0), False)
 
-        # STATS
-        x_stats = 555
+        # TOGGLES
+        pos_toggled_content = (545, -180)
+        x_toggles = 555
         if view_state.toggle_enabled == UiToggle.STATS:
-            self._render_stats(player_speed_multiplier, player_state, x_stats, -150)
+            self._render_stats(player_speed_multiplier, player_state, pos_toggled_content)
+        elif view_state.toggle_enabled == UiToggle.TALENTS:
+            hovered_talent_option = self._render_talents(talents, pos_toggled_content, mouse_ui_position)
         is_mouse_hovering_stats_toggle = self._toggle_in_ui(
-            x_stats, y_1, "STATS", view_state.toggle_enabled == UiToggle.STATS, mouse_ui_position)
+            x_toggles, y_1, "STATS", view_state.toggle_enabled == UiToggle.STATS, mouse_ui_position)
         is_mouse_hovering_talents_toggle = self._toggle_in_ui(
-            x_stats, y_1 + 30, "TALENTS", view_state.toggle_enabled == UiToggle.TALENTS, mouse_ui_position)
+            x_toggles, y_1 + 30, "TALENTS", view_state.toggle_enabled == UiToggle.TALENTS,
+            mouse_ui_position)
         if is_mouse_hovering_stats_toggle:
             hovered_ui_toggle = UiToggle.STATS
         elif is_mouse_hovering_talents_toggle:
@@ -812,7 +821,7 @@ class View:
         if not is_mouse_hovering_ui:
             mouse_game_world_position = self._translate_screen_position_to_world(mouse_screen_position)
         return MouseHoverEvent(hovered_item_slot_number, hovered_consumable_slot_number, mouse_game_world_position,
-                               hovered_ui_toggle)
+                               hovered_ui_toggle, hovered_talent_option)
 
     def _toggle_in_ui(self, x: int, y: int, text: str, enabled: bool, mouse_ui_position: Tuple[int, int]) -> bool:
         rect = Rect(x, y, 120, 20)
@@ -822,8 +831,8 @@ class View:
         self._text_in_ui(self.font_tooltip_details, text, (x + 20, y + 2))
         return is_point_in_rect(mouse_ui_position, rect)
 
-    def _render_stats(self, player_speed_multiplier: float, player_state: PlayerState, x_in_ui: int, y_in_ui: int):
-        self._rect_transparent_in_ui((x_in_ui, y_in_ui, 130, 140), 120, COLOR_BLACK)
+    def _render_stats(self, player_speed_multiplier: float, player_state: PlayerState, ui_position: Tuple[int, int]):
+        self._rect_transparent_in_ui((ui_position[0], ui_position[1], 140, 140), 140, (0, 0, 30))
         player_life_steal = player_state.life_steal_ratio
         health_regen_text = \
             "  health reg: " + "{:.1f}".format(player_state.health_resource.base_regen)
@@ -848,14 +857,51 @@ class View:
             armor_stat_text += " +" + str(player_state.armor_bonus)
         elif player_state.armor_bonus < 0:
             armor_stat_text += " " + str(player_state.armor_bonus)
-        x_text = x_in_ui + 5
-        y_0 = y_in_ui + 15
+        x_text = ui_position[0] + 5
+        y_0 = ui_position[1] + 15
         self._text_in_ui(self.font_stats, health_regen_text, (x_text, y_0), COLOR_WHITE)
         self._text_in_ui(self.font_stats, mana_regen_text, (x_text, y_0 + 20), COLOR_WHITE)
         self._text_in_ui(self.font_stats, damage_stat_text, (x_text, y_0 + 40), COLOR_WHITE)
         self._text_in_ui(self.font_stats, speed_stat_text, (x_text, y_0 + 60), COLOR_WHITE)
         self._text_in_ui(self.font_stats, lifesteal_stat_text, (x_text, y_0 + 80), COLOR_WHITE)
         self._text_in_ui(self.font_stats, armor_stat_text, (x_text, y_0 + 100), COLOR_WHITE)
+
+    def _render_talents(self, talents: TalentsGraphics, ui_position: Tuple[int, int],
+                        mouse_ui_position: Tuple[int, int]) -> Optional[Tuple[int, int]]:
+
+        hovered_talent_option = None
+
+        self._rect_transparent_in_ui((ui_position[0], ui_position[1], 140, 140), 140, (0, 0, 30))
+        x_text = ui_position[0] + 15
+        y_0 = ui_position[1] + 15
+        for i, choice_graphics in enumerate(talents.choice_graphics_items):
+            y = y_0 + i * 20
+            y_text = y + 3
+            choice = choice_graphics.choice
+            rect_first = Rect(x_text - 5, y, 55, 18)
+            if is_point_in_rect(mouse_ui_position, rect_first):
+                hovered_talent_option = (i, 0)
+            rect_second = Rect(x_text - 5 + 60, y, 55, 18)
+            if is_point_in_rect(mouse_ui_position, rect_second):
+                hovered_talent_option = (i, 1)
+            if choice_graphics.chosen_index == 0:
+                self._rect_transparent_in_ui(rect_first, 100, COLOR_BLUE)
+            elif choice_graphics.chosen_index == 1:
+                self._rect_transparent_in_ui(rect_second, 100, COLOR_BLUE)
+            else:
+                self._rect_in_ui(COLOR_WHITE, rect_first, 1)
+                self._rect_in_ui(COLOR_WHITE, rect_second, 1)
+            self._text_in_ui(self.font_stats, choice.first.name, (x_text, y_text), COLOR_WHITE)
+            self._text_in_ui(self.font_stats, choice.second.name, (x_text + 60, y_text), COLOR_WHITE)
+
+        if talents.choice_graphics_items:
+            player_can_choose = talents.choice_graphics_items[-1].chosen_index is None
+            if player_can_choose:
+                self._text_in_ui(self.font_stats, "Choose a talent!", (x_text, ui_position[1] + 120))
+        else:
+            self._text_in_ui(self.font_stats, "No talents", (x_text, ui_position[1] + 120))
+
+        return hovered_talent_option
 
     def _player_portrait(self, hero_id: HeroId, ui_position: Tuple[int, int]):
         rect_portrait_pos = self._translate_ui_position_to_screen(ui_position)

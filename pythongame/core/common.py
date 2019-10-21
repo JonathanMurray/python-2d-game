@@ -24,6 +24,11 @@ def get_all_directions():
     return [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT]
 
 
+class HeroUpgrade:
+    ARMOR = 1
+    DAMAGE = 2
+
+
 class ConsumableType(Enum):
     HEALTH_LESSER = 1
     HEALTH = 2

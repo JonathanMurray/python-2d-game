@@ -10,6 +10,7 @@ from pythongame.core.item_inventory import ItemInventory
 from pythongame.core.loot import LootTable
 from pythongame.core.math import boxes_intersect, rects_intersect, get_position_from_center_position, \
     translate_in_direction, is_x_and_y_within_distance
+from pythongame.core.talents import TalentsState, TalentChoice
 
 GRID_CELL_WIDTH = 25
 
@@ -339,12 +340,15 @@ class PlayerLearnedNewAbility(GainExpEvent):
     def __init__(self, ability_type: AbilityType):
         self.ability_type = ability_type
 
+class PlayerUnlockedNewTalent(GainExpEvent):
+    pass
+
 
 class PlayerState:
     def __init__(self, health_resource: HealthOrManaResource, mana_resource: HealthOrManaResource,
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
                  item_inventory: ItemInventory, new_level_abilities: Dict[int, AbilityType], hero_id: HeroId,
-                 armor: int, level_bonus: PlayerLevelBonus):
+                 armor: int, level_bonus: PlayerLevelBonus, talents_state: TalentsState):
         self.health_resource: HealthOrManaResource = health_resource
         self.mana_resource: HealthOrManaResource = mana_resource
         self.consumable_inventory = consumable_inventory
@@ -367,6 +371,8 @@ class PlayerState:
         self.base_armor: int = armor  # depends on which hero is being played
         self.armor_bonus: int = 0  # affected by items/buffs. [Change it additively]
         self.level_bonus = level_bonus
+        self.talents_state: TalentsState = talents_state
+        self.chosen_talent_option_indices: List[int] = []
 
     # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):
@@ -402,6 +408,8 @@ class PlayerState:
                 new_ability = self.new_level_abilities[self.level]
                 self.gain_ability(new_ability)
                 events.append(PlayerLearnedNewAbility(new_ability))
+            if self.level in self.talents_state.choices_by_level:
+                events.append(PlayerUnlockedNewTalent())
         return events
 
     def lose_exp_from_death(self):
@@ -436,6 +444,26 @@ class PlayerState:
                     buff.force_cancel()
         for item_effect in self.item_inventory.get_all_active_item_effects():
             item_effect.item_handle_event(event, game_state)
+
+    def choose_talent(self, option_index: int) -> str:
+        self.chosen_talent_option_indices.append(option_index)
+        choice_index = len(self.chosen_talent_option_indices) - 1
+        choices: List[TalentChoice] = [choice for level, choice in sorted(self.talents_state.choices_by_level.items())]
+        choice = choices[choice_index]
+        if option_index == 0:
+            option = choice.first
+        elif option_index == 1:
+            option = choice.second
+        else:
+            raise Exception("Illegal talent choice option: " + str(option_index))
+        upgrade = option.upgrade
+        if upgrade == HeroUpgrade.ARMOR:
+            self.armor_bonus += 1
+        elif upgrade == HeroUpgrade.DAMAGE:
+            self.damage_modifier_bonus += 0.1
+        else:
+            print("DEBUG: No immediate effect from upgrade: " + str(upgrade))
+        return option.name
 
 
 # TODO Is there a way to handle this better in the view module? This class shouldn't need to masquerade as a WorldEntity

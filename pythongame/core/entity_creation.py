@@ -1,6 +1,7 @@
 from typing import Tuple
 
-from pythongame.core.common import NpcType, Direction, Sprite, ItemType, ConsumableType, WallType, PortalId, HeroId
+from pythongame.core.common import NpcType, Direction, Sprite, ItemType, ConsumableType, WallType, PortalId, HeroId, \
+    HeroUpgrade
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, ITEMS, CONSUMABLES, POTION_ENTITY_SIZE, \
     WALLS, PORTALS, HEROES, NpcData
@@ -10,6 +11,7 @@ from pythongame.core.item_inventory import ItemInventory, ItemInventorySlot, Ite
 from pythongame.core.math import get_position_from_center_position
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.talents import TalentsState, TalentChoice, TalentChoiceOption
 from pythongame.game_data.enemies.enemy_chest import CHEST_ENTITY_SIZE, CHEST_LOOT
 
 # TODO handle this (global path finder) in a better way!
@@ -94,9 +96,14 @@ def create_player_state(hero_id: HeroId) -> PlayerState:
     item_inventory = ItemInventory(item_slots)
     health_resource = HealthOrManaResource(data.health, 0)
     mana_resource = HealthOrManaResource(data.mana, data.mana_regen)
+    # TODO Make talents hero specific
+    talents_state = TalentsState({
+        2: TalentChoice(TalentChoiceOption("Armor", HeroUpgrade.ARMOR),
+                        TalentChoiceOption("Damage", HeroUpgrade.DAMAGE))
+    })
     return PlayerState(
-        health_resource, mana_resource, consumable_inventory, data.abilities,
-        item_inventory, data.new_level_abilities, data.hero_id, data.armor, data.level_bonus)
+        health_resource, mana_resource, consumable_inventory, data.abilities, item_inventory, data.new_level_abilities,
+        data.hero_id, data.armor, data.level_bonus, talents_state)
 
 
 def create_warp_point(center_pos: Tuple[int, int], size: Tuple[int, int]) -> WarpPoint:
