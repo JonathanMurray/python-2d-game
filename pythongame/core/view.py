@@ -786,7 +786,7 @@ class View:
                                  (250, 250, 0), False)
 
         # TOGGLES
-        pos_toggled_content = (545, -180)
+        pos_toggled_content = (545, -280)
         x_toggles = 555
         if view_state.toggle_enabled == UiToggle.STATS:
             self._render_stats(player_speed_multiplier, player_state, pos_toggled_content)
@@ -871,37 +871,50 @@ class View:
 
         hovered_talent_option = None
 
-        self._rect_transparent_in_ui((ui_position[0], ui_position[1], 140, 140), 140, (0, 0, 30))
+        rect_container = ui_position[0], ui_position[1], 140, 220
+        self._rect_transparent_in_ui(rect_container, 140, (0, 0, 30))
         x_text = ui_position[0] + 15
         y_0 = ui_position[1] + 15
         for i, choice_graphics in enumerate(talents.choice_graphics_items):
-            y = y_0 + i * 20
-            y_text = y + 3
+            y = y_0 + i * (UI_ICON_SIZE[1] + 30)
+            y_icon = y + 3
             choice = choice_graphics.choice
-            rect_first = Rect(x_text - 5, y, 55, 18)
-            if is_point_in_rect(mouse_ui_position, rect_first):
+            self._text_in_ui(self.font_stats, choice.first.name, (x_text, y_icon + UI_ICON_SIZE[1] + 5), COLOR_WHITE)
+            self._text_in_ui(self.font_stats, choice.second.name, (x_text + 60, y_icon + UI_ICON_SIZE[1] + 5),
+                             COLOR_WHITE)
+            is_mouse_hovering_first = self._render_talent_icon(
+                choice.first.ui_icon_sprite, (x_text, y_icon), choice_graphics.chosen_index == 0, mouse_ui_position)
+            is_mouse_hovering_second = self._render_talent_icon(
+                choice.second.ui_icon_sprite, (x_text + 60, y_icon), choice_graphics.chosen_index == 1,
+                mouse_ui_position)
+
+            if is_mouse_hovering_first:
                 hovered_talent_option = (i, 0)
-            rect_second = Rect(x_text - 5 + 60, y, 55, 18)
-            if is_point_in_rect(mouse_ui_position, rect_second):
+            elif is_mouse_hovering_second:
                 hovered_talent_option = (i, 1)
-            if choice_graphics.chosen_index == 0:
-                self._rect_transparent_in_ui(rect_first, 100, COLOR_BLUE)
-            elif choice_graphics.chosen_index == 1:
-                self._rect_transparent_in_ui(rect_second, 100, COLOR_BLUE)
-            else:
-                self._rect_in_ui(COLOR_WHITE, rect_first, 1)
-                self._rect_in_ui(COLOR_WHITE, rect_second, 1)
-            self._text_in_ui(self.font_stats, choice.first.name, (x_text, y_text), COLOR_WHITE)
-            self._text_in_ui(self.font_stats, choice.second.name, (x_text + 60, y_text), COLOR_WHITE)
+
+        y_bot_text = rect_container[1] + rect_container[3] - 20
 
         if talents.choice_graphics_items:
             player_can_choose = talents.choice_graphics_items[-1].chosen_index is None
             if player_can_choose:
-                self._text_in_ui(self.font_stats, "Choose a talent!", (x_text, ui_position[1] + 120))
+                self._text_in_ui(self.font_stats, "Choose a talent!", (x_text, y_bot_text))
         else:
-            self._text_in_ui(self.font_stats, "No talents", (x_text, ui_position[1] + 120))
+            self._text_in_ui(self.font_stats, "No talents", (x_text, y_bot_text))
 
         return hovered_talent_option
+
+    def _render_talent_icon(self, ui_icon_sprite: UiIconSprite, position: Tuple[int, int], chosen: bool,
+                            mouse_ui_position: Tuple[int, int]) -> bool:
+        translated_pos = self._translate_ui_position_to_screen(position)
+        rect = (translated_pos[0], translated_pos[1], UI_ICON_SIZE[0], UI_ICON_SIZE[1])
+        self._rect_filled(COLOR_BLACK, rect)
+        image = self.images_by_ui_sprite[ui_icon_sprite]
+        self._image(image, translated_pos)
+        color_outline = COLOR_HIGHLIGHTED_ICON if chosen else COLOR_WHITE
+        width_outline = 2 if chosen else 1
+        self._rect(color_outline, rect, width_outline)
+        return is_point_in_rect(mouse_ui_position, Rect(position[0], position[1], UI_ICON_SIZE[0], UI_ICON_SIZE[1]))
 
     def _player_portrait(self, hero_id: HeroId, ui_position: Tuple[int, int]):
         rect_portrait_pos = self._translate_ui_position_to_screen(ui_position)

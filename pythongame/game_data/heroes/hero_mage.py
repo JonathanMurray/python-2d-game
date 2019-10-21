@@ -1,4 +1,4 @@
-from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgrade
+from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgrade, UiIconSprite
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
@@ -56,10 +56,10 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
     }
     # TODO Add more talents (unique to this hero)
     talents_state = TalentsState({
-        2: TalentChoice(TalentChoiceOption("Armor", HeroUpgrade.ARMOR),
-                        TalentChoiceOption("Damage", HeroUpgrade.DAMAGE)),
-        4: TalentChoice(TalentChoiceOption("Burn", HeroUpgrade.ABILITY_FIREBALL_BURN),
-                        TalentChoiceOption("Stun", HeroUpgrade.ABILITY_WHIRLWIND_STUN))
+        2: TalentChoice(TalentChoiceOption("Armor", HeroUpgrade.ARMOR, UiIconSprite.ITEM_ZULS_AEGIS),
+                        TalentChoiceOption("Damage", HeroUpgrade.DAMAGE, UiIconSprite.ITEM_ROYAL_SWORD)),
+        4: TalentChoice(TalentChoiceOption("Burn", HeroUpgrade.ABILITY_FIREBALL_BURN, UiIconSprite.ABILITY_FIREBALL),
+                        TalentChoiceOption("Stun", HeroUpgrade.ABILITY_WHIRLWIND_STUN, UiIconSprite.ABILITY_WHIRLWIND))
     })
     return InitialPlayerStateData(
         health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor,

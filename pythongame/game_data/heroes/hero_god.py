@@ -48,8 +48,8 @@ def _get_initial_player_state_god() -> InitialPlayerStateData:
     abilities = [AbilityType.KILL_EVERYTHING, AbilityType.TELEPORT]
     new_level_abilities = {}
     talents_state = TalentsState({
-        2: TalentChoice(TalentChoiceOption("Armor", HeroUpgrade.ARMOR),
-                        TalentChoiceOption("Damage", HeroUpgrade.DAMAGE))
+        2: TalentChoice(TalentChoiceOption("Armor", HeroUpgrade.ARMOR, UiIconSprite.ITEM_ZULS_AEGIS),
+                        TalentChoiceOption("Damage", HeroUpgrade.DAMAGE, UiIconSprite.ITEM_ROYAL_SWORD))
     })
     return InitialPlayerStateData(
         health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus,

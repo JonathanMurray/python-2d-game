@@ -1,12 +1,13 @@
 from typing import Dict, List, Optional
 
-from pythongame.core.common import HeroUpgrade
+from pythongame.core.common import HeroUpgrade, UiIconSprite
 
 
 class TalentChoiceOption:
-    def __init__(self, name: str, upgrade: HeroUpgrade):
+    def __init__(self, name: str, upgrade: HeroUpgrade, ui_icon_sprite: UiIconSprite):
         self.name = name
         self.upgrade = upgrade
+        self.ui_icon_sprite = ui_icon_sprite
 
 
 class TalentChoice:
