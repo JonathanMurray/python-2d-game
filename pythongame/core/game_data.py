@@ -144,12 +144,12 @@ class ConsumableData:
 
 
 class ItemData:
-    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Sprite, name: str, description: str,
+    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Sprite, name: str, description_lines: List[str],
                  item_equipment_category: Optional[ItemEquipmentCategory] = None):
         self.icon_sprite = icon_sprite
         self.entity_sprite = entity_sprite
         self.name = name
-        self.description = description
+        self.description_lines: List[str] = description_lines
         self.item_equipment_category = item_equipment_category  # If category is None, the item can't be equipped
 
 

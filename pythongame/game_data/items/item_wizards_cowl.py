@@ -32,6 +32,6 @@ def register_wizards_cowl():
         sprite, SpriteInitializer("resources/graphics/item_wizards_cowl.png", ITEM_ENTITY_SIZE))
     register_item_effect(ITEM_TYPE, ItemEffect(MANA_AMOUNT_ON_KILL, ITEM_TYPE))
     name = "Wizard's Cowl"
-    description = "Grants +" + str(MANA_AMOUNT_ON_KILL) + " mana on kills"
+    description = ["On kill: restore " + str(MANA_AMOUNT_ON_KILL) + " mana"]
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.HEAD)
     register_item_data(ITEM_TYPE, item_data)

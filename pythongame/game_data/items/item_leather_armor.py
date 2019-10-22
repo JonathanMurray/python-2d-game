@@ -29,6 +29,6 @@ def register_leather_armor_item():
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
     register_item_effect(ITEM_TYPE, ItemEffect())
     name = "Leather Armor"
-    description = "Grants +" + str(ARMOR_BOOST) + " armor"
+    description = [str(ARMOR_BOOST) + " armor"]
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.CHEST)
     register_item_data(ITEM_TYPE, item_data)

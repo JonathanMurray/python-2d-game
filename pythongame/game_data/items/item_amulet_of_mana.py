@@ -36,6 +36,6 @@ def register_amulet_of_mana_item():
         mana_regen_boost = MANA_REGEN_BOOSTS[i]
         register_item_effect(item_type, ItemEffect(mana_regen_boost, item_type))
         name = "Amulet of Mana (" + str(i + 1) + ")"
-        description = "Grants +" + str(mana_regen_boost) + " mana regeneration"
+        description = ["+" + str(mana_regen_boost) + " mana regen"]
         item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.NECK)
         register_item_data(item_type, item_data)

@@ -54,10 +54,10 @@ class ImageWithRelativePosition:
 
 # Used to display some text above an NPC like "[Space] talk"
 class EntityActionText:
-    def __init__(self, entity: WorldEntity, text: str, details: Optional[str]):
-        self.entity = entity
-        self.text = text
-        self.details = details
+    def __init__(self, entity: WorldEntity, text: str, details: List[str]):
+        self.entity: WorldEntity = entity
+        self.text: str = text
+        self.details: List[str] = details
 
 
 class TooltipGraphics:
@@ -512,7 +512,9 @@ class View:
     def _entity_action_text(self, entity_action_text: EntityActionText):
         entity_center_pos = self._translate_world_position_to_screen(entity_action_text.entity.get_center_position())
         text = entity_action_text.text
-        detail_lines = self._split_text_into_lines(entity_action_text.details, 30) if entity_action_text.details else []
+        detail_lines = []
+        for detail_entry in entity_action_text.details:
+            detail_lines += self._split_text_into_lines(detail_entry, 30)
         if detail_lines:
             line_length = max(max([len(line) for line in detail_lines]), len(text))
         else:
@@ -737,7 +739,7 @@ class View:
                     tooltip_details = []
                     if item_data.item_equipment_category:
                         tooltip_details.append("[" + item_data.item_equipment_category.name + "]")
-                    tooltip_details.append(item_data.description)
+                    tooltip_details += item_data.description_lines
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
                     tooltip = TooltipGraphics(tooltip_title, tooltip_details, tooltip_bottom_left_position)
                 elif slot_equipment_category:

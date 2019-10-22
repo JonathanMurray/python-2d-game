@@ -18,5 +18,5 @@ def register_frog_item():
     register_item_effect(ITEM_TYPE, ItemEffect())
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    description = "Who could this belong to?"
+    description = ["Who could this belong to?"]
     register_item_data(ITEM_TYPE, ItemData(ui_icon_sprite, sprite, "Frog", description))

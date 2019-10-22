@@ -27,6 +27,7 @@ def register_staff_of_fire_item():
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/item_staff_of_fire.png")
     register_entity_sprite_initializer(
         sprite, SpriteInitializer("resources/graphics/item_staff_of_fire.png", ITEM_ENTITY_SIZE))
-    description = "[Mage] Increases the damage of your fireball ability by " + str(FIREBALL_DAMAGE_BOOST)
+    description = ["(Only usable by mage)",
+                   "Increases the damage of your fireball ability by " + str(FIREBALL_DAMAGE_BOOST)]
     item_data = ItemData(ui_icon_sprite, sprite, "Staff of Fire", description, ItemEquipmentCategory.MAIN_HAND)
     register_item_data(ITEM_TYPE, item_data)

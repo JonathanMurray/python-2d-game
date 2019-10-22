@@ -33,6 +33,7 @@ def register_wand_item():
         sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
     register_item_effect(ITEM_TYPE, ItemEffect())
     name = "Wizard's wand"
-    description = "Grants " + str(MANA_REGEN_BONUS) + " mana regeneration and +" + str(MAX_MANA_BONUS) + " max mana"
+    description = ["+" + str(MANA_REGEN_BONUS) + " mana regen",
+                   "+" + str(MAX_MANA_BONUS) + " max mana"]
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.MAIN_HAND)
     register_item_data(ITEM_TYPE, item_data)

@@ -37,6 +37,6 @@ def register_orb_of_life_item():
         bonus = BONUSES[i]
         register_item_effect(item_type, ItemEffect(bonus, item_type))
         name = "Orb of Life (" + str(i + 1) + ")"
-        description = "Grants +" + str(int(round(bonus * 100))) + "% life steal"
+        description = ["+" + str(int(round(bonus * 100))) + "% life steal"]
         item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.OFF_HAND)
         register_item_data(item_type, item_data)

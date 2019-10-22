@@ -1,5 +1,5 @@
 import sys
-from typing import Optional, Any
+from typing import Optional, Any, List
 
 import pygame
 
@@ -278,23 +278,23 @@ class PlayingScene:
 
 def get_entity_action_text(ready_entity: Any, is_shift_key_held_down: bool) -> EntityActionText:
     if isinstance(ready_entity, NonPlayerCharacter):
-        return EntityActionText(ready_entity.world_entity, "[Space] ...", None)
+        return EntityActionText(ready_entity.world_entity, "[Space] ...", [])
     elif isinstance(ready_entity, LootableOnGround):
         loot_name = _get_loot_name(ready_entity)
         if is_shift_key_held_down:
-            loot_details = "> " + _get_loot_details(ready_entity)
+            loot_details = _get_loot_details(ready_entity)
         else:
-            loot_details = None
+            loot_details = []
         return EntityActionText(ready_entity.world_entity, "[Space] " + loot_name, loot_details)
     elif isinstance(ready_entity, Portal):
         if ready_entity.is_enabled:
-            return EntityActionText(ready_entity.world_entity, "[Space] Warp", None)
+            return EntityActionText(ready_entity.world_entity, "[Space] Warp", [])
         else:
-            return EntityActionText(ready_entity.world_entity, "[Space] ???", None)
+            return EntityActionText(ready_entity.world_entity, "[Space] ???", [])
     elif isinstance(ready_entity, WarpPoint):
-        return EntityActionText(ready_entity.world_entity, "[Space] Warp", None)
+        return EntityActionText(ready_entity.world_entity, "[Space] Warp", [])
     elif isinstance(ready_entity, Chest):
-        return EntityActionText(ready_entity.world_entity, "[Space] Open", None)
+        return EntityActionText(ready_entity.world_entity, "[Space] Open", [])
     else:
         raise Exception("Unhandled entity: " + str(ready_entity))
 
@@ -306,11 +306,11 @@ def _get_loot_name(lootable: LootableOnGround) -> str:
         return ITEMS[lootable.item_type].name
 
 
-def _get_loot_details(lootable: LootableOnGround) -> str:
+def _get_loot_details(lootable: LootableOnGround) -> List[str]:
     if isinstance(lootable, ConsumableOnGround):
-        return CONSUMABLES[lootable.consumable_type].description
+        return [CONSUMABLES[lootable.consumable_type].description]
     if isinstance(lootable, ItemOnGround):
-        return ITEMS[lootable.item_type].description
+        return ITEMS[lootable.item_type].description_lines
 
 
 def exit_game():

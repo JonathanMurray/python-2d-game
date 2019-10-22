@@ -37,6 +37,6 @@ def register_orb_of_the_magi_item():
         bonus = MULTIPLIER_BONUSES[i]
         register_item_effect(item_type, ItemEffect(bonus, item_type))
         name = "Orb of the Magi (" + str(i + 1) + ")"
-        description = "Grants +" + str(int(round(bonus * 100))) + "% dmg"
+        description = ["+" + str(int(round(bonus * 100))) + "% damage"]
         item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.OFF_HAND)
         register_item_data(item_type, item_data)

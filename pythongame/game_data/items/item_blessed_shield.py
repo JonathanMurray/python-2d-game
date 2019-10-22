@@ -45,7 +45,7 @@ def register_blessed_shield_item():
         proc_chance = PROC_CHANCES[i]
         register_item_effect(item_type, ItemEffect(proc_chance, item_type))
         name = "Blessed Shield (" + str(i + 1) + ")"
-        description = "Gives +" + str(ARMOR_BOOST) + " armor and {:.0f}".format(
-            proc_chance * 100) + "% chance to gain 1 health when attacked"
+        description = [str(ARMOR_BOOST) + " armor",
+                       "{:.0f}".format(proc_chance * 100) + "% on hit: gain 1 health"]
         item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.OFF_HAND)
         register_item_data(item_type, item_data)

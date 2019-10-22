@@ -39,6 +39,7 @@ def register_soldiers_helmet_item():
         health_amount = HEALTH_AMOUNTS[i]
         register_item_effect(item_type, ItemEffect(health_amount, item_type))
         name = "Soldier's Helmet (" + str(i + 1) + ")"
-        description = "Grants +" + str(ARMOR_BOOST) + " armor and +" + str(health_amount) + " max health"
+        description = [str(ARMOR_BOOST) + " armor",
+                       "+" + str(health_amount) + " max health"]
         item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.HEAD)
         register_item_data(item_type, item_data)

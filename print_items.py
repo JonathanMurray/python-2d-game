@@ -15,7 +15,7 @@ def print_items():
         print(category.name + ":")
         print("- - - - -")
         for item_type, item_data in items_with_category(category):
-            print("{:<25}".format(item_type.name) + str(item_data.description))
+            print("{:<25}".format(item_type.name) + str(item_data.description_lines))
         print("")
 
 
