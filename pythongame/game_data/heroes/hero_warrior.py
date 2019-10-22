@@ -58,7 +58,10 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
     # TODO Add more talents (unique to this hero)
     talents_state = TalentsState({
         2: TalentChoice(TalentChoiceOption("Armor", HeroUpgrade.ARMOR, UiIconSprite.ITEM_ZULS_AEGIS),
-                        TalentChoiceOption("Damage", HeroUpgrade.DAMAGE, UiIconSprite.ITEM_ROYAL_SWORD))
+                        TalentChoiceOption("Damage", HeroUpgrade.DAMAGE, UiIconSprite.ITEM_ROYAL_SWORD)),
+        4: TalentChoice(TalentChoiceOption("Melee", HeroUpgrade.ABILITY_CHARGE_MELEE, UiIconSprite.ABILITY_CHARGE),
+                        TalentChoiceOption("AoE", HeroUpgrade.ABILITY_SLASH_AOE_BONUS_DAMAGE,
+                                           UiIconSprite.ABILITY_SWORD_SLASH))
     })
     return InitialPlayerStateData(
         health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor,
