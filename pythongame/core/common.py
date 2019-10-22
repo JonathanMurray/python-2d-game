@@ -492,6 +492,7 @@ def get_random_hint():
         "Use magic statues and warpstones to teleport long distances",
         "Hover over things with the mouse cursor to get more info",
         "Drag inventory items and consumables with the mouse cursor",
-        "Equip items by dragging them to the appropriate inventory slot"
+        "Equip items by dragging them to the appropriate inventory slot",
+        "Choose talents to improve your stats and abilities"
     ]
     return random.choice(hints)
