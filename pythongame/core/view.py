@@ -786,7 +786,7 @@ class View:
                                  (250, 250, 0), False)
 
         # TOGGLES
-        pos_toggled_content = (545, -280)
+        pos_toggled_content = (545, -300)
         x_toggles = 555
         if view_state.toggle_enabled == UiToggle.STATS:
             self._render_stats(player_speed_multiplier, player_state, pos_toggled_content)
@@ -871,10 +871,13 @@ class View:
 
         hovered_talent_option = None
 
-        rect_container = ui_position[0], ui_position[1], 140, 220
+        rect_container = ui_position[0], ui_position[1], 140, 260
         self._rect_transparent_in_ui(rect_container, 140, (0, 0, 30))
-        x_text = ui_position[0] + 15
-        y_0 = ui_position[1] + 15
+
+        self._text_in_ui(self.font_tooltip_details, "TALENTS:", (ui_position[0] + 35, ui_position[1] + 10))
+
+        x_text = ui_position[0] + 22
+        y_0 = ui_position[1] + 35
         for i, choice_graphics in enumerate(talents.choice_graphics_items):
             y = y_0 + i * (UI_ICON_SIZE[1] + 30)
             y_icon = y + 3
@@ -893,14 +896,14 @@ class View:
             elif is_mouse_hovering_second:
                 hovered_talent_option = (i, 1)
 
-        y_bot_text = rect_container[1] + rect_container[3] - 20
+        y_bot_text = rect_container[1] + rect_container[3] - 26
 
         if talents.choice_graphics_items:
             player_can_choose = talents.choice_graphics_items[-1].chosen_index is None
             if player_can_choose:
                 self._text_in_ui(self.font_stats, "Choose a talent!", (x_text, y_bot_text))
         else:
-            self._text_in_ui(self.font_stats, "No talents", (x_text, y_bot_text))
+            self._text_in_ui(self.font_stats, "No talents yet!", (x_text, y_bot_text))
 
         return hovered_talent_option
 
