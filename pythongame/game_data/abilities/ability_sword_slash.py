@@ -2,7 +2,7 @@ import random
 
 from pygame.rect import Rect
 
-from pythongame.core.ability_effects import register_ability_effect
+from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import get_buff_effect
 from pythongame.core.common import AbilityType, Millis, BuffType, HeroId, UiIconSprite, SoundId
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
@@ -16,7 +16,7 @@ MIN_DMG = 2
 MAX_DMG = 5
 
 
-def _apply_ability(game_state: GameState) -> bool:
+def _apply_ability(game_state: GameState) -> AbilityResult:
     player_entity = game_state.player_entity
     rect_w = 36
     # Note: We assume that this ability is used by this specific hero
@@ -35,7 +35,7 @@ def _apply_ability(game_state: GameState) -> bool:
     game_state.visual_effects.append(
         VisualRect((100, 0, 0), slash_pos, rect_w, int(rect_w * 0.7), Millis(200), 2, None))
     game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(300))
-    return True
+    return AbilityWasUsedSuccessfully()
 
 
 def register_sword_slash_ability():

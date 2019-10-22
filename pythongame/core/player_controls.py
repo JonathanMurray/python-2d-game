@@ -1,4 +1,5 @@
-from pythongame.core.ability_effects import apply_ability_effect
+from pythongame.core.ability_effects import apply_ability_effect, AbilityFailedToExecute, \
+    AbilityWasUsedSuccessfully
 from pythongame.core.common import AbilityType, SoundId, Millis
 from pythongame.core.consumable_effects import try_consume_consumable, ConsumableWasConsumed, \
     ConsumableFailedToBeConsumed
@@ -29,20 +30,22 @@ class PlayerControls:
             player_state.ability_cooldowns_remaining[ability_type] = Millis(500)
             return
 
-        did_execute = apply_ability_effect(game_state, ability_type)
-        if did_execute:
+        ability_result = apply_ability_effect(game_state, ability_type)
+        if isinstance(ability_result, AbilityFailedToExecute):
+            view_state.set_message("Failed to execute ability!")
+            play_sound(SoundId.INVALID_ACTION)
+            player_state.ability_cooldowns_remaining[ability_type] = Millis(500)
+        elif isinstance(ability_result, AbilityWasUsedSuccessfully):
             if ability_data.sound_id:
                 play_sound(ability_data.sound_id)
             else:
                 print("WARN: No sound defined for ability: " + str(ability_type))
-            player_state.mana_resource.lose(mana_cost)
-            player_state.ability_cooldowns_remaining[ability_type] += ability_data.cooldown
+            if not ability_result.should_regain_mana_and_cd:
+                player_state.mana_resource.lose(mana_cost)
+                player_state.ability_cooldowns_remaining[ability_type] += ability_data.cooldown
             game_state.player_state.notify_about_event(PlayerUsedAbilityEvent(ability_type), game_state)
-            return
         else:
-            view_state.set_message("Failed to execute ability!")
-            play_sound(SoundId.INVALID_ACTION)
-            player_state.ability_cooldowns_remaining[ability_type] = Millis(500)
+            raise Exception("Unhandled ability effect result: " + str(ability_result))
 
     @staticmethod
     def try_use_consumable(slot_number: int, game_state: GameState, view_state: ViewState):

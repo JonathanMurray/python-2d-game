@@ -1,4 +1,4 @@
-from pythongame.core.ability_effects import register_ability_effect
+from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.common import HeroId, PortraitIconSprite, UiIconSprite, Millis, PLAYER_ENTITY_SIZE, HeroUpgrade
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_portrait_icon_sprite_path, register_hero_data, HeroData, \
@@ -56,11 +56,11 @@ def _get_initial_player_state_god() -> InitialPlayerStateData:
         talents_state)
 
 
-def _apply_ability(game_state: GameState) -> bool:
+def _apply_ability(game_state: GameState) -> AbilityResult:
     player_entity = game_state.player_entity
     for enemy in game_state.get_enemies_within_x_y_distance_of(400, player_entity.get_center_position()):
         enemy.health_resource.set_zero()
-    return True
+    return AbilityWasUsedSuccessfully()
 
 
 def _register_kill_everything_ability():

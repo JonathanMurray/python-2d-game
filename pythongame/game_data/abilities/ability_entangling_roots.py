@@ -1,4 +1,4 @@
-from pythongame.core.ability_effects import register_ability_effect
+from pythongame.core.ability_effects import register_ability_effect, AbilityResult, AbilityWasUsedSuccessfully
 from pythongame.core.buff_effects import register_buff_effect, AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import Sprite, ProjectileType, AbilityType, Millis, \
     Direction, BuffType, SoundId, UiIconSprite, PeriodicTimer, HeroUpgrade
@@ -40,7 +40,7 @@ class ProjectileController(AbstractProjectileController):
         projectile.has_collided_and_should_be_removed = True
 
 
-def _apply_ability(game_state: GameState) -> bool:
+def _apply_ability(game_state: GameState) -> AbilityResult:
     player_entity = game_state.player_entity
     distance_from_player = 35
     projectile_pos = translate_in_direction(
@@ -55,7 +55,7 @@ def _apply_ability(game_state: GameState) -> bool:
     effect_position = (projectile_pos[0] + PROJECTILE_SIZE[0] // 2,
                        projectile_pos[1] + PROJECTILE_SIZE[1] // 2)
     game_state.visual_effects.append(VisualCircle((250, 150, 50), effect_position, 9, 18, Millis(80), 0))
-    return True
+    return AbilityWasUsedSuccessfully()
 
 
 class Rooted(AbstractBuffEffect):

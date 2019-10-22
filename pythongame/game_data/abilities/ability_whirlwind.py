@@ -1,6 +1,6 @@
 import random
 
-from pythongame.core.ability_effects import register_ability_effect
+from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect, register_buff_effect
 from pythongame.core.common import AbilityType, Sprite, \
     ProjectileType, Millis, Direction, BuffType, SoundId, PeriodicTimer, HeroUpgrade
@@ -19,7 +19,7 @@ PROJECTILE_TYPE = ProjectileType.PLAYER_WHIRLWIND
 PROJECTILE_SIZE = (140, 110)
 
 
-def _apply_ability(game_state: GameState) -> bool:
+def _apply_ability(game_state: GameState) -> AbilityResult:
     player_entity = game_state.player_entity
     aoe_center_pos = translate_in_direction(player_entity.get_center_position(), player_entity.direction, 60)
     aoe_pos = get_position_from_center_position(aoe_center_pos, PROJECTILE_SIZE)
@@ -28,7 +28,7 @@ def _apply_ability(game_state: GameState) -> bool:
     projectile = Projectile(entity, create_projectile_controller(PROJECTILE_TYPE))
     game_state.projectile_entities.append(projectile)
     game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(300))
-    return True
+    return AbilityWasUsedSuccessfully()
 
 
 class ProjectileController(AbstractProjectileController):

@@ -2,7 +2,7 @@ import random
 
 from pygame.rect import Rect
 
-from pythongame.core.ability_effects import register_ability_effect
+from pythongame.core.ability_effects import register_ability_effect, AbilityResult, AbilityWasUsedSuccessfully
 from pythongame.core.buff_effects import get_buff_effect
 from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PLAYER_ENTITY_SIZE, HeroUpgrade
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
@@ -15,7 +15,7 @@ MIN_DMG = 3
 MAX_DMG = 4
 
 
-def _apply_ability(game_state: GameState) -> bool:
+def _apply_ability(game_state: GameState) -> AbilityResult:
     player_entity = game_state.player_entity
     rect_w = 28
     slash_center_pos = translate_in_direction(
@@ -47,7 +47,7 @@ def _apply_ability(game_state: GameState) -> bool:
     game_state.visual_effects.append(VisualCross((100, 100, 70), slash_center_pos, 6, Millis(100), 2))
 
     game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(250))
-    return True
+    return AbilityWasUsedSuccessfully()
 
 
 def register_shiv_ability():

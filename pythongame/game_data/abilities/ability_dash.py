@@ -2,7 +2,8 @@ from typing import Optional
 
 from pygame.rect import Rect
 
-from pythongame.core.ability_effects import register_ability_effect
+from pythongame.core.ability_effects import register_ability_effect, AbilityResult, AbilityWasUsedSuccessfully, \
+    AbilityFailedToExecute
 from pythongame.core.buff_effects import register_buff_effect, AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import AbilityType, Millis, UiIconSprite, SoundId, BuffType, HeroUpgrade
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
@@ -21,7 +22,7 @@ HEALTH_REGEN_BOOST = 5
 DAMAGE = 5
 
 
-def _apply_ability(game_state: GameState) -> bool:
+def _apply_ability(game_state: GameState) -> AbilityResult:
     player_entity = game_state.player_entity
     previous_position = player_entity.get_center_position()
 
@@ -31,7 +32,7 @@ def _apply_ability(game_state: GameState) -> bool:
         is_valid_pos = not game_state.would_entity_collide_if_new_pos(player_entity, new_position)
         if is_valid_pos:
             if _would_collide_with_wall(game_state, player_entity, distance):
-                return False
+                return AbilityFailedToExecute()
             enemy_hit = _get_enemy_that_was_hit(game_state, player_entity, distance)
             if enemy_hit:
                 deal_player_damage_to_enemy(game_state, enemy_hit, DAMAGE)
@@ -49,8 +50,8 @@ def _apply_ability(game_state: GameState) -> bool:
             game_state.visual_effects.append(VisualRect(color, previous_position, 37, 46, Millis(150), 1))
             game_state.visual_effects.append(
                 VisualCircle(color, new_center_position, 25, 40, Millis(300), 1, player_entity))
-            return True
-    return False
+            return AbilityWasUsedSuccessfully()
+    return AbilityFailedToExecute()
 
 
 def _get_enemy_that_was_hit(game_state: GameState, player_entity: WorldEntity, distance_jumped: int) \

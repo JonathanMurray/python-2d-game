@@ -1,6 +1,6 @@
 import random
 
-from pythongame.core.ability_effects import register_ability_effect
+from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
 from pythongame.core.common import Sprite, ProjectileType, AbilityType, Millis, \
     Direction, SoundId, BuffType, PeriodicTimer, HeroUpgrade
@@ -58,7 +58,7 @@ class BurntByFireball(AbstractBuffEffect):
         return BUFF_TYPE
 
 
-def _apply_ability(game_state: GameState) -> bool:
+def _apply_ability(game_state: GameState) -> AbilityResult:
     player_entity = game_state.player_entity
     distance_from_player = 35
     projectile_pos = translate_in_direction(
@@ -74,7 +74,7 @@ def _apply_ability(game_state: GameState) -> bool:
                        projectile_pos[1] + PROJECTILE_SIZE[1] // 2)
     game_state.visual_effects.append(VisualCircle((250, 150, 50), effect_position, 15, 5, Millis(300), 0))
     game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(300))
-    return True
+    return AbilityWasUsedSuccessfully()
 
 
 def _upgrade_fireball_mana_cost(_game_state: GameState):

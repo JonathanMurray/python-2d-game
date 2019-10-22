@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pythongame.core.ability_effects import register_ability_effect
+from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
 from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PeriodicTimer, HeroUpgrade
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
@@ -19,10 +19,10 @@ SPEED_DECREASE = 0.3
 ARMOR_BONUS = 5
 
 
-def _apply_ability(game_state: GameState) -> bool:
+def _apply_ability(game_state: GameState) -> AbilityResult:
     game_state.player_state.force_cancel_all_buffs()
     game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_SNEAK), DURATION_SNEAK)
-    return True
+    return AbilityWasUsedSuccessfully()
 
 
 class Sneaking(AbstractBuffEffect):

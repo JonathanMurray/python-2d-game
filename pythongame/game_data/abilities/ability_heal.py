@@ -1,4 +1,4 @@
-from pythongame.core.ability_effects import register_ability_effect
+from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, AbilityType, UiIconSprite
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
@@ -7,9 +7,9 @@ from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacte
 from pythongame.core.visual_effects import create_visual_healing_text, VisualCircle
 
 
-def _apply_heal(game_state: GameState) -> bool:
+def _apply_heal(game_state: GameState) -> AbilityResult:
     game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.HEALING_OVER_TIME), Millis(3500))
-    return True
+    return AbilityWasUsedSuccessfully()
 
 
 class HealingOverTime(AbstractBuffEffect):

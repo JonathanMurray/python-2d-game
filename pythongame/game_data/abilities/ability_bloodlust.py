@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pythongame.core.ability_effects import register_ability_effect
+from pythongame.core.ability_effects import register_ability_effect, AbilityResult, AbilityWasUsedSuccessfully
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, AbilityType, UiIconSprite, SoundId, PeriodicTimer
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
@@ -16,9 +16,9 @@ LIFE_STEAL_BONUS_RATIO = 0.15
 KILL_DURATION_INCREASE_BONUS = Millis(1000)
 
 
-def _apply_ability(game_state: GameState) -> bool:
+def _apply_ability(game_state: GameState) -> AbilityResult:
     game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_TYPE), BUFF_DURATION)
-    return True
+    return AbilityWasUsedSuccessfully()
 
 
 class BloodLust(AbstractBuffEffect):
