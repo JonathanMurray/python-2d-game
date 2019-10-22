@@ -33,6 +33,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
         if is_valid_pos:
             if _would_collide_with_wall(game_state, player_entity, distance):
                 return AbilityFailedToExecute()
+            should_regain_mana_and_cd = False
             enemy_hit = _get_enemy_that_was_hit(game_state, player_entity, distance)
             if enemy_hit:
                 deal_player_damage_to_enemy(game_state, enemy_hit, DAMAGE)
@@ -40,7 +41,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
                 has_reset_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_DASH_KILL_RESET)
                 enemy_died = enemy_hit.health_resource.is_at_or_below_zero()
                 if has_reset_upgrade and enemy_died:
-                    pass  # TODO Make it so that mana and cooldown is reset (requires refactoring first)
+                    should_regain_mana_and_cd = True
 
             player_entity.set_position(new_position)
             new_center_position = player_entity.get_center_position()
@@ -50,7 +51,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
             game_state.visual_effects.append(VisualRect(color, previous_position, 37, 46, Millis(150), 1))
             game_state.visual_effects.append(
                 VisualCircle(color, new_center_position, 25, 40, Millis(300), 1, player_entity))
-            return AbilityWasUsedSuccessfully()
+            return AbilityWasUsedSuccessfully(should_regain_mana_and_cd=should_regain_mana_and_cd)
     return AbilityFailedToExecute()
 
 

@@ -40,7 +40,11 @@ class PlayerControls:
                 play_sound(ability_data.sound_id)
             else:
                 print("WARN: No sound defined for ability: " + str(ability_type))
-            if not ability_result.should_regain_mana_and_cd:
+            if ability_result.should_regain_mana_and_cd:
+                # The cooldown is reset to almost 0. We set it to 500 to avoid it being used twice because of ability
+                # key being held down by user.
+                player_state.ability_cooldowns_remaining[ability_type] += Millis(500)
+            else:
                 player_state.mana_resource.lose(mana_cost)
                 player_state.ability_cooldowns_remaining[ability_type] += ability_data.cooldown
             game_state.player_state.notify_about_event(PlayerUsedAbilityEvent(ability_type), game_state)
