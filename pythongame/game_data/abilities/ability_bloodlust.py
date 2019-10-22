@@ -2,18 +2,23 @@ from typing import Optional
 
 from pythongame.core.ability_effects import register_ability_effect, AbilityResult, AbilityWasUsedSuccessfully
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
-from pythongame.core.common import BuffType, Millis, AbilityType, UiIconSprite, SoundId, PeriodicTimer
+from pythongame.core.common import BuffType, Millis, AbilityType, UiIconSprite, SoundId, PeriodicTimer, HeroUpgrade
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, BuffEventOutcome, \
     EnemyDiedEvent
+from pythongame.core.hero_upgrades import register_hero_upgrade_effect
 from pythongame.core.visual_effects import VisualCircle
 
 COOLDOWN = Millis(25000)
 BUFF_DURATION = Millis(10000)
 BUFF_TYPE = BuffType.BLOOD_LUST
 LIFE_STEAL_BONUS_RATIO = 0.15
-KILL_DURATION_INCREASE_BONUS = Millis(1000)
+INCREASED_DURATION_FROM_KILL = Millis(1000)
+INCREASED_DURATION_FROM_KILL_WITH_UPGRADE = Millis(1500)
+
+# This variable is updated when picking the talent
+has_blood_lust_duration_increase_upgrade = False
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
@@ -44,7 +49,16 @@ class BloodLust(AbstractBuffEffect):
 
     def buff_handle_event(self, event: Event) -> Optional[BuffEventOutcome]:
         if isinstance(event, EnemyDiedEvent):
-            return BuffEventOutcome.change_remaining_duration(KILL_DURATION_INCREASE_BONUS)
+            if has_blood_lust_duration_increase_upgrade:
+                duration_increase = INCREASED_DURATION_FROM_KILL_WITH_UPGRADE
+            else:
+                duration_increase = INCREASED_DURATION_FROM_KILL
+            return BuffEventOutcome.change_remaining_duration(duration_increase)
+
+
+def _apply_upgrade(_game_state: GameState):
+    global has_blood_lust_duration_increase_upgrade
+    has_blood_lust_duration_increase_upgrade = True
 
 
 def register_bloodlust_ability():
@@ -53,10 +67,11 @@ def register_bloodlust_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_BLOODLUST
     description = "Gain +" + str(int(LIFE_STEAL_BONUS_RATIO * 100)) + "% lifesteal for " + \
                   "{:.0f}".format(BUFF_DURATION / 1000) + "s. Duration is increased by " + \
-                  "{:.0f}".format(KILL_DURATION_INCREASE_BONUS / 1000) + "s for each enemy killed."
+                  "{:.0f}".format(INCREASED_DURATION_FROM_KILL / 1000) + "s for each enemy killed."
     register_ability_data(
         ability_type,
         AbilityData("Bloodlust", ui_icon_sprite, 25, COOLDOWN, description, SoundId.ABILITY_BLOODLUST))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_bloodlust.png")
     register_buff_effect(BUFF_TYPE, BloodLust)
     register_buff_text(BUFF_TYPE, "Bloodlust")
+    register_hero_upgrade_effect(HeroUpgrade.ABILITY_BLOODLUST_DURATION, _apply_upgrade)

@@ -7,10 +7,15 @@ from pythongame.core.buff_effects import get_buff_effect
 from pythongame.core.common import AbilityType, Millis, BuffType, HeroId, UiIconSprite, SoundId, HeroUpgrade
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
-    HEROES
+    HEROES, ABILITIES
 from pythongame.core.game_state import GameState
+from pythongame.core.hero_upgrades import register_hero_upgrade_effect
 from pythongame.core.math import translate_in_direction
 from pythongame.core.visual_effects import VisualRect
+
+ABILITY_TYPE = AbilityType.SWORD_SLASH
+COOLDOWN = Millis(700)
+UPGRADED_COOLDOWN = Millis(600)
 
 MIN_DMG = 2
 MAX_DMG = 5
@@ -43,13 +48,17 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
     return AbilityWasUsedSuccessfully()
 
 
+def _apply_upgrade(_game_state: GameState):
+    ABILITIES[ABILITY_TYPE].cooldown = UPGRADED_COOLDOWN
+
+
 def register_sword_slash_ability():
-    ability_type = AbilityType.SWORD_SLASH
     ui_icon_sprite = UiIconSprite.ABILITY_SWORD_SLASH
 
-    register_ability_effect(ability_type, _apply_ability)
+    register_ability_effect(ABILITY_TYPE, _apply_ability)
     description = "Deal " + str(MIN_DMG) + "-" + str(MAX_DMG) + " damage to enemies in front of you."
     register_ability_data(
-        ability_type,
-        AbilityData("Slash", ui_icon_sprite, 1, Millis(700), description, SoundId.ABILITY_SLASH))
+        ABILITY_TYPE,
+        AbilityData("Slash", ui_icon_sprite, 1, COOLDOWN, description, SoundId.ABILITY_SLASH))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_slash.png")
+    register_hero_upgrade_effect(HeroUpgrade.ABILITY_SLASH_CD, _apply_upgrade)
