@@ -10,11 +10,16 @@
 * Clean up enemy movement/attack logic - model as FSM?
 
 #### Game engine:
+* New control scheme: Hold left mouse button to move. Hero moves based on angle between mouse pointer and hero.
 * Use 8 directions instead of 4?
 * save game_state to file on crash
 * Make it more difficult to kite fast enemies. Enemies are too slow at attacking when they get into melee range
 
 #### Visuals:
+* improve talent graphics: somehow fit longer talent names, and show talent descriptions
+* indicate with the TALENTS toggle when the player has a talent to choose
+* Unify stat texts for items. Should be a new line for each distinct buff, rather than one long sentence.
+* Visualize bonus damage as 'crits' somehow
 * Render tiny buff icons above entities that have active buffs (like bloodlust icon from wc2)
 * gray out ability icon when player doesn't have enough mana for it
 * put dmg/healing/xp numbers further up for tall characters (base it on sprite size, not entity size)
