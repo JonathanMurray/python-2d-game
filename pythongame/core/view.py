@@ -832,7 +832,12 @@ class View:
         return is_point_in_rect(mouse_ui_position, rect)
 
     def _render_stats(self, player_speed_multiplier: float, player_state: PlayerState, ui_position: Tuple[int, int]):
-        self._rect_transparent_in_ui((ui_position[0], ui_position[1], 140, 140), 140, (0, 0, 30))
+
+        rect_container = ui_position[0], ui_position[1], 140, 170
+        self._rect_transparent_in_ui(rect_container, 140, (0, 0, 30))
+
+        self._text_in_ui(self.font_tooltip_details, "STATS:", (ui_position[0] + 45, ui_position[1] + 10))
+
         player_life_steal = player_state.life_steal_ratio
         health_regen_text = \
             "  health reg: " + "{:.1f}".format(player_state.health_resource.base_regen)
@@ -857,8 +862,8 @@ class View:
             armor_stat_text += " +" + str(player_state.armor_bonus)
         elif player_state.armor_bonus < 0:
             armor_stat_text += " " + str(player_state.armor_bonus)
-        x_text = ui_position[0] + 5
-        y_0 = ui_position[1] + 15
+        x_text = ui_position[0] + 7
+        y_0 = ui_position[1] + 45
         self._text_in_ui(self.font_stats, health_regen_text, (x_text, y_0), COLOR_WHITE)
         self._text_in_ui(self.font_stats, mana_regen_text, (x_text, y_0 + 20), COLOR_WHITE)
         self._text_in_ui(self.font_stats, damage_stat_text, (x_text, y_0 + 40), COLOR_WHITE)
