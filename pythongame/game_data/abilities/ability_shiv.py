@@ -30,8 +30,14 @@ def _apply_ability(game_state: GameState) -> bool:
 
         # Note: Dependency on other ability 'sneak'
         if game_state.player_state.has_active_buff(BuffType.SNEAKING):
+            # Talent: increase the damage bonus that Shiv gets from being used while sneaking
             has_damage_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_SHIV_SNEAK_BONUS_DAMAGE)
             damage *= 4 if has_damage_upgrade else 3.5
+        else:
+            # Talent: if attacking an enemy that's at 100% health while not sneaking, deal bonus damage
+            has_damage_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_SHIV_FULL_HEALTH_BONUS_DAMAGE)
+            if has_damage_upgrade and enemy.health_resource.is_at_max():
+                damage *= 1.5
 
         deal_player_damage_to_enemy(game_state, enemy, damage)
         break

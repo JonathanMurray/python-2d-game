@@ -4,7 +4,7 @@ from pygame.rect import Rect
 
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import register_buff_effect, AbstractBuffEffect, get_buff_effect
-from pythongame.core.common import AbilityType, Millis, UiIconSprite, SoundId, BuffType
+from pythongame.core.common import AbilityType, Millis, UiIconSprite, SoundId, BuffType, HeroUpgrade
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text
@@ -36,6 +36,11 @@ def _apply_ability(game_state: GameState) -> bool:
             if enemy_hit:
                 deal_player_damage_to_enemy(game_state, enemy_hit, DAMAGE)
                 game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_TYPE), BUFF_DURATION)
+                has_reset_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_DASH_KILL_RESET)
+                enemy_died = enemy_hit.health_resource.is_at_or_below_zero()
+                if has_reset_upgrade and enemy_died:
+                    pass  # TODO Make it so that mana and cooldown is reset (requires refactoring first)
+
             player_entity.set_position(new_position)
             new_center_position = player_entity.get_center_position()
             color = (250, 140, 80)
