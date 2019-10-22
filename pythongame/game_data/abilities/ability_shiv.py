@@ -4,7 +4,7 @@ from pygame.rect import Rect
 
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import get_buff_effect
-from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PLAYER_ENTITY_SIZE
+from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PLAYER_ENTITY_SIZE, HeroUpgrade
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path
 from pythongame.core.game_state import GameState
@@ -30,7 +30,8 @@ def _apply_ability(game_state: GameState) -> bool:
 
         # Note: Dependency on other ability 'sneak'
         if game_state.player_state.has_active_buff(BuffType.SNEAKING):
-            damage *= 3.5
+            has_damage_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_SHIV_SNEAK_BONUS_DAMAGE)
+            damage *= 4 if has_damage_upgrade else 3.5
 
         deal_player_damage_to_enemy(game_state, enemy, damage)
         break

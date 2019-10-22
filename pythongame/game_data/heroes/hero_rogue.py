@@ -58,7 +58,10 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
     # TODO Add more talents (unique to this hero)
     talents_state = TalentsState({
         2: TalentChoice(TalentChoiceOption("Armor", HeroUpgrade.ARMOR, UiIconSprite.ITEM_ZULS_AEGIS),
-                        TalentChoiceOption("Damage", HeroUpgrade.DAMAGE, UiIconSprite.ITEM_ROYAL_SWORD))
+                        TalentChoiceOption("Damage", HeroUpgrade.DAMAGE, UiIconSprite.ITEM_ROYAL_SWORD)),
+        4: TalentChoice(TalentChoiceOption("Cheap", HeroUpgrade.ABILITY_SNEAK_MANA_COST, UiIconSprite.ABILITY_SNEAK),
+                        TalentChoiceOption("Bonus", HeroUpgrade.ABILITY_SHIV_SNEAK_BONUS_DAMAGE,
+                                           UiIconSprite.ABILITY_SHIV)),
     })
     return InitialPlayerStateData(
         health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus,
