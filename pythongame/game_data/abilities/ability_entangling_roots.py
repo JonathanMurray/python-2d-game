@@ -1,11 +1,12 @@
 from pythongame.core.ability_effects import register_ability_effect
 from pythongame.core.buff_effects import register_buff_effect, AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import Sprite, ProjectileType, AbilityType, Millis, \
-    Direction, BuffType, SoundId, UiIconSprite, PeriodicTimer
+    Direction, BuffType, SoundId, UiIconSprite, PeriodicTimer, HeroUpgrade
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, SpriteSheet, \
-    register_entity_sprite_map
+    register_entity_sprite_map, ABILITIES
 from pythongame.core.game_state import GameState, WorldEntity, Projectile, NonPlayerCharacter
+from pythongame.core.hero_upgrades import register_hero_upgrade_effect
 from pythongame.core.math import get_position_from_center_position, translate_in_direction
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
@@ -79,11 +80,15 @@ class Rooted(AbstractBuffEffect):
         return BUFF_TYPE
 
 
+def _upgrade_entangling_roots_cooldown(_game_state: GameState):
+    ABILITIES[AbilityType.ENTANGLING_ROOTS].cooldown -= 4000
+
+
 def register_entangling_roots_ability():
     register_ability_effect(ABILITY_TYPE, _apply_ability)
     description = "Root an enemy for " + "{:.0f}".format(DEBUFF_DURATION / 1000) + "s and deal periodic damage."
     mana_cost = 22
-    ability_data = AbilityData("Entangling roots", ICON_SPRITE, mana_cost, Millis(8000), description,
+    ability_data = AbilityData("Entangling roots", ICON_SPRITE, mana_cost, Millis(12000), description,
                                SoundId.ABILITY_ENTANGLING_ROOTS)
     register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ICON_SPRITE, "resources/graphics/ability_icon_entangling_roots.png")
@@ -98,6 +103,7 @@ def register_entangling_roots_ability():
                                (0, 0))
     register_buff_effect(BUFF_TYPE, Rooted)
     _register_engangling_roots_effect_decoration()
+    register_hero_upgrade_effect(HeroUpgrade.ABILITY_ENTANGLING_ROOTS_COOLDOWN, _upgrade_entangling_roots_cooldown)
 
 
 def _register_engangling_roots_effect_decoration():

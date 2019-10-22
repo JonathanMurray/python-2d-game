@@ -11,6 +11,7 @@ from pythongame.core.game_data import CONSUMABLES, ITEMS
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     ConsumableOnGround, ItemOnGround, Chest
+from pythongame.core.hero_upgrades import apply_hero_upgrade
 from pythongame.core.math import get_directions_to_position
 from pythongame.core.npc_behaviors import get_dialog_data, invoke_npc_action, get_dialog_graphics, DialogGraphics
 from pythongame.core.player_environment_interactions import PlayerInteractionsState
@@ -266,7 +267,8 @@ class PlayingScene:
         if mouse_was_just_clicked and mouse_hover_event.talent_choice_option is not None:
             choice_index, option_index = mouse_hover_event.talent_choice_option
             if len(self.game_state.player_state.chosen_talent_option_indices) == choice_index:
-                name_of_picked = self.game_state.player_state.choose_talent(option_index)
+                name_of_picked, upgrade_picked = self.game_state.player_state.choose_talent(option_index)
+                apply_hero_upgrade(upgrade_picked, self.game_state)
                 self.view_state.set_message("Talent picked: " + name_of_picked)
 
         self.view.update_display()

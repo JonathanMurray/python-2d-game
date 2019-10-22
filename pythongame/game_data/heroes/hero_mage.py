@@ -59,8 +59,12 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
         2: TalentChoice(TalentChoiceOption("Armor", HeroUpgrade.ARMOR, UiIconSprite.ITEM_ZULS_AEGIS),
                         TalentChoiceOption("Damage", HeroUpgrade.DAMAGE, UiIconSprite.ITEM_ROYAL_SWORD)),
         4: TalentChoice(TalentChoiceOption("Burn", HeroUpgrade.ABILITY_FIREBALL_BURN, UiIconSprite.ABILITY_FIREBALL),
-                        TalentChoiceOption("Stun", HeroUpgrade.ABILITY_WHIRLWIND_STUN, UiIconSprite.ABILITY_WHIRLWIND))
+                        TalentChoiceOption("Stun", HeroUpgrade.ABILITY_WHIRLWIND_STUN, UiIconSprite.ABILITY_WHIRLWIND)),
+        6: TalentChoice(TalentChoiceOption("Quick", HeroUpgrade.ABILITY_ENTANGLING_ROOTS_COOLDOWN,
+                                           UiIconSprite.ABILITY_ENTANGLING_ROOTS),
+                        TalentChoiceOption("Cheap", HeroUpgrade.ABILITY_FIREBALL_MANA_COST,
+                                           UiIconSprite.ABILITY_FIREBALL))
     })
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor,
-        level_bonus, talents_state)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus,
+        talents_state)

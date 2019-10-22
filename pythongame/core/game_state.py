@@ -447,7 +447,7 @@ class PlayerState:
         for item_effect in self.item_inventory.get_all_active_item_effects():
             item_effect.item_handle_event(event, game_state)
 
-    def choose_talent(self, option_index: int) -> str:
+    def choose_talent(self, option_index: int) -> Tuple[str, HeroUpgrade]:
         self.chosen_talent_option_indices.append(option_index)
         choice_index = len(self.chosen_talent_option_indices) - 1
         choices: List[TalentChoice] = [choice for level, choice in sorted(self.talents_state.choices_by_level.items())]
@@ -458,15 +458,8 @@ class PlayerState:
             option = choice.second
         else:
             raise Exception("Illegal talent choice option: " + str(option_index))
-        upgrade = option.upgrade
-        if upgrade == HeroUpgrade.ARMOR:
-            self.armor_bonus += 1
-        elif upgrade == HeroUpgrade.DAMAGE:
-            self.damage_modifier_bonus += 0.1
-        else:
-            print("DEBUG: No immediate effect from upgrade: " + str(upgrade))
-        self.upgrades.append(upgrade)
-        return option.name
+        self.upgrades.append(option.upgrade)
+        return option.name, option.upgrade
 
     def has_upgrade(self, upgrade: HeroUpgrade) -> bool:
         return upgrade in self.upgrades

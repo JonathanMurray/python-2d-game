@@ -7,8 +7,9 @@ from pythongame.core.common import Sprite, ProjectileType, AbilityType, Millis, 
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, SpriteSheet, \
-    register_entity_sprite_map
+    register_entity_sprite_map, ABILITIES
 from pythongame.core.game_state import GameState, WorldEntity, Projectile, NonPlayerCharacter
+from pythongame.core.hero_upgrades import register_hero_upgrade_effect
 from pythongame.core.math import get_position_from_center_position, translate_in_direction
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
@@ -76,6 +77,10 @@ def _apply_ability(game_state: GameState) -> bool:
     return True
 
 
+def _upgrade_fireball_mana_cost(_game_state: GameState):
+    ABILITIES[AbilityType.FIREBALL].mana_cost -= 1
+
+
 def register_fireball_ability():
     register_ability_effect(AbilityType.FIREBALL, _apply_ability)
     description = "Shoot a fireball, dealing " + str(MIN_DMG) + "-" + str(MAX_DMG) + \
@@ -98,3 +103,4 @@ def register_fireball_ability():
     register_entity_sprite_map(Sprite.PROJECTILE_PLAYER_FIREBALL, sprite_sheet, original_sprite_size,
                                scaled_sprite_size, indices_by_dir, (-9, -9))
     register_buff_effect(BUFF_TYPE, BurntByFireball)
+    register_hero_upgrade_effect(HeroUpgrade.ABILITY_FIREBALL_MANA_COST, _upgrade_fireball_mana_cost)

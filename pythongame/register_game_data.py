@@ -42,6 +42,7 @@ from pythongame.game_data.enemies.enemy_veteran import register_veteran_enemy
 from pythongame.game_data.enemies.enemy_warrior import register_warrior_enemy
 from pythongame.game_data.enemies.enemy_warrior_king import register_warrior_king_enemy
 from pythongame.game_data.enemies.enemy_zombie import register_zombie_enemy
+from pythongame.game_data.heroes.generic_talents import register_generic_talents
 from pythongame.game_data.heroes.hero_god import register_hero_god
 from pythongame.game_data.heroes.hero_mage import register_hero_mage
 from pythongame.game_data.heroes.hero_rogue import register_hero_rogue
@@ -197,3 +198,5 @@ def register_all_game_data():
     register_portal()
 
     register_warp_point()
+
+    register_generic_talents()
