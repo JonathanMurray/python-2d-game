@@ -32,7 +32,8 @@ class PlayerControls:
 
         ability_result = apply_ability_effect(game_state, ability_type)
         if isinstance(ability_result, AbilityFailedToExecute):
-            view_state.set_message("Failed to execute ability!")
+            message = "Can't do that!" + (" (" + ability_result.reason + ")" if ability_result.reason else "")
+            view_state.set_message(message)
             play_sound(SoundId.INVALID_ACTION)
             player_state.ability_cooldowns_remaining[ability_type] = Millis(500)
         elif isinstance(ability_result, AbilityWasUsedSuccessfully):

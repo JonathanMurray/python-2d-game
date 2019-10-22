@@ -32,7 +32,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
         is_valid_pos = not game_state.would_entity_collide_if_new_pos(player_entity, new_position)
         if is_valid_pos:
             if _would_collide_with_wall(game_state, player_entity, distance):
-                return AbilityFailedToExecute()
+                return AbilityFailedToExecute(reason="Wall is blocking")
             should_regain_mana_and_cd = False
             enemy_hit = _get_enemy_that_was_hit(game_state, player_entity, distance)
             if enemy_hit:
@@ -52,7 +52,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
             game_state.visual_effects.append(
                 VisualCircle(color, new_center_position, 25, 40, Millis(300), 1, player_entity))
             return AbilityWasUsedSuccessfully(should_regain_mana_and_cd=should_regain_mana_and_cd)
-    return AbilityFailedToExecute()
+    return AbilityFailedToExecute(reason="No space")
 
 
 def _get_enemy_that_was_hit(game_state: GameState, player_entity: WorldEntity, distance_jumped: int) \

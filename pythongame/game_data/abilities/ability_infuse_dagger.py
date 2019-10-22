@@ -29,7 +29,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
     slash_rect = Rect(int(slash_center_pos[0] - rect_w / 2), int(slash_center_pos[1] - rect_w / 2), rect_w, rect_w)
     affected_enemies = game_state.get_enemy_intersecting_rect(slash_rect)
     if not affected_enemies:
-        return AbilityFailedToExecute()
+        return AbilityFailedToExecute(reason="No targets")
 
     # Note: Dependency on other ability 'sneak'
     used_from_stealth = game_state.player_state.has_active_buff(BuffType.SNEAKING)

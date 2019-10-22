@@ -1,4 +1,4 @@
-from typing import Dict, Callable
+from typing import Dict, Callable, Optional
 
 from pythongame.core.common import *
 from pythongame.core.game_state import GameState
@@ -7,8 +7,10 @@ from pythongame.core.game_state import GameState
 class AbilityResult:
     pass
 
+
 class AbilityFailedToExecute(AbilityResult):
-    pass
+    def __init__(self, reason: Optional[str] = None):
+        self.reason = reason
 
 
 class AbilityWasUsedSuccessfully(AbilityResult):
