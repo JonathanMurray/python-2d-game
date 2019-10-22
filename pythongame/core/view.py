@@ -489,20 +489,23 @@ class View:
         self._text(self.font_message, message, (x_message, y_message))
 
     def _tooltip(self, tooltip: TooltipGraphics):
-        w_tooltip = 320
-        h_tooltip = 130
+
+        detail_lines = []
+        detail_max_line_length = 32
+        for detail in tooltip.details:
+            detail_lines += self._split_text_into_lines(detail, detail_max_line_length)
+
+        w_tooltip = 260
+        h_tooltip = 60 + 17 * len(detail_lines)
         x_tooltip = tooltip.bottom_left_corner[0]
-        y_tooltip = tooltip.bottom_left_corner[1] - h_tooltip
+        y_tooltip = tooltip.bottom_left_corner[1] - h_tooltip - 3
         rect_tooltip = (x_tooltip, y_tooltip, w_tooltip, h_tooltip)
         self._rect_transparent((x_tooltip, y_tooltip, w_tooltip, h_tooltip), 200, (0, 0, 30))
-        self._rect(COLOR_WHITE, rect_tooltip, 2)
+        self._rect(COLOR_WHITE, rect_tooltip, 1)
         self._text(self.font_tooltip_header, tooltip.title, (x_tooltip + 20, y_tooltip + 15), COLOR_WHITE)
         y_separator = y_tooltip + 40
         self._line(COLOR_WHITE, (x_tooltip + 10, y_separator), (x_tooltip + w_tooltip - 10, y_separator), 1)
-        detail_lines = []
-        detail_max_line_length = 42
-        for detail in tooltip.details:
-            detail_lines += self._split_text_into_lines(detail, detail_max_line_length)
+
         for i, line in enumerate(detail_lines):
             self._text(self.font_tooltip_details, line, (x_tooltip + 20, y_tooltip + 50 + i * 18), COLOR_WHITE)
 
