@@ -31,6 +31,10 @@
 #### Sounds:
 * Abilities
     * mage channeling ability
+    * warrior stomp ability
+    * rogue shiv (randomize sound)
+    * warrior slash (randomize sound)
+    * rogue shiv from stealth (some crit sound)
 * UI
     * drop potion or item
 * using portal
