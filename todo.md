@@ -16,9 +16,7 @@
 * Make it more difficult to kite fast enemies. Enemies are too slow at attacking when they get into melee range
 
 #### Visuals:
-* improve talent graphics: somehow fit longer talent names, and show talent descriptions
 * indicate with the TALENTS toggle when the player has a talent to choose
-* Unify stat texts for items. Should be a new line for each distinct buff, rather than one long sentence.
 * Visualize bonus damage as 'crits' somehow
 * Render tiny buff icons above entities that have active buffs (like bloodlust icon from wc2)
 * gray out ability icon when player doesn't have enough mana for it
