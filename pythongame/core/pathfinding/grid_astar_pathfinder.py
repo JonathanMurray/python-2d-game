@@ -80,7 +80,6 @@ class GlobalPathFinder:
         if not size in self.astars_by_entity_size:
             self.astars_by_entity_size[size] = GridBasedAStar(self.grid, size)
 
-
     def run(self, entity_size: Tuple[int, int], start_cell: Tuple[int, int], goal_cell: Tuple[int, int]) \
             -> Optional[List[Any]]:
 

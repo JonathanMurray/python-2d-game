@@ -32,7 +32,6 @@ def register_blood_amulet():
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
     register_item_effect(ITEM_TYPE, ItemEffect())
     name = "Blood Amulet"
-    description = "Gives a " + str(int(PROC_CHANCE * 100)) + "% chance to restore " + \
-                  str(HEALTH_ON_KILL_AMOUNT) + " health on kills"
+    description = [str(int(PROC_CHANCE * 100)) + "% on kill: gain " + str(HEALTH_ON_KILL_AMOUNT) + " health"]
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.NECK)
     register_item_data(ITEM_TYPE, item_data)

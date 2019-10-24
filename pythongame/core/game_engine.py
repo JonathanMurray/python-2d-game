@@ -7,7 +7,8 @@ from pythongame.core.entity_creation import create_money_pile_on_ground, create_
 from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities, \
     NpcCategory, PORTALS, ABILITIES
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
-    EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest
+    EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest, \
+    PlayerUnlockedNewTalent
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
 from pythongame.core.loot import LootEntry
@@ -82,7 +83,7 @@ class GameEngine:
         result = self.game_state.player_state.item_inventory.try_add_item(item_effect, item_equipment_category)
         if result:
             play_sound(SoundId.EVENT_PICKED_UP)
-            self.game_state.remove_entities([item])
+            self.game_state.items_on_ground.remove(item)
             self.view_state.set_message("You picked up " + item_data.name)
             if isinstance(result, ItemWasActivated):
                 item_effect.apply_start_effect(self.game_state)
@@ -109,7 +110,7 @@ class GameEngine:
             self.game_state.player_state.consumable_inventory.add_consumable(consumable_type)
             self.view_state.set_message("You picked up " + consumable_name)
             play_sound(SoundId.EVENT_PICKED_UP)
-            self.game_state.remove_entities([consumable])
+            self.game_state.consumables_on_ground.remove(consumable)
         else:
             self.view_state.set_message("No space for " + consumable_name)
 
@@ -182,6 +183,8 @@ class GameEngine:
                     allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
                 if isinstance(event, PlayerLearnedNewAbility):
                     self.view_state.enqueue_message("New ability: " + ABILITIES[event.ability_type].name)
+                if isinstance(event, PlayerUnlockedNewTalent):
+                    self.view_state.enqueue_message("You can pick a talent!")
 
             for enemy_that_died in enemies_that_died:
                 if enemy_that_died.death_sound_id:
@@ -256,40 +259,35 @@ class GameEngine:
         #          HANDLE COLLISIONS
         # ------------------------------------
 
-        entities_to_remove = []
         for money_pile in self.game_state.money_piles_on_ground:
             if boxes_intersect(self.game_state.player_entity.rect(), money_pile.world_entity.rect()):
                 play_sound(SoundId.EVENT_PICKED_UP_MONEY)
-                entities_to_remove.append(money_pile)
+                money_pile.has_been_picked_up_and_should_be_removed = True
                 self.game_state.player_state.money += money_pile.amount
 
         for enemy in [e for e in self.game_state.non_player_characters if e.is_enemy]:
             for projectile in self.game_state.get_projectiles_intersecting_with(enemy.world_entity):
-                should_remove_projectile = projectile.projectile_controller.apply_enemy_collision(
-                    enemy, self.game_state)
-                if should_remove_projectile:
-                    entities_to_remove.append(projectile)
+                if not projectile.has_collided_and_should_be_removed:
+                    projectile.projectile_controller.apply_enemy_collision(enemy, self.game_state, projectile)
 
         for player_summon in [npc for npc in self.game_state.non_player_characters
                               if npc.npc_category == NpcCategory.PLAYER_SUMMON]:
             for projectile in self.game_state.get_projectiles_intersecting_with(player_summon.world_entity):
-                should_remove_projectile = projectile.projectile_controller.apply_player_summon_collision(
-                    player_summon, self.game_state)
-                if should_remove_projectile:
-                    entities_to_remove.append(projectile)
+                if not projectile.has_collided_and_should_be_removed:
+                    projectile.projectile_controller.apply_player_summon_collision(player_summon, self.game_state,
+                                                                                   projectile)
 
         for projectile in self.game_state.get_projectiles_intersecting_with(self.game_state.player_entity):
-            should_remove_projectile = projectile.projectile_controller.apply_player_collision(self.game_state)
-            if should_remove_projectile:
-                entities_to_remove.append(projectile)
+            if not projectile.has_collided_and_should_be_removed:
+                projectile.projectile_controller.apply_player_collision(self.game_state, projectile)
 
         for projectile in self.game_state.projectile_entities:
-            if self.game_state.walls_state.does_entity_intersect_with_wall(projectile.world_entity):
-                should_remove_projectile = projectile.projectile_controller.apply_wall_collision(self.game_state)
-                if should_remove_projectile:
-                    entities_to_remove.append(projectile)
+            if not projectile.has_collided_and_should_be_removed:
+                if self.game_state.walls_state.does_entity_intersect_with_wall(projectile.world_entity):
+                    projectile.projectile_controller.apply_wall_collision(self.game_state, projectile)
 
-        self.game_state.remove_entities(entities_to_remove)
+        self.game_state.remove_money_piles_that_have_been_picked_up()
+        self.game_state.remove_projectiles_that_have_been_destroyed()
 
         # ------------------------------------
         #       UPDATE CAMERA POSITION

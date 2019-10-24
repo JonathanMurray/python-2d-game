@@ -24,6 +24,23 @@ def get_all_directions():
     return [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT]
 
 
+class HeroUpgrade:
+    ARMOR = 1
+    DAMAGE = 2
+    ABILITY_WHIRLWIND_STUN = 10
+    ABILITY_FIREBALL_BURN = 11
+    ABILITY_ENTANGLING_ROOTS_COOLDOWN = 12
+    ABILITY_FIREBALL_MANA_COST = 13
+    ABILITY_SNEAK_MANA_COST = 20
+    ABILITY_SHIV_SNEAK_BONUS_DAMAGE = 21
+    ABILITY_DASH_KILL_RESET = 22
+    ABILITY_SHIV_FULL_HEALTH_BONUS_DAMAGE = 23
+    ABILITY_CHARGE_MELEE = 30
+    ABILITY_SLASH_AOE_BONUS_DAMAGE = 31
+    ABILITY_BLOODLUST_DURATION = 32
+    ABILITY_SLASH_CD = 33
+
+
 class ConsumableType(Enum):
     HEALTH_LESSER = 1
     HEALTH = 2
@@ -255,6 +272,7 @@ class BuffType(Enum):
     TELEPORTING_WITH_WARP_STONE = 33
     TELEPORTING_WITH_WARP_POINT = 34
     BEING_SPAWNED = 35
+    BURNT_BY_FIREBALL = 36
 
 
 class ItemType(Enum):
@@ -478,6 +496,7 @@ def get_random_hint():
         "Use magic statues and warpstones to teleport long distances",
         "Hover over things with the mouse cursor to get more info",
         "Drag inventory items and consumables with the mouse cursor",
-        "Equip items by dragging them to the appropriate inventory slot"
+        "Equip items by dragging them to the appropriate inventory slot",
+        "Choose talents to improve your stats and abilities"
     ]
     return random.choice(hints)

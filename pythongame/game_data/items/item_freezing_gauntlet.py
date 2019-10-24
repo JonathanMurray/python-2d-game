@@ -60,8 +60,8 @@ def register_freezing_gauntlet_item():
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
     register_item_effect(ITEM_TYPE, ItemEffect(ITEM_TYPE))
     name = "Freezing Gauntlet"
-    description = "Slows your targets by " + str(int(SLOW_AMOUNT * 100)) + "% for " \
-                  + "{:.1f}".format(SLOW_DURATION / 1000) + "s"
+    description = ["Slows your targets by " + str(int(SLOW_AMOUNT * 100)) + "% for " \
+                   + "{:.1f}".format(SLOW_DURATION / 1000) + "s"]
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.MAIN_HAND)
     register_item_data(ITEM_TYPE, item_data)
     register_buff_effect(BUFF_TYPE, DebuffedByFreezingGauntlet)

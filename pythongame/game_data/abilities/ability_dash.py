@@ -2,9 +2,10 @@ from typing import Optional
 
 from pygame.rect import Rect
 
-from pythongame.core.ability_effects import register_ability_effect
+from pythongame.core.ability_effects import register_ability_effect, AbilityResult, AbilityWasUsedSuccessfully, \
+    AbilityFailedToExecute
 from pythongame.core.buff_effects import register_buff_effect, AbstractBuffEffect, get_buff_effect
-from pythongame.core.common import AbilityType, Millis, UiIconSprite, SoundId, BuffType
+from pythongame.core.common import AbilityType, Millis, UiIconSprite, SoundId, BuffType, HeroUpgrade
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text
@@ -21,7 +22,7 @@ HEALTH_REGEN_BOOST = 5
 DAMAGE = 5
 
 
-def _apply_ability(game_state: GameState) -> bool:
+def _apply_ability(game_state: GameState) -> AbilityResult:
     player_entity = game_state.player_entity
     previous_position = player_entity.get_center_position()
 
@@ -31,11 +32,17 @@ def _apply_ability(game_state: GameState) -> bool:
         is_valid_pos = not game_state.would_entity_collide_if_new_pos(player_entity, new_position)
         if is_valid_pos:
             if _would_collide_with_wall(game_state, player_entity, distance):
-                return False
+                return AbilityFailedToExecute(reason="Wall is blocking")
+            should_regain_mana_and_cd = False
             enemy_hit = _get_enemy_that_was_hit(game_state, player_entity, distance)
             if enemy_hit:
                 deal_player_damage_to_enemy(game_state, enemy_hit, DAMAGE)
                 game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_TYPE), BUFF_DURATION)
+                has_reset_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_DASH_KILL_RESET)
+                enemy_died = enemy_hit.health_resource.is_at_or_below_zero()
+                if has_reset_upgrade and enemy_died:
+                    should_regain_mana_and_cd = True
+
             player_entity.set_position(new_position)
             new_center_position = player_entity.get_center_position()
             color = (250, 140, 80)
@@ -44,8 +51,8 @@ def _apply_ability(game_state: GameState) -> bool:
             game_state.visual_effects.append(VisualRect(color, previous_position, 37, 46, Millis(150), 1))
             game_state.visual_effects.append(
                 VisualCircle(color, new_center_position, 25, 40, Millis(300), 1, player_entity))
-            return True
-    return False
+            return AbilityWasUsedSuccessfully(should_regain_mana_and_cd=should_regain_mana_and_cd)
+    return AbilityFailedToExecute(reason="No space")
 
 
 def _get_enemy_that_was_hit(game_state: GameState, player_entity: WorldEntity, distance_jumped: int) \

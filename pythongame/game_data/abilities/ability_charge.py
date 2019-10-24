@@ -2,9 +2,10 @@ from typing import Optional
 
 from pygame.rect import Rect
 
-from pythongame.core.ability_effects import register_ability_effect
+from pythongame.core.ability_effects import register_ability_effect, AbilityResult, AbilityWasUsedSuccessfully
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
-from pythongame.core.common import BuffType, Millis, AbilityType, SoundId, HeroId, UiIconSprite, PeriodicTimer
+from pythongame.core.common import BuffType, Millis, AbilityType, SoundId, HeroId, UiIconSprite, PeriodicTimer, \
+    HeroUpgrade
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     HEROES, register_buff_as_channeling
@@ -22,9 +23,9 @@ MIN_DMG = 4
 MAX_DMG = 8
 
 
-def _apply_ability(game_state: GameState) -> bool:
+def _apply_ability(game_state: GameState) -> AbilityResult:
     game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_TYPE_CHARGING), CHARGE_DURATION)
-    return True
+    return AbilityWasUsedSuccessfully()
 
 
 class Charging(AbstractBuffEffect):
@@ -60,7 +61,10 @@ class Charging(AbstractBuffEffect):
         for enemy in affected_enemies:
             visual_impact_pos = get_middle_point(charger_center_pos, enemy.world_entity.get_center_position())
             damage = MIN_DMG
-            if self.time_since_start > float(CHARGE_DURATION) * 0.3:
+            # Talent: Apply damage bonus even if using charge in melee range
+            has_melee_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_CHARGE_MELEE)
+            if self.time_since_start > float(CHARGE_DURATION) * 0.3 or has_melee_upgrade:
+                # TODO Stun target as a bonus here
                 damage = MAX_DMG
             deal_player_damage_to_enemy(game_state, enemy, damage)
             game_state.visual_effects.append(

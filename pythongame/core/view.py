@@ -12,7 +12,8 @@ from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerC
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory
 from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.npc_behaviors import DialogGraphics
-from pythongame.core.view_state import ViewState
+from pythongame.core.talents import TalentsGraphics
+from pythongame.core.view_state import ViewState, UiToggle
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite, VisualCross
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 
@@ -36,10 +37,13 @@ DIR_FONTS = './resources/fonts/'
 
 class MouseHoverEvent:
     def __init__(self, item_slot_number: Optional[int], consumable_slot_number: Optional[int],
-                 game_world_position: Optional[Tuple[int, int]]):
+                 game_world_position: Optional[Tuple[int, int]], ui_toggle: Optional[UiToggle],
+                 talent_choice_option: Optional[Tuple[int, int]]):
         self.item_slot_number = item_slot_number
         self.consumable_slot_number = consumable_slot_number
         self.game_world_position = game_world_position
+        self.ui_toggle = ui_toggle
+        self.talent_choice_option = talent_choice_option  # (choice_index, option_index)
 
 
 class ImageWithRelativePosition:
@@ -50,17 +54,19 @@ class ImageWithRelativePosition:
 
 # Used to display some text above an NPC like "[Space] talk"
 class EntityActionText:
-    def __init__(self, entity: WorldEntity, text: str, details: Optional[str]):
-        self.entity = entity
-        self.text = text
-        self.details = details
+    def __init__(self, entity: WorldEntity, text: str, details: List[str]):
+        self.entity: WorldEntity = entity
+        self.text: str = text
+        self.details: List[str] = details
 
 
 class TooltipGraphics:
-    def __init__(self, title: str, details: List[str], bottom_left_corner: Tuple[int, int]):
+    def __init__(self, title: str, details: List[str], bottom_left: Optional[Tuple[int, int]] = None,
+                 bottom_right: Optional[Tuple[int, int]] = None):
         self.title = title
         self.details = details
-        self.bottom_left_corner = bottom_left_corner
+        self.bottom_left_corner: Optional[Tuple[int, int]] = bottom_left
+        self.bottom_right_corner: Optional[Tuple[int, int]] = bottom_right
 
 
 def load_and_scale_sprite(sprite_initializer: SpriteInitializer):
@@ -182,7 +188,7 @@ class View:
     def _rect_filled(self, color, rect):
         pygame.draw.rect(self.screen, color, rect)
 
-    def _rect_transparent(self, rect, alpha, color):
+    def _rect_transparent(self, rect, alpha: int, color):
         # Using a separate surface is the only way to render a transparent rectangle
         surface = pygame.Surface((rect[2], rect[3]))
         surface.set_alpha(alpha)
@@ -450,6 +456,16 @@ class View:
                            rect[2], rect[3])
         self._rect(color, translated_rect, line_width)
 
+    def _rect_filled_in_ui(self, color, rect):
+        translated_rect = (self._translate_ui_x_to_screen(rect[0]), self._translate_ui_y_to_screen(rect[1]),
+                           rect[2], rect[3])
+        self._rect_filled(color, translated_rect)
+
+    def _rect_transparent_in_ui(self, rect, alpha: int, color):
+        translated_rect = (self._translate_ui_x_to_screen(rect[0]), self._translate_ui_y_to_screen(rect[1]),
+                           rect[2], rect[3])
+        self._rect_transparent(translated_rect, alpha, color)
+
     def _image_in_ui(self, image, position):
         self._image(image, self._translate_ui_position_to_screen(position))
 
@@ -475,27 +491,36 @@ class View:
         self._text(self.font_message, message, (x_message, y_message))
 
     def _tooltip(self, tooltip: TooltipGraphics):
-        w_tooltip = 320
-        h_tooltip = 130
-        x_tooltip = tooltip.bottom_left_corner[0]
-        y_tooltip = tooltip.bottom_left_corner[1] - h_tooltip
+
+        detail_lines = []
+        detail_max_line_length = 32
+        for detail in tooltip.details:
+            detail_lines += self._split_text_into_lines(detail, detail_max_line_length)
+
+        w_tooltip = 260
+        h_tooltip = 60 + 17 * len(detail_lines)
+        if tooltip.bottom_left_corner is not None:
+            bottom_left_corner = tooltip.bottom_left_corner
+        else:
+            bottom_left_corner = (tooltip.bottom_right_corner[0] - w_tooltip, tooltip.bottom_right_corner[1])
+        x_tooltip = bottom_left_corner[0]
+        y_tooltip = bottom_left_corner[1] - h_tooltip - 3
         rect_tooltip = (x_tooltip, y_tooltip, w_tooltip, h_tooltip)
         self._rect_transparent((x_tooltip, y_tooltip, w_tooltip, h_tooltip), 200, (0, 0, 30))
-        self._rect(COLOR_WHITE, rect_tooltip, 2)
+        self._rect(COLOR_WHITE, rect_tooltip, 1)
         self._text(self.font_tooltip_header, tooltip.title, (x_tooltip + 20, y_tooltip + 15), COLOR_WHITE)
         y_separator = y_tooltip + 40
         self._line(COLOR_WHITE, (x_tooltip + 10, y_separator), (x_tooltip + w_tooltip - 10, y_separator), 1)
-        detail_lines = []
-        detail_max_line_length = 42
-        for detail in tooltip.details:
-            detail_lines += self._split_text_into_lines(detail, detail_max_line_length)
+
         for i, line in enumerate(detail_lines):
             self._text(self.font_tooltip_details, line, (x_tooltip + 20, y_tooltip + 50 + i * 18), COLOR_WHITE)
 
     def _entity_action_text(self, entity_action_text: EntityActionText):
         entity_center_pos = self._translate_world_position_to_screen(entity_action_text.entity.get_center_position())
         text = entity_action_text.text
-        detail_lines = self._split_text_into_lines(entity_action_text.details, 30) if entity_action_text.details else []
+        detail_lines = []
+        for detail_entry in entity_action_text.details:
+            detail_lines += self._split_text_into_lines(detail_entry, 30)
         if detail_lines:
             line_length = max(max([len(line) for line in detail_lines]), len(text))
         else:
@@ -572,13 +597,13 @@ class View:
             is_paused: bool,
             player_speed_multiplier: float,
             mouse_screen_position: Tuple[int, int],
-            dialog: Optional[DialogGraphics]) -> MouseHoverEvent:
+            dialog: Optional[DialogGraphics],
+            talents: TalentsGraphics) -> MouseHoverEvent:
 
         player_health = player_state.health_resource.value
         player_max_health = player_state.health_resource.max_value
         player_max_mana = player_state.mana_resource.max_value
         player_mana = player_state.mana_resource.value
-        player_life_steal = player_state.life_steal_ratio
         player_active_buffs = player_state.active_buffs
         consumable_slots = player_state.consumable_inventory.consumables_in_slots
         ability_cooldowns_remaining = player_state.ability_cooldowns_remaining
@@ -597,6 +622,8 @@ class View:
 
         hovered_item_slot_number = None
         hovered_consumable_slot_number = None
+        hovered_ui_toggle = None
+        hovered_talent_option: Optional[Tuple[int, int]] = None
         is_mouse_hovering_ui = is_point_in_rect(mouse_screen_position, self.ui_screen_area)
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
@@ -630,7 +657,7 @@ class View:
             tooltip_details = [
                 "regeneration: " + "{:.1f}".format(player_state.health_resource.get_effective_regen()) + "/s"]
             tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_healthbar[0], rect_healthbar[1]))
-            tooltip = TooltipGraphics("Health", tooltip_details, tooltip_bottom_left_position)
+            tooltip = TooltipGraphics("Health", tooltip_details, bottom_left=tooltip_bottom_left_position)
         health_text = str(player_health) + "/" + str(player_max_health)
         self._text_in_ui(self.font_ui_stat_bar_numbers, health_text, (x_0 + 20, y_4 - 1))
 
@@ -641,7 +668,7 @@ class View:
             tooltip_details = [
                 "regeneration: " + "{:.1f}".format(player_state.mana_resource.get_effective_regen()) + "/s"]
             tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_manabar[0], rect_manabar[1]))
-            tooltip = TooltipGraphics("Mana", tooltip_details, tooltip_bottom_left_position)
+            tooltip = TooltipGraphics("Mana", tooltip_details, bottom_left=tooltip_bottom_left_position)
         mana_text = str(player_mana) + "/" + str(player_max_mana)
         self._text_in_ui(self.font_ui_stat_bar_numbers, mana_text, (x_0 + 20, y_4 + 20))
 
@@ -667,7 +694,7 @@ class View:
                     tooltip_title = CONSUMABLES[consumable_type].name
                     tooltip_details = [CONSUMABLES[consumable_type].description]
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
-                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, tooltip_bottom_left_position)
+                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, bottom_left=tooltip_bottom_left_position)
             self._consumable_icon_in_ui(x, y, UI_ICON_SIZE, slot_number, consumable_types,
                                         highlighted_consumable_action)
 
@@ -690,7 +717,7 @@ class View:
                     mana_cost = str(ability_data.mana_cost)
                     tooltip_details = ["Cooldown: " + cooldown + " s", "Mana: " + mana_cost, ability_data.description]
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
-                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, tooltip_bottom_left_position)
+                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, bottom_left=tooltip_bottom_left_position)
             self._ability_icon_in_ui(x, y, UI_ICON_SIZE, ability_type,
                                      highlighted_ability_action, ability_cooldowns_remaining)
 
@@ -718,15 +745,15 @@ class View:
                     tooltip_details = []
                     if item_data.item_equipment_category:
                         tooltip_details.append("[" + item_data.item_equipment_category.name + "]")
-                    tooltip_details.append(item_data.description)
+                    tooltip_details += item_data.description_lines
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
-                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, tooltip_bottom_left_position)
+                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, bottom_left=tooltip_bottom_left_position)
                 elif slot_equipment_category:
                     tooltip_title = "..."  # "[" + slot_equipment_category.name + "]"
                     tooltip_details = ["[" + slot_equipment_category.name + "]",
                                        "You have nothing equipped. Drag an item here to equip it!"]
                     tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
-                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, tooltip_bottom_left_position)
+                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, bottom_left=tooltip_bottom_left_position)
             self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type, slot_equipment_category)
 
         # MINIMAP
@@ -769,8 +796,62 @@ class View:
             self._stat_bar_in_ui((x_buffs, y + 20), 60, 2, buff_duration_ratios_remaining[i],
                                  (250, 250, 0), False)
 
-        # STATS
-        x_stats = 555
+        # TOGGLES
+        pos_toggled_content = (545, -300)
+        x_toggles = 555
+        if view_state.toggle_enabled == UiToggle.STATS:
+            self._render_stats(player_speed_multiplier, player_state, pos_toggled_content)
+        elif view_state.toggle_enabled == UiToggle.TALENTS:
+            hovered_talent_option, talent_tooltip = self._render_talents(
+                talents, pos_toggled_content, mouse_ui_position)
+            tooltip = talent_tooltip if talent_tooltip is not None else tooltip
+        is_mouse_hovering_stats_toggle = self._toggle_in_ui(
+            x_toggles, y_1, "STATS", view_state.toggle_enabled == UiToggle.STATS, mouse_ui_position)
+        is_mouse_hovering_talents_toggle = self._toggle_in_ui(
+            x_toggles, y_1 + 30, "TALENTS", view_state.toggle_enabled == UiToggle.TALENTS,
+            mouse_ui_position)
+        if is_mouse_hovering_stats_toggle:
+            hovered_ui_toggle = UiToggle.STATS
+        elif is_mouse_hovering_talents_toggle:
+            hovered_ui_toggle = UiToggle.TALENTS
+
+        self._rect(COLOR_BORDER, self.ui_screen_area, 1)
+
+        self._rect_transparent((0, 0, 50, 20), 100, COLOR_BLACK)
+        self._text(self.font_debug_info, fps_string + " fps", (5, 3))
+
+        if message:
+            self._message(message)
+
+        if tooltip:
+            self._tooltip(tooltip)
+
+        if is_paused:
+            self._rect_transparent((0, 0, self.screen_size[0], self.screen_size[1]), 140, COLOR_BLACK)
+            self._splash_screen_text("PAUSED", self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50)
+
+        mouse_game_world_position = None
+        if not is_mouse_hovering_ui:
+            mouse_game_world_position = self._translate_screen_position_to_world(mouse_screen_position)
+        return MouseHoverEvent(hovered_item_slot_number, hovered_consumable_slot_number, mouse_game_world_position,
+                               hovered_ui_toggle, hovered_talent_option)
+
+    def _toggle_in_ui(self, x: int, y: int, text: str, enabled: bool, mouse_ui_position: Tuple[int, int]) -> bool:
+        rect = Rect(x, y, 120, 20)
+        if enabled:
+            self._rect_filled_in_ui((50, 50, 150), rect)
+        self._rect_in_ui(COLOR_WHITE, rect, 1)
+        self._text_in_ui(self.font_tooltip_details, text, (x + 20, y + 2))
+        return is_point_in_rect(mouse_ui_position, rect)
+
+    def _render_stats(self, player_speed_multiplier: float, player_state: PlayerState, ui_position: Tuple[int, int]):
+
+        rect_container = ui_position[0], ui_position[1], 140, 170
+        self._rect_transparent_in_ui(rect_container, 140, (0, 0, 30))
+
+        self._text_in_ui(self.font_tooltip_details, "STATS:", (ui_position[0] + 45, ui_position[1] + 10))
+
+        player_life_steal = player_state.life_steal_ratio
         health_regen_text = \
             "  health reg: " + "{:.1f}".format(player_state.health_resource.base_regen)
         if player_state.health_resource.regen_bonus > 0:
@@ -794,32 +875,75 @@ class View:
             armor_stat_text += " +" + str(player_state.armor_bonus)
         elif player_state.armor_bonus < 0:
             armor_stat_text += " " + str(player_state.armor_bonus)
-        self._text_in_ui(self.font_stats, health_regen_text, (x_stats, y_1), COLOR_WHITE)
-        self._text_in_ui(self.font_stats, mana_regen_text, (x_stats, y_1 + 20), COLOR_WHITE)
-        self._text_in_ui(self.font_stats, damage_stat_text, (x_stats, y_1 + 40), COLOR_WHITE)
-        self._text_in_ui(self.font_stats, speed_stat_text, (x_stats, y_1 + 60), COLOR_WHITE)
-        self._text_in_ui(self.font_stats, lifesteal_stat_text, (x_stats, y_1 + 80), COLOR_WHITE)
-        self._text_in_ui(self.font_stats, armor_stat_text, (x_stats, y_1 + 100), COLOR_WHITE)
+        x_text = ui_position[0] + 7
+        y_0 = ui_position[1] + 45
+        self._text_in_ui(self.font_stats, health_regen_text, (x_text, y_0), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, mana_regen_text, (x_text, y_0 + 20), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, damage_stat_text, (x_text, y_0 + 40), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, speed_stat_text, (x_text, y_0 + 60), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, lifesteal_stat_text, (x_text, y_0 + 80), COLOR_WHITE)
+        self._text_in_ui(self.font_stats, armor_stat_text, (x_text, y_0 + 100), COLOR_WHITE)
 
-        self._rect(COLOR_BORDER, self.ui_screen_area, 1)
+    def _render_talents(self, talents: TalentsGraphics, ui_position: Tuple[int, int],
+                        mouse_ui_position: Tuple[int, int]) -> Tuple[
+        Optional[Tuple[int, int]], Optional[TooltipGraphics]]:
 
-        self._rect_transparent((0, 0, 50, 20), 100, COLOR_BLACK)
-        self._text(self.font_debug_info, fps_string + " fps", (5, 3))
+        tooltip_graphics: TooltipGraphics = None
+        hovered_talent_option = None
 
-        if message:
-            self._message(message)
+        rect_container = ui_position[0], ui_position[1], 140, 260
+        self._rect_transparent_in_ui(rect_container, 140, (0, 0, 30))
 
-        if tooltip:
-            self._tooltip(tooltip)
+        self._text_in_ui(self.font_tooltip_details, "TALENTS:", (ui_position[0] + 35, ui_position[1] + 10))
 
-        if is_paused:
-            self._rect_transparent((0, 0, self.screen_size[0], self.screen_size[1]), 140, COLOR_BLACK)
-            self._splash_screen_text("PAUSED", self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50)
+        x_text = ui_position[0] + 22
+        y_0 = ui_position[1] + 35
+        for i, choice_graphics in enumerate(talents.choice_graphics_items):
+            y = y_0 + i * (UI_ICON_SIZE[1] + 30)
+            y_icon = y + 3
+            choice = choice_graphics.choice
+            self._text_in_ui(self.font_stats, choice.first.name, (x_text, y_icon + UI_ICON_SIZE[1] + 5), COLOR_WHITE)
+            self._text_in_ui(self.font_stats, choice.second.name, (x_text + 60, y_icon + UI_ICON_SIZE[1] + 5),
+                             COLOR_WHITE)
+            is_mouse_hovering_first = self._render_talent_icon(
+                choice.first.ui_icon_sprite, (x_text, y_icon), choice_graphics.chosen_index == 0, mouse_ui_position)
+            is_mouse_hovering_second = self._render_talent_icon(
+                choice.second.ui_icon_sprite, (x_text + 60, y_icon), choice_graphics.chosen_index == 1,
+                mouse_ui_position)
 
-        mouse_game_world_position = None
-        if not is_mouse_hovering_ui:
-            mouse_game_world_position = self._translate_screen_position_to_world(mouse_screen_position)
-        return MouseHoverEvent(hovered_item_slot_number, hovered_consumable_slot_number, mouse_game_world_position)
+            if is_mouse_hovering_first:
+                hovered_talent_option = (i, 0)
+                tooltip_graphics = TooltipGraphics(
+                    choice.first.name, [choice.first.description],
+                    bottom_right=self._translate_ui_position_to_screen((x_text + UI_ICON_SIZE[0], y_icon)))
+            elif is_mouse_hovering_second:
+                hovered_talent_option = (i, 1)
+                tooltip_graphics = TooltipGraphics(
+                    choice.second.name, [choice.second.description],
+                    bottom_right=self._translate_ui_position_to_screen((x_text + UI_ICON_SIZE[0] + 60, y_icon)))
+
+        y_bot_text = rect_container[1] + rect_container[3] - 26
+
+        if talents.choice_graphics_items:
+            player_can_choose = talents.choice_graphics_items[-1].chosen_index is None
+            if player_can_choose:
+                self._text_in_ui(self.font_stats, "Choose a talent!", (x_text, y_bot_text))
+        else:
+            self._text_in_ui(self.font_stats, "No talents yet!", (x_text, y_bot_text))
+
+        return hovered_talent_option, tooltip_graphics
+
+    def _render_talent_icon(self, ui_icon_sprite: UiIconSprite, position: Tuple[int, int], chosen: bool,
+                            mouse_ui_position: Tuple[int, int]) -> bool:
+        translated_pos = self._translate_ui_position_to_screen(position)
+        rect = (translated_pos[0], translated_pos[1], UI_ICON_SIZE[0], UI_ICON_SIZE[1])
+        self._rect_filled(COLOR_BLACK, rect)
+        image = self.images_by_ui_sprite[ui_icon_sprite]
+        self._image(image, translated_pos)
+        color_outline = COLOR_HIGHLIGHTED_ICON if chosen else COLOR_WHITE
+        width_outline = 2 if chosen else 1
+        self._rect(color_outline, rect, width_outline)
+        return is_point_in_rect(mouse_ui_position, Rect(position[0], position[1], UI_ICON_SIZE[0], UI_ICON_SIZE[1]))
 
     def _player_portrait(self, hero_id: HeroId, ui_position: Tuple[int, int]):
         rect_portrait_pos = self._translate_ui_position_to_screen(ui_position)
@@ -918,6 +1042,8 @@ class View:
 
     @staticmethod
     def _split_text_into_lines(full_text: str, max_line_length: int) -> List[str]:
+        if len(full_text) == 0:
+            return []
         tokens = full_text.split()
         lines = []
         line = tokens[0]

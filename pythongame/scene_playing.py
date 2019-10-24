@@ -1,5 +1,5 @@
 import sys
-from typing import Optional, Any
+from typing import Optional, Any, List
 
 import pygame
 
@@ -11,10 +11,12 @@ from pythongame.core.game_data import CONSUMABLES, ITEMS
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     ConsumableOnGround, ItemOnGround, Chest
+from pythongame.core.hero_upgrades import apply_hero_upgrade
 from pythongame.core.math import get_directions_to_position
 from pythongame.core.npc_behaviors import get_dialog_data, invoke_npc_action, get_dialog_graphics, DialogGraphics
 from pythongame.core.player_environment_interactions import PlayerInteractionsState
 from pythongame.core.sound_player import play_sound
+from pythongame.core.talents import talents_graphics_from_state
 from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_main_user_inputs, get_dialog_user_inputs, \
@@ -193,6 +195,10 @@ class PlayingScene:
 
         # TODO If dragging an item, highlight the inventory slots that are valid for the item?
 
+        talents_graphics = talents_graphics_from_state(
+            self.game_state.player_state.talents_state, self.game_state.player_state.level,
+            self.game_state.player_state.chosen_talent_option_indices)
+
         mouse_hover_event: MouseHoverEvent = self.view.render_ui(
             player_state=self.game_state.player_state,
             view_state=self.view_state,
@@ -200,7 +206,8 @@ class PlayingScene:
             fps_string=fps_string,
             is_paused=False,
             mouse_screen_position=self.mouse_screen_position,
-            dialog=dialog)
+            dialog=dialog,
+            talents=talents_graphics)
 
         # TODO There is a lot of details here about UI state (dragging items). Move that elsewhere.
 
@@ -254,6 +261,16 @@ class PlayingScene:
                                                            mouse_hover_event.game_world_position)
             self.consumable_slot_being_dragged = None
 
+        if mouse_was_just_clicked and mouse_hover_event.ui_toggle is not None:
+            self.view_state.notify_toggle_was_clicked(mouse_hover_event.ui_toggle)
+
+        if mouse_was_just_clicked and mouse_hover_event.talent_choice_option is not None:
+            choice_index, option_index = mouse_hover_event.talent_choice_option
+            if len(self.game_state.player_state.chosen_talent_option_indices) == choice_index:
+                name_of_picked, upgrade_picked = self.game_state.player_state.choose_talent(option_index)
+                apply_hero_upgrade(upgrade_picked, self.game_state)
+                self.view_state.set_message("Talent picked: " + name_of_picked)
+
         self.view.update_display()
 
         return transition_to_pause
@@ -261,23 +278,23 @@ class PlayingScene:
 
 def get_entity_action_text(ready_entity: Any, is_shift_key_held_down: bool) -> EntityActionText:
     if isinstance(ready_entity, NonPlayerCharacter):
-        return EntityActionText(ready_entity.world_entity, "[Space] ...", None)
+        return EntityActionText(ready_entity.world_entity, "[Space] ...", [])
     elif isinstance(ready_entity, LootableOnGround):
         loot_name = _get_loot_name(ready_entity)
         if is_shift_key_held_down:
-            loot_details = "> " + _get_loot_details(ready_entity)
+            loot_details = _get_loot_details(ready_entity)
         else:
-            loot_details = None
+            loot_details = []
         return EntityActionText(ready_entity.world_entity, "[Space] " + loot_name, loot_details)
     elif isinstance(ready_entity, Portal):
         if ready_entity.is_enabled:
-            return EntityActionText(ready_entity.world_entity, "[Space] Warp", None)
+            return EntityActionText(ready_entity.world_entity, "[Space] Warp", [])
         else:
-            return EntityActionText(ready_entity.world_entity, "[Space] ???", None)
+            return EntityActionText(ready_entity.world_entity, "[Space] ???", [])
     elif isinstance(ready_entity, WarpPoint):
-        return EntityActionText(ready_entity.world_entity, "[Space] Warp", None)
+        return EntityActionText(ready_entity.world_entity, "[Space] Warp", [])
     elif isinstance(ready_entity, Chest):
-        return EntityActionText(ready_entity.world_entity, "[Space] Open", None)
+        return EntityActionText(ready_entity.world_entity, "[Space] Open", [])
     else:
         raise Exception("Unhandled entity: " + str(ready_entity))
 
@@ -289,11 +306,11 @@ def _get_loot_name(lootable: LootableOnGround) -> str:
         return ITEMS[lootable.item_type].name
 
 
-def _get_loot_details(lootable: LootableOnGround) -> str:
+def _get_loot_details(lootable: LootableOnGround) -> List[str]:
     if isinstance(lootable, ConsumableOnGround):
-        return CONSUMABLES[lootable.consumable_type].description
+        return [CONSUMABLES[lootable.consumable_type].description]
     if isinstance(lootable, ItemOnGround):
-        return ITEMS[lootable.item_type].description
+        return ITEMS[lootable.item_type].description_lines
 
 
 def exit_game():

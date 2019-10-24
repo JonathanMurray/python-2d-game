@@ -27,6 +27,6 @@ def register_sword_of_leeching_item():
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/item_sword_of_leeching.png")
     register_entity_sprite_initializer(
         sprite, SpriteInitializer("resources/graphics/item_sword_of_leeching.png", ITEM_ENTITY_SIZE))
-    description = "Grants lifesteal (" + str(int(LIFE_STEAL_BOOST * 100)) + "%)"
+    description = ["+" + str(int(LIFE_STEAL_BOOST * 100)) + "% life steal"]
     item_data = ItemData(ui_icon_sprite, sprite, "Sword of Leeching", description, ItemEquipmentCategory.MAIN_HAND)
     register_item_data(ITEM_TYPE, item_data)

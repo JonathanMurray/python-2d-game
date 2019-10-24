@@ -31,7 +31,7 @@ def register_winged_helmet_item():
     image_file_path = "resources/graphics/item_winged_helmet.png"
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    description = "Grants +" + str(ARMOR_BOOST) + " armor and " + \
-                  str(int(SPEED_MULTIPLIER * 100)) + "% increased movement speed"
+    description = [str(ARMOR_BOOST) + " armor",
+                   "Increases movement speed by " + str(int(SPEED_MULTIPLIER * 100)) + "%"]
     item_data = ItemData(ui_icon_sprite, sprite, "Winged helmet", description, ItemEquipmentCategory.HEAD)
     register_item_data(ITEM_TYPE, item_data)

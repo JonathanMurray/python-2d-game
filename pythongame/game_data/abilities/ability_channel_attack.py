@@ -1,4 +1,4 @@
-from pythongame.core.ability_effects import register_ability_effect
+from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, ProjectileType, UiIconSprite, PeriodicTimer
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
@@ -15,9 +15,9 @@ PROJECTILE_SIZE = (30, 30)
 PROJECTILE_SPEED = 0.7
 
 
-def _apply_channel_attack(game_state: GameState) -> bool:
+def _apply_channel_attack(game_state: GameState) -> AbilityResult:
     game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.CHANNELING_MAGIC_MISSILES), CHANNEL_DURATION)
-    return True
+    return AbilityWasUsedSuccessfully()
 
 
 class ChannelingMagicMissiles(AbstractBuffEffect):
@@ -51,15 +51,14 @@ class PlayerMagicMissileProjectileController(AbstractProjectileController):
         super().__init__(500)
         self._enemies_hit = []
 
-    def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState):
+    def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState, projectile: Projectile):
         if npc not in self._enemies_hit:
             damage = 1
             deal_player_damage_to_enemy(game_state, npc, damage)
             game_state.visual_effects.append(
                 VisualCircle((250, 100, 250), npc.world_entity.get_center_position(), 15, 25, Millis(100), 0))
             self._enemies_hit.append(npc)
-        # Projectile pierces enemies
-        return False
+        # Projectile pierces enemies (so we don't mark projectile as destroyed)
 
 
 def register_channel_attack_ability():

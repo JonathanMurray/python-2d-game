@@ -1,8 +1,12 @@
-from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE
+from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgrade, UiIconSprite
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
 from pythongame.core.game_state import PlayerLevelBonus
+from pythongame.core.talents import TalentsState, TalentChoice, TalentChoiceOption
+from pythongame.game_data.heroes.generic_talents import GENERIC_TALENT_CHOICE
+
+HERO_ID = HeroId.WARRIOR
 
 
 def register_hero_warrior():
@@ -27,7 +31,7 @@ def register_hero_warrior():
                   "are enemies all around."
     hero_data = HeroData(sprite, portrait_icon_sprite, _get_initial_player_state_warrior(), entity_speed,
                          PLAYER_ENTITY_SIZE, description)
-    register_hero_data(HeroId.WARRIOR, hero_data)
+    register_hero_data(HERO_ID, hero_data)
 
 
 def _get_initial_player_state_warrior() -> InitialPlayerStateData:
@@ -52,6 +56,22 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
         5: AbilityType.BLOOD_LUST,
         7: AbilityType.STOMP
     }
+    # TODO Add more talents (unique to this hero)
+    talents_state = TalentsState({
+        2: GENERIC_TALENT_CHOICE,
+        4: TalentChoice(
+            TalentChoiceOption("Melee", "Your charge ability deals full damage even when used at close range",
+                               HeroUpgrade.ABILITY_CHARGE_MELEE, UiIconSprite.ABILITY_CHARGE),
+            TalentChoiceOption("AoE",
+                               "The damage of your slash ability is increased if at least 2 enemies are hit",
+                               HeroUpgrade.ABILITY_SLASH_AOE_BONUS_DAMAGE,
+                               UiIconSprite.ABILITY_SWORD_SLASH)),
+        6: TalentChoice(
+            TalentChoiceOption("Persist", "The duration of your bloodlust ability is increased additionally on kills",
+                               HeroUpgrade.ABILITY_BLOODLUST_DURATION, UiIconSprite.ABILITY_BLOODLUST),
+            TalentChoiceOption("Quick", "Reduces the cooldown of your slash ability", HeroUpgrade.ABILITY_SLASH_CD,
+                               UiIconSprite.ABILITY_SWORD_SLASH))
+    })
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HeroId.WARRIOR, armor,
-        level_bonus)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor,
+        level_bonus, talents_state)

@@ -32,6 +32,7 @@ def register_elite_armor():
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
     register_item_effect(ITEM_TYPE, ItemEffect())
     name = "Elite Armor"
-    description = "Grants +" + str(ARMOR_BOOST) + " armor and +" + str(HEALTH_REGEN_BOOST) + " health regeneration"
+    description = [str(ARMOR_BOOST) + " armor",
+                   "+" + str(HEALTH_REGEN_BOOST) + " health regen"]
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.CHEST)
     register_item_data(ITEM_TYPE, item_data)

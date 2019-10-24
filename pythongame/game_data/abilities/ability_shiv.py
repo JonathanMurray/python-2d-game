@@ -2,9 +2,9 @@ import random
 
 from pygame.rect import Rect
 
-from pythongame.core.ability_effects import register_ability_effect
+from pythongame.core.ability_effects import register_ability_effect, AbilityResult, AbilityWasUsedSuccessfully
 from pythongame.core.buff_effects import get_buff_effect
-from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PLAYER_ENTITY_SIZE
+from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PLAYER_ENTITY_SIZE, HeroUpgrade
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path
 from pythongame.core.game_state import GameState
@@ -15,7 +15,7 @@ MIN_DMG = 3
 MAX_DMG = 4
 
 
-def _apply_ability(game_state: GameState) -> bool:
+def _apply_ability(game_state: GameState) -> AbilityResult:
     player_entity = game_state.player_entity
     rect_w = 28
     slash_center_pos = translate_in_direction(
@@ -30,7 +30,14 @@ def _apply_ability(game_state: GameState) -> bool:
 
         # Note: Dependency on other ability 'sneak'
         if game_state.player_state.has_active_buff(BuffType.SNEAKING):
-            damage *= 3.5
+            # Talent: increase the damage bonus that Shiv gets from being used while sneaking
+            has_damage_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_SHIV_SNEAK_BONUS_DAMAGE)
+            damage *= 4 if has_damage_upgrade else 3.5
+        else:
+            # Talent: if attacking an enemy that's at 100% health while not sneaking, deal bonus damage
+            has_damage_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_SHIV_FULL_HEALTH_BONUS_DAMAGE)
+            if has_damage_upgrade and enemy.health_resource.is_at_max():
+                damage *= 1.5
 
         deal_player_damage_to_enemy(game_state, enemy, damage)
         break
@@ -40,7 +47,7 @@ def _apply_ability(game_state: GameState) -> bool:
     game_state.visual_effects.append(VisualCross((100, 100, 70), slash_center_pos, 6, Millis(100), 2))
 
     game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(250))
-    return True
+    return AbilityWasUsedSuccessfully()
 
 
 def register_shiv_ability():

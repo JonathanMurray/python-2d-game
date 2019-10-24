@@ -39,6 +39,7 @@ def register_blue_robe_item():
         mana_amount = MANA_AMOUNTS[i]
         register_item_effect(item_type, ItemEffect(mana_amount, item_type))
         name = "Blue Robe (" + str(i + 1) + ")"
-        description = "Grants +" + str(MANA_REGEN_BOOST) + " mana regeneration and " + str(mana_amount) + " max mana"
+        description = ["+" + str(MANA_REGEN_BOOST) + " mana regen",
+                       "+" + str(mana_amount) + " max mana"]
         item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.CHEST)
         register_item_data(item_type, item_data)

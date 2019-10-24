@@ -18,6 +18,12 @@ _Equip powerful items:_
 <img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/item.png" height="300" />
 <br/>
 
+_Customize your character with talents:_
+
+<img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/talents.png" height="300" />
+<br/>
+
+
 _Interact with NPCs:_
 
 <img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/dialog.png" height="300" />

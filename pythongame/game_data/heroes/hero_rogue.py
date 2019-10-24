@@ -1,8 +1,10 @@
-from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE
+from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgrade, UiIconSprite
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
 from pythongame.core.game_state import PlayerLevelBonus
+from pythongame.core.talents import TalentsState, TalentChoice, TalentChoiceOption
+from pythongame.game_data.heroes.generic_talents import GENERIC_TALENT_CHOICE
 
 HERO_ID = HeroId.ROGUE
 
@@ -54,5 +56,23 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
         5: AbilityType.DASH,
         7: AbilityType.INFUSE_DAGGER
     }
+    # TODO Add more talents (unique to this hero)
+    talents_state = TalentsState({
+        2: GENERIC_TALENT_CHOICE,
+        4: TalentChoice(TalentChoiceOption("Cheap", "Reduces the mana-cost of your sneak ability",
+                                           HeroUpgrade.ABILITY_SNEAK_MANA_COST, UiIconSprite.ABILITY_SNEAK),
+                        TalentChoiceOption("Sneak",
+                                           "Increases the damage bonus that shiv gets from being used from stealth",
+                                           HeroUpgrade.ABILITY_SHIV_SNEAK_BONUS_DAMAGE,
+                                           UiIconSprite.ABILITY_SHIV)),
+        6: TalentChoice(
+            TalentChoiceOption("Reset", "The cooldown and mana-cost of your dash ability is reset if it kills an enemy",
+                               HeroUpgrade.ABILITY_DASH_KILL_RESET, UiIconSprite.ABILITY_DASH),
+            TalentChoiceOption("Init",
+                               "Shiv deals bonus damage on enemies that are at full health, unless your stealthed",
+                               HeroUpgrade.ABILITY_SHIV_FULL_HEALTH_BONUS_DAMAGE,
+                               UiIconSprite.ABILITY_SHIV)),
+    })
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus,
+        talents_state)

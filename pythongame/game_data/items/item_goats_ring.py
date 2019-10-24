@@ -58,7 +58,7 @@ def register_goats_ring():
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
     register_item_effect(ITEM_TYPE, ItemEffect(ITEM_TYPE))
     name = "The Goat's Curse"
-    description = "Curses enemies to take damage over time"
+    description = ["Curses enemies to take damage over time"]
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.RING)
     register_item_data(ITEM_TYPE, item_data)
     register_buff_effect(BUFF_TYPE, DebuffedByGoatsRing)

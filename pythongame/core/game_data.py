@@ -8,6 +8,7 @@ from pythongame.core.common import *
 from pythongame.core.common import UiIconSprite, PortraitIconSprite
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.loot import LootTable
+from pythongame.core.talents import TalentsState
 
 ITEM_ENTITY_SIZE = (30, 30)
 POTION_ENTITY_SIZE = (30, 30)
@@ -143,12 +144,12 @@ class ConsumableData:
 
 
 class ItemData:
-    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Sprite, name: str, description: str,
+    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Sprite, name: str, description_lines: List[str],
                  item_equipment_category: Optional[ItemEquipmentCategory] = None):
         self.icon_sprite = icon_sprite
         self.entity_sprite = entity_sprite
         self.name = name
-        self.description = description
+        self.description_lines: List[str] = description_lines
         self.item_equipment_category = item_equipment_category  # If category is None, the item can't be equipped
 
 
@@ -180,7 +181,7 @@ class InitialPlayerStateData:
     def __init__(
             self, health: int, mana: int, mana_regen: float, consumable_slots: Dict[int, List[ConsumableType]],
             abilities: List[AbilityType], new_level_abilities: Dict[int, AbilityType],
-            hero_id: HeroId, armor: int, level_bonus: PlayerLevelBonus):
+            hero_id: HeroId, armor: int, level_bonus: PlayerLevelBonus, talents_state: TalentsState):
         self.health = health
         self.mana = mana
         self.mana_regen = mana_regen
@@ -190,6 +191,7 @@ class InitialPlayerStateData:
         self.hero_id = hero_id
         self.armor = armor
         self.level_bonus = level_bonus
+        self.talents_state = talents_state
 
 
 class HeroData:

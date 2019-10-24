@@ -30,7 +30,7 @@ def register_knights_armor():
     register_item_effect(ITEM_TYPE, ItemEffect())
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    description = "Gives +" + str(ARMOR_BOOST) + " armor, but reduces movement speed by " + \
-                  "{:.0f}".format(SPEED_DECREASE * 100) + "%"
+    description = [str(ARMOR_BOOST) + " armor",
+                   "Reduces movement speed by {:.0f}".format(SPEED_DECREASE * 100) + "%"]
     item_data = ItemData(ui_icon_sprite, sprite, "Knight's Armor", description, ItemEquipmentCategory.CHEST)
     register_item_data(ITEM_TYPE, item_data)

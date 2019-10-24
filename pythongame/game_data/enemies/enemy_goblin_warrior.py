@@ -1,4 +1,4 @@
-from pythongame.core.common import Millis, NpcType, Sprite, Direction, ItemType
+from pythongame.core.common import Millis, NpcType, Sprite, Direction, ItemType, ConsumableType
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.loot import LootTable, LootGroup, LootEntry
 from pythongame.core.npc_behaviors import register_npc_behavior, MeleeEnemyNpcMind
@@ -20,7 +20,7 @@ def register_goblin_warrior_enemy():
     exp_reward = 50
     loot_table = LootTable(
         [
-            LootGroup.single(LootEntry.item(ItemType.FROG), 1),
+            LootGroup(2, [LootEntry.item(ItemType.FROG), LootEntry.consumable(ConsumableType.WARP_STONE)], 1),
             LootGroup(1, LOOT_ITEMS_3 + LOOT_ITEMS_4, 1),
             LootGroup(1, [LootEntry.money(2), LootEntry.money(3), LootEntry.money(5)], 0.7)
         ]

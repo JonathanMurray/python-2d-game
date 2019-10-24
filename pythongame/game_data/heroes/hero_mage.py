@@ -1,8 +1,12 @@
-from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE
+from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgrade, UiIconSprite
 from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
     register_entity_sprite_map, register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
 from pythongame.core.game_state import PlayerLevelBonus
+from pythongame.core.talents import TalentsState, TalentChoice, TalentChoiceOption
+from pythongame.game_data.heroes.generic_talents import GENERIC_TALENT_CHOICE
+
+HERO_ID = HeroId.MAGE
 
 
 def register_hero_mage():
@@ -26,7 +30,7 @@ def register_hero_mage():
                   "large groups of enemies effectively, as long as she can keep her distance..."
     hero_data = HeroData(sprite, portrait_icon_sprite, _get_initial_player_state_mage(), entity_speed,
                          PLAYER_ENTITY_SIZE, description)
-    register_hero_data(HeroId.MAGE, hero_data)
+    register_hero_data(HERO_ID, hero_data)
 
 
 def _get_initial_player_state_mage() -> InitialPlayerStateData:
@@ -51,6 +55,20 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
         5: AbilityType.ENTANGLING_ROOTS,
         7: AbilityType.CHANNEL_ATTACK
     }
+    # TODO Add more talents (unique to this hero)
+    talents_state = TalentsState({
+        2: GENERIC_TALENT_CHOICE,
+        4: TalentChoice(TalentChoiceOption("Burn", "Enemies hit by your fireballs take additional damage over time",
+                                           HeroUpgrade.ABILITY_FIREBALL_BURN, UiIconSprite.ABILITY_FIREBALL),
+                        TalentChoiceOption("Stun", "Whirlwind periodically stuns enemies it hits for a short moment",
+                                           HeroUpgrade.ABILITY_WHIRLWIND_STUN, UiIconSprite.ABILITY_WHIRLWIND)),
+        6: TalentChoice(TalentChoiceOption("Quick", "Reduces the cooldown of your root ability",
+                                           HeroUpgrade.ABILITY_ENTANGLING_ROOTS_COOLDOWN,
+                                           UiIconSprite.ABILITY_ENTANGLING_ROOTS),
+                        TalentChoiceOption("Cheap", "Reduces the mana-cost of your fireball ability",
+                                           HeroUpgrade.ABILITY_FIREBALL_MANA_COST,
+                                           UiIconSprite.ABILITY_FIREBALL))
+    })
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HeroId.MAGE, armor,
-        level_bonus)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus,
+        talents_state)

@@ -1,9 +1,7 @@
 ## TODO
 
-#### Bugs:
-* many projectiles can hit several targets, but should only be able to hit one (fireball, entangling roots)
-
 #### Refactorings:
+* Separate code for different views (picking hero, game, paused, game editor, etc)
 * Move non-trivial logic from game_state. Prefer to have game-logic elsewhere.
 * Avoid storing EnemyMind and ProjectileController in game_state. That module should only depend on common
 * Simplify and generalise the handling of visual effects
@@ -12,11 +10,16 @@
 * Clean up enemy movement/attack logic - model as FSM?
 
 #### Game engine:
+* New control scheme: Hold left mouse button to move. Hero moves based on angle between mouse pointer and hero.
 * Use 8 directions instead of 4?
 * save game_state to file on crash
 * Make it more difficult to kite fast enemies. Enemies are too slow at attacking when they get into melee range
 
 #### Visuals:
+* improve talent graphics: somehow fit longer talent names, and show talent descriptions
+* indicate with the TALENTS toggle when the player has a talent to choose
+* Unify stat texts for items. Should be a new line for each distinct buff, rather than one long sentence.
+* Visualize bonus damage as 'crits' somehow
 * Render tiny buff icons above entities that have active buffs (like bloodlust icon from wc2)
 * gray out ability icon when player doesn't have enough mana for it
 * put dmg/healing/xp numbers further up for tall characters (base it on sprite size, not entity size)
@@ -28,6 +31,10 @@
 #### Sounds:
 * Abilities
     * mage channeling ability
+    * warrior stomp ability
+    * rogue shiv (randomize sound)
+    * warrior slash (randomize sound)
+    * rogue shiv from stealth (some crit sound)
 * UI
     * drop potion or item
 * using portal
@@ -43,9 +50,6 @@
     * builder
         * place turret on ground that shoots in all directions
         * send out mechanical minion that seeks out enemies and self detonates
-* New "progress" functionality:
-    * choosing between different abilities on level-up
-    * gaining a more powerful version of an existing ability. Whirlwind could start without stun and then gain stun on upgrade
 * More advanced abilities:
     * AoE effect that covers a large area and stays after being cast (like Diablo 2 sorc Blizzard ability)
     * channeling locked in one target. drain life / slow / gain mana / gain damage bonus

@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Tuple, Optional
 
 from pygame.rect import Rect
@@ -8,6 +9,11 @@ MINIMAP_UPDATE_INTERVAL = 1000
 MESSAGE_DURATION = 3500
 HIGHLIGHT_consumable_ACTION_DURATION = 120
 HIGHLIGHT_ABILITY_ACTION_DURATION = 120
+
+
+class UiToggle(Enum):
+    STATS = 1
+    TALENTS = 2
 
 
 # This class maintains the UI state that's related to the game clock. For instance, when the player clicks a button in
@@ -28,6 +34,8 @@ class ViewState:
         self.highlighted_consumable_action: Optional[int] = None
         self.highlighted_ability_action: Optional[AbilityType] = None
 
+        self.toggle_enabled: Optional[UiToggle] = None
+
     def notify_ability_was_clicked(self, ability_type: AbilityType):
         self.highlighted_ability_action = ability_type
         self._ticks_since_last_ability_action = 0
@@ -38,6 +46,12 @@ class ViewState:
 
     def notify_player_entity_center_position(self, player_entity_center_position: Tuple[int, int]):
         self._player_entity_center_position = player_entity_center_position
+
+    def notify_toggle_was_clicked(self, ui_toggle: UiToggle):
+        if self.toggle_enabled == ui_toggle:
+            self.toggle_enabled = None
+        else:
+            self.toggle_enabled = ui_toggle
 
     def set_message(self, message: str):
         self.message = message

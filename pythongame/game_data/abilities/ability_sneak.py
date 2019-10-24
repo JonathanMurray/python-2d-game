@@ -1,12 +1,13 @@
 from typing import Optional
 
-from pythongame.core.ability_effects import register_ability_effect
+from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
-from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PeriodicTimer
+from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PeriodicTimer, HeroUpgrade
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
-    register_buff_text
+    register_buff_text, ABILITIES
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, BuffEventOutcome, \
     PlayerUsedAbilityEvent, PlayerLostHealthEvent
+from pythongame.core.hero_upgrades import register_hero_upgrade_effect
 from pythongame.core.visual_effects import VisualCircle
 
 ABILITY_TYPE = AbilityType.SNEAK
@@ -18,10 +19,10 @@ SPEED_DECREASE = 0.3
 ARMOR_BONUS = 5
 
 
-def _apply_ability(game_state: GameState) -> bool:
+def _apply_ability(game_state: GameState) -> AbilityResult:
     game_state.player_state.force_cancel_all_buffs()
     game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_SNEAK), DURATION_SNEAK)
-    return True
+    return AbilityWasUsedSuccessfully()
 
 
 class Sneaking(AbstractBuffEffect):
@@ -64,6 +65,10 @@ class AfterSneaking(AbstractBuffEffect):
         return BUFF_POST_SNEAK
 
 
+def _upgrade_mana_cost(_game_state: GameState):
+    ABILITIES[ABILITY_TYPE].mana_cost = 20
+
+
 def register_sneak_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_SNEAK
 
@@ -79,3 +84,4 @@ def register_sneak_ability():
     register_buff_text(BUFF_SNEAK, "Stealthed")
     register_buff_effect(BUFF_POST_SNEAK, AfterSneaking)
     register_buff_text(BUFF_POST_SNEAK, "Element of surprise")
+    register_hero_upgrade_effect(HeroUpgrade.ABILITY_SNEAK_MANA_COST, _upgrade_mana_cost)
