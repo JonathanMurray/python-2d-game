@@ -4,6 +4,7 @@ from pythongame.core.game_data import Sprite, Direction, ConsumableType, Ability
     InitialPlayerStateData
 from pythongame.core.game_state import PlayerLevelBonus
 from pythongame.core.talents import TalentsState, TalentChoice, TalentChoiceOption
+from pythongame.game_data.heroes.generic_talents import GENERIC_TALENT_CHOICE
 
 HERO_ID = HeroId.WARRIOR
 
@@ -57,13 +58,19 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
     }
     # TODO Add more talents (unique to this hero)
     talents_state = TalentsState({
-        2: TalentChoice(TalentChoiceOption("Armor", HeroUpgrade.ARMOR, UiIconSprite.ITEM_ZULS_AEGIS),
-                        TalentChoiceOption("Damage", HeroUpgrade.DAMAGE, UiIconSprite.ITEM_ROYAL_SWORD)),
-        4: TalentChoice(TalentChoiceOption("Melee", HeroUpgrade.ABILITY_CHARGE_MELEE, UiIconSprite.ABILITY_CHARGE),
-                        TalentChoiceOption("AoE", HeroUpgrade.ABILITY_SLASH_AOE_BONUS_DAMAGE,
-                                           UiIconSprite.ABILITY_SWORD_SLASH)),
-        6: TalentChoice(TalentChoiceOption("Persist", HeroUpgrade.ABILITY_BLOODLUST_DURATION, UiIconSprite.ABILITY_BLOODLUST),
-                        TalentChoiceOption("Quick", HeroUpgrade.ABILITY_SLASH_CD, UiIconSprite.ABILITY_SWORD_SLASH))
+        2: GENERIC_TALENT_CHOICE,
+        4: TalentChoice(
+            TalentChoiceOption("Melee", "Your charge ability deals full damage even when used at close range",
+                               HeroUpgrade.ABILITY_CHARGE_MELEE, UiIconSprite.ABILITY_CHARGE),
+            TalentChoiceOption("AoE",
+                               "The damage of your slash ability is increased if at least 2 enemies are hit",
+                               HeroUpgrade.ABILITY_SLASH_AOE_BONUS_DAMAGE,
+                               UiIconSprite.ABILITY_SWORD_SLASH)),
+        6: TalentChoice(
+            TalentChoiceOption("Persist", "The duration of your bloodlust ability is increased additionally on kills",
+                               HeroUpgrade.ABILITY_BLOODLUST_DURATION, UiIconSprite.ABILITY_BLOODLUST),
+            TalentChoiceOption("Quick", "Reduces the cooldown of your slash ability", HeroUpgrade.ABILITY_SLASH_CD,
+                               UiIconSprite.ABILITY_SWORD_SLASH))
     })
     return InitialPlayerStateData(
         health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor,

@@ -4,6 +4,7 @@ from pythongame.core.game_data import Sprite, Direction, ConsumableType, Ability
     InitialPlayerStateData
 from pythongame.core.game_state import PlayerLevelBonus
 from pythongame.core.talents import TalentsState, TalentChoice, TalentChoiceOption
+from pythongame.game_data.heroes.generic_talents import GENERIC_TALENT_CHOICE
 
 HERO_ID = HeroId.MAGE
 
@@ -56,13 +57,16 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
     }
     # TODO Add more talents (unique to this hero)
     talents_state = TalentsState({
-        2: TalentChoice(TalentChoiceOption("Armor", HeroUpgrade.ARMOR, UiIconSprite.ITEM_ZULS_AEGIS),
-                        TalentChoiceOption("Damage", HeroUpgrade.DAMAGE, UiIconSprite.ITEM_ROYAL_SWORD)),
-        4: TalentChoice(TalentChoiceOption("Burn", HeroUpgrade.ABILITY_FIREBALL_BURN, UiIconSprite.ABILITY_FIREBALL),
-                        TalentChoiceOption("Stun", HeroUpgrade.ABILITY_WHIRLWIND_STUN, UiIconSprite.ABILITY_WHIRLWIND)),
-        6: TalentChoice(TalentChoiceOption("Quick", HeroUpgrade.ABILITY_ENTANGLING_ROOTS_COOLDOWN,
+        2: GENERIC_TALENT_CHOICE,
+        4: TalentChoice(TalentChoiceOption("Burn", "Enemies hit by your fireballs take additional damage over time",
+                                           HeroUpgrade.ABILITY_FIREBALL_BURN, UiIconSprite.ABILITY_FIREBALL),
+                        TalentChoiceOption("Stun", "Whirlwind periodically stuns enemies it hits for a short moment",
+                                           HeroUpgrade.ABILITY_WHIRLWIND_STUN, UiIconSprite.ABILITY_WHIRLWIND)),
+        6: TalentChoice(TalentChoiceOption("Quick", "Reduces the cooldown of your root ability",
+                                           HeroUpgrade.ABILITY_ENTANGLING_ROOTS_COOLDOWN,
                                            UiIconSprite.ABILITY_ENTANGLING_ROOTS),
-                        TalentChoiceOption("Cheap", HeroUpgrade.ABILITY_FIREBALL_MANA_COST,
+                        TalentChoiceOption("Cheap", "Reduces the mana-cost of your fireball ability",
+                                           HeroUpgrade.ABILITY_FIREBALL_MANA_COST,
                                            UiIconSprite.ABILITY_FIREBALL))
     })
     return InitialPlayerStateData(
