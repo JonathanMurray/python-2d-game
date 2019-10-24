@@ -8,6 +8,12 @@ different monsters, using potions and abilities to your advantage.
 <img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/gameplay.png" height="300" />
 <br/>
 
+_Choose your hero:_
+
+<img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/heroes.png" height="300" />
+<br/>
+
+
 _Master different abilities:_
 
 <img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/ability.png" height="300" />
