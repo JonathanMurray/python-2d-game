@@ -1,6 +1,8 @@
 ## TODO
 
 #### Refactorings:
+* Split up view.py into several files
+* Improve how mouse handling (clicking and hovering) is handled
 * Separate code for different views (picking hero, game, paused, game editor, etc)
 * Move non-trivial logic from game_state. Prefer to have game-logic elsewhere.
 * Avoid storing EnemyMind and ProjectileController in game_state. That module should only depend on common
@@ -16,6 +18,7 @@
 * Make it more difficult to kite fast enemies. Enemies are too slow at attacking when they get into melee range
 
 #### Visuals:
+* highlight UI options that user hovers over with mouse pointer
 * indicate with the TALENTS toggle when the player has a talent to choose
 * Visualize bonus damage as 'crits' somehow
 * Render tiny buff icons above entities that have active buffs (like bloodlust icon from wc2)
