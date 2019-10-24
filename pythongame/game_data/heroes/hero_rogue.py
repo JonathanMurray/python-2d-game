@@ -59,9 +59,9 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
     # TODO Add more talents (unique to this hero)
     talents_state = TalentsState({
         2: GENERIC_TALENT_CHOICE,
-        4: TalentChoice(TalentChoiceOption("Cheap", "Reduces the mana-cost of your sneak ability",
+        4: TalentChoice(TalentChoiceOption("Cheap", "Reduces the mana-cost of your stealth ability",
                                            HeroUpgrade.ABILITY_SNEAK_MANA_COST, UiIconSprite.ABILITY_SNEAK),
-                        TalentChoiceOption("Sneak",
+                        TalentChoiceOption("Stealth",
                                            "Increases the damage bonus that shiv gets from being used from stealth",
                                            HeroUpgrade.ABILITY_SHIV_SNEAK_BONUS_DAMAGE,
                                            UiIconSprite.ABILITY_SHIV)),
