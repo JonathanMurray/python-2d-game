@@ -46,9 +46,6 @@
     * builder
         * place turret on ground that shoots in all directions
         * send out mechanical minion that seeks out enemies and self detonates
-* New "progress" functionality:
-    * choosing between different abilities on level-up
-    * gaining a more powerful version of an existing ability. Whirlwind could start without stun and then gain stun on upgrade
 * More advanced abilities:
     * AoE effect that covers a large area and stays after being cast (like Diablo 2 sorc Blizzard ability)
     * channeling locked in one target. drain life / slow / gain mana / gain damage bonus
