@@ -183,16 +183,16 @@ class View:
         if entity.sprite is None:
             raise Exception("Entity has no sprite: " + str(entity))
         elif entity.sprite in self.images_by_sprite:
-            images: Dict[Direction, List[ImageWithRelativePosition]] = self.images_by_sprite[entity.sprite]
-            image_with_relative_position = self._get_image_from_direction(images, entity.direction,
-                                                                          entity.movement_animation_progress)
+            image_with_relative_position = self._get_image_for_sprite(
+                entity.sprite, entity.direction, entity.movement_animation_progress)
             self.world_render.image_with_relative_pos(image_with_relative_position, entity.get_position())
         else:
             raise Exception("Unhandled sprite: " + str(entity.sprite))
 
-    @staticmethod
-    def _get_image_from_direction(images: Dict[Direction, List[ImageWithRelativePosition]], direction: Direction,
-                                  animation_progress: float) -> ImageWithRelativePosition:
+    def _get_image_for_sprite(self, sprite: Sprite, direction: Direction,
+                              animation_progress: float) -> ImageWithRelativePosition:
+
+        images: Dict[Direction, List[ImageWithRelativePosition]] = self.images_by_sprite[sprite]
         if direction in images:
             images_for_this_direction = images[direction]
         else:
@@ -239,13 +239,10 @@ class View:
         position = visual_sprite.position
         animation_progress = visual_sprite.animation_progress()
         sprite = visual_sprite.sprite
-        translated_position = self._translate_world_position_to_screen(position)
         if sprite in self.images_by_sprite:
-            images: Dict[Direction, List[ImageWithRelativePosition]] = self.images_by_sprite[sprite]
-            image_with_relative_position = self._get_image_from_direction(images, Direction.DOWN,
-                                                                          animation_progress)
-            pos = sum_of_vectors(translated_position, image_with_relative_position.position_relative_to_entity)
-            self.screen_render.image(image_with_relative_position.image, pos)
+            image_with_relative_position = self._get_image_for_sprite(
+                sprite, Direction.DOWN, animation_progress)
+            self.world_render.image_with_relative_pos(image_with_relative_position, position)
         else:
             raise Exception("Unhandled sprite: " + str(sprite))
 
@@ -405,7 +402,7 @@ class View:
                                     COLOR_WHITE)
 
     def _entity_action_text(self, entity_action_text: EntityActionText):
-        entity_center_pos = self._translate_world_position_to_screen(entity_action_text.entity.get_center_position())
+        entity_center_pos = entity_action_text.entity.get_center_position()
         text = entity_action_text.text
         detail_lines = []
         for detail_entry in entity_action_text.details:
@@ -417,10 +414,10 @@ class View:
         rect_width = line_length * 8
         rect_height = 16 + len(detail_lines) * 16
         rect_pos = (entity_center_pos[0] - rect_width // 2, entity_center_pos[1] - 60)
-        self.screen_render.rect_transparent(Rect(rect_pos[0], rect_pos[1], rect_width, rect_height), 150, (0, 0, 0))
-        self.screen_render.text(self.font_npc_action, text, (rect_pos[0] + 4, rect_pos[1]))
+        self.world_render.rect_transparent(Rect(rect_pos[0], rect_pos[1], rect_width, rect_height), 150, (0, 0, 0))
+        self.world_render.text(self.font_npc_action, text, (rect_pos[0] + 4, rect_pos[1]))
         for i, detail_line in enumerate(detail_lines):
-            self.screen_render.text(self.font_npc_action, detail_line, (rect_pos[0] + 4, rect_pos[1] + (i + 1) * 16))
+            self.world_render.text(self.font_npc_action, detail_line, (rect_pos[0] + 4, rect_pos[1] + (i + 1) * 16))
 
     def render_world(self, all_entities_to_render: List[WorldEntity], decorations_to_render: List[DecorationEntity],
                      camera_world_area, non_player_characters: List[NonPlayerCharacter], is_player_invisible: bool,
@@ -1019,8 +1016,7 @@ class View:
 
     def render_map_editor_world_entity_at_position(self, sprite: Sprite, entity_size: Tuple[int, int],
                                                    position: Tuple[int, int]):
-        images: Dict[Direction, List[ImageWithRelativePosition]] = self.images_by_sprite[sprite]
-        image_with_relative_position = self._get_image_from_direction(images, Direction.DOWN, 0)
+        image_with_relative_position = self._get_image_for_sprite(sprite, Direction.DOWN, 0)
         sprite_position = sum_of_vectors(position, image_with_relative_position.position_relative_to_entity)
         self.screen_render.image(image_with_relative_position.image, sprite_position)
         self.screen_render.rect((50, 250, 0), Rect(position[0], position[1], entity_size[0], entity_size[1]), 3)
