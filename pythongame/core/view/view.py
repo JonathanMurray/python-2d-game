@@ -186,9 +186,7 @@ class View:
             images: Dict[Direction, List[ImageWithRelativePosition]] = self.images_by_sprite[entity.sprite]
             image_with_relative_position = self._get_image_from_direction(images, entity.direction,
                                                                           entity.movement_animation_progress)
-            pos = self._translate_world_position_to_screen((entity.x, entity.y))
-            pos = sum_of_vectors(pos, image_with_relative_position.position_relative_to_entity)
-            self.screen_render.image(image_with_relative_position.image, pos)
+            self.world_render.image_with_relative_pos(image_with_relative_position, entity.get_position())
         else:
             raise Exception("Unhandled sprite: " + str(entity.sprite))
 
@@ -225,8 +223,7 @@ class View:
     def _visual_circle(self, visual_circle: VisualCircle):
         position = visual_circle.circle()[0]
         radius = visual_circle.circle()[1]
-        translated_position = self._translate_world_position_to_screen(position)
-        self.screen_render.circle(visual_circle.color, translated_position, radius, visual_circle.line_width)
+        self.world_render.circle(visual_circle.color, position, radius, visual_circle.line_width)
 
     def _visual_rect(self, visual_rect: VisualRect):
         self.world_render.rect(visual_rect.color, visual_rect.rect(), visual_rect.line_width)
@@ -236,9 +233,7 @@ class View:
             self.world_render.line(visual_cross.color, start_pos, end_pos, visual_cross.line_width)
 
     def _visual_text(self, visual_text: VisualText):
-        position = visual_text.position()
-        translated_position = self._translate_world_position_to_screen(position)
-        self.screen_render.text(self.font_game_world_text, visual_text.text, translated_position, visual_text.color)
+        self.world_render.text(self.font_game_world_text, visual_text.text, visual_text.position(), visual_text.color)
 
     def _visual_sprite(self, visual_sprite: VisualSprite):
         position = visual_sprite.position
@@ -255,17 +250,12 @@ class View:
             raise Exception("Unhandled sprite: " + str(sprite))
 
     def _stat_bar_for_world_entity(self, world_entity, h, relative_y, ratio, color):
-        position_on_screen = self._translate_world_position_to_screen((world_entity.x, world_entity.y))
-        self.screen_render.stat_bar(position_on_screen[0] + 1, position_on_screen[1] + relative_y,
-                                    world_entity.w - 2, h, ratio, color, False)
+        self.world_render.stat_bar(world_entity.x + 1, world_entity.y + relative_y,
+                                   world_entity.w - 2, h, ratio, color, False)
 
     # ------------------------------------
     #           DRAWING THE UI
     # ------------------------------------
-
-    def _stat_bar_in_ui(self, position_in_ui, w, h, ratio_filled: float, color, border: bool):
-        x, y = self._translate_ui_position_to_screen(position_in_ui)
-        self.screen_render.stat_bar(x, y, w, h, ratio_filled, color, border)
 
     def _consumable_icon_in_ui(self, x_in_ui, y_in_ui, size, consumable_number: int,
                                consumable_types: List[ConsumableType], highlighted_consumable_action: int):
@@ -542,16 +532,17 @@ class View:
 
         x_exp_bar = x_1
         self.ui_render.text(self.font_level, "Level " + str(player_level), (x_exp_bar, y_0))
-        self._stat_bar_in_ui((x_exp_bar, y_0 + 18), 380, 2, player_exp / player_max_exp_in_this_level, (200, 200, 200),
-                             True)
+        self.ui_render.stat_bar(x_exp_bar, y_0 + 18, 380, 2, player_exp / player_max_exp_in_this_level,
+                                (200, 200, 200),
+                                True)
 
         x_0 = 20
 
         self._player_portrait(hero_id, (x_0, y_0 + 13))
 
         rect_healthbar = Rect(x_0, y_4 - 1, 100, 14)
-        self._stat_bar_in_ui((rect_healthbar[0], rect_healthbar[1]), rect_healthbar[2], rect_healthbar[3],
-                             player_health / player_max_health, (200, 0, 50), True)
+        self.ui_render.stat_bar(rect_healthbar[0], rect_healthbar[1], rect_healthbar[2], rect_healthbar[3],
+                                player_health / player_max_health, (200, 0, 50), True)
         if is_point_in_rect(mouse_ui_position, rect_healthbar):
             tooltip_details = [
                 "regeneration: " + "{:.1f}".format(player_state.health_resource.get_effective_regen()) + "/s"]
@@ -561,8 +552,8 @@ class View:
         self.ui_render.text(self.font_ui_stat_bar_numbers, health_text, (x_0 + 20, y_4 - 1))
 
         rect_manabar = Rect(x_0, y_4 + 20, 100, 14)
-        self._stat_bar_in_ui((rect_manabar[0], rect_manabar[1]), rect_manabar[2], rect_manabar[3],
-                             player_mana / player_max_mana, (50, 0, 200), True)
+        self.ui_render.stat_bar(rect_manabar[0], rect_manabar[1], rect_manabar[2], rect_manabar[3],
+                                player_mana / player_max_mana, (50, 0, 200), True)
         if is_point_in_rect(mouse_ui_position, rect_manabar):
             tooltip_details = [
                 "regeneration: " + "{:.1f}".format(player_state.mana_resource.get_effective_regen()) + "/s"]
@@ -692,8 +683,8 @@ class View:
             y_offset_buff = i * 25
             y = y_buffs + y_offset_buff
             self.ui_render.text(self.font_buff_texts, text, (x_buffs, y))
-            self._stat_bar_in_ui((x_buffs, y + 20), 60, 2, buff_duration_ratios_remaining[i],
-                                 (250, 250, 0), False)
+            self.ui_render.stat_bar(x_buffs, y + 20, 60, 2, buff_duration_ratios_remaining[i],
+                                    (250, 250, 0), False)
 
         # TOGGLES
         pos_toggled_content = (545, -300)
@@ -959,12 +950,12 @@ class View:
 
     def render_item_being_dragged(self, item_type: ItemType, mouse_screen_position: Tuple[int, int]):
         ui_icon_sprite = ITEMS[item_type].icon_sprite
-        position = (mouse_screen_position[0] - UI_ICON_SIZE[0] // 2, mouse_screen_position[1] - UI_ICON_SIZE[1] / 2)
+        position = (mouse_screen_position[0] - UI_ICON_SIZE[0] // 2, mouse_screen_position[1] - UI_ICON_SIZE[1] // 2)
         self.screen_render.image(self.images_by_ui_sprite[ui_icon_sprite], position)
 
     def render_consumable_being_dragged(self, consumable_type: ConsumableType, mouse_screen_position: Tuple[int, int]):
         ui_icon_sprite = CONSUMABLES[consumable_type].icon_sprite
-        position = (mouse_screen_position[0] - UI_ICON_SIZE[0] // 2, mouse_screen_position[1] - UI_ICON_SIZE[1] / 2)
+        position = (mouse_screen_position[0] - UI_ICON_SIZE[0] // 2, mouse_screen_position[1] - UI_ICON_SIZE[1] // 2)
         self.screen_render.image(self.images_by_ui_sprite[ui_icon_sprite], position)
 
     def _splash_screen_text(self, text, x, y):

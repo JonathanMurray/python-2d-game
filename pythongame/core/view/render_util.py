@@ -3,6 +3,9 @@ from typing import Tuple, Callable
 import pygame
 from pygame.rect import Rect
 
+from pythongame.core.math import sum_of_vectors
+from pythongame.core.view.image_loading import ImageWithRelativePosition
+
 COLOR_WHITE = (250, 250, 250)
 
 
@@ -30,10 +33,10 @@ class DrawableArea:
     def line(self, color, start_pos: Tuple[int, int], end_pos: Tuple[int, int], line_width: int):
         pygame.draw.line(self.screen, color, self._translate_pos(start_pos), self._translate_pos(end_pos), line_width)
 
-    def circle(self, color, pos: Tuple[int, int], radius, line_width):
-        pygame.draw.circle(self.screen, color, pos, radius, line_width)
+    def circle(self, color, pos: Tuple[int, int], radius: int, line_width: int):
+        pygame.draw.circle(self.screen, color, self._translate_pos(pos), radius, line_width)
 
-    def stat_bar(self, x, y, w, h, ratio_filled: float, color, border: bool):
+    def stat_bar(self, x: int, y: int, w: int, h: int, ratio_filled: float, color, border: bool):
         self.rect_filled((0, 0, 0), Rect(x - 1, y - 1, w + 2, h + 2))
         if border:
             self.rect((250, 250, 250), Rect(x - 2, y - 2, w + 4, h + 4), 1)
@@ -44,6 +47,10 @@ class DrawableArea:
 
     def image(self, image, pos: Tuple[int, int]):
         self.screen.blit(image, self._translate_pos(pos))
+
+    def image_with_relative_pos(self, image_with_relative_position: ImageWithRelativePosition, pos: Tuple[int, int]):
+        translated_pos = sum_of_vectors(pos, image_with_relative_position.position_relative_to_entity)
+        self.image(image_with_relative_position.image, translated_pos)
 
     def _translate_rect(self, rect: Rect):
         translated_pos = self.translate_coordinates((rect[0], rect[1]))
