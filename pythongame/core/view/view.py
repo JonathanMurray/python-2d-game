@@ -73,6 +73,7 @@ class View:
         pygame_screen = pygame.display.set_mode(screen_size)
         self.screen_render = DrawableArea(pygame_screen)
         self.ui_render = DrawableArea(pygame_screen, self._translate_ui_position_to_screen)
+        self.world_render = DrawableArea(pygame_screen, self._translate_world_position_to_screen)
 
         self.ui_screen_area = Rect(0, camera_size[1], screen_size[0], screen_size[1] - camera_size[1])
         self.camera_size = camera_size
@@ -133,12 +134,6 @@ class View:
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
 
-    def _translate_ui_x_to_screen(self, ui_x):
-        return ui_x + self.ui_screen_area.x
-
-    def _translate_ui_y_to_screen(self, ui_y):
-        return ui_y + self.ui_screen_area.y
-
     def _translate_screen_position_to_ui(self, position: Tuple[int, int]):
         return position[0] - self.ui_screen_area.x, position[1] - self.ui_screen_area.y
 
@@ -181,17 +176,6 @@ class View:
                         self.screen_render.text(self.font_debug_info, str(world_x) + "," + str(world_y),
                                                 (screen_x, screen_y),
                                                 (250, 250, 250))
-
-    def _world_rect(self, color, world_rect, line_width=0):
-        translated_pos = self._translate_world_position_to_screen((world_rect[0], world_rect[1]))
-        self.screen_render.rect(color, Rect(translated_pos[0], translated_pos[1], world_rect[2], world_rect[3]),
-                                line_width)
-
-    def _world_line(self, color: Tuple[int, int, int], start_pos: Tuple[int, int], end_pos: Tuple[int, int],
-                    line_width: int):
-        start_position = self._translate_world_position_to_screen(start_pos)
-        end_position = self._translate_world_position_to_screen(end_pos)
-        self.screen_render.line(color, start_position, end_position, line_width)
 
     def _world_entity(self, entity: Union[WorldEntity, DecorationEntity]):
         if not entity.visible:
@@ -236,7 +220,7 @@ class View:
             raise Exception("Unhandled visual effect: " + str(visual_effect))
 
     def _visual_line(self, line: VisualLine):
-        self._world_line(line.color, line.start_position, line.end_position, line.line_width)
+        self.world_render.line(line.color, line.start_position, line.end_position, line.line_width)
 
     def _visual_circle(self, visual_circle: VisualCircle):
         position = visual_circle.circle()[0]
@@ -245,11 +229,11 @@ class View:
         self.screen_render.circle(visual_circle.color, translated_position, radius, visual_circle.line_width)
 
     def _visual_rect(self, visual_rect: VisualRect):
-        self._world_rect(visual_rect.color, visual_rect.rect(), visual_rect.line_width)
+        self.world_render.rect(visual_rect.color, visual_rect.rect(), visual_rect.line_width)
 
     def _visual_cross(self, visual_cross: VisualCross):
         for start_pos, end_pos in visual_cross.lines():
-            self._world_line(visual_cross.color, start_pos, end_pos, visual_cross.line_width)
+            self.world_render.line(visual_cross.color, start_pos, end_pos, visual_cross.line_width)
 
     def _visual_text(self, visual_text: VisualText):
         position = visual_text.position()
@@ -466,7 +450,7 @@ class View:
         for entity in all_entities_to_render:
             self._world_entity(entity)
             if entity == player_entity and is_player_invisible:
-                self._world_rect((200, 100, 250), player_entity.rect(), 2)
+                self.world_render.rect((200, 100, 250), player_entity.rect(), 2)
 
         player_sprite_y_relative_to_entity = \
             ENTITY_SPRITE_INITIALIZERS[player_entity.sprite][Direction.DOWN].position_relative_to_entity[1]
@@ -484,7 +468,7 @@ class View:
         if render_hit_and_collision_boxes:
             for entity in all_entities_to_render:
                 # hit box
-                self._world_rect((250, 250, 250), entity.rect(), 1)
+                self.world_render.rect((250, 250, 250), entity.rect(), 1)
 
         for npc in non_player_characters:
             healthbar_color = COLOR_RED if npc.is_enemy else (250, 250, 0)

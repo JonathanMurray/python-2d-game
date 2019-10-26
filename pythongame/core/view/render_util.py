@@ -27,8 +27,8 @@ class DrawableArea:
         surface.fill(color)
         self.screen.blit(surface, self._translate_pos((rect[0], rect[1])))
 
-    def line(self, color, start_pos: Tuple[int, int], end_pos: Tuple[int, int], line_width):
-        pygame.draw.line(self.screen, color, start_pos, end_pos, line_width)
+    def line(self, color, start_pos: Tuple[int, int], end_pos: Tuple[int, int], line_width: int):
+        pygame.draw.line(self.screen, color, self._translate_pos(start_pos), self._translate_pos(end_pos), line_width)
 
     def circle(self, color, pos: Tuple[int, int], radius, line_width):
         pygame.draw.circle(self.screen, color, pos, radius, line_width)
