@@ -15,7 +15,7 @@ from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.image_loading import load_images_by_sprite, load_images_by_ui_sprite, \
     load_images_by_portrait_sprite
 from pythongame.core.view.view import View, PORTRAIT_ICON_SIZE, UI_ICON_SIZE
-from pythongame.map_editor_world_entity import MapEditorWorldEntity
+from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
 from pythongame.map_file import save_game_state_to_json_file, create_game_state_from_json_file
 from pythongame.register_game_data import register_all_game_data
 

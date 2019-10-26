@@ -16,7 +16,7 @@ from pythongame.core.view.image_loading import ImageWithRelativePosition
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
 from pythongame.core.view.view_state import ViewState, UiToggle
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite, VisualCross
-from pythongame.map_editor_world_entity import MapEditorWorldEntity
+from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
 
 COLOR_BACKGROUND = (88 + 30, 72 + 30, 40 + 30)
 COLOR_BACKGROUND_LINES = (93 + 30, 77 + 30, 45 + 30)
