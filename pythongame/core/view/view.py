@@ -254,16 +254,15 @@ class View:
     #           DRAWING THE UI
     # ------------------------------------
 
-    def _consumable_icon_in_ui(self, x_in_ui, y_in_ui, size, consumable_number: int,
+    def _consumable_icon_in_ui(self, x, y, size, consumable_number: int,
                                consumable_types: List[ConsumableType], highlighted_consumable_action: int):
         w = size[0]
         h = size[1]
-        x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
-        self.screen_render.rect_filled((40, 40, 50), Rect(x, y, w, h))
+        self.ui_render.rect_filled((40, 40, 50), Rect(x, y, w, h))
         if consumable_types:
             icon_sprite = CONSUMABLES[consumable_types[0]].icon_sprite
-            self.screen_render.image(self.images_by_ui_sprite[icon_sprite], (x, y))
-        self.screen_render.rect((150, 150, 190), Rect(x, y, w, h), 1)
+            self.ui_render.image(self.images_by_ui_sprite[icon_sprite], (x, y))
+        self.ui_render.rect((150, 150, 190), Rect(x, y, w, h), 1)
         # Render any consumables that are deeper down in the inventory
         sub_rect_h = 3
         for i in range(len(consumable_types)):
@@ -275,73 +274,76 @@ class View:
                 sub_rect_color = (110, 110, 200)
             else:
                 sub_rect_color = (170, 170, 170)
-            self.screen_render.rect_filled(sub_rect_color, Rect(x, y - 2 - (sub_rect_h + 1) * (i + 1), w, sub_rect_h))
+            self.ui_render.rect_filled(
+                sub_rect_color, Rect(x, y - 2 - (sub_rect_h + 1) * (i + 1), w, sub_rect_h))
 
         if highlighted_consumable_action == consumable_number:
-            self.screen_render.rect(COLOR_HIGHLIGHTED_ICON, Rect(x - 1, y - 1, w + 2, h + 2), 3)
-        self.screen_render.text(self.font_ui_icon_keys, str(consumable_number), (x + 12, y + h + 4))
+            self.ui_render.rect(COLOR_HIGHLIGHTED_ICON, Rect(x - 1, y - 1, w + 2, h + 2), 3)
+        self.ui_render.text(self.font_ui_icon_keys, str(consumable_number), (x + 12, y + h + 4))
 
-    def _ability_icon_in_ui(self, x_in_ui, y_in_ui, size, ability_type, highlighted_ability_action,
+    def _ability_icon_in_ui(self, x, y, size, ability_type, highlighted_ability_action,
                             ability_cooldowns_remaining):
         w = size[0]
         h = size[1]
-        x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
         ability = ABILITIES[ability_type]
         ability_key = KEYS_BY_ABILITY_TYPE[ability_type]
         icon_sprite = ability.icon_sprite
         icon_rect = Rect(x, y, w, h)
-        self.screen_render.rect_filled((40, 40, 50), icon_rect)
-        self.screen_render.image(self.images_by_ui_sprite[icon_sprite], (x, y))
-        self.screen_render.rect((150, 150, 190), icon_rect, 1)
+        self.ui_render.rect_filled((40, 40, 50), icon_rect)
+        self.ui_render.image(self.images_by_ui_sprite[icon_sprite], (x, y))
+        self.ui_render.rect((150, 150, 190), icon_rect, 1)
         if highlighted_ability_action == ability_type:
-            self.screen_render.rect(COLOR_HIGHLIGHTED_ICON, Rect(x - 1, y - 1, w + 2, h + 2), 3)
-        self.screen_render.text(self.font_ui_icon_keys, ability_key.key_string, (x + 12, y + h + 4))
+            self.ui_render.rect(COLOR_HIGHLIGHTED_ICON, Rect(x - 1, y - 1, w + 2, h + 2), 3)
+        self.ui_render.text(self.font_ui_icon_keys, ability_key.key_string, (x + 12, y + h + 4))
 
         if ability_cooldowns_remaining[ability_type] > 0:
             ratio_remaining = ability_cooldowns_remaining[ability_type] / ability.cooldown
             cooldown_rect = Rect(x + 1, y + 1 + (h - 2) * (1 - ratio_remaining), w - 2, (h - 2) * ratio_remaining + 1)
-            self.screen_render.rect_filled((100, 30, 30), cooldown_rect)
-            self.screen_render.rect((180, 30, 30), icon_rect, 2)
+            self.ui_render.rect_filled((100, 30, 30), cooldown_rect)
+            self.ui_render.rect((180, 30, 30), icon_rect, 2)
 
-    def _item_icon_in_ui(self, x_in_ui, y_in_ui, size, item_type: ItemType,
+    def _item_icon_in_ui(self, x, y, size, item_type: ItemType,
                          slot_equipment_category: ItemEquipmentCategory):
         w = size[0]
         h = size[1]
-        x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
         rect = Rect(x, y, w, h)
-        self.screen_render.rect_filled((40, 40, 50), rect)
+        self.ui_render.rect_filled((40, 40, 50), rect)
         if item_type:
             if slot_equipment_category:
-                self.screen_render.rect_filled((40, 40, 70), rect)
+                self.ui_render.rect_filled((40, 40, 70), rect)
             ui_icon_sprite = ITEMS[item_type].icon_sprite
-            self.screen_render.image(self.images_by_ui_sprite[ui_icon_sprite], (x, y))
+            self.ui_render.image(self.images_by_ui_sprite[ui_icon_sprite], (x, y))
         elif slot_equipment_category:
-            if slot_equipment_category == ItemEquipmentCategory.HEAD:
-                self.screen_render.image(self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_HELMET], (x, y))
-            elif slot_equipment_category == ItemEquipmentCategory.CHEST:
-                self.screen_render.image(self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_CHEST], (x, y))
-            elif slot_equipment_category == ItemEquipmentCategory.MAIN_HAND:
-                self.screen_render.image(self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_MAINHAND], (x, y))
-            elif slot_equipment_category == ItemEquipmentCategory.OFF_HAND:
-                self.screen_render.image(self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_OFFHAND], (x, y))
-            elif slot_equipment_category == ItemEquipmentCategory.NECK:
-                self.screen_render.image(self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_NECK], (x, y))
-            elif slot_equipment_category == ItemEquipmentCategory.RING:
-                self.screen_render.image(self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_RING], (x, y))
+            image = self._get_image_for_item_category(slot_equipment_category)
+            self.ui_render.image(image, (x, y))
         if item_type and slot_equipment_category:
             color_outline = (250, 250, 250)
         else:
             color_outline = (100, 100, 140)
-        self.screen_render.rect(color_outline, rect, 1)
+        self.ui_render.rect(color_outline, rect, 1)
 
-    def _map_editor_icon_in_ui(self, x_in_ui, y_in_ui, size: Tuple[int, int], highlighted: bool, user_input_key: str,
+    def _get_image_for_item_category(self, slot_equipment_category: ItemEquipmentCategory):
+        if slot_equipment_category == ItemEquipmentCategory.HEAD:
+            ui_icon_sprite = UiIconSprite.INVENTORY_TEMPLATE_HELMET
+        elif slot_equipment_category == ItemEquipmentCategory.CHEST:
+            ui_icon_sprite = UiIconSprite.INVENTORY_TEMPLATE_CHEST
+        elif slot_equipment_category == ItemEquipmentCategory.MAIN_HAND:
+            ui_icon_sprite = UiIconSprite.INVENTORY_TEMPLATE_MAINHAND
+        elif slot_equipment_category == ItemEquipmentCategory.OFF_HAND:
+            ui_icon_sprite = UiIconSprite.INVENTORY_TEMPLATE_OFFHAND
+        elif slot_equipment_category == ItemEquipmentCategory.NECK:
+            ui_icon_sprite = UiIconSprite.INVENTORY_TEMPLATE_NECK
+        elif slot_equipment_category == ItemEquipmentCategory.RING:
+            ui_icon_sprite = UiIconSprite.INVENTORY_TEMPLATE_RING
+        else:
+            raise Exception("Unhandled equipment category: " + str(slot_equipment_category))
+        return self.images_by_ui_sprite[ui_icon_sprite]
+
+    def _map_editor_icon_in_ui(self, x, y, size: Tuple[int, int], highlighted: bool, user_input_key: str,
                                sprite: Optional[Sprite], ui_icon_sprite: Optional[UiIconSprite]):
         w = size[0]
         h = size[1]
-        x, y = self._translate_ui_position_to_screen((x_in_ui, y_in_ui))
-
-        self.screen_render.rect_filled((40, 40, 40), Rect(x, y, w, h))
-
+        self.ui_render.rect_filled((40, 40, 40), Rect(x, y, w, h))
         if sprite:
             image = self.images_by_sprite[sprite][Direction.DOWN][0].image
         elif ui_icon_sprite:
@@ -350,22 +352,21 @@ class View:
             raise Exception("Nothing to render!")
 
         icon_scaled_image = pygame.transform.scale(image, size)
-        self.screen_render.image(icon_scaled_image, (x, y))
+        self.ui_render.image(icon_scaled_image, (x, y))
 
-        self.screen_render.rect(COLOR_WHITE, Rect(x, y, w, h), 2)
+        self.ui_render.rect(COLOR_WHITE, Rect(x, y, w, h), 2)
         if highlighted:
-            self.screen_render.rect(COLOR_HIGHLIGHTED_ICON, Rect(x - 1, y - 1, w + 2, h + 2), 3)
-        self.screen_render.text(self.font_ui_icon_keys, user_input_key, (x + 12, y + h + 4))
+            self.ui_render.rect(COLOR_HIGHLIGHTED_ICON, Rect(x - 1, y - 1, w + 2, h + 2), 3)
+        self.ui_render.text(self.font_ui_icon_keys, user_input_key, (x + 12, y + h + 4))
 
     def _minimap_in_ui(self, position_in_ui, size, player_relative_position):
-        pos_in_screen = self._translate_ui_position_to_screen(position_in_ui)
-        rect_in_screen = Rect(pos_in_screen[0], pos_in_screen[1], size[0], size[1])
-        self.screen_render.rect_filled((40, 40, 50), rect_in_screen)
-        self.screen_render.rect((150, 150, 190), rect_in_screen, 1)
-        dot_x = rect_in_screen[0] + player_relative_position[0] * size[0]
-        dot_y = rect_in_screen[1] + player_relative_position[1] * size[1]
+        rect = Rect(position_in_ui[0], position_in_ui[1], size[0], size[1])
+        self.ui_render.rect_filled((40, 40, 50), rect)
+        self.ui_render.rect((150, 150, 190), rect, 1)
+        dot_x = rect[0] + player_relative_position[0] * size[0]
+        dot_y = rect[1] + player_relative_position[1] * size[1]
         dot_w = 4
-        self.screen_render.rect_filled((100, 160, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
+        self.ui_render.rect_filled((100, 160, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
     def _message(self, message):
         w_rect = len(message) * 9 + 10
@@ -390,16 +391,16 @@ class View:
         x_tooltip = bottom_left_corner[0]
         y_tooltip = bottom_left_corner[1] - h_tooltip - 3
         rect_tooltip = Rect(x_tooltip, y_tooltip, w_tooltip, h_tooltip)
-        self.screen_render.rect_transparent(Rect(x_tooltip, y_tooltip, w_tooltip, h_tooltip), 200, (0, 0, 30))
-        self.screen_render.rect(COLOR_WHITE, rect_tooltip, 1)
-        self.screen_render.text(self.font_tooltip_header, tooltip.title, (x_tooltip + 20, y_tooltip + 15), COLOR_WHITE)
+        self.ui_render.rect_transparent(Rect(x_tooltip, y_tooltip, w_tooltip, h_tooltip), 200, (0, 0, 30))
+        self.ui_render.rect(COLOR_WHITE, rect_tooltip, 1)
+        self.ui_render.text(self.font_tooltip_header, tooltip.title, (x_tooltip + 20, y_tooltip + 15), COLOR_WHITE)
         y_separator = y_tooltip + 40
-        self.screen_render.line(COLOR_WHITE, (x_tooltip + 10, y_separator), (x_tooltip + w_tooltip - 10, y_separator),
-                                1)
+        self.ui_render.line(COLOR_WHITE, (x_tooltip + 10, y_separator), (x_tooltip + w_tooltip - 10, y_separator),
+                            1)
 
         for i, line in enumerate(detail_lines):
-            self.screen_render.text(self.font_tooltip_details, line, (x_tooltip + 20, y_tooltip + 50 + i * 18),
-                                    COLOR_WHITE)
+            self.ui_render.text(self.font_tooltip_details, line, (x_tooltip + 20, y_tooltip + 50 + i * 18),
+                                COLOR_WHITE)
 
     def _entity_action_text(self, entity_action_text: EntityActionText):
         entity_center_pos = entity_action_text.entity.get_center_position()
@@ -543,7 +544,7 @@ class View:
         if is_point_in_rect(mouse_ui_position, rect_healthbar):
             tooltip_details = [
                 "regeneration: " + "{:.1f}".format(player_state.health_resource.get_effective_regen()) + "/s"]
-            tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_healthbar[0], rect_healthbar[1]))
+            tooltip_bottom_left_position = (rect_healthbar[0], rect_healthbar[1])
             tooltip = TooltipGraphics("Health", tooltip_details, bottom_left=tooltip_bottom_left_position)
         health_text = str(player_health) + "/" + str(player_max_health)
         self.ui_render.text(self.font_ui_stat_bar_numbers, health_text, (x_0 + 20, y_4 - 1))
@@ -554,7 +555,7 @@ class View:
         if is_point_in_rect(mouse_ui_position, rect_manabar):
             tooltip_details = [
                 "regeneration: " + "{:.1f}".format(player_state.mana_resource.get_effective_regen()) + "/s"]
-            tooltip_bottom_left_position = self._translate_ui_position_to_screen((rect_manabar[0], rect_manabar[1]))
+            tooltip_bottom_left_position = (rect_manabar[0], rect_manabar[1])
             tooltip = TooltipGraphics("Mana", tooltip_details, bottom_left=tooltip_bottom_left_position)
         mana_text = str(player_mana) + "/" + str(player_max_mana)
         self.ui_render.text(self.font_ui_stat_bar_numbers, mana_text, (x_0 + 20, y_4 + 20))
@@ -564,12 +565,12 @@ class View:
         # CONSUMABLES
         icon_space = 2
         icon_rect_padding = 2
-        consumables_rect_pos = self._translate_ui_position_to_screen((x_1 - icon_rect_padding, y_2 - icon_rect_padding))
+        consumables_rect_pos = (x_1 - icon_rect_padding, y_2 - icon_rect_padding)
         consumables_rect = Rect(
             consumables_rect_pos[0], consumables_rect_pos[1],
             (UI_ICON_SIZE[0] + icon_space) * len(consumable_slots) - icon_space + icon_rect_padding * 2,
             UI_ICON_SIZE[1] + icon_rect_padding * 2)
-        self.screen_render.rect_filled((60, 60, 80), consumables_rect)
+        self.ui_render.rect_filled((60, 60, 80), consumables_rect)
         for i, slot_number in enumerate(consumable_slots):
             x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_2
@@ -580,19 +581,19 @@ class View:
                 if consumable_type:
                     tooltip_title = CONSUMABLES[consumable_type].name
                     tooltip_details = [CONSUMABLES[consumable_type].description]
-                    tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
+                    tooltip_bottom_left_position = (x, y)
                     tooltip = TooltipGraphics(tooltip_title, tooltip_details, bottom_left=tooltip_bottom_left_position)
             self._consumable_icon_in_ui(x, y, UI_ICON_SIZE, slot_number, consumable_types,
                                         highlighted_consumable_action)
 
         # ABILITIES
-        abilities_rect_pos = self._translate_ui_position_to_screen((x_1 - icon_rect_padding, y_4 - icon_rect_padding))
+        abilities_rect_pos = (x_1 - icon_rect_padding, y_4 - icon_rect_padding)
         max_num_abilities = 5
         abilities_rect = Rect(
             abilities_rect_pos[0], abilities_rect_pos[1],
             (UI_ICON_SIZE[0] + icon_space) * max_num_abilities - icon_space + icon_rect_padding * 2,
             UI_ICON_SIZE[1] + icon_rect_padding * 2)
-        self.screen_render.rect_filled((60, 60, 80), abilities_rect)
+        self.ui_render.rect_filled((60, 60, 80), abilities_rect)
         for i, ability_type in enumerate(abilities):
             x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_4
@@ -603,21 +604,21 @@ class View:
                     cooldown = str(ability_data.cooldown / 1000.0)
                     mana_cost = str(ability_data.mana_cost)
                     tooltip_details = ["Cooldown: " + cooldown + " s", "Mana: " + mana_cost, ability_data.description]
-                    tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
+                    tooltip_bottom_left_position = (x, y)
                     tooltip = TooltipGraphics(tooltip_title, tooltip_details, bottom_left=tooltip_bottom_left_position)
             self._ability_icon_in_ui(x, y, UI_ICON_SIZE, ability_type,
                                      highlighted_ability_action, ability_cooldowns_remaining)
 
         # ITEMS
         x_2 = 325
-        items_rect_pos = self._translate_ui_position_to_screen((x_2 - icon_rect_padding, y_2 - icon_rect_padding))
+        items_rect_pos = (x_2 - icon_rect_padding, y_2 - icon_rect_padding)
         num_item_slot_rows = 3
         num_slots_per_row = 3
         items_rect = Rect(
             items_rect_pos[0], items_rect_pos[1],
             (UI_ICON_SIZE[0] + icon_space) * num_slots_per_row - icon_space + icon_rect_padding * 2,
             num_item_slot_rows * UI_ICON_SIZE[1] + (num_item_slot_rows - 1) * icon_space + icon_rect_padding * 2)
-        self.screen_render.rect_filled((60, 60, 80), items_rect)
+        self.ui_render.rect_filled((60, 60, 80), items_rect)
         for i in range(len(item_slots)):
             x = x_2 + (i % num_slots_per_row) * (UI_ICON_SIZE[0] + icon_space)
             y = y_2 + (i // num_slots_per_row) * (UI_ICON_SIZE[1] + icon_space)
@@ -633,21 +634,21 @@ class View:
                     if item_data.item_equipment_category:
                         tooltip_details.append("[" + item_data.item_equipment_category.name + "]")
                     tooltip_details += item_data.description_lines
-                    tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
+                    tooltip_bottom_left_position = (x, y)
                     tooltip = TooltipGraphics(tooltip_title, tooltip_details, bottom_left=tooltip_bottom_left_position)
                 elif slot_equipment_category:
                     tooltip_title = "..."  # "[" + slot_equipment_category.name + "]"
                     tooltip_details = ["[" + slot_equipment_category.name + "]",
                                        "You have nothing equipped. Drag an item here to equip it!"]
-                    tooltip_bottom_left_position = self._translate_ui_position_to_screen((x, y))
+                    tooltip_bottom_left_position = (x, y)
                     tooltip = TooltipGraphics(tooltip_title, tooltip_details, bottom_left=tooltip_bottom_left_position)
             self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type, slot_equipment_category)
 
         # MINIMAP
         x_3 = 440
-        minimap_padding_rect_pos = self._translate_ui_position_to_screen((x_3 - 2, y_2 - 2))
+        minimap_padding_rect_pos = (x_3 - 2, y_2 - 2)
         minimap_padding_rect = Rect(minimap_padding_rect_pos[0], minimap_padding_rect_pos[1], 80 + 4, 80 + 4)
-        self.screen_render.rect_filled((60, 60, 80), minimap_padding_rect)
+        self.ui_render.rect_filled((60, 60, 80), minimap_padding_rect)
         self._minimap_in_ui((x_3, y_2), (80, 80), player_minimap_relative_position)
 
         if dialog:
@@ -666,16 +667,16 @@ class View:
                 buff_duration_ratios_remaining.append(active_buff.get_ratio_duration_remaining())
         num_buffs_to_render = len(buff_texts)
         y_buffs = -35 - (num_buffs_to_render - 1) * 25
-        buffs_screen_position = self._translate_ui_position_to_screen((x_buffs, y_buffs))
+        buffs_ui_position = (x_buffs, y_buffs)
         if num_buffs_to_render:
             rect_padding = 5
             # Note: The width of this rect is hard-coded so long buff descriptions aren't well supported
             buffs_background_rect = Rect(
-                buffs_screen_position[0] - rect_padding,
-                buffs_screen_position[1] - rect_padding,
+                buffs_ui_position[0] - rect_padding,
+                buffs_ui_position[1] - rect_padding,
                 140 + rect_padding * 2,
                 num_buffs_to_render * 25 + rect_padding * 2)
-            self.screen_render.rect_transparent(buffs_background_rect, 125, COLOR_BLACK)
+            self.ui_render.rect_transparent(buffs_background_rect, 125, COLOR_BLACK)
         for i, text in enumerate(buff_texts):
             y_offset_buff = i * 25
             y = y_buffs + y_offset_buff
@@ -802,12 +803,12 @@ class View:
                 hovered_talent_option = (i, 0)
                 tooltip_graphics = TooltipGraphics(
                     choice.first.name, [choice.first.description],
-                    bottom_right=self._translate_ui_position_to_screen((x_text + UI_ICON_SIZE[0], y_icon)))
+                    bottom_right=(x_text + UI_ICON_SIZE[0], y_icon))
             elif is_mouse_hovering_second:
                 hovered_talent_option = (i, 1)
                 tooltip_graphics = TooltipGraphics(
                     choice.second.name, [choice.second.description],
-                    bottom_right=self._translate_ui_position_to_screen((x_text + UI_ICON_SIZE[0] + 60, y_icon)))
+                    bottom_right=(x_text + UI_ICON_SIZE[0] + 60, y_icon))
 
         y_bot_text = rect_container[1] + rect_container[3] - 26
 
@@ -822,25 +823,21 @@ class View:
 
     def _render_talent_icon(self, ui_icon_sprite: UiIconSprite, position: Tuple[int, int], chosen: bool,
                             mouse_ui_position: Tuple[int, int]) -> bool:
-        translated_pos = self._translate_ui_position_to_screen(position)
-        rect = Rect(translated_pos[0], translated_pos[1], UI_ICON_SIZE[0], UI_ICON_SIZE[1])
-        self.screen_render.rect_filled(COLOR_BLACK, rect)
+        rect = Rect(position[0], position[1], UI_ICON_SIZE[0], UI_ICON_SIZE[1])
+        self.ui_render.rect_filled(COLOR_BLACK, rect)
         image = self.images_by_ui_sprite[ui_icon_sprite]
-        self.screen_render.image(image, translated_pos)
+        self.ui_render.image(image, position)
         color_outline = COLOR_HIGHLIGHTED_ICON if chosen else COLOR_WHITE
         width_outline = 2 if chosen else 1
-        self.screen_render.rect(color_outline, rect, width_outline)
+        self.ui_render.rect(color_outline, rect, width_outline)
         return is_point_in_rect(mouse_ui_position, Rect(position[0], position[1], UI_ICON_SIZE[0], UI_ICON_SIZE[1]))
 
     def _player_portrait(self, hero_id: HeroId, ui_position: Tuple[int, int]):
-        rect_portrait_pos = self._translate_ui_position_to_screen(ui_position)
         portrait_sprite = HEROES[hero_id].portrait_icon_sprite
         player_portrait_image = self.images_by_portrait_sprite[portrait_sprite]
-        self.screen_render.image(player_portrait_image, rect_portrait_pos)
-        self.screen_render.rect((160, 160, 180),
-                                Rect(rect_portrait_pos[0], rect_portrait_pos[1], PORTRAIT_ICON_SIZE[0],
-                                     PORTRAIT_ICON_SIZE[1]),
-                                2)
+        self.ui_render.image(player_portrait_image, ui_position)
+        rect = Rect(ui_position[0], ui_position[1], PORTRAIT_ICON_SIZE[0], PORTRAIT_ICON_SIZE[1])
+        self.ui_render.rect((160, 160, 180), rect, 2)
 
     def _dialog(self, dialog_graphics: DialogGraphics):
 
