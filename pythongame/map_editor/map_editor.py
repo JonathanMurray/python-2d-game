@@ -14,8 +14,8 @@ from pythongame.core.game_state import GameState
 from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.image_loading import load_images_by_sprite, load_images_by_ui_sprite, \
     load_images_by_portrait_sprite
-from pythongame.core.view.view import View, PORTRAIT_ICON_SIZE, UI_ICON_SIZE
-from pythongame.map_editor.map_editor_ui import MapEditorView
+from pythongame.core.view.game_world_view import GameWorldView
+from pythongame.map_editor.map_editor_ui_view import MapEditorView, PORTRAIT_ICON_SIZE, MAP_EDITOR_UI_ICON_SIZE
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
 from pythongame.map_file import save_game_state_to_json_file, create_game_state_from_json_file
 from pythongame.register_game_data import register_all_game_data
@@ -193,13 +193,11 @@ def main(map_file_name: Optional[str]):
 
     pygame_screen = pygame.display.set_mode(SCREEN_SIZE)
     images_by_sprite = load_images_by_sprite(ENTITY_SPRITE_INITIALIZERS)
-    images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, UI_ICON_SIZE)
+    images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, MAP_EDITOR_UI_ICON_SIZE)
     images_by_portrait_sprite = load_images_by_portrait_sprite(PORTRAIT_ICON_SPRITE_PATHS, PORTRAIT_ICON_SIZE)
-    view = View(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite, images_by_ui_sprite,
-                images_by_portrait_sprite)
-
-    map_editor_ui = MapEditorView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite, images_by_ui_sprite,
-                                  images_by_portrait_sprite)
+    world_view = GameWorldView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite)
+    ui_view = MapEditorView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite, images_by_ui_sprite,
+                            images_by_portrait_sprite)
 
     user_state = UserState.deleting_entities()
 
@@ -234,7 +232,7 @@ def main(map_file_name: Optional[str]):
                 snapped_mouse_world_position = sum_of_vectors(
                     snapped_mouse_screen_position, game_state.camera_world_area.topleft)
                 is_snapped_mouse_within_world = game_state.is_position_within_game_world(snapped_mouse_world_position)
-                is_snapped_mouse_over_ui = map_editor_ui.is_screen_position_within_ui(snapped_mouse_screen_position)
+                is_snapped_mouse_over_ui = ui_view.is_screen_position_within_ui(snapped_mouse_screen_position)
                 if is_mouse_button_down and is_snapped_mouse_within_world and not is_snapped_mouse_over_ui:
                     if user_state.placing_entity:
                         if user_state.placing_entity.wall_type:
@@ -307,7 +305,7 @@ def main(map_file_name: Optional[str]):
 
         entities_to_render = game_state.get_all_entities_to_render()
         decorations_to_render = game_state.get_decorations_to_render()
-        view.render_world(
+        world_view.render_world(
             all_entities_to_render=entities_to_render,
             decorations_to_render=decorations_to_render,
             player_entity=game_state.player_entity,
@@ -322,7 +320,7 @@ def main(map_file_name: Optional[str]):
             entire_world_area=game_state.entire_world_area,
             entity_action_text=None)
 
-        entity_icon_hovered_by_mouse = map_editor_ui.render(
+        entity_icon_hovered_by_mouse = ui_view.render(
             chars_by_entities=CHARS_BY_ENTITY,
             entities=MAP_EDITOR_ENTITIES,
             placing_entity=user_state.placing_entity,
@@ -343,23 +341,23 @@ def main(map_file_name: Optional[str]):
         elif not is_snapped_mouse_within_world:
             snapped_mouse_rect = Rect(snapped_mouse_screen_position[0], snapped_mouse_screen_position[1],
                                       grid_cell_size, grid_cell_size)
-            map_editor_ui.render_map_editor_mouse_rect((250, 50, 0), snapped_mouse_rect)
+            ui_view.render_map_editor_mouse_rect((250, 50, 0), snapped_mouse_rect)
         elif user_state.placing_entity:
             entity_being_placed = user_state.placing_entity
-            map_editor_ui.render_map_editor_world_entity_at_position(
+            ui_view.render_map_editor_world_entity_at_position(
                 entity_being_placed.sprite, entity_being_placed.entity_size, snapped_mouse_screen_position)
         elif user_state.deleting_entities:
             snapped_mouse_rect = Rect(snapped_mouse_screen_position[0], snapped_mouse_screen_position[1],
                                       grid_cell_size, grid_cell_size)
-            map_editor_ui.render_map_editor_mouse_rect((250, 250, 0), snapped_mouse_rect)
+            ui_view.render_map_editor_mouse_rect((250, 250, 0), snapped_mouse_rect)
         elif user_state.deleting_decorations:
             snapped_mouse_rect = Rect(snapped_mouse_screen_position[0], snapped_mouse_screen_position[1],
                                       grid_cell_size, grid_cell_size)
-            map_editor_ui.render_map_editor_mouse_rect((0, 250, 250), snapped_mouse_rect)
+            ui_view.render_map_editor_mouse_rect((0, 250, 250), snapped_mouse_rect)
         else:
             raise Exception("Unhandled user_state: " + str(user_state))
 
-        view.update_display()
+        world_view.update_display()
 
 
 def _add_money(amount: int, game_state, snapped_mouse_world_position):

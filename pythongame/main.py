@@ -10,9 +10,10 @@ from pythongame.core.game_data import allocate_input_keys_for_abilities, ENTITY_
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.player_environment_interactions import PlayerInteractionsState
 from pythongame.core.sound_player import init_sound_player
+from pythongame.core.view.game_ui_view import GameUiView, UI_ICON_SIZE, PORTRAIT_ICON_SIZE
 from pythongame.core.view.image_loading import load_images_by_sprite, \
     load_images_by_ui_sprite, load_images_by_portrait_sprite
-from pythongame.core.view.view import View, UI_ICON_SIZE, PORTRAIT_ICON_SIZE
+from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.core.view.view_state import ViewState
 from pythongame.map_file import create_game_state_from_json_file
 from pythongame.player_file import SavedPlayerState, load_player_state_from_json_file
@@ -41,8 +42,9 @@ class Main:
         images_by_sprite = load_images_by_sprite(ENTITY_SPRITE_INITIALIZERS)
         images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, UI_ICON_SIZE)
         images_by_portrait_sprite = load_images_by_portrait_sprite(PORTRAIT_ICON_SPRITE_PATHS, PORTRAIT_ICON_SIZE)
-        self.view = View(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite, images_by_ui_sprite,
-                         images_by_portrait_sprite)
+        self.world_view = GameWorldView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite)
+        self.ui_view = GameUiView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_ui_sprite,
+                                  images_by_portrait_sprite)
 
         init_sound_player()
         self.clock = pygame.time.Clock()
@@ -109,9 +111,10 @@ class Main:
         self.playing_scene = PlayingScene(
             self.game_state,
             self.game_engine,
-            self.view,
+            self.world_view,
+            self.ui_view,
             self.view_state)
-        self.paused_scene = PausedScene(self.game_state, self.view, self.view_state)
+        self.paused_scene = PausedScene(self.game_state, self.world_view, self.ui_view, self.view_state)
         self.view_state.set_message("Hint: " + get_random_hint())
 
         if saved_player_state:

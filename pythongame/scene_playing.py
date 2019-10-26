@@ -21,7 +21,8 @@ from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, Acti
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_main_user_inputs, get_dialog_user_inputs, \
     ActionChangeDialogOption, ActionSaveGameState, ActionPressShiftKey, ActionReleaseShiftKey
-from pythongame.core.view.view import MouseHoverEvent, View, EntityActionText
+from pythongame.core.view.game_ui_view import GameUiView, MouseHoverEvent
+from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
 from pythongame.core.view.view_state import ViewState
 from pythongame.player_file import save_to_file
 
@@ -72,12 +73,14 @@ class PlayingScene:
             self,
             game_state: GameState,
             game_engine: GameEngine,
-            view: View,
+            world_view: GameWorldView,
+            ui_view: GameUiView,
             view_state: ViewState):
         self.player_interactions_state = PlayerInteractionsState()
         self.game_state = game_state
         self.game_engine = game_engine
-        self.view = view
+        self.view = world_view
+        self.game_ui_view = ui_view
         self.view_state = view_state
         self.render_hit_and_collision_boxes = False
         self.mouse_screen_position = (0, 0)
@@ -199,7 +202,7 @@ class PlayingScene:
             self.game_state.player_state.talents_state, self.game_state.player_state.level,
             self.game_state.player_state.chosen_talent_option_indices)
 
-        mouse_hover_event: MouseHoverEvent = self.view.render_ui(
+        mouse_hover_event: MouseHoverEvent = self.game_ui_view.render_ui(
             player_state=self.game_state.player_state,
             view_state=self.view_state,
             player_speed_multiplier=self.game_state.player_entity.speed_multiplier,
@@ -222,7 +225,7 @@ class PlayingScene:
 
         if self.item_slot_being_dragged is not None:
             item_type = self.game_state.player_state.item_inventory.get_item_type_in_slot(self.item_slot_being_dragged)
-            self.view.render_item_being_dragged(item_type, self.mouse_screen_position)
+            self.game_ui_view.render_item_being_dragged(item_type, self.mouse_screen_position)
 
         if mouse_was_just_released and self.item_slot_being_dragged is not None:
             if hovered_item_slot_number is not None and self.item_slot_being_dragged != hovered_item_slot_number:
@@ -232,9 +235,9 @@ class PlayingScene:
                     play_sound(SoundId.UI_ITEM_WAS_MOVED)
                 else:
                     play_sound(SoundId.INVALID_ACTION)
-            if mouse_hover_event.game_world_position:
+            if not mouse_hover_event.is_over_ui:
                 self.game_engine.drop_inventory_item_on_ground(self.item_slot_being_dragged,
-                                                               mouse_hover_event.game_world_position)
+                                                               self.get_mouse_hover_world_pos())
             self.item_slot_being_dragged = None
 
         # DRAGGING CONSUMABLES
@@ -249,16 +252,16 @@ class PlayingScene:
         if self.consumable_slot_being_dragged is not None:
             consumable_type = self.game_state.player_state.consumable_inventory.consumables_in_slots[
                 self.consumable_slot_being_dragged][0]
-            self.view.render_consumable_being_dragged(consumable_type, self.mouse_screen_position)
+            self.game_ui_view.render_consumable_being_dragged(consumable_type, self.mouse_screen_position)
 
         if mouse_was_just_released and self.consumable_slot_being_dragged is not None:
             if hovered_consumable_slot_number is not None and self.consumable_slot_being_dragged != hovered_consumable_slot_number:
                 self.game_engine.drag_consumable_between_inventory_slots(
                     self.consumable_slot_being_dragged, hovered_consumable_slot_number)
                 play_sound(SoundId.UI_ITEM_WAS_MOVED)
-            if mouse_hover_event.game_world_position:
+            if not mouse_hover_event.is_over_ui:
                 self.game_engine.drop_consumable_on_ground(self.consumable_slot_being_dragged,
-                                                           mouse_hover_event.game_world_position)
+                                                           self.get_mouse_hover_world_pos())
             self.consumable_slot_being_dragged = None
 
         if mouse_was_just_clicked and mouse_hover_event.ui_toggle is not None:
@@ -274,6 +277,10 @@ class PlayingScene:
         self.view.update_display()
 
         return transition_to_pause
+
+    def get_mouse_hover_world_pos(self):
+        return (int(self.mouse_screen_position[0] + self.game_state.camera_world_area.x),
+                int(self.mouse_screen_position[1] + self.game_state.camera_world_area.y))
 
 
 def get_entity_action_text(ready_entity: Any, is_shift_key_held_down: bool) -> EntityActionText:
