@@ -4,18 +4,16 @@ import pygame
 from pygame.rect import Rect
 
 from pythongame.core.common import Direction, Sprite, ConsumableType, ItemType, HeroId, UiIconSprite
-from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, ABILITIES, BUFF_TEXTS, \
-    KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, PORTRAIT_ICON_SPRITE_PATHS, \
-    HEROES, ConsumableCategory, CHANNELING_BUFFS
+from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, ABILITIES, BUFF_TEXTS, \
+    KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, HEROES, ConsumableCategory, CHANNELING_BUFFS
 from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration, \
     PlayerState
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory
 from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.npc_behaviors import DialogGraphics
 from pythongame.core.talents import TalentsGraphics
-from pythongame.core.view.image_loading import SpriteInitializer, ImageWithRelativePosition, \
-    load_and_scale_sprite, load_and_scale_directional_sprites
-from pythongame.core.view.render_util import DrawableArea
+from pythongame.core.view.image_loading import ImageWithRelativePosition
+from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
 from pythongame.core.view.view_state import ViewState, UiToggle
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite, VisualCross
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
@@ -68,9 +66,10 @@ class TooltipGraphics:
 
 class View:
 
-    def __init__(self, camera_size, screen_size):
+    def __init__(self, pygame_screen, camera_size: Tuple[int, int], screen_size: Tuple[int, int],
+                 images_by_sprite: Dict[Sprite, Dict[Direction, List[ImageWithRelativePosition]]],
+                 images_by_ui_sprite, images_by_portrait_sprite):
         pygame.font.init()
-        pygame_screen = pygame.display.set_mode(screen_size)
         self.screen_render = DrawableArea(pygame_screen)
         self.ui_render = DrawableArea(pygame_screen, self._translate_ui_position_to_screen)
         self.world_render = DrawableArea(pygame_screen, self._translate_world_position_to_screen)
@@ -98,18 +97,9 @@ class View:
         self.font_dialog = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 24)
         self.font_dialog_option_detail_body = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
 
-        self.images_by_sprite: Dict[Sprite, Dict[Direction, List[ImageWithRelativePosition]]] = {
-            sprite: load_and_scale_directional_sprites(ENTITY_SPRITE_INITIALIZERS[sprite])
-            for sprite in ENTITY_SPRITE_INITIALIZERS
-        }
-        self.images_by_ui_sprite = {sprite: load_and_scale_sprite(
-            SpriteInitializer(UI_ICON_SPRITE_PATHS[sprite], UI_ICON_SIZE))
-            for sprite in UI_ICON_SPRITE_PATHS
-        }
-        self.images_by_portrait_sprite = {sprite: load_and_scale_sprite(
-            SpriteInitializer(PORTRAIT_ICON_SPRITE_PATHS[sprite], PORTRAIT_ICON_SIZE))
-            for sprite in PORTRAIT_ICON_SPRITE_PATHS
-        }
+        self.images_by_sprite: Dict[Sprite, Dict[Direction, List[ImageWithRelativePosition]]] = images_by_sprite
+        self.images_by_ui_sprite = images_by_ui_sprite
+        self.images_by_portrait_sprite = images_by_portrait_sprite
 
         # This is updated every time the view is called
         self.camera_world_area = None
@@ -339,26 +329,6 @@ class View:
             raise Exception("Unhandled equipment category: " + str(slot_equipment_category))
         return self.images_by_ui_sprite[ui_icon_sprite]
 
-    def _map_editor_icon_in_ui(self, x, y, size: Tuple[int, int], highlighted: bool, user_input_key: str,
-                               sprite: Optional[Sprite], ui_icon_sprite: Optional[UiIconSprite]):
-        w = size[0]
-        h = size[1]
-        self.ui_render.rect_filled((40, 40, 40), Rect(x, y, w, h))
-        if sprite:
-            image = self.images_by_sprite[sprite][Direction.DOWN][0].image
-        elif ui_icon_sprite:
-            image = self.images_by_ui_sprite[ui_icon_sprite]
-        else:
-            raise Exception("Nothing to render!")
-
-        icon_scaled_image = pygame.transform.scale(image, size)
-        self.ui_render.image(icon_scaled_image, (x, y))
-
-        self.ui_render.rect(COLOR_WHITE, Rect(x, y, w, h), 2)
-        if highlighted:
-            self.ui_render.rect(COLOR_HIGHLIGHTED_ICON, Rect(x - 1, y - 1, w + 2, h + 2), 3)
-        self.ui_render.text(self.font_ui_icon_keys, user_input_key, (x + 12, y + h + 4))
-
     def _minimap_in_ui(self, position_in_ui, size, player_relative_position):
         rect = Rect(position_in_ui[0], position_in_ui[1], size[0], size[1])
         self.ui_render.rect_filled((40, 40, 50), rect)
@@ -380,7 +350,7 @@ class View:
         detail_lines = []
         detail_max_line_length = 32
         for detail in tooltip.details:
-            detail_lines += self._split_text_into_lines(detail, detail_max_line_length)
+            detail_lines += split_text_into_lines(detail, detail_max_line_length)
 
         w_tooltip = 260
         h_tooltip = 60 + 17 * len(detail_lines)
@@ -407,7 +377,7 @@ class View:
         text = entity_action_text.text
         detail_lines = []
         for detail_entry in entity_action_text.details:
-            detail_lines += self._split_text_into_lines(detail_entry, 30)
+            detail_lines += split_text_into_lines(detail_entry, 30)
         if detail_lines:
             line_length = max(max([len(line) for line in detail_lines]), len(text))
         else:
@@ -871,7 +841,7 @@ class View:
         self.screen_render.rect((160, 160, 180), rect_portrait, 2)
 
         dialog_pos = (x_left + 120, rect_dialog_container[1] + 15)
-        dialog_lines = self._split_text_into_lines(dialog_graphics.text_body, 35)
+        dialog_lines = split_text_into_lines(dialog_graphics.text_body, 35)
         for i, dialog_text_line in enumerate(dialog_lines):
             if i == 6:
                 print("WARN: too long dialog for NPC!")
@@ -919,28 +889,12 @@ class View:
                 self.screen_render.text(self.font_dialog, active_option.detail_header,
                                         (x_left + 14 + UI_ICON_SIZE[0] + 4, y_action_text - h_detail_section_expansion))
             if active_option.detail_body is not None:
-                detail_body_lines = self._split_text_into_lines(active_option.detail_body, 70)
+                detail_body_lines = split_text_into_lines(active_option.detail_body, 70)
                 for i, line in enumerate(detail_body_lines):
                     line_pos = (x_left + 10, y_action_text - h_detail_section_expansion + 35 + 20 * i)
                     self.screen_render.text(self.font_dialog_option_detail_body, line, line_pos)
         action_text = active_option.detail_action_text
         self.screen_render.text(self.font_dialog, "[Space] : " + action_text, (x_left + 10, y_action_text))
-
-    @staticmethod
-    def _split_text_into_lines(full_text: str, max_line_length: int) -> List[str]:
-        if len(full_text) == 0:
-            return []
-        tokens = full_text.split()
-        lines = []
-        line = tokens[0]
-        for token in tokens[1:]:
-            if len(line + ' ' + token) <= max_line_length:
-                line = line + ' ' + token
-            else:
-                lines.append(line)
-                line = token
-        lines.append(line)
-        return lines
 
     def render_item_being_dragged(self, item_type: ItemType, mouse_screen_position: Tuple[int, int]):
         ui_icon_sprite = ITEMS[item_type].icon_sprite
@@ -1026,26 +980,22 @@ class View:
         ui_position = self._translate_screen_position_to_ui(screen_position)
         return ui_position[1] >= 0
 
-    def render_picking_hero_ui(self, heroes: List[HeroId], selected_index: int):
-        self.screen_render.fill(COLOR_BLACK)
-        x_base = 170
-        y_0 = 200
-        for i, hero in enumerate(heroes):
-            hero_data = HEROES[hero]
-            sprite = hero_data.portrait_icon_sprite
-            image = self.images_by_portrait_sprite[sprite]
-            x = x_base + i * (PORTRAIT_ICON_SIZE[0] + 20)
-            self.screen_render.image(image, (x, y_0))
-            if i == selected_index:
-                self.screen_render.rect(COLOR_HIGHLIGHTED_ICON,
-                                        Rect(x, y_0, PORTRAIT_ICON_SIZE[0], PORTRAIT_ICON_SIZE[1]), 3)
-            else:
-                self.screen_render.rect(COLOR_WHITE, Rect(x, y_0, PORTRAIT_ICON_SIZE[0], PORTRAIT_ICON_SIZE[1]), 1)
-            self.screen_render.text(self.font_dialog, hero.name, (x, y_0 + PORTRAIT_ICON_SIZE[1] + 10))
-        description = HEROES[heroes[selected_index]].description
-        description_lines = self._split_text_into_lines(description, 40)
-        y_1 = 350
-        for i, description_line in enumerate(description_lines):
-            self.screen_render.text(self.font_dialog, description_line, (x_base, y_1 + i * 20))
-        y_2 = 500
-        self.screen_render.text(self.font_dialog, "SELECT YOUR HERO (Space to confirm)", (x_base, y_2))
+    def _map_editor_icon_in_ui(self, x, y, size: Tuple[int, int], highlighted: bool, user_input_key: str,
+                               sprite: Optional[Sprite], ui_icon_sprite: Optional[UiIconSprite]):
+        w = size[0]
+        h = size[1]
+        self.ui_render.rect_filled((40, 40, 40), Rect(x, y, w, h))
+        if sprite:
+            image = self.images_by_sprite[sprite][Direction.DOWN][0].image
+        elif ui_icon_sprite:
+            image = self.images_by_ui_sprite[ui_icon_sprite]
+        else:
+            raise Exception("Nothing to render!")
+
+        icon_scaled_image = pygame.transform.scale(image, size)
+        self.ui_render.image(icon_scaled_image, (x, y))
+
+        self.ui_render.rect(COLOR_WHITE, Rect(x, y, w, h), 2)
+        if highlighted:
+            self.ui_render.rect(COLOR_HIGHLIGHTED_ICON, Rect(x - 1, y - 1, w + 2, h + 2), 3)
+        self.ui_render.text(self.font_ui_icon_keys, user_input_key, (x + 12, y + h + 4))

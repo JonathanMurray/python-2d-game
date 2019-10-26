@@ -5,17 +5,21 @@ import pygame
 from pythongame.core.buff_effects import get_buff_effect
 from pythongame.core.common import SceneId, Millis, HeroId, ItemType, ConsumableType, Sprite, BuffType, get_random_hint
 from pythongame.core.consumable_inventory import ConsumableInventory
-from pythongame.core.game_data import allocate_input_keys_for_abilities
+from pythongame.core.game_data import allocate_input_keys_for_abilities, ENTITY_SPRITE_INITIALIZERS, \
+    UI_ICON_SPRITE_PATHS, PORTRAIT_ICON_SPRITE_PATHS
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.player_environment_interactions import PlayerInteractionsState
 from pythongame.core.sound_player import init_sound_player
-from pythongame.core.view.view import View
+from pythongame.core.view.image_loading import load_images_by_sprite, \
+    load_images_by_ui_sprite, load_images_by_portrait_sprite
+from pythongame.core.view.view import View, UI_ICON_SIZE, PORTRAIT_ICON_SIZE
 from pythongame.core.view.view_state import ViewState
 from pythongame.map_file import create_game_state_from_json_file
 from pythongame.player_file import SavedPlayerState, load_player_state_from_json_file
 from pythongame.register_game_data import register_all_game_data
 from pythongame.scene_paused import PausedScene
 from pythongame.scene_picking_hero.scene_picking_hero import PickingHeroScene
+from pythongame.scene_picking_hero.view_picking_hero import PickingHeroView
 from pythongame.scene_playing import PlayingScene
 
 SCREEN_SIZE = (700, 700)
@@ -33,11 +37,16 @@ class Main:
 
         pygame.init()
 
-        self.view = View(CAMERA_SIZE, SCREEN_SIZE)
+        pygame_screen = pygame.display.set_mode(SCREEN_SIZE)
+        images_by_sprite = load_images_by_sprite(ENTITY_SPRITE_INITIALIZERS)
+        images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, UI_ICON_SIZE)
+        images_by_portrait_sprite = load_images_by_portrait_sprite(PORTRAIT_ICON_SPRITE_PATHS, PORTRAIT_ICON_SIZE)
+        self.view = View(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite, images_by_ui_sprite,
+                         images_by_portrait_sprite)
+
         init_sound_player()
         self.clock = pygame.time.Clock()
-
-        self.picking_hero_scene = PickingHeroScene(self.view)
+        self.picking_hero_scene = PickingHeroScene(PickingHeroView(pygame_screen, images_by_portrait_sprite))
         # These are initialized after hero has been picked
         self.playing_scene = None
         self.paused_scene = None

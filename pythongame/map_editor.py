@@ -9,9 +9,12 @@ from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, It
 from pythongame.core.entity_creation import create_portal, create_hero_world_entity, create_npc, create_wall, \
     create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground, \
     create_player_state, create_chest
+from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, PORTRAIT_ICON_SPRITE_PATHS
 from pythongame.core.game_state import GameState
 from pythongame.core.math import sum_of_vectors
-from pythongame.core.view.view import View
+from pythongame.core.view.image_loading import load_images_by_sprite, load_images_by_ui_sprite, \
+    load_images_by_portrait_sprite
+from pythongame.core.view.view import View, PORTRAIT_ICON_SIZE, UI_ICON_SIZE
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 from pythongame.map_file import save_game_state_to_json_file, create_game_state_from_json_file
 from pythongame.register_game_data import register_all_game_data
@@ -187,7 +190,12 @@ def main(map_file_name: Optional[str]):
 
     pygame.init()
 
-    view = View(CAMERA_SIZE, SCREEN_SIZE)
+    pygame_screen = pygame.display.set_mode(SCREEN_SIZE)
+    images_by_sprite = load_images_by_sprite(ENTITY_SPRITE_INITIALIZERS)
+    images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, UI_ICON_SIZE)
+    images_by_portrait_sprite = load_images_by_portrait_sprite(PORTRAIT_ICON_SPRITE_PATHS, PORTRAIT_ICON_SIZE)
+    view = View(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite, images_by_ui_sprite,
+                images_by_portrait_sprite)
 
     user_state = UserState.deleting_entities()
 

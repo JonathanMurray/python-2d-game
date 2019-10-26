@@ -1,4 +1,4 @@
-from typing import Tuple, Callable
+from typing import Tuple, Callable, List
 
 import pygame
 from pygame.rect import Rect
@@ -59,3 +59,19 @@ class DrawableArea:
 
     def _translate_pos(self, pos: Tuple[int, int]):
         return self.translate_coordinates((pos[0], pos[1]))
+
+
+def split_text_into_lines(full_text: str, max_line_length: int) -> List[str]:
+    if len(full_text) == 0:
+        return []
+    tokens = full_text.split()
+    lines = []
+    line = tokens[0]
+    for token in tokens[1:]:
+        if len(line + ' ' + token) <= max_line_length:
+            line = line + ' ' + token
+        else:
+            lines.append(line)
+            line = token
+    lines.append(line)
+    return lines

@@ -3,7 +3,7 @@ from typing import Tuple, Optional, List, Any, Dict
 import pygame
 from pygame.rect import Rect
 
-from pythongame.core.common import Direction
+from pythongame.core.common import Direction, Sprite, UiIconSprite, PortraitIconSprite
 
 
 class SpriteInitializer:
@@ -94,3 +94,19 @@ def load_and_scale_directional_sprites(
 def _load_and_scale_sprite(image_file_path: str, scaling_size: Tuple[int, int]):
     image = pygame.image.load(image_file_path).convert_alpha()
     return pygame.transform.scale(image, scaling_size)
+
+
+def load_images_by_sprite(dictionary: Dict[Sprite, Dict[Direction, Animation]]) \
+        -> Dict[Sprite, Dict[Direction, List[ImageWithRelativePosition]]]:
+    return {sprite: load_and_scale_directional_sprites(dictionary[sprite]) for sprite in dictionary}
+
+
+def load_images_by_ui_sprite(dictionary: Dict[UiIconSprite, str], icon_size: Tuple[int, int]) \
+        -> Dict[UiIconSprite, Any]:
+    return {sprite: load_and_scale_sprite(SpriteInitializer(dictionary[sprite], icon_size)) for sprite in dictionary
+            }
+
+
+def load_images_by_portrait_sprite(dictionary: Dict[PortraitIconSprite, str], icon_size: Tuple[int, int]) \
+        -> Dict[PortraitIconSprite, Any]:
+    return {sprite: load_and_scale_sprite(SpriteInitializer(dictionary[sprite], icon_size)) for sprite in dictionary}
