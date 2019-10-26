@@ -9,14 +9,13 @@ from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, ABILITIES, BUF
 from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration, \
     PlayerState
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory
-from pythongame.core.math import is_point_in_rect, sum_of_vectors
+from pythongame.core.math import is_point_in_rect
 from pythongame.core.npc_behaviors import DialogGraphics
 from pythongame.core.talents import TalentsGraphics
 from pythongame.core.view.image_loading import ImageWithRelativePosition
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
 from pythongame.core.view.view_state import ViewState, UiToggle
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite, VisualCross
-from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
 
 COLOR_BACKGROUND = (88 + 30, 72 + 30, 40 + 30)
 COLOR_BACKGROUND_LINES = (93 + 30, 77 + 30, 45 + 30)
@@ -29,7 +28,6 @@ COLOR_HIGHLIGHTED_ICON = (250, 250, 150)
 COLOR_BORDER = (139, 69, 19)
 UI_ICON_SIZE = (32, 32)
 PORTRAIT_ICON_SIZE = (100, 70)
-MAP_EDITOR_UI_ICON_SIZE = (32, 32)
 
 RENDER_WORLD_COORDINATES = False
 
@@ -910,92 +908,8 @@ class View:
         self.screen_render.text(self.font_splash_screen, text, (x, y), COLOR_WHITE)
         self.screen_render.text(self.font_splash_screen, text, (x + 2, y + 2), COLOR_BLACK)
 
-    def render_map_editor_ui(
-            self, chars_by_entities: Dict[MapEditorWorldEntity, str], entities: List[MapEditorWorldEntity],
-            placing_entity: Optional[MapEditorWorldEntity], deleting_entities: bool, deleting_decorations: bool,
-            num_enemies: int, num_walls: int, num_decorations: int, grid_cell_size: int,
-            mouse_screen_position: Tuple[int, int]) -> Optional[MapEditorWorldEntity]:
 
-        mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
-
-        hovered_by_mouse: MapEditorWorldEntity = None
-
-        self.screen_render.rect(COLOR_BLACK, Rect(0, 0, self.camera_size[0], self.camera_size[1]), 3)
-        self.screen_render.rect_filled(COLOR_BLACK, Rect(0, self.camera_size[1], self.screen_size[0],
-                                                         self.screen_size[1] - self.camera_size[1]))
-
-        icon_space = 5
-
-        y_1 = 17
-        y_2 = y_1 + 22
-
-        x_0 = 20
-        self._map_editor_icon_in_ui(x_0, y_2, MAP_EDITOR_UI_ICON_SIZE, deleting_entities, 'Q', None,
-                                    UiIconSprite.MAP_EDITOR_TRASHCAN)
-        self._map_editor_icon_in_ui(x_0 + MAP_EDITOR_UI_ICON_SIZE[0] + icon_space, y_2, MAP_EDITOR_UI_ICON_SIZE,
-                                    deleting_decorations, 'Z', None, UiIconSprite.MAP_EDITOR_RECYCLING)
-
-        x_1 = 155
-        self.ui_render.text(self.font_ui_headers, "ENTITIES", (x_1, y_1))
-        num_icons_per_row = 27
-        for i, entity in enumerate(entities):
-            if entity in chars_by_entities:
-                char = chars_by_entities[entity]
-            else:
-                char = ''
-            is_this_entity_being_placed = entity is placing_entity
-            x = x_1 + (i % num_icons_per_row) * (MAP_EDITOR_UI_ICON_SIZE[0] + icon_space)
-            row_index = (i // num_icons_per_row)
-            y = y_2 + row_index * (MAP_EDITOR_UI_ICON_SIZE[1] + 25)
-            if is_point_in_rect(mouse_ui_position, Rect(x, y, MAP_EDITOR_UI_ICON_SIZE[0], MAP_EDITOR_UI_ICON_SIZE[1])):
-                hovered_by_mouse = entity
-            self._map_editor_icon_in_ui(
-                x, y, MAP_EDITOR_UI_ICON_SIZE, is_this_entity_being_placed, char, entity.sprite, None)
-
-        self.screen_render.rect(COLOR_WHITE, self.ui_screen_area, 1)
-
-        self.screen_render.rect_transparent(Rect(0, 0, 150, 80), 100, COLOR_BLACK)
-        self.screen_render.text(self.font_debug_info, "# enemies: " + str(num_enemies), (5, 3))
-        self.screen_render.text(self.font_debug_info, "# walls: " + str(num_walls), (5, 20))
-        self.screen_render.text(self.font_debug_info, "# decorations: " + str(num_decorations), (5, 37))
-        self.screen_render.text(self.font_debug_info, "Cell size: " + str(grid_cell_size), (5, 54))
-
-        return hovered_by_mouse
-
-    def render_map_editor_mouse_rect(self, color: Tuple[int, int, int], map_editor_mouse_rect: Rect):
-        self.screen_render.rect(color, map_editor_mouse_rect, 3)
-
-    def render_map_editor_world_entity_at_position(self, sprite: Sprite, entity_size: Tuple[int, int],
-                                                   position: Tuple[int, int]):
-        image_with_relative_position = self._get_image_for_sprite(sprite, Direction.DOWN, 0)
-        sprite_position = sum_of_vectors(position, image_with_relative_position.position_relative_to_entity)
-        self.screen_render.image(image_with_relative_position.image, sprite_position)
-        self.screen_render.rect((50, 250, 0), Rect(position[0], position[1], entity_size[0], entity_size[1]), 3)
 
     @staticmethod
     def update_display():
         pygame.display.update()
-
-    def is_screen_position_within_ui(self, screen_position: Tuple[int, int]):
-        ui_position = self._translate_screen_position_to_ui(screen_position)
-        return ui_position[1] >= 0
-
-    def _map_editor_icon_in_ui(self, x, y, size: Tuple[int, int], highlighted: bool, user_input_key: str,
-                               sprite: Optional[Sprite], ui_icon_sprite: Optional[UiIconSprite]):
-        w = size[0]
-        h = size[1]
-        self.ui_render.rect_filled((40, 40, 40), Rect(x, y, w, h))
-        if sprite:
-            image = self.images_by_sprite[sprite][Direction.DOWN][0].image
-        elif ui_icon_sprite:
-            image = self.images_by_ui_sprite[ui_icon_sprite]
-        else:
-            raise Exception("Nothing to render!")
-
-        icon_scaled_image = pygame.transform.scale(image, size)
-        self.ui_render.image(icon_scaled_image, (x, y))
-
-        self.ui_render.rect(COLOR_WHITE, Rect(x, y, w, h), 2)
-        if highlighted:
-            self.ui_render.rect(COLOR_HIGHLIGHTED_ICON, Rect(x - 1, y - 1, w + 2, h + 2), 3)
-        self.ui_render.text(self.font_ui_icon_keys, user_input_key, (x + 12, y + h + 4))
