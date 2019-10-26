@@ -42,6 +42,7 @@
 * goblin death sounds
 
 #### Features:
+* zombie/mummy has chance to inflict DOT or other debuff on hit
 * add UI toggle "HELP" that brings up a window explaining controls and objectives
 * right click items to swap them between inventory and equipped
 * allow some type of items to be stacked in inventory (gold nugget and sapphire)
