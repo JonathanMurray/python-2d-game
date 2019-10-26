@@ -17,7 +17,7 @@ from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vector
 from pythongame.core.player_controls import PlayerControls
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view_state import ViewState
-from pythongame.core.visual_effects import create_visual_exp_text, create_teleport_effects, VisualRect
+from pythongame.core.visual_effects import create_visual_exp_text, create_teleport_effects, VisualRect, VisualCircle
 from pythongame.game_data.portals import PORTAL_DELAY
 
 
@@ -179,6 +179,9 @@ class GameEngine:
             for event in gain_exp_events:
                 if isinstance(event, PlayerLeveledUp):
                     play_sound(SoundId.EVENT_PLAYER_LEVELED_UP)
+                    self.game_state.visual_effects.append(
+                        VisualCircle((150, 150, 250), self.game_state.player_entity.get_center_position(), 9, 35,
+                                     Millis(150), 2))
                     self.view_state.set_message("You reached level " + str(self.game_state.player_state.level))
                     allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
                 if isinstance(event, PlayerLearnedNewAbility):
