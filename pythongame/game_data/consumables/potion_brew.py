@@ -10,7 +10,7 @@ from pythongame.core.game_data import register_entity_sprite_initializer, regist
     register_buff_text
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, PlayerLostHealthEvent, \
     BuffEventOutcome
-from pythongame.core.image_loading import SpriteInitializer
+from pythongame.core.view.image_loading import SpriteInitializer
 
 BUFF_DURATION = Millis(10000)
 BUFF_TYPE = BuffType.RESTORING_HEALTH_FROM_BREW

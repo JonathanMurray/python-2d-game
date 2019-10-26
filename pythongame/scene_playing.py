@@ -21,8 +21,8 @@ from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, Acti
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_main_user_inputs, get_dialog_user_inputs, \
     ActionChangeDialogOption, ActionSaveGameState, ActionPressShiftKey, ActionReleaseShiftKey
-from pythongame.core.view import MouseHoverEvent, View, EntityActionText
-from pythongame.core.view_state import ViewState
+from pythongame.core.view.view import MouseHoverEvent, View, EntityActionText
+from pythongame.core.view.view_state import ViewState
 from pythongame.player_file import save_to_file
 
 

@@ -16,7 +16,7 @@ from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vector
     get_rect_with_increased_size_in_all_directions, translate_in_direction
 from pythongame.core.player_controls import PlayerControls
 from pythongame.core.sound_player import play_sound
-from pythongame.core.view_state import ViewState
+from pythongame.core.view.view_state import ViewState
 from pythongame.core.visual_effects import create_visual_exp_text, create_teleport_effects, VisualRect, VisualCircle
 from pythongame.game_data.portals import PORTAL_DELAY
 

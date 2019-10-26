@@ -7,10 +7,10 @@ from pythongame.core.game_data import register_ability_data, AbilityData, regist
     register_entity_sprite_map, ABILITIES
 from pythongame.core.game_state import GameState, WorldEntity, Projectile, NonPlayerCharacter
 from pythongame.core.hero_upgrades import register_hero_upgrade_effect
-from pythongame.core.image_loading import SpriteSheet
 from pythongame.core.math import get_position_from_center_position, translate_in_direction
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
+from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualCircle, VisualSprite
 
 BUFF_TYPE = BuffType.ROOTED_BY_ENTANGLING_ROOTS

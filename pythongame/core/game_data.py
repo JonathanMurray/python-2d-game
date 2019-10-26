@@ -5,10 +5,10 @@ import pygame
 
 from pythongame.core.common import *
 from pythongame.core.common import UiIconSprite, PortraitIconSprite
-from pythongame.core.image_loading import SpriteInitializer, SpriteSheet, SpriteMapInitializer, Animation
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.loot import LootTable
 from pythongame.core.talents import TalentsState
+from pythongame.core.view.image_loading import SpriteInitializer, SpriteSheet, SpriteMapInitializer, Animation
 
 ITEM_ENTITY_SIZE = (30, 30)
 POTION_ENTITY_SIZE = (30, 30)

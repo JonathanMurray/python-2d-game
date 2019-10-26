@@ -6,7 +6,7 @@ import pygame
 from pythongame.core.common import HeroId, SoundId
 from pythongame.core.sound_player import play_sound
 from pythongame.core.user_input import ActionExitGame
-from pythongame.core.view import View
+from pythongame.core.view.view import View
 from pythongame.scene_picking_hero.user_input_picking_hero import get_picking_hero_user_input, ActionPickHeroChange, \
     ActionPickHeroAccept
 

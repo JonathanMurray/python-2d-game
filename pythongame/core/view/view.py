@@ -9,13 +9,13 @@ from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE
     HEROES, ConsumableCategory, CHANNELING_BUFFS
 from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration, \
     PlayerState
-from pythongame.core.image_loading import SpriteInitializer, ImageWithRelativePosition, \
-    load_and_scale_sprite, load_and_scale_directional_sprites
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory
 from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.npc_behaviors import DialogGraphics
 from pythongame.core.talents import TalentsGraphics
-from pythongame.core.view_state import ViewState, UiToggle
+from pythongame.core.view.image_loading import SpriteInitializer, ImageWithRelativePosition, \
+    load_and_scale_sprite, load_and_scale_directional_sprites
+from pythongame.core.view.view_state import ViewState, UiToggle
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite, VisualCross
 from pythongame.map_editor_world_entity import MapEditorWorldEntity
 

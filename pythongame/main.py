@@ -9,8 +9,8 @@ from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_engine import GameEngine
 from pythongame.core.player_environment_interactions import PlayerInteractionsState
 from pythongame.core.sound_player import init_sound_player
-from pythongame.core.view import View
-from pythongame.core.view_state import ViewState
+from pythongame.core.view.view import View
+from pythongame.core.view.view_state import ViewState
 from pythongame.map_file import create_game_state_from_json_file
 from pythongame.player_file import SavedPlayerState, load_player_state_from_json_file
 from pythongame.register_game_data import register_all_game_data

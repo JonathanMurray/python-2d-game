@@ -6,8 +6,8 @@ from pythongame.core.common import SceneId
 from pythongame.core.game_state import GameState
 from pythongame.core.talents import talents_graphics_from_state
 from pythongame.core.user_input import ActionExitGame, ActionPauseGame, get_main_user_inputs, ActionSaveGameState
-from pythongame.core.view import View
-from pythongame.core.view_state import ViewState
+from pythongame.core.view.view import View
+from pythongame.core.view.view_state import ViewState
 from pythongame.player_file import save_to_file
 
 

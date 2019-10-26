@@ -7,11 +7,11 @@ from pythongame.core.entity_creation import create_item_on_ground
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, ITEMS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
-from pythongame.core.image_loading import SpriteSheet
 from pythongame.core.item_effects import get_item_effect
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
     register_npc_dialog_data, DialogData, DialogOptionData
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.view.image_loading import SpriteSheet
 
 ITEM_TYPE_FROG = ItemType.FROG
 

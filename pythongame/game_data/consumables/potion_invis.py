@@ -5,7 +5,7 @@ from pythongame.core.consumable_effects import create_potion_visual_effect_at_pl
 from pythongame.core.game_data import register_ui_icon_sprite_path, UiIconSprite, register_buff_text, ConsumableData, \
     register_consumable_data, ConsumableCategory, register_entity_sprite_initializer, POTION_ENTITY_SIZE
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
-from pythongame.core.image_loading import SpriteInitializer
+from pythongame.core.view.image_loading import SpriteInitializer
 from pythongame.core.visual_effects import VisualRect
 
 BUFF_TYPE = BuffType.INVISIBILITY

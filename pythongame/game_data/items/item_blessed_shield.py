@@ -5,9 +5,9 @@ from pythongame.core.damage_interactions import player_receive_healing
 from pythongame.core.game_data import register_ui_icon_sprite_path, register_item_data, ItemData, \
     register_entity_sprite_initializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import GameState, Event, PlayerWasAttackedEvent
-from pythongame.core.image_loading import SpriteInitializer
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
+from pythongame.core.view.image_loading import SpriteInitializer
 
 ITEM_TYPES = [ItemType.BLESSED_SHIELD_1, ItemType.BLESSED_SHIELD_2, ItemType.BLESSED_SHIELD_3]
 PROC_CHANCES = [0.3, 0.4, 0.5]

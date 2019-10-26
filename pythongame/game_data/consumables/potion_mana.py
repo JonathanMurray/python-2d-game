@@ -6,7 +6,7 @@ from pythongame.core.game_data import POTION_ENTITY_SIZE, ConsumableCategory
 from pythongame.core.game_data import register_ui_icon_sprite_path, register_entity_sprite_initializer, \
     register_consumable_data, ConsumableData
 from pythongame.core.game_state import GameState
-from pythongame.core.image_loading import SpriteInitializer
+from pythongame.core.view.image_loading import SpriteInitializer
 
 MANA_AMOUNT = 100
 

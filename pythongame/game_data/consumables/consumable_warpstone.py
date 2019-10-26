@@ -4,8 +4,8 @@ from pythongame.core.consumable_effects import register_consumable_effect, Consu
 from pythongame.core.game_data import register_entity_sprite_initializer, register_ui_icon_sprite_path, \
     register_consumable_data, ConsumableData, POTION_ENTITY_SIZE, ConsumableCategory
 from pythongame.core.game_state import GameState
-from pythongame.core.image_loading import SpriteInitializer
 from pythongame.core.math import translate_in_direction
+from pythongame.core.view.image_loading import SpriteInitializer
 from pythongame.game_data.portals import PORTAL_DELAY
 
 

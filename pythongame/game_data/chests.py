@@ -1,7 +1,7 @@
 from pythongame.core.common import Sprite, Direction
 from pythongame.core.game_data import register_entity_sprite_map
-from pythongame.core.image_loading import SpriteSheet
 from pythongame.core.loot import LootTable, LootGroup
+from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.game_data.loot_tables import LOOT_ITEMS_1, LOOT_ITEMS_2
 
 CHEST_ENTITY_SIZE = (30, 30)  # Must not align perfectly with grid cell size (pathfinding issues)

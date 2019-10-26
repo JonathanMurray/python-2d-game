@@ -1,6 +1,6 @@
 from pythongame.core.common import WallType, Sprite, Direction
 from pythongame.core.game_data import register_wall_data, WallData, register_entity_sprite_map
-from pythongame.core.image_loading import SpriteSheet
+from pythongame.core.view.image_loading import SpriteSheet
 
 
 def register_walls():
