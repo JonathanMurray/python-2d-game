@@ -4,10 +4,11 @@ from pythongame.core.consumable_effects import ConsumableWasConsumed, \
     register_consumable_effect, ConsumableFailedToBeConsumed
 from pythongame.core.damage_interactions import deal_npc_damage_to_npc
 from pythongame.core.entity_creation import create_npc
-from pythongame.core.game_data import register_entity_sprite_initializer, SpriteInitializer, \
-    register_ui_icon_sprite_path, register_consumable_data, ConsumableData, POTION_ENTITY_SIZE, ConsumableCategory, \
-    NON_PLAYER_CHARACTERS, NpcData, register_npc_data, SpriteSheet, register_entity_sprite_map
+from pythongame.core.game_data import register_entity_sprite_initializer, register_ui_icon_sprite_path, \
+    register_consumable_data, ConsumableData, POTION_ENTITY_SIZE, ConsumableCategory, \
+    NON_PLAYER_CHARACTERS, NpcData, register_npc_data, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.image_loading import SpriteInitializer, SpriteSheet
 from pythongame.core.math import *
 from pythongame.core.npc_behaviors import AbstractNpcMind, register_npc_behavior
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder

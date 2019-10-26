@@ -6,8 +6,9 @@ from pythongame.core.common import AbilityType, Sprite, \
     ProjectileType, Millis, Direction, BuffType, SoundId, PeriodicTimer, HeroUpgrade
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
-    register_ui_icon_sprite_path, register_entity_sprite_map, SpriteSheet
+    register_ui_icon_sprite_path, register_entity_sprite_map
 from pythongame.core.game_state import GameState, WorldEntity, Projectile, NonPlayerCharacter
+from pythongame.core.image_loading import SpriteSheet
 from pythongame.core.math import get_position_from_center_position, translate_in_direction
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller

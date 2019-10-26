@@ -3,10 +3,11 @@ from pythongame.core.buff_effects import register_buff_effect, AbstractBuffEffec
 from pythongame.core.common import Sprite, ProjectileType, AbilityType, Millis, \
     Direction, BuffType, SoundId, UiIconSprite, PeriodicTimer, HeroUpgrade
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
-from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, SpriteSheet, \
+from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_entity_sprite_map, ABILITIES
 from pythongame.core.game_state import GameState, WorldEntity, Projectile, NonPlayerCharacter
 from pythongame.core.hero_upgrades import register_hero_upgrade_effect
+from pythongame.core.image_loading import SpriteSheet
 from pythongame.core.math import get_position_from_center_position, translate_in_direction
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller

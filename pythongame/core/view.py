@@ -1,14 +1,16 @@
-from typing import Dict, Any, List, Tuple, Optional, Union
+from typing import Dict, List, Tuple, Optional, Union
 
 import pygame
 from pygame.rect import Rect
 
 from pythongame.core.common import Direction, Sprite, ConsumableType, ItemType, HeroId, UiIconSprite
-from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, SpriteInitializer, \
-    ABILITIES, BUFF_TEXTS, Animation, KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, PORTRAIT_ICON_SPRITE_PATHS, \
+from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, ABILITIES, BUFF_TEXTS, \
+    KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, PORTRAIT_ICON_SPRITE_PATHS, \
     HEROES, ConsumableCategory, CHANNELING_BUFFS
 from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration, \
     PlayerState
+from pythongame.core.image_loading import SpriteInitializer, ImageWithRelativePosition, \
+    load_and_scale_sprite, load_and_scale_directional_sprites
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory
 from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.npc_behaviors import DialogGraphics
@@ -46,12 +48,6 @@ class MouseHoverEvent:
         self.talent_choice_option = talent_choice_option  # (choice_index, option_index)
 
 
-class ImageWithRelativePosition:
-    def __init__(self, image: Any, position_relative_to_entity: Tuple[int, int]):
-        self.image = image
-        self.position_relative_to_entity = position_relative_to_entity
-
-
 # Used to display some text above an NPC like "[Space] talk"
 class EntityActionText:
     def __init__(self, entity: WorldEntity, text: str, details: List[str]):
@@ -67,42 +63,6 @@ class TooltipGraphics:
         self.details = details
         self.bottom_left_corner: Optional[Tuple[int, int]] = bottom_left
         self.bottom_right_corner: Optional[Tuple[int, int]] = bottom_right
-
-
-def load_and_scale_sprite(sprite_initializer: SpriteInitializer):
-    image = pygame.image.load(sprite_initializer.image_file_path).convert_alpha()
-    return pygame.transform.scale(image, sprite_initializer.scaling_size)
-
-
-def load_and_scale_directional_sprites(
-        animations_by_dir: Dict[Direction, Animation]) \
-        -> Dict[Direction, List[ImageWithRelativePosition]]:
-    images: Dict[Direction, List[ImageWithRelativePosition]] = {}
-    for direction in animations_by_dir:
-        animation = animations_by_dir[direction]
-        images_for_dir: List[ImageWithRelativePosition] = []
-        if animation.sprite_initializers:
-            for sprite_init in animation.sprite_initializers:
-                sprite_init: SpriteInitializer = sprite_init
-                image = pygame.image.load(sprite_init.image_file_path).convert_alpha()
-                scaled_image = pygame.transform.scale(image, sprite_init.scaling_size)
-                images_for_dir.append(ImageWithRelativePosition(scaled_image, animation.position_relative_to_entity))
-        elif animation.sprite_map_initializers:
-            for sprite_map_init in animation.sprite_map_initializers:
-                sprite_sheet = sprite_map_init.sprite_sheet
-                index_position_within_map = sprite_map_init.index_position_within_map
-                original_sprite_size = sprite_map_init.original_sprite_size
-                rectangle = Rect(index_position_within_map[0] * original_sprite_size[0],
-                                 index_position_within_map[1] * original_sprite_size[1],
-                                 original_sprite_size[0],
-                                 original_sprite_size[1])
-                image = sprite_sheet.image_at(rectangle)
-                scaled_image = pygame.transform.scale(image, sprite_map_init.scaling_size)
-                images_for_dir.append(ImageWithRelativePosition(scaled_image, animation.position_relative_to_entity))
-        else:
-            raise Exception("Invalid animation: " + str(animation))
-        images[direction] = images_for_dir
-    return images
 
 
 class View:

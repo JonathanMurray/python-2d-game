@@ -1,5 +1,6 @@
 from pythongame.core.common import NpcType, Sprite, Direction, Millis
-from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
+from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map
+from pythongame.core.image_loading import SpriteSheet
 from pythongame.core.npc_behaviors import register_npc_behavior, MeleeEnemyNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.game_data.loot_tables import LOOT_TABLE_2

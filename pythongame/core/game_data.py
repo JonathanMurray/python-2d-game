@@ -2,63 +2,16 @@ from typing import Dict, List, Optional, Tuple
 
 # We should probably not load image files in here!
 import pygame
-from pygame.rect import Rect
 
 from pythongame.core.common import *
 from pythongame.core.common import UiIconSprite, PortraitIconSprite
+from pythongame.core.image_loading import SpriteInitializer, SpriteSheet, SpriteMapInitializer, Animation
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.loot import LootTable
 from pythongame.core.talents import TalentsState
 
 ITEM_ENTITY_SIZE = (30, 30)
 POTION_ENTITY_SIZE = (30, 30)
-
-
-class SpriteInitializer:
-    def __init__(self, image_file_path: str, scaling_size: Tuple[int, int]):
-        self.image_file_path = image_file_path
-        self.scaling_size = scaling_size
-
-
-class SpriteSheet(object):
-    def __init__(self, file_path: str):
-        self.file_path = file_path
-        self.sheet = None
-
-    def _load_sheet(self):
-        self.sheet = pygame.image.load(self.file_path).convert_alpha()
-
-    def image_at(self, rect: Rect):
-        if self.sheet is None:
-            self._load_sheet()
-
-        # noinspection PyArgumentList
-        image = pygame.Surface(rect.size, pygame.SRCALPHA)
-        destination_in_image = (0, 0)
-        image.blit(self.sheet, destination_in_image, rect)
-        transparent_color_in_image = (0, 0, 0)
-        image.set_colorkey(transparent_color_in_image, pygame.RLEACCEL)
-        return image
-
-
-class SpriteMapInitializer:
-    def __init__(self, sprite_sheet: SpriteSheet, original_sprite_size: Tuple[int, int], scaling_size: Tuple[int, int],
-                 index_position_within_map: Tuple[int, int]):
-        self.sprite_sheet = sprite_sheet
-        self.original_sprite_size = original_sprite_size
-        self.scaling_size = scaling_size
-        self.index_position_within_map = index_position_within_map
-
-
-class Animation:
-    def __init__(
-            self,
-            sprite_initializers: Optional[List[SpriteInitializer]],
-            sprite_map_initializers: Optional[List[SpriteMapInitializer]],
-            position_relative_to_entity: Tuple[int, int]):
-        self.sprite_initializers = sprite_initializers
-        self.sprite_map_initializers = sprite_map_initializers
-        self.position_relative_to_entity = position_relative_to_entity
 
 
 class AbilityData:

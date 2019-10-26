@@ -3,9 +3,9 @@ from pythongame.core.common import ConsumableType, BuffType, Millis, UiIconSprit
 from pythongame.core.consumable_effects import create_potion_visual_effect_at_player, ConsumableWasConsumed, \
     register_consumable_effect
 from pythongame.core.game_data import register_ui_icon_sprite_path, register_buff_text, \
-    register_consumable_data, ConsumableData, ConsumableCategory, register_entity_sprite_initializer, SpriteInitializer, \
-    POTION_ENTITY_SIZE
+    register_consumable_data, ConsumableData, ConsumableCategory, register_entity_sprite_initializer, POTION_ENTITY_SIZE
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.image_loading import SpriteInitializer
 from pythongame.core.visual_effects import VisualCircle
 
 DURATION = Millis(15000)

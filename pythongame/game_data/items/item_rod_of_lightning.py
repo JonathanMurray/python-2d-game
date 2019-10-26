@@ -3,8 +3,9 @@ import random
 from pythongame.core.common import ItemType, Millis, Sprite, UiIconSprite, PeriodicTimer
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ui_icon_sprite_path, register_item_data, ItemData, \
-    register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
+    register_entity_sprite_initializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import GameState
+from pythongame.core.image_loading import SpriteInitializer
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.visual_effects import VisualCircle, VisualLine

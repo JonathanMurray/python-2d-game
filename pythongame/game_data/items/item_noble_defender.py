@@ -1,9 +1,10 @@
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import ItemType, Sprite, BuffType, Millis
 from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
-    register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
+    register_entity_sprite_initializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import Event, GameState, WorldEntity, \
     NonPlayerCharacter, PlayerWasAttackedEvent
+from pythongame.core.image_loading import SpriteInitializer
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
 
