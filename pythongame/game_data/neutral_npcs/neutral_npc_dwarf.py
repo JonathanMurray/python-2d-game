@@ -2,12 +2,13 @@ import random
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
     ItemType, PeriodicTimer
-from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
+from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, register_npc_dialog_data, DialogData, \
     DialogOptionData, sell_item_option
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.view.image_loading import SpriteSheet
 
 ITEM_TYPE_GOLD = ItemType.GOLD_NUGGET
 

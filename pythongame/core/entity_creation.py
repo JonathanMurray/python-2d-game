@@ -10,7 +10,7 @@ from pythongame.core.item_inventory import ItemInventory, ItemInventorySlot, Ite
 from pythongame.core.math import get_position_from_center_position
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
-from pythongame.game_data.enemies.enemy_chest import CHEST_ENTITY_SIZE, CHEST_LOOT
+from pythongame.game_data.chests import CHEST_ENTITY_SIZE, CHEST_LOOT
 
 # TODO handle this (global path finder) in a better way!
 global_path_finder: GlobalPathFinder = None

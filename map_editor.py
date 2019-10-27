@@ -2,7 +2,7 @@
 
 import argparse
 
-from pythongame import map_editor
+from pythongame.map_editor import map_editor
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--map')

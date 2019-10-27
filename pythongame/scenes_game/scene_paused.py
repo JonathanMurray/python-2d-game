@@ -6,20 +6,23 @@ from pythongame.core.common import SceneId
 from pythongame.core.game_state import GameState
 from pythongame.core.talents import talents_graphics_from_state
 from pythongame.core.user_input import ActionExitGame, ActionPauseGame, get_main_user_inputs, ActionSaveGameState
-from pythongame.core.view import View
-from pythongame.core.view_state import ViewState
+from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.player_file import save_to_file
+from pythongame.scenes_game.game_ui_state import GameUiState
+from pythongame.scenes_game.game_ui_view import GameUiView
 
 
 class PausedScene:
     def __init__(
             self,
             game_state: GameState,
-            view: View,
-            view_state: ViewState):
+            world_view: GameWorldView,
+            ui_view: GameUiView,
+            ui_state: GameUiState):
         self.game_state = game_state
-        self.view = view
-        self.view_state = view_state
+        self.world_view = world_view
+        self.ui_view = ui_view
+        self.ui_state = ui_state
 
     def run_one_frame(self):
         scene_transition = None
@@ -34,7 +37,7 @@ class PausedScene:
             if isinstance(action, ActionSaveGameState):
                 save_to_file(self.game_state)
 
-        self.view.render_world(
+        self.world_view.render_world(
             all_entities_to_render=self.game_state.get_all_entities_to_render(),
             decorations_to_render=self.game_state.get_decorations_to_render(),
             player_entity=self.game_state.player_entity,
@@ -53,9 +56,9 @@ class PausedScene:
             self.game_state.player_state.talents_state, self.game_state.player_state.level,
             self.game_state.player_state.chosen_talent_option_indices)
 
-        self.view.render_ui(
+        self.ui_view.render_ui(
             player_state=self.game_state.player_state,
-            view_state=self.view_state,
+            ui_state=self.ui_state,
             player_speed_multiplier=self.game_state.player_entity.speed_multiplier,
             fps_string="...",
             is_paused=True,
@@ -63,6 +66,6 @@ class PausedScene:
             dialog=None,  # We don't bother to show dialog etc when game is paused
             talents=talents_graphics)
 
-        self.view.update_display()
+        self.world_view.update_display()
 
         return scene_transition

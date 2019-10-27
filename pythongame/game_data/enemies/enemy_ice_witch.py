@@ -2,13 +2,14 @@ from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effec
 from pythongame.core.common import Millis, NpcType, Sprite, Direction, BuffType
 from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
-from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
+from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_buff_text
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.math import is_x_and_y_within_distance
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
+from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualLine
 from pythongame.game_data.loot_tables import LOOT_TABLE_4
 

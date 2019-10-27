@@ -14,12 +14,13 @@ HIGHLIGHT_ABILITY_ACTION_DURATION = 120
 class UiToggle(Enum):
     STATS = 1
     TALENTS = 2
+    CONTROLS = 3
 
 
 # This class maintains the UI state that's related to the game clock. For instance, when the player clicks a button in
 # the UI, it should be highlighted but only for a while. Keeping that logic here lets main.py be free from UI details
 # and it lets view.py be stateless.
-class ViewState:
+class GameUiState:
     def __init__(self, entire_world_area: Rect):
         self._entire_world_area = entire_world_area
         self._player_entity_center_position = (0, 0)
@@ -35,6 +36,8 @@ class ViewState:
         self.highlighted_ability_action: Optional[AbilityType] = None
 
         self.toggle_enabled: Optional[UiToggle] = None
+
+        self.talent_toggle_has_unseen_talents = False
 
     def notify_ability_was_clicked(self, ability_type: AbilityType):
         self.highlighted_ability_action = ability_type
@@ -52,6 +55,8 @@ class ViewState:
             self.toggle_enabled = None
         else:
             self.toggle_enabled = ui_toggle
+            if ui_toggle == UiToggle.TALENTS:
+                self.talent_toggle_has_unseen_talents = False
 
     def set_message(self, message: str):
         self.message = message
@@ -59,6 +64,10 @@ class ViewState:
 
     def enqueue_message(self, message: str):
         self._enqueued_messages.append(message)
+
+    def notify_new_talent_was_unlocked(self):
+        if self.toggle_enabled != UiToggle.TALENTS:
+            self.talent_toggle_has_unseen_talents = True
 
     def notify_time_passed(self, time_passed: Millis):
         self._ticks_since_minimap_updated += time_passed

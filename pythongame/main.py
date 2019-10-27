@@ -5,18 +5,23 @@ import pygame
 from pythongame.core.buff_effects import get_buff_effect
 from pythongame.core.common import SceneId, Millis, HeroId, ItemType, ConsumableType, Sprite, BuffType, get_random_hint
 from pythongame.core.consumable_inventory import ConsumableInventory
-from pythongame.core.game_data import allocate_input_keys_for_abilities
-from pythongame.core.game_engine import GameEngine
-from pythongame.core.player_environment_interactions import PlayerInteractionsState
+from pythongame.core.game_data import allocate_input_keys_for_abilities, ENTITY_SPRITE_INITIALIZERS, \
+    UI_ICON_SPRITE_PATHS, PORTRAIT_ICON_SPRITE_PATHS
 from pythongame.core.sound_player import init_sound_player
-from pythongame.core.view import View
-from pythongame.core.view_state import ViewState
+from pythongame.core.view.game_world_view import GameWorldView
+from pythongame.core.view.image_loading import load_images_by_sprite, \
+    load_images_by_ui_sprite, load_images_by_portrait_sprite
 from pythongame.map_file import create_game_state_from_json_file
 from pythongame.player_file import SavedPlayerState, load_player_state_from_json_file
 from pythongame.register_game_data import register_all_game_data
-from pythongame.scene_paused import PausedScene
 from pythongame.scene_picking_hero.scene_picking_hero import PickingHeroScene
-from pythongame.scene_playing import PlayingScene
+from pythongame.scene_picking_hero.view_picking_hero import PickingHeroView
+from pythongame.scenes_game.game_engine import GameEngine
+from pythongame.scenes_game.game_ui_state import GameUiState
+from pythongame.scenes_game.game_ui_view import GameUiView, UI_ICON_SIZE, PORTRAIT_ICON_SIZE
+from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
+from pythongame.scenes_game.scene_paused import PausedScene
+from pythongame.scenes_game.scene_playing import PlayingScene
 
 SCREEN_SIZE = (700, 700)
 CAMERA_SIZE = (700, 530)
@@ -33,16 +38,22 @@ class Main:
 
         pygame.init()
 
-        self.view = View(CAMERA_SIZE, SCREEN_SIZE)
+        pygame_screen = pygame.display.set_mode(SCREEN_SIZE)
+        images_by_sprite = load_images_by_sprite(ENTITY_SPRITE_INITIALIZERS)
+        images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, UI_ICON_SIZE)
+        images_by_portrait_sprite = load_images_by_portrait_sprite(PORTRAIT_ICON_SPRITE_PATHS, PORTRAIT_ICON_SIZE)
+        self.world_view = GameWorldView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite)
+        self.ui_view = GameUiView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_ui_sprite,
+                                  images_by_portrait_sprite)
+
         init_sound_player()
         self.clock = pygame.time.Clock()
-
-        self.picking_hero_scene = PickingHeroScene(self.view)
+        self.picking_hero_scene = PickingHeroScene(PickingHeroView(pygame_screen, images_by_portrait_sprite))
         # These are initialized after hero has been picked
         self.playing_scene = None
         self.paused_scene = None
         self.game_state = None
-        self.view_state = None
+        self.ui_state = None
         self.game_engine = None
         self.player_interactions_state = None
 
@@ -94,16 +105,17 @@ class Main:
     def setup_game(self, picked_hero: HeroId, hero_start_level: int, start_money: int,
                    saved_player_state: Optional[SavedPlayerState]):
         self.game_state = create_game_state_from_json_file(CAMERA_SIZE, self.map_file_path, picked_hero)
-        self.view_state = ViewState(self.game_state.entire_world_area)
-        self.game_engine = GameEngine(self.game_state, self.view_state)
+        self.ui_state = GameUiState(self.game_state.entire_world_area)
+        self.game_engine = GameEngine(self.game_state, self.ui_state)
         self.player_interactions_state = PlayerInteractionsState()
         self.playing_scene = PlayingScene(
             self.game_state,
             self.game_engine,
-            self.view,
-            self.view_state)
-        self.paused_scene = PausedScene(self.game_state, self.view, self.view_state)
-        self.view_state.set_message("Hint: " + get_random_hint())
+            self.world_view,
+            self.ui_view,
+            self.ui_state)
+        self.paused_scene = PausedScene(self.game_state, self.world_view, self.ui_view, self.ui_state)
+        self.ui_state.set_message("Hint: " + get_random_hint())
 
         if saved_player_state:
             self.game_state.player_state.gain_exp_worth_n_levels(saved_player_state.level - 1)

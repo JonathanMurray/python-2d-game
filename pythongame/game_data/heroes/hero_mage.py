@@ -1,9 +1,10 @@
 from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgrade, UiIconSprite
-from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, SpriteSheet, \
-    register_entity_sprite_map, register_portrait_icon_sprite_path, register_hero_data, HeroData, \
+from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, register_entity_sprite_map, \
+    register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
 from pythongame.core.game_state import PlayerLevelBonus
 from pythongame.core.talents import TalentsState, TalentChoice, TalentChoiceOption
+from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.game_data.heroes.generic_talents import GENERIC_TALENT_CHOICE
 
 HERO_ID = HeroId.MAGE

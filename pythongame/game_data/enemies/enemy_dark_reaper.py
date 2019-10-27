@@ -3,13 +3,14 @@ import random
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import Millis, NpcType, Sprite, Direction, BuffType
 from pythongame.core.damage_interactions import deal_damage_to_player, DamageType
-from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
+from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.loot import LootTable, LootEntry
 from pythongame.core.math import get_perpendicular_directions, is_x_and_y_within_distance
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
+from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualLine, VisualCircle
 
 BUFF_TYPE_INVULN = BuffType.INVULNERABILITY

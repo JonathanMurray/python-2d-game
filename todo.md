@@ -1,7 +1,6 @@
 ## TODO
 
 #### Refactorings:
-* Separate code for different views (picking hero, game, paused, game editor, etc)
 * Move non-trivial logic from game_state. Prefer to have game-logic elsewhere.
 * Avoid storing EnemyMind and ProjectileController in game_state. That module should only depend on common
 * Simplify and generalise the handling of visual effects
@@ -16,9 +15,6 @@
 * Make it more difficult to kite fast enemies. Enemies are too slow at attacking when they get into melee range
 
 #### Visuals:
-* improve talent graphics: somehow fit longer talent names, and show talent descriptions
-* indicate with the TALENTS toggle when the player has a talent to choose
-* Unify stat texts for items. Should be a new line for each distinct buff, rather than one long sentence.
 * Visualize bonus damage as 'crits' somehow
 * Render tiny buff icons above entities that have active buffs (like bloodlust icon from wc2)
 * gray out ability icon when player doesn't have enough mana for it
@@ -37,10 +33,14 @@
     * rogue shiv from stealth (some crit sound)
 * UI
     * drop potion or item
+    * complete a trade (some coin/money sound)
+    * complete a quest (similar to levelup)
 * using portal
 * goblin death sounds
+* necromancer summoning mummy
 
 #### Features:
+* zombie/mummy has chance to inflict DOT or other debuff on hit
 * right click items to swap them between inventory and equipped
 * allow some type of items to be stacked in inventory (gold nugget and sapphire)
 * give enemies 'armor'?

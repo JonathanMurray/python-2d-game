@@ -6,13 +6,13 @@ from pythongame.core.common import Sprite, ProjectileType, AbilityType, Millis, 
     Direction, SoundId, BuffType, PeriodicTimer, HeroUpgrade
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
-    register_ui_icon_sprite_path, SpriteSheet, \
-    register_entity_sprite_map, ABILITIES
+    register_ui_icon_sprite_path, register_entity_sprite_map, ABILITIES
 from pythongame.core.game_state import GameState, WorldEntity, Projectile, NonPlayerCharacter
 from pythongame.core.hero_upgrades import register_hero_upgrade_effect
 from pythongame.core.math import get_position_from_center_position, translate_in_direction
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
+from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualCircle
 
 # Note: Projectile size must be smaller than hero entity size (otherwise you get a collision when shooting next to wall)

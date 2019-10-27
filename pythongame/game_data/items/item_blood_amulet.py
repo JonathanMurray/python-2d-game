@@ -3,10 +3,11 @@ import random
 from pythongame.core.common import ItemType, Sprite
 from pythongame.core.damage_interactions import player_receive_healing
 from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
-    register_entity_sprite_initializer, SpriteInitializer, ITEM_ENTITY_SIZE
+    register_entity_sprite_initializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import Event, EnemyDiedEvent, GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
+from pythongame.core.view.image_loading import SpriteInitializer
 
 ITEM_TYPE = ItemType.BLOOD_AMULET
 HEALTH_ON_KILL_AMOUNT = 5

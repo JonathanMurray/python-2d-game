@@ -1,5 +1,6 @@
 from pythongame.core.common import Direction
-from pythongame.core.game_data import register_entity_sprite_map, Sprite, SpriteSheet
+from pythongame.core.game_data import register_entity_sprite_map, Sprite
+from pythongame.core.view.image_loading import SpriteSheet
 
 
 def register_decorations():

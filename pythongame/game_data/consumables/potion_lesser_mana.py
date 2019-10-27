@@ -4,8 +4,9 @@ from pythongame.core.consumable_effects import create_potion_visual_effect_at_pl
 from pythongame.core.damage_interactions import player_receive_mana
 from pythongame.core.game_data import POTION_ENTITY_SIZE, ConsumableCategory
 from pythongame.core.game_data import register_ui_icon_sprite_path, register_entity_sprite_initializer, \
-    SpriteInitializer, register_consumable_data, ConsumableData
+    register_consumable_data, ConsumableData
 from pythongame.core.game_state import GameState
+from pythongame.core.view.image_loading import SpriteInitializer
 
 MANA_AMOUNT = 50
 
