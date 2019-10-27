@@ -128,8 +128,12 @@ class PlayingUiController:
                 triggered_events.append(event)
             self.consumable_slot_being_dragged = None
 
+        # UI TOGGLES
+
         if mouse_was_just_clicked and mouse_hover_event.ui_toggle is not None:
             self.ui_state.notify_toggle_was_clicked(mouse_hover_event.ui_toggle)
+
+        # PICKING TALENTS
 
         if mouse_was_just_clicked and mouse_hover_event.talent_choice_option is not None:
             choice_index, option_index = mouse_hover_event.talent_choice_option

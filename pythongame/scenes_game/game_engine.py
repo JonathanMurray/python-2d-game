@@ -187,6 +187,7 @@ class GameEngine:
                 if isinstance(event, PlayerLearnedNewAbility):
                     self.ui_state.enqueue_message("New ability: " + ABILITIES[event.ability_type].name)
                 if isinstance(event, PlayerUnlockedNewTalent):
+                    self.ui_state.notify_new_talent_was_unlocked()
                     self.ui_state.enqueue_message("You can pick a talent!")
 
             for enemy_that_died in enemies_that_died:

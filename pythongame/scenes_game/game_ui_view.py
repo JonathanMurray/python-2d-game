@@ -18,6 +18,7 @@ COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
 COLOR_HIGHLIGHTED_ICON = (250, 250, 150)
 COLOR_HOVERED_ICON_HIGHLIGHT = (200, 200, 250)
+COLOR_HIGHLIGHT_HAS_UNSEEN = (150, 250, 200)
 COLOR_BORDER = (139, 69, 19)
 UI_ICON_SIZE = (32, 32)
 PORTRAIT_ICON_SIZE = (100, 70)
@@ -225,7 +226,8 @@ class GameUiView:
             self.ui_render.text(self.font_tooltip_details, line, (x_tooltip + 20, y_tooltip + 50 + i * 18),
                                 COLOR_WHITE)
 
-    def _toggle_in_ui(self, x: int, y: int, text: str, enabled: bool, mouse_ui_position: Tuple[int, int]) -> bool:
+    def _toggle_in_ui(self, x: int, y: int, text: str, enabled: bool, mouse_ui_position: Tuple[int, int],
+                      highlight: bool) -> bool:
         rect = Rect(x, y, 120, 20)
         if enabled:
             self.ui_render.rect_filled((50, 50, 150), rect)
@@ -234,6 +236,8 @@ class GameUiView:
         is_hovered_by_mouse = is_point_in_rect(mouse_ui_position, rect)
         if is_hovered_by_mouse:
             self.ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, rect, 1)
+        if highlight:
+            self.ui_render.rect(COLOR_HIGHLIGHT_HAS_UNSEEN, rect, 1)
         return is_hovered_by_mouse
 
     def _render_stats(self, player_speed_multiplier: float, player_state: PlayerState, ui_position: Tuple[int, int]):
@@ -673,10 +677,10 @@ class GameUiView:
                 talents, pos_toggled_content, mouse_ui_position)
             tooltip = talent_tooltip if talent_tooltip is not None else tooltip
         is_mouse_hovering_stats_toggle = self._toggle_in_ui(
-            x_toggles, y_1, "STATS", ui_state.toggle_enabled == UiToggle.STATS, mouse_ui_position)
+            x_toggles, y_1, "STATS", ui_state.toggle_enabled == UiToggle.STATS, mouse_ui_position, False)
         is_mouse_hovering_talents_toggle = self._toggle_in_ui(
             x_toggles, y_1 + 30, "TALENTS", ui_state.toggle_enabled == UiToggle.TALENTS,
-            mouse_ui_position)
+            mouse_ui_position, ui_state.talent_toggle_has_unseen_talents)
         if is_mouse_hovering_stats_toggle:
             hovered_ui_toggle = UiToggle.STATS
         elif is_mouse_hovering_talents_toggle:
