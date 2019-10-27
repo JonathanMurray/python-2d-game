@@ -33,8 +33,11 @@
     * rogue shiv from stealth (some crit sound)
 * UI
     * drop potion or item
+    * complete a trade (some coin/money sound)
+    * complete a quest (similar to levelup)
 * using portal
 * goblin death sounds
+* necromancer summoning mummy
 
 #### Features:
 * zombie/mummy has chance to inflict DOT or other debuff on hit
