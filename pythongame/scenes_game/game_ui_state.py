@@ -14,6 +14,7 @@ HIGHLIGHT_ABILITY_ACTION_DURATION = 120
 class UiToggle(Enum):
     STATS = 1
     TALENTS = 2
+    CONTROLS = 3
 
 
 # This class maintains the UI state that's related to the game clock. For instance, when the player clicks a button in

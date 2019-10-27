@@ -332,6 +332,21 @@ class GameUiView:
 
         return hovered_talent_option, tooltip_graphics
 
+    def _render_controls(self, ui_position: Tuple[int, int]):
+
+        rect_container = Rect(ui_position[0], ui_position[1], 140, 170)
+        self.ui_render.rect_transparent(rect_container, 140, (0, 0, 30))
+
+        self.ui_render.text(self.font_tooltip_details, "CONTROLS:", (ui_position[0] + 35, ui_position[1] + 10))
+        x_text = ui_position[0] + 15
+        y_0 = ui_position[1] + 45
+        self.ui_render.text(self.font_stats, "Move: arrow-keys", (x_text, y_0))
+        self.ui_render.text(self.font_stats, "Abilities: Q W E R", (x_text, y_0 + 20))
+        self.ui_render.text(self.font_stats, "Potions: 1 2 3 4 5", (x_text, y_0 + 40))
+        self.ui_render.text(self.font_stats, "Interact: Space", (x_text, y_0 + 60))
+        self.ui_render.text(self.font_stats, "Inventory: mouse", (x_text, y_0 + 80))
+        self.ui_render.text(self.font_stats, "Dialog: arrow-keys", (x_text, y_0 + 100))
+
     def _render_talent_icon(self, ui_icon_sprite: UiIconSprite, position: Tuple[int, int], chosen: bool,
                             mouse_ui_position: Tuple[int, int]) -> bool:
         rect = Rect(position[0], position[1], UI_ICON_SIZE[0], UI_ICON_SIZE[1])
@@ -685,15 +700,22 @@ class GameUiView:
             hovered_talent_option, talent_tooltip = self._render_talents(
                 talents, pos_toggled_content, mouse_ui_position)
             tooltip = talent_tooltip if talent_tooltip is not None else tooltip
+        elif ui_state.toggle_enabled == UiToggle.CONTROLS:
+            self._render_controls(pos_toggled_content)
+
         is_mouse_hovering_stats_toggle = self._toggle_in_ui(
             x_toggles, y_1, "STATS", ui_state.toggle_enabled == UiToggle.STATS, mouse_ui_position, False)
         is_mouse_hovering_talents_toggle = self._toggle_in_ui(
             x_toggles, y_1 + 30, "TALENTS", ui_state.toggle_enabled == UiToggle.TALENTS,
             mouse_ui_position, ui_state.talent_toggle_has_unseen_talents)
+        is_mouse_hovering_help_toggle = self._toggle_in_ui(
+            x_toggles, y_1 + 60, "CONTROLS", ui_state.toggle_enabled == UiToggle.CONTROLS, mouse_ui_position, False)
         if is_mouse_hovering_stats_toggle:
             hovered_ui_toggle = UiToggle.STATS
         elif is_mouse_hovering_talents_toggle:
             hovered_ui_toggle = UiToggle.TALENTS
+        elif is_mouse_hovering_help_toggle:
+            hovered_ui_toggle = UiToggle.CONTROLS
 
         self.screen_render.rect(COLOR_BORDER, self.ui_screen_area, 1)
 
