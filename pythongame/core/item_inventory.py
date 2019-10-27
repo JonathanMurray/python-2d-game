@@ -13,6 +13,16 @@ class ItemEquipmentCategory(Enum):
     RING = 6
 
 
+ITEM_EQUIPMENT_CATEGORY_NAMES = {
+    ItemEquipmentCategory.CHEST: "Chest",
+    ItemEquipmentCategory.MAIN_HAND: "Main-Hand",
+    ItemEquipmentCategory.OFF_HAND: "Off-Hand",
+    ItemEquipmentCategory.HEAD: "Head",
+    ItemEquipmentCategory.NECK: "Neck",
+    ItemEquipmentCategory.RING: "Ring",
+}
+
+
 class ItemActivationEvent:
     pass
 

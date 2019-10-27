@@ -7,7 +7,7 @@ from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprit
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, \
     KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, HEROES, ConsumableCategory
 from pythongame.core.game_state import PlayerState
-from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory
+from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import is_point_in_rect
 from pythongame.core.npc_behaviors import DialogGraphics
 from pythongame.core.talents import TalentsGraphics
@@ -20,6 +20,7 @@ COLOR_HIGHLIGHTED_ICON = (250, 250, 150)
 COLOR_HOVERED_ICON_HIGHLIGHT = (200, 200, 250)
 COLOR_HIGHLIGHT_HAS_UNSEEN = (150, 250, 200)
 COLOR_BORDER = (139, 69, 19)
+COLOR_ITEM_TOOLTIP_HEADER = (250, 250, 150)
 UI_ICON_SIZE = (32, 32)
 PORTRAIT_ICON_SIZE = (100, 70)
 
@@ -40,8 +41,9 @@ class MouseHoverEvent:
 
 
 class TooltipGraphics:
-    def __init__(self, title: str, details: List[str], bottom_left: Optional[Tuple[int, int]] = None,
-                 bottom_right: Optional[Tuple[int, int]] = None):
+    def __init__(self, title_color: Tuple[int, int, int], title: str, details: List[str],
+                 bottom_left: Optional[Tuple[int, int]] = None, bottom_right: Optional[Tuple[int, int]] = None):
+        self.title_color = title_color
         self.title = title
         self.details = details
         self.bottom_left_corner: Optional[Tuple[int, int]] = bottom_left
@@ -217,7 +219,8 @@ class GameUiView:
         rect_tooltip = Rect(x_tooltip, y_tooltip, w_tooltip, h_tooltip)
         self.ui_render.rect_transparent(Rect(x_tooltip, y_tooltip, w_tooltip, h_tooltip), 200, (0, 0, 30))
         self.ui_render.rect(COLOR_WHITE, rect_tooltip, 1)
-        self.ui_render.text(self.font_tooltip_header, tooltip.title, (x_tooltip + 20, y_tooltip + 15), COLOR_WHITE)
+        self.ui_render.text(self.font_tooltip_header, tooltip.title, (x_tooltip + 20, y_tooltip + 15),
+                            tooltip.title_color)
         y_separator = y_tooltip + 40
         self.ui_render.line(COLOR_WHITE, (x_tooltip + 10, y_separator), (x_tooltip + w_tooltip - 10, y_separator),
                             1)
@@ -310,12 +313,12 @@ class GameUiView:
             if is_mouse_hovering_first:
                 hovered_talent_option = (i, 0)
                 tooltip_graphics = TooltipGraphics(
-                    choice.first.name, [choice.first.description],
+                    COLOR_WHITE, choice.first.name, [choice.first.description],
                     bottom_right=(x_text + UI_ICON_SIZE[0], y_icon))
             elif is_mouse_hovering_second:
                 hovered_talent_option = (i, 1)
                 tooltip_graphics = TooltipGraphics(
-                    choice.second.name, [choice.second.description],
+                    COLOR_WHITE, choice.second.name, [choice.second.description],
                     bottom_right=(x_text + UI_ICON_SIZE[0] + 60, y_icon))
 
         y_bot_text = rect_container[1] + rect_container[3] - 26
@@ -520,7 +523,7 @@ class GameUiView:
             tooltip_details = [
                 "regeneration: " + "{:.1f}".format(player_state.health_resource.get_effective_regen()) + "/s"]
             tooltip_bottom_left_position = (rect_healthbar[0], rect_healthbar[1])
-            tooltip = TooltipGraphics("Health", tooltip_details, bottom_left=tooltip_bottom_left_position)
+            tooltip = TooltipGraphics(COLOR_WHITE, "Health", tooltip_details, bottom_left=tooltip_bottom_left_position)
         health_text = str(player_health) + "/" + str(player_max_health)
         self.ui_render.text(self.font_ui_stat_bar_numbers, health_text, (x_0 + 20, y_4 - 1))
 
@@ -531,7 +534,7 @@ class GameUiView:
             tooltip_details = [
                 "regeneration: " + "{:.1f}".format(player_state.mana_resource.get_effective_regen()) + "/s"]
             tooltip_bottom_left_position = (rect_manabar[0], rect_manabar[1])
-            tooltip = TooltipGraphics("Mana", tooltip_details, bottom_left=tooltip_bottom_left_position)
+            tooltip = TooltipGraphics(COLOR_WHITE, "Mana", tooltip_details, bottom_left=tooltip_bottom_left_position)
         mana_text = str(player_mana) + "/" + str(player_max_mana)
         self.ui_render.text(self.font_ui_stat_bar_numbers, mana_text, (x_0 + 20, y_4 + 20))
 
@@ -557,7 +560,8 @@ class GameUiView:
                     tooltip_title = CONSUMABLES[consumable_type].name
                     tooltip_details = [CONSUMABLES[consumable_type].description]
                     tooltip_bottom_left_position = (x, y)
-                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, bottom_left=tooltip_bottom_left_position)
+                    tooltip = TooltipGraphics(COLOR_WHITE, tooltip_title, tooltip_details,
+                                              bottom_left=tooltip_bottom_left_position)
             weak_highlight = slot_number == hovered_consumable_slot_number
             strong_highlight = slot_number == highlighted_consumable_action
             self._consumable_icon_in_ui(x, y, UI_ICON_SIZE, slot_number, consumable_types, weak_highlight,
@@ -584,7 +588,8 @@ class GameUiView:
                     mana_cost = str(ability_data.mana_cost)
                     tooltip_details = ["Cooldown: " + cooldown + " s", "Mana: " + mana_cost, ability_data.description]
                     tooltip_bottom_left_position = (x, y)
-                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, bottom_left=tooltip_bottom_left_position)
+                    tooltip = TooltipGraphics(COLOR_WHITE, tooltip_title, tooltip_details,
+                                              bottom_left=tooltip_bottom_left_position)
             strong_highlight = ability_type == highlighted_ability_action
             self._ability_icon_in_ui(
                 x, y, UI_ICON_SIZE, ability_type, weak_highlight, strong_highlight, ability_cooldowns_remaining)
@@ -613,16 +618,20 @@ class GameUiView:
                     tooltip_title = item_data.name
                     tooltip_details = []
                     if item_data.item_equipment_category:
-                        tooltip_details.append("[" + item_data.item_equipment_category.name + "]")
+                        category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[item_data.item_equipment_category]
+                        tooltip_details.append("[" + category_name + "]")
                     tooltip_details += item_data.description_lines
                     tooltip_bottom_left_position = (x, y)
-                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, bottom_left=tooltip_bottom_left_position)
+                    tooltip = TooltipGraphics(COLOR_ITEM_TOOLTIP_HEADER, tooltip_title, tooltip_details,
+                                              bottom_left=tooltip_bottom_left_position)
                 elif slot_equipment_category:
-                    tooltip_title = "..."  # "[" + slot_equipment_category.name + "]"
-                    tooltip_details = ["[" + slot_equipment_category.name + "]",
+                    tooltip_title = "..."
+                    category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[slot_equipment_category]
+                    tooltip_details = ["[" + category_name + "]",
                                        "You have nothing equipped. Drag an item here to equip it!"]
                     tooltip_bottom_left_position = (x, y)
-                    tooltip = TooltipGraphics(tooltip_title, tooltip_details, bottom_left=tooltip_bottom_left_position)
+                    tooltip = TooltipGraphics(COLOR_WHITE, tooltip_title, tooltip_details,
+                                              bottom_left=tooltip_bottom_left_position)
             else:
                 highlight = False
             self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type, slot_equipment_category, highlight)
