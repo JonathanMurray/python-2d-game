@@ -17,6 +17,7 @@ from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
 COLOR_HIGHLIGHTED_ICON = (250, 250, 150)
+COLOR_HOVERED_ICON_HIGHLIGHT = (200, 200, 250)
 COLOR_BORDER = (139, 69, 19)
 UI_ICON_SIZE = (32, 32)
 PORTRAIT_ICON_SIZE = (100, 70)
@@ -89,8 +90,8 @@ class GameUiView:
     def _translate_screen_position_to_ui(self, position: Tuple[int, int]):
         return position[0] - self.ui_screen_area.x, position[1] - self.ui_screen_area.y
 
-    def _consumable_icon_in_ui(self, x, y, size, consumable_number: int,
-                               consumable_types: List[ConsumableType], highlighted_consumable_action: int):
+    def _consumable_icon_in_ui(self, x, y, size, consumable_number: int, consumable_types: List[ConsumableType],
+                               weak_highlight: bool, strong_highlight: bool):
         w = size[0]
         h = size[1]
         self.ui_render.rect_filled((40, 40, 50), Rect(x, y, w, h))
@@ -112,11 +113,14 @@ class GameUiView:
             self.ui_render.rect_filled(
                 sub_rect_color, Rect(x, y - 2 - (sub_rect_h + 1) * (i + 1), w, sub_rect_h))
 
-        if highlighted_consumable_action == consumable_number:
+        if strong_highlight:
             self.ui_render.rect(COLOR_HIGHLIGHTED_ICON, Rect(x - 1, y - 1, w + 2, h + 2), 3)
+        elif weak_highlight:
+            self.ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, Rect(x, y, w, h), 1)
+
         self.ui_render.text(self.font_ui_icon_keys, str(consumable_number), (x + 12, y + h + 4))
 
-    def _ability_icon_in_ui(self, x, y, size, ability_type, highlighted_ability_action,
+    def _ability_icon_in_ui(self, x, y, size, ability_type, weak_highlight: bool, strong_highlight: bool,
                             ability_cooldowns_remaining):
         w = size[0]
         h = size[1]
@@ -127,8 +131,10 @@ class GameUiView:
         self.ui_render.rect_filled((40, 40, 50), icon_rect)
         self.ui_render.image(self.images_by_ui_sprite[icon_sprite], (x, y))
         self.ui_render.rect((150, 150, 190), icon_rect, 1)
-        if highlighted_ability_action == ability_type:
+        if strong_highlight:
             self.ui_render.rect(COLOR_HIGHLIGHTED_ICON, Rect(x - 1, y - 1, w + 2, h + 2), 3)
+        elif weak_highlight:
+            self.ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, Rect(x, y, w, h), 1)
         self.ui_render.text(self.font_ui_icon_keys, ability_key.key_string, (x + 12, y + h + 4))
 
         if ability_cooldowns_remaining[ability_type] > 0:
@@ -137,8 +143,8 @@ class GameUiView:
             self.ui_render.rect_filled((100, 30, 30), cooldown_rect)
             self.ui_render.rect((180, 30, 30), icon_rect, 2)
 
-    def _item_icon_in_ui(self, x, y, size, item_type: ItemType,
-                         slot_equipment_category: ItemEquipmentCategory):
+    def _item_icon_in_ui(self, x, y, size, item_type: ItemType, slot_equipment_category: ItemEquipmentCategory,
+                         highlight: bool):
         w = size[0]
         h = size[1]
         rect = Rect(x, y, w, h)
@@ -156,6 +162,8 @@ class GameUiView:
         else:
             color_outline = (100, 100, 140)
         self.ui_render.rect(color_outline, rect, 1)
+        if highlight:
+            self.ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, rect, 1)
 
     def _get_image_for_item_category(self, slot_equipment_category: ItemEquipmentCategory):
         if slot_equipment_category == ItemEquipmentCategory.HEAD:
@@ -223,7 +231,10 @@ class GameUiView:
             self.ui_render.rect_filled((50, 50, 150), rect)
         self.ui_render.rect(COLOR_WHITE, rect, 1)
         self.ui_render.text(self.font_tooltip_details, text, (x + 20, y + 2))
-        return is_point_in_rect(mouse_ui_position, rect)
+        is_hovered_by_mouse = is_point_in_rect(mouse_ui_position, rect)
+        if is_hovered_by_mouse:
+            self.ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, rect, 1)
+        return is_hovered_by_mouse
 
     def _render_stats(self, player_speed_multiplier: float, player_state: PlayerState, ui_position: Tuple[int, int]):
 
@@ -323,7 +334,10 @@ class GameUiView:
         color_outline = COLOR_HIGHLIGHTED_ICON if chosen else COLOR_WHITE
         width_outline = 2 if chosen else 1
         self.ui_render.rect(color_outline, rect, width_outline)
-        return is_point_in_rect(mouse_ui_position, Rect(position[0], position[1], UI_ICON_SIZE[0], UI_ICON_SIZE[1]))
+        is_hovered_by_mouse = is_point_in_rect(mouse_ui_position, rect)
+        if is_hovered_by_mouse:
+            self.ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, rect, 1)
+        return is_hovered_by_mouse
 
     def _player_portrait(self, hero_id: HeroId, ui_position: Tuple[int, int]):
         portrait_sprite = HEROES[hero_id].portrait_icon_sprite
@@ -540,8 +554,10 @@ class GameUiView:
                     tooltip_details = [CONSUMABLES[consumable_type].description]
                     tooltip_bottom_left_position = (x, y)
                     tooltip = TooltipGraphics(tooltip_title, tooltip_details, bottom_left=tooltip_bottom_left_position)
-            self._consumable_icon_in_ui(x, y, UI_ICON_SIZE, slot_number, consumable_types,
-                                        highlighted_consumable_action)
+            weak_highlight = slot_number == hovered_consumable_slot_number
+            strong_highlight = slot_number == highlighted_consumable_action
+            self._consumable_icon_in_ui(x, y, UI_ICON_SIZE, slot_number, consumable_types, weak_highlight,
+                                        strong_highlight)
 
         # ABILITIES
         abilities_rect_pos = (x_1 - icon_rect_padding, y_4 - icon_rect_padding)
@@ -554,8 +570,10 @@ class GameUiView:
         for i, ability_type in enumerate(abilities):
             x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
             y = y_4
+            weak_highlight = False
             if is_point_in_rect(mouse_ui_position, Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
                 if ability_type:
+                    weak_highlight = True
                     ability_data = ABILITIES[ability_type]
                     tooltip_title = ability_data.name
                     cooldown = str(ability_data.cooldown / 1000.0)
@@ -563,8 +581,9 @@ class GameUiView:
                     tooltip_details = ["Cooldown: " + cooldown + " s", "Mana: " + mana_cost, ability_data.description]
                     tooltip_bottom_left_position = (x, y)
                     tooltip = TooltipGraphics(tooltip_title, tooltip_details, bottom_left=tooltip_bottom_left_position)
-            self._ability_icon_in_ui(x, y, UI_ICON_SIZE, ability_type,
-                                     highlighted_ability_action, ability_cooldowns_remaining)
+            strong_highlight = ability_type == highlighted_ability_action
+            self._ability_icon_in_ui(
+                x, y, UI_ICON_SIZE, ability_type, weak_highlight, strong_highlight, ability_cooldowns_remaining)
 
         # ITEMS
         x_2 = 325
@@ -583,6 +602,7 @@ class GameUiView:
             item_type = slot.get_item_type() if not slot.is_empty() else None
             slot_equipment_category = slot.enforced_equipment_category
             if is_point_in_rect(mouse_ui_position, Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
+                highlight = True
                 hovered_item_slot_number = i
                 if item_type:
                     item_data = ITEMS[item_type]
@@ -599,7 +619,9 @@ class GameUiView:
                                        "You have nothing equipped. Drag an item here to equip it!"]
                     tooltip_bottom_left_position = (x, y)
                     tooltip = TooltipGraphics(tooltip_title, tooltip_details, bottom_left=tooltip_bottom_left_position)
-            self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type, slot_equipment_category)
+            else:
+                highlight = False
+            self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type, slot_equipment_category, highlight)
 
         # MINIMAP
         x_3 = 440
