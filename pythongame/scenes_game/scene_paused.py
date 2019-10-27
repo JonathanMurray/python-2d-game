@@ -6,10 +6,10 @@ from pythongame.core.common import SceneId
 from pythongame.core.game_state import GameState
 from pythongame.core.talents import talents_graphics_from_state
 from pythongame.core.user_input import ActionExitGame, ActionPauseGame, get_main_user_inputs, ActionSaveGameState
-from pythongame.core.view.game_ui_view import GameUiView
 from pythongame.core.view.game_world_view import GameWorldView
-from pythongame.core.view.view_state import ViewState
 from pythongame.player_file import save_to_file
+from pythongame.scenes_game.game_ui_state import GameUiState
+from pythongame.scenes_game.game_ui_view import GameUiView
 
 
 class PausedScene:
@@ -18,11 +18,11 @@ class PausedScene:
             game_state: GameState,
             world_view: GameWorldView,
             ui_view: GameUiView,
-            view_state: ViewState):
+            ui_state: GameUiState):
         self.game_state = game_state
         self.world_view = world_view
         self.ui_view = ui_view
-        self.view_state = view_state
+        self.ui_state = ui_state
 
     def run_one_frame(self):
         scene_transition = None
@@ -58,7 +58,7 @@ class PausedScene:
 
         self.ui_view.render_ui(
             player_state=self.game_state.player_state,
-            view_state=self.view_state,
+            ui_state=self.ui_state,
             player_speed_multiplier=self.game_state.player_entity.speed_multiplier,
             fps_string="...",
             is_paused=True,

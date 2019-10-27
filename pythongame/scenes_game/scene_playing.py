@@ -8,23 +8,23 @@ import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 from pythongame.core.common import Millis, SoundId
 from pythongame.core.game_data import CONSUMABLES, ITEMS
-from pythongame.core.game_engine import GameEngine
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     ConsumableOnGround, ItemOnGround, Chest
 from pythongame.core.hero_upgrades import apply_hero_upgrade
 from pythongame.core.math import get_directions_to_position
 from pythongame.core.npc_behaviors import get_dialog_data, invoke_npc_action, get_dialog_graphics, DialogGraphics
-from pythongame.core.player_environment_interactions import PlayerInteractionsState
 from pythongame.core.sound_player import play_sound
 from pythongame.core.talents import talents_graphics_from_state
 from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_main_user_inputs, get_dialog_user_inputs, \
     ActionChangeDialogOption, ActionSaveGameState, ActionPressShiftKey, ActionReleaseShiftKey
-from pythongame.core.view.game_ui_view import GameUiView, MouseHoverEvent
 from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
-from pythongame.core.view.view_state import ViewState
 from pythongame.player_file import save_to_file
+from pythongame.scenes_game.game_engine import GameEngine
+from pythongame.scenes_game.game_ui_state import GameUiState
+from pythongame.scenes_game.game_ui_view import GameUiView, MouseHoverEvent
+from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
 
 
 class DialogHandler:
@@ -37,11 +37,11 @@ class DialogHandler:
         self.active_dialog_option_index = (self.active_dialog_option_index + delta) % num_options
         play_sound(SoundId.DIALOG)
 
-    def handle_user_clicked_space(self, game_state: GameState, view_state: ViewState):
+    def handle_user_clicked_space(self, game_state: GameState, ui_state: GameUiState):
         message = invoke_npc_action(self.npc_active_in_dialog.npc_type, self.active_dialog_option_index,
                                     game_state)
         if message:
-            view_state.set_message(message)
+            ui_state.set_message(message)
         self.npc_active_in_dialog.stun_status.remove_one()
         self.npc_active_in_dialog = None
 
@@ -75,13 +75,13 @@ class PlayingScene:
             game_engine: GameEngine,
             world_view: GameWorldView,
             ui_view: GameUiView,
-            view_state: ViewState):
+            ui_state: GameUiState):
         self.player_interactions_state = PlayerInteractionsState()
         self.game_state = game_state
         self.game_engine = game_engine
         self.view = world_view
         self.game_ui_view = ui_view
-        self.view_state = view_state
+        self.ui_state = ui_state
         self.render_hit_and_collision_boxes = False
         self.mouse_screen_position = (0, 0)
         self.item_slot_being_dragged: Optional[int] = None
@@ -113,7 +113,7 @@ class PlayingScene:
                 if isinstance(action, ActionChangeDialogOption):
                     self.dialog_handler.change_dialog_option(action.index_delta)
                 if isinstance(action, ActionPressSpaceKey):
-                    self.dialog_handler.handle_user_clicked_space(self.game_state, self.view_state)
+                    self.dialog_handler.handle_user_clicked_space(self.game_state, self.ui_state)
         else:
             user_actions = get_main_user_inputs()
             for action in user_actions:
@@ -204,7 +204,7 @@ class PlayingScene:
 
         mouse_hover_event: MouseHoverEvent = self.game_ui_view.render_ui(
             player_state=self.game_state.player_state,
-            view_state=self.view_state,
+            ui_state=self.ui_state,
             player_speed_multiplier=self.game_state.player_entity.speed_multiplier,
             fps_string=fps_string,
             is_paused=False,
@@ -265,14 +265,14 @@ class PlayingScene:
             self.consumable_slot_being_dragged = None
 
         if mouse_was_just_clicked and mouse_hover_event.ui_toggle is not None:
-            self.view_state.notify_toggle_was_clicked(mouse_hover_event.ui_toggle)
+            self.ui_state.notify_toggle_was_clicked(mouse_hover_event.ui_toggle)
 
         if mouse_was_just_clicked and mouse_hover_event.talent_choice_option is not None:
             choice_index, option_index = mouse_hover_event.talent_choice_option
             if len(self.game_state.player_state.chosen_talent_option_indices) == choice_index:
                 name_of_picked, upgrade_picked = self.game_state.player_state.choose_talent(option_index)
                 apply_hero_upgrade(upgrade_picked, self.game_state)
-                self.view_state.set_message("Talent picked: " + name_of_picked)
+                self.ui_state.set_message("Talent picked: " + name_of_picked)
 
         self.view.update_display()
 

@@ -1,11 +1,11 @@
 import sys
 from typing import List, Any
 
-from pythongame.core.game_engine import GameEngine
 from pythongame.core.game_state import GameState, WorldEntity, LootableOnGround
 from pythongame.core.math import boxes_intersect, is_x_and_y_within_distance, \
     get_manhattan_distance_between_rects
 from pythongame.core.npc_behaviors import has_npc_dialog
+from pythongame.scenes_game.game_engine import GameEngine
 
 
 class PlayerInteractionsState:

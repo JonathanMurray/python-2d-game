@@ -12,7 +12,7 @@ from pythongame.core.math import is_point_in_rect
 from pythongame.core.npc_behaviors import DialogGraphics
 from pythongame.core.talents import TalentsGraphics
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
-from pythongame.core.view.view_state import ViewState, UiToggle
+from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -436,7 +436,7 @@ class GameUiView:
     def render_ui(
             self,
             player_state: PlayerState,
-            view_state: ViewState,
+            ui_state: GameUiState,
             fps_string: str,
             is_paused: bool,
             player_speed_multiplier: float,
@@ -459,10 +459,10 @@ class GameUiView:
         player_money = player_state.money
         hero_id = player_state.hero_id
 
-        player_minimap_relative_position = view_state.player_minimap_relative_position
-        message = view_state.message
-        highlighted_consumable_action = view_state.highlighted_consumable_action
-        highlighted_ability_action = view_state.highlighted_ability_action
+        player_minimap_relative_position = ui_state.player_minimap_relative_position
+        message = ui_state.message
+        highlighted_consumable_action = ui_state.highlighted_consumable_action
+        highlighted_ability_action = ui_state.highlighted_ability_action
 
         hovered_item_slot_number = None
         hovered_consumable_slot_number = None
@@ -644,16 +644,16 @@ class GameUiView:
         # TOGGLES
         pos_toggled_content = (545, -300)
         x_toggles = 555
-        if view_state.toggle_enabled == UiToggle.STATS:
+        if ui_state.toggle_enabled == UiToggle.STATS:
             self._render_stats(player_speed_multiplier, player_state, pos_toggled_content)
-        elif view_state.toggle_enabled == UiToggle.TALENTS:
+        elif ui_state.toggle_enabled == UiToggle.TALENTS:
             hovered_talent_option, talent_tooltip = self._render_talents(
                 talents, pos_toggled_content, mouse_ui_position)
             tooltip = talent_tooltip if talent_tooltip is not None else tooltip
         is_mouse_hovering_stats_toggle = self._toggle_in_ui(
-            x_toggles, y_1, "STATS", view_state.toggle_enabled == UiToggle.STATS, mouse_ui_position)
+            x_toggles, y_1, "STATS", ui_state.toggle_enabled == UiToggle.STATS, mouse_ui_position)
         is_mouse_hovering_talents_toggle = self._toggle_in_ui(
-            x_toggles, y_1 + 30, "TALENTS", view_state.toggle_enabled == UiToggle.TALENTS,
+            x_toggles, y_1 + 30, "TALENTS", ui_state.toggle_enabled == UiToggle.TALENTS,
             mouse_ui_position)
         if is_mouse_hovering_stats_toggle:
             hovered_ui_toggle = UiToggle.STATS

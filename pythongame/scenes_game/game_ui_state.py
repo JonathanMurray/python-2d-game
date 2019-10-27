@@ -19,7 +19,7 @@ class UiToggle(Enum):
 # This class maintains the UI state that's related to the game clock. For instance, when the player clicks a button in
 # the UI, it should be highlighted but only for a while. Keeping that logic here lets main.py be free from UI details
 # and it lets view.py be stateless.
-class ViewState:
+class GameUiState:
     def __init__(self, entire_world_area: Rect):
         self._entire_world_area = entire_world_area
         self._player_entity_center_position = (0, 0)
