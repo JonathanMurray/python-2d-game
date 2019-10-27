@@ -14,7 +14,6 @@ from pythongame.core.hero_upgrades import apply_hero_upgrade
 from pythongame.core.math import get_directions_to_position
 from pythongame.core.npc_behaviors import get_dialog_data, invoke_npc_action, get_dialog_graphics, DialogGraphics
 from pythongame.core.sound_player import play_sound
-from pythongame.core.talents import talents_graphics_from_state
 from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_main_user_inputs, get_dialog_user_inputs, \
@@ -23,8 +22,11 @@ from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
 from pythongame.player_file import save_to_file
 from pythongame.scenes_game.game_engine import GameEngine
 from pythongame.scenes_game.game_ui_state import GameUiState
-from pythongame.scenes_game.game_ui_view import GameUiView, MouseHoverEvent
+from pythongame.scenes_game.game_ui_view import GameUiView
 from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
+from pythongame.scenes_game.playing_ui_controller import PlayingUiController, EventTriggeredFromUi, \
+    DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
+    PickTalent, StartDraggingItemOrConsumable
 
 
 class DialogHandler:
@@ -79,15 +81,13 @@ class PlayingScene:
         self.player_interactions_state = PlayerInteractionsState()
         self.game_state = game_state
         self.game_engine = game_engine
-        self.view = world_view
-        self.game_ui_view = ui_view
+        self.world_view = world_view
         self.ui_state = ui_state
         self.render_hit_and_collision_boxes = False
         self.mouse_screen_position = (0, 0)
-        self.item_slot_being_dragged: Optional[int] = None
-        self.consumable_slot_being_dragged: Optional[int] = None
         self.dialog_handler = DialogHandler()
         self.is_shift_key_held_down = False
+        self.ui_controller = PlayingUiController(game_state, ui_view, ui_state)
 
     def run_one_frame(self, time_passed: Millis, fps_string: str) -> bool:
 
@@ -179,7 +179,7 @@ class PlayingScene:
             if ready_entity is not None:
                 entity_action_text = get_entity_action_text(ready_entity, self.is_shift_key_held_down)
 
-        self.view.render_world(
+        self.world_view.render_world(
             all_entities_to_render=self.game_state.get_all_entities_to_render(),
             decorations_to_render=self.game_state.get_decorations_to_render(),
             player_entity=self.game_state.player_entity,
@@ -196,85 +196,31 @@ class PlayingScene:
 
         dialog = self.dialog_handler.get_dialog_graphics()
 
-        # TODO If dragging an item, highlight the inventory slots that are valid for the item?
+        events_triggered_from_ui: List[EventTriggeredFromUi] = self.ui_controller.render_and_handle_mouse(
+            fps_string, dialog, self.mouse_screen_position, mouse_was_just_clicked, mouse_was_just_released)
 
-        talents_graphics = talents_graphics_from_state(
-            self.game_state.player_state.talents_state, self.game_state.player_state.level,
-            self.game_state.player_state.chosen_talent_option_indices)
-
-        mouse_hover_event: MouseHoverEvent = self.game_ui_view.render_ui(
-            player_state=self.game_state.player_state,
-            ui_state=self.ui_state,
-            player_speed_multiplier=self.game_state.player_entity.speed_multiplier,
-            fps_string=fps_string,
-            is_paused=False,
-            mouse_screen_position=self.mouse_screen_position,
-            dialog=dialog,
-            talents=talents_graphics)
-
-        # TODO There is a lot of details here about UI state (dragging items). Move that elsewhere.
-
-        # DRAGGING ITEMS
-
-        hovered_item_slot_number = mouse_hover_event.item_slot_number
-
-        if mouse_was_just_clicked and hovered_item_slot_number is not None:
-            if not self.game_state.player_state.item_inventory.is_slot_empty(hovered_item_slot_number):
-                self.item_slot_being_dragged = hovered_item_slot_number
+        for event in events_triggered_from_ui:
+            if isinstance(event, StartDraggingItemOrConsumable):
                 play_sound(SoundId.UI_START_DRAGGING_ITEM)
-
-        if self.item_slot_being_dragged is not None:
-            item_type = self.game_state.player_state.item_inventory.get_item_type_in_slot(self.item_slot_being_dragged)
-            self.game_ui_view.render_item_being_dragged(item_type, self.mouse_screen_position)
-
-        if mouse_was_just_released and self.item_slot_being_dragged is not None:
-            if hovered_item_slot_number is not None and self.item_slot_being_dragged != hovered_item_slot_number:
-                did_switch_succeed = self.game_engine.drag_item_between_inventory_slots(
-                    self.item_slot_being_dragged, hovered_item_slot_number)
+            elif isinstance(event, DragItemBetweenInventorySlots):
+                did_switch_succeed = self.game_engine.drag_item_between_inventory_slots(event.from_slot, event.to_slot)
                 if did_switch_succeed:
                     play_sound(SoundId.UI_ITEM_WAS_MOVED)
                 else:
                     play_sound(SoundId.INVALID_ACTION)
-            if not mouse_hover_event.is_over_ui:
-                self.game_engine.drop_inventory_item_on_ground(self.item_slot_being_dragged,
-                                                               self.get_mouse_hover_world_pos())
-            self.item_slot_being_dragged = None
-
-        # DRAGGING CONSUMABLES
-
-        hovered_consumable_slot_number = mouse_hover_event.consumable_slot_number
-
-        if mouse_was_just_clicked and hovered_consumable_slot_number is not None:
-            if self.game_state.player_state.consumable_inventory.consumables_in_slots[hovered_consumable_slot_number]:
-                self.consumable_slot_being_dragged = hovered_consumable_slot_number
-                play_sound(SoundId.UI_START_DRAGGING_ITEM)
-
-        if self.consumable_slot_being_dragged is not None:
-            consumable_type = self.game_state.player_state.consumable_inventory.consumables_in_slots[
-                self.consumable_slot_being_dragged][0]
-            self.game_ui_view.render_consumable_being_dragged(consumable_type, self.mouse_screen_position)
-
-        if mouse_was_just_released and self.consumable_slot_being_dragged is not None:
-            if hovered_consumable_slot_number is not None and self.consumable_slot_being_dragged != hovered_consumable_slot_number:
-                self.game_engine.drag_consumable_between_inventory_slots(
-                    self.consumable_slot_being_dragged, hovered_consumable_slot_number)
+            elif isinstance(event, DropItemOnGround):
+                self.game_engine.drop_inventory_item_on_ground(event.from_slot, event.world_position)
+            elif isinstance(event, DragConsumableBetweenInventorySlots):
+                self.game_engine.drag_consumable_between_inventory_slots(event.from_slot, event.to_slot)
                 play_sound(SoundId.UI_ITEM_WAS_MOVED)
-            if not mouse_hover_event.is_over_ui:
-                self.game_engine.drop_consumable_on_ground(self.consumable_slot_being_dragged,
-                                                           self.get_mouse_hover_world_pos())
-            self.consumable_slot_being_dragged = None
+            elif isinstance(event, DropConsumableOnGround):
+                self.game_engine.drop_consumable_on_ground(event.from_slot, event.world_position)
+            elif isinstance(event, PickTalent):
+                apply_hero_upgrade(event.hero_upgrade, self.game_state)
+            else:
+                raise Exception("Unhandled event: " + str(event))
 
-        if mouse_was_just_clicked and mouse_hover_event.ui_toggle is not None:
-            self.ui_state.notify_toggle_was_clicked(mouse_hover_event.ui_toggle)
-
-        if mouse_was_just_clicked and mouse_hover_event.talent_choice_option is not None:
-            choice_index, option_index = mouse_hover_event.talent_choice_option
-            if len(self.game_state.player_state.chosen_talent_option_indices) == choice_index:
-                name_of_picked, upgrade_picked = self.game_state.player_state.choose_talent(option_index)
-                apply_hero_upgrade(upgrade_picked, self.game_state)
-                self.ui_state.set_message("Talent picked: " + name_of_picked)
-
-        self.view.update_display()
+        self.world_view.update_display()
 
         return transition_to_pause
 
