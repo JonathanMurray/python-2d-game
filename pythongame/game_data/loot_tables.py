@@ -5,6 +5,7 @@ LOOT_ITEMS_1 = [
     LootEntry.item(ItemType.WOODEN_SHIELD),
     LootEntry.item(ItemType.LEATHER_COWL),
     LootEntry.item(ItemType.LEATHER_ARMOR),
+    LootEntry.item(ItemType.HATCHET),
 ]
 
 LOOT_ITEMS_2 = [
