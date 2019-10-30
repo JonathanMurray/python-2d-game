@@ -24,7 +24,7 @@ class WorldEntity:
         self.sprite: Sprite = sprite
         self.direction: Direction = direction
         self._speed = speed
-        self.speed_multiplier = 1
+        self._speed_multiplier = 1  # update and get using methods
         self._effective_speed = speed
         self._is_moving = True
         self.pygame_collision_rect: Rect = Rect(self.x, self.y, self.w, self.h)
@@ -66,8 +66,11 @@ class WorldEntity:
         return int(self.x), int(self.y)
 
     def add_to_speed_multiplier(self, amount):
-        self.speed_multiplier += amount
-        self._effective_speed = self.speed_multiplier * self._speed
+        self._speed_multiplier += amount
+        self._effective_speed = self._speed_multiplier * self._speed
+
+    def get_speed_multiplier(self):
+        return self._speed_multiplier
 
     # TODO use more
     def rect(self) -> Rect:
