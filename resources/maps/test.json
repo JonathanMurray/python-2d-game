@@ -266,6 +266,13 @@
         50,
         400
       ]
+    },
+    {
+      "item_type": "HATCHET",
+      "position": [
+        100,
+        100
+      ]
     }
   ],
   "money_piles_on_ground": [],
@@ -421,5 +428,6 @@
       ]
     }
   ],
-  "portals": []
+  "portals": [],
+  "chests": []
 }
