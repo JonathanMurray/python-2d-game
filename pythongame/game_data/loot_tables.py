@@ -80,22 +80,17 @@ LOOT_TABLE_1 = LootTable([
 LOOT_TABLE_2 = LootTable([
     LootGroup(1, [LootEntry.money(1), LootEntry.money(2), LootEntry.money(3)], 0.1),
     LootGroup(1, LOOT_POTIONS_1, 0.05),
-    LootGroup(1, LOOT_ITEMS_1 + LOOT_ITEMS_2 + LOOT_ITEMS_3, 0.05),
-    LootGroup.single(LootEntry.item(ItemType.GOLD_NUGGET), 0.01),
+    LootGroup(1, LOOT_ITEMS_1 + LOOT_ITEMS_2 + LOOT_ITEMS_3, 0.05)
 ])
 
 LOOT_TABLE_3 = LootTable([
     LootGroup(1, [LootEntry.money(2), LootEntry.money(3), LootEntry.money(4)], 0.2),
     LootGroup(1, LOOT_POTIONS_1 + LOOT_POTIONS_2, 0.1),
-    LootGroup(1, LOOT_ITEMS_2 + LOOT_ITEMS_3 + LOOT_ITEMS_4, 0.1),
-    LootGroup.single(LootEntry.item(ItemType.GOLD_NUGGET), 0.015),
-    LootGroup.single(LootEntry.item(ItemType.SAPHIRE), 0.005)
+    LootGroup(1, LOOT_ITEMS_2 + LOOT_ITEMS_3 + LOOT_ITEMS_4, 0.1)
 ])
 
 LOOT_TABLE_4 = LootTable([
     LootGroup(1, [LootEntry.money(2), LootEntry.money(3), LootEntry.money(4)], 0.4),
     LootGroup(1, LOOT_POTIONS_1 + LOOT_POTIONS_2, 0.2),
-    LootGroup(1, LOOT_ITEMS_3 + LOOT_ITEMS_4, 0.2),
-    LootGroup.single(LootEntry.item(ItemType.GOLD_NUGGET), 0.1),
-    LootGroup.single(LootEntry.item(ItemType.SAPHIRE), 0.02),
+    LootGroup(1, LOOT_ITEMS_3 + LOOT_ITEMS_4, 0.2)
 ])
