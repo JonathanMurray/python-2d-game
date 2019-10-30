@@ -37,6 +37,8 @@ def register_sorcerer_npc():
     dialog_options = [
         buy_consumable_option(ConsumableType.HEALTH, 5),
         buy_consumable_option(ConsumableType.MANA, 5),
+        buy_consumable_option(ConsumableType.SPEED, 5),
+        buy_consumable_option(ConsumableType.POWER, 10),
         DialogOptionData("\"Good bye\"", "cancel", None)]
     dialog_text_body = "Greetings. I am glad to see that you have made it this far! However, great danger lies ahead... " \
                        "Here, see if any of these potions are of interest to you."
