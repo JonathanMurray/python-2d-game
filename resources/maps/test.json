@@ -287,6 +287,13 @@
         100,
         200
       ]
+    },
+    {
+      "item_type": "TORN_DOCUMENT",
+      "position": [
+        100,
+        250
+      ]
     }
   ],
   "money_piles_on_ground": [],

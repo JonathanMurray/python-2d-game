@@ -78,6 +78,7 @@ from pythongame.game_data.items.item_soldiers_helmet import register_soldiers_he
 from pythongame.game_data.items.item_staff_of_fire import register_staff_of_fire_item
 from pythongame.game_data.items.item_skull_staff import register_skull_staff_item
 from pythongame.game_data.items.item_stone_amulet import register_stone_amulet_item
+from pythongame.game_data.items.item_torn_document import register_torn_document_item
 from pythongame.game_data.items.item_wand import register_wand_item
 from pythongame.game_data.items.item_winged_helmet import register_winged_helmet_item
 from pythongame.game_data.items.item_wizards_cowl import register_wizards_cowl
@@ -183,6 +184,7 @@ def register_all_game_data():
     register_hatchet_item()
     register_elite_helmet_item()
     register_stone_amulet_item()
+    register_torn_document_item()
 
     # Register items before NPCs as vendors may rely on item data
 
