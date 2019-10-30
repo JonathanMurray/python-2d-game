@@ -8,7 +8,7 @@ from pythongame.core.view.image_loading import SpriteInitializer
 
 ITEM_TYPE = ItemType.MESSENGERS_HAT
 
-SPEED_MULTIPLIER = 0.1
+SPEED_MULTIPLIER = 0.2
 
 
 class ItemEffect(AbstractItemEffect):
