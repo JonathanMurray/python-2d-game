@@ -44,7 +44,7 @@ def register_speed_potion():
     register_consumable_effect(ConsumableType.SPEED, _apply_speed)
     register_buff_effect(BuffType.INCREASED_MOVE_SPEED, IncreasedMoveSpeed)
     register_buff_text(BuffType.INCREASED_MOVE_SPEED, "Speed potion")
-    image_path = "resources/graphics/white_potion.gif"
+    image_path = "resources/graphics/item_speed_potion.png"
     register_ui_icon_sprite_path(ui_icon_sprite, image_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_path, POTION_ENTITY_SIZE))
     description = "Gain +" + "{:.0f}".format(SPEED_INCREASE * 100) + "% movement speed for " + \
