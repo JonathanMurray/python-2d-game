@@ -122,6 +122,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.NOBLE_DEFENDER),
     MapEditorWorldEntity.item(ItemType.HATCHET),
     MapEditorWorldEntity.item(ItemType.ELITE_HELMET),
+    MapEditorWorldEntity.item(ItemType.STONE_AMULET),
 
     MapEditorWorldEntity.money(1),
 

@@ -40,6 +40,7 @@ LOOT_ITEMS_3 = [
     LootEntry.item(ItemType.ZULS_AEGIS),
     LootEntry.item(ItemType.GOATS_RING),
     LootEntry.item(ItemType.BLOOD_AMULET),
+    LootEntry.item(ItemType.STONE_AMULET),
     LootEntry.item(ItemType.KNIGHTS_ARMOR),
     LootEntry.item(ItemType.RING_OF_POWER),
     LootEntry.item(ItemType.ROYAL_SWORD),

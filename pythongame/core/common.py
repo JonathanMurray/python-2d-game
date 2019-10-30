@@ -198,6 +198,7 @@ class Sprite(Enum):
     ITEM_FROG = 333
     ITEM_HATCHET = 334
     ITEM_ELITE_HELMET = 335
+    ITEM_STONE_AMULET = 336
     COINS_1 = 350
     COINS_2 = 351
     COINS_5 = 352
@@ -275,6 +276,7 @@ class BuffType(Enum):
     TELEPORTING_WITH_WARP_POINT = 34
     BEING_SPAWNED = 35
     BURNT_BY_FIREBALL = 36
+    PROTECTED_BY_STONE_AMULET = 37
 
 
 class ItemType(Enum):
@@ -327,6 +329,7 @@ class ItemType(Enum):
     FROG = 90
     HATCHET = 91
     ELITE_HELMET = 92
+    STONE_AMULET = 93
 
 
 class ProjectileType(Enum):
@@ -450,6 +453,7 @@ class UiIconSprite(Enum):
     ITEM_FROG = 233
     ITEM_HATCHET = 234
     ITEM_ELITE_HELMET = 235
+    ITEM_STONE_AMULET = 236
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
     INVENTORY_TEMPLATE_HELMET = 400
