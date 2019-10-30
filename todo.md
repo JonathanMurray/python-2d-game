@@ -40,6 +40,8 @@
 * necromancer summoning mummy
 
 #### Features:
+* necromancer enemy should have more dangerous attacks
+* goblin mage's fireball should be more threatening
 * zombie/mummy has chance to inflict DOT or other debuff on hit
 * right click items to swap them between inventory and equipped
 * allow some type of items to be stacked in inventory (gold nugget and sapphire)
@@ -53,9 +55,7 @@
 * More advanced abilities:
     * AoE effect that covers a large area and stays after being cast (like Diablo 2 sorc Blizzard ability)
     * channeling locked in one target. drain life / slow / gain mana / gain damage bonus
-    * effects that trigger if last-hitting an enemy (execute ability, if it kills enemy then get mana back)
     * debuffs that spread between enemies
-    * effects that have a chance to trigger
     * buff that damages nearby enemies
     * buff that bounces damage back to enemies
 * Render enemy locations on minimap?
