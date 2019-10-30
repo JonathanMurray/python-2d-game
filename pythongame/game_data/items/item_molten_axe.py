@@ -7,7 +7,7 @@ from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.view.image_loading import SpriteInitializer
 
 ITEM_TYPE = ItemType.MOLTEN_AXE
-DAMAGE_BONUS = 0.15
+DAMAGE_BONUS = 0.25
 
 
 class ItemEffect(AbstractItemEffect):
