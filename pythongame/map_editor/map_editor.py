@@ -89,7 +89,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.consumable(ConsumableType.WARP_STONE),
 
     MapEditorWorldEntity.item(ItemType.MESSENGERS_HAT),
-    MapEditorWorldEntity.item(ItemType.SWORD_OF_LEECHING),
+    MapEditorWorldEntity.item(ItemType.SKULL_STAFF),
     MapEditorWorldEntity.item(ItemType.ROD_OF_LIGHTNING),
     MapEditorWorldEntity.item(ItemType.AMULET_OF_MANA_1),
     MapEditorWorldEntity.item(ItemType.SOLDIERS_HELMET_1),

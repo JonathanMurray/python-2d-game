@@ -6,7 +6,7 @@ from pythongame.core.item_effects import register_item_effect, AbstractItemEffec
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.view.image_loading import SpriteInitializer
 
-ITEM_TYPE = ItemType.SWORD_OF_LEECHING
+ITEM_TYPE = ItemType.SKULL_STAFF
 LIFE_STEAL_BOOST = 0.1
 
 
@@ -21,13 +21,13 @@ class ItemEffect(AbstractItemEffect):
         return ITEM_TYPE
 
 
-def register_sword_of_leeching_item():
-    ui_icon_sprite = UiIconSprite.ITEM_SWORD_OF_LEECHING
-    sprite = Sprite.ITEM_SWORD_OF_LEECHING
+def register_skull_staff_item():
+    ui_icon_sprite = UiIconSprite.ITEM_SKULL_STAFF
+    sprite = Sprite.ITEM_SKULL_STAFF
     register_item_effect(ITEM_TYPE, ItemEffect())
-    register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/item_sword_of_leeching.png")
+    register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/item_skullstaff.png")
     register_entity_sprite_initializer(
-        sprite, SpriteInitializer("resources/graphics/item_sword_of_leeching.png", ITEM_ENTITY_SIZE))
+        sprite, SpriteInitializer("resources/graphics/item_skullstaff.png", ITEM_ENTITY_SIZE))
     description = ["+" + str(int(LIFE_STEAL_BOOST * 100)) + "% life steal"]
-    item_data = ItemData(ui_icon_sprite, sprite, "Sword of Leeching", description, ItemEquipmentCategory.MAIN_HAND)
+    item_data = ItemData(ui_icon_sprite, sprite, "Skull Staff", description, ItemEquipmentCategory.MAIN_HAND)
     register_item_data(ITEM_TYPE, item_data)

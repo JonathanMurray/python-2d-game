@@ -75,7 +75,7 @@ from pythongame.game_data.items.item_royal_sword import register_royal_sword_ite
 from pythongame.game_data.items.item_saphire import register_saphire
 from pythongame.game_data.items.item_soldiers_helmet import register_soldiers_helmet_item
 from pythongame.game_data.items.item_staff_of_fire import register_staff_of_fire_item
-from pythongame.game_data.items.item_sword_of_leeching import register_sword_of_leeching_item
+from pythongame.game_data.items.item_skull_staff import register_skull_staff_item
 from pythongame.game_data.items.item_wand import register_wand_item
 from pythongame.game_data.items.item_winged_helmet import register_winged_helmet_item
 from pythongame.game_data.items.item_wizards_cowl import register_wizards_cowl
@@ -147,7 +147,7 @@ def register_all_game_data():
 
     register_messengers_hat_item()
     register_amulet_of_mana_item()
-    register_sword_of_leeching_item()
+    register_skull_staff_item()
     register_rod_of_lightning_item()
     register_soldiers_helmet_item()
     register_blessed_shield_item()

@@ -20,7 +20,7 @@ LOOT_ITEMS_2 = [
 
 LOOT_ITEMS_3 = [
     LootEntry.item(ItemType.MESSENGERS_HAT),
-    LootEntry.item(ItemType.SWORD_OF_LEECHING),
+    LootEntry.item(ItemType.SKULL_STAFF),
     LootEntry.item(ItemType.ROD_OF_LIGHTNING),
     LootEntry.item(ItemType.AMULET_OF_MANA_2),
     LootEntry.item(ItemType.AMULET_OF_MANA_3),
