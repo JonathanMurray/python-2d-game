@@ -87,6 +87,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.consumable(ConsumableType.SPEED),
     MapEditorWorldEntity.consumable(ConsumableType.BREW),
     MapEditorWorldEntity.consumable(ConsumableType.WARP_STONE),
+    MapEditorWorldEntity.consumable(ConsumableType.POWER),
 
     MapEditorWorldEntity.item(ItemType.MESSENGERS_HAT),
     MapEditorWorldEntity.item(ItemType.SKULL_STAFF),

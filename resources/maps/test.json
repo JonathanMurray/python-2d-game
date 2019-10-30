@@ -40,6 +40,13 @@
         100,
         50
       ]
+    },
+    {
+      "consumable_type": "POWER",
+      "position": [
+        100,
+        300
+      ]
     }
   ],
   "items_on_ground": [
