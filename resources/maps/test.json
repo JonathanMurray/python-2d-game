@@ -273,6 +273,13 @@
         100,
         100
       ]
+    },
+    {
+      "item_type": "ELITE_HELMET",
+      "position": [
+        100,
+        150
+      ]
     }
   ],
   "money_piles_on_ground": [],
@@ -289,13 +296,6 @@
       "position": [
         225,
         200
-      ]
-    },
-    {
-      "npc_type": "ZOMBIE",
-      "position": [
-        100,
-        150
       ]
     },
     {

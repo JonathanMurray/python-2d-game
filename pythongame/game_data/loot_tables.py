@@ -44,7 +44,8 @@ LOOT_ITEMS_3 = [
     LootEntry.item(ItemType.RING_OF_POWER),
     LootEntry.item(ItemType.ROYAL_SWORD),
     LootEntry.item(ItemType.MOLTEN_AXE),
-    LootEntry.item(ItemType.WAND)
+    LootEntry.item(ItemType.WAND),
+    LootEntry.item(ItemType.ELITE_HELMET),
 ]
 
 LOOT_ITEMS_4 = [

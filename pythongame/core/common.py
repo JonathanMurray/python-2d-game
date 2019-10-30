@@ -197,6 +197,7 @@ class Sprite(Enum):
     ITEM_NOBLE_DEFENDER = 332
     ITEM_FROG = 333
     ITEM_HATCHET = 334
+    ITEM_ELITE_HELMET = 335
     COINS_1 = 350
     COINS_2 = 351
     COINS_5 = 352
@@ -325,6 +326,7 @@ class ItemType(Enum):
     NOBLE_DEFENDER = 89
     FROG = 90
     HATCHET = 91
+    ELITE_HELMET = 92
 
 
 class ProjectileType(Enum):
@@ -447,6 +449,7 @@ class UiIconSprite(Enum):
     ITEM_NOBLE_DEFENDER = 232
     ITEM_FROG = 233
     ITEM_HATCHET = 234
+    ITEM_ELITE_HELMET = 235
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
     INVENTORY_TEMPLATE_HELMET = 400

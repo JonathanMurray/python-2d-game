@@ -121,6 +121,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.GLADIATOR_ARMOR),
     MapEditorWorldEntity.item(ItemType.NOBLE_DEFENDER),
     MapEditorWorldEntity.item(ItemType.HATCHET),
+    MapEditorWorldEntity.item(ItemType.ELITE_HELMET),
 
     MapEditorWorldEntity.money(1),
 
