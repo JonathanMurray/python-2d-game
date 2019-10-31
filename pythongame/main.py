@@ -16,6 +16,7 @@ from pythongame.player_file import SavedPlayerState, load_player_state_from_json
 from pythongame.register_game_data import register_all_game_data
 from pythongame.scene_picking_hero.scene_picking_hero import PickingHeroScene
 from pythongame.scene_picking_hero.view_picking_hero import PickingHeroView
+from pythongame.scene_victory_screen.scene_victory_screen import VictoryScreenScene
 from pythongame.scenes_game.game_engine import GameEngine
 from pythongame.scenes_game.game_ui_state import GameUiState
 from pythongame.scenes_game.game_ui_view import GameUiView, UI_ICON_SIZE, PORTRAIT_ICON_SIZE
@@ -49,8 +50,9 @@ class Main:
         init_sound_player()
         self.clock = pygame.time.Clock()
         self.picking_hero_scene = PickingHeroScene(PickingHeroView(pygame_screen, images_by_portrait_sprite))
+        self.victory_screen_scene = VictoryScreenScene(pygame_screen)
         # These are initialized after hero has been picked
-        self.playing_scene = None
+        self.playing_scene: PlayingScene = None
         self.paused_scene = None
         self.game_state = None
         self.ui_state = None
@@ -90,14 +92,17 @@ class Main:
                     self.scene_id = SceneId.PLAYING
 
             elif self.scene_id == SceneId.PLAYING:
-                transition_to_pause = self.playing_scene.run_one_frame(time_passed, str(int(self.clock.get_fps())))
-                if transition_to_pause:
-                    self.scene_id = SceneId.PAUSED
+                next_scene = self.playing_scene.run_one_frame(time_passed, str(int(self.clock.get_fps())))
+                if next_scene is not None:
+                    self.scene_id = next_scene
 
             elif self.scene_id == SceneId.PAUSED:
                 transition_to_playing = self.paused_scene.run_one_frame()
                 if transition_to_playing:
                     self.scene_id = SceneId.PLAYING
+
+            elif self.scene_id == SceneId.VICTORY_SCREEN:
+                self.victory_screen_scene.run_one_frame(time_passed)
 
             else:
                 raise Exception("Unhandled scene: " + str(self.scene_id))

@@ -61,6 +61,7 @@ from pythongame.game_data.items.item_gladiator_armor import register_gladiator_a
 from pythongame.game_data.items.item_goats_ring import register_goats_ring
 from pythongame.game_data.items.item_gold_nugget import register_gold_nugget
 from pythongame.game_data.items.item_hatchet import register_hatchet_item
+from pythongame.game_data.items.item_key import register_key_item
 from pythongame.game_data.items.item_knights_armor import register_knights_armor
 from pythongame.game_data.items.item_leather_armor import register_leather_armor_item
 from pythongame.game_data.items.item_leather_cowl import register_leather_cowl_item
@@ -187,6 +188,7 @@ def register_all_game_data():
     register_elite_helmet_item()
     register_stone_amulet_item()
     register_torn_document_item()
+    register_key_item()
 
     # Register items before NPCs as vendors may rely on item data
 

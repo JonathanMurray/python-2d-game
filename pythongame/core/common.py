@@ -11,6 +11,7 @@ class SceneId(Enum):
     PICKING_HERO = 1
     PLAYING = 2
     PAUSED = 3
+    VICTORY_SCREEN = 4
 
 
 class Direction(Enum):
@@ -39,6 +40,7 @@ class HeroUpgrade:
     ABILITY_SLASH_AOE_BONUS_DAMAGE = 31
     ABILITY_BLOODLUST_DURATION = 32
     ABILITY_SLASH_CD = 33
+    HAS_WON_GAME = 100
 
 
 class ConsumableType(Enum):
@@ -202,6 +204,7 @@ class Sprite(Enum):
     ITEM_ELITE_HELMET = 335
     ITEM_STONE_AMULET = 336
     ITEM_TORN_DOCUMENT = 337
+    ITEM_KEY = 338
     COINS_1 = 350
     COINS_2 = 351
     COINS_5 = 352
@@ -335,6 +338,7 @@ class ItemType(Enum):
     ELITE_HELMET = 92
     STONE_AMULET = 93
     TORN_DOCUMENT = 94
+    KEY = 95
 
 
 class ProjectileType(Enum):
@@ -461,6 +465,7 @@ class UiIconSprite(Enum):
     ITEM_ELITE_HELMET = 235
     ITEM_STONE_AMULET = 236
     ITEM_TORN_DOCUMENT = 237
+    ITEM_KEY = 238
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
     INVENTORY_TEMPLATE_HELMET = 400

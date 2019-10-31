@@ -6,7 +6,7 @@ import pygame
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis, SoundId
+from pythongame.core.common import Millis, SoundId, HeroUpgrade, SceneId
 from pythongame.core.game_data import CONSUMABLES, ITEMS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     ConsumableOnGround, ItemOnGround, Chest
@@ -88,8 +88,11 @@ class PlayingScene:
         self.dialog_handler = DialogHandler()
         self.is_shift_key_held_down = False
         self.ui_controller = PlayingUiController(game_state, ui_view, ui_state)
+        self.total_time_played = 0
 
-    def run_one_frame(self, time_passed: Millis, fps_string: str) -> bool:
+    def run_one_frame(self, time_passed: Millis, fps_string: str) -> Optional[SceneId]:
+
+        self.total_time_played += time_passed
 
         transition_to_pause = False
 
@@ -222,7 +225,11 @@ class PlayingScene:
 
         self.world_view.update_display()
 
-        return transition_to_pause
+        if self.game_state.player_state.has_upgrade(HeroUpgrade.HAS_WON_GAME):
+            return SceneId.VICTORY_SCREEN
+        if transition_to_pause:
+            return SceneId.PAUSED
+        return None
 
     def get_mouse_hover_world_pos(self):
         return (int(self.mouse_screen_position[0] + self.game_state.camera_world_area.x),

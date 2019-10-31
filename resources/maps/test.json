@@ -301,6 +301,13 @@
         100,
         250
       ]
+    },
+    {
+      "item_type": "KEY",
+      "position": [
+        100,
+        350
+      ]
     }
   ],
   "money_piles_on_ground": [],

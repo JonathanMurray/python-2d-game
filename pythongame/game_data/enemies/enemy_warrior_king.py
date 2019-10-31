@@ -23,7 +23,7 @@ def register_warrior_king_enemy():
         [
             LootGroup.single(LootEntry.consumable(ConsumableType.WARP_STONE), 1),
             LootGroup(1, LOOT_ITEMS_4, 1),
-            LootGroup.single(LootEntry.item(ItemType.TORN_DOCUMENT), 1),
+            LootGroup.single(LootEntry.item(ItemType.KEY), 1),
         ]
     )
     npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, loot_table)

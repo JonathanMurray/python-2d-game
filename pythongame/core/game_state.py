@@ -377,7 +377,7 @@ class PlayerState:
         self.level_bonus = level_bonus
         self.talents_state: TalentsState = talents_state
         self.chosen_talent_option_indices: List[int] = []
-        self.upgrades: List[HeroUpgrade] = []
+        self._upgrades: List[HeroUpgrade] = []
 
     # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):
@@ -461,11 +461,14 @@ class PlayerState:
             option = choice.second
         else:
             raise Exception("Illegal talent choice option: " + str(option_index))
-        self.upgrades.append(option.upgrade)
+        self._upgrades.append(option.upgrade)
         return option.name, option.upgrade
 
+    def gain_upgrade(self, upgrade: HeroUpgrade):
+        self._upgrades.append(upgrade)
+
     def has_upgrade(self, upgrade: HeroUpgrade) -> bool:
-        return upgrade in self.upgrades
+        return upgrade in self._upgrades
 
 
 # TODO Is there a way to handle this better in the view module? This class shouldn't need to masquerade as a WorldEntity
