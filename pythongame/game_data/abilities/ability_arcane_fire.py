@@ -1,6 +1,7 @@
 from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
-from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, ProjectileType, UiIconSprite, PeriodicTimer
+from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, ProjectileType, UiIconSprite, PeriodicTimer, \
+    SoundId
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_entity_sprite_initializer, register_buff_as_channeling
@@ -17,11 +18,11 @@ PROJECTILE_SPEED = 0.7
 
 
 def _apply_channel_attack(game_state: GameState) -> AbilityResult:
-    game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.CHANNELING_MAGIC_MISSILES), CHANNEL_DURATION)
+    game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.CHANNELING_ARCANE_FIRE), CHANNEL_DURATION)
     return AbilityWasUsedSuccessfully()
 
 
-class ChannelingMagicMissiles(AbstractBuffEffect):
+class Channeling(AbstractBuffEffect):
     def __init__(self):
         self.timer = PeriodicTimer(Millis(70))
 
@@ -34,9 +35,9 @@ class ChannelingMagicMissiles(AbstractBuffEffect):
         if self.timer.update_and_check_if_ready(time_passed):
             player_center_position = game_state.player_entity.get_center_position()
             projectile_pos = get_position_from_center_position(player_center_position, PROJECTILE_SIZE)
-            entity = WorldEntity(projectile_pos, PROJECTILE_SIZE, Sprite.PROJECTILE_PLAYER_MAGIC_MISSILE,
+            entity = WorldEntity(projectile_pos, PROJECTILE_SIZE, Sprite.PROJECTILE_PLAYER_ARCANE_FIRE,
                                  game_state.player_entity.direction, PROJECTILE_SPEED)
-            projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER_MAGIC_MISSILE))
+            projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER_ARCANE_FIRE))
             game_state.projectile_entities.append(projectile)
             game_state.visual_effects.append(VisualRect((250, 0, 250), player_center_position, 45, 60, Millis(250), 1))
 
@@ -44,10 +45,10 @@ class ChannelingMagicMissiles(AbstractBuffEffect):
         game_state.player_state.stun_status.remove_one()
 
     def get_buff_type(self):
-        return BuffType.CHANNELING_MAGIC_MISSILES
+        return BuffType.CHANNELING_ARCANE_FIRE
 
 
-class PlayerMagicMissileProjectileController(AbstractProjectileController):
+class ProjectileController(AbstractProjectileController):
     def __init__(self):
         super().__init__(500)
         self._enemies_hit = []
@@ -62,20 +63,20 @@ class PlayerMagicMissileProjectileController(AbstractProjectileController):
         # Projectile pierces enemies (so we don't mark projectile as destroyed)
 
 
-def register_channel_attack_ability():
-    register_ability_effect(AbilityType.CHANNEL_ATTACK, _apply_channel_attack)
+def register_arcane_fire_ability():
+    register_ability_effect(AbilityType.ARCANE_FIRE, _apply_channel_attack)
     description = "Channel for " + "{:.1f}".format(CHANNEL_DURATION / 1000) + \
                   "s, firing piercing missiles in front of you that damage enemies."
     mana_cost = 40
     cooldown = Millis(30000)
-    ability_data = AbilityData("Arcane Fire", UiIconSprite.ABILITY_MAGIC_MISSILE, mana_cost, cooldown, description,
-                               None)
-    register_ability_data(AbilityType.CHANNEL_ATTACK, ability_data)
+    ability_data = AbilityData("Arcane Fire", UiIconSprite.ABILITY_ARCANE_FIRE, mana_cost, cooldown, description,
+                               SoundId.ABILITY_ARCANE_FIRE)
+    register_ability_data(AbilityType.ARCANE_FIRE, ability_data)
 
-    register_ui_icon_sprite_path(UiIconSprite.ABILITY_MAGIC_MISSILE, "resources/graphics/magic_missile.png")
-    register_buff_effect(BuffType.CHANNELING_MAGIC_MISSILES, ChannelingMagicMissiles)
+    register_ui_icon_sprite_path(UiIconSprite.ABILITY_ARCANE_FIRE, "resources/graphics/magic_missile.png")
+    register_buff_effect(BuffType.CHANNELING_ARCANE_FIRE, Channeling)
     register_entity_sprite_initializer(
-        Sprite.PROJECTILE_PLAYER_MAGIC_MISSILE,
+        Sprite.PROJECTILE_PLAYER_ARCANE_FIRE,
         SpriteInitializer("resources/graphics/magic_missile.png", PROJECTILE_SIZE))
-    register_projectile_controller(ProjectileType.PLAYER_MAGIC_MISSILE, PlayerMagicMissileProjectileController)
-    register_buff_as_channeling(BuffType.CHANNELING_MAGIC_MISSILES)
+    register_projectile_controller(ProjectileType.PLAYER_ARCANE_FIRE, ProjectileController)
+    register_buff_as_channeling(BuffType.CHANNELING_ARCANE_FIRE)

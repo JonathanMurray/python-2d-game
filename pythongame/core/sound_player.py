@@ -25,6 +25,7 @@ def init_sound_player():
         SoundId.ABILITY_SLASH: load_sound_file('Slash02.ogg'),
         SoundId.ABILITY_STOMP: load_sound_file('Slash01.ogg'),
         SoundId.ABILITY_BLOODLUST: load_sound_file('bloodlust.ogg'),
+        SoundId.ABILITY_ARCANE_FIRE: load_sound_file('Retro_8-Bit_Game-Alarm_Bell_07.wav'),
         SoundId.POTION: load_sound_file('PowerUp04.ogg'),
         SoundId.EVENT_PLAYER_LEVELED_UP: load_sound_file('PowerUp02.ogg'),
         SoundId.EVENT_PICKED_UP: load_sound_file('UI01.ogg'),

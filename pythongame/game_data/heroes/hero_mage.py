@@ -54,7 +54,7 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
     new_level_abilities = {
         3: AbilityType.WHIRLWIND,
         5: AbilityType.ENTANGLING_ROOTS,
-        7: AbilityType.CHANNEL_ATTACK
+        7: AbilityType.ARCANE_FIRE
     }
     # TODO Add more talents (unique to this hero)
     talents_state = TalentsState({
