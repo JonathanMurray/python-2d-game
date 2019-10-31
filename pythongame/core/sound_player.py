@@ -36,6 +36,7 @@ def init_sound_player():
         SoundId.EVENT_PURCHASED_SOMETHING: load_sound_file('Retro_8-Bit_Game-Pickup_Object_Item_Coin_08.wav'),
         SoundId.EVENT_PLAYER_DIED: load_sound_file('Death01.ogg'),
         SoundId.EVENT_ENEMY_DIED: load_sound_file('Damage02.ogg'),
+        SoundId.EVENT_COMPLETED_QUEST: load_sound_file('PowerUp01.ogg'),
         SoundId.DEATH_RAT: load_sound_file('rat_death.ogg', volume=2),
         SoundId.DEATH_ZOMBIE: load_sound_file('zombie_death.ogg', 'zombie_death_2.ogg'),
         SoundId.DEATH_BOSS: load_sound_file('Retro_8-Bit_Game-Powerup_Achievement_11.wav'),
