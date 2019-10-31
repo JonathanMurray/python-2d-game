@@ -72,12 +72,13 @@ def register_young_sorceress_npc():
     movement_speed = 0.03
     register_npc_data(npc_type, NpcData.neutral(sprite, size, movement_speed))
     register_npc_behavior(npc_type, NpcMind)
-    introduction = "Hey you! Have you seen my pet frog? I bet it was that old green mean goblin king that took it! " \
-                   "If you help me get it back, I'll give you something in return!"
+    introduction = "Hey you! Have you seen my pet frog? I bet it was that old green mean goblin king that took it!"
+
     prompt = "> "
     frog_data = ITEMS[ItemType.FROG]
     dialog_options = [
-        DialogOptionData(prompt + frog_data.name, "give", AcceptFrog(), UiIconSprite.ITEM_FROG, frog_data.name),
+        DialogOptionData(prompt + frog_data.name, "give", AcceptFrog(), UiIconSprite.ITEM_FROG, frog_data.name,
+                         "If you help me get it back, I'll give you something in return!"),
         DialogOptionData("\"Good bye\"", "cancel", None)]
     dialog_data = DialogData(ui_icon_sprite, introduction, dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)
