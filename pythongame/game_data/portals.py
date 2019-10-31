@@ -1,9 +1,10 @@
 from typing import Tuple
 
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect
-from pythongame.core.common import Direction, PortalId, Millis, BuffType
+from pythongame.core.common import Direction, PortalId, Millis, BuffType, SoundId
 from pythongame.core.game_data import Sprite, register_entity_sprite_map, register_portal_data, PortalData
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import create_teleport_effects
 
@@ -31,6 +32,7 @@ class BeingTeleported(AbstractBuffEffect):
             self.has_teleport_happened = True
             game_state.player_entity.set_position(self.destination)
             game_state.visual_effects += create_teleport_effects(buffed_entity.get_center_position())
+            play_sound(SoundId.WARP)
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.remove_one()

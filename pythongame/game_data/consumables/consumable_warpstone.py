@@ -27,7 +27,5 @@ def register_warpstone_consumable():
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_path, POTION_ENTITY_SIZE))
     register_ui_icon_sprite_path(ui_icon_sprite, image_path)
     description = "Warps you back to safety"
-    # TODO Use some teleport sound
-    data = ConsumableData(ui_icon_sprite, sprite, "Warpstone", description, ConsumableCategory.OTHER,
-                          SoundId.CONSUMABLE_POTION)
+    data = ConsumableData(ui_icon_sprite, sprite, "Warpstone", description, ConsumableCategory.OTHER, SoundId.WARP)
     register_consumable_data(consumable_type, data)
