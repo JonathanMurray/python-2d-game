@@ -36,6 +36,7 @@ def init_sound_player():
         SoundId.EVENT_ENEMY_DIED: load_sound_file('Damage02.ogg'),
         SoundId.DEATH_RAT: load_sound_file('rat_death.ogg', volume=2),
         SoundId.DEATH_ZOMBIE: load_sound_file('zombie_death.ogg', 'zombie_death_2.ogg'),
+        SoundId.DEATH_BOSS: load_sound_file('Retro_8-Bit_Game-Powerup_Achievement_11.wav'),
         SoundId.WARNING: load_sound_file('UI06.ogg'),
         SoundId.INVALID_ACTION: load_sound_file('invalid_action.ogg'),
         SoundId.PLAYER_PAIN: load_sound_file('pain1.ogg', 'pain2.ogg', 'pain3.ogg', 'pain4.ogg'),
