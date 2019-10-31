@@ -9,6 +9,7 @@ from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path
 from pythongame.core.game_state import GameState
 from pythongame.core.math import translate_in_direction
+from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import VisualRect, VisualCross
 
 MIN_DMG = 3
@@ -25,11 +26,16 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
 
     slash_rect = Rect(int(slash_center_pos[0] - rect_w / 2), int(slash_center_pos[1] - rect_w / 2), rect_w, rect_w)
     affected_enemies = game_state.get_enemy_intersecting_rect(slash_rect)
+    is_stealthed = game_state.player_state.has_active_buff(BuffType.STEALTHING)
+    if is_stealthed:
+        play_sound(SoundId.ABILITY_SHIV_STEALTHED)
+    else:
+        play_sound(SoundId.ABILITY_SHIV)
     for enemy in affected_enemies:
         damage: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
 
         # Note: Dependency on other ability 'stealth'
-        if game_state.player_state.has_active_buff(BuffType.STEALTHING):
+        if is_stealthed:
             # Talent: increase the damage bonus that Shiv gets from being used while stealthing
             has_damage_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_SHIV_SNEAK_BONUS_DAMAGE)
             damage *= 4 if has_damage_upgrade else 3.5
@@ -57,6 +63,6 @@ def register_shiv_ability():
     register_ability_effect(ability_type, _apply_ability)
     description = "Deal " + str(MIN_DMG) + "-" + str(MAX_DMG) + " damage to one enemy in front of you. " + \
                   "[from stealth: 350% damage]"
-    ability_data = AbilityData("Shiv", ui_icon_sprite, 1, Millis(400), description, SoundId.ABILITY_SHIV)
+    ability_data = AbilityData("Shiv", ui_icon_sprite, 1, Millis(400), description, None)
     register_ability_data(ability_type, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/double_edged_dagger.png")
