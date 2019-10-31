@@ -1,6 +1,6 @@
 import random
 
-from pythongame.core.common import Millis, NpcType, Sprite, Direction
+from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId
 from pythongame.core.entity_creation import create_npc
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     NON_PLAYER_CHARACTERS
@@ -9,6 +9,7 @@ from pythongame.core.math import random_direction, get_position_from_center_posi
     is_x_and_y_within_distance
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualLine, VisualCircle
 from pythongame.game_data.loot_tables import LOOT_TABLE_4
@@ -47,6 +48,7 @@ class NpcMind(AbstractNpcMind):
                 game_state.add_non_player_character(mummy_enemy)
                 game_state.visual_effects.append(VisualCircle((80, 150, 100), necro_center_pos, 40, 70, Millis(120), 3))
                 game_state.visual_effects.append(VisualCircle((80, 150, 100), mummy_center_pos, 40, 70, Millis(120), 3))
+                play_sound(SoundId.ENEMY_NECROMANCER_SUMMON)
             else:
                 # Failed to summon, so try again without waiting full duration
                 self._summoning_cooldown = 1000
