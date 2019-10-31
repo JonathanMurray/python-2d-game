@@ -7,7 +7,7 @@ from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.view.image_loading import SpriteInitializer
 
 ITEM_TYPE = ItemType.ROYAL_SWORD
-DAMAGE_BONUS = 0.1
+DAMAGE_BONUS = 0.15
 ARMOR_BONUS = 1
 
 

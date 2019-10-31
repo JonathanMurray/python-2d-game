@@ -87,9 +87,10 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.consumable(ConsumableType.SPEED),
     MapEditorWorldEntity.consumable(ConsumableType.BREW),
     MapEditorWorldEntity.consumable(ConsumableType.WARP_STONE),
+    MapEditorWorldEntity.consumable(ConsumableType.POWER),
 
     MapEditorWorldEntity.item(ItemType.MESSENGERS_HAT),
-    MapEditorWorldEntity.item(ItemType.SWORD_OF_LEECHING),
+    MapEditorWorldEntity.item(ItemType.SKULL_STAFF),
     MapEditorWorldEntity.item(ItemType.ROD_OF_LIGHTNING),
     MapEditorWorldEntity.item(ItemType.AMULET_OF_MANA_1),
     MapEditorWorldEntity.item(ItemType.SOLDIERS_HELMET_1),
@@ -120,6 +121,11 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.WAND),
     MapEditorWorldEntity.item(ItemType.GLADIATOR_ARMOR),
     MapEditorWorldEntity.item(ItemType.NOBLE_DEFENDER),
+    MapEditorWorldEntity.item(ItemType.HATCHET),
+    MapEditorWorldEntity.item(ItemType.ELITE_HELMET),
+    MapEditorWorldEntity.item(ItemType.STONE_AMULET),
+    MapEditorWorldEntity.item(ItemType.TORN_DOCUMENT),
+    MapEditorWorldEntity.item(ItemType.KEY),
 
     MapEditorWorldEntity.money(1),
 

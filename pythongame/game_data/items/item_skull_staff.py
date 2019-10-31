@@ -6,28 +6,28 @@ from pythongame.core.item_effects import register_item_effect, AbstractItemEffec
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.view.image_loading import SpriteInitializer
 
-ITEM_TYPE = ItemType.MOLTEN_AXE
-DAMAGE_BONUS = 0.25
+ITEM_TYPE = ItemType.SKULL_STAFF
+LIFE_STEAL_BOOST = 0.1
 
 
 class ItemEffect(AbstractItemEffect):
     def apply_start_effect(self, game_state: GameState):
-        game_state.player_state.damage_modifier_bonus += DAMAGE_BONUS
+        game_state.player_state.life_steal_ratio += LIFE_STEAL_BOOST
 
     def apply_end_effect(self, game_state: GameState):
-        game_state.player_state.damage_modifier_bonus -= DAMAGE_BONUS
+        game_state.player_state.life_steal_ratio -= LIFE_STEAL_BOOST
 
     def get_item_type(self):
         return ITEM_TYPE
 
 
-def register_molten_axe_item():
-    ui_icon_sprite = UiIconSprite.ITEM_MOLTEN_AXE
-    sprite = Sprite.ITEM_MOLTEN_AXE
+def register_skull_staff_item():
+    ui_icon_sprite = UiIconSprite.ITEM_SKULL_STAFF
+    sprite = Sprite.ITEM_SKULL_STAFF
     register_item_effect(ITEM_TYPE, ItemEffect())
-    image_file_path = "resources/graphics/item_molten_axe.png"
-    register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
-    register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    description = ["+" + str(int(round(DAMAGE_BONUS * 100))) + "% damage"]
-    item_data = ItemData(ui_icon_sprite, sprite, "Molten Axe", description, ItemEquipmentCategory.MAIN_HAND)
+    register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/item_skullstaff.png")
+    register_entity_sprite_initializer(
+        sprite, SpriteInitializer("resources/graphics/item_skullstaff.png", ITEM_ENTITY_SIZE))
+    description = ["+" + str(int(LIFE_STEAL_BOOST * 100)) + "% life steal"]
+    item_data = ItemData(ui_icon_sprite, sprite, "Skull Staff", description, ItemEquipmentCategory.MAIN_HAND)
     register_item_data(ITEM_TYPE, item_data)

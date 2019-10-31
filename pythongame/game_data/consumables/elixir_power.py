@@ -6,48 +6,51 @@ from pythongame.core.game_data import register_ui_icon_sprite_path, register_buf
     register_consumable_data, ConsumableData, ConsumableCategory, register_entity_sprite_initializer, POTION_ENTITY_SIZE
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
 from pythongame.core.view.image_loading import SpriteInitializer
-from pythongame.core.visual_effects import VisualCircle
+from pythongame.core.visual_effects import VisualRect
 
-DURATION = Millis(15000)
-SPEED_INCREASE = 0.5
+DURATION = Millis(10000)
+DAMAGE_MODIFIER_INCREASE = 0.5
+BUFF_TYPE = BuffType.ELIXIR_OF_POWER
 
 
-def _apply_speed(game_state: GameState):
+def _apply(game_state: GameState):
     create_potion_visual_effect_at_player(game_state)
-    game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.INCREASED_MOVE_SPEED), DURATION)
+    game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_TYPE), DURATION)
     return ConsumableWasConsumed()
 
 
-class IncreasedMoveSpeed(AbstractBuffEffect):
+class BuffedFromElixirOfPower(AbstractBuffEffect):
     def __init__(self):
-        self.timer = PeriodicTimer(Millis(100))
+        self.timer = PeriodicTimer(Millis(300))
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_entity.add_to_speed_multiplier(SPEED_INCREASE)
+        game_state.player_state.damage_modifier_bonus += DAMAGE_MODIFIER_INCREASE
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         if self.timer.update_and_check_if_ready(time_passed):
             game_state.visual_effects.append(
-                VisualCircle((150, 200, 250), game_state.player_entity.get_center_position(), 5, 10, Millis(200), 0))
+                VisualRect((0, 0, 0), game_state.player_entity.get_center_position(), 6, 18, Millis(200), 3))
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_entity.add_to_speed_multiplier(-SPEED_INCREASE)
+        game_state.player_state.damage_modifier_bonus -= DAMAGE_MODIFIER_INCREASE
 
     def get_buff_type(self):
-        return BuffType.INCREASED_MOVE_SPEED
+        return BUFF_TYPE
 
 
-def register_speed_potion():
-    ui_icon_sprite = UiIconSprite.POTION_SPEED
-    sprite = Sprite.POTION_SPEED
-    register_consumable_effect(ConsumableType.SPEED, _apply_speed)
-    register_buff_effect(BuffType.INCREASED_MOVE_SPEED, IncreasedMoveSpeed)
-    register_buff_text(BuffType.INCREASED_MOVE_SPEED, "Speed potion")
-    image_path = "resources/graphics/item_speed_potion.png"
+def register_elixir_of_power():
+    ui_icon_sprite = UiIconSprite.ELIXIR_POWER
+    sprite = Sprite.ELIXIR_POWER
+    consumable_type = ConsumableType.POWER
+    register_consumable_effect(consumable_type, _apply)
+    register_buff_effect(BUFF_TYPE, BuffedFromElixirOfPower)
+    name = "Elixir of Power"
+    register_buff_text(BUFF_TYPE, name)
+    image_path = "resources/graphics/item_elixir_of_power.png"
     register_ui_icon_sprite_path(ui_icon_sprite, image_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_path, POTION_ENTITY_SIZE))
-    description = "Gain +" + "{:.0f}".format(SPEED_INCREASE * 100) + "% movement speed for " + \
+    description = "Gain +" + "{:.0f}".format(DAMAGE_MODIFIER_INCREASE * 100) + "% damage for " + \
                   "{:.0f}".format(DURATION / 1000) + "s."
-    data = ConsumableData(ui_icon_sprite, sprite, "Speed potion", description, ConsumableCategory.OTHER)
-    register_consumable_data(ConsumableType.SPEED, data)
+    data = ConsumableData(ui_icon_sprite, sprite, name, description, ConsumableCategory.OTHER)
+    register_consumable_data(consumable_type, data)

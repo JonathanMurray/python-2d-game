@@ -2,7 +2,7 @@ import random
 from typing import Optional
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
-    PeriodicTimer, get_random_hint
+    PeriodicTimer, get_random_hint, HeroUpgrade, ItemType, UiIconSprite
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
@@ -44,6 +44,15 @@ class HintAction(AbstractNpcAction):
         return get_random_hint()
 
 
+class WinAction(AbstractNpcAction):
+
+    def act(self, game_state: GameState):
+        if game_state.player_state.item_inventory.has_item_in_inventory(ItemType.KEY):
+            game_state.player_state.gain_upgrade(HeroUpgrade.HAS_WON_GAME)
+        else:
+            return "You don't have that!"
+
+
 def register_nomad_npc():
     size = (30, 30)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.NEUTRAL_NPC_NOMAD
@@ -55,6 +64,9 @@ def register_nomad_npc():
     dialog_options = [
         DialogOptionData("Receive blessing", "gain full health", HealAction()),
         DialogOptionData("Ask for advice", "see random hint", HintAction()),
+        DialogOptionData("\"The red baron\"", "give", WinAction(), UiIconSprite.ITEM_KEY,
+                         "Key", "The red baron... Yes, he has caused us much trouble. He stole from me a key that may"
+                                " lead us out of here. You must bring it back to me!"),
         DialogOptionData("\"Good bye\"", "cancel", None)]
     dialog_data = DialogData(PortraitIconSprite.NOMAD, text_body, dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)

@@ -6,7 +6,22 @@
     ]
   },
   "consumables_on_ground": [],
-  "items_on_ground": [],
+  "items_on_ground": [
+    {
+      "item_type": "GOLD_NUGGET",
+      "position": [
+        -25,
+        2500
+      ]
+    },
+    {
+      "item_type": "SAPHIRE",
+      "position": [
+        3625,
+        2000
+      ]
+    }
+  ],
   "money_piles_on_ground": [],
   "non_player_characters": [
     {

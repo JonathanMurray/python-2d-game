@@ -8,8 +8,8 @@ from pythongame.core.view.image_loading import SpriteInitializer
 
 ITEM_TYPE = ItemType.WINGED_HELMET
 
-SPEED_MULTIPLIER = 0.1
-ARMOR_BOOST = 2
+SPEED_MULTIPLIER = 0.2
+ARMOR_BOOST = 3
 
 
 class ItemEffect(AbstractItemEffect):

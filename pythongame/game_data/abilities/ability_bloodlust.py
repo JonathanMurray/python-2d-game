@@ -14,6 +14,7 @@ COOLDOWN = Millis(25000)
 BUFF_DURATION = Millis(10000)
 BUFF_TYPE = BuffType.BLOOD_LUST
 LIFE_STEAL_BONUS_RATIO = 0.15
+SPEED_BONUS = 0.3
 INCREASED_DURATION_FROM_KILL = Millis(1000)
 INCREASED_DURATION_FROM_KILL_WITH_UPGRADE = Millis(1500)
 
@@ -33,6 +34,7 @@ class BloodLust(AbstractBuffEffect):
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.life_steal_ratio += LIFE_STEAL_BONUS_RATIO
+        game_state.player_entity.add_to_speed_multiplier(SPEED_BONUS)
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
@@ -43,6 +45,7 @@ class BloodLust(AbstractBuffEffect):
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.life_steal_ratio -= LIFE_STEAL_BONUS_RATIO
+        game_state.player_entity.add_to_speed_multiplier(-SPEED_BONUS)
 
     def get_buff_type(self):
         return BUFF_TYPE
@@ -65,7 +68,8 @@ def register_bloodlust_ability():
     ability_type = AbilityType.BLOOD_LUST
     register_ability_effect(ability_type, _apply_ability)
     ui_icon_sprite = UiIconSprite.ABILITY_BLOODLUST
-    description = "Gain +" + str(int(LIFE_STEAL_BONUS_RATIO * 100)) + "% lifesteal for " + \
+    description = "Gain +" + str(int(LIFE_STEAL_BONUS_RATIO * 100)) + "% lifesteal " + \
+                  "and +" + str(int(SPEED_BONUS * 100)) + "% increased movement speed for " + \
                   "{:.0f}".format(BUFF_DURATION / 1000) + "s. Duration is increased by " + \
                   "{:.0f}".format(INCREASED_DURATION_FROM_KILL / 1000) + "s for each enemy killed."
     register_ability_data(

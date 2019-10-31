@@ -40,6 +40,13 @@
         100,
         50
       ]
+    },
+    {
+      "consumable_type": "POWER",
+      "position": [
+        100,
+        300
+      ]
     }
   ],
   "items_on_ground": [
@@ -51,7 +58,7 @@
       ]
     },
     {
-      "item_type": "SWORD_OF_LEECHING",
+      "item_type": "SKULL_STAFF",
       "position": [
         -100,
         100
@@ -266,29 +273,50 @@
         50,
         400
       ]
+    },
+    {
+      "item_type": "HATCHET",
+      "position": [
+        100,
+        100
+      ]
+    },
+    {
+      "item_type": "ELITE_HELMET",
+      "position": [
+        100,
+        150
+      ]
+    },
+    {
+      "item_type": "STONE_AMULET",
+      "position": [
+        100,
+        200
+      ]
+    },
+    {
+      "item_type": "TORN_DOCUMENT",
+      "position": [
+        100,
+        250
+      ]
+    },
+    {
+      "item_type": "KEY",
+      "position": [
+        100,
+        350
+      ]
     }
   ],
   "money_piles_on_ground": [],
   "non_player_characters": [
     {
-      "npc_type": "MUMMY",
-      "position": [
-        125,
-        225
-      ]
-    },
-    {
       "npc_type": "GOBLIN_WARLOCK",
       "position": [
         225,
         200
-      ]
-    },
-    {
-      "npc_type": "ZOMBIE",
-      "position": [
-        100,
-        150
       ]
     },
     {
@@ -303,6 +331,125 @@
       "position": [
         200,
         0
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        350,
+        375
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        350,
+        325
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        275,
+        400
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        175,
+        375
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        325,
+        325
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        325,
+        200
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        400,
+        250
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        300,
+        250
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        250,
+        250
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        200,
+        250
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        250,
+        350
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        225,
+        400
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        150,
+        275
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        275,
+        175
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        325,
+        150
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        400,
+        150
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        450,
+        125
       ]
     }
   ],
@@ -421,5 +568,6 @@
       ]
     }
   ],
-  "portals": []
+  "portals": [],
+  "chests": []
 }
