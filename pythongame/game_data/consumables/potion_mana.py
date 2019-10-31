@@ -1,4 +1,4 @@
-from pythongame.core.common import ConsumableType, Sprite, UiIconSprite
+from pythongame.core.common import ConsumableType, Sprite, UiIconSprite, SoundId
 from pythongame.core.consumable_effects import create_potion_visual_effect_at_player, ConsumableWasConsumed, \
     ConsumableFailedToBeConsumed, register_consumable_effect
 from pythongame.core.damage_interactions import player_receive_mana
@@ -30,5 +30,5 @@ def register_mana_potion():
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_path, POTION_ENTITY_SIZE))
     register_ui_icon_sprite_path(ui_icon_sprite, image_path)
     data = ConsumableData(ui_icon_sprite, sprite, "Mana potion", "Restores " + str(MANA_AMOUNT) + " mana",
-                          ConsumableCategory.MANA)
+                          ConsumableCategory.MANA, SoundId.CONSUMABLE_POTION)
     register_consumable_data(consumable_type, data)

@@ -1,7 +1,7 @@
 from typing import Optional
 
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect, register_buff_effect
-from pythongame.core.common import ConsumableType, Sprite, UiIconSprite, Millis, BuffType, PeriodicTimer
+from pythongame.core.common import ConsumableType, Sprite, UiIconSprite, Millis, BuffType, PeriodicTimer, SoundId
 from pythongame.core.consumable_effects import ConsumableWasConsumed, \
     register_consumable_effect, ConsumableFailedToBeConsumed
 from pythongame.core.damage_interactions import player_receive_healing, player_receive_mana
@@ -54,7 +54,8 @@ def register_brew_potion():
     register_ui_icon_sprite_path(ui_icon_sprite, image_path)
     description = "Slowly restores health and mana over " + "{:.0f}".format(BUFF_DURATION / 1000) + \
                   "s. Only works outside of combat."
-    data = ConsumableData(ui_icon_sprite, sprite, "Brew", description, ConsumableCategory.HEALTH)
+    data = ConsumableData(ui_icon_sprite, sprite, "Brew", description, ConsumableCategory.HEALTH,
+                          SoundId.CONSUMABLE_POTION)
     register_consumable_data(consumable_type, data)
 
     register_buff_effect(BUFF_TYPE, RestoringHealthFromBrew)
