@@ -8,7 +8,7 @@ from pythongame.game_data.abilities.ability_frost_nova import register_frost_nov
 from pythongame.game_data.abilities.ability_heal import register_heal_ability
 from pythongame.game_data.abilities.ability_infuse_dagger import register_infuse_dagger_ability
 from pythongame.game_data.abilities.ability_shiv import register_shiv_ability
-from pythongame.game_data.abilities.ability_sneak import register_sneak_ability
+from pythongame.game_data.abilities.ability_stealth import register_stealth_ability
 from pythongame.game_data.abilities.ability_stomp import register_stomp_ability
 from pythongame.game_data.abilities.ability_sword_slash import register_sword_slash_ability
 from pythongame.game_data.abilities.ability_teleport import register_teleport_ability
@@ -112,7 +112,7 @@ def register_all_game_data():
     register_entangling_roots_ability()
     register_stomp_ability()
     register_shiv_ability()
-    register_sneak_ability()
+    register_stealth_ability()
     register_infuse_dagger_ability()
     register_dash_ability()
 

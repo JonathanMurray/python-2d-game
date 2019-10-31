@@ -28,13 +28,13 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
     for enemy in affected_enemies:
         damage: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
 
-        # Note: Dependency on other ability 'sneak'
-        if game_state.player_state.has_active_buff(BuffType.SNEAKING):
-            # Talent: increase the damage bonus that Shiv gets from being used while sneaking
+        # Note: Dependency on other ability 'stealth'
+        if game_state.player_state.has_active_buff(BuffType.STEALTHING):
+            # Talent: increase the damage bonus that Shiv gets from being used while stealthing
             has_damage_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_SHIV_SNEAK_BONUS_DAMAGE)
             damage *= 4 if has_damage_upgrade else 3.5
         else:
-            # Talent: if attacking an enemy that's at 100% health while not sneaking, deal bonus damage
+            # Talent: if attacking an enemy that's at 100% health while not stealthing, deal bonus damage
             has_damage_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_SHIV_FULL_HEALTH_BONUS_DAMAGE)
             if has_damage_upgrade and enemy.health_resource.is_at_max():
                 damage *= 1.5

@@ -53,7 +53,7 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
     }
     abilities = [AbilityType.SHIV]
     new_level_abilities = {
-        3: AbilityType.SNEAK,
+        3: AbilityType.STEALTH,
         5: AbilityType.DASH,
         7: AbilityType.INFUSE_DAGGER
     }
@@ -61,7 +61,7 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
     talents_state = TalentsState({
         2: GENERIC_TALENT_CHOICE,
         4: TalentChoice(TalentChoiceOption("Cheap", "Reduces the mana-cost of your stealth ability",
-                                           HeroUpgrade.ABILITY_SNEAK_MANA_COST, UiIconSprite.ABILITY_SNEAK),
+                                           HeroUpgrade.ABILITY_STEALTH_MANA_COST, UiIconSprite.ABILITY_STEALTH),
                         TalentChoiceOption("Stealth",
                                            "Increases the damage bonus that shiv gets from being used from stealth",
                                            HeroUpgrade.ABILITY_SHIV_SNEAK_BONUS_DAMAGE,
