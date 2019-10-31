@@ -24,21 +24,6 @@
 * render stat bonuses with green color
 * show more clearly in UI, which inventory slots are storage and which ones are for equipped items
 
-#### Sounds:
-* Abilities
-    * mage channeling ability
-    * warrior stomp ability
-    * rogue shiv (randomize sound)
-    * warrior slash (randomize sound)
-    * rogue shiv from stealth (some crit sound)
-* UI
-    * drop potion or item
-    * complete a trade (some coin/money sound)
-    * complete a quest (similar to levelup)
-* using portal
-* goblin death sounds
-* necromancer summoning mummy
-
 #### Features:
 * necromancer enemy should have more dangerous attacks
 * goblin mage's fireball should be more threatening

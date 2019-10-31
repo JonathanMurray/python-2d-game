@@ -49,6 +49,7 @@ def init_sound_player():
         SoundId.ENEMY_ATTACK_WAS_BLOCKED: load_sound_file('enemy_hit_blocked_2.ogg', volume=0.5),
         SoundId.ENEMY_NECROMANCER_SUMMON: load_sound_file('SciFi01.ogg'),
         SoundId.UI_ITEM_WAS_MOVED: load_sound_file('UI04.ogg'),
+        SoundId.UI_ITEM_WAS_DROPPED_ON_GROUND: load_sound_file('UI06.ogg', volume=2),
         SoundId.UI_START_DRAGGING_ITEM: load_sound_file('drag.ogg'),
         SoundId.DIALOG: load_sound_file('UI04.ogg'),
         SoundId.EVENT_PORTAL_ACTIVATED: load_sound_file('UI06.wav')

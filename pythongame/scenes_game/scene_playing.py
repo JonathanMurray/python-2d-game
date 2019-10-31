@@ -213,11 +213,13 @@ class PlayingScene:
                     play_sound(SoundId.INVALID_ACTION)
             elif isinstance(event, DropItemOnGround):
                 self.game_engine.drop_inventory_item_on_ground(event.from_slot, event.world_position)
+                play_sound(SoundId.UI_ITEM_WAS_DROPPED_ON_GROUND)
             elif isinstance(event, DragConsumableBetweenInventorySlots):
                 self.game_engine.drag_consumable_between_inventory_slots(event.from_slot, event.to_slot)
                 play_sound(SoundId.UI_ITEM_WAS_MOVED)
             elif isinstance(event, DropConsumableOnGround):
                 self.game_engine.drop_consumable_on_ground(event.from_slot, event.world_position)
+                play_sound(SoundId.UI_ITEM_WAS_DROPPED_ON_GROUND)
             elif isinstance(event, PickTalent):
                 apply_hero_upgrade(event.hero_upgrade, self.game_state)
             else:
