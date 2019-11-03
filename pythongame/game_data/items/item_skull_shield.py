@@ -9,7 +9,7 @@ from pythongame.core.item_effects import register_item_effect, StatModifyingItem
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.view.image_loading import SpriteInitializer
 
-PROC_CHANCE = 0.2
+PROC_CHANCE = 0.25
 DAMAGE = 5
 
 

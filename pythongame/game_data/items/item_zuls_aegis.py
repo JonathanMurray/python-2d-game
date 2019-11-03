@@ -11,10 +11,10 @@ from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.view.image_loading import SpriteInitializer
 from pythongame.core.visual_effects import VisualCircle
 
-STUN_DURATION = Millis(1500)
+STUN_DURATION = Millis(2500)
 
 BUFF_TYPE_STUNNED = BuffType.STUNNED_BY_AEGIS_ITEM
-PROC_CHANCE = 0.2
+PROC_CHANCE = 0.25
 
 
 class ItemEffect(StatModifyingItemEffect):
@@ -45,7 +45,7 @@ class StunnedFromAegis(AbstractBuffEffect):
 
 def register_zuls_aegis():
     item_type = ItemType.ZULS_AEGIS
-    armor_boost = 2
+    armor_boost = 3
     ui_icon_sprite = UiIconSprite.ITEM_ZULS_AEGIS
     sprite = Sprite.ITEM_ZULS_AEGIS
     image_file_path = "resources/graphics/item_zuls_aegis.png"
