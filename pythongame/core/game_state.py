@@ -1,5 +1,5 @@
 import math
-from typing import List, Optional, Dict, Any, Tuple
+from typing import List, Optional, Dict, Any, Tuple, Union
 
 from pygame.rect import Rect
 
@@ -306,6 +306,11 @@ class PlayerLostHealthEvent(Event):
         self.npc_attacker = npc_attacker
 
 
+class PlayerBlockedEvent(Event):
+    def __init__(self, npc_attacker: NonPlayerCharacter):
+        self.npc_attacker = npc_attacker
+
+
 class PlayerWasAttackedEvent(Event):
     def __init__(self, npc_attacker: NonPlayerCharacter):
         self.npc_attacker = npc_attacker
@@ -352,7 +357,7 @@ class PlayerState:
     def __init__(self, health_resource: HealthOrManaResource, mana_resource: HealthOrManaResource,
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
                  item_inventory: ItemInventory, new_level_abilities: Dict[int, AbilityType], hero_id: HeroId,
-                 armor: int, level_bonus: PlayerLevelBonus, talents_state: TalentsState):
+                 armor: int, level_bonus: PlayerLevelBonus, talents_state: TalentsState, block_chance: float):
         self.health_resource: HealthOrManaResource = health_resource
         self.mana_resource: HealthOrManaResource = mana_resource
         self.consumable_inventory = consumable_inventory
@@ -378,6 +383,8 @@ class PlayerState:
         self.talents_state: TalentsState = talents_state
         self.chosen_talent_option_indices: List[int] = []
         self._upgrades: List[HeroUpgrade] = []
+        self.block_chance: float = block_chance
+        self.block_damage_reduction: int = 0
 
     # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):
@@ -558,6 +565,35 @@ class GameState:
             cell_y = (w.y - entire_world_area.y) // GRID_CELL_WIDTH
             grid[cell_x][cell_y] = 1
         return grid
+
+    def modify_hero_stat(self, hero_stat: HeroStat, stat_delta: Union[int, float]):
+        player_state = self.player_state
+        if hero_stat == HeroStat.MAX_HEALTH:
+            if stat_delta >= 0:
+                player_state.health_resource.increase_max(stat_delta)
+            elif stat_delta < 0:
+                player_state.health_resource.decrease_max(-stat_delta)
+        elif hero_stat == HeroStat.HEALTH_REGEN:
+            player_state.health_resource.regen_bonus += stat_delta
+        elif hero_stat == HeroStat.MAX_MANA:
+            if stat_delta >= 0:
+                player_state.mana_resource.increase_max(stat_delta)
+            elif stat_delta < 0:
+                player_state.mana_resource.decrease_max(-stat_delta)
+        elif hero_stat == HeroStat.MANA_REGEN:
+            player_state.mana_resource.regen_bonus += stat_delta
+        elif hero_stat == HeroStat.ARMOR:
+            player_state.armor_bonus += stat_delta
+        elif hero_stat == HeroStat.MOVEMENT_SPEED:
+            self.player_entity.add_to_speed_multiplier(stat_delta)
+        elif hero_stat == HeroStat.DAMAGE:
+            player_state.damage_modifier_bonus += stat_delta
+        elif hero_stat == HeroStat.LIFE_STEAL:
+            player_state.life_steal_ratio += stat_delta
+        elif hero_stat == HeroStat.BLOCK_AMOUNT:
+            player_state.block_damage_reduction += stat_delta
+        else:
+            raise Exception("Unhandled stat: " + str(hero_stat))
 
     def add_non_player_character(self, npc: NonPlayerCharacter):
         self.non_player_characters.append(npc)

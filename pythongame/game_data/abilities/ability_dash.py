@@ -4,8 +4,9 @@ from pygame.rect import Rect
 
 from pythongame.core.ability_effects import register_ability_effect, AbilityResult, AbilityWasUsedSuccessfully, \
     AbilityFailedToExecute
-from pythongame.core.buff_effects import register_buff_effect, AbstractBuffEffect, get_buff_effect
-from pythongame.core.common import AbilityType, Millis, UiIconSprite, SoundId, BuffType, HeroUpgrade
+from pythongame.core.buff_effects import register_buff_effect, get_buff_effect, \
+    StatModifyingBuffEffect
+from pythongame.core.common import AbilityType, Millis, UiIconSprite, SoundId, BuffType, HeroUpgrade, HeroStat
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text
@@ -82,17 +83,9 @@ def _would_collide_with_wall(game_state: GameState, player_entity: WorldEntity, 
     return False
 
 
-class AfterDash(AbstractBuffEffect):
-    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.armor_bonus += ARMOR_BOOST
-        game_state.player_state.health_resource.regen_bonus += HEALTH_REGEN_BOOST
-
-    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.armor_bonus -= ARMOR_BOOST
-        game_state.player_state.health_resource.regen_bonus -= HEALTH_REGEN_BOOST
-
-    def get_buff_type(self):
-        return BUFF_TYPE
+class AfterDash(StatModifyingBuffEffect):
+    def __init__(self):
+        super().__init__(BUFF_TYPE, {HeroStat.ARMOR: ARMOR_BOOST, HeroStat.HEALTH_REGEN: HEALTH_REGEN_BOOST})
 
 
 def register_dash_ability():

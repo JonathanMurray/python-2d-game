@@ -11,7 +11,7 @@ from pythongame.core.math import get_position_from_center_position, translate_in
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
 from pythongame.core.view.image_loading import SpriteSheet
-from pythongame.core.visual_effects import VisualCircle, VisualSprite
+from pythongame.core.visual_effects import VisualCircle, VisualSprite, create_visual_stun_text
 
 BUFF_TYPE = BuffType.ROOTED_BY_ENTANGLING_ROOTS
 
@@ -66,6 +66,7 @@ class Rooted(AbstractBuffEffect):
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         buffed_npc.stun_status.add_one()
+        game_state.visual_effects.append(create_visual_stun_text(buffed_entity))
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
@@ -87,7 +88,7 @@ def _upgrade_entangling_roots_cooldown(_game_state: GameState):
 
 def register_entangling_roots_ability():
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    description = "Root an enemy for " + "{:.0f}".format(DEBUFF_DURATION / 1000) + "s and deal periodic damage."
+    description = "Stun an enemy for " + "{:.0f}".format(DEBUFF_DURATION / 1000) + "s and deal periodic damage."
     mana_cost = 22
     ability_data = AbilityData("Entangling roots", ICON_SPRITE, mana_cost, Millis(12000), description,
                                SoundId.ABILITY_ENTANGLING_ROOTS)

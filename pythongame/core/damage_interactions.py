@@ -5,10 +5,10 @@ from typing import Optional
 from pythongame.core.common import SoundId, Millis
 from pythongame.core.enemy_target_selection import EnemyTarget
 from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, PlayerLostHealthEvent, \
-    PlayerDamagedEnemy, PlayerWasAttackedEvent
+    PlayerDamagedEnemy, PlayerWasAttackedEvent, PlayerBlockedEvent
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import create_visual_damage_text, VisualRect, create_visual_healing_text, \
-    create_visual_mana_text
+    create_visual_mana_text, create_visual_block_text
 
 
 class DamageType(Enum):
@@ -40,13 +40,17 @@ def deal_damage_to_player(game_state: GameState, base_amount: float, damage_type
     player_state = game_state.player_state
     if npc_attacker:
         player_state.notify_about_event(PlayerWasAttackedEvent(npc_attacker), game_state)
+    damage_reduction = 0
+    # Armor only reduces physical damage
     if damage_type == DamageType.PHYSICAL:
+        if random.random() < player_state.block_chance:
+            if player_state.block_damage_reduction > 0:
+                game_state.visual_effects.append(create_visual_block_text(game_state.player_entity))
+            damage_reduction += player_state.block_damage_reduction
+            player_state.notify_about_event(PlayerBlockedEvent(npc_attacker), game_state)
         # Armor has a random element to it. Example: 5 armor absorbs 0-5 damage
-        reduction = random.randint(0, player_state.base_armor + player_state.armor_bonus)
-    else:
-        # Armor only reduces physical damage
-        reduction = 0
-    amount = max(0.0, base_amount - reduction)
+        damage_reduction += random.randint(0, player_state.base_armor + player_state.armor_bonus)
+    amount = max(0.0, base_amount - damage_reduction)
     health_lost_integer = player_state.health_resource.lose(amount)
     if health_lost_integer > 0:
         game_state.visual_effects.append(create_visual_damage_text(game_state.player_entity, health_lost_integer))

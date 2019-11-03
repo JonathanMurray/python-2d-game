@@ -121,23 +121,33 @@ class VisualSprite(VisualEffect):
         return (self._animation_progress + float(self._age) / float(self.max_age)) % 1
 
 
+def create_visual_stun_text(entity: WorldEntity):
+    start_position, end_position = _get_entity_text_positions(entity, 10)
+    return VisualText("STUN", (255, 255, 255), start_position, end_position, Millis(500))
+
+
+def create_visual_block_text(entity: WorldEntity):
+    start_position, end_position = _get_entity_text_positions(entity, 10)
+    return VisualText("BLOCK", (255, 255, 255), start_position, end_position, Millis(500))
+
+
 def create_visual_damage_text(entity: WorldEntity, damage_amount: int):
-    start_position, end_position = _get_entity_text_positions(entity)
+    start_position, end_position = _get_entity_text_positions(entity, 40)
     return VisualText(str(damage_amount), (220, 0, 0), start_position, end_position, Millis(800))
 
 
 def create_visual_healing_text(entity: WorldEntity, healing_amount: int):
-    start_position, end_position = _get_entity_text_positions(entity)
+    start_position, end_position = _get_entity_text_positions(entity, 40)
     return VisualText(str(healing_amount), (0, 140, 0), start_position, end_position, Millis(800))
 
 
 def create_visual_mana_text(entity: WorldEntity, healing_amount: int):
-    start_position, end_position = _get_entity_text_positions(entity)
+    start_position, end_position = _get_entity_text_positions(entity, 40)
     return VisualText(str(healing_amount), (0, 0, 140), start_position, end_position, Millis(800))
 
 
 def create_visual_exp_text(entity: WorldEntity, exp_amount: int):
-    start_position, end_position = _get_entity_text_positions(entity)
+    start_position, end_position = _get_entity_text_positions(entity, 40)
     return VisualText(str(exp_amount), (255, 255, 255), start_position, end_position, Millis(800))
 
 
@@ -148,11 +158,12 @@ def create_teleport_effects(effect_position: Tuple) -> List[VisualEffect]:
             VisualCircle(color, effect_position, 25, 50, Millis(300), 2)]
 
 
-def _get_entity_text_positions(entity: WorldEntity) -> Tuple[Tuple[int, int], Tuple[int, int]]:
+def _get_entity_text_positions(entity: WorldEntity, text_y_travel_distance: int) -> Tuple[
+    Tuple[int, int], Tuple[int, int]]:
     sprite_size = ENTITY_SPRITE_SIZES[entity.sprite]
     y_start = entity.y + entity.h - sprite_size[1]
     random_x_offset = random.randint(-10, 10)
     x = entity.get_center_position()[0] - 5 + random_x_offset
     start_position = (x, y_start)
-    end_position = (x, y_start - 40)
+    end_position = (x, y_start - text_y_travel_distance)
     return start_position, end_position

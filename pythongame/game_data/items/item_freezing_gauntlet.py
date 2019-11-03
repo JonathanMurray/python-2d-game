@@ -19,14 +19,11 @@ BUFF_TYPE = BuffType.DEBUFFED_BY_FREEZING_GAUNTLET
 class ItemEffect(AbstractItemEffect):
 
     def __init__(self, item_type: ItemType):
-        self.item_type = item_type
+        super().__init__(item_type)
 
     def item_handle_event(self, event: Event, game_state: GameState):
         if isinstance(event, PlayerDamagedEnemy):
             event.enemy_npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), SLOW_DURATION)
-
-    def get_item_type(self):
-        return self.item_type
 
 
 class DebuffedByFreezingGauntlet(AbstractBuffEffect):

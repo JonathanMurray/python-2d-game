@@ -5,7 +5,7 @@ LOOT_ITEMS_1 = [
     LootEntry.item(ItemType.WOODEN_SHIELD),
     LootEntry.item(ItemType.LEATHER_COWL),
     LootEntry.item(ItemType.LEATHER_ARMOR),
-    LootEntry.item(ItemType.HATCHET),
+    LootEntry.item(ItemType.WOODEN_SWORD),
 ]
 
 LOOT_ITEMS_2 = [
@@ -13,10 +13,10 @@ LOOT_ITEMS_2 = [
     LootEntry.item(ItemType.ORB_OF_THE_MAGI_1),
     LootEntry.item(ItemType.ORB_OF_WISDOM_1),
     LootEntry.item(ItemType.ORB_OF_LIFE_1),
-    LootEntry.item(ItemType.ROYAL_DAGGER),
     LootEntry.item(ItemType.BLUE_ROBE_1),
     LootEntry.item(ItemType.BLESSED_SHIELD_1),
     LootEntry.item(ItemType.SOLDIERS_HELMET_1),
+    LootEntry.item(ItemType.HATCHET),
 ]
 
 LOOT_ITEMS_3 = [
@@ -38,25 +38,32 @@ LOOT_ITEMS_3 = [
     LootEntry.item(ItemType.ORB_OF_LIFE_2),
     LootEntry.item(ItemType.ORB_OF_LIFE_3),
     LootEntry.item(ItemType.ZULS_AEGIS),
+    LootEntry.item(ItemType.SKULL_SHIELD),
     LootEntry.item(ItemType.GOATS_RING),
     LootEntry.item(ItemType.BLOOD_AMULET),
     LootEntry.item(ItemType.STONE_AMULET),
     LootEntry.item(ItemType.KNIGHTS_ARMOR),
     LootEntry.item(ItemType.RING_OF_POWER),
     LootEntry.item(ItemType.ROYAL_SWORD),
+    LootEntry.item(ItemType.ROYAL_DAGGER),
     LootEntry.item(ItemType.MOLTEN_AXE),
     LootEntry.item(ItemType.WAND),
     LootEntry.item(ItemType.ELITE_HELMET),
+    LootEntry.item(ItemType.DRUIDS_RING),
+    LootEntry.item(ItemType.HEALING_WAND),
+    LootEntry.item(ItemType.ELVEN_ARMOR),
 ]
 
 LOOT_ITEMS_4 = [
     LootEntry.item(ItemType.WINGED_HELMET),
-    LootEntry.item(ItemType.ELVEN_ARMOR),
+    LootEntry.item(ItemType.WARLORDS_ARMOR),
     LootEntry.item(ItemType.ELITE_ARMOR),
     LootEntry.item(ItemType.GLADIATOR_ARMOR),
     LootEntry.item(ItemType.FREEZING_GAUNTLET),
     LootEntry.item(ItemType.WIZARDS_COWL),
-    LootEntry.item(ItemType.NOBLE_DEFENDER)
+    LootEntry.item(ItemType.WARLOCKS_COWL),
+    LootEntry.item(ItemType.NOBLE_DEFENDER),
+    LootEntry.item(ItemType.LICH_ARMOR),
 ]
 
 LOOT_POTIONS_1 = [

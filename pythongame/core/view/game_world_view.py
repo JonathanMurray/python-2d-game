@@ -181,7 +181,11 @@ class GameWorldView:
             self.world_render.line(visual_cross.color, start_pos, end_pos, visual_cross.line_width)
 
     def _visual_text(self, visual_text: VisualText):
-        self.world_render.text(self.font_game_world_text, visual_text.text, visual_text.position(), visual_text.color)
+        text = visual_text.text
+        position = visual_text.position()
+        # Adjust position so that long texts don't appear too far to the right
+        translated_position = (position[0] - 3 * len(text), position[1])
+        self.world_render.text(self.font_game_world_text, text, translated_position, visual_text.color)
 
     def _visual_sprite(self, visual_sprite: VisualSprite):
         position = visual_sprite.position
