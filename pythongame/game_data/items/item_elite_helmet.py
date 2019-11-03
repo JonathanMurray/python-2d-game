@@ -10,7 +10,7 @@ def register_elite_helmet_item():
         ui_icon_sprite=UiIconSprite.ITEM_ELITE_HELMET,
         sprite=Sprite.ITEM_ELITE_HELMET,
         image_file_path="resources/graphics/item_elite_helmet.png",
-        item_equipment_category=ItemEquipmentCategory.NECK,
+        item_equipment_category=ItemEquipmentCategory.HEAD,
         name="Elite helmet",
         stat_modifiers={HeroStat.ARMOR: 3}
     )
