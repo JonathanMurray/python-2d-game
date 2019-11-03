@@ -9,7 +9,7 @@ from pythongame.core.game_state import Event, PlayerLostHealthEvent, GameState, 
 from pythongame.core.item_effects import register_item_effect, StatModifyingItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.view.image_loading import SpriteInitializer
-from pythongame.core.visual_effects import VisualCircle
+from pythongame.core.visual_effects import VisualCircle, create_visual_stun_text
 
 STUN_DURATION = Millis(2500)
 
@@ -33,6 +33,7 @@ class StunnedFromAegis(AbstractBuffEffect):
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         visual_effect = VisualCircle((220, 220, 50), buffed_entity.get_center_position(), 9, 16, Millis(250), 2)
         game_state.visual_effects.append(visual_effect)
+        game_state.visual_effects.append(create_visual_stun_text(buffed_entity))
         buffed_npc.stun_status.add_one()
         buffed_entity.set_not_moving()
 

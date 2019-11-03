@@ -8,7 +8,7 @@ from pythongame.core.game_data import register_ability_data, AbilityData, regist
     register_buff_as_channeling
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
 from pythongame.core.sound_player import play_sound
-from pythongame.core.visual_effects import VisualRect, VisualCircle
+from pythongame.core.visual_effects import VisualRect, VisualCircle, create_visual_stun_text
 
 STUN_DURATION = Millis(3500)
 CHANNELING_STOMP = BuffType.CHANNELING_STOMP
@@ -70,6 +70,7 @@ class StunnedFromStomp(AbstractBuffEffect):
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         buffed_npc.stun_status.add_one()
         buffed_entity.set_not_moving()
+        game_state.visual_effects.append(create_visual_stun_text(buffed_entity))
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         buffed_npc.stun_status.remove_one()

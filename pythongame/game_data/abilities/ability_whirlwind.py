@@ -12,7 +12,7 @@ from pythongame.core.math import get_position_from_center_position, translate_in
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
 from pythongame.core.view.image_loading import SpriteSheet
-from pythongame.core.visual_effects import VisualRect
+from pythongame.core.visual_effects import VisualRect, create_visual_stun_text
 
 BUFF_TYPE = BuffType.STUNNED_BY_WHIRLWIND
 PROJECTILE_SPRITE = Sprite.PROJECTILE_PLAYER_WHIRLWIND
@@ -83,6 +83,7 @@ class Stunned(AbstractBuffEffect):
         effect_position = buffed_entity.get_center_position()
         game_state.visual_effects.append(
             VisualRect((250, 250, 50), effect_position, 30, 40, Millis(100), 1, buffed_entity))
+        game_state.visual_effects.append(create_visual_stun_text(buffed_entity))
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):

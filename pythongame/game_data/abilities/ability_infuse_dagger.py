@@ -9,7 +9,7 @@ from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
 from pythongame.core.math import translate_in_direction
-from pythongame.core.visual_effects import VisualRect, VisualCross
+from pythongame.core.visual_effects import VisualRect, VisualCross, create_visual_stun_text
 
 ABILITY_TYPE = AbilityType.INFUSE_DAGGER
 DEBUFF = BuffType.DAMAGED_BY_INFUSED_DAGGER
@@ -32,8 +32,8 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
         return AbilityFailedToExecute(reason="No targets")
 
     # Note: Dependency on other ability 'stealth'
-    used_from_stealth = game_state.player_state.has_active_buff(BuffType.STEALTHING)
-    buff_effect = get_buff_effect(DEBUFF, used_from_stealth)
+    should_stun = game_state.player_state.has_active_buff(BuffType.STEALTHING)
+    buff_effect = get_buff_effect(DEBUFF, should_stun)
     affected_enemies[0].gain_buff_effect(buff_effect, DEBUFF_DURATION)
 
     game_state.visual_effects.append(
@@ -52,6 +52,7 @@ class DamagedByInfusedDagger(AbstractBuffEffect):
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         if self.should_stun:
             buffed_npc.stun_status.add_one()
+            game_state.visual_effects.append(create_visual_stun_text(buffed_entity))
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
