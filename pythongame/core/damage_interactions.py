@@ -44,7 +44,8 @@ def deal_damage_to_player(game_state: GameState, base_amount: float, damage_type
     # Armor only reduces physical damage
     if damage_type == DamageType.PHYSICAL:
         if random.random() < player_state.block_chance:
-            game_state.visual_effects.append(create_visual_block_text(game_state.player_entity))
+            if player_state.block_damage_reduction > 0:
+                game_state.visual_effects.append(create_visual_block_text(game_state.player_entity))
             damage_reduction += player_state.block_damage_reduction
             player_state.notify_about_event(PlayerBlockedEvent(npc_attacker), game_state)
         # Armor has a random element to it. Example: 5 armor absorbs 0-5 damage
