@@ -5,6 +5,10 @@ from pythongame.core.game_state import GameState, Event
 
 
 class AbstractItemEffect:
+
+    def __init__(self, item_type: ItemType):
+        self.item_type = item_type
+
     def apply_start_effect(self, game_state: GameState):
         pass
 
@@ -15,10 +19,13 @@ class AbstractItemEffect:
         pass
 
     def get_item_type(self):
-        pass
+        return self.item_type
 
     def item_handle_event(self, event: Event, game_state: GameState):
         pass
+
+    def get_description(self) -> List[str]:
+        raise Exception("No description defined for item " + str(self.get_item_type()))
 
 
 def _get_description_of_stat_modifier(hero_stat: HeroStat, delta: Union[int, float]) -> str:
