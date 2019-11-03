@@ -1,9 +1,9 @@
-from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
+from pythongame.core.buff_effects import register_buff_effect, get_buff_effect, \
+    StatModifyingBuffEffect
 from pythongame.core.common import ItemType, Sprite, BuffType, Millis, HeroStat
 from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
     register_entity_sprite_initializer, ITEM_ENTITY_SIZE
-from pythongame.core.game_state import Event, GameState, WorldEntity, \
-    NonPlayerCharacter, PlayerWasAttackedEvent
+from pythongame.core.game_state import Event, GameState, PlayerWasAttackedEvent
 from pythongame.core.item_effects import register_item_effect, StatModifyingItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.view.image_loading import SpriteInitializer
@@ -23,16 +23,10 @@ class ItemEffect(StatModifyingItemEffect):
             game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_TYPE_SLOWED), SLOW_DURATION)
 
 
-class SlowedFromNobleDefender(AbstractBuffEffect):
+class SlowedFromNobleDefender(StatModifyingBuffEffect):
 
-    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        buffed_entity.add_to_speed_multiplier(-SLOW_AMOUNT)
-
-    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        buffed_entity.add_to_speed_multiplier(SLOW_AMOUNT)
-
-    def get_buff_type(self):
-        return BUFF_TYPE_SLOWED
+    def __init__(self):
+        super().__init__(BUFF_TYPE_SLOWED, {HeroStat.MOVEMENT_SPEED: -SLOW_AMOUNT})
 
 
 def register_noble_defender():

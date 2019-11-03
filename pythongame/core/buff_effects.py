@@ -1,4 +1,4 @@
-from typing import Dict, Type, Optional, Any
+from typing import Dict, Type, Optional, Any, Union
 
 from pythongame.core.common import *
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, BuffEventOutcome
@@ -20,6 +20,24 @@ class AbstractBuffEffect:
 
     def buff_handle_event(self, event: Event) -> Optional[BuffEventOutcome]:
         return None
+
+
+class StatModifyingBuffEffect(AbstractBuffEffect):
+
+    def __init__(self, buff_type: BuffType, stat_modifiers: Dict[HeroStat, Union[int, float]]):
+        self.buff_type = buff_type
+        self.stat_modifiers = stat_modifiers
+
+    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
+        for stat, delta in self.stat_modifiers.items():
+            game_state.modify_hero_stat(stat, delta)
+
+    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
+        for stat, delta in self.stat_modifiers.items():
+            game_state.modify_hero_stat(stat, -delta)
+
+    def get_buff_type(self):
+        return self.buff_type
 
 
 _buff_effects: Dict[BuffType, Type[AbstractBuffEffect]] = {}

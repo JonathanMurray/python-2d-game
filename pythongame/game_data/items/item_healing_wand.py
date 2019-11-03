@@ -1,14 +1,12 @@
-from pythongame.core.buff_effects import get_buff_effect, register_buff_effect, AbstractBuffEffect
-from pythongame.core.common import ItemType, Sprite, BuffType, Millis
+from pythongame.core.buff_effects import get_buff_effect, register_buff_effect, StatModifyingBuffEffect
+from pythongame.core.common import ItemType, Sprite, BuffType, Millis, HeroStat
 from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
     register_entity_sprite_initializer, ITEM_ENTITY_SIZE, register_buff_text
-from pythongame.core.game_state import Event, PlayerDamagedEnemy, GameState, WorldEntity, \
-    NonPlayerCharacter
+from pythongame.core.game_state import Event, PlayerDamagedEnemy, GameState
 from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.view.image_loading import SpriteInitializer
 
-ITEM_TYPE = ItemType.HEALING_WAND
 BUFF_TYPE = BuffType.BUFFED_BY_HEALING_WAND
 HEALTH_REGEN_BONUS = 1
 BUFF_DURATION = Millis(3000)
@@ -27,29 +25,23 @@ class ItemEffect(AbstractItemEffect):
         return self.item_type
 
 
-class BuffedByHealingWand(AbstractBuffEffect):
-
-    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.health_resource.regen_bonus += HEALTH_REGEN_BONUS
-
-    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.health_resource.regen_bonus -= HEALTH_REGEN_BONUS
-
-    def get_buff_type(self):
-        return BUFF_TYPE
+class BuffedByHealingWand(StatModifyingBuffEffect):
+    def __init__(self):
+        super().__init__(BUFF_TYPE, {HeroStat.HEALTH_REGEN: HEALTH_REGEN_BONUS})
 
 
 def register_healing_wand_item():
+    item_type = ItemType.HEALING_WAND
     ui_icon_sprite = UiIconSprite.ITEM_HEALING_WAND
     sprite = Sprite.ITEM_HEALING_WAND
     image_file_path = "resources/graphics/item_healing_wand.png"
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    register_item_effect(ITEM_TYPE, ItemEffect(ITEM_TYPE))
+    register_item_effect(item_type, ItemEffect(item_type))
     name = "Healing wand"
     description = ["When you damage an enemy, gain +" + str(HEALTH_REGEN_BONUS) + " health regen for " +
                    "{:.0f}".format(BUFF_DURATION / 1000) + "s"]
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.MAIN_HAND)
-    register_item_data(ITEM_TYPE, item_data)
+    register_item_data(item_type, item_data)
     register_buff_effect(BUFF_TYPE, BuffedByHealingWand)
     register_buff_text(BUFF_TYPE, "Healing wand")

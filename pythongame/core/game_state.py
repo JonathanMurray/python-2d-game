@@ -1,5 +1,5 @@
 import math
-from typing import List, Optional, Dict, Any, Tuple
+from typing import List, Optional, Dict, Any, Tuple, Union
 
 from pygame.rect import Rect
 
@@ -558,6 +558,33 @@ class GameState:
             cell_y = (w.y - entire_world_area.y) // GRID_CELL_WIDTH
             grid[cell_x][cell_y] = 1
         return grid
+
+    def modify_hero_stat(self, hero_stat: HeroStat, stat_delta: Union[int, float]):
+        player_state = self.player_state
+        if hero_stat == HeroStat.MAX_HEALTH:
+            if stat_delta >= 0:
+                player_state.health_resource.increase_max(stat_delta)
+            elif stat_delta < 0:
+                player_state.health_resource.decrease_max(-stat_delta)
+        elif hero_stat == HeroStat.HEALTH_REGEN:
+            player_state.health_resource.regen_bonus += stat_delta
+        elif hero_stat == HeroStat.MAX_MANA:
+            if stat_delta >= 0:
+                player_state.mana_resource.increase_max(stat_delta)
+            elif stat_delta < 0:
+                player_state.mana_resource.decrease_max(-stat_delta)
+        elif hero_stat == HeroStat.MANA_REGEN:
+            player_state.mana_resource.regen_bonus += stat_delta
+        elif hero_stat == HeroStat.ARMOR:
+            player_state.armor_bonus += stat_delta
+        elif hero_stat == HeroStat.MOVEMENT_SPEED:
+            self.player_entity.add_to_speed_multiplier(stat_delta)
+        elif hero_stat == HeroStat.DAMAGE:
+            player_state.damage_modifier_bonus += stat_delta
+        elif hero_stat == HeroStat.LIFE_STEAL:
+            player_state.life_steal_ratio += stat_delta
+        else:
+            raise Exception("Unhandled stat: " + str(hero_stat))
 
     def add_non_player_character(self, npc: NonPlayerCharacter):
         self.non_player_characters.append(npc)
