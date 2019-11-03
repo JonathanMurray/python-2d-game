@@ -126,6 +126,11 @@ def create_visual_stun_text(entity: WorldEntity):
     return VisualText("STUN", (255, 255, 255), start_position, end_position, Millis(500))
 
 
+def create_visual_block_text(entity: WorldEntity):
+    start_position, end_position = _get_entity_text_positions(entity, 10)
+    return VisualText("BLOCK", (255, 255, 255), start_position, end_position, Millis(500))
+
+
 def create_visual_damage_text(entity: WorldEntity, damage_amount: int):
     start_position, end_position = _get_entity_text_positions(entity, 40)
     return VisualText(str(damage_amount), (220, 0, 0), start_position, end_position, Millis(800))

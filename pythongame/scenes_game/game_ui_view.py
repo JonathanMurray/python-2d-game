@@ -245,7 +245,7 @@ class GameUiView:
 
     def _render_stats(self, player_speed_multiplier: float, player_state: PlayerState, ui_position: Tuple[int, int]):
 
-        rect_container = Rect(ui_position[0], ui_position[1], 140, 170)
+        rect_container = Rect(ui_position[0], ui_position[1], 140, 210)
         self.ui_render.rect_transparent(rect_container, 140, (0, 0, 30))
 
         self.ui_render.text(self.font_tooltip_details, "STATS:", (ui_position[0] + 45, ui_position[1] + 10))
@@ -274,6 +274,10 @@ class GameUiView:
             armor_stat_text += " +" + str(player_state.armor_bonus)
         elif player_state.armor_bonus < 0:
             armor_stat_text += " " + str(player_state.armor_bonus)
+        block_chance_text = \
+            "     % block: " + str(int(round(player_state.block_chance * 100)))
+        block_reduction_text = \
+            "block amount: " + str(player_state.block_damage_reduction)
         x_text = ui_position[0] + 7
         y_0 = ui_position[1] + 45
         self.ui_render.text(self.font_stats, health_regen_text, (x_text, y_0), COLOR_WHITE)
@@ -282,6 +286,8 @@ class GameUiView:
         self.ui_render.text(self.font_stats, speed_stat_text, (x_text, y_0 + 60), COLOR_WHITE)
         self.ui_render.text(self.font_stats, lifesteal_stat_text, (x_text, y_0 + 80), COLOR_WHITE)
         self.ui_render.text(self.font_stats, armor_stat_text, (x_text, y_0 + 100), COLOR_WHITE)
+        self.ui_render.text(self.font_stats, block_chance_text, (x_text, y_0 + 120), COLOR_WHITE)
+        self.ui_render.text(self.font_stats, block_reduction_text, (x_text, y_0 + 140), COLOR_WHITE)
 
     def _render_talents(self, talents: TalentsGraphics, ui_position: Tuple[int, int],
                         mouse_ui_position: Tuple[int, int]) -> Tuple[

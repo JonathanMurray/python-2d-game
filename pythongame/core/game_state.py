@@ -352,7 +352,7 @@ class PlayerState:
     def __init__(self, health_resource: HealthOrManaResource, mana_resource: HealthOrManaResource,
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
                  item_inventory: ItemInventory, new_level_abilities: Dict[int, AbilityType], hero_id: HeroId,
-                 armor: int, level_bonus: PlayerLevelBonus, talents_state: TalentsState):
+                 armor: int, level_bonus: PlayerLevelBonus, talents_state: TalentsState, block_chance: float):
         self.health_resource: HealthOrManaResource = health_resource
         self.mana_resource: HealthOrManaResource = mana_resource
         self.consumable_inventory = consumable_inventory
@@ -378,6 +378,8 @@ class PlayerState:
         self.talents_state: TalentsState = talents_state
         self.chosen_talent_option_indices: List[int] = []
         self._upgrades: List[HeroUpgrade] = []
+        self.block_chance: float = block_chance
+        self.block_damage_reduction: int = 0
 
     # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):
@@ -583,6 +585,8 @@ class GameState:
             player_state.damage_modifier_bonus += stat_delta
         elif hero_stat == HeroStat.LIFE_STEAL:
             player_state.life_steal_ratio += stat_delta
+        elif hero_stat == HeroStat.BLOCK_AMOUNT:
+            player_state.block_damage_reduction += stat_delta
         else:
             raise Exception("Unhandled stat: " + str(hero_stat))
 

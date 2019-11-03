@@ -37,7 +37,8 @@ def register_blessed_shield_item():
         item_type = item_types[i]
 
         healing_amount = healing_amounts[i]
-        effect = ItemEffect(proc_chance, healing_amount, item_type, {HeroStat.ARMOR: armor_boost})
+        stat_modifiers = {HeroStat.ARMOR: armor_boost, HeroStat.BLOCK_AMOUNT: 6}
+        effect = ItemEffect(proc_chance, healing_amount, item_type, stat_modifiers)
         register_item_effect(item_type, effect)
         name = "Blessed Shield (" + str(i + 1) + ")"
         description = effect.get_description() + [

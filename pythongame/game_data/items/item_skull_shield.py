@@ -32,7 +32,7 @@ def register_skull_shield_item():
     image_file_path = "resources/graphics/item_skull_shield.png"
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    effect = ItemEffect(item_type, {HeroStat.ARMOR: armor_boost})
+    effect = ItemEffect(item_type, {HeroStat.ARMOR: armor_boost, HeroStat.BLOCK_AMOUNT: 7})
     register_item_effect(item_type, effect)
     name = "Skull shield"
     description = effect.get_description() + \

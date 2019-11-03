@@ -11,5 +11,5 @@ def register_wooden_shield():
         image_file_path="resources/graphics/item_wooden_shield.png",
         item_equipment_category=ItemEquipmentCategory.OFF_HAND,
         name="Wooden Shield",
-        stat_modifiers={HeroStat.ARMOR: 1}
+        stat_modifiers={HeroStat.ARMOR: 1, HeroStat.BLOCK_AMOUNT: 3}
     )

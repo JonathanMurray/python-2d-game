@@ -529,6 +529,7 @@ class HeroStat(Enum):
     MOVEMENT_SPEED = 6
     DAMAGE = 7
     LIFE_STEAL = 8
+    BLOCK_AMOUNT = 9
 
 
 # Use to handle timing-related boilerplate for buffs, items, enemy behaviours, etc
