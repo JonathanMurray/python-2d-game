@@ -3,7 +3,7 @@
 This is a simple 2D action RPG game that lets you control a character and fight against 
 different monsters, using potions and abilities to your advantage.
 
-#### In-game footage (YoutTube):
+#### In-game footage (YouTube):
 
 [![in-game footage](https://img.youtube.com/vi/4FijOSF_O6o/0.jpg)](https://www.youtube.com/watch?v=4FijOSF_O6o)
 
