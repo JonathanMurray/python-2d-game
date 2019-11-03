@@ -1,27 +1,16 @@
 from pythongame.core.common import ItemType, Sprite, HeroStat
-from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
-    register_entity_sprite_initializer, ITEM_ENTITY_SIZE
-from pythongame.core.item_effects import register_item_effect, StatModifyingItemEffect
+from pythongame.core.game_data import UiIconSprite
 from pythongame.core.item_inventory import ItemEquipmentCategory
-from pythongame.core.view.image_loading import SpriteInitializer
+from pythongame.game_data.items.register_items_util import register_stat_modifying_item
 
 
 def register_winged_helmet_item():
-    item_type = ItemType.WINGED_HELMET
-    speed_multiplier = 0.2
-    armor_boost = 3
-    ui_icon_sprite = UiIconSprite.ITEM_WINGED_HELMET
-    sprite = Sprite.ITEM_WINGED_HELMET
-    effect = StatModifyingItemEffect(
-        item_type,
-        {
-            HeroStat.ARMOR: armor_boost,
-            HeroStat.MOVEMENT_SPEED: speed_multiplier
-        })
-    register_item_effect(item_type, effect)
-    image_file_path = "resources/graphics/item_winged_helmet.png"
-    register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
-    register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    description = effect.get_description()
-    item_data = ItemData(ui_icon_sprite, sprite, "Winged helmet", description, ItemEquipmentCategory.HEAD)
-    register_item_data(item_type, item_data)
+    register_stat_modifying_item(
+        item_type=ItemType.WINGED_HELMET,
+        ui_icon_sprite=UiIconSprite.ITEM_WINGED_HELMET,
+        sprite=Sprite.ITEM_WINGED_HELMET,
+        image_file_path="resources/graphics/item_winged_helmet.png",
+        item_equipment_category=ItemEquipmentCategory.HEAD,
+        name="Winged helmet",
+        stat_modifiers={HeroStat.ARMOR: 3, HeroStat.MOVEMENT_SPEED: 0.2}
+    )
