@@ -21,7 +21,6 @@ def register_soldiers_helmet_item():
         effect = StatModifyingItemEffect(item_type, {HeroStat.ARMOR: armor_boost, HeroStat.MAX_HEALTH: health_amount})
         register_item_effect(item_type, effect)
         name = "Soldier's Helmet (" + str(i + 1) + ")"
-        description = [str(armor_boost) + " armor",
-                       "+" + str(health_amount) + " max health"]
+        description = effect.get_description()
         item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.HEAD)
         register_item_data(item_type, item_data)

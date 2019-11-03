@@ -43,11 +43,13 @@ def register_noble_defender():
     image_file_path = "resources/graphics/item_noble_defender.png"
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    register_item_effect(item_type, ItemEffect(item_type, {HeroStat.ARMOR: armor_boost}))
+    effect = ItemEffect(item_type, {HeroStat.ARMOR: armor_boost})
+    register_item_effect(item_type, effect)
     name = "Noble defender"
-    description = [str(armor_boost) + " armor",
-                   "On hit: your movement speed is slowed by {:.0f}".format(SLOW_AMOUNT * 100) + "% for " \
+    description = effect.get_description() + \
+                  ["On hit: your movement speed is slowed by {:.0f}".format(SLOW_AMOUNT * 100) + "% for " \
                    + "{:.1f}".format(SLOW_DURATION / 1000) + "s"]
+
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.OFF_HAND)
     register_item_data(item_type, item_data)
     register_buff_effect(BUFF_TYPE_SLOWED, SlowedFromNobleDefender)

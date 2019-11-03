@@ -17,6 +17,6 @@ def register_leather_armor_item():
     effect = StatModifyingItemEffect(item_type, {HeroStat.ARMOR: armor_boost})
     register_item_effect(item_type, effect)
     name = "Leather Armor"
-    description = [str(armor_boost) + " armor"]
+    description = effect.get_description()
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.CHEST)
     register_item_data(item_type, item_data)

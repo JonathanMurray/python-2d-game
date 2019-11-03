@@ -11,10 +11,11 @@ def register_hatchet_item():
     damage_bonus = 0.1
     ui_icon_sprite = UiIconSprite.ITEM_HATCHET
     sprite = Sprite.ITEM_HATCHET
-    register_item_effect(item_type, StatModifyingItemEffect(item_type, {HeroStat.DAMAGE: damage_bonus}))
+    effect = StatModifyingItemEffect(item_type, {HeroStat.DAMAGE: damage_bonus})
+    register_item_effect(item_type, effect)
     image_file_path = "resources/graphics/item_hatchet.png"
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    description = ["+" + str(int(round(damage_bonus * 100))) + "% damage"]
+    description = effect.get_description()
     item_data = ItemData(ui_icon_sprite, sprite, "Hatchet", description, ItemEquipmentCategory.MAIN_HAND)
     register_item_data(item_type, item_data)

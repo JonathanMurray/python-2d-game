@@ -18,8 +18,9 @@ def register_orb_of_life_item():
     for i in range(3):
         item_type = item_types[i]
         bonus = bonuses[i]
-        register_item_effect(item_type, StatModifyingItemEffect(item_type, {HeroStat.LIFE_STEAL: bonus}))
+        effect = StatModifyingItemEffect(item_type, {HeroStat.LIFE_STEAL: bonus})
+        register_item_effect(item_type, effect)
         name = "Orb of Life (" + str(i + 1) + ")"
-        description = ["+" + str(int(round(bonus * 100))) + "% life steal"]
+        description = effect.get_description()
         item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.OFF_HAND)
         register_item_data(item_type, item_data)

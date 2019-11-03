@@ -12,9 +12,10 @@ def register_wooden_shield():
     ui_icon_sprite = UiIconSprite.ITEM_WOODEN_SHIELD
     sprite = Sprite.ITEM_WOODEN_SHIELD
     image_file_path = "resources/graphics/item_wooden_shield.png"
-    register_item_effect(item_type, StatModifyingItemEffect(item_type, {HeroStat.ARMOR: armor_boost}))
+    effect = StatModifyingItemEffect(item_type, {HeroStat.ARMOR: armor_boost})
+    register_item_effect(item_type, effect)
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    description = [str(armor_boost) + " armor"]
+    description = effect.get_description()
     item_data = ItemData(ui_icon_sprite, sprite, "Wooden Shield", description, ItemEquipmentCategory.OFF_HAND)
     register_item_data(item_type, item_data)

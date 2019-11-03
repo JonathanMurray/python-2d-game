@@ -23,8 +23,6 @@ def register_gladiator_armor():
     })
     register_item_effect(item_type, effect)
     name = "Gladiator's armor"
-    description = [str(armor_boost) + " armor",
-                   "+" + str(max_health_boost) + " max health",
-                   "+" + str(int(round(damage_boost * 100))) + "% damage"]
+    description = effect.get_description()
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.CHEST)
     register_item_data(item_type, item_data)

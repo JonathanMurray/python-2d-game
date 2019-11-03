@@ -16,6 +16,6 @@ def register_leather_cowl_item():
     image_file_path = "resources/graphics/item_leather_cowl.png"
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    description = [str(armor_boost) + " armor"]
+    description = effect.get_description()
     item_data = ItemData(ui_icon_sprite, sprite, "Leather cowl", description, ItemEquipmentCategory.HEAD)
     register_item_data(item_type, item_data)

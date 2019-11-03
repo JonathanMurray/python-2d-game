@@ -17,7 +17,6 @@ def register_royal_sword_item():
     image_file_path = "resources/graphics/item_royal_sword.png"
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    description = [str(armor_bonus) + " armor",
-                   "+" + str(int(round(damage_bonus * 100))) + "% damage"]
+    description = effect.get_description()
     item_data = ItemData(ui_icon_sprite, sprite, "Royal Sword", description, ItemEquipmentCategory.MAIN_HAND)
     register_item_data(item_type, item_data)

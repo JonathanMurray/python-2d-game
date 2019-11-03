@@ -21,7 +21,6 @@ def register_elite_armor():
     })
     register_item_effect(item_type, effect)
     name = "Elite Armor"
-    description = [str(armor_boost) + " armor",
-                   "+" + str(health_regen_boost) + " health regen"]
+    description = effect.get_description()
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.CHEST)
     register_item_data(item_type, item_data)

@@ -20,6 +20,6 @@ def register_orb_of_the_magi_item():
         effect = StatModifyingItemEffect(item_type, {HeroStat.DAMAGE: bonus})
         register_item_effect(item_type, effect)
         name = "Orb of the Magi (" + str(i + 1) + ")"
-        description = ["+" + str(int(round(bonus * 100))) + "% damage"]
+        description = effect.get_description()
         item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.OFF_HAND)
         register_item_data(item_type, item_data)

@@ -18,8 +18,9 @@ def register_orb_of_wisdom_item():
     for i in range(3):
         item_type = item_types[i]
         bonus = bonuses[i]
-        register_item_effect(item_type, StatModifyingItemEffect(item_type, {HeroStat.MANA_REGEN: bonus}))
+        effect = StatModifyingItemEffect(item_type, {HeroStat.MANA_REGEN: bonus})
+        register_item_effect(item_type, effect)
         name = "Orb of Wisdom (" + str(i + 1) + ")"
-        description = ["+" + str(bonus) + " mana regen"]
+        description = effect.get_description()
         item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.OFF_HAND)
         register_item_data(item_type, item_data)

@@ -14,8 +14,9 @@ def register_ring_of_power_item():
     image_file_path = "resources/graphics/item_ring_of_power.png"
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    register_item_effect(item_type, StatModifyingItemEffect(item_type, {HeroStat.DAMAGE: multiplier_bonus}))
+    effect = StatModifyingItemEffect(item_type, {HeroStat.DAMAGE: multiplier_bonus})
+    register_item_effect(item_type, effect)
     name = "Ring of Power"
-    description = ["+" + str(int(round(multiplier_bonus * 100))) + "% damage"]
+    description = effect.get_description()
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.RING)
     register_item_data(item_type, item_data)

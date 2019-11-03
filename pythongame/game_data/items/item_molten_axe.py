@@ -11,10 +11,11 @@ def register_molten_axe_item():
     damage_bonus = 0.25
     ui_icon_sprite = UiIconSprite.ITEM_MOLTEN_AXE
     sprite = Sprite.ITEM_MOLTEN_AXE
-    register_item_effect(item_type, StatModifyingItemEffect(item_type, {HeroStat.DAMAGE: damage_bonus}))
+    effect = StatModifyingItemEffect(item_type, {HeroStat.DAMAGE: damage_bonus})
+    register_item_effect(item_type, effect)
     image_file_path = "resources/graphics/item_molten_axe.png"
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    description = ["+" + str(int(round(damage_bonus * 100))) + "% damage"]
+    description = effect.get_description()
     item_data = ItemData(ui_icon_sprite, sprite, "Molten Axe", description, ItemEquipmentCategory.MAIN_HAND)
     register_item_data(item_type, item_data)

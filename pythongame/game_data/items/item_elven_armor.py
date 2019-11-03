@@ -23,8 +23,6 @@ def register_elven_armor():
     })
     register_item_effect(item_type, effect)
     name = "Elven Armor"
-    description = [str(armor_boost) + " armor",
-                   "+" + str(mana_regen_boost) + " mana regen",
-                   "+" + str(mana_boost) + " max mana"]
+    description = effect.get_description()
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.CHEST)
     register_item_data(item_type, item_data)

@@ -51,10 +51,11 @@ def register_zuls_aegis():
     image_file_path = "resources/graphics/item_zuls_aegis.png"
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    register_item_effect(item_type, ItemEffect(item_type, {HeroStat.ARMOR: armor_boost}))
+    effect = ItemEffect(item_type, {HeroStat.ARMOR: armor_boost})
+    register_item_effect(item_type, effect)
     name = "Zul's Aegis"
-    description = [str(armor_boost) + " armor",
-                   "{:.0f}".format(PROC_CHANCE * 100) + "% on hit: stun attacker for " \
+    description = effect.get_description() + \
+                  ["{:.0f}".format(PROC_CHANCE * 100) + "% on hit: stun attacker for " \
                    + "{:.1f}".format(STUN_DURATION / 1000) + "s"]
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.OFF_HAND)
     register_item_data(item_type, item_data)

@@ -34,9 +34,9 @@ def register_blessed_shield_item():
     for i in range(3):
         item_type = item_types[i]
         proc_chance = proc_chances[i]
-        register_item_effect(item_type, ItemEffect(proc_chance, item_type, {HeroStat.ARMOR: armor_boost}))
+        effect = ItemEffect(proc_chance, item_type, {HeroStat.ARMOR: armor_boost})
+        register_item_effect(item_type, effect)
         name = "Blessed Shield (" + str(i + 1) + ")"
-        description = [str(armor_boost) + " armor",
-                       "{:.0f}".format(proc_chance * 100) + "% on hit: gain 1 health"]
+        description = effect.get_description() + ["{:.0f}".format(proc_chance * 100) + "% on hit: gain 1 health"]
         item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.OFF_HAND)
         register_item_data(item_type, item_data)

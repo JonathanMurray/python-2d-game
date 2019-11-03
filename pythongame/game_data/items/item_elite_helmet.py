@@ -11,10 +11,11 @@ def register_elite_helmet_item():
     armor_boost = 3
     ui_icon_sprite = UiIconSprite.ITEM_ELITE_HELMET
     sprite = Sprite.ITEM_ELITE_HELMET
-    register_item_effect(item_type, StatModifyingItemEffect(item_type, {HeroStat.ARMOR: armor_boost}))
+    effect = StatModifyingItemEffect(item_type, {HeroStat.ARMOR: armor_boost})
+    register_item_effect(item_type, effect)
     image_file_path = "resources/graphics/item_elite_helmet.png"
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    description = [str(armor_boost) + " armor"]
+    description = effect.get_description()
     item_data = ItemData(ui_icon_sprite, sprite, "Elite helmet", description, ItemEquipmentCategory.HEAD)
     register_item_data(item_type, item_data)
