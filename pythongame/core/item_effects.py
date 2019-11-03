@@ -93,6 +93,14 @@ class StatModifyingItemEffect(AbstractItemEffect):
         return [_get_description_of_stat_modifier(stat, delta) for (stat, delta) in self.stat_modifiers.items()]
 
 
+class EmptyItemEffect(AbstractItemEffect):
+    def __init__(self, item_type: ItemType):
+        self.item_type = item_type
+
+    def get_item_type(self):
+        return self.item_type
+
+
 _item_effects: Dict[ItemType, AbstractItemEffect] = {}
 
 
