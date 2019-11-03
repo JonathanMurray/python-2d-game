@@ -41,8 +41,8 @@ def register_noble_defender():
     register_item_effect(item_type, effect)
     name = "Noble defender"
     description = effect.get_description() + \
-                  ["On hit: your movement speed is slowed by {:.0f}".format(SLOW_AMOUNT * 100) + "% for " \
-                   + "{:.1f}".format(SLOW_DURATION / 1000) + "s"]
+                  ["When you are attacked, your movement speed is slowed by {:.0f}".format(SLOW_AMOUNT * 100) +
+                   "% for " + "{:.1f}".format(SLOW_DURATION / 1000) + "s"]
 
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.OFF_HAND)
     register_item_data(item_type, item_data)

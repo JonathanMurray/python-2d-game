@@ -306,6 +306,11 @@ class PlayerLostHealthEvent(Event):
         self.npc_attacker = npc_attacker
 
 
+class PlayerBlockedEvent(Event):
+    def __init__(self, npc_attacker: NonPlayerCharacter):
+        self.npc_attacker = npc_attacker
+
+
 class PlayerWasAttackedEvent(Event):
     def __init__(self, npc_attacker: NonPlayerCharacter):
         self.npc_attacker = npc_attacker
