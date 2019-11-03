@@ -498,6 +498,17 @@ class PortraitIconSprite(Enum):
     HERO_GOD = 13
 
 
+class HeroStat(Enum):
+    MAX_HEALTH = 1
+    HEALTH_REGEN = 2
+    MAX_MANA = 3
+    MANA_REGEN = 4
+    ARMOR = 5
+    MOVEMENT_SPEED = 6
+    DAMAGE = 7
+    LIFE_STEAL = 8
+
+
 # Use to handle timing-related boilerplate for buffs, items, enemy behaviours, etc
 class PeriodicTimer:
     def __init__(self, cooldown: Millis):

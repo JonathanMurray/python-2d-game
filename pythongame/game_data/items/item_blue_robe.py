@@ -1,46 +1,30 @@
-from pythongame.core.common import ItemType, Sprite, UiIconSprite
+from pythongame.core.common import ItemType, Sprite, UiIconSprite, HeroStat
 from pythongame.core.game_data import register_ui_icon_sprite_path, register_item_data, ItemData, \
     register_entity_sprite_initializer, ITEM_ENTITY_SIZE
-from pythongame.core.game_state import GameState
-from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
+from pythongame.core.item_effects import register_item_effect, StatModifyingItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.view.image_loading import SpriteInitializer
 
-ITEM_TYPES = [ItemType.BLUE_ROBE_1, ItemType.BLUE_ROBE_2, ItemType.BLUE_ROBE_3]
-MANA_AMOUNTS = [10, 15, 20]
-MANA_REGEN_BOOST = 0.5
-
-
-class ItemEffect(AbstractItemEffect):
-
-    def __init__(self, mana_amount: int, item_type: ItemType):
-        self.mana_amount = mana_amount
-        self.item_type = item_type
-
-    def apply_start_effect(self, game_state: GameState):
-        game_state.player_state.mana_resource.regen_bonus += MANA_REGEN_BOOST
-        game_state.player_state.mana_resource.increase_max(self.mana_amount)
-
-    def apply_end_effect(self, game_state: GameState):
-        game_state.player_state.mana_resource.regen_bonus -= MANA_REGEN_BOOST
-        game_state.player_state.mana_resource.decrease_max(self.mana_amount)
-
-    def get_item_type(self):
-        return self.item_type
-
 
 def register_blue_robe_item():
+    item_types = [ItemType.BLUE_ROBE_1, ItemType.BLUE_ROBE_2, ItemType.BLUE_ROBE_3]
+    mana_amounts = [10, 15, 20]
+    mana_regen_boost = 0.5
     ui_icon_sprite = UiIconSprite.ITEM_BLUE_ROBE
     sprite = Sprite.ITEM_BLUE_ROBE
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/item_blue_robe.png")
     register_entity_sprite_initializer(
         sprite, SpriteInitializer("resources/graphics/item_blue_robe.png", ITEM_ENTITY_SIZE))
     for i in range(3):
-        item_type = ITEM_TYPES[i]
-        mana_amount = MANA_AMOUNTS[i]
-        register_item_effect(item_type, ItemEffect(mana_amount, item_type))
+        item_type = item_types[i]
+        mana_amount = mana_amounts[i]
+        effect = StatModifyingItemEffect(item_type, {
+            HeroStat.MANA_REGEN: mana_regen_boost,
+            HeroStat.MAX_MANA: mana_amount
+        })
+        register_item_effect(item_type, effect)
         name = "Blue Robe (" + str(i + 1) + ")"
-        description = ["+" + str(MANA_REGEN_BOOST) + " mana regen",
+        description = ["+" + str(mana_regen_boost) + " mana regen",
                        "+" + str(mana_amount) + " max mana"]
         item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.CHEST)
         register_item_data(item_type, item_data)
