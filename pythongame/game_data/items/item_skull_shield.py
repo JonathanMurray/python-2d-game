@@ -4,7 +4,7 @@ from pythongame.core.common import ItemType, Sprite, HeroStat
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
     register_entity_sprite_initializer, ITEM_ENTITY_SIZE
-from pythongame.core.game_state import Event, PlayerLostHealthEvent, GameState
+from pythongame.core.game_state import Event, GameState, PlayerWasAttackedEvent
 from pythongame.core.item_effects import register_item_effect, StatModifyingItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.view.image_loading import SpriteInitializer
@@ -19,7 +19,7 @@ class ItemEffect(StatModifyingItemEffect):
         super().__init__(item_type, stat_modifiers)
 
     def item_handle_event(self, event: Event, game_state: GameState):
-        if isinstance(event, PlayerLostHealthEvent):
+        if isinstance(event, PlayerWasAttackedEvent):
             if event.npc_attacker and random.random() < PROC_CHANCE:
                 deal_player_damage_to_enemy(game_state, event.npc_attacker, DAMAGE)
 
