@@ -2,7 +2,7 @@ import random
 from typing import Optional
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
-    UiIconSprite, ItemType, PeriodicTimer, HeroId
+    UiIconSprite, ItemType, PeriodicTimer, HeroId, SoundId
 from pythongame.core.entity_creation import create_item_on_ground
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, ITEMS
@@ -11,6 +11,7 @@ from pythongame.core.item_effects import get_item_effect
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
     register_npc_dialog_data, DialogData, DialogOptionData
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 
 ITEM_TYPE_FROG = ItemType.FROG
@@ -59,6 +60,7 @@ class AcceptFrog(AbstractNpcAction):
             if not add_result:
                 game_state.items_on_ground.append(
                     create_item_on_ground(reward_item_type, game_state.player_entity.get_position()))
+            play_sound(SoundId.EVENT_COMPLETED_QUEST)
             return "Reward gained: " + reward_data.name
         else:
             return "You don't have that!"

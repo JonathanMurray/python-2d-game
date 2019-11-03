@@ -130,7 +130,8 @@ def register_summon_scroll():
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_path, POTION_ENTITY_SIZE))
     register_ui_icon_sprite_path(ui_icon_sprite, image_path)
     description = "Summon a dragonling to fight for you (" + str(int(DURATION_SUMMON / 1000)) + "s)"
-    data = ConsumableData(ui_icon_sprite, sprite, "Dragon's scroll", description, ConsumableCategory.OTHER)
+    data = ConsumableData(ui_icon_sprite, sprite, "Dragon's scroll", description, ConsumableCategory.OTHER,
+                          SoundId.CONSUMABLE_POTION)
     register_consumable_data(consumable_type, data)
 
     summoned_npc_type = NpcType.PLAYER_SUMMON_DRAGON

@@ -1,4 +1,4 @@
-from pythongame.core.common import ConsumableType, Sprite, UiIconSprite
+from pythongame.core.common import ConsumableType, Sprite, UiIconSprite, SoundId
 from pythongame.core.consumable_effects import create_potion_visual_effect_at_player, ConsumableWasConsumed, \
     ConsumableFailedToBeConsumed, \
     register_consumable_effect
@@ -30,5 +30,6 @@ def register_lesser_health_potion():
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_path, POTION_ENTITY_SIZE))
     register_ui_icon_sprite_path(ui_icon_sprite, image_path)
     description = "Restores " + str(HEALING_AMOUNT) + " health"
-    data = ConsumableData(ui_icon_sprite, sprite, "Lesser health potion", description, ConsumableCategory.HEALTH)
+    data = ConsumableData(ui_icon_sprite, sprite, "Lesser health potion", description, ConsumableCategory.HEALTH,
+                          SoundId.CONSUMABLE_POTION)
     register_consumable_data(consumable_type, data)

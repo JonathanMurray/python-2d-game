@@ -1,5 +1,5 @@
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect
-from pythongame.core.common import ConsumableType, Sprite, UiIconSprite, BuffType, Direction
+from pythongame.core.common import ConsumableType, Sprite, UiIconSprite, BuffType, Direction, SoundId
 from pythongame.core.consumable_effects import register_consumable_effect, ConsumableWasConsumed
 from pythongame.core.game_data import register_entity_sprite_initializer, register_ui_icon_sprite_path, \
     register_consumable_data, ConsumableData, POTION_ENTITY_SIZE, ConsumableCategory
@@ -27,5 +27,5 @@ def register_warpstone_consumable():
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_path, POTION_ENTITY_SIZE))
     register_ui_icon_sprite_path(ui_icon_sprite, image_path)
     description = "Warps you back to safety"
-    data = ConsumableData(ui_icon_sprite, sprite, "Warpstone", description, ConsumableCategory.OTHER)
+    data = ConsumableData(ui_icon_sprite, sprite, "Warpstone", description, ConsumableCategory.OTHER, SoundId.WARP)
     register_consumable_data(consumable_type, data)

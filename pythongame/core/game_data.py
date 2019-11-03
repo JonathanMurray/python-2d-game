@@ -85,12 +85,13 @@ class ConsumableCategory(Enum):
 
 class ConsumableData:
     def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Optional[Sprite], name: str, description: str,
-                 category: ConsumableCategory):
+                 category: ConsumableCategory, sound: SoundId):
         self.icon_sprite = icon_sprite
         self.entity_sprite = entity_sprite
         self.name = name
         self.description = description
         self.category = category
+        self.sound = sound
 
 
 class ItemData:

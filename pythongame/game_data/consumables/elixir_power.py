@@ -1,5 +1,5 @@
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
-from pythongame.core.common import ConsumableType, BuffType, Millis, UiIconSprite, Sprite, PeriodicTimer
+from pythongame.core.common import ConsumableType, BuffType, Millis, UiIconSprite, Sprite, PeriodicTimer, SoundId
 from pythongame.core.consumable_effects import create_potion_visual_effect_at_player, ConsumableWasConsumed, \
     register_consumable_effect
 from pythongame.core.game_data import register_ui_icon_sprite_path, register_buff_text, \
@@ -52,5 +52,5 @@ def register_elixir_of_power():
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_path, POTION_ENTITY_SIZE))
     description = "Gain +" + "{:.0f}".format(DAMAGE_MODIFIER_INCREASE * 100) + "% damage for " + \
                   "{:.0f}".format(DURATION / 1000) + "s."
-    data = ConsumableData(ui_icon_sprite, sprite, name, description, ConsumableCategory.OTHER)
+    data = ConsumableData(ui_icon_sprite, sprite, name, description, ConsumableCategory.OTHER, SoundId.CONSUMABLE_BUFF)
     register_consumable_data(consumable_type, data)

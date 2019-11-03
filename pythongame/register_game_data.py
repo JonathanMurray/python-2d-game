@@ -1,5 +1,5 @@
 from pythongame.game_data.abilities.ability_bloodlust import register_bloodlust_ability
-from pythongame.game_data.abilities.ability_channel_attack import register_channel_attack_ability
+from pythongame.game_data.abilities.ability_arcane_fire import register_arcane_fire_ability
 from pythongame.game_data.abilities.ability_charge import register_charge_ability
 from pythongame.game_data.abilities.ability_dash import register_dash_ability
 from pythongame.game_data.abilities.ability_entangling_roots import register_entangling_roots_ability
@@ -8,7 +8,7 @@ from pythongame.game_data.abilities.ability_frost_nova import register_frost_nov
 from pythongame.game_data.abilities.ability_heal import register_heal_ability
 from pythongame.game_data.abilities.ability_infuse_dagger import register_infuse_dagger_ability
 from pythongame.game_data.abilities.ability_shiv import register_shiv_ability
-from pythongame.game_data.abilities.ability_sneak import register_sneak_ability
+from pythongame.game_data.abilities.ability_stealth import register_stealth_ability
 from pythongame.game_data.abilities.ability_stomp import register_stomp_ability
 from pythongame.game_data.abilities.ability_sword_slash import register_sword_slash_ability
 from pythongame.game_data.abilities.ability_teleport import register_teleport_ability
@@ -103,7 +103,7 @@ def register_all_game_data():
     register_fireball_ability()
     register_frost_nova_ability()
     register_heal_ability()
-    register_channel_attack_ability()
+    register_arcane_fire_ability()
     register_teleport_ability()
     register_sword_slash_ability()
     register_bloodlust_ability()
@@ -112,7 +112,7 @@ def register_all_game_data():
     register_entangling_roots_ability()
     register_stomp_ability()
     register_shiv_ability()
-    register_sneak_ability()
+    register_stealth_ability()
     register_infuse_dagger_ability()
     register_dash_ability()
 

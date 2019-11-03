@@ -3,7 +3,7 @@ from pythongame.core.ability_effects import apply_ability_effect, AbilityFailedT
 from pythongame.core.common import AbilityType, SoundId, Millis
 from pythongame.core.consumable_effects import try_consume_consumable, ConsumableWasConsumed, \
     ConsumableFailedToBeConsumed
-from pythongame.core.game_data import ABILITIES
+from pythongame.core.game_data import ABILITIES, CONSUMABLES
 from pythongame.core.game_state import GameState, PlayerUsedAbilityEvent
 from pythongame.core.sound_player import play_sound
 from pythongame.scenes_game.game_ui_state import GameUiState
@@ -39,8 +39,6 @@ class PlayerControls:
         elif isinstance(ability_result, AbilityWasUsedSuccessfully):
             if ability_data.sound_id:
                 play_sound(ability_data.sound_id)
-            else:
-                print("WARN: No sound defined for ability: " + str(ability_type))
             if ability_result.should_regain_mana_and_cd:
                 # The cooldown is reset to almost 0. We set it to 500 to avoid it being used twice because of ability
                 # key being held down by user.
@@ -64,7 +62,8 @@ class PlayerControls:
                 game_state.player_state.consumable_inventory.remove_consumable_from_slot(slot_number)
                 if result.message:
                     ui_state.set_message(result.message)
-                play_sound(SoundId.POTION)
+                data = CONSUMABLES[consumable_type_in_this_slot]
+                play_sound(data.sound)
             elif isinstance(result, ConsumableFailedToBeConsumed):
                 play_sound(SoundId.INVALID_ACTION)
                 ui_state.set_message(result.reason)

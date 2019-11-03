@@ -31,8 +31,8 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
     if not affected_enemies:
         return AbilityFailedToExecute(reason="No targets")
 
-    # Note: Dependency on other ability 'sneak'
-    used_from_stealth = game_state.player_state.has_active_buff(BuffType.SNEAKING)
+    # Note: Dependency on other ability 'stealth'
+    used_from_stealth = game_state.player_state.has_active_buff(BuffType.STEALTHING)
     buff_effect = get_buff_effect(DEBUFF, used_from_stealth)
     affected_enemies[0].gain_buff_effect(buff_effect, DEBUFF_DURATION)
 
