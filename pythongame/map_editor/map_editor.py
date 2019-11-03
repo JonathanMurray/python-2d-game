@@ -12,9 +12,9 @@ from pythongame.core.entity_creation import create_portal, create_hero_world_ent
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, PORTRAIT_ICON_SPRITE_PATHS
 from pythongame.core.game_state import GameState
 from pythongame.core.math import sum_of_vectors
+from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.core.view.image_loading import load_images_by_sprite, load_images_by_ui_sprite, \
     load_images_by_portrait_sprite
-from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.map_editor.map_editor_ui_view import MapEditorView, PORTRAIT_ICON_SIZE, MAP_EDITOR_UI_ICON_SIZE
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
 from pythongame.map_file import save_game_state_to_json_file, create_game_state_from_json_file
@@ -126,6 +126,13 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.STONE_AMULET),
     MapEditorWorldEntity.item(ItemType.TORN_DOCUMENT),
     MapEditorWorldEntity.item(ItemType.KEY),
+    MapEditorWorldEntity.item(ItemType.WOODEN_SWORD),
+    MapEditorWorldEntity.item(ItemType.DRUIDS_RING),
+    MapEditorWorldEntity.item(ItemType.WARLOCKS_COWL),
+    MapEditorWorldEntity.item(ItemType.LICH_ARMOR),
+    MapEditorWorldEntity.item(ItemType.WARLORDS_ARMOR),
+    MapEditorWorldEntity.item(ItemType.HEALING_WAND),
+    MapEditorWorldEntity.item(ItemType.SKULL_SHIELD),
 
     MapEditorWorldEntity.money(1),
 

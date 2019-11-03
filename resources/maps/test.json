@@ -308,6 +308,55 @@
         100,
         350
       ]
+    },
+    {
+      "item_type": "WOODEN_SWORD",
+      "position": [
+        100,
+        400
+      ]
+    },
+    {
+      "item_type": "DRUIDS_RING",
+      "position": [
+        150,
+        50
+      ]
+    },
+    {
+      "item_type": "WARLOCKS_COWL",
+      "position": [
+        150,
+        100
+      ]
+    },
+    {
+      "item_type": "LICH_ARMOR",
+      "position": [
+        150,
+        150
+      ]
+    },
+    {
+      "item_type": "WARLORDS_ARMOR",
+      "position": [
+        150,
+        200
+      ]
+    },
+    {
+      "item_type": "HEALING_WAND",
+      "position": [
+        150,
+        250
+      ]
+    },
+    {
+      "item_type": "SKULL_SHIELD",
+      "position": [
+        150,
+        300
+      ]
     }
   ],
   "money_piles_on_ground": [],
@@ -357,13 +406,6 @@
     {
       "npc_type": "RAT_1",
       "position": [
-        175,
-        375
-      ]
-    },
-    {
-      "npc_type": "RAT_1",
-      "position": [
         325,
         325
       ]
@@ -399,13 +441,6 @@
     {
       "npc_type": "RAT_1",
       "position": [
-        200,
-        250
-      ]
-    },
-    {
-      "npc_type": "RAT_1",
-      "position": [
         250,
         350
       ]
@@ -415,13 +450,6 @@
       "position": [
         225,
         400
-      ]
-    },
-    {
-      "npc_type": "RAT_1",
-      "position": [
-        150,
-        275
       ]
     },
     {

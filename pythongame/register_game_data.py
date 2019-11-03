@@ -1,5 +1,5 @@
-from pythongame.game_data.abilities.ability_bloodlust import register_bloodlust_ability
 from pythongame.game_data.abilities.ability_arcane_fire import register_arcane_fire_ability
+from pythongame.game_data.abilities.ability_bloodlust import register_bloodlust_ability
 from pythongame.game_data.abilities.ability_charge import register_charge_ability
 from pythongame.game_data.abilities.ability_dash import register_dash_ability
 from pythongame.game_data.abilities.ability_entangling_roots import register_entangling_roots_ability
@@ -15,6 +15,7 @@ from pythongame.game_data.abilities.ability_teleport import register_teleport_ab
 from pythongame.game_data.abilities.ability_whirlwind import register_whirlwind_ability
 from pythongame.game_data.buff_hero_spawning import register_spawn_buff
 from pythongame.game_data.buff_recovering_after_ability import register_recovering_after_ability_buff
+from pythongame.game_data.chests import register_chest_entity
 from pythongame.game_data.coin import register_coin
 from pythongame.game_data.consumables.consumable_warpstone import register_warpstone_consumable
 from pythongame.game_data.consumables.elixir_power import register_elixir_of_power
@@ -27,7 +28,6 @@ from pythongame.game_data.consumables.potion_mana import register_mana_potion
 from pythongame.game_data.consumables.potion_speed import register_speed_potion
 from pythongame.game_data.consumables.scroll_ability_summon import register_summon_scroll
 from pythongame.game_data.decorations import register_decorations
-from pythongame.game_data.chests import register_chest_entity
 from pythongame.game_data.enemies.enemy_dark_reaper import register_dark_reaper_enemy
 from pythongame.game_data.enemies.enemy_goblin_spearman import register_goblin_spearman_enemy
 from pythongame.game_data.enemies.enemy_goblin_spearman_elite import register_goblin_spearman_elite_enemy
@@ -48,12 +48,13 @@ from pythongame.game_data.heroes.hero_god import register_hero_god
 from pythongame.game_data.heroes.hero_mage import register_hero_mage
 from pythongame.game_data.heroes.hero_rogue import register_hero_rogue
 from pythongame.game_data.heroes.hero_warrior import register_hero_warrior
-from pythongame.game_data.items.item_elite_helmet import register_elite_helmet_item
 from pythongame.game_data.items.item_amulet_of_mana import register_amulet_of_mana_item
 from pythongame.game_data.items.item_blessed_shield import register_blessed_shield_item
 from pythongame.game_data.items.item_blood_amulet import register_blood_amulet
 from pythongame.game_data.items.item_blue_robe import register_blue_robe_item
+from pythongame.game_data.items.item_druids_ring import register_druids_ring_item
 from pythongame.game_data.items.item_elite_armor import register_elite_armor
+from pythongame.game_data.items.item_elite_helmet import register_elite_helmet_item
 from pythongame.game_data.items.item_elven_armor import register_elven_armor
 from pythongame.game_data.items.item_freezing_gauntlet import register_freezing_gauntlet_item
 from pythongame.game_data.items.item_frog import register_frog_item
@@ -61,10 +62,12 @@ from pythongame.game_data.items.item_gladiator_armor import register_gladiator_a
 from pythongame.game_data.items.item_goats_ring import register_goats_ring
 from pythongame.game_data.items.item_gold_nugget import register_gold_nugget
 from pythongame.game_data.items.item_hatchet import register_hatchet_item
+from pythongame.game_data.items.item_healing_wand import register_healing_wand_item
 from pythongame.game_data.items.item_key import register_key_item
 from pythongame.game_data.items.item_knights_armor import register_knights_armor
 from pythongame.game_data.items.item_leather_armor import register_leather_armor_item
 from pythongame.game_data.items.item_leather_cowl import register_leather_cowl_item
+from pythongame.game_data.items.item_lich_armor import register_lich_armor_item
 from pythongame.game_data.items.item_messengers_hat import register_messengers_hat_item
 from pythongame.game_data.items.item_molten_axe import register_molten_axe_item
 from pythongame.game_data.items.item_noble_defender import register_noble_defender
@@ -76,15 +79,19 @@ from pythongame.game_data.items.item_rod_of_lightning import register_rod_of_lig
 from pythongame.game_data.items.item_royal_dagger import register_royal_dagger_item
 from pythongame.game_data.items.item_royal_sword import register_royal_sword_item
 from pythongame.game_data.items.item_saphire import register_saphire
+from pythongame.game_data.items.item_skull_shield import register_skull_shield_item
+from pythongame.game_data.items.item_skull_staff import register_skull_staff_item
 from pythongame.game_data.items.item_soldiers_helmet import register_soldiers_helmet_item
 from pythongame.game_data.items.item_staff_of_fire import register_staff_of_fire_item
-from pythongame.game_data.items.item_skull_staff import register_skull_staff_item
 from pythongame.game_data.items.item_stone_amulet import register_stone_amulet_item
 from pythongame.game_data.items.item_torn_document import register_torn_document_item
 from pythongame.game_data.items.item_wand import register_wand_item
+from pythongame.game_data.items.item_warlocks_cowl import register_warlocks_cowl_item
+from pythongame.game_data.items.item_warlords_armor import register_warlords_armor_item
 from pythongame.game_data.items.item_winged_helmet import register_winged_helmet_item
 from pythongame.game_data.items.item_wizards_cowl import register_wizards_cowl
 from pythongame.game_data.items.item_wooden_shield import register_wooden_shield
+from pythongame.game_data.items.item_wooden_sword import register_wooden_sword_item
 from pythongame.game_data.items.item_zuls_aegis import register_zuls_aegis
 from pythongame.game_data.map_editor_icons import register_map_editor_icons
 from pythongame.game_data.neutral_npcs.neutral_npc_dwarf import register_dwarf_npc
@@ -189,6 +196,13 @@ def register_all_game_data():
     register_stone_amulet_item()
     register_torn_document_item()
     register_key_item()
+    register_wooden_sword_item()
+    register_druids_ring_item()
+    register_warlocks_cowl_item()
+    register_lich_armor_item()
+    register_warlords_armor_item()
+    register_healing_wand_item()
+    register_skull_shield_item()
 
     # Register items before NPCs as vendors may rely on item data
 
