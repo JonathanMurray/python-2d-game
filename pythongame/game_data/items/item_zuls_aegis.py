@@ -1,4 +1,4 @@
-from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect
+from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect, register_buff_effect
 from pythongame.core.common import ItemType, Sprite, BuffType, Millis, HeroStat
 from pythongame.core.game_data import UiIconSprite
 from pythongame.core.game_state import Event, GameState, WorldEntity, \
@@ -44,6 +44,8 @@ class StunnedFromAegis(AbstractBuffEffect):
 
 
 def register_zuls_aegis():
+    register_buff_effect(BUFF_TYPE_STUNNED, StunnedFromAegis)
+
     item_type = ItemType.ZULS_AEGIS
     effect = ItemEffect(item_type, {HeroStat.ARMOR: 3, HeroStat.BLOCK_AMOUNT: 8})
     register_custom_effect_item(

@@ -48,6 +48,9 @@ def register_buff_effect(buff_type: BuffType, effect: Type[AbstractBuffEffect]):
 
 
 def get_buff_effect(buff_type: BuffType, args: Optional[Any] = None) -> AbstractBuffEffect:
+    if not buff_type in _buff_effects:
+        raise Exception(
+            "No buff effect found for buff " + str(buff_type) + "! Known buffs: " + str(_buff_effects.keys()))
     if args is not None:
         # args passed in, assume the buff takes args in constructor
         return _buff_effects[buff_type](args)
