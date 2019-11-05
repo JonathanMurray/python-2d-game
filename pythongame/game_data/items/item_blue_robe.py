@@ -9,7 +9,7 @@ from pythongame.core.view.image_loading import SpriteInitializer
 def register_blue_robe_item():
     item_types = [ItemType.BLUE_ROBE_1, ItemType.BLUE_ROBE_2, ItemType.BLUE_ROBE_3]
     mana_amounts = [10, 15, 20]
-    mana_regen_boost = 0.5
+    mana_regen_boost = 0.3
     ui_icon_sprite = UiIconSprite.ITEM_BLUE_ROBE
     sprite = Sprite.ITEM_BLUE_ROBE
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/item_blue_robe.png")

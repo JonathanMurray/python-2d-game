@@ -11,7 +11,7 @@ class ItemEffect(AbstractItemEffect):
 
     def __init__(self, item_type: ItemType):
         super().__init__(item_type)
-        self.mana_on_kill = 5
+        self.mana_on_kill = 3
 
     def item_handle_event(self, event: Event, game_state: GameState):
         if isinstance(event, EnemyDiedEvent):

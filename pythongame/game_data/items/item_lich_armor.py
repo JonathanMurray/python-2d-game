@@ -11,5 +11,5 @@ def register_lich_armor_item():
         image_file_path="resources/graphics/item_lich_armor.png",
         item_equipment_category=ItemEquipmentCategory.CHEST,
         name="Lich Armor",
-        stat_modifiers={HeroStat.MAX_MANA: 40}
+        stat_modifiers={HeroStat.ARMOR: 1, HeroStat.MAX_MANA: 40}
     )

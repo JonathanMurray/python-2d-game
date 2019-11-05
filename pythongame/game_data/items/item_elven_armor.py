@@ -11,5 +11,5 @@ def register_elven_armor():
         image_file_path="resources/graphics/item_elven_armor.png",
         item_equipment_category=ItemEquipmentCategory.CHEST,
         name="Elven Armor",
-        stat_modifiers={HeroStat.MANA_REGEN: 0.5, HeroStat.MAX_MANA: 15, HeroStat.ARMOR: 1}
+        stat_modifiers={HeroStat.ARMOR: 1, HeroStat.MANA_REGEN: 0.5, HeroStat.MAX_MANA: 15}
     )

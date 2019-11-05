@@ -11,5 +11,5 @@ def register_elite_armor():
         image_file_path="resources/graphics/item_elite_armor.png",
         item_equipment_category=ItemEquipmentCategory.CHEST,
         name="Elite Armor",
-        stat_modifiers={HeroStat.HEALTH_REGEN: 0.5, HeroStat.ARMOR: 2}
+        stat_modifiers={HeroStat.ARMOR: 2, HeroStat.HEALTH_REGEN: 0.5}
     )

@@ -11,5 +11,5 @@ def register_gladiator_armor():
         image_file_path="resources/graphics/item_gladiator_armor.png",
         item_equipment_category=ItemEquipmentCategory.CHEST,
         name="Gladiator's armor",
-        stat_modifiers={HeroStat.MAX_HEALTH: 15, HeroStat.ARMOR: 2, HeroStat.DAMAGE: 0.05}
+        stat_modifiers={HeroStat.ARMOR: 2, HeroStat.MAX_HEALTH: 15, HeroStat.DAMAGE: 0.05}
     )
