@@ -5,6 +5,7 @@ from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import CONSUMABLES, ITEMS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.item_effects import get_item_effect
 from pythongame.core.math import is_x_and_y_within_distance, get_perpendicular_directions
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
@@ -139,6 +140,31 @@ class SellConsumableNpcAction(AbstractNpcAction):
         return "Bought " + self.name
 
 
+class SellItemNpcAction(AbstractNpcAction):
+    def __init__(self, cost: int, item_type: ItemType, name: str):
+        self.cost = cost
+        self.item_type = item_type
+        self.name = name
+        self.item_effect = get_item_effect(self.item_type)
+        self.item_equipment_category = ITEMS[self.item_type].item_equipment_category
+
+    def act(self, game_state: GameState):
+        player_state = game_state.player_state
+        can_afford = player_state.money >= self.cost
+        has_space = player_state.consumable_inventory.has_space_for_more()
+        if not can_afford:
+            play_sound(SoundId.WARNING)
+            return "Not enough gold!"
+        if not has_space:
+            play_sound(SoundId.WARNING)
+            return "Not enough space!"
+        player_state.money -= self.cost
+
+        player_state.item_inventory.try_add_item(self.item_effect, self.item_equipment_category)
+        play_sound(SoundId.EVENT_PURCHASED_SOMETHING)
+        return "Bought " + self.name
+
+
 class BuyItemNpcAction(AbstractNpcAction):
 
     def __init__(self, item_type: ItemType, price: int, name: str):
@@ -227,6 +253,19 @@ def buy_consumable_option(consumable_type: ConsumableType, cost: int):
                             data.icon_sprite,
                             data.name,
                             data.description)
+
+
+def buy_item_option(item_type: ItemType, cost: int):
+    data = ITEMS[item_type]
+    name_formatter = "{:<25}"
+    buy_prompt = "> "
+    cost_formatter = "[{} gold]"
+    return DialogOptionData(buy_prompt + name_formatter.format(data.name) + cost_formatter.format(cost),
+                            "buy",
+                            SellItemNpcAction(cost, item_type, data.name.lower()),
+                            data.icon_sprite,
+                            data.name,
+                            ", ".join(data.description_lines))
 
 
 def sell_item_option(item_type: ItemType, price: int, detail_body: str):

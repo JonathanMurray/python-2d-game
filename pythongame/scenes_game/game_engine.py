@@ -1,4 +1,4 @@
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import *
@@ -16,7 +16,6 @@ from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vector
     get_rect_with_increased_size_in_all_directions, translate_in_direction
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import create_visual_exp_text, create_teleport_effects, VisualRect, VisualCircle
-from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.game_data.portals import PORTAL_DELAY
 from pythongame.scenes_game.game_ui_state import GameUiState
 from pythongame.scenes_game.player_controls import PlayerControls
@@ -24,10 +23,9 @@ from pythongame.scenes_game.player_controls import PlayerControls
 
 class GameEngine:
 
-    def __init__(self, game_state: GameState, ui_state: GameUiState, world_behavior: AbstractWorldBehavior):
+    def __init__(self, game_state: GameState, ui_state: GameUiState):
         self.game_state = game_state
         self.ui_state = ui_state
-        self.world_behavior = world_behavior
 
     def try_use_ability(self, ability_type: AbilityType):
         PlayerControls.try_use_ability(ability_type, self.game_state, self.ui_state)
@@ -155,9 +153,8 @@ class GameEngine:
         ]
         self.game_state.visual_effects += visual_effects
 
-    def run_one_frame(self, time_passed: Millis) -> Optional[SceneId]:
-
-        next_scene = self.world_behavior.control(time_passed)
+    # Returns whether or not player died
+    def run_one_frame(self, time_passed: Millis) -> bool:
 
         for npc in self.game_state.non_player_characters:
             # NonPlayerCharacter AI shouldn't run if enemy is too far out of sight
@@ -307,9 +304,8 @@ class GameEngine:
         self.game_state.center_camera_on_player()
 
         if self.game_state.player_state.health_resource.is_at_or_below_zero():
-            self.world_behavior.handle_player_died()
-
-        return next_scene
+            return True
+        return False
 
     def _is_npc_close_to_camera(self, npc: NonPlayerCharacter):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(

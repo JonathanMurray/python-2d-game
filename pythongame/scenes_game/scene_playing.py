@@ -19,6 +19,7 @@ from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, Acti
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_main_user_inputs, get_dialog_user_inputs, \
     ActionChangeDialogOption, ActionSaveGameState, ActionPressShiftKey, ActionReleaseShiftKey
 from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
+from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.player_file import save_to_file
 from pythongame.scenes_game.game_engine import GameEngine
 from pythongame.scenes_game.game_ui_state import GameUiState
@@ -77,7 +78,8 @@ class PlayingScene:
             game_engine: GameEngine,
             world_view: GameWorldView,
             ui_view: GameUiView,
-            ui_state: GameUiState):
+            ui_state: GameUiState,
+            world_behavior: AbstractWorldBehavior):
         self.player_interactions_state = PlayerInteractionsState()
         self.game_state = game_state
         self.game_engine = game_engine
@@ -89,8 +91,14 @@ class PlayingScene:
         self.is_shift_key_held_down = False
         self.ui_controller = PlayingUiController(game_state, ui_view, ui_state)
         self.total_time_played = 0
+        self.world_behavior = world_behavior
+        self.has_run_startup = False
 
     def run_one_frame(self, time_passed: Millis, fps_string: str) -> Optional[SceneId]:
+
+        if not self.has_run_startup:
+            self.world_behavior.on_startup()
+            self.has_run_startup = True
 
         self.total_time_played += time_passed
 
@@ -169,7 +177,10 @@ class PlayingScene:
         #     UPDATE STATE BASED ON CLOCK
         # ------------------------------------
 
-        next_scene = self.game_engine.run_one_frame(time_passed)
+        next_scene = self.world_behavior.control(time_passed)
+        did_player_die = self.game_engine.run_one_frame(time_passed)
+        if did_player_die:
+            next_scene = self.world_behavior.handle_player_died()
 
         # ------------------------------------
         #          RENDER EVERYTHING

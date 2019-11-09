@@ -38,17 +38,15 @@ class StandardWorldBehavior(AbstractWorldBehavior):
     def __init__(self, game_state: GameState, ui_state: GameUiState):
         self.game_state = game_state
         self.ui_state = ui_state
-        self._has_shown_hint = False
+
+    def on_startup(self):
+        self.ui_state.set_message("Hint: " + get_random_hint())
 
     def control(self, time_passed: Millis) -> Optional[SceneId]:
-        if not self._has_shown_hint:
-            self._has_shown_hint = True
-            self.ui_state.set_message("Hint: " + get_random_hint())
-
         if self.game_state.player_state.has_upgrade(HeroUpgrade.HAS_WON_GAME):
             return SceneId.VICTORY_SCREEN
 
-    def handle_player_died(self):
+    def handle_player_died(self) -> Optional[SceneId]:
         self.game_state.player_entity.set_position(self.game_state.player_spawn_position)
         self.game_state.player_state.health_resource.set_to_partial_of_max(0.5)
         self.game_state.player_state.lose_exp_from_death()
@@ -56,6 +54,28 @@ class StandardWorldBehavior(AbstractWorldBehavior):
         self.ui_state.set_message("Lost exp from dying")
         play_sound(SoundId.EVENT_PLAYER_DIED)
         self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
+        return None
+
+
+class ChallengeWorldBehavior(AbstractWorldBehavior):
+
+    def __init__(self, game_state: GameState, ui_state: GameUiState):
+        self.game_state = game_state
+        self.ui_state = ui_state
+
+    def on_startup(self):
+        self.ui_state.set_message("Challenge starting...")
+        self.game_state.player_state.money += 100
+        # TODO Start at higher level
+
+    def control(self, time_passed: Millis) -> Optional[SceneId]:
+        if self.game_state.player_state.has_upgrade(HeroUpgrade.HAS_WON_GAME):
+            print("TODO: Go to other victory screen")
+            return SceneId.VICTORY_SCREEN
+
+    def handle_player_died(self) -> Optional[SceneId]:
+        print("TODO: Go to some other screen")
+        return SceneId.PICKING_HERO
 
 
 class Main:
@@ -139,15 +159,19 @@ class Main:
                    saved_player_state: Optional[SavedPlayerState]):
         self.game_state = create_game_state_from_json_file(CAMERA_SIZE, self.map_file_path, picked_hero)
         self.ui_state = GameUiState(self.game_state.entire_world_area)
-        world_behavior = StandardWorldBehavior(self.game_state, self.ui_state)
-        self.game_engine = GameEngine(self.game_state, self.ui_state, world_behavior)
+        if self.map_file_path == 'resources/maps/challenge.json':
+            world_behavior = ChallengeWorldBehavior(self.game_state, self.ui_state)
+        else:
+            world_behavior = StandardWorldBehavior(self.game_state, self.ui_state)
+        self.game_engine = GameEngine(self.game_state, self.ui_state)
         self.player_interactions_state = PlayerInteractionsState()
         self.playing_scene = PlayingScene(
             self.game_state,
             self.game_engine,
             self.world_view,
             self.ui_view,
-            self.ui_state)
+            self.ui_state,
+            world_behavior)
         self.paused_scene = PausedScene(self.game_state, self.world_view, self.ui_view, self.ui_state)
 
         if saved_player_state:
