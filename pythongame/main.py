@@ -11,6 +11,7 @@ from pythongame.core.sound_player import init_sound_player
 from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.core.view.image_loading import load_images_by_sprite, \
     load_images_by_ui_sprite, load_images_by_portrait_sprite
+from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.map_file import create_game_state_from_json_file
 from pythongame.player_file import SavedPlayerState, load_player_state_from_json_file
 from pythongame.register_game_data import register_all_game_data
@@ -28,6 +29,18 @@ SCREEN_SIZE = (700, 700)
 CAMERA_SIZE = (700, 530)
 
 register_all_game_data()
+
+
+class StandardWorldBehavior(AbstractWorldBehavior):
+
+    def __init__(self, ui_state: GameUiState):
+        self.ui_state = ui_state
+        self._has_shown_hint = False
+
+    def control(self, time_passed: Millis):
+        if not self._has_shown_hint:
+            self._has_shown_hint = True
+            self.ui_state.set_message("Hint: " + get_random_hint())
 
 
 class Main:
@@ -111,7 +124,8 @@ class Main:
                    saved_player_state: Optional[SavedPlayerState]):
         self.game_state = create_game_state_from_json_file(CAMERA_SIZE, self.map_file_path, picked_hero)
         self.ui_state = GameUiState(self.game_state.entire_world_area)
-        self.game_engine = GameEngine(self.game_state, self.ui_state)
+        world_behavior = StandardWorldBehavior(self.ui_state)
+        self.game_engine = GameEngine(self.game_state, self.ui_state, world_behavior)
         self.player_interactions_state = PlayerInteractionsState()
         self.playing_scene = PlayingScene(
             self.game_state,
@@ -120,7 +134,6 @@ class Main:
             self.ui_view,
             self.ui_state)
         self.paused_scene = PausedScene(self.game_state, self.world_view, self.ui_view, self.ui_state)
-        self.ui_state.set_message("Hint: " + get_random_hint())
 
         if saved_player_state:
             self.game_state.player_state.gain_exp_worth_n_levels(saved_player_state.level - 1)
