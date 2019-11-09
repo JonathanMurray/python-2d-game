@@ -56,7 +56,7 @@ def _get_description_of_stat_modifier(hero_stat: HeroStat, delta: Union[int, flo
 
 class StatModifyingItemEffect(AbstractItemEffect):
     def __init__(self, item_type: ItemType, stat_modifiers: Dict[HeroStat, Union[int, float]]):
-        self.item_type = item_type
+        super().__init__(item_type)
         self.stat_modifiers = stat_modifiers
 
     def apply_start_effect(self, game_state: GameState):
@@ -67,19 +67,13 @@ class StatModifyingItemEffect(AbstractItemEffect):
         for stat, delta in self.stat_modifiers.items():
             game_state.modify_hero_stat(stat, -delta)
 
-    def get_item_type(self):
-        return self.item_type
-
     def get_description(self) -> List[str]:
         return [_get_description_of_stat_modifier(stat, delta) for (stat, delta) in self.stat_modifiers.items()]
 
 
 class EmptyItemEffect(AbstractItemEffect):
     def __init__(self, item_type: ItemType):
-        self.item_type = item_type
-
-    def get_item_type(self):
-        return self.item_type
+        super().__init__(item_type)
 
 
 _item_effects: Dict[ItemType, AbstractItemEffect] = {}
