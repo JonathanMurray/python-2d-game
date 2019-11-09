@@ -428,10 +428,12 @@ class PlayerState:
         partial_exp_loss = 0.5
         self.exp = max(0, self.exp - int(self.max_exp_in_this_level * partial_exp_loss))
 
-    def gain_exp_worth_n_levels(self, num_levels: int):
+    def gain_exp_worth_n_levels(self, num_levels: int) -> List[GainExpEvent]:
+        events = []
         for i in range(num_levels):
             amount = self.max_exp_in_this_level - self.exp
-            self.gain_exp(amount)
+            events += self.gain_exp(amount)
+        return events
 
     def update_stats_for_new_level(self):
         self.health_resource.increase_max(self.level_bonus.health)

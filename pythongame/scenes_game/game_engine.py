@@ -153,6 +153,10 @@ class GameEngine:
         ]
         self.game_state.visual_effects += visual_effects
 
+    def gain_levels(self, num_levels: int):
+        gain_exp_events = self.game_state.player_state.gain_exp_worth_n_levels(num_levels)
+        self._handle_gain_exp_events(gain_exp_events)
+
     # Returns whether or not player died
     def run_one_frame(self, time_passed: Millis) -> bool:
 
@@ -180,19 +184,7 @@ class GameEngine:
             exp_gained = sum([NON_PLAYER_CHARACTERS[e.npc_type].exp_reward for e in enemies_that_died])
             self.game_state.visual_effects.append(create_visual_exp_text(self.game_state.player_entity, exp_gained))
             gain_exp_events = self.game_state.player_state.gain_exp(exp_gained)
-            for event in gain_exp_events:
-                if isinstance(event, PlayerLeveledUp):
-                    play_sound(SoundId.EVENT_PLAYER_LEVELED_UP)
-                    self.game_state.visual_effects.append(
-                        VisualCircle((150, 150, 250), self.game_state.player_entity.get_center_position(), 9, 35,
-                                     Millis(150), 2))
-                    self.ui_state.set_message("You reached level " + str(self.game_state.player_state.level))
-                    allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
-                if isinstance(event, PlayerLearnedNewAbility):
-                    self.ui_state.enqueue_message("New ability: " + ABILITIES[event.ability_type].name)
-                if isinstance(event, PlayerUnlockedNewTalent):
-                    self.ui_state.notify_new_talent_was_unlocked()
-                    self.ui_state.enqueue_message("You can pick a talent!")
+            self._handle_gain_exp_events(gain_exp_events)
 
             for enemy_that_died in enemies_that_died:
                 if enemy_that_died.death_sound_id:
@@ -306,6 +298,21 @@ class GameEngine:
         if self.game_state.player_state.health_resource.is_at_or_below_zero():
             return True
         return False
+
+    def _handle_gain_exp_events(self, gain_exp_events):
+        for event in gain_exp_events:
+            if isinstance(event, PlayerLeveledUp):
+                play_sound(SoundId.EVENT_PLAYER_LEVELED_UP)
+                self.game_state.visual_effects.append(
+                    VisualCircle((150, 150, 250), self.game_state.player_entity.get_center_position(), 9, 35,
+                                 Millis(150), 2))
+                self.ui_state.set_message("You reached level " + str(self.game_state.player_state.level))
+                allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
+            if isinstance(event, PlayerLearnedNewAbility):
+                self.ui_state.enqueue_message("New ability: " + ABILITIES[event.ability_type].name)
+            if isinstance(event, PlayerUnlockedNewTalent):
+                self.ui_state.notify_new_talent_was_unlocked()
+                self.ui_state.enqueue_message("You can pick a talent!")
 
     def _is_npc_close_to_camera(self, npc: NonPlayerCharacter):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(

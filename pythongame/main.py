@@ -59,14 +59,15 @@ class StandardWorldBehavior(AbstractWorldBehavior):
 
 class ChallengeWorldBehavior(AbstractWorldBehavior):
 
-    def __init__(self, game_state: GameState, ui_state: GameUiState):
+    def __init__(self, game_state: GameState, ui_state: GameUiState, game_engine: GameEngine):
         self.game_state = game_state
         self.ui_state = ui_state
+        self.game_engine = game_engine
 
     def on_startup(self):
         self.ui_state.set_message("Challenge starting...")
         self.game_state.player_state.money += 100
-        # TODO Start at higher level
+        self.game_engine.gain_levels(6)
 
     def control(self, time_passed: Millis) -> Optional[SceneId]:
         if self.game_state.player_state.has_upgrade(HeroUpgrade.HAS_WON_GAME):
@@ -159,11 +160,11 @@ class Main:
                    saved_player_state: Optional[SavedPlayerState]):
         self.game_state = create_game_state_from_json_file(CAMERA_SIZE, self.map_file_path, picked_hero)
         self.ui_state = GameUiState(self.game_state.entire_world_area)
+        self.game_engine = GameEngine(self.game_state, self.ui_state)
         if self.map_file_path == 'resources/maps/challenge.json':
-            world_behavior = ChallengeWorldBehavior(self.game_state, self.ui_state)
+            world_behavior = ChallengeWorldBehavior(self.game_state, self.ui_state, self.game_engine)
         else:
             world_behavior = StandardWorldBehavior(self.game_state, self.ui_state)
-        self.game_engine = GameEngine(self.game_state, self.ui_state)
         self.player_interactions_state = PlayerInteractionsState()
         self.playing_scene = PlayingScene(
             self.game_state,

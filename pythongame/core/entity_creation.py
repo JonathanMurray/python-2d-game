@@ -78,8 +78,12 @@ def create_decoration_entity(pos: Tuple[int, int], sprite: Sprite) -> Decoration
 
 
 def create_player_state(hero_id: HeroId) -> PlayerState:
+    # Note: All mutable types should be cloned before being given to game_state
     data = HEROES[hero_id].initial_player_state
-    consumable_inventory = ConsumableInventory(data.consumable_slots)
+    consumable_slots = {}
+    for slot_number in data.consumable_slots:
+        consumable_slots[slot_number] = list(data.consumable_slots[slot_number])
+    consumable_inventory = ConsumableInventory(consumable_slots)
     item_slots = [
         ItemInventorySlot(None, ItemEquipmentCategory.NECK),
         ItemInventorySlot(None, ItemEquipmentCategory.HEAD),
@@ -95,8 +99,8 @@ def create_player_state(hero_id: HeroId) -> PlayerState:
     health_resource = HealthOrManaResource(data.health, 0)
     mana_resource = HealthOrManaResource(data.mana, data.mana_regen)
     return PlayerState(
-        health_resource, mana_resource, consumable_inventory, data.abilities, item_inventory, data.new_level_abilities,
-        data.hero_id, data.armor, data.level_bonus, data.talents_state, data.block_chance)
+        health_resource, mana_resource, consumable_inventory, list(data.abilities), item_inventory,
+        data.new_level_abilities, data.hero_id, data.armor, data.level_bonus, data.talents_state, data.block_chance)
 
 
 def create_warp_point(center_pos: Tuple[int, int], size: Tuple[int, int]) -> WarpPoint:
