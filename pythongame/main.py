@@ -3,11 +3,13 @@ from typing import Optional
 import pygame
 
 from pythongame.core.buff_effects import get_buff_effect
-from pythongame.core.common import SceneId, Millis, HeroId, ItemType, ConsumableType, Sprite, BuffType, get_random_hint
+from pythongame.core.common import SceneId, Millis, HeroId, ItemType, ConsumableType, Sprite, BuffType, get_random_hint, \
+    SoundId, HeroUpgrade
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import allocate_input_keys_for_abilities, ENTITY_SPRITE_INITIALIZERS, \
     UI_ICON_SPRITE_PATHS, PORTRAIT_ICON_SPRITE_PATHS
-from pythongame.core.sound_player import init_sound_player
+from pythongame.core.game_state import GameState
+from pythongame.core.sound_player import init_sound_player, play_sound
 from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.core.view.image_loading import load_images_by_sprite, \
     load_images_by_ui_sprite, load_images_by_portrait_sprite
@@ -33,14 +35,27 @@ register_all_game_data()
 
 class StandardWorldBehavior(AbstractWorldBehavior):
 
-    def __init__(self, ui_state: GameUiState):
+    def __init__(self, game_state: GameState, ui_state: GameUiState):
+        self.game_state = game_state
         self.ui_state = ui_state
         self._has_shown_hint = False
 
-    def control(self, time_passed: Millis):
+    def control(self, time_passed: Millis) -> Optional[SceneId]:
         if not self._has_shown_hint:
             self._has_shown_hint = True
             self.ui_state.set_message("Hint: " + get_random_hint())
+
+        if self.game_state.player_state.has_upgrade(HeroUpgrade.HAS_WON_GAME):
+            return SceneId.VICTORY_SCREEN
+
+    def handle_player_died(self):
+        self.game_state.player_entity.set_position(self.game_state.player_spawn_position)
+        self.game_state.player_state.health_resource.set_to_partial_of_max(0.5)
+        self.game_state.player_state.lose_exp_from_death()
+        self.game_state.player_state.force_cancel_all_buffs()
+        self.ui_state.set_message("Lost exp from dying")
+        play_sound(SoundId.EVENT_PLAYER_DIED)
+        self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
 
 
 class Main:
@@ -124,7 +139,7 @@ class Main:
                    saved_player_state: Optional[SavedPlayerState]):
         self.game_state = create_game_state_from_json_file(CAMERA_SIZE, self.map_file_path, picked_hero)
         self.ui_state = GameUiState(self.game_state.entire_world_area)
-        world_behavior = StandardWorldBehavior(self.ui_state)
+        world_behavior = StandardWorldBehavior(self.game_state, self.ui_state)
         self.game_engine = GameEngine(self.game_state, self.ui_state, world_behavior)
         self.player_interactions_state = PlayerInteractionsState()
         self.playing_scene = PlayingScene(

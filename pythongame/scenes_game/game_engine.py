@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import *
@@ -155,9 +155,9 @@ class GameEngine:
         ]
         self.game_state.visual_effects += visual_effects
 
-    def run_one_frame(self, time_passed: Millis):
+    def run_one_frame(self, time_passed: Millis) -> Optional[SceneId]:
 
-        self.world_behavior.control(time_passed)
+        next_scene = self.world_behavior.control(time_passed)
 
         for npc in self.game_state.non_player_characters:
             # NonPlayerCharacter AI shouldn't run if enemy is too far out of sight
@@ -305,16 +305,9 @@ class GameEngine:
         self.game_state.center_camera_on_player()
 
         if self.game_state.player_state.health_resource.is_at_or_below_zero():
-            self._spawn_player_after_death()
+            self.world_behavior.handle_player_died()
 
-    def _spawn_player_after_death(self):
-        self.game_state.player_entity.set_position(self.game_state.player_spawn_position)
-        self.game_state.player_state.health_resource.set_to_partial_of_max(0.5)
-        self.game_state.player_state.lose_exp_from_death()
-        self.game_state.player_state.force_cancel_all_buffs()
-        self.ui_state.set_message("Lost exp from dying")
-        play_sound(SoundId.EVENT_PLAYER_DIED)
-        self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
+        return next_scene
 
     def _is_npc_close_to_camera(self, npc: NonPlayerCharacter):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(

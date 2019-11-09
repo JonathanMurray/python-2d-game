@@ -6,7 +6,7 @@ import pygame
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis, SoundId, HeroUpgrade, SceneId
+from pythongame.core.common import Millis, SoundId, SceneId
 from pythongame.core.game_data import CONSUMABLES, ITEMS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     ConsumableOnGround, ItemOnGround, Chest
@@ -169,7 +169,7 @@ class PlayingScene:
         #     UPDATE STATE BASED ON CLOCK
         # ------------------------------------
 
-        self.game_engine.run_one_frame(time_passed)
+        next_scene = self.game_engine.run_one_frame(time_passed)
 
         # ------------------------------------
         #          RENDER EVERYTHING
@@ -227,8 +227,8 @@ class PlayingScene:
 
         self.world_view.update_display()
 
-        if self.game_state.player_state.has_upgrade(HeroUpgrade.HAS_WON_GAME):
-            return SceneId.VICTORY_SCREEN
+        if next_scene is not None:
+            return next_scene
         if transition_to_pause:
             return SceneId.PAUSED
         return None
