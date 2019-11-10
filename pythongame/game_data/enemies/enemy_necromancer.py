@@ -6,7 +6,7 @@ from pythongame.core.game_data import register_npc_data, NpcData, register_entit
     NON_PLAYER_CHARACTERS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.math import random_direction, get_position_from_center_position, sum_of_vectors, \
-    is_x_and_y_within_distance
+    is_x_and_y_within_distance, rect_from_corners
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.sound_player import play_sound
@@ -24,10 +24,10 @@ class NpcMind(AbstractNpcMind):
         self._time_since_decision = 0
         self._decision_interval = 750
         self._time_since_summoning = 0
-        self._max_summoning_cooldown = 8000
-        self._summoning_cooldown = self._max_summoning_cooldown
+        self._summoning_cooldown = self._random_summoning_cooldown()
         self._time_since_healing = 0
-        self._healing_cooldown = 5000
+        self._healing_cooldown = self._random_healing_cooldown()
+        self._alive_summons = []
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, _player_entity: WorldEntity,
                     _is_player_invisible: bool, time_passed: Millis):
@@ -37,24 +37,37 @@ class NpcMind(AbstractNpcMind):
         if self._time_since_summoning > self._summoning_cooldown:
             necro_center_pos = npc.world_entity.get_center_position()
             self._time_since_summoning = 0
-            relative_pos_from_summoner = (random.randint(-150, 150), random.randint(-150, 150))
-            mummy_center_pos = sum_of_vectors(necro_center_pos, relative_pos_from_summoner)
-            mummy_size = NON_PLAYER_CHARACTERS[NpcType.MUMMY].size
-            mummy_pos = game_state.get_within_world(
-                get_position_from_center_position(mummy_center_pos, mummy_size), mummy_size)
-            mummy_enemy = create_npc(NpcType.MUMMY, mummy_pos)
-            if not game_state.would_entity_collide_if_new_pos(mummy_enemy.world_entity, mummy_pos):
-                self._summoning_cooldown = self._max_summoning_cooldown
-                game_state.add_non_player_character(mummy_enemy)
-                game_state.visual_effects.append(VisualCircle((80, 150, 100), necro_center_pos, 40, 70, Millis(120), 3))
-                game_state.visual_effects.append(VisualCircle((80, 150, 100), mummy_center_pos, 40, 70, Millis(120), 3))
-                play_sound(SoundId.ENEMY_NECROMANCER_SUMMON)
+            self._alive_summons = [summon for summon in self._alive_summons
+                                   if summon in game_state.non_player_characters]
+            if len(self._alive_summons) < 3:
+                relative_pos_from_summoner = (random.randint(-150, 150), random.randint(-150, 150))
+                summon_center_pos = sum_of_vectors(necro_center_pos, relative_pos_from_summoner)
+                summon_type = random.choice([NpcType.ZOMBIE, NpcType.MUMMY])
+                summon_size = NON_PLAYER_CHARACTERS[summon_type].size
+                summon_pos = game_state.get_within_world(
+                    get_position_from_center_position(summon_center_pos, summon_size), summon_size)
+                summon_enemy = create_npc(summon_type, summon_pos)
+                is_wall_blocking = game_state.walls_state.does_rect_intersect_with_wall(
+                    rect_from_corners(necro_center_pos, summon_center_pos))
+                is_position_blocked = game_state.would_entity_collide_if_new_pos(summon_enemy.world_entity, summon_pos)
+                if not is_wall_blocking and not is_position_blocked:
+                    self._summoning_cooldown = self._random_summoning_cooldown()
+                    game_state.add_non_player_character(summon_enemy)
+                    self._alive_summons.append(summon_enemy)
+                    game_state.visual_effects.append(
+                        VisualCircle((80, 150, 100), necro_center_pos, 40, 70, Millis(120), 3))
+                    game_state.visual_effects.append(
+                        VisualCircle((80, 150, 100), summon_center_pos, 40, 70, Millis(120), 3))
+                    play_sound(SoundId.ENEMY_NECROMANCER_SUMMON)
+                else:
+                    # Failed to summon, so try again without waiting full duration
+                    self._summoning_cooldown = 500
             else:
-                # Failed to summon, so try again without waiting full duration
-                self._summoning_cooldown = 1000
+                self._summoning_cooldown = self._random_summoning_cooldown()
 
         if self._time_since_healing > self._healing_cooldown:
             self._time_since_healing = 0
+            self._healing_cooldown = self._random_healing_cooldown()
             necro_center_pos = npc.world_entity.get_center_position()
             nearby_hurt_enemies = [
                 e for e in game_state.non_player_characters
@@ -76,6 +89,14 @@ class NpcMind(AbstractNpcMind):
                 npc.world_entity.set_moving_in_dir(direction)
             else:
                 npc.world_entity.set_not_moving()
+
+    @staticmethod
+    def _random_summoning_cooldown():
+        return 500 + random.randint(0, 5000)
+
+    @staticmethod
+    def _random_healing_cooldown():
+        return 1000 + random.randint(0, 8000)
 
 
 def register_necromancer_enemy():

@@ -6,6 +6,16 @@ from pygame.rect import Rect
 from pythongame.core.common import Direction
 
 
+def rect_from_corners(corner1: Tuple[int, int], corner2: Tuple[int, int]):
+    x_values = [corner1[0], corner2[0]]
+    y_values = [corner1[1], corner2[1]]
+    x0 = min(x_values)
+    y0 = min(y_values)
+    w = max(x_values) - x0
+    h = max(y_values) - y0
+    return Rect(x0, y0, w, h)
+
+
 # deprecated - only used by view
 def is_point_in_rect(point: Tuple[int, int], rect: Rect):
     return rect.collidepoint(point[0], point[1])
