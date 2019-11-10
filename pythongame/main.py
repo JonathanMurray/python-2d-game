@@ -100,11 +100,11 @@ class Main:
         self.clock = pygame.time.Clock()
         self.picking_hero_scene = PickingHeroScene(PickingHeroView(pygame_screen, images_by_portrait_sprite))
         self.victory_screen_scene = VictoryScreenScene(pygame_screen)
+        self.ui_state = GameUiState()
         # These are initialized after hero has been picked
         self.playing_scene: PlayingScene = None
         self.paused_scene = None
         self.game_state = None
-        self.ui_state = None
         self.game_engine = None
         self.player_interactions_state = None
 
@@ -159,7 +159,7 @@ class Main:
     def setup_game(self, picked_hero: HeroId, hero_start_level: int, start_money: int,
                    saved_player_state: Optional[SavedPlayerState]):
         self.game_state = create_game_state_from_json_file(CAMERA_SIZE, self.map_file_path, picked_hero)
-        self.ui_state = GameUiState(self.game_state.entire_world_area)
+
         self.game_engine = GameEngine(self.game_state, self.ui_state)
         if self.map_file_path == 'resources/maps/challenge.json':
             world_behavior = ChallengeWorldBehavior(self.game_state, self.ui_state, self.game_engine)

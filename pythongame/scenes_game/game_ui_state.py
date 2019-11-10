@@ -21,8 +21,8 @@ class UiToggle(Enum):
 # the UI, it should be highlighted but only for a while. Keeping that logic here lets main.py be free from UI details
 # and it lets view.py be stateless.
 class GameUiState:
-    def __init__(self, entire_world_area: Rect):
-        self._entire_world_area = entire_world_area
+    def __init__(self):
+        self._entire_world_area = Rect(0, 0, 1, 1)
         self._player_entity_center_position = (0, 0)
         self._ticks_since_minimap_updated = MINIMAP_UPDATE_INTERVAL
         self._ticks_since_message_updated = 0
@@ -47,8 +47,10 @@ class GameUiState:
         self.highlighted_consumable_action = slot_number
         self._ticks_since_last_consumable_action = 0
 
-    def notify_player_entity_center_position(self, player_entity_center_position: Tuple[int, int]):
+    def notify_player_entity_center_position(self, player_entity_center_position: Tuple[int, int],
+                                             entire_world_area: Rect):
         self._player_entity_center_position = player_entity_center_position
+        self._entire_world_area = entire_world_area
 
     def notify_toggle_was_clicked(self, ui_toggle: UiToggle):
         if self.toggle_enabled == ui_toggle:
