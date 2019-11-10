@@ -310,19 +310,31 @@ class GameEngine:
         return events
 
     def _handle_gain_exp_events(self, gain_exp_events):
+        did_level_up = False
+        new_abilities: List[str] = []
+        did_unlock_new_talent = False
         for event in gain_exp_events:
             if isinstance(event, PlayerLeveledUp):
-                play_sound(SoundId.EVENT_PLAYER_LEVELED_UP)
-                self.game_state.visual_effects.append(
-                    VisualCircle((150, 150, 250), self.game_state.player_entity.get_center_position(), 9, 35,
-                                 Millis(150), 2))
-                self.ui_state.set_message("You reached level " + str(self.game_state.player_state.level))
-                allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
+                did_level_up = True
             if isinstance(event, PlayerLearnedNewAbility):
-                self.ui_state.enqueue_message("New ability: " + ABILITIES[event.ability_type].name)
+                new_abilities.append(ABILITIES[event.ability_type].name)
             if isinstance(event, PlayerUnlockedNewTalent):
-                self.ui_state.notify_new_talent_was_unlocked()
-                self.ui_state.enqueue_message("You can pick a talent!")
+                did_unlock_new_talent = True
+
+        if did_level_up:
+            play_sound(SoundId.EVENT_PLAYER_LEVELED_UP)
+            self.game_state.visual_effects.append(
+                VisualCircle((150, 150, 250), self.game_state.player_entity.get_center_position(), 9, 35,
+                             Millis(150), 2))
+            self.ui_state.set_message("You reached level " + str(self.game_state.player_state.level))
+            allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
+        if len(new_abilities) == 1:
+            self.ui_state.enqueue_message("New ability: " + new_abilities[0])
+        elif len(new_abilities) > 1:
+            self.ui_state.enqueue_message("Gained several new abilities")
+        if did_unlock_new_talent:
+            self.ui_state.notify_new_talent_was_unlocked()
+            self.ui_state.enqueue_message("You can pick a talent!")
 
     def _is_npc_close_to_camera(self, npc: NonPlayerCharacter):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(
