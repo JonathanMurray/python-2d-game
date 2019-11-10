@@ -1,4 +1,4 @@
-from typing import Dict, Callable, Any
+from typing import Dict, Callable
 
 from pythongame.core.common import *
 from pythongame.core.game_state import GameState

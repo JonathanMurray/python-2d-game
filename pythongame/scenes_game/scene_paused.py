@@ -1,8 +1,9 @@
 import sys
+from typing import Optional
 
 import pygame
 
-from pythongame.core.common import SceneId
+from pythongame.core.common import SceneId, Millis, AbstractScene, SceneTransition
 from pythongame.core.game_state import GameState
 from pythongame.core.talents import talents_graphics_from_state
 from pythongame.core.user_input import ActionExitGame, ActionPauseGame, get_main_user_inputs, ActionSaveGameState
@@ -12,19 +13,23 @@ from pythongame.scenes_game.game_ui_state import GameUiState
 from pythongame.scenes_game.game_ui_view import GameUiView
 
 
-class PausedScene:
+class PausedScene(AbstractScene):
     def __init__(
             self,
-            game_state: GameState,
             world_view: GameWorldView,
-            ui_view: GameUiView,
-            ui_state: GameUiState):
-        self.game_state = game_state
+            ui_view: GameUiView):
         self.world_view = world_view
         self.ui_view = ui_view
+
+        # Set on initialization
+        self.game_state = None
+        self.ui_state = None
+
+    def initialize(self, game_state: GameState, ui_state: GameUiState):
+        self.game_state = game_state
         self.ui_state = ui_state
 
-    def run_one_frame(self):
+    def run_one_frame(self, _time_passed: Millis, _fps_string: str) -> Optional[SceneTransition]:
         scene_transition = None
 
         user_actions = get_main_user_inputs()

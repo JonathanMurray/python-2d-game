@@ -1,5 +1,11 @@
 ## TODO
 
+#### Bugs:
+* If you transition from the playing state back to the pickingHero state while holding down an ability key,
+and then pick a different hero, the game will crash. This is because the user-input module has remembered the state of 
+the held down ability key and the game will incorrectly try to use an ability from the previous hero. The solution is
+to improve state-handling in the user input code.
+
 #### Refactorings:
 * Move non-trivial logic from game_state. Prefer to have game-logic elsewhere.
 * Avoid storing EnemyMind and ProjectileController in game_state. That module should only depend on common

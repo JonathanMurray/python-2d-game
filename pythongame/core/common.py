@@ -1,6 +1,6 @@
 import random
 from enum import Enum
-from typing import NewType
+from typing import NewType, Optional, Any
 
 Millis = NewType('Millis', int)
 
@@ -9,9 +9,11 @@ PLAYER_ENTITY_SIZE = (30, 30)
 
 class SceneId(Enum):
     PICKING_HERO = 1
-    PLAYING = 2
-    PAUSED = 3
-    VICTORY_SCREEN = 4
+    CREATING_GAME_WORLD = 2
+    PLAYING = 3
+    PAUSED = 4
+    VICTORY_SCREEN = 5
+    CHALLENGE_COMPLETE_SCREEN = 6
 
 
 class Direction(Enum):
@@ -570,3 +572,18 @@ def get_random_hint():
         "Choose talents to improve your stats and abilities"
     ]
     return random.choice(hints)
+
+
+class SceneTransition:
+    def __init__(self, scene_id: SceneId, data: Any):
+        self.scene_id = scene_id
+        self.data = data
+
+
+class AbstractScene:
+
+    def initialize(self, data: Any):
+        pass
+
+    def run_one_frame(self, _time_passed: Millis, _fps_string: str) -> Optional[SceneTransition]:
+        pass

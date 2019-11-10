@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 # We should probably not load image files in here!
 import pygame
@@ -29,6 +29,9 @@ class UserAbilityKey:
     def __init__(self, key_string: str, pygame_key):
         self.key_string = key_string
         self.pygame_key = pygame_key
+
+    def __repr__(self):
+        return "(" + self.key_string + ", " + str(self.pygame_key) + ")"
 
 
 user_ability_keys = [UserAbilityKey("Q", pygame.K_q),
@@ -200,6 +203,7 @@ def register_ability_data(ability_type: AbilityType, ability_data: AbilityData):
 
 
 def allocate_input_keys_for_abilities(abilities: List[AbilityType]):
+    KEYS_BY_ABILITY_TYPE.clear()
     for i, ability in enumerate(abilities):
         KEYS_BY_ABILITY_TYPE[ability] = user_ability_keys[i]
 

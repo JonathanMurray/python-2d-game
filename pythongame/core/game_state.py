@@ -1,5 +1,5 @@
 import math
-from typing import List, Optional, Dict, Any, Tuple, Union
+from typing import List, Dict, Tuple, Union
 
 from pygame.rect import Rect
 

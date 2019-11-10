@@ -1,12 +1,12 @@
 import sys
-from typing import Optional, Any, List
+from typing import Optional, Any, List, Tuple
 
 import pygame
 
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis, SoundId, SceneId
+from pythongame.core.common import Millis, SoundId, SceneId, AbstractScene, SceneTransition
 from pythongame.core.game_data import CONSUMABLES, ITEMS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     ConsumableOnGround, ItemOnGround, Chest
@@ -71,34 +71,33 @@ class DialogHandler:
             return get_dialog_graphics(self.npc_active_in_dialog.npc_type, self.active_dialog_option_index)
 
 
-class PlayingScene:
+class PlayingScene(AbstractScene):
     def __init__(
             self,
-            game_state: GameState,
-            game_engine: GameEngine,
             world_view: GameWorldView,
-            ui_view: GameUiView,
-            ui_state: GameUiState,
-            world_behavior: AbstractWorldBehavior):
+            ui_view: GameUiView):
         self.player_interactions_state = PlayerInteractionsState()
-        self.game_state = game_state
-        self.game_engine = game_engine
         self.world_view = world_view
-        self.ui_state = ui_state
+        self.ui_view = ui_view
         self.render_hit_and_collision_boxes = False
         self.mouse_screen_position = (0, 0)
         self.dialog_handler = DialogHandler()
         self.is_shift_key_held_down = False
-        self.ui_controller = PlayingUiController(game_state, ui_view, ui_state)
         self.total_time_played = 0
-        self.world_behavior = world_behavior
-        self.has_run_startup = False
 
-    def run_one_frame(self, time_passed: Millis, fps_string: str) -> Optional[SceneId]:
+        # Set on initialization
+        self.game_state = None
+        self.game_engine = None
+        self.world_behavior = None
+        self.ui_state = None
+        self.ui_controller =None
 
-        if not self.has_run_startup:
-            self.world_behavior.on_startup()
-            self.has_run_startup = True
+    def initialize(self, data: Tuple[GameState, GameEngine, AbstractWorldBehavior, GameUiState]):
+        self.game_state, self.game_engine, self.world_behavior, self.ui_state = data
+        self.ui_controller = PlayingUiController(self.ui_view, self.ui_state)
+        self.world_behavior.on_startup()
+
+    def run_one_frame(self, time_passed: Millis, fps_string: str) -> Optional[SceneTransition]:
 
         self.total_time_played += time_passed
 
@@ -177,10 +176,10 @@ class PlayingScene:
         #     UPDATE STATE BASED ON CLOCK
         # ------------------------------------
 
-        next_scene = self.world_behavior.control(time_passed)
+        scene_transition = self.world_behavior.control(time_passed)
         did_player_die = self.game_engine.run_one_frame(time_passed)
         if did_player_die:
-            next_scene = self.world_behavior.handle_player_died()
+            scene_transition = self.world_behavior.handle_player_died()
 
         # ------------------------------------
         #          RENDER EVERYTHING
@@ -211,7 +210,8 @@ class PlayingScene:
         dialog = self.dialog_handler.get_dialog_graphics()
 
         events_triggered_from_ui: List[EventTriggeredFromUi] = self.ui_controller.render_and_handle_mouse(
-            fps_string, dialog, self.mouse_screen_position, mouse_was_just_clicked, mouse_was_just_released)
+            self.game_state, fps_string, dialog, self.mouse_screen_position, mouse_was_just_clicked,
+            mouse_was_just_released)
 
         for event in events_triggered_from_ui:
             if isinstance(event, StartDraggingItemOrConsumable):
@@ -238,10 +238,10 @@ class PlayingScene:
 
         self.world_view.update_display()
 
-        if next_scene is not None:
-            return next_scene
+        if scene_transition is not None:
+            return scene_transition
         if transition_to_pause:
-            return SceneId.PAUSED
+            return SceneTransition(SceneId.PAUSED, self.game_state)
         return None
 
     def get_mouse_hover_world_pos(self):

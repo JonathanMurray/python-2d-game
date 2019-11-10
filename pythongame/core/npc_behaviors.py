@@ -1,4 +1,4 @@
-from typing import Dict, Type, Optional, List
+from typing import Dict, Type, List
 
 from pythongame.core.common import *
 from pythongame.core.damage_interactions import deal_npc_damage, DamageType
