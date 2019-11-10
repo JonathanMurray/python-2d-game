@@ -23,7 +23,6 @@ from pythongame.scene_victory_screen.scene_victory_screen import VictoryScreenSc
 from pythongame.scenes_game.game_engine import GameEngine
 from pythongame.scenes_game.game_ui_state import GameUiState
 from pythongame.scenes_game.game_ui_view import GameUiView, UI_ICON_SIZE, PORTRAIT_ICON_SIZE
-from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
 from pythongame.scenes_game.scene_paused import PausedScene
 from pythongame.scenes_game.scene_playing import PlayingScene
 
@@ -106,7 +105,6 @@ class Main:
         self.paused_scene = None
         self.game_state = None
         self.game_engine = None
-        self.player_interactions_state = None
 
         start_immediately_and_skip_hero_selection = (
                 chosen_hero_id is not None
@@ -165,7 +163,6 @@ class Main:
             world_behavior = ChallengeWorldBehavior(self.game_state, self.ui_state, self.game_engine)
         else:
             world_behavior = StandardWorldBehavior(self.game_state, self.ui_state)
-        self.player_interactions_state = PlayerInteractionsState()
         self.playing_scene = PlayingScene(
             self.game_state,
             self.game_engine,
