@@ -13,7 +13,7 @@ from pythongame.core.sound_player import play_sound
 from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.map_file import create_game_state_from_json_file
 from pythongame.player_file import SavedPlayerState
-from pythongame.scenes_game.game_engine import GameEngine
+from pythongame.scenes_game.game_engine import GameEngine, EngineEvent
 from pythongame.scenes_game.game_ui_state import GameUiState
 
 
@@ -32,7 +32,7 @@ class InitFlags:
                str(self.saved_player_state) + ", " + str(self.hero_start_level) + ", " + str(self.start_money) + ")"
 
 
-class StandardWorldBehavior(AbstractWorldBehavior):
+class StoryBehavior(AbstractWorldBehavior):
 
     def __init__(self, game_state: GameState, ui_state: GameUiState):
         self.game_state = game_state
@@ -45,18 +45,19 @@ class StandardWorldBehavior(AbstractWorldBehavior):
         if self.game_state.player_state.has_upgrade(HeroUpgrade.HAS_WON_GAME):
             return SceneTransition(SceneId.VICTORY_SCREEN, None)
 
-    def handle_player_died(self) -> Optional[SceneTransition]:
-        self.game_state.player_entity.set_position(self.game_state.player_spawn_position)
-        self.game_state.player_state.health_resource.set_to_partial_of_max(0.5)
-        self.game_state.player_state.lose_exp_from_death()
-        self.game_state.player_state.force_cancel_all_buffs()
-        self.ui_state.set_message("Lost exp from dying")
-        play_sound(SoundId.EVENT_PLAYER_DIED)
-        self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
+    def handle_event(self, event: EngineEvent) -> Optional[SceneTransition]:
+        if event == EngineEvent.PLAYER_DIED:
+            self.game_state.player_entity.set_position(self.game_state.player_spawn_position)
+            self.game_state.player_state.health_resource.set_to_partial_of_max(0.5)
+            self.game_state.player_state.lose_exp_from_death()
+            self.game_state.player_state.force_cancel_all_buffs()
+            self.ui_state.set_message("Lost exp from dying")
+            play_sound(SoundId.EVENT_PLAYER_DIED)
+            self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
         return None
 
 
-class ChallengeWorldBehavior(AbstractWorldBehavior):
+class ChallengeBehavior(AbstractWorldBehavior):
 
     def __init__(self, game_state: GameState, ui_state: GameUiState, game_engine: GameEngine):
         self.game_state = game_state
@@ -71,12 +72,18 @@ class ChallengeWorldBehavior(AbstractWorldBehavior):
 
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:
         self.total_time_played += time_passed
-        if self.game_state.player_state.has_upgrade(HeroUpgrade.HAS_WON_GAME):
-            return SceneTransition(SceneId.CHALLENGE_COMPLETE_SCREEN, self.total_time_played)
+        return None
 
-    def handle_player_died(self) -> Optional[SceneTransition]:
-        print("TODO: Go to some other screen")
-        return SceneTransition(SceneId.PICKING_HERO, None)
+    def handle_event(self, event: EngineEvent) -> Optional[SceneTransition]:
+        if event == EngineEvent.PLAYER_DIED:
+            print("TODO: Go to some other screen")
+            return SceneTransition(SceneId.PICKING_HERO, None)
+        elif event == EngineEvent.ENEMY_DIED:
+            num_enemies = len([npc for npc in self.game_state.non_player_characters if npc.is_enemy])
+            if num_enemies == 0:
+                return SceneTransition(SceneId.CHALLENGE_COMPLETE_SCREEN, self.total_time_played)
+            self.ui_state.set_message(str(num_enemies) + " enemies remaining")
+        return None
 
 
 class CreatingWorldScene(AbstractScene):
@@ -100,9 +107,9 @@ class CreatingWorldScene(AbstractScene):
         ui_state = GameUiState()
         game_engine = GameEngine(game_state, ui_state)
         if self.flags.map_file_path == 'resources/maps/challenge.json':
-            world_behavior = ChallengeWorldBehavior(game_state, ui_state, game_engine)
+            world_behavior = ChallengeBehavior(game_state, ui_state, game_engine)
         else:
-            world_behavior = StandardWorldBehavior(game_state, ui_state)
+            world_behavior = StoryBehavior(game_state, ui_state)
 
         if saved_player_state:
             game_state.player_state.gain_exp_worth_n_levels(saved_player_state.level - 1)

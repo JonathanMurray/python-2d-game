@@ -10,13 +10,6 @@
   "money_piles_on_ground": [],
   "non_player_characters": [
     {
-      "npc_type": "NEUTRAL_CHALLENGE_FINISHER",
-      "position": [
-        2025,
-        850
-      ]
-    },
-    {
       "npc_type": "NEUTRAL_CHALLENGE_STARTER",
       "position": [
         450,

@@ -86,11 +86,11 @@ class PlayingScene(AbstractScene):
         self.total_time_played = 0
 
         # Set on initialization
-        self.game_state = None
-        self.game_engine = None
-        self.world_behavior = None
-        self.ui_state = None
-        self.ui_controller =None
+        self.game_state: GameState = None
+        self.game_engine: GameEngine = None
+        self.world_behavior: AbstractWorldBehavior = None
+        self.ui_state: GameUiState = None
+        self.ui_controller: PlayingUiController = None
 
     def initialize(self, data: Tuple[GameState, GameEngine, AbstractWorldBehavior, GameUiState]):
         self.game_state, self.game_engine, self.world_behavior, self.ui_state = data
@@ -177,9 +177,9 @@ class PlayingScene(AbstractScene):
         # ------------------------------------
 
         scene_transition = self.world_behavior.control(time_passed)
-        did_player_die = self.game_engine.run_one_frame(time_passed)
-        if did_player_die:
-            scene_transition = self.world_behavior.handle_player_died()
+        engine_events = self.game_engine.run_one_frame(time_passed)
+        for event in engine_events:
+            scene_transition = self.world_behavior.handle_event(event)
 
         # ------------------------------------
         #          RENDER EVERYTHING

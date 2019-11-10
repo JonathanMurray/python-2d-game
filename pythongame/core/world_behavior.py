@@ -1,6 +1,7 @@
 from typing import Optional
 
 from pythongame.core.common import Millis, SceneTransition
+from pythongame.scenes_game.game_engine import EngineEvent
 
 
 class AbstractWorldBehavior:
@@ -11,5 +12,5 @@ class AbstractWorldBehavior:
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:
         pass
 
-    def handle_player_died(self) -> Optional[SceneTransition]:
+    def handle_event(self, event: EngineEvent) -> Optional[SceneTransition]:
         pass

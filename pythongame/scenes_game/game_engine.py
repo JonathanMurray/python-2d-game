@@ -21,6 +21,11 @@ from pythongame.scenes_game.game_ui_state import GameUiState
 from pythongame.scenes_game.player_controls import PlayerControls
 
 
+class EngineEvent(Enum):
+    PLAYER_DIED = 1
+    ENEMY_DIED = 2
+
+
 class GameEngine:
 
     def __init__(self, game_state: GameState, ui_state: GameUiState):
@@ -158,7 +163,9 @@ class GameEngine:
         self._handle_gain_exp_events(gain_exp_events)
 
     # Returns whether or not player died
-    def run_one_frame(self, time_passed: Millis) -> bool:
+    def run_one_frame(self, time_passed: Millis) -> List[EngineEvent]:
+
+        events = []
 
         for npc in self.game_state.non_player_characters:
             # NonPlayerCharacter AI shouldn't run if enemy is too far out of sight
@@ -196,6 +203,7 @@ class GameEngine:
                 enemy_death_position = enemy_that_died.world_entity.get_position()
                 self._put_loot_on_ground(enemy_death_position, loot)
                 self.game_state.player_state.notify_about_event(EnemyDiedEvent(), self.game_state)
+            events.append(EngineEvent.ENEMY_DIED)
 
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_effects()
@@ -297,8 +305,9 @@ class GameEngine:
         self.game_state.center_camera_on_player()
 
         if self.game_state.player_state.health_resource.is_at_or_below_zero():
-            return True
-        return False
+            events.append(EngineEvent.PLAYER_DIED)
+
+        return events
 
     def _handle_gain_exp_events(self, gain_exp_events):
         for event in gain_exp_events:

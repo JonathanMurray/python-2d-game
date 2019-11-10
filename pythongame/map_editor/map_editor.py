@@ -78,7 +78,6 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_YOUNG_SORCERESS),
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_WARPSTONE_MERCHANT),
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_CHALLENGE_STARTER),
-    MapEditorWorldEntity.npc(NpcType.NEUTRAL_CHALLENGE_FINISHER),
 
     MapEditorWorldEntity.consumable(ConsumableType.HEALTH_LESSER),
     MapEditorWorldEntity.consumable(ConsumableType.HEALTH),

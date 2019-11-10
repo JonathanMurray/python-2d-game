@@ -94,7 +94,6 @@ from pythongame.game_data.items.item_wooden_shield import register_wooden_shield
 from pythongame.game_data.items.item_wooden_sword import register_wooden_sword_item
 from pythongame.game_data.items.item_zuls_aegis import register_zuls_aegis
 from pythongame.game_data.map_editor_icons import register_map_editor_icons
-from pythongame.game_data.neutral_npcs.neutral_npc_challenge_finisher import register_challenge_finisher_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_challenge_starter import register_challenge_starter_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_dwarf import register_dwarf_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_ninja import register_ninja_npc
@@ -214,7 +213,6 @@ def register_all_game_data():
     register_sorcerer_npc()
     register_young_sorceress_npc()
     register_warpstone_merchant_npc()
-    register_challenge_finisher_npc()
     register_challenge_starter_npc()
 
     register_decorations()
