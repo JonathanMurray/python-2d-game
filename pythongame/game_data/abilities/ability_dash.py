@@ -30,8 +30,8 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
     for distance in [40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]:
         new_position = translate_in_direction((player_entity.x, player_entity.y), player_entity.direction,
                                               distance)
-        is_valid_pos = not game_state.would_entity_collide_if_new_pos(player_entity, new_position)
-        if is_valid_pos:
+        if game_state.is_position_within_game_world(new_position) \
+                and not game_state.would_entity_collide_if_new_pos(player_entity, new_position):
             if _would_collide_with_wall(game_state, player_entity, distance):
                 return AbilityFailedToExecute(reason="Wall is blocking")
             should_regain_mana_and_cd = False
