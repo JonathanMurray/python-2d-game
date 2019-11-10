@@ -13,6 +13,11 @@ class PlayerControls:
 
     @staticmethod
     def try_use_ability(ability_type: AbilityType, game_state: GameState, ui_state: GameUiState):
+
+        if ability_type not in game_state.player_state.abilities:
+            raise Exception(
+                "Cannot use ability: " + str(ability_type) + "! Player has: " + str(game_state.player_state.abilities))
+
         if game_state.player_state.stun_status.is_stunned():
             return
         ui_state.notify_ability_was_clicked(ability_type)
