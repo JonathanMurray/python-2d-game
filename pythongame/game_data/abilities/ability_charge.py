@@ -9,7 +9,7 @@ from pythongame.core.common import BuffType, Millis, AbilityType, SoundId, HeroI
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     HEROES, register_buff_as_channeling
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, CameraShake
 from pythongame.core.math import translate_in_direction, get_middle_point
 from pythongame.core.visual_effects import VisualRect, VisualCircle
 
@@ -73,6 +73,7 @@ class Charging(AbstractBuffEffect):
                 VisualRect((150, 0, 0), visual_impact_pos, 35, 20, IMPACT_STUN_DURATION, 2, None))
             game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_TYPE_STUNNED), IMPACT_STUN_DURATION)
             enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE_STUNNED), IMPACT_STUN_DURATION)
+            game_state.camera_shake = CameraShake(Millis(50), Millis(150), 12)
             # The buff should end upon impact
             return True
         return False
