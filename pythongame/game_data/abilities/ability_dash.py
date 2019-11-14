@@ -10,7 +10,7 @@ from pythongame.core.common import AbilityType, Millis, UiIconSprite, SoundId, B
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, CameraShake
 from pythongame.core.math import translate_in_direction
 from pythongame.core.visual_effects import VisualCircle, VisualRect, VisualLine
 
@@ -37,6 +37,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
             should_regain_mana_and_cd = False
             enemy_hit = _get_enemy_that_was_hit(game_state, player_entity, distance)
             if enemy_hit:
+                game_state.camera_shake = CameraShake(Millis(50), Millis(150), 4)
                 deal_player_damage_to_enemy(game_state, enemy_hit, DAMAGE)
                 game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_TYPE), BUFF_DURATION)
                 has_reset_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_DASH_KILL_RESET)

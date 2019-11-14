@@ -7,7 +7,7 @@ from pythongame.core.buff_effects import get_buff_effect
 from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PLAYER_ENTITY_SIZE, HeroUpgrade
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path
-from pythongame.core.game_state import GameState
+from pythongame.core.game_state import GameState, CameraShake
 from pythongame.core.math import translate_in_direction
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import VisualRect, VisualCross
@@ -39,6 +39,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
             # Talent: increase the damage bonus that Shiv gets from being used while stealthing
             has_damage_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_SHIV_SNEAK_BONUS_DAMAGE)
             damage *= 4 if has_damage_upgrade else 3.5
+            game_state.camera_shake = CameraShake(Millis(50), Millis(150), 4)
         else:
             # Talent: if attacking an enemy that's at 100% health while not stealthing, deal bonus damage
             has_damage_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_SHIV_FULL_HEALTH_BONUS_DAMAGE)

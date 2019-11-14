@@ -7,7 +7,7 @@ from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, 
     PLAYER_ENTITY_SIZE
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, CameraShake
 from pythongame.core.math import translate_in_direction
 from pythongame.core.visual_effects import VisualRect, VisualCross, create_visual_stun_text
 
@@ -33,6 +33,8 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
 
     # Note: Dependency on other ability 'stealth'
     should_stun = game_state.player_state.has_active_buff(BuffType.STEALTHING)
+    if should_stun:
+        game_state.camera_shake = CameraShake(Millis(50), Millis(150), 4)
     buff_effect = get_buff_effect(DEBUFF, should_stun)
     affected_enemies[0].gain_buff_effect(buff_effect, DEBUFF_DURATION)
 
