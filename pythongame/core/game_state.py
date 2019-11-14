@@ -524,6 +524,24 @@ class WarpPoint:
         self.world_entity.visible = True
 
 
+class CameraShake:
+
+    def __init__(self, shake_frequency: Millis, duration: Millis, max_offset: int):
+        self._timer = PeriodicTimer(shake_frequency)
+        self._time_left = duration
+        self._max_offset = max_offset
+        self.offset = (0, 0)
+
+    def notify_time_passed(self, time_passed: Millis):
+        self._time_left -= time_passed
+        if self._timer.update_and_check_if_ready(time_passed):
+            self.offset = (random.randint(-self._max_offset, self._max_offset),
+                           random.randint(-self._max_offset, self._max_offset))
+
+    def has_time_left(self) -> bool:
+        return self._time_left > 0
+
+
 class GameState:
     def __init__(self, player_entity: WorldEntity, consumables_on_ground: List[ConsumableOnGround],
                  items_on_ground: List[ItemOnGround], money_piles_on_ground: List[MoneyPileOnGround],
@@ -532,6 +550,7 @@ class GameState:
                  decoration_entities: List[DecorationEntity], portals: List[Portal], chests: List[Chest]):
         self.camera_size = camera_size
         self.camera_world_area = Rect((0, 0), self.camera_size)
+        self.camera_shake: CameraShake = None
         self.player_entity = player_entity
         self.projectile_entities: List[Projectile] = []
         # TODO: unify code for picking up stuff from the ground. The way they are rendered and picked up are similar,
@@ -565,6 +584,19 @@ class GameState:
             cell_y = (w.y - entire_world_area.y) // GRID_CELL_WIDTH
             grid[cell_x][cell_y] = 1
         return grid
+
+    def handle_camera_shake(self, time_passed: Millis):
+        if self.camera_shake is not None:
+            self.camera_shake.notify_time_passed(time_passed)
+            if not self.camera_shake.has_time_left():
+                self.camera_shake = None
+
+    def get_camera_world_area_including_camera_shake(self) -> Rect:
+        camera_world_area = Rect(self.camera_world_area)
+        if self.camera_shake is not None:
+            camera_world_area[0] += self.camera_shake.offset[0]
+            camera_world_area[1] += self.camera_shake.offset[1]
+        return camera_world_area
 
     def modify_hero_stat(self, hero_stat: HeroStat, stat_delta: Union[int, float]):
         player_state = self.player_state

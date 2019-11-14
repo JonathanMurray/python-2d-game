@@ -188,7 +188,7 @@ class PlayingScene:
             player_entity=self.game_state.player_entity,
             is_player_invisible=self.game_state.player_state.is_invisible,
             player_active_buffs=self.game_state.player_state.active_buffs,
-            camera_world_area=self.game_state.camera_world_area,
+            camera_world_area=self.game_state.get_camera_world_area_including_camera_shake(),
             non_player_characters=self.game_state.non_player_characters,
             visual_effects=self.game_state.visual_effects,
             render_hit_and_collision_boxes=self.render_hit_and_collision_boxes,

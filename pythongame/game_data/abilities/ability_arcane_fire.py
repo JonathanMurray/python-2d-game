@@ -5,7 +5,7 @@ from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, Projec
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_entity_sprite_initializer, register_buff_as_channeling
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
+from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile, CameraShake
 from pythongame.core.math import get_position_from_center_position
 from pythongame.core.projectile_controllers import AbstractProjectileController, register_projectile_controller, \
     create_projectile_controller
@@ -29,6 +29,7 @@ class Channeling(AbstractBuffEffect):
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.add_one()
         game_state.player_entity.set_not_moving()
+        game_state.camera_shake = CameraShake(Millis(50), CHANNEL_DURATION, 5)
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
