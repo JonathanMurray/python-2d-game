@@ -16,8 +16,8 @@ from pythongame.core.npc_behaviors import get_dialog_data, invoke_npc_action, ge
 from pythongame.core.sound_player import play_sound
 from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
-    ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_main_user_inputs, get_dialog_user_inputs, \
-    ActionChangeDialogOption, ActionSaveGameState, ActionPressShiftKey, ActionReleaseShiftKey
+    ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_dialog_user_inputs, \
+    ActionChangeDialogOption, ActionSaveGameState, ActionPressShiftKey, ActionReleaseShiftKey, PlayingUserInputHandler
 from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
 from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.player_file import save_to_file
@@ -92,11 +92,16 @@ class PlayingScene(AbstractScene):
         self.world_behavior: AbstractWorldBehavior = None
         self.ui_state: GameUiState = None
         self.ui_controller: PlayingUiController = None
+        self.user_input_handler = PlayingUserInputHandler()
 
     def initialize(self, data: Tuple[GameState, GameEngine, AbstractWorldBehavior, GameUiState]):
-        self.game_state, self.game_engine, self.world_behavior, self.ui_state = data
-        self.ui_controller = PlayingUiController(self.ui_view, self.ui_state)
-        self.world_behavior.on_startup()
+        if data is not None:
+            self.game_state, self.game_engine, self.world_behavior, self.ui_state = data
+            self.ui_controller = PlayingUiController(self.ui_view, self.ui_state)
+            self.world_behavior.on_startup()
+        # In case this scene has been running before, we make sure to clear any state. Otherwise keys that were held
+        # down would still be considered active!
+        self.user_input_handler = PlayingUserInputHandler()
 
     def run_one_frame(self, time_passed: Millis, fps_string: str) -> Optional[SceneTransition]:
 
@@ -126,7 +131,7 @@ class PlayingScene(AbstractScene):
                 if isinstance(action, ActionPressSpaceKey):
                     self.dialog_handler.handle_user_clicked_space(self.game_state, self.ui_state)
         else:
-            user_actions = get_main_user_inputs()
+            user_actions = self.user_input_handler.get_main_user_inputs()
             for action in user_actions:
                 if isinstance(action, ActionExitGame):
                     exit_game()

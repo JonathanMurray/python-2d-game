@@ -22,8 +22,9 @@ class PickingHeroScene(AbstractScene):
         # Set on initialization
         self.flags: InitFlags = None
 
-    def initialize(self, flags: InitFlags):
-        self.flags = flags  # map hero money level
+    def initialize(self, flags: Optional[InitFlags]):
+        if flags is not None:
+            self.flags = flags
 
     def run_one_frame(self, _time_passed: Millis, _fps_string: str) -> Optional[SceneTransition]:
         action = get_picking_hero_user_input()

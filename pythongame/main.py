@@ -74,8 +74,7 @@ class Main:
         print("transition: " + str(self.scene_id) + " --> " + str(scene_transition.scene_id) +
               " (" + str(scene_transition.data) + ")")
         self.scene_id = scene_transition.scene_id
-        if scene_transition.data:
-            self.scenes_by_id[self.scene_id].initialize(scene_transition.data)
+        self.scenes_by_id[self.scene_id].initialize(scene_transition.data)
 
 
 def start(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start_level: Optional[int],

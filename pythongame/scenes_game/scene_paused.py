@@ -6,7 +6,8 @@ import pygame
 from pythongame.core.common import SceneId, Millis, AbstractScene, SceneTransition
 from pythongame.core.game_state import GameState
 from pythongame.core.talents import talents_graphics_from_state
-from pythongame.core.user_input import ActionExitGame, ActionPauseGame, get_main_user_inputs, ActionSaveGameState
+from pythongame.core.user_input import ActionExitGame, ActionPauseGame, ActionSaveGameState, \
+    get_paused_user_inputs
 from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.player_file import save_to_file
 from pythongame.scenes_game.game_ui_state import GameUiState
@@ -31,7 +32,7 @@ class PausedScene(AbstractScene):
     def run_one_frame(self, _time_passed: Millis, _fps_string: str) -> Optional[SceneTransition]:
         scene_transition = None
 
-        user_actions = get_main_user_inputs()
+        user_actions = get_paused_user_inputs()
         for action in user_actions:
             if isinstance(action, ActionExitGame):
                 pygame.quit()
