@@ -10,7 +10,7 @@ from pythongame.core.common import Millis, SoundId, SceneId, AbstractScene, Scen
 from pythongame.core.game_data import CONSUMABLES, ITEMS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     ConsumableOnGround, ItemOnGround, Chest
-from pythongame.core.hero_upgrades import apply_hero_upgrade
+from pythongame.core.hero_upgrades import pick_talent
 from pythongame.core.math import get_directions_to_position
 from pythongame.core.npc_behaviors import get_dialog_data, invoke_npc_action, get_dialog_graphics, DialogGraphics
 from pythongame.core.sound_player import play_sound
@@ -243,7 +243,8 @@ class PlayingScene(AbstractScene):
                 self.game_engine.drop_consumable_on_ground(event.from_slot, event.world_position)
                 play_sound(SoundId.UI_ITEM_WAS_DROPPED_ON_GROUND)
             elif isinstance(event, PickTalent):
-                apply_hero_upgrade(event.hero_upgrade, self.game_state)
+                name_of_picked = pick_talent(self.game_state, event.option_index)
+                self.ui_state.set_message("Talent picked: " + name_of_picked)
             else:
                 raise Exception("Unhandled event: " + str(event))
 

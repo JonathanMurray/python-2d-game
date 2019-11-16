@@ -1,6 +1,5 @@
 from typing import Optional, Tuple, List
 
-from pythongame.core.common import HeroUpgrade
 from pythongame.core.game_state import GameState
 from pythongame.core.npc_behaviors import DialogGraphics
 from pythongame.core.talents import talents_graphics_from_state
@@ -37,8 +36,8 @@ class DropConsumableOnGround(EventTriggeredFromUi):
 
 
 class PickTalent(EventTriggeredFromUi):
-    def __init__(self, hero_upgrade: HeroUpgrade):
-        self.hero_upgrade = hero_upgrade
+    def __init__(self, option_index: int):
+        self.option_index = option_index
 
 
 class StartDraggingItemOrConsumable(EventTriggeredFromUi):
@@ -142,8 +141,6 @@ class PlayingUiController:
         if mouse_was_just_clicked and mouse_hover_event.talent_choice_option is not None:
             choice_index, option_index = mouse_hover_event.talent_choice_option
             if len(game_state.player_state.chosen_talent_option_indices) == choice_index:
-                name_of_picked, upgrade_picked = game_state.player_state.choose_talent(option_index)
-                triggered_events.append(PickTalent(upgrade_picked))
-                self.ui_state.set_message("Talent picked: " + name_of_picked)
+                triggered_events.append(PickTalent(option_index))
 
         return triggered_events

@@ -9,6 +9,7 @@ from pythongame.core.common import SceneId, Millis, HeroId, BuffType, get_random
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_state import GameState
+from pythongame.core.hero_upgrades import pick_talent
 from pythongame.core.sound_player import play_sound
 from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.map_file import create_game_state_from_json_file
@@ -124,6 +125,8 @@ class CreatingWorldScene(AbstractScene):
                 if portal.portal_id.name in saved_player_state.enabled_portals:
                     sprite = saved_player_state.enabled_portals[portal.portal_id.name]
                     portal.activate(Sprite[sprite])
+            for index in saved_player_state.chosen_talent_option_indices:
+                pick_talent(game_state, index)
         else:
             if hero_start_level > 1:
                 game_state.player_state.gain_exp_worth_n_levels(hero_start_level - 1)

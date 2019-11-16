@@ -28,7 +28,7 @@ def get_all_directions():
     return [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT]
 
 
-class HeroUpgrade:
+class HeroUpgrade(Enum):
     ARMOR = 1
     DAMAGE = 2
     ABILITY_WHIRLWIND_STUN = 10
