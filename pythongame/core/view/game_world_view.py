@@ -8,7 +8,8 @@ from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, CHANNELING_BUF
 from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration
 from pythongame.core.view.image_loading import ImageWithRelativePosition
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
-from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite, VisualCross
+from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite, VisualCross, \
+    VisualParticleSystem
 
 COLOR_BACKGROUND = (88 + 30, 72 + 30, 40 + 30)
 COLOR_BACKGROUND_LINES = (93 + 30, 77 + 30, 45 + 30)
@@ -162,6 +163,8 @@ class GameWorldView:
             self._visual_text(visual_effect)
         elif isinstance(visual_effect, VisualSprite):
             self._visual_sprite(visual_effect)
+        elif isinstance(visual_effect, VisualParticleSystem):
+            self._visual_particle_system(visual_effect)
         else:
             raise Exception("Unhandled visual effect: " + str(visual_effect))
 
@@ -197,6 +200,10 @@ class GameWorldView:
             self.world_render.image_with_relative_pos(image_with_relative_position, position)
         else:
             raise Exception("Unhandled sprite: " + str(sprite))
+
+    def _visual_particle_system(self, visual_particle_system: VisualParticleSystem):
+        for particle in visual_particle_system.particles():
+            self.world_render.rect_transparent(particle.rect, particle.alpha, particle.color)
 
     def _stat_bar_for_world_entity(self, world_entity, h, relative_y, ratio, color):
         self.world_render.stat_bar(world_entity.x + 1, world_entity.y + relative_y,

@@ -1,6 +1,8 @@
 import random
 from typing import Tuple, Optional, List
 
+from pygame.rect import Rect
+
 from pythongame.core.common import Millis, Sprite
 from pythongame.core.game_data import ENTITY_SPRITE_SIZES
 from pythongame.core.game_state import WorldEntity
@@ -20,6 +22,49 @@ class VisualEffect:
 
     def update_position_if_attached_to_entity(self):
         pass
+
+
+class Particle:
+    def __init__(self, rect: Rect, velocity: Tuple[int, int], color: Tuple[int, int, int], alpha: int,
+                 time_left: Millis):
+        self.rect = rect
+        self.velocity = velocity
+        self.color = color
+        self.alpha = alpha
+        self.time_left = time_left
+
+    def notify_time_passed(self, time_passed: Millis):
+        self.rect[0] += self.velocity[0] * time_passed / 30
+        self.rect[1] += self.velocity[1] * time_passed / 30
+        self.time_left -= time_passed
+
+
+class VisualParticleSystem(VisualEffect):
+
+    def __init__(self, num_particles: int, position: Tuple[int, int], colors: List[Tuple[int, int, int]], alpha: int,
+                 duration_interval: Tuple[Millis, Millis]):
+        super().__init__(Millis(250), None)
+        self._particles: List[Particle] = []
+        max_start_offset = 20
+        for i in range(num_particles):
+            w = random.randint(8, 16)
+            max_speed = 20 - w
+            x = position[0] + random.randint(-max_start_offset, max_start_offset) - w / 2
+            y = position[1] + random.randint(-max_start_offset, max_start_offset) - w / 2
+            velocity = random.randint(-max_speed, max_speed), random.randint(-max_speed, max_speed)
+            particle_color = random.choice(colors)
+            duration = random.randint(duration_interval[0], duration_interval[1])
+            particle = Particle(Rect(x, y, w, w), velocity, particle_color, alpha, duration)
+            self._particles.append(particle)
+
+    def notify_time_passed(self, time_passed: Millis):
+        super().notify_time_passed(time_passed)
+        for p in self._particles:
+            p.notify_time_passed(time_passed)
+        self._particles = [p for p in self._particles if p.time_left > 0]
+
+    def particles(self):
+        return self._particles
 
 
 class VisualLine(VisualEffect):

@@ -13,7 +13,7 @@ from pythongame.core.math import get_position_from_center_position, translate_in
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
 from pythongame.core.view.image_loading import SpriteSheet
-from pythongame.core.visual_effects import VisualCircle
+from pythongame.core.visual_effects import VisualCircle, VisualParticleSystem
 
 # Note: Projectile size must be smaller than hero entity size (otherwise you get a collision when shooting next to wall)
 PROJECTILE_SIZE = (28, 28)
@@ -21,6 +21,21 @@ MIN_DMG = 3
 MAX_DMG = 4
 
 BUFF_TYPE = BuffType.BURNT_BY_FIREBALL
+
+
+def _create_visual_splash(effect_position, game_state):
+    game_state.visual_effects.append(
+        VisualCircle((250, 100, 50), effect_position, 22, 45, Millis(100), 0))
+    particle_colors = [(250, 100, 100),
+                       (250, 50, 100),
+                       (250, 100, 50)]
+    particle_system = VisualParticleSystem(
+        num_particles=10,
+        position=effect_position,
+        colors=particle_colors,
+        alpha=100,
+        duration_interval=(Millis(50), Millis(200)))
+    game_state.visual_effects.append(particle_system)
 
 
 class ProjectileController(AbstractProjectileController):
@@ -31,14 +46,14 @@ class ProjectileController(AbstractProjectileController):
         base_damage: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
         damage_amount = base_damage + game_state.player_state.fireball_dmg_boost
         deal_player_damage_to_enemy(game_state, npc, damage_amount)
-        game_state.visual_effects.append(
-            VisualCircle((250, 100, 50), npc.world_entity.get_center_position(), 22, 45, Millis(100), 0))
+        _create_visual_splash(npc.world_entity.get_center_position(), game_state)
         has_burn_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_FIREBALL_BURN)
         if has_burn_upgrade:
             npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(2500))
         projectile.has_collided_and_should_be_removed = True
 
-    def apply_wall_collision(self, _game_state: GameState, projectile: Projectile):
+    def apply_wall_collision(self, game_state: GameState, projectile: Projectile):
+        _create_visual_splash(projectile.world_entity.get_center_position(), game_state)
         projectile.has_collided_and_should_be_removed = True
 
 
