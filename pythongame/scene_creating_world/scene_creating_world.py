@@ -7,9 +7,11 @@ from pythongame.core.common import ItemType, \
 from pythongame.core.common import SceneId, Millis, HeroId, BuffType, get_random_hint, \
     SoundId, HeroUpgrade, AbstractScene, SceneTransition
 from pythongame.core.consumable_inventory import ConsumableInventory
-from pythongame.core.game_data import allocate_input_keys_for_abilities
+from pythongame.core.game_data import allocate_input_keys_for_abilities, ITEMS
 from pythongame.core.game_state import GameState
 from pythongame.core.hero_upgrades import pick_talent
+from pythongame.core.item_effects import get_item_effect
+from pythongame.core.item_inventory import ItemWasActivated
 from pythongame.core.sound_player import play_sound
 from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.map_file import create_game_state_from_json_file
@@ -41,6 +43,10 @@ class StoryBehavior(AbstractWorldBehavior):
 
     def on_startup(self):
         self.ui_state.set_message("Hint: " + get_random_hint())
+        self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.HEALTH_LESSER)
+        self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.HEALTH_LESSER)
+        self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.MANA_LESSER)
+        self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.MANA_LESSER)
 
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:
         if self.game_state.player_state.has_upgrade(HeroUpgrade.HAS_WON_GAME):
@@ -69,7 +75,27 @@ class ChallengeBehavior(AbstractWorldBehavior):
     def on_startup(self):
         self.ui_state.set_message("Challenge starting...")
         self.game_state.player_state.money += 100
-        self.game_engine.gain_levels(6)
+        self.game_engine.gain_levels(4)
+
+        consumables = [ConsumableType.HEALTH,
+                       ConsumableType.HEALTH,
+                       ConsumableType.MANA,
+                       ConsumableType.MANA,
+                       ConsumableType.SPEED,
+                       ConsumableType.POWER]
+        for consumable_type in consumables:
+            self.game_state.player_state.consumable_inventory.add_consumable(consumable_type)
+        items = [ItemType.LEATHER_COWL, ItemType.LEATHER_ARMOR, ItemType.WOODEN_SWORD, ItemType.WOODEN_SHIELD]
+        for item_type in items:
+            self._equip_item_on_startup(item_type)
+
+    def _equip_item_on_startup(self, item_type):
+        data = ITEMS[item_type]
+        item_effect = get_item_effect(item_type)
+        result = self.game_state.player_state.item_inventory.try_add_item(item_effect, data.item_equipment_category)
+        if result:
+            if isinstance(result, ItemWasActivated):
+                item_effect.apply_start_effect(self.game_state)
 
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:
         self.total_time_played += time_passed
