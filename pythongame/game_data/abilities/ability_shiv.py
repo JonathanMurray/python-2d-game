@@ -46,7 +46,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
             if has_damage_upgrade and enemy.health_resource.is_at_max():
                 damage *= 1.5
 
-        deal_player_damage_to_enemy(game_state, enemy, damage)
+        deal_player_damage_to_enemy(game_state, enemy, damage, visual_emphasis=is_stealthed)
         break
 
     game_state.visual_effects.append(

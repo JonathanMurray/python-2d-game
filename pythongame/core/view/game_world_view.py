@@ -51,8 +51,8 @@ class GameWorldView:
         self.font_buff_texts = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_message = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 14)
         self.font_debug_info = pygame.font.Font(None, 19)
-        self.font_game_world_text = pygame.font.Font(DIR_FONTS + 'Arial Rounded Bold.ttf', 12)
-        self.font_game_world_text = pygame.font.Font(None, 19)
+        self.font_visual_text = pygame.font.Font(None, 19)
+        self.font_visual_text_large = pygame.font.Font(None, 21)
         self.font_ui_icon_keys = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 12)
         self.font_level = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 11)
         self.font_dialog = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 24)
@@ -188,7 +188,8 @@ class GameWorldView:
         position = visual_text.position()
         # Adjust position so that long texts don't appear too far to the right
         translated_position = (position[0] - 3 * len(text), position[1])
-        self.world_render.text(self.font_game_world_text, text, translated_position, visual_text.color)
+        font = self.font_visual_text_large if visual_text.emphasis else self.font_visual_text
+        self.world_render.text(font, text, translated_position, visual_text.color)
 
     def _visual_sprite(self, visual_sprite: VisualSprite):
         position = visual_sprite.position

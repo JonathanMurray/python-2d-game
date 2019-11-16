@@ -21,7 +21,7 @@ class DamageType(Enum):
 # False if enemy was invulnerable.
 # damage_source parameter can be used to prevent buffs from triggering themselves
 def deal_player_damage_to_enemy(game_state: GameState, npc: NonPlayerCharacter, base_amount: float,
-                                damage_source: Optional[str] = None):
+                                visual_emphasis: bool = False, damage_source: Optional[str] = None):
     player_state = game_state.player_state
     damage_modifier: float = player_state.base_damage_modifier + player_state.damage_modifier_bonus
     amount: float = base_amount * damage_modifier
@@ -29,7 +29,8 @@ def deal_player_damage_to_enemy(game_state: GameState, npc: NonPlayerCharacter, 
         return False
     health_lost_integer = npc.health_resource.lose(amount)
     game_state.player_state.notify_about_event(PlayerDamagedEnemy(npc, damage_source), game_state)
-    game_state.visual_effects.append(create_visual_damage_text(npc.world_entity, health_lost_integer))
+    game_state.visual_effects.append(
+        create_visual_damage_text(npc.world_entity, health_lost_integer, emphasis=visual_emphasis))
     health_from_life_steal = player_state.life_steal_ratio * amount
     player_receive_healing(health_from_life_steal, game_state)
     return True
