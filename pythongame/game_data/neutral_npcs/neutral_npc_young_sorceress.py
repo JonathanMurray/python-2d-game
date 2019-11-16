@@ -7,7 +7,7 @@ from pythongame.core.entity_creation import create_item_on_ground
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, ITEMS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
-from pythongame.core.item_effects import get_item_effect
+from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
     register_npc_dialog_data, DialogData, DialogOptionData
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
@@ -56,8 +56,8 @@ class AcceptFrog(AbstractNpcAction):
             reward_effect = get_item_effect(reward_item_type)
             reward_data = ITEMS[reward_item_type]
             reward_equipment_category = reward_data.item_equipment_category
-            add_result = game_state.player_state.item_inventory.try_add_item(reward_effect, reward_equipment_category)
-            if not add_result:
+            did_add_item = try_add_item_to_inventory(game_state, reward_effect, reward_equipment_category)
+            if not did_add_item:
                 game_state.items_on_ground.append(
                     create_item_on_ground(reward_item_type, game_state.player_entity.get_position()))
             play_sound(SoundId.EVENT_COMPLETED_QUEST)
