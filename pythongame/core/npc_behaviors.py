@@ -5,7 +5,7 @@ from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import CONSUMABLES, ITEMS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
-from pythongame.core.item_effects import get_item_effect
+from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
 from pythongame.core.math import is_x_and_y_within_distance, get_perpendicular_directions
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
@@ -151,16 +151,16 @@ class SellItemNpcAction(AbstractNpcAction):
     def act(self, game_state: GameState):
         player_state = game_state.player_state
         can_afford = player_state.money >= self.cost
-        has_space = player_state.consumable_inventory.has_space_for_more()
         if not can_afford:
             play_sound(SoundId.WARNING)
             return "Not enough gold!"
-        if not has_space:
+
+        did_add_item = try_add_item_to_inventory(game_state, self.item_effect, self.item_equipment_category)
+        if not did_add_item:
             play_sound(SoundId.WARNING)
             return "Not enough space!"
-        player_state.money -= self.cost
 
-        player_state.item_inventory.try_add_item(self.item_effect, self.item_equipment_category)
+        player_state.money -= self.cost
         play_sound(SoundId.EVENT_PURCHASED_SOMETHING)
         return "Bought " + self.name
 

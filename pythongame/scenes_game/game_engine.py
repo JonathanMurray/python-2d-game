@@ -9,7 +9,7 @@ from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS,
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
     EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest, \
     PlayerUnlockedNewTalent
-from pythongame.core.item_effects import get_item_effect
+from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
 from pythongame.core.loot import LootEntry
 from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vectors, \
@@ -85,13 +85,11 @@ class GameEngine:
         item_effect = get_item_effect(item.item_type)
         item_data = ITEMS[item.item_type]
         item_equipment_category = item_data.item_equipment_category
-        result = self.game_state.player_state.item_inventory.try_add_item(item_effect, item_equipment_category)
-        if result:
+        did_add_item = try_add_item_to_inventory(self.game_state, item_effect, item_equipment_category)
+        if did_add_item:
             play_sound(SoundId.EVENT_PICKED_UP)
             self.game_state.items_on_ground.remove(item)
             self.ui_state.set_message("You picked up " + item_data.name)
-            if isinstance(result, ItemWasActivated):
-                item_effect.apply_start_effect(self.game_state)
         else:
             self.ui_state.set_message("No space for " + item_data.name)
 

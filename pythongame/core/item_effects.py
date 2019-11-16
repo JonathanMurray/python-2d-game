@@ -2,6 +2,7 @@ from typing import Dict, Union, List
 
 from pythongame.core.common import *
 from pythongame.core.game_state import GameState, Event
+from pythongame.core.item_inventory import ItemEquipmentCategory, ItemWasActivated
 
 
 class AbstractItemEffect:
@@ -87,3 +88,12 @@ def register_item_effect(item_type: ItemType, effect: AbstractItemEffect):
 # There is only one effect instance per item type - having duplicate items with active effects may not be well supported
 def get_item_effect(item_type: ItemType) -> AbstractItemEffect:
     return _item_effects[item_type]
+
+
+def try_add_item_to_inventory(game_state: GameState, item_effect: AbstractItemEffect,
+                              item_equipment_category: ItemEquipmentCategory) -> bool:
+    result = game_state.player_state.item_inventory.try_add_item(item_effect, item_equipment_category)
+    if result:
+        if isinstance(result, ItemWasActivated):
+            item_effect.apply_start_effect(game_state)
+    return result is not None

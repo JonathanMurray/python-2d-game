@@ -10,8 +10,7 @@ from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import allocate_input_keys_for_abilities, ITEMS
 from pythongame.core.game_state import GameState
 from pythongame.core.hero_upgrades import pick_talent
-from pythongame.core.item_effects import get_item_effect
-from pythongame.core.item_inventory import ItemWasActivated
+from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
 from pythongame.core.sound_player import play_sound
 from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.map_file import create_game_state_from_json_file
@@ -92,10 +91,7 @@ class ChallengeBehavior(AbstractWorldBehavior):
     def _equip_item_on_startup(self, item_type):
         data = ITEMS[item_type]
         item_effect = get_item_effect(item_type)
-        result = self.game_state.player_state.item_inventory.try_add_item(item_effect, data.item_equipment_category)
-        if result:
-            if isinstance(result, ItemWasActivated):
-                item_effect.apply_start_effect(self.game_state)
+        try_add_item_to_inventory(self.game_state, item_effect, data.item_equipment_category)
 
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:
         self.total_time_played += time_passed
