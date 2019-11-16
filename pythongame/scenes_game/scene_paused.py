@@ -1,5 +1,5 @@
 import sys
-from typing import Optional
+from typing import Optional, Tuple
 
 import pygame
 
@@ -25,9 +25,8 @@ class PausedScene(AbstractScene):
         self.game_state = None
         self.ui_state = None
 
-    def initialize(self, game_state: GameState, ui_state: GameUiState):
-        self.game_state = game_state
-        self.ui_state = ui_state
+    def initialize(self, data: Tuple[GameState, GameUiState]):
+        self.game_state, self.ui_state = data
 
     def run_one_frame(self, _time_passed: Millis, _fps_string: str) -> Optional[SceneTransition]:
         scene_transition = None
@@ -38,7 +37,7 @@ class PausedScene(AbstractScene):
                 pygame.quit()
                 sys.exit()
             if isinstance(action, ActionPauseGame):
-                scene_transition = SceneId.PLAYING
+                scene_transition = SceneTransition(SceneId.PLAYING, None)
             if isinstance(action, ActionSaveGameState):
                 save_to_file(self.game_state)
 
@@ -65,7 +64,7 @@ class PausedScene(AbstractScene):
             player_state=self.game_state.player_state,
             ui_state=self.ui_state,
             player_speed_multiplier=self.game_state.player_entity.get_speed_multiplier(),
-            fps_string="...",
+            text_in_topleft_corner="...",
             is_paused=True,
             mouse_screen_position=(0, 0),  # We don't bother to show tooltips etc when game is paused
             dialog=None,  # We don't bother to show dialog etc when game is paused

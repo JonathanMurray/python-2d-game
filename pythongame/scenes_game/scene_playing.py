@@ -21,6 +21,7 @@ from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, Acti
 from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
 from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.player_file import save_to_file
+from pythongame.scene_creating_world.scene_creating_world import ChallengeBehavior
 from pythongame.scenes_game.game_engine import GameEngine
 from pythongame.scenes_game.game_ui_state import GameUiState
 from pythongame.scenes_game.game_ui_view import GameUiView
@@ -209,8 +210,13 @@ class PlayingScene(AbstractScene):
 
         dialog = self.dialog_handler.get_dialog_graphics()
 
+        if isinstance(self.world_behavior, ChallengeBehavior):
+            text_in_topleft_corner = "Time: " + str(self.world_behavior.total_time_played // 1000)
+        else:
+            text_in_topleft_corner = fps_string + " fps"
+
         events_triggered_from_ui: List[EventTriggeredFromUi] = self.ui_controller.render_and_handle_mouse(
-            self.game_state, fps_string, dialog, self.mouse_screen_position, mouse_was_just_clicked,
+            self.game_state, text_in_topleft_corner, dialog, self.mouse_screen_position, mouse_was_just_clicked,
             mouse_was_just_released)
 
         for event in events_triggered_from_ui:
@@ -241,7 +247,7 @@ class PlayingScene(AbstractScene):
         if scene_transition is not None:
             return scene_transition
         if transition_to_pause:
-            return SceneTransition(SceneId.PAUSED, self.game_state)
+            return SceneTransition(SceneId.PAUSED, (self.game_state, self.ui_state))
         return None
 
     def get_mouse_hover_world_pos(self):

@@ -479,7 +479,7 @@ class GameUiView:
             self,
             player_state: PlayerState,
             ui_state: GameUiState,
-            fps_string: str,
+            text_in_topleft_corner: str,
             is_paused: bool,
             player_speed_multiplier: float,
             mouse_screen_position: Tuple[int, int],
@@ -725,8 +725,8 @@ class GameUiView:
 
         self.screen_render.rect(COLOR_BORDER, self.ui_screen_area, 1)
 
-        self.screen_render.rect_transparent(Rect(0, 0, 50, 20), 100, COLOR_BLACK)
-        self.screen_render.text(self.font_debug_info, fps_string + " fps", (5, 3))
+        self.screen_render.rect_transparent(Rect(0, 0, 70, 20), 100, COLOR_BLACK)
+        self.screen_render.text(self.font_debug_info, text_in_topleft_corner, (5, 3))
 
         if message:
             self._message(message)

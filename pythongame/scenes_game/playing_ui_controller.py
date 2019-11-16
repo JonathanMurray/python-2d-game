@@ -62,7 +62,7 @@ class PlayingUiController:
         self.consumable_slot_being_dragged: Optional[int] = None
 
     def render_and_handle_mouse(
-            self, game_state: GameState, fps_string: str, dialog_graphics: DialogGraphics,
+            self, game_state: GameState, text_in_topleft_corner: str, dialog_graphics: DialogGraphics,
             mouse_screen_position: Tuple[int, int], mouse_was_just_clicked: bool,
             mouse_was_just_released: bool) -> List[EventTriggeredFromUi]:
 
@@ -78,7 +78,7 @@ class PlayingUiController:
             player_state=game_state.player_state,
             ui_state=self.ui_state,
             player_speed_multiplier=game_state.player_entity.get_speed_multiplier(),
-            fps_string=fps_string,
+            text_in_topleft_corner=text_in_topleft_corner,
             is_paused=False,
             mouse_screen_position=mouse_screen_position,
             dialog=dialog_graphics,
