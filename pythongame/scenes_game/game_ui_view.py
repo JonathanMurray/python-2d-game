@@ -277,6 +277,8 @@ class GameUiView:
             armor_stat_text += " " + str(player_state.armor_bonus)
         dodge_chance_text = \
             "     % dodge: " + str(int(round(player_state.base_dodge_chance * 100)))
+        if player_state.dodge_chance_bonus > 0:
+            dodge_chance_text += " +" + str(int(round(player_state.dodge_chance_bonus * 100)))
         block_chance_text = \
             "     % block: " + str(int(round(player_state.block_chance * 100)))
         block_reduction_text = \

@@ -541,6 +541,7 @@ class HeroStat(Enum):
     DAMAGE = 7
     LIFE_STEAL = 8
     BLOCK_AMOUNT = 9
+    DODGE_CHANCE = 10
 
 
 # Use to handle timing-related boilerplate for buffs, items, enemy behaviours, etc

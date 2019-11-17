@@ -18,9 +18,9 @@ BUFF_DURATION = Millis(3000)
 
 ABILITY_TYPE = AbilityType.DASH
 BUFF_TYPE = BuffType.AFTER_DASH
-ARMOR_BOOST = 3
 HEALTH_REGEN_BOOST = 5
 DAMAGE = 5
+DODGE_CHANCE_BOOST = 0.05
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
@@ -86,14 +86,16 @@ def _would_collide_with_wall(game_state: GameState, player_entity: WorldEntity, 
 
 class AfterDash(StatModifyingBuffEffect):
     def __init__(self):
-        super().__init__(BUFF_TYPE, {HeroStat.ARMOR: ARMOR_BOOST, HeroStat.HEALTH_REGEN: HEALTH_REGEN_BOOST})
+        super().__init__(BUFF_TYPE,
+                         {HeroStat.DODGE_CHANCE: DODGE_CHANCE_BOOST, HeroStat.HEALTH_REGEN: HEALTH_REGEN_BOOST})
 
 
 def register_dash_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_DASH
     register_ability_effect(ABILITY_TYPE, _apply_ability)
     description = "Dash over an enemy, dealing " + str(DAMAGE) + " damage. Then, gain +" + \
-                  str(ARMOR_BOOST) + " armor and +" + str(HEALTH_REGEN_BOOST) + " health regen"
+                  "{:.0f}".format(DODGE_CHANCE_BOOST * 100) + "% dodge chance and +" + \
+                  str(HEALTH_REGEN_BOOST) + " health regen"
     mana_cost = 12
     ability_data = AbilityData("Dash", ui_icon_sprite, mana_cost, Millis(4000), description, SoundId.ABILITY_DASH)
     register_ability_data(ABILITY_TYPE, ability_data)

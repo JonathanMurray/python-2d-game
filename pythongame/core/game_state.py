@@ -636,6 +636,8 @@ class GameState:
             player_state.life_steal_ratio += stat_delta
         elif hero_stat == HeroStat.BLOCK_AMOUNT:
             player_state.block_damage_reduction += stat_delta
+        elif hero_stat == HeroStat.DODGE_CHANCE:
+            player_state.dodge_chance_bonus += stat_delta
         else:
             raise Exception("Unhandled stat: " + str(hero_stat))
 

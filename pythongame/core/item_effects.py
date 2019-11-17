@@ -51,6 +51,8 @@ def _get_description_of_stat_modifier(hero_stat: HeroStat, delta: Union[int, flo
         return "+" + str(int(delta * 100)) + "% life steal"
     elif hero_stat == HeroStat.BLOCK_AMOUNT:
         return str(delta) + " block"
+    elif hero_stat == HeroStat.DODGE_CHANCE:
+        return "+" + str(delta) + "% dodge"
     else:
         raise Exception("Unhandled stat: " + str(hero_stat))
 

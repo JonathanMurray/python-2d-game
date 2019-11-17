@@ -51,6 +51,7 @@ class GameWorldView:
         self.font_buff_texts = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_message = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 14)
         self.font_debug_info = pygame.font.Font(None, 19)
+        self.font_visual_text_small = pygame.font.Font(None, 14)
         self.font_visual_text = pygame.font.Font(None, 19)
         self.font_visual_text_large = pygame.font.Font(None, 21)
         self.font_ui_icon_keys = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 12)
@@ -191,7 +192,13 @@ class GameWorldView:
         position = visual_text.position()
         # Adjust position so that long texts don't appear too far to the right
         translated_position = (position[0] - 3 * len(text), position[1])
-        font = self.font_visual_text_large if visual_text.emphasis else self.font_visual_text
+        # limit the space long texts claim on the screen (example "BLOCK" and "DODGE")
+        if len(text) >= 4:
+            font = self.font_visual_text_small
+        elif visual_text.emphasis:
+            font = self.font_visual_text_large
+        else:
+            font = self.font_visual_text
         self.world_render.text(font, text, translated_position, visual_text.color)
 
     def _visual_sprite(self, visual_sprite: VisualSprite):
