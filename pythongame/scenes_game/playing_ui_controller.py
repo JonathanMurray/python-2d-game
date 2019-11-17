@@ -43,6 +43,9 @@ class PickTalent(EventTriggeredFromUi):
 class StartDraggingItemOrConsumable(EventTriggeredFromUi):
     pass
 
+class ClickUiToggle(EventTriggeredFromUi):
+    pass
+
 
 def get_mouse_world_pos(game_state: GameState, mouse_screen_position: Tuple[int, int]):
     return (int(mouse_screen_position[0] + game_state.camera_world_area.x),
@@ -135,6 +138,7 @@ class PlayingUiController:
 
         if mouse_was_just_clicked and mouse_hover_event.ui_toggle is not None:
             self.ui_state.notify_toggle_was_clicked(mouse_hover_event.ui_toggle)
+            triggered_events.append(ClickUiToggle())
 
         # PICKING TALENTS
 

@@ -29,7 +29,7 @@ from pythongame.scenes_game.game_ui_view import GameUiView
 from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
 from pythongame.scenes_game.playing_ui_controller import PlayingUiController, EventTriggeredFromUi, \
     DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
-    PickTalent, StartDraggingItemOrConsumable
+    PickTalent, StartDraggingItemOrConsumable, ClickUiToggle
 
 
 class DialogHandler:
@@ -180,10 +180,13 @@ class PlayingScene(AbstractScene):
                     save_to_file(self.game_state)
                 if isinstance(action, ActionToggleUiTalents):
                     self.ui_state.notify_toggle_was_clicked(UiToggle.TALENTS)
+                    play_sound(SoundId.UI_TOGGLE)
                 if isinstance(action, ActionToggleUiStats):
                     self.ui_state.notify_toggle_was_clicked(UiToggle.STATS)
+                    play_sound(SoundId.UI_TOGGLE)
                 if isinstance(action, ActionToggleUiControls):
                     self.ui_state.notify_toggle_was_clicked(UiToggle.CONTROLS)
+                    play_sound(SoundId.UI_TOGGLE)
 
         # ------------------------------------
         #     UPDATE STATE BASED ON CLOCK
@@ -254,6 +257,9 @@ class PlayingScene(AbstractScene):
                 if not self.game_state.player_state.has_unpicked_talents():
                     self.ui_state.close_talent_toggle()
                 self.ui_state.set_message("Talent picked: " + name_of_picked)
+                play_sound(SoundId.EVENT_PICKED_TALENT)
+            elif isinstance(event, ClickUiToggle):
+                play_sound(SoundId.UI_TOGGLE)
             else:
                 raise Exception("Unhandled event: " + str(event))
 
