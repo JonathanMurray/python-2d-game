@@ -130,11 +130,14 @@ class GameWorldView:
         if not entity.visible:
             return
         if entity.sprite is None:
-            raise Exception("Entity has no sprite: " + str(entity))
+            raise Exception("Entity has no sprite value: " + str(entity))
         elif entity.sprite in self.images_by_sprite:
             image_with_relative_position = self._get_image_for_sprite(
                 entity.sprite, entity.direction, entity.movement_animation_progress)
             self.world_render.image_with_relative_pos(image_with_relative_position, entity.get_position())
+        elif entity.sprite == Sprite.NONE:
+            # This value is used by entities that don't use sprites. They might have other graphics (like VisualEffects)
+            pass
         else:
             raise Exception("Unhandled sprite: " + str(entity.sprite))
 

@@ -133,6 +133,7 @@ class AbilityType(Enum):
 
 
 class Sprite(Enum):
+    NONE = 0
     EFFECT_ABILITY_FROST_NOVA = 3
     PROJECTILE_PLAYER_FIREBALL = 11
     PROJECTILE_PLAYER_ARCANE_FIRE = 12
@@ -368,6 +369,7 @@ class ProjectileType(Enum):
     PLAYER_WHIRLWIND = 3
     PLAYER_ENTANGLING_ROOTS = 4
     ENEMY_GOBLIN_WARLOCK = 101
+    ENEMY_NECROMANCER = 102
 
 
 class SoundId(Enum):

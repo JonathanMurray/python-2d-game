@@ -264,11 +264,11 @@ class GameEngine:
 
         for visual_effect in self.game_state.visual_effects:
             visual_effect.update_position_if_attached_to_entity()
-            if visual_effect.attached_to_entity \
-                    and not visual_effect.attached_to_entity in [e.world_entity for e in
-                                                                 self.game_state.non_player_characters] \
-                    and visual_effect.attached_to_entity != self.game_state.player_entity:
-                visual_effect.has_expired = True
+            if visual_effect.attached_to_entity:
+                npcs = [e.world_entity for e in self.game_state.non_player_characters]
+                projectiles = [p.world_entity for p in self.game_state.projectile_entities]
+                if not visual_effect.attached_to_entity in npcs + projectiles + [self.game_state.player_entity]:
+                    visual_effect.has_expired = True
 
         # ------------------------------------
         #          HANDLE COLLISIONS

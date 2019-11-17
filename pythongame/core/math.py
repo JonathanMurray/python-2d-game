@@ -33,23 +33,6 @@ def random_direction():
     return random.choice([Direction.LEFT, Direction.RIGHT, Direction.UP, Direction.DOWN])
 
 
-# TODO: is this method needed?
-def get_direction_between(from_pos: Tuple[int, int], to_pos: Tuple[int, int]):
-    dx = to_pos[0] - from_pos[0]
-    dy = to_pos[1] - from_pos[1]
-    if abs(dx) > abs(dy):
-        if dx > 0:
-            direction = Direction.RIGHT
-        else:
-            direction = Direction.LEFT
-    else:
-        if dy < 0:
-            direction = Direction.UP
-        else:
-            direction = Direction.DOWN
-    return direction
-
-
 # Returns 2 directions, starting with vertical or horizontal depending on which is closer to the true direction
 # Example: (0, 0) -> (2, 1) gives [RIGHT, DOWN]
 # Example: (0, 0) -> (2, 0) gives [RIGHT, None]

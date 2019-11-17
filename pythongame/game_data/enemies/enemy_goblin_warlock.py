@@ -171,7 +171,7 @@ def register_goblin_warlock_enemy():
     register_entity_sprite_map(enemy_sprite, enemy_sprite_sheet, enemy_original_sprite_size, enemy_scaled_sprite_size,
                                enemy_indices_by_dir, (-12, -24))
 
-    register_projectile_controller(ProjectileType.ENEMY_GOBLIN_WARLOCK, ProjectileController)
+    register_projectile_controller(PROJECTILE_TYPE, ProjectileController)
 
     projectile_sprite_sheet = SpriteSheet("resources/graphics/goblin_fireball_entity.png")
     projectile_original_sprite_size = (132, 156)
