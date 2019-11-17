@@ -54,15 +54,17 @@ class ActionSaveGameState:
 class ActionToggleRenderDebugging:
     pass
 
+
 class ActionToggleUiTalents:
     pass
+
 
 class ActionToggleUiStats:
     pass
 
+
 class ActionToggleUiControls:
     pass
-
 
 
 # Used for determining when user hovers over something in UI.
@@ -82,6 +84,10 @@ class ActionMouseReleased:
     pass
 
 
+class ActionRightMouseClicked:
+    pass
+
+
 class ActionChangeDialogOption:
     def __init__(self, index_delta: int):
         self.index_delta = index_delta
@@ -94,6 +100,9 @@ DIRECTION_BY_PYGAME_MOVEMENT_KEY = {
     pygame.K_UP: Direction.UP,
     pygame.K_DOWN: Direction.DOWN
 }
+
+PYGAME_MOUSE_LEFT_BUTTON = 1
+PYGAME_MOUSE_RIGHT_BUTTON = 3
 
 
 def get_dialog_user_inputs() -> List[Any]:
@@ -194,10 +203,14 @@ class PlayingUserInputHandler:
                 actions.append(ActionMouseMovement(event.pos))
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                actions.append(ActionMouseClicked())
+                if event.button == PYGAME_MOUSE_LEFT_BUTTON:
+                    actions.append(ActionMouseClicked())
+                elif event.button == PYGAME_MOUSE_RIGHT_BUTTON:
+                    actions.append(ActionRightMouseClicked())
 
             if event.type == pygame.MOUSEBUTTONUP:
-                actions.append(ActionMouseReleased())
+                if event.button == PYGAME_MOUSE_LEFT_BUTTON:
+                    actions.append(ActionMouseReleased())
 
         if self._movement_keys_down:
             last_pressed_movement_key = self._movement_keys_down[-1]

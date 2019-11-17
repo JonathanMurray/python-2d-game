@@ -73,6 +73,16 @@ class GameEngine:
         consumable = create_consumable_on_ground(consumable_type, game_world_position)
         self.game_state.consumables_on_ground.append(consumable)
 
+    def try_switch_item_at_slot(self, item_slot: int) -> bool:
+        item_equip_events = self.game_state.player_state.item_inventory.try_switch_item_at_slot(item_slot)
+        for event in item_equip_events:
+            if isinstance(event, ItemWasDeactivated):
+                get_item_effect(event.item_type).apply_end_effect(self.game_state)
+            elif isinstance(event, ItemWasActivated):
+                get_item_effect(event.item_type).apply_start_effect(self.game_state)
+        did_switch_succeed = len(item_equip_events) > 0
+        return did_switch_succeed
+
     def try_pick_up_loot_from_ground(self, loot: LootableOnGround):
         if isinstance(loot, ConsumableOnGround):
             self._try_pick_up_consumable_from_ground(loot)

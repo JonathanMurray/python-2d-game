@@ -43,6 +43,12 @@ class PickTalent(EventTriggeredFromUi):
 class StartDraggingItemOrConsumable(EventTriggeredFromUi):
     pass
 
+
+class TrySwitchItemInInventory(EventTriggeredFromUi):
+    def __init__(self, slot: int):
+        self.slot = slot
+
+
 class ClickUiToggle(EventTriggeredFromUi):
     pass
 
@@ -66,7 +72,7 @@ class PlayingUiController:
     def render_and_handle_mouse(
             self, game_state: GameState, text_in_topleft_corner: str, dialog_graphics: DialogGraphics,
             mouse_screen_position: Tuple[int, int], mouse_was_just_clicked: bool,
-            mouse_was_just_released: bool) -> List[EventTriggeredFromUi]:
+            mouse_was_just_released: bool, right_mouse_was_just_clicked: bool) -> List[EventTriggeredFromUi]:
 
         triggered_events: List[EventTriggeredFromUi] = []
 
@@ -94,6 +100,8 @@ class PlayingUiController:
             if not game_state.player_state.item_inventory.is_slot_empty(hovered_item_slot_number):
                 self.item_slot_being_dragged = hovered_item_slot_number
                 triggered_events.append(StartDraggingItemOrConsumable())
+        if right_mouse_was_just_clicked and hovered_item_slot_number is not None:
+            triggered_events.append(TrySwitchItemInInventory(hovered_item_slot_number))
 
         if self.item_slot_being_dragged is not None:
             item_type = game_state.player_state.item_inventory.get_item_type_in_slot(self.item_slot_being_dragged)

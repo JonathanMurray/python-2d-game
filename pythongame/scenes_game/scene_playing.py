@@ -18,7 +18,7 @@ from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, Acti
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_dialog_user_inputs, \
     ActionChangeDialogOption, ActionSaveGameState, ActionPressShiftKey, ActionReleaseShiftKey, PlayingUserInputHandler, \
-    ActionToggleUiTalents, ActionToggleUiStats, ActionToggleUiControls
+    ActionToggleUiTalents, ActionToggleUiStats, ActionToggleUiControls, ActionRightMouseClicked
 from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
 from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.player_file import save_to_file
@@ -29,7 +29,7 @@ from pythongame.scenes_game.game_ui_view import GameUiView
 from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
 from pythongame.scenes_game.playing_ui_controller import PlayingUiController, EventTriggeredFromUi, \
     DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
-    PickTalent, StartDraggingItemOrConsumable, ClickUiToggle
+    PickTalent, StartDraggingItemOrConsumable, ClickUiToggle, TrySwitchItemInInventory
 
 
 class DialogHandler:
@@ -116,6 +116,7 @@ class PlayingScene(AbstractScene):
 
         mouse_was_just_clicked = False
         mouse_was_just_released = False
+        right_mouse_was_just_clicked = False
 
         # ------------------------------------
         #         HANDLE USER INPUT
@@ -157,6 +158,8 @@ class PlayingScene(AbstractScene):
                     mouse_was_just_clicked = True
                 if isinstance(action, ActionMouseReleased):
                     mouse_was_just_released = True
+                if isinstance(action, ActionRightMouseClicked):
+                    right_mouse_was_just_clicked = True
                 if isinstance(action, ActionPressSpaceKey):
                     ready_entity = self.player_interactions_state.get_entity_to_interact_with()
                     if ready_entity is not None:
@@ -232,7 +235,7 @@ class PlayingScene(AbstractScene):
 
         events_triggered_from_ui: List[EventTriggeredFromUi] = self.ui_controller.render_and_handle_mouse(
             self.game_state, text_in_topleft_corner, dialog, self.mouse_screen_position, mouse_was_just_clicked,
-            mouse_was_just_released)
+            mouse_was_just_released, right_mouse_was_just_clicked)
 
         for event in events_triggered_from_ui:
             if isinstance(event, StartDraggingItemOrConsumable):
@@ -260,6 +263,12 @@ class PlayingScene(AbstractScene):
                 play_sound(SoundId.EVENT_PICKED_TALENT)
             elif isinstance(event, ClickUiToggle):
                 play_sound(SoundId.UI_TOGGLE)
+            elif isinstance(event, TrySwitchItemInInventory):
+                did_switch_succeed = self.game_engine.try_switch_item_at_slot(event.slot)
+                if did_switch_succeed:
+                    play_sound(SoundId.UI_ITEM_WAS_MOVED)
+                else:
+                    play_sound(SoundId.INVALID_ACTION)
             else:
                 raise Exception("Unhandled event: " + str(event))
 
