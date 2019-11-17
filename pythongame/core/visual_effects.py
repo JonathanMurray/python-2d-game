@@ -177,6 +177,11 @@ def create_visual_block_text(entity: WorldEntity):
     return VisualText("BLOCK", (255, 255, 255), start_position, end_position, Millis(500))
 
 
+def create_visual_dodge_text(entity: WorldEntity):
+    start_position, end_position = _get_entity_text_positions(entity, 10)
+    return VisualText("DODGE", (255, 255, 255), start_position, end_position, Millis(500))
+
+
 def create_visual_damage_text(entity: WorldEntity, damage_amount: int, emphasis: bool = False):
     start_position, end_position = _get_entity_text_positions(entity, 40)
     color = (220, 50, 100) if emphasis else (220, 0, 0)

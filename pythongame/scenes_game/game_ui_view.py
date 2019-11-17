@@ -246,7 +246,7 @@ class GameUiView:
 
     def _render_stats(self, player_speed_multiplier: float, player_state: PlayerState, ui_position: Tuple[int, int]):
 
-        rect_container = Rect(ui_position[0], ui_position[1], 140, 210)
+        rect_container = Rect(ui_position[0], ui_position[1], 140, 230)
         self.ui_render.rect_transparent(rect_container, 140, (0, 0, 30))
 
         self.ui_render.text(self.font_tooltip_details, "STATS:", (ui_position[0] + 45, ui_position[1] + 10))
@@ -275,6 +275,8 @@ class GameUiView:
             armor_stat_text += " +" + str(player_state.armor_bonus)
         elif player_state.armor_bonus < 0:
             armor_stat_text += " " + str(player_state.armor_bonus)
+        dodge_chance_text = \
+            "     % dodge: " + str(int(round(player_state.base_dodge_chance * 100)))
         block_chance_text = \
             "     % block: " + str(int(round(player_state.block_chance * 100)))
         block_reduction_text = \
@@ -287,8 +289,9 @@ class GameUiView:
         self.ui_render.text(self.font_stats, speed_stat_text, (x_text, y_0 + 60), COLOR_WHITE)
         self.ui_render.text(self.font_stats, lifesteal_stat_text, (x_text, y_0 + 80), COLOR_WHITE)
         self.ui_render.text(self.font_stats, armor_stat_text, (x_text, y_0 + 100), COLOR_WHITE)
-        self.ui_render.text(self.font_stats, block_chance_text, (x_text, y_0 + 120), COLOR_WHITE)
-        self.ui_render.text(self.font_stats, block_reduction_text, (x_text, y_0 + 140), COLOR_WHITE)
+        self.ui_render.text(self.font_stats, dodge_chance_text, (x_text, y_0 + 120), COLOR_WHITE)
+        self.ui_render.text(self.font_stats, block_chance_text, (x_text, y_0 + 140), COLOR_WHITE)
+        self.ui_render.text(self.font_stats, block_reduction_text, (x_text, y_0 + 160), COLOR_WHITE)
 
     def _render_talents(self, talents: TalentsGraphics, ui_position: Tuple[int, int],
                         mouse_ui_position: Tuple[int, int]) -> Tuple[

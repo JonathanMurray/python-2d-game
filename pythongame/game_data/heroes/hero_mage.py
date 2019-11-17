@@ -43,6 +43,7 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
     armor_per_level = 0.3
     level_bonus = PlayerLevelBonus(health_per_level, mana_per_level, armor_per_level)
     armor = 1
+    dodge_chance = 0
     consumable_slots = {
         1: [],
         2: [],
@@ -70,6 +71,7 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
                                            HeroUpgrade.ABILITY_FIREBALL_MANA_COST,
                                            UiIconSprite.ABILITY_FIREBALL))
     })
+    block_chance = 0.1
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus,
-        talents_state, 0.1)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, dodge_chance,
+        level_bonus, talents_state, block_chance)

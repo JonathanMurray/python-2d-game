@@ -44,6 +44,7 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
     armor_per_level = 1.5
     level_bonus = PlayerLevelBonus(health_per_level, mana_per_level, armor_per_level)
     armor = 3
+    dodge_chance = 0.05
     consumable_slots = {
         1: [],
         2: [],
@@ -73,6 +74,7 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
             TalentChoiceOption("Quick", "Reduces the cooldown of your slash ability", HeroUpgrade.ABILITY_SLASH_CD,
                                UiIconSprite.ABILITY_SWORD_SLASH))
     })
+    block_chance = 0.2
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor,
-        level_bonus, talents_state, 0.2)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, dodge_chance,
+        level_bonus, talents_state, block_chance)

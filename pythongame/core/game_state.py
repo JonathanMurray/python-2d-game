@@ -357,7 +357,8 @@ class PlayerState:
     def __init__(self, health_resource: HealthOrManaResource, mana_resource: HealthOrManaResource,
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
                  item_inventory: ItemInventory, new_level_abilities: Dict[int, AbilityType], hero_id: HeroId,
-                 armor: int, level_bonus: PlayerLevelBonus, talents_state: TalentsState, block_chance: float):
+                 armor: int, base_dodge_chance: float, level_bonus: PlayerLevelBonus, talents_state: TalentsState,
+                 block_chance: float):
         self.health_resource: HealthOrManaResource = health_resource
         self.mana_resource: HealthOrManaResource = mana_resource
         self.consumable_inventory = consumable_inventory
@@ -379,6 +380,8 @@ class PlayerState:
         self.hero_id: HeroId = hero_id
         self.base_armor: float = armor  # depends on which hero is being played
         self.armor_bonus: int = 0  # affected by items/buffs. [Change it additively]
+        self.base_dodge_chance: float = base_dodge_chance  # depends on which hero is being used
+        self.dodge_chance_bonus: float = 0  # affected by items/buffs. [Change it additively]
         self.level_bonus = level_bonus
         # TODO Improve encapsulation of talents logic and state
         self.talents_state: TalentsState = talents_state

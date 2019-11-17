@@ -40,6 +40,7 @@ def _get_initial_player_state_god() -> InitialPlayerStateData:
     mana_regen = 100
     level_bonus = PlayerLevelBonus(0, 0, 0)
     armor = 99
+    dodge_chance = 0.05
     consumable_slots = {
         1: [],
         2: [],
@@ -52,9 +53,10 @@ def _get_initial_player_state_god() -> InitialPlayerStateData:
     talents_state = TalentsState({
         2: GENERIC_TALENT_CHOICE
     })
+    block_chance = 0
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus,
-        talents_state, 0)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, dodge_chance,
+        level_bonus, talents_state, block_chance)
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:

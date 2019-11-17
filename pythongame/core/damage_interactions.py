@@ -9,7 +9,7 @@ from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntit
     PlayerDamagedEnemy, PlayerWasAttackedEvent, PlayerBlockedEvent
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import create_visual_damage_text, VisualRect, create_visual_healing_text, \
-    create_visual_mana_text, create_visual_block_text
+    create_visual_mana_text, create_visual_block_text, create_visual_dodge_text
 
 
 class DamageType(Enum):
@@ -45,7 +45,11 @@ def deal_damage_to_player(game_state: GameState, base_amount: float, damage_type
     damage_reduction = 0
     # Armor only reduces physical damage
     if damage_type == DamageType.PHYSICAL:
-        if random.random() < player_state.block_chance:
+        dodge_chance = player_state.base_dodge_chance + player_state.dodge_chance_bonus
+        if random.random() < dodge_chance:
+            game_state.visual_effects.append(create_visual_dodge_text(game_state.player_entity))
+            damage_reduction = base_amount  # Somewhat of a hack. All damage is mitigated when dodging
+        elif random.random() < player_state.block_chance:
             if player_state.block_damage_reduction > 0:
                 game_state.visual_effects.append(create_visual_block_text(game_state.player_entity))
             damage_reduction += player_state.block_damage_reduction

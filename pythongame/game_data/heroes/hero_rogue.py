@@ -44,6 +44,7 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
     armor_per_level = 1
     level_bonus = PlayerLevelBonus(health_per_level, mana_per_level, armor_per_level)
     armor = 2
+    dodge_chance = 0.1
     consumable_slots = {
         1: [],
         2: [],
@@ -74,6 +75,7 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
                                HeroUpgrade.ABILITY_SHIV_FULL_HEALTH_BONUS_DAMAGE,
                                UiIconSprite.ABILITY_SHIV)),
     })
+    block_chance = 0.15
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus,
-        talents_state, 0.15)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, dodge_chance,
+        level_bonus, talents_state, block_chance)
