@@ -144,7 +144,8 @@ class ItemInventory:
                 return ItemActivationStateDidNotChange(item_effect.get_item_type())
         return None
 
-    def put_item_in_inventory_slot(self, item_effect, item_equipment_category: ItemEquipmentCategory, slot_number: int):
+    def put_item_in_inventory_slot(self, item_effect, item_equipment_category: ItemEquipmentCategory,
+                                   slot_number: int) -> ItemActivationEvent:
         item_in_slot = ItemInSlot(item_effect, item_equipment_category)
         slot = self.slots[slot_number]
         if not slot.is_empty():

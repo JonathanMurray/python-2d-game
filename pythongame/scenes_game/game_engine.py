@@ -50,12 +50,15 @@ class GameEngine:
     def drag_item_between_inventory_slots(self, slot_1: int, slot_2: int) -> bool:
         item_equip_events = self.game_state.player_state.item_inventory.switch_item_slots(slot_1, slot_2)
         for event in item_equip_events:
-            if isinstance(event, ItemWasDeactivated):
-                get_item_effect(event.item_type).apply_end_effect(self.game_state)
-            elif isinstance(event, ItemWasActivated):
-                get_item_effect(event.item_type).apply_start_effect(self.game_state)
+            self._handle_item_equip_event(event)
         did_switch_succeed = len(item_equip_events) > 0
         return did_switch_succeed
+
+    def _handle_item_equip_event(self, event):
+        if isinstance(event, ItemWasDeactivated):
+            get_item_effect(event.item_type).apply_end_effect(self.game_state)
+        elif isinstance(event, ItemWasActivated):
+            get_item_effect(event.item_type).apply_start_effect(self.game_state)
 
     def drag_consumable_between_inventory_slots(self, from_slot: int, to_slot: int):
         self.game_state.player_state.consumable_inventory.drag_consumable_between_inventory_slots(from_slot, to_slot)
@@ -63,8 +66,7 @@ class GameEngine:
     def drop_inventory_item_on_ground(self, item_slot: int, game_world_position: Tuple[int, int]):
         item_equip_event = self.game_state.player_state.item_inventory.remove_item_from_slot(item_slot)
         item_type = item_equip_event.item_type
-        if isinstance(item_equip_event, ItemWasDeactivated):
-            get_item_effect(item_type).apply_end_effect(self.game_state)
+        self._handle_item_equip_event(item_equip_event)
         item = create_item_on_ground(item_type, game_world_position)
         self.game_state.items_on_ground.append(item)
 
@@ -76,10 +78,7 @@ class GameEngine:
     def try_switch_item_at_slot(self, item_slot: int) -> bool:
         item_equip_events = self.game_state.player_state.item_inventory.try_switch_item_at_slot(item_slot)
         for event in item_equip_events:
-            if isinstance(event, ItemWasDeactivated):
-                get_item_effect(event.item_type).apply_end_effect(self.game_state)
-            elif isinstance(event, ItemWasActivated):
-                get_item_effect(event.item_type).apply_start_effect(self.game_state)
+            self._handle_item_equip_event(event)
         did_switch_succeed = len(item_equip_events) > 0
         return did_switch_succeed
 
@@ -109,10 +108,9 @@ class GameEngine:
                 item_effect = get_item_effect(item_type)
                 item_data = ITEMS[item_type]
                 item_equipment_category = item_data.item_equipment_category
-                result = self.game_state.player_state.item_inventory.put_item_in_inventory_slot(
+                event = self.game_state.player_state.item_inventory.put_item_in_inventory_slot(
                     item_effect, item_equipment_category, slot_number)
-                if isinstance(result, ItemWasActivated):
-                    item_effect.apply_start_effect(self.game_state)
+                self._handle_item_equip_event(event)
 
     def _try_pick_up_consumable_from_ground(self, consumable: ConsumableOnGround):
         # TODO move some logic into ConsumableInventory class
