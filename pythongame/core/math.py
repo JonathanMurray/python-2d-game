@@ -52,6 +52,7 @@ def get_direction_between(from_pos: Tuple[int, int], to_pos: Tuple[int, int]):
 
 # Returns 2 directions, starting with vertical or horizontal depending on which is closer to the true direction
 # Example: (0, 0) -> (2, 1) gives [RIGHT, DOWN]
+# Example: (0, 0) -> (2, 0) gives [RIGHT, None]
 # noinspection PyShadowingNames
 def get_directions_to_position(from_entity, position) -> Tuple[Direction, Direction]:
     dx = position[0] - from_entity.x
