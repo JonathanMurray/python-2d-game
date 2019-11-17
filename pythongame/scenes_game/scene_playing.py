@@ -251,6 +251,8 @@ class PlayingScene(AbstractScene):
                 play_sound(SoundId.UI_ITEM_WAS_DROPPED_ON_GROUND)
             elif isinstance(event, PickTalent):
                 name_of_picked = pick_talent(self.game_state, event.option_index)
+                if not self.game_state.player_state.has_unpicked_talents():
+                    self.ui_state.close_talent_toggle()
                 self.ui_state.set_message("Talent picked: " + name_of_picked)
             else:
                 raise Exception("Unhandled event: " + str(event))

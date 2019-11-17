@@ -380,6 +380,7 @@ class PlayerState:
         self.base_armor: int = armor  # depends on which hero is being played
         self.armor_bonus: int = 0  # affected by items/buffs. [Change it additively]
         self.level_bonus = level_bonus
+        # TODO Improve encapsulation of talents logic and state
         self.talents_state: TalentsState = talents_state
         self.chosen_talent_option_indices: List[int] = []
         self._upgrades: List[HeroUpgrade] = []
@@ -472,6 +473,12 @@ class PlayerState:
             raise Exception("Illegal talent choice option: " + str(option_index))
         self._upgrades.append(option.upgrade)
         return option.name, option.upgrade
+
+    def has_unpicked_talents(self):
+        num_available_talents = len(
+            [level for (level, choice) in self.talents_state.choices_by_level.items() if level <= self.level])
+        num_picked_talents = len(self.chosen_talent_option_indices)
+        return num_picked_talents < num_available_talents
 
     def gain_upgrade(self, upgrade: HeroUpgrade):
         self._upgrades.append(upgrade)

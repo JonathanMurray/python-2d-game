@@ -71,6 +71,10 @@ class GameUiState:
         if self.toggle_enabled != UiToggle.TALENTS:
             self.talent_toggle_has_unseen_talents = True
 
+    def close_talent_toggle(self):
+        if self.toggle_enabled == UiToggle.TALENTS:
+            self.toggle_enabled = None
+
     def notify_time_passed(self, time_passed: Millis):
         self._ticks_since_minimap_updated += time_passed
         if self._ticks_since_minimap_updated > MINIMAP_UPDATE_INTERVAL:
