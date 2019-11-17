@@ -357,6 +357,13 @@
         150,
         300
       ]
+    },
+    {
+      "item_type": "THIEFS_MASK",
+      "position": [
+        150,
+        350
+      ]
     }
   ],
   "money_piles_on_ground": [],

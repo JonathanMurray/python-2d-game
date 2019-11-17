@@ -134,6 +134,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.WARLORDS_ARMOR),
     MapEditorWorldEntity.item(ItemType.HEALING_WAND),
     MapEditorWorldEntity.item(ItemType.SKULL_SHIELD),
+    MapEditorWorldEntity.item(ItemType.THIEFS_MASK),
 
     MapEditorWorldEntity.money(1),
 
