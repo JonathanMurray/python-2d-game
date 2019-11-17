@@ -40,12 +40,13 @@ class StoryBehavior(AbstractWorldBehavior):
         self.game_state = game_state
         self.ui_state = ui_state
 
-    def on_startup(self):
+    def on_startup(self, new_hero_was_created: bool):
         self.ui_state.set_message("Hint: " + get_random_hint())
-        self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.HEALTH_LESSER)
-        self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.HEALTH_LESSER)
-        self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.MANA_LESSER)
-        self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.MANA_LESSER)
+        if new_hero_was_created:
+            self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.HEALTH_LESSER)
+            self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.HEALTH_LESSER)
+            self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.MANA_LESSER)
+            self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.MANA_LESSER)
 
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:
         if self.game_state.player_state.has_upgrade(HeroUpgrade.HAS_WON_GAME):
@@ -72,22 +73,23 @@ class ChallengeBehavior(AbstractWorldBehavior):
         self.total_time_played = 0
         self.init_flags = init_flags
 
-    def on_startup(self):
+    def on_startup(self, new_hero_was_created: bool):
         self.ui_state.set_message("Challenge starting...")
-        self.game_state.player_state.money += 100
-        self.game_engine.gain_levels(4)
+        if new_hero_was_created:
+            self.game_state.player_state.money += 100
+            self.game_engine.gain_levels(4)
 
-        consumables = [ConsumableType.HEALTH,
-                       ConsumableType.HEALTH,
-                       ConsumableType.MANA,
-                       ConsumableType.MANA,
-                       ConsumableType.SPEED,
-                       ConsumableType.POWER]
-        for consumable_type in consumables:
-            self.game_state.player_state.consumable_inventory.add_consumable(consumable_type)
-        items = [ItemType.LEATHER_COWL, ItemType.LEATHER_ARMOR, ItemType.WOODEN_SWORD, ItemType.WOODEN_SHIELD]
-        for item_type in items:
-            self._equip_item_on_startup(item_type)
+            consumables = [ConsumableType.HEALTH,
+                           ConsumableType.HEALTH,
+                           ConsumableType.MANA,
+                           ConsumableType.MANA,
+                           ConsumableType.SPEED,
+                           ConsumableType.POWER]
+            for consumable_type in consumables:
+                self.game_state.player_state.consumable_inventory.add_consumable(consumable_type)
+            items = [ItemType.LEATHER_COWL, ItemType.LEATHER_ARMOR, ItemType.WOODEN_SWORD, ItemType.WOODEN_SHIELD]
+            for item_type in items:
+                self._equip_item_on_startup(item_type)
 
     def _equip_item_on_startup(self, item_type):
         data = ITEMS[item_type]
@@ -117,7 +119,7 @@ class CreatingWorldScene(AbstractScene):
         self.flags: InitFlags = None
 
     def initialize(self, flags: InitFlags):
-        self.flags = flags  # map hero money level
+        self.flags = flags  # map hero money level saved
 
     def run_one_frame(self, _time_passed: Millis, _fps_string: str) -> Optional[SceneTransition]:
 
@@ -159,4 +161,6 @@ class CreatingWorldScene(AbstractScene):
 
         game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
 
-        return SceneTransition(SceneId.PLAYING, (game_state, game_engine, world_behavior, ui_state))
+        new_hero_was_created = saved_player_state is None
+        scene_transition_data = (game_state, game_engine, world_behavior, ui_state, new_hero_was_created)
+        return SceneTransition(SceneId.PLAYING, scene_transition_data)

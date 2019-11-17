@@ -6,7 +6,7 @@ from pythongame.scenes_game.game_engine import EngineEvent
 
 class AbstractWorldBehavior:
 
-    def on_startup(self):
+    def on_startup(self, new_hero_was_created: bool):
         pass
 
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:

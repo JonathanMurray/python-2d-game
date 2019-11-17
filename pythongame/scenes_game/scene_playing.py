@@ -95,11 +95,11 @@ class PlayingScene(AbstractScene):
         self.ui_controller: PlayingUiController = None
         self.user_input_handler = PlayingUserInputHandler()
 
-    def initialize(self, data: Tuple[GameState, GameEngine, AbstractWorldBehavior, GameUiState]):
+    def initialize(self, data: Tuple[GameState, GameEngine, AbstractWorldBehavior, GameUiState, bool]):
         if data is not None:
-            self.game_state, self.game_engine, self.world_behavior, self.ui_state = data
+            self.game_state, self.game_engine, self.world_behavior, self.ui_state, new_hero_was_created = data
             self.ui_controller = PlayingUiController(self.ui_view, self.ui_state)
-            self.world_behavior.on_startup()
+            self.world_behavior.on_startup(new_hero_was_created)
         # In case this scene has been running before, we make sure to clear any state. Otherwise keys that were held
         # down would still be considered active!
         self.user_input_handler = PlayingUserInputHandler()
