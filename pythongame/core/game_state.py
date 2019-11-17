@@ -377,7 +377,7 @@ class PlayerState:
         self.base_damage_modifier: float = 1  # only affected by level. [Changes multiplicatively]
         self.damage_modifier_bonus: float = 0  # affected by items. [Change it additively]
         self.hero_id: HeroId = hero_id
-        self.base_armor: int = armor  # depends on which hero is being played
+        self.base_armor: float = armor  # depends on which hero is being played
         self.armor_bonus: int = 0  # affected by items/buffs. [Change it additively]
         self.level_bonus = level_bonus
         # TODO Improve encapsulation of talents logic and state

@@ -1,3 +1,4 @@
+import math
 import random
 from enum import Enum
 from typing import Optional
@@ -50,7 +51,7 @@ def deal_damage_to_player(game_state: GameState, base_amount: float, damage_type
             damage_reduction += player_state.block_damage_reduction
             player_state.notify_about_event(PlayerBlockedEvent(npc_attacker), game_state)
         # Armor has a random element to it. Example: 5 armor absorbs 0-5 damage
-        damage_reduction += random.randint(0, player_state.base_armor + player_state.armor_bonus)
+        damage_reduction += random.randint(0, math.floor(player_state.base_armor) + player_state.armor_bonus)
     amount = max(0.0, base_amount - damage_reduction)
     health_lost_integer = player_state.health_resource.lose(amount)
     if health_lost_integer > 0:

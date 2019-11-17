@@ -1,3 +1,4 @@
+import math
 from typing import List, Tuple, Optional
 
 import pygame
@@ -269,7 +270,7 @@ class GameUiView:
         lifesteal_stat_text = \
             "% life steal: " + str(int(round(player_life_steal * 100)))
         armor_stat_text = \
-            "       armor: " + str(player_state.base_armor)
+            "       armor: " + str(math.floor(player_state.base_armor))
         if player_state.armor_bonus > 0:
             armor_stat_text += " +" + str(player_state.armor_bonus)
         elif player_state.armor_bonus < 0:
