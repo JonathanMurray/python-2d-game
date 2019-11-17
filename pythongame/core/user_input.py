@@ -54,6 +54,16 @@ class ActionSaveGameState:
 class ActionToggleRenderDebugging:
     pass
 
+class ActionToggleUiTalents:
+    pass
+
+class ActionToggleUiStats:
+    pass
+
+class ActionToggleUiControls:
+    pass
+
+
 
 # Used for determining when user hovers over something in UI.
 # TODO: Handle the dependency between user input and the visual interface in a better way
@@ -155,6 +165,12 @@ class PlayingUserInputHandler:
                     actions.append(ActionPressShiftKey())
                 elif event.key == pygame.K_s:
                     actions.append(ActionSaveGameState())
+                elif event.key == pygame.K_t:
+                    actions.append(ActionToggleUiTalents())
+                elif event.key == pygame.K_a:
+                    actions.append(ActionToggleUiStats())
+                elif event.key == pygame.K_c:
+                    actions.append(ActionToggleUiControls())
                 else:
                     for ability_type in KEYS_BY_ABILITY_TYPE:
                         if event.key == KEYS_BY_ABILITY_TYPE[ability_type].pygame_key:

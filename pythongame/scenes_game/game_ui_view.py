@@ -710,12 +710,12 @@ class GameUiView:
             self._render_controls(pos_toggled_content)
 
         is_mouse_hovering_stats_toggle = self._toggle_in_ui(
-            x_toggles, y_1, "STATS", ui_state.toggle_enabled == UiToggle.STATS, mouse_ui_position, False)
+            x_toggles, y_1, "STATS    [A]", ui_state.toggle_enabled == UiToggle.STATS, mouse_ui_position, False)
         is_mouse_hovering_talents_toggle = self._toggle_in_ui(
-            x_toggles, y_1 + 30, "TALENTS", ui_state.toggle_enabled == UiToggle.TALENTS,
+            x_toggles, y_1 + 30, "TALENTS  [T]", ui_state.toggle_enabled == UiToggle.TALENTS,
             mouse_ui_position, ui_state.talent_toggle_has_unseen_talents)
         is_mouse_hovering_help_toggle = self._toggle_in_ui(
-            x_toggles, y_1 + 60, "CONTROLS", ui_state.toggle_enabled == UiToggle.CONTROLS, mouse_ui_position, False)
+            x_toggles, y_1 + 60, "CONTROLS [C]", ui_state.toggle_enabled == UiToggle.CONTROLS, mouse_ui_position, False)
         if is_mouse_hovering_stats_toggle:
             hovered_ui_toggle = UiToggle.STATS
         elif is_mouse_hovering_talents_toggle:

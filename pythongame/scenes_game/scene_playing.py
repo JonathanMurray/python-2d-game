@@ -17,13 +17,14 @@ from pythongame.core.sound_player import play_sound
 from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_dialog_user_inputs, \
-    ActionChangeDialogOption, ActionSaveGameState, ActionPressShiftKey, ActionReleaseShiftKey, PlayingUserInputHandler
+    ActionChangeDialogOption, ActionSaveGameState, ActionPressShiftKey, ActionReleaseShiftKey, PlayingUserInputHandler, \
+    ActionToggleUiTalents, ActionToggleUiStats, ActionToggleUiControls
 from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
 from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.player_file import save_to_file
 from pythongame.scene_creating_world.scene_creating_world import ChallengeBehavior
 from pythongame.scenes_game.game_engine import GameEngine
-from pythongame.scenes_game.game_ui_state import GameUiState
+from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.game_ui_view import GameUiView
 from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
 from pythongame.scenes_game.playing_ui_controller import PlayingUiController, EventTriggeredFromUi, \
@@ -177,6 +178,12 @@ class PlayingScene(AbstractScene):
                     self.is_shift_key_held_down = False
                 if isinstance(action, ActionSaveGameState):
                     save_to_file(self.game_state)
+                if isinstance(action, ActionToggleUiTalents):
+                    self.ui_state.notify_toggle_was_clicked(UiToggle.TALENTS)
+                if isinstance(action, ActionToggleUiStats):
+                    self.ui_state.notify_toggle_was_clicked(UiToggle.STATS)
+                if isinstance(action, ActionToggleUiControls):
+                    self.ui_state.notify_toggle_was_clicked(UiToggle.CONTROLS)
 
         # ------------------------------------
         #     UPDATE STATE BASED ON CLOCK
