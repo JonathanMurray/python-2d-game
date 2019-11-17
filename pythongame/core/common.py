@@ -297,6 +297,7 @@ class BuffType(Enum):
     PROTECTED_BY_STONE_AMULET = 37
     ELIXIR_OF_POWER = 38
     BUFFED_BY_HEALING_WAND = 39
+    ENEMY_GOBLIN_SPEARMAN_SPRINT = 40
 
 
 class ItemType(Enum):

@@ -28,6 +28,7 @@ from pythongame.game_data.consumables.potion_mana import register_mana_potion
 from pythongame.game_data.consumables.potion_speed import register_speed_potion
 from pythongame.game_data.consumables.scroll_ability_summon import register_summon_scroll
 from pythongame.game_data.decorations import register_decorations
+from pythongame.game_data.enemies.buff_goblin_sprint import register_goblin_sprint_buff
 from pythongame.game_data.enemies.enemy_dark_reaper import register_dark_reaper_enemy
 from pythongame.game_data.enemies.enemy_goblin_spearman import register_goblin_spearman_enemy
 from pythongame.game_data.enemies.enemy_goblin_spearman_elite import register_goblin_spearman_elite_enemy
@@ -153,6 +154,7 @@ def register_all_game_data():
     register_goblin_spearman_enemy()
     register_goblin_spearman_elite_enemy()
     register_goblin_warrior_enemy()
+    register_goblin_sprint_buff()
 
     register_hero_mage()
     register_hero_warrior()
