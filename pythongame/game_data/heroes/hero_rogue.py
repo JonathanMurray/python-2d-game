@@ -70,7 +70,7 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
             TalentChoiceOption("Reset", "The cooldown and mana-cost of your dash ability is reset if it kills an enemy",
                                HeroUpgrade.ABILITY_DASH_KILL_RESET, UiIconSprite.ABILITY_DASH),
             TalentChoiceOption("Init",
-                               "Shiv deals bonus damage on enemies that are at full health, unless your stealthed",
+                               "Shiv deals bonus damage on enemies that are at full health, unless you're stealthed",
                                HeroUpgrade.ABILITY_SHIV_FULL_HEALTH_BONUS_DAMAGE,
                                UiIconSprite.ABILITY_SHIV)),
     })
