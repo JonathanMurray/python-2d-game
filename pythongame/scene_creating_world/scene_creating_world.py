@@ -65,11 +65,12 @@ class StoryBehavior(AbstractWorldBehavior):
 
 class ChallengeBehavior(AbstractWorldBehavior):
 
-    def __init__(self, game_state: GameState, ui_state: GameUiState, game_engine: GameEngine):
+    def __init__(self, game_state: GameState, ui_state: GameUiState, game_engine: GameEngine, init_flags: InitFlags):
         self.game_state = game_state
         self.ui_state = ui_state
         self.game_engine = game_engine
         self.total_time_played = 0
+        self.init_flags = init_flags
 
     def on_startup(self):
         self.ui_state.set_message("Challenge starting...")
@@ -99,8 +100,7 @@ class ChallengeBehavior(AbstractWorldBehavior):
 
     def handle_event(self, event: EngineEvent) -> Optional[SceneTransition]:
         if event == EngineEvent.PLAYER_DIED:
-            print("TODO: Go to some other screen")
-            return SceneTransition(SceneId.PICKING_HERO, None)
+            return SceneTransition(SceneId.PICKING_HERO, self.init_flags)
         elif event == EngineEvent.ENEMY_DIED:
             num_enemies = len([npc for npc in self.game_state.non_player_characters if npc.is_enemy])
             if num_enemies == 0:
@@ -130,7 +130,7 @@ class CreatingWorldScene(AbstractScene):
         ui_state = GameUiState()
         game_engine = GameEngine(game_state, ui_state)
         if self.flags.map_file_path == 'resources/maps/challenge.json':
-            world_behavior = ChallengeBehavior(game_state, ui_state, game_engine)
+            world_behavior = ChallengeBehavior(game_state, ui_state, game_engine, self.flags)
         else:
             world_behavior = StoryBehavior(game_state, ui_state)
 
