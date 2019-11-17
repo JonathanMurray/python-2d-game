@@ -4,7 +4,7 @@ from pythongame.core.ability_effects import register_ability_effect, AbilityResu
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, AbilityType, UiIconSprite, SoundId, PeriodicTimer, HeroUpgrade
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
-    register_buff_text
+    register_buff_text, ABILITIES
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, BuffEventOutcome, \
     EnemyDiedEvent
 from pythongame.core.hero_upgrades import register_hero_upgrade_effect
@@ -17,6 +17,7 @@ LIFE_STEAL_BONUS_RATIO = 0.15
 SPEED_BONUS = 0.3
 INCREASED_DURATION_FROM_KILL = Millis(1000)
 INCREASED_DURATION_FROM_KILL_WITH_UPGRADE = Millis(1500)
+SWORD_SLASH_CD_BONUS = Millis(100)
 
 # This variable is updated when picking the talent
 has_blood_lust_duration_increase_upgrade = False
@@ -35,6 +36,8 @@ class BloodLust(AbstractBuffEffect):
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.life_steal_ratio += LIFE_STEAL_BONUS_RATIO
         game_state.player_entity.add_to_speed_multiplier(SPEED_BONUS)
+        sword_slash_data = ABILITIES[AbilityType.SWORD_SLASH]
+        sword_slash_data.cooldown -= SWORD_SLASH_CD_BONUS
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
@@ -46,6 +49,8 @@ class BloodLust(AbstractBuffEffect):
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.life_steal_ratio -= LIFE_STEAL_BONUS_RATIO
         game_state.player_entity.add_to_speed_multiplier(-SPEED_BONUS)
+        sword_slash_data = ABILITIES[AbilityType.SWORD_SLASH]
+        sword_slash_data.cooldown += SWORD_SLASH_CD_BONUS
 
     def get_buff_type(self):
         return BUFF_TYPE
@@ -68,10 +73,12 @@ def register_bloodlust_ability():
     ability_type = AbilityType.BLOOD_LUST
     register_ability_effect(ability_type, _apply_ability)
     ui_icon_sprite = UiIconSprite.ABILITY_BLOODLUST
-    description = "Gain +" + str(int(LIFE_STEAL_BONUS_RATIO * 100)) + "% lifesteal " + \
-                  "and +" + str(int(SPEED_BONUS * 100)) + "% increased movement speed for " + \
-                  "{:.0f}".format(BUFF_DURATION / 1000) + "s. Duration is increased by " + \
-                  "{:.0f}".format(INCREASED_DURATION_FROM_KILL / 1000) + "s for each enemy killed."
+    description = "Gain Bloodlust for " + "{:.0f}".format(BUFF_DURATION / 1000) + "s " + \
+                  "(+" + str(int(LIFE_STEAL_BONUS_RATIO * 100)) + "% lifesteal, " + \
+                  "reduced Slash cooldown, " + \
+                  "+" + str(int(SPEED_BONUS * 100)) + "% movement speed). " + \
+                  "Duration is increased by " + "{:.0f}".format(INCREASED_DURATION_FROM_KILL / 1000) + \
+                  "s for each enemy killed."
     register_ability_data(
         ability_type,
         AbilityData("Bloodlust", ui_icon_sprite, 25, COOLDOWN, description, SoundId.ABILITY_BLOODLUST))
