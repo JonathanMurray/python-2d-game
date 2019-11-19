@@ -6,6 +6,16 @@ from pygame.rect import Rect
 from pythongame.core.common import Direction
 
 
+def rect_from_corners(corner1: Tuple[int, int], corner2: Tuple[int, int]):
+    x_values = [corner1[0], corner2[0]]
+    y_values = [corner1[1], corner2[1]]
+    x0 = min(x_values)
+    y0 = min(y_values)
+    w = max(x_values) - x0
+    h = max(y_values) - y0
+    return Rect(x0, y0, w, h)
+
+
 # deprecated - only used by view
 def is_point_in_rect(point: Tuple[int, int], rect: Rect):
     return rect.collidepoint(point[0], point[1])
@@ -23,25 +33,9 @@ def random_direction():
     return random.choice([Direction.LEFT, Direction.RIGHT, Direction.UP, Direction.DOWN])
 
 
-# TODO: is this method needed?
-def get_direction_between(from_pos: Tuple[int, int], to_pos: Tuple[int, int]):
-    dx = to_pos[0] - from_pos[0]
-    dy = to_pos[1] - from_pos[1]
-    if abs(dx) > abs(dy):
-        if dx > 0:
-            direction = Direction.RIGHT
-        else:
-            direction = Direction.LEFT
-    else:
-        if dy < 0:
-            direction = Direction.UP
-        else:
-            direction = Direction.DOWN
-    return direction
-
-
 # Returns 2 directions, starting with vertical or horizontal depending on which is closer to the true direction
 # Example: (0, 0) -> (2, 1) gives [RIGHT, DOWN]
+# Example: (0, 0) -> (2, 0) gives [RIGHT, None]
 # noinspection PyShadowingNames
 def get_directions_to_position(from_entity, position) -> Tuple[Direction, Direction]:
     dx = position[0] - from_entity.x

@@ -1,4 +1,4 @@
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import *
@@ -8,26 +8,29 @@ from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS,
     NpcCategory, PORTALS, ABILITIES
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
     EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest, \
-    PlayerUnlockedNewTalent, CameraShake
-from pythongame.core.item_effects import get_item_effect
+    PlayerUnlockedNewTalent
+from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
 from pythongame.core.loot import LootEntry
 from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vectors, \
     get_rect_with_increased_size_in_all_directions, translate_in_direction
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import create_visual_exp_text, create_teleport_effects, VisualRect, VisualCircle
-from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.game_data.portals import PORTAL_DELAY
 from pythongame.scenes_game.game_ui_state import GameUiState
 from pythongame.scenes_game.player_controls import PlayerControls
 
 
+class EngineEvent(Enum):
+    PLAYER_DIED = 1
+    ENEMY_DIED = 2
+
+
 class GameEngine:
 
-    def __init__(self, game_state: GameState, ui_state: GameUiState, world_behavior: AbstractWorldBehavior):
+    def __init__(self, game_state: GameState, ui_state: GameUiState):
         self.game_state = game_state
         self.ui_state = ui_state
-        self.world_behavior = world_behavior
 
     def try_use_ability(self, ability_type: AbilityType):
         PlayerControls.try_use_ability(ability_type, self.game_state, self.ui_state)
@@ -47,12 +50,15 @@ class GameEngine:
     def drag_item_between_inventory_slots(self, slot_1: int, slot_2: int) -> bool:
         item_equip_events = self.game_state.player_state.item_inventory.switch_item_slots(slot_1, slot_2)
         for event in item_equip_events:
-            if isinstance(event, ItemWasDeactivated):
-                get_item_effect(event.item_type).apply_end_effect(self.game_state)
-            elif isinstance(event, ItemWasActivated):
-                get_item_effect(event.item_type).apply_start_effect(self.game_state)
+            self._handle_item_equip_event(event)
         did_switch_succeed = len(item_equip_events) > 0
         return did_switch_succeed
+
+    def _handle_item_equip_event(self, event):
+        if isinstance(event, ItemWasDeactivated):
+            get_item_effect(event.item_type).apply_end_effect(self.game_state)
+        elif isinstance(event, ItemWasActivated):
+            get_item_effect(event.item_type).apply_start_effect(self.game_state)
 
     def drag_consumable_between_inventory_slots(self, from_slot: int, to_slot: int):
         self.game_state.player_state.consumable_inventory.drag_consumable_between_inventory_slots(from_slot, to_slot)
@@ -60,8 +66,7 @@ class GameEngine:
     def drop_inventory_item_on_ground(self, item_slot: int, game_world_position: Tuple[int, int]):
         item_equip_event = self.game_state.player_state.item_inventory.remove_item_from_slot(item_slot)
         item_type = item_equip_event.item_type
-        if isinstance(item_equip_event, ItemWasDeactivated):
-            get_item_effect(item_type).apply_end_effect(self.game_state)
+        self._handle_item_equip_event(item_equip_event)
         item = create_item_on_ground(item_type, game_world_position)
         self.game_state.items_on_ground.append(item)
 
@@ -69,6 +74,13 @@ class GameEngine:
         consumable_type = self.game_state.player_state.consumable_inventory.remove_consumable_from_slot(consumable_slot)
         consumable = create_consumable_on_ground(consumable_type, game_world_position)
         self.game_state.consumables_on_ground.append(consumable)
+
+    def try_switch_item_at_slot(self, item_slot: int) -> bool:
+        item_equip_events = self.game_state.player_state.item_inventory.try_switch_item_at_slot(item_slot)
+        for event in item_equip_events:
+            self._handle_item_equip_event(event)
+        did_switch_succeed = len(item_equip_events) > 0
+        return did_switch_succeed
 
     def try_pick_up_loot_from_ground(self, loot: LootableOnGround):
         if isinstance(loot, ConsumableOnGround):
@@ -82,13 +94,11 @@ class GameEngine:
         item_effect = get_item_effect(item.item_type)
         item_data = ITEMS[item.item_type]
         item_equipment_category = item_data.item_equipment_category
-        result = self.game_state.player_state.item_inventory.try_add_item(item_effect, item_equipment_category)
-        if result:
+        did_add_item = try_add_item_to_inventory(self.game_state, item_effect, item_equipment_category)
+        if did_add_item:
             play_sound(SoundId.EVENT_PICKED_UP)
             self.game_state.items_on_ground.remove(item)
             self.ui_state.set_message("You picked up " + item_data.name)
-            if isinstance(result, ItemWasActivated):
-                item_effect.apply_start_effect(self.game_state)
         else:
             self.ui_state.set_message("No space for " + item_data.name)
 
@@ -98,10 +108,9 @@ class GameEngine:
                 item_effect = get_item_effect(item_type)
                 item_data = ITEMS[item_type]
                 item_equipment_category = item_data.item_equipment_category
-                result = self.game_state.player_state.item_inventory.put_item_in_inventory_slot(
+                event = self.game_state.player_state.item_inventory.put_item_in_inventory_slot(
                     item_effect, item_equipment_category, slot_number)
-                if isinstance(result, ItemWasActivated):
-                    item_effect.apply_start_effect(self.game_state)
+                self._handle_item_equip_event(event)
 
     def _try_pick_up_consumable_from_ground(self, consumable: ConsumableOnGround):
         # TODO move some logic into ConsumableInventory class
@@ -155,9 +164,14 @@ class GameEngine:
         ]
         self.game_state.visual_effects += visual_effects
 
-    def run_one_frame(self, time_passed: Millis) -> Optional[SceneId]:
+    def gain_levels(self, num_levels: int):
+        gain_exp_events = self.game_state.player_state.gain_exp_worth_n_levels(num_levels)
+        self._handle_gain_exp_events(gain_exp_events)
 
-        next_scene = self.world_behavior.control(time_passed)
+    # Returns whether or not player died
+    def run_one_frame(self, time_passed: Millis) -> List[EngineEvent]:
+
+        events = []
 
         for npc in self.game_state.non_player_characters:
             # NonPlayerCharacter AI shouldn't run if enemy is too far out of sight
@@ -165,7 +179,8 @@ class GameEngine:
                 npc.npc_mind.control_npc(self.game_state, npc, self.game_state.player_entity,
                                          self.game_state.player_state.is_invisible, time_passed)
 
-        self.ui_state.notify_player_entity_center_position(self.game_state.player_entity.get_center_position())
+        self.ui_state.notify_player_entity_center_position(self.game_state.player_entity.get_center_position(),
+                                                           self.game_state.entire_world_area)
 
         self.ui_state.notify_time_passed(time_passed)
 
@@ -183,19 +198,7 @@ class GameEngine:
             exp_gained = sum([NON_PLAYER_CHARACTERS[e.npc_type].exp_reward for e in enemies_that_died])
             self.game_state.visual_effects.append(create_visual_exp_text(self.game_state.player_entity, exp_gained))
             gain_exp_events = self.game_state.player_state.gain_exp(exp_gained)
-            for event in gain_exp_events:
-                if isinstance(event, PlayerLeveledUp):
-                    play_sound(SoundId.EVENT_PLAYER_LEVELED_UP)
-                    self.game_state.visual_effects.append(
-                        VisualCircle((150, 150, 250), self.game_state.player_entity.get_center_position(), 9, 35,
-                                     Millis(150), 2))
-                    self.ui_state.set_message("You reached level " + str(self.game_state.player_state.level))
-                    allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
-                if isinstance(event, PlayerLearnedNewAbility):
-                    self.ui_state.enqueue_message("New ability: " + ABILITIES[event.ability_type].name)
-                if isinstance(event, PlayerUnlockedNewTalent):
-                    self.ui_state.notify_new_talent_was_unlocked()
-                    self.ui_state.enqueue_message("You can pick a talent!")
+            self._handle_gain_exp_events(gain_exp_events)
 
             for enemy_that_died in enemies_that_died:
                 if enemy_that_died.death_sound_id:
@@ -206,6 +209,7 @@ class GameEngine:
                 enemy_death_position = enemy_that_died.world_entity.get_position()
                 self._put_loot_on_ground(enemy_death_position, loot)
                 self.game_state.player_state.notify_about_event(EnemyDiedEvent(), self.game_state)
+            events.append(EngineEvent.ENEMY_DIED)
 
         self.game_state.remove_expired_projectiles()
         self.game_state.remove_expired_visual_effects()
@@ -260,11 +264,11 @@ class GameEngine:
 
         for visual_effect in self.game_state.visual_effects:
             visual_effect.update_position_if_attached_to_entity()
-            if visual_effect.attached_to_entity \
-                    and not visual_effect.attached_to_entity in [e.world_entity for e in
-                                                                 self.game_state.non_player_characters] \
-                    and visual_effect.attached_to_entity != self.game_state.player_entity:
-                visual_effect.has_expired = True
+            if visual_effect.attached_to_entity:
+                npcs = [e.world_entity for e in self.game_state.non_player_characters]
+                projectiles = [p.world_entity for p in self.game_state.projectile_entities]
+                if not visual_effect.attached_to_entity in npcs + projectiles + [self.game_state.player_entity]:
+                    visual_effect.has_expired = True
 
         # ------------------------------------
         #          HANDLE COLLISIONS
@@ -307,9 +311,36 @@ class GameEngine:
         self.game_state.center_camera_on_player()
 
         if self.game_state.player_state.health_resource.is_at_or_below_zero():
-            self.world_behavior.handle_player_died()
+            events.append(EngineEvent.PLAYER_DIED)
 
-        return next_scene
+        return events
+
+    def _handle_gain_exp_events(self, gain_exp_events):
+        did_level_up = False
+        new_abilities: List[str] = []
+        did_unlock_new_talent = False
+        for event in gain_exp_events:
+            if isinstance(event, PlayerLeveledUp):
+                did_level_up = True
+            if isinstance(event, PlayerLearnedNewAbility):
+                new_abilities.append(ABILITIES[event.ability_type].name)
+            if isinstance(event, PlayerUnlockedNewTalent):
+                did_unlock_new_talent = True
+
+        if did_level_up:
+            play_sound(SoundId.EVENT_PLAYER_LEVELED_UP)
+            self.game_state.visual_effects.append(
+                VisualCircle((150, 150, 250), self.game_state.player_entity.get_center_position(), 9, 35,
+                             Millis(150), 2))
+            self.ui_state.set_message("You reached level " + str(self.game_state.player_state.level))
+            allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
+        if len(new_abilities) == 1:
+            self.ui_state.enqueue_message("New ability: " + new_abilities[0])
+        elif len(new_abilities) > 1:
+            self.ui_state.enqueue_message("Gained several new abilities")
+        if did_unlock_new_talent:
+            self.ui_state.notify_new_talent_was_unlocked()
+            self.ui_state.enqueue_message("You can pick a talent!")
 
     def _is_npc_close_to_camera(self, npc: NonPlayerCharacter):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(

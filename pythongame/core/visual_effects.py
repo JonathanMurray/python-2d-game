@@ -141,12 +141,13 @@ class VisualRect(VisualEffect):
 
 class VisualText(VisualEffect):
     def __init__(self, text: str, color: Tuple[int, int, int], start_position: Tuple[int, int],
-                 end_position: Tuple[int, int], max_age: Millis):
+                 end_position: Tuple[int, int], max_age: Millis, emphasis: bool = False):
         super().__init__(max_age, None)
         self.text = text
         self.color = color
         self.start_position = start_position
         self.end_position = end_position
+        self.emphasis = emphasis
 
     def position(self):
         x = self.start_position[0] + int(self._age / self._max_age * (self.end_position[0] - self.start_position[0]))
@@ -176,9 +177,15 @@ def create_visual_block_text(entity: WorldEntity):
     return VisualText("BLOCK", (255, 255, 255), start_position, end_position, Millis(500))
 
 
-def create_visual_damage_text(entity: WorldEntity, damage_amount: int):
+def create_visual_dodge_text(entity: WorldEntity):
+    start_position, end_position = _get_entity_text_positions(entity, 10)
+    return VisualText("DODGE", (255, 255, 255), start_position, end_position, Millis(500))
+
+
+def create_visual_damage_text(entity: WorldEntity, damage_amount: int, emphasis: bool = False):
     start_position, end_position = _get_entity_text_positions(entity, 40)
-    return VisualText(str(damage_amount), (220, 0, 0), start_position, end_position, Millis(800))
+    color = (220, 50, 100) if emphasis else (220, 0, 0)
+    return VisualText(str(damage_amount), color, start_position, end_position, Millis(800), emphasis=emphasis)
 
 
 def create_visual_healing_text(entity: WorldEntity, healing_amount: int):

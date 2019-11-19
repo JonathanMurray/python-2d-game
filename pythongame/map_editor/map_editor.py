@@ -77,6 +77,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_SORCERER),
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_YOUNG_SORCERESS),
     MapEditorWorldEntity.npc(NpcType.NEUTRAL_WARPSTONE_MERCHANT),
+    MapEditorWorldEntity.npc(NpcType.NEUTRAL_CHALLENGE_STARTER),
 
     MapEditorWorldEntity.consumable(ConsumableType.HEALTH_LESSER),
     MapEditorWorldEntity.consumable(ConsumableType.HEALTH),
@@ -133,6 +134,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.WARLORDS_ARMOR),
     MapEditorWorldEntity.item(ItemType.HEALING_WAND),
     MapEditorWorldEntity.item(ItemType.SKULL_SHIELD),
+    MapEditorWorldEntity.item(ItemType.THIEFS_MASK),
 
     MapEditorWorldEntity.money(1),
 

@@ -1,6 +1,6 @@
 from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.common import HeroId, PortraitIconSprite, UiIconSprite, Millis, PLAYER_ENTITY_SIZE
-from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, register_entity_sprite_map, \
+from pythongame.core.game_data import Sprite, Direction, AbilityType, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData, AbilityData, register_ability_data, register_ui_icon_sprite_path
 from pythongame.core.game_state import PlayerLevelBonus, GameState
@@ -40,9 +40,10 @@ def _get_initial_player_state_god() -> InitialPlayerStateData:
     mana_regen = 100
     level_bonus = PlayerLevelBonus(0, 0, 0)
     armor = 99
+    dodge_chance = 0.05
     consumable_slots = {
-        1: [ConsumableType.HEALTH_LESSER],
-        2: [ConsumableType.MANA_LESSER],
+        1: [],
+        2: [],
         3: [],
         4: [],
         5: []
@@ -52,9 +53,10 @@ def _get_initial_player_state_god() -> InitialPlayerStateData:
     talents_state = TalentsState({
         2: GENERIC_TALENT_CHOICE
     })
+    block_chance = 0
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus,
-        talents_state, 0)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, dodge_chance,
+        level_bonus, talents_state, block_chance)
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:

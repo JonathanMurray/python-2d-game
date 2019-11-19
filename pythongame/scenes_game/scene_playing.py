@@ -1,32 +1,35 @@
 import sys
-from typing import Optional, Any, List
+from typing import Optional, Any, List, Tuple
 
 import pygame
 
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis, SoundId, SceneId
+from pythongame.core.common import Millis, SoundId, SceneId, AbstractScene, SceneTransition
 from pythongame.core.game_data import CONSUMABLES, ITEMS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     ConsumableOnGround, ItemOnGround, Chest
-from pythongame.core.hero_upgrades import apply_hero_upgrade
+from pythongame.core.hero_upgrades import pick_talent
 from pythongame.core.math import get_directions_to_position
 from pythongame.core.npc_behaviors import get_dialog_data, invoke_npc_action, get_dialog_graphics, DialogGraphics
 from pythongame.core.sound_player import play_sound
 from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
-    ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_main_user_inputs, get_dialog_user_inputs, \
-    ActionChangeDialogOption, ActionSaveGameState, ActionPressShiftKey, ActionReleaseShiftKey
+    ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_dialog_user_inputs, \
+    ActionChangeDialogOption, ActionSaveGameState, ActionPressShiftKey, ActionReleaseShiftKey, PlayingUserInputHandler, \
+    ActionToggleUiTalents, ActionToggleUiStats, ActionToggleUiControls, ActionRightMouseClicked
 from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
+from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.player_file import save_to_file
+from pythongame.scene_creating_world.scene_creating_world import ChallengeBehavior
 from pythongame.scenes_game.game_engine import GameEngine
-from pythongame.scenes_game.game_ui_state import GameUiState
+from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.game_ui_view import GameUiView
 from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
 from pythongame.scenes_game.playing_ui_controller import PlayingUiController, EventTriggeredFromUi, \
     DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
-    PickTalent, StartDraggingItemOrConsumable
+    PickTalent, StartDraggingItemOrConsumable, ClickUiToggle, TrySwitchItemInInventory
 
 
 class DialogHandler:
@@ -70,27 +73,38 @@ class DialogHandler:
             return get_dialog_graphics(self.npc_active_in_dialog.npc_type, self.active_dialog_option_index)
 
 
-class PlayingScene:
+class PlayingScene(AbstractScene):
     def __init__(
             self,
-            game_state: GameState,
-            game_engine: GameEngine,
             world_view: GameWorldView,
-            ui_view: GameUiView,
-            ui_state: GameUiState):
+            ui_view: GameUiView):
         self.player_interactions_state = PlayerInteractionsState()
-        self.game_state = game_state
-        self.game_engine = game_engine
         self.world_view = world_view
-        self.ui_state = ui_state
+        self.ui_view = ui_view
         self.render_hit_and_collision_boxes = False
         self.mouse_screen_position = (0, 0)
         self.dialog_handler = DialogHandler()
         self.is_shift_key_held_down = False
-        self.ui_controller = PlayingUiController(game_state, ui_view, ui_state)
         self.total_time_played = 0
 
-    def run_one_frame(self, time_passed: Millis, fps_string: str) -> Optional[SceneId]:
+        # Set on initialization
+        self.game_state: GameState = None
+        self.game_engine: GameEngine = None
+        self.world_behavior: AbstractWorldBehavior = None
+        self.ui_state: GameUiState = None
+        self.ui_controller: PlayingUiController = None
+        self.user_input_handler = PlayingUserInputHandler()
+
+    def initialize(self, data: Tuple[GameState, GameEngine, AbstractWorldBehavior, GameUiState, bool]):
+        if data is not None:
+            self.game_state, self.game_engine, self.world_behavior, self.ui_state, new_hero_was_created = data
+            self.ui_controller = PlayingUiController(self.ui_view, self.ui_state)
+            self.world_behavior.on_startup(new_hero_was_created)
+        # In case this scene has been running before, we make sure to clear any state. Otherwise keys that were held
+        # down would still be considered active!
+        self.user_input_handler = PlayingUserInputHandler()
+
+    def run_one_frame(self, time_passed: Millis, fps_string: str) -> Optional[SceneTransition]:
 
         self.total_time_played += time_passed
 
@@ -102,6 +116,7 @@ class PlayingScene:
 
         mouse_was_just_clicked = False
         mouse_was_just_released = False
+        right_mouse_was_just_clicked = False
 
         # ------------------------------------
         #         HANDLE USER INPUT
@@ -118,7 +133,7 @@ class PlayingScene:
                 if isinstance(action, ActionPressSpaceKey):
                     self.dialog_handler.handle_user_clicked_space(self.game_state, self.ui_state)
         else:
-            user_actions = get_main_user_inputs()
+            user_actions = self.user_input_handler.get_main_user_inputs()
             for action in user_actions:
                 if isinstance(action, ActionExitGame):
                     exit_game()
@@ -143,6 +158,8 @@ class PlayingScene:
                     mouse_was_just_clicked = True
                 if isinstance(action, ActionMouseReleased):
                     mouse_was_just_released = True
+                if isinstance(action, ActionRightMouseClicked):
+                    right_mouse_was_just_clicked = True
                 if isinstance(action, ActionPressSpaceKey):
                     ready_entity = self.player_interactions_state.get_entity_to_interact_with()
                     if ready_entity is not None:
@@ -164,12 +181,24 @@ class PlayingScene:
                     self.is_shift_key_held_down = False
                 if isinstance(action, ActionSaveGameState):
                     save_to_file(self.game_state)
+                if isinstance(action, ActionToggleUiTalents):
+                    self.ui_state.notify_toggle_was_clicked(UiToggle.TALENTS)
+                    play_sound(SoundId.UI_TOGGLE)
+                if isinstance(action, ActionToggleUiStats):
+                    self.ui_state.notify_toggle_was_clicked(UiToggle.STATS)
+                    play_sound(SoundId.UI_TOGGLE)
+                if isinstance(action, ActionToggleUiControls):
+                    self.ui_state.notify_toggle_was_clicked(UiToggle.CONTROLS)
+                    play_sound(SoundId.UI_TOGGLE)
 
         # ------------------------------------
         #     UPDATE STATE BASED ON CLOCK
         # ------------------------------------
 
-        next_scene = self.game_engine.run_one_frame(time_passed)
+        scene_transition = self.world_behavior.control(time_passed)
+        engine_events = self.game_engine.run_one_frame(time_passed)
+        for event in engine_events:
+            scene_transition = self.world_behavior.handle_event(event)
 
         # ------------------------------------
         #          RENDER EVERYTHING
@@ -199,8 +228,14 @@ class PlayingScene:
 
         dialog = self.dialog_handler.get_dialog_graphics()
 
+        if isinstance(self.world_behavior, ChallengeBehavior):
+            text_in_topleft_corner = "Time: " + str(self.world_behavior.total_time_played // 1000)
+        else:
+            text_in_topleft_corner = fps_string + " fps"
+
         events_triggered_from_ui: List[EventTriggeredFromUi] = self.ui_controller.render_and_handle_mouse(
-            fps_string, dialog, self.mouse_screen_position, mouse_was_just_clicked, mouse_was_just_released)
+            self.game_state, text_in_topleft_corner, dialog, self.mouse_screen_position, mouse_was_just_clicked,
+            mouse_was_just_released, right_mouse_was_just_clicked)
 
         for event in events_triggered_from_ui:
             if isinstance(event, StartDraggingItemOrConsumable):
@@ -221,16 +256,28 @@ class PlayingScene:
                 self.game_engine.drop_consumable_on_ground(event.from_slot, event.world_position)
                 play_sound(SoundId.UI_ITEM_WAS_DROPPED_ON_GROUND)
             elif isinstance(event, PickTalent):
-                apply_hero_upgrade(event.hero_upgrade, self.game_state)
+                name_of_picked = pick_talent(self.game_state, event.option_index)
+                if not self.game_state.player_state.has_unpicked_talents():
+                    self.ui_state.close_talent_toggle()
+                self.ui_state.set_message("Talent picked: " + name_of_picked)
+                play_sound(SoundId.EVENT_PICKED_TALENT)
+            elif isinstance(event, ClickUiToggle):
+                play_sound(SoundId.UI_TOGGLE)
+            elif isinstance(event, TrySwitchItemInInventory):
+                did_switch_succeed = self.game_engine.try_switch_item_at_slot(event.slot)
+                if did_switch_succeed:
+                    play_sound(SoundId.UI_ITEM_WAS_MOVED)
+                else:
+                    play_sound(SoundId.INVALID_ACTION)
             else:
                 raise Exception("Unhandled event: " + str(event))
 
         self.world_view.update_display()
 
-        if next_scene is not None:
-            return next_scene
+        if scene_transition is not None:
+            return scene_transition
         if transition_to_pause:
-            return SceneId.PAUSED
+            return SceneTransition(SceneId.PAUSED, (self.game_state, self.ui_state))
         return None
 
     def get_mouse_hover_world_pos(self):

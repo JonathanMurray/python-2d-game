@@ -28,6 +28,7 @@ from pythongame.game_data.consumables.potion_mana import register_mana_potion
 from pythongame.game_data.consumables.potion_speed import register_speed_potion
 from pythongame.game_data.consumables.scroll_ability_summon import register_summon_scroll
 from pythongame.game_data.decorations import register_decorations
+from pythongame.game_data.enemies.buff_goblin_sprint import register_goblin_sprint_buff
 from pythongame.game_data.enemies.enemy_dark_reaper import register_dark_reaper_enemy
 from pythongame.game_data.enemies.enemy_goblin_spearman import register_goblin_spearman_enemy
 from pythongame.game_data.enemies.enemy_goblin_spearman_elite import register_goblin_spearman_elite_enemy
@@ -84,6 +85,7 @@ from pythongame.game_data.items.item_skull_staff import register_skull_staff_ite
 from pythongame.game_data.items.item_soldiers_helmet import register_soldiers_helmet_item
 from pythongame.game_data.items.item_staff_of_fire import register_staff_of_fire_item
 from pythongame.game_data.items.item_stone_amulet import register_stone_amulet_item
+from pythongame.game_data.items.item_thiefs_mask import register_thiefs_mask_item
 from pythongame.game_data.items.item_torn_document import register_torn_document_item
 from pythongame.game_data.items.item_wand import register_wand_item
 from pythongame.game_data.items.item_warlocks_cowl import register_warlocks_cowl_item
@@ -94,6 +96,7 @@ from pythongame.game_data.items.item_wooden_shield import register_wooden_shield
 from pythongame.game_data.items.item_wooden_sword import register_wooden_sword_item
 from pythongame.game_data.items.item_zuls_aegis import register_zuls_aegis
 from pythongame.game_data.map_editor_icons import register_map_editor_icons
+from pythongame.game_data.neutral_npcs.neutral_npc_challenge_starter import register_challenge_starter_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_dwarf import register_dwarf_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_ninja import register_ninja_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_nomad import register_nomad_npc
@@ -152,6 +155,7 @@ def register_all_game_data():
     register_goblin_spearman_enemy()
     register_goblin_spearman_elite_enemy()
     register_goblin_warrior_enemy()
+    register_goblin_sprint_buff()
 
     register_hero_mage()
     register_hero_warrior()
@@ -203,6 +207,7 @@ def register_all_game_data():
     register_warlords_armor_item()
     register_healing_wand_item()
     register_skull_shield_item()
+    register_thiefs_mask_item()
 
     # Register items before NPCs as vendors may rely on item data
 
@@ -212,6 +217,7 @@ def register_all_game_data():
     register_sorcerer_npc()
     register_young_sorceress_npc()
     register_warpstone_merchant_npc()
+    register_challenge_starter_npc()
 
     register_decorations()
     register_map_editor_icons()

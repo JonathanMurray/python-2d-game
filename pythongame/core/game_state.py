@@ -1,5 +1,5 @@
 import math
-from typing import List, Optional, Dict, Any, Tuple, Union
+from typing import List, Dict, Tuple, Union
 
 from pygame.rect import Rect
 
@@ -357,7 +357,8 @@ class PlayerState:
     def __init__(self, health_resource: HealthOrManaResource, mana_resource: HealthOrManaResource,
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
                  item_inventory: ItemInventory, new_level_abilities: Dict[int, AbilityType], hero_id: HeroId,
-                 armor: int, level_bonus: PlayerLevelBonus, talents_state: TalentsState, block_chance: float):
+                 armor: int, base_dodge_chance: float, level_bonus: PlayerLevelBonus, talents_state: TalentsState,
+                 block_chance: float):
         self.health_resource: HealthOrManaResource = health_resource
         self.mana_resource: HealthOrManaResource = mana_resource
         self.consumable_inventory = consumable_inventory
@@ -377,9 +378,12 @@ class PlayerState:
         self.base_damage_modifier: float = 1  # only affected by level. [Changes multiplicatively]
         self.damage_modifier_bonus: float = 0  # affected by items. [Change it additively]
         self.hero_id: HeroId = hero_id
-        self.base_armor: int = armor  # depends on which hero is being played
+        self.base_armor: float = armor  # depends on which hero is being played
         self.armor_bonus: int = 0  # affected by items/buffs. [Change it additively]
+        self.base_dodge_chance: float = base_dodge_chance  # depends on which hero is being used
+        self.dodge_chance_bonus: float = 0  # affected by items/buffs. [Change it additively]
         self.level_bonus = level_bonus
+        # TODO Improve encapsulation of talents logic and state
         self.talents_state: TalentsState = talents_state
         self.chosen_talent_option_indices: List[int] = []
         self._upgrades: List[HeroUpgrade] = []
@@ -428,10 +432,12 @@ class PlayerState:
         partial_exp_loss = 0.5
         self.exp = max(0, self.exp - int(self.max_exp_in_this_level * partial_exp_loss))
 
-    def gain_exp_worth_n_levels(self, num_levels: int):
+    def gain_exp_worth_n_levels(self, num_levels: int) -> List[GainExpEvent]:
+        events = []
         for i in range(num_levels):
             amount = self.max_exp_in_this_level - self.exp
-            self.gain_exp(amount)
+            events += self.gain_exp(amount)
+        return events
 
     def update_stats_for_new_level(self):
         self.health_resource.increase_max(self.level_bonus.health)
@@ -470,6 +476,12 @@ class PlayerState:
             raise Exception("Illegal talent choice option: " + str(option_index))
         self._upgrades.append(option.upgrade)
         return option.name, option.upgrade
+
+    def has_unpicked_talents(self):
+        num_available_talents = len(
+            [level for (level, choice) in self.talents_state.choices_by_level.items() if level <= self.level])
+        num_picked_talents = len(self.chosen_talent_option_indices)
+        return num_picked_talents < num_available_talents
 
     def gain_upgrade(self, upgrade: HeroUpgrade):
         self._upgrades.append(upgrade)
@@ -624,6 +636,8 @@ class GameState:
             player_state.life_steal_ratio += stat_delta
         elif hero_stat == HeroStat.BLOCK_AMOUNT:
             player_state.block_damage_reduction += stat_delta
+        elif hero_stat == HeroStat.DODGE_CHANCE:
+            player_state.dodge_chance_bonus += stat_delta
         else:
             raise Exception("Unhandled stat: " + str(hero_stat))
 

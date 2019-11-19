@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 # We should probably not load image files in here!
 import pygame
@@ -29,6 +29,9 @@ class UserAbilityKey:
     def __init__(self, key_string: str, pygame_key):
         self.key_string = key_string
         self.pygame_key = pygame_key
+
+    def __repr__(self):
+        return "(" + self.key_string + ", " + str(self.pygame_key) + ")"
 
 
 user_ability_keys = [UserAbilityKey("Q", pygame.K_q),
@@ -132,7 +135,7 @@ class InitialPlayerStateData:
     def __init__(
             self, health: int, mana: int, mana_regen: float, consumable_slots: Dict[int, List[ConsumableType]],
             abilities: List[AbilityType], new_level_abilities: Dict[int, AbilityType], hero_id: HeroId, armor: int,
-            level_bonus: PlayerLevelBonus, talents_state: TalentsState, block_chance: float):
+            dodge_chance: float, level_bonus: PlayerLevelBonus, talents_state: TalentsState, block_chance: float):
         self.health = health
         self.mana = mana
         self.mana_regen = mana_regen
@@ -141,6 +144,7 @@ class InitialPlayerStateData:
         self.new_level_abilities = new_level_abilities
         self.hero_id = hero_id
         self.armor = armor
+        self.dodge_chance = dodge_chance
         self.level_bonus = level_bonus
         self.talents_state = talents_state
         self.block_chance = block_chance
@@ -200,6 +204,7 @@ def register_ability_data(ability_type: AbilityType, ability_data: AbilityData):
 
 
 def allocate_input_keys_for_abilities(abilities: List[AbilityType]):
+    KEYS_BY_ABILITY_TYPE.clear()
     for i, ability in enumerate(abilities):
         KEYS_BY_ABILITY_TYPE[ability] = user_ability_keys[i]
 

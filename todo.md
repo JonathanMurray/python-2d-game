@@ -15,7 +15,6 @@
 * Make it more difficult to kite fast enemies. Enemies are too slow at attacking when they get into melee range
 
 #### Visuals:
-* Visualize bonus damage as 'crits' somehow
 * Render tiny buff icons above entities that have active buffs (like bloodlust icon from wc2)
 * gray out ability icon when player doesn't have enough mana for it
 * put dmg/healing/xp numbers further up for tall characters (base it on sprite size, not entity size)

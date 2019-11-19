@@ -1,5 +1,5 @@
 from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgrade, UiIconSprite
-from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, register_entity_sprite_map, \
+from pythongame.core.game_data import Sprite, Direction, AbilityType, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
 from pythongame.core.game_state import PlayerLevelBonus
@@ -41,12 +41,13 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
     mana_regen = 2
     health_per_level = 15
     mana_per_level = 5
-    armor_per_level = 3
+    armor_per_level = 1.5
     level_bonus = PlayerLevelBonus(health_per_level, mana_per_level, armor_per_level)
     armor = 3
+    dodge_chance = 0.05
     consumable_slots = {
-        1: [ConsumableType.HEALTH_LESSER],
-        2: [ConsumableType.HEALTH_LESSER],
+        1: [],
+        2: [],
         3: [],
         4: [],
         5: []
@@ -73,6 +74,7 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
             TalentChoiceOption("Quick", "Reduces the cooldown of your slash ability", HeroUpgrade.ABILITY_SLASH_CD,
                                UiIconSprite.ABILITY_SWORD_SLASH))
     })
+    block_chance = 0.2
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor,
-        level_bonus, talents_state, 0.2)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, dodge_chance,
+        level_bonus, talents_state, block_chance)

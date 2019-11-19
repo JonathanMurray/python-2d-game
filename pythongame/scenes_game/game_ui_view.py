@@ -1,3 +1,4 @@
+import math
 from typing import List, Tuple, Optional
 
 import pygame
@@ -245,7 +246,7 @@ class GameUiView:
 
     def _render_stats(self, player_speed_multiplier: float, player_state: PlayerState, ui_position: Tuple[int, int]):
 
-        rect_container = Rect(ui_position[0], ui_position[1], 140, 210)
+        rect_container = Rect(ui_position[0], ui_position[1], 140, 230)
         self.ui_render.rect_transparent(rect_container, 140, (0, 0, 30))
 
         self.ui_render.text(self.font_tooltip_details, "STATS:", (ui_position[0] + 45, ui_position[1] + 10))
@@ -269,11 +270,15 @@ class GameUiView:
         lifesteal_stat_text = \
             "% life steal: " + str(int(round(player_life_steal * 100)))
         armor_stat_text = \
-            "       armor: " + str(player_state.base_armor)
+            "       armor: " + str(math.floor(player_state.base_armor))
         if player_state.armor_bonus > 0:
             armor_stat_text += " +" + str(player_state.armor_bonus)
         elif player_state.armor_bonus < 0:
             armor_stat_text += " " + str(player_state.armor_bonus)
+        dodge_chance_text = \
+            "     % dodge: " + str(int(round(player_state.base_dodge_chance * 100)))
+        if player_state.dodge_chance_bonus > 0:
+            dodge_chance_text += " +" + str(int(round(player_state.dodge_chance_bonus * 100)))
         block_chance_text = \
             "     % block: " + str(int(round(player_state.block_chance * 100)))
         block_reduction_text = \
@@ -286,8 +291,9 @@ class GameUiView:
         self.ui_render.text(self.font_stats, speed_stat_text, (x_text, y_0 + 60), COLOR_WHITE)
         self.ui_render.text(self.font_stats, lifesteal_stat_text, (x_text, y_0 + 80), COLOR_WHITE)
         self.ui_render.text(self.font_stats, armor_stat_text, (x_text, y_0 + 100), COLOR_WHITE)
-        self.ui_render.text(self.font_stats, block_chance_text, (x_text, y_0 + 120), COLOR_WHITE)
-        self.ui_render.text(self.font_stats, block_reduction_text, (x_text, y_0 + 140), COLOR_WHITE)
+        self.ui_render.text(self.font_stats, dodge_chance_text, (x_text, y_0 + 120), COLOR_WHITE)
+        self.ui_render.text(self.font_stats, block_chance_text, (x_text, y_0 + 140), COLOR_WHITE)
+        self.ui_render.text(self.font_stats, block_reduction_text, (x_text, y_0 + 160), COLOR_WHITE)
 
     def _render_talents(self, talents: TalentsGraphics, ui_position: Tuple[int, int],
                         mouse_ui_position: Tuple[int, int]) -> Tuple[
@@ -479,7 +485,7 @@ class GameUiView:
             self,
             player_state: PlayerState,
             ui_state: GameUiState,
-            fps_string: str,
+            text_in_topleft_corner: str,
             is_paused: bool,
             player_speed_multiplier: float,
             mouse_screen_position: Tuple[int, int],
@@ -710,12 +716,12 @@ class GameUiView:
             self._render_controls(pos_toggled_content)
 
         is_mouse_hovering_stats_toggle = self._toggle_in_ui(
-            x_toggles, y_1, "STATS", ui_state.toggle_enabled == UiToggle.STATS, mouse_ui_position, False)
+            x_toggles, y_1, "STATS    [A]", ui_state.toggle_enabled == UiToggle.STATS, mouse_ui_position, False)
         is_mouse_hovering_talents_toggle = self._toggle_in_ui(
-            x_toggles, y_1 + 30, "TALENTS", ui_state.toggle_enabled == UiToggle.TALENTS,
+            x_toggles, y_1 + 30, "TALENTS  [T]", ui_state.toggle_enabled == UiToggle.TALENTS,
             mouse_ui_position, ui_state.talent_toggle_has_unseen_talents)
         is_mouse_hovering_help_toggle = self._toggle_in_ui(
-            x_toggles, y_1 + 60, "CONTROLS", ui_state.toggle_enabled == UiToggle.CONTROLS, mouse_ui_position, False)
+            x_toggles, y_1 + 60, "CONTROLS [C]", ui_state.toggle_enabled == UiToggle.CONTROLS, mouse_ui_position, False)
         if is_mouse_hovering_stats_toggle:
             hovered_ui_toggle = UiToggle.STATS
         elif is_mouse_hovering_talents_toggle:
@@ -725,8 +731,8 @@ class GameUiView:
 
         self.screen_render.rect(COLOR_BORDER, self.ui_screen_area, 1)
 
-        self.screen_render.rect_transparent(Rect(0, 0, 50, 20), 100, COLOR_BLACK)
-        self.screen_render.text(self.font_debug_info, fps_string + " fps", (5, 3))
+        self.screen_render.rect_transparent(Rect(0, 0, 70, 20), 100, COLOR_BLACK)
+        self.screen_render.text(self.font_debug_info, text_in_topleft_corner, (5, 3))
 
         if message:
             self._message(message)

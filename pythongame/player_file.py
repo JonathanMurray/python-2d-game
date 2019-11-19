@@ -7,7 +7,8 @@ from pythongame.core.game_state import GameState
 
 class SavedPlayerState:
     def __init__(self, hero_id: str, level: int, exp: int, consumables_in_slots: Dict[str, List[str]],
-                 items: List[str], money: int, enabled_portals: Dict[str, str]):
+                 items: List[str], money: int, enabled_portals: Dict[str, str],
+                 chosen_talent_option_indices: List[int]):
         self.hero_id = hero_id
         self.level = level
         self.exp = exp
@@ -15,6 +16,7 @@ class SavedPlayerState:
         self.items = items
         self.money = money
         self.enabled_portals = enabled_portals
+        self.chosen_talent_option_indices = chosen_talent_option_indices
 
 
 class PlayerStateJson:
@@ -27,7 +29,8 @@ class PlayerStateJson:
             "consumables": player_state.consumables_in_slots,
             "items": player_state.items,
             "money": player_state.money,
-            "enabled_portals": player_state.enabled_portals
+            "enabled_portals": player_state.enabled_portals,
+            "talents": player_state.chosen_talent_option_indices
         }
 
     @staticmethod
@@ -39,7 +42,8 @@ class PlayerStateJson:
             data["consumables"],
             data["items"],
             data["money"],
-            data["enabled_portals"]
+            data["enabled_portals"],
+            data.get("talents", [])
         )
 
 
@@ -57,16 +61,18 @@ def save_player_state_to_json_file(player_state: SavedPlayerState, file_path: st
 
 def save_to_file(game_state: GameState):
     filename = "savefiles/DEBUG_" + str(datetime.datetime.now()).replace(" ", "_") + ".json"
+    player_state = game_state.player_state
     saved_player_state = SavedPlayerState(
-        game_state.player_state.hero_id.name,
-        game_state.player_state.level,
-        game_state.player_state.exp,
-        {slot_number: [c.name for c in consumables] for (slot_number, consumables)
-         in game_state.player_state.consumable_inventory.consumables_in_slots.items()},
-        [slot.get_item_type().name if not slot.is_empty() else None
-         for slot in game_state.player_state.item_inventory.slots],
-        game_state.player_state.money,
-        {p.portal_id.name: p.world_entity.sprite.name for p in game_state.portals if p.is_enabled}
+        hero_id=player_state.hero_id.name,
+        level=player_state.level,
+        exp=player_state.exp,
+        consumables_in_slots={slot_number: [c.name for c in consumables] for (slot_number, consumables)
+                              in player_state.consumable_inventory.consumables_in_slots.items()},
+        items=[slot.get_item_type().name if not slot.is_empty() else None
+               for slot in player_state.item_inventory.slots],
+        money=player_state.money,
+        enabled_portals={p.portal_id.name: p.world_entity.sprite.name for p in game_state.portals if p.is_enabled},
+        chosen_talent_option_indices=player_state.chosen_talent_option_indices
     )
     save_player_state_to_json_file(saved_player_state, filename)
     print("Saved game state to file: " + filename)

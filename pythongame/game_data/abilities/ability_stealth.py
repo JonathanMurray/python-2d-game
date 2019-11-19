@@ -16,7 +16,7 @@ BUFF_POST_STEALTH = BuffType.AFTER_STEALTHING
 DURATION_STEALTH = Millis(15000)
 DURATION_POST_STEALTH = Millis(2500)
 SPEED_DECREASE = 0.3
-ARMOR_BONUS = 5
+DODGE_CHANCE_BONUS = 0.05
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
@@ -29,7 +29,7 @@ class Stealthing(AbstractBuffEffect):
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.is_invisible = True
         game_state.player_entity.add_to_speed_multiplier(-SPEED_DECREASE)
-        game_state.player_state.armor_bonus += ARMOR_BONUS
+        game_state.player_state.dodge_chance_bonus += DODGE_CHANCE_BONUS
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.is_invisible = False
@@ -59,7 +59,7 @@ class AfterStealthing(AbstractBuffEffect):
             game_state.visual_effects.append(visual_effect)
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.armor_bonus -= ARMOR_BONUS
+        game_state.player_state.dodge_chance_bonus -= DODGE_CHANCE_BONUS
 
     def get_buff_type(self):
         return BUFF_POST_STEALTH
@@ -73,8 +73,9 @@ def register_stealth_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_STEALTH
 
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    description = "Become invisible to enemies. After effect ends, gain " + \
-                  str(ARMOR_BONUS) + " armor for " + "{:.1f}".format(DURATION_POST_STEALTH / 1000) + "s"
+    description = "Become invisible to enemies. After effect ends, gain +" + \
+                  "{:.0f}".format(DODGE_CHANCE_BONUS * 100) + "% dodge chance for " + \
+                  "{:.1f}".format(DURATION_POST_STEALTH / 1000) + "s"
     mana_cost = 25
     cooldown = Millis(6000)
     ability_data = AbilityData("Stealth", ui_icon_sprite, mana_cost, cooldown, description, SoundId.ABILITY_STEALTH)

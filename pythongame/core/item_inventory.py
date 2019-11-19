@@ -105,6 +105,15 @@ class ItemInventory:
             slot_2.item = content_1
         return events
 
+    def try_switch_item_at_slot(self, slot_index: int) -> List[ItemActivationEvent]:
+        if self.slots[slot_index].is_empty():
+            return []
+        for other_slot_index in [s for s in range(len(self.slots)) if s != slot_index]:
+            events = self.switch_item_slots(slot_index, other_slot_index)
+            if events:
+                return events
+        return []
+
     def has_item_in_inventory(self, item_type: ItemType):
         matches = [slot for slot in self.slots if not slot.is_empty() and slot.get_item_type() == item_type]
         if len(matches) > 0:
@@ -135,7 +144,8 @@ class ItemInventory:
                 return ItemActivationStateDidNotChange(item_effect.get_item_type())
         return None
 
-    def put_item_in_inventory_slot(self, item_effect, item_equipment_category: ItemEquipmentCategory, slot_number: int):
+    def put_item_in_inventory_slot(self, item_effect, item_equipment_category: ItemEquipmentCategory,
+                                   slot_number: int) -> ItemActivationEvent:
         item_in_slot = ItemInSlot(item_effect, item_equipment_category)
         slot = self.slots[slot_number]
         if not slot.is_empty():

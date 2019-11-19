@@ -1,6 +1,6 @@
 import random
 from enum import Enum
-from typing import NewType
+from typing import NewType, Optional, Any
 
 Millis = NewType('Millis', int)
 
@@ -8,10 +8,13 @@ PLAYER_ENTITY_SIZE = (30, 30)
 
 
 class SceneId(Enum):
-    PICKING_HERO = 1
-    PLAYING = 2
-    PAUSED = 3
-    VICTORY_SCREEN = 4
+    STARTING_PROGRAM = 1
+    PICKING_HERO = 2
+    CREATING_GAME_WORLD = 3
+    PLAYING = 4
+    PAUSED = 5
+    VICTORY_SCREEN = 6
+    CHALLENGE_COMPLETE_SCREEN = 7
 
 
 class Direction(Enum):
@@ -25,7 +28,7 @@ def get_all_directions():
     return [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT]
 
 
-class HeroUpgrade:
+class HeroUpgrade(Enum):
     ARMOR = 1
     DAMAGE = 2
     ABILITY_WHIRLWIND_STUN = 10
@@ -40,7 +43,7 @@ class HeroUpgrade:
     ABILITY_SLASH_AOE_BONUS_DAMAGE = 31
     ABILITY_BLOODLUST_DURATION = 32
     ABILITY_SLASH_CD = 33
-    HAS_WON_GAME = 100
+    HAS_WON_GAME = 100  # TODO This should probably not be modelled as a "hero upgrade"
 
 
 class ConsumableType(Enum):
@@ -78,6 +81,7 @@ class NpcType(Enum):
     NEUTRAL_SORCERER = 103
     NEUTRAL_YOUNG_SORCERESS = 104
     NEUTRAL_WARPSTONE_MERCHANT = 105
+    NEUTRAL_CHALLENGE_STARTER = 107
     PLAYER_SUMMON_DRAGON = 200
 
 
@@ -129,6 +133,7 @@ class AbilityType(Enum):
 
 
 class Sprite(Enum):
+    NONE = 0
     EFFECT_ABILITY_FROST_NOVA = 3
     PROJECTILE_PLAYER_FIREBALL = 11
     PROJECTILE_PLAYER_ARCANE_FIRE = 12
@@ -167,6 +172,7 @@ class Sprite(Enum):
     NEUTRAL_NPC_SORCERER = 263
     NEUTRAL_NPC_YOUNG_SORCERESS = 264
     NEUTRAL_WARPSTONE_MERCHANT = 265
+    NEUTRAL_NPC_CHALLENGE_STARTER = 267
     ITEM_AMULET_OF_MANA = 301
     ITEM_MESSENGERS_HAT = 302
     ITEM_ROD_OF_LIGHTNING = 303
@@ -212,6 +218,7 @@ class Sprite(Enum):
     ITEM_WARLORDS_ARMOR = 343
     ITEM_HEALING_WAND = 344
     ITEM_SKULL_SHIELD = 345
+    ITEM_THIEFS_MASK = 346
     COINS_1 = 350
     COINS_2 = 351
     COINS_5 = 352
@@ -292,6 +299,7 @@ class BuffType(Enum):
     PROTECTED_BY_STONE_AMULET = 37
     ELIXIR_OF_POWER = 38
     BUFFED_BY_HEALING_WAND = 39
+    ENEMY_GOBLIN_SPEARMAN_SPRINT = 40
 
 
 class ItemType(Enum):
@@ -354,6 +362,7 @@ class ItemType(Enum):
     WARLORDS_ARMOR = 100
     HEALING_WAND = 101
     SKULL_SHIELD = 102
+    THIEFS_MASK = 103
 
 
 class ProjectileType(Enum):
@@ -362,6 +371,7 @@ class ProjectileType(Enum):
     PLAYER_WHIRLWIND = 3
     PLAYER_ENTANGLING_ROOTS = 4
     ENEMY_GOBLIN_WARLOCK = 101
+    ENEMY_NECROMANCER = 102
 
 
 class SoundId(Enum):
@@ -390,6 +400,7 @@ class SoundId(Enum):
     EVENT_PURCHASED_SOMETHING = 105
     EVENT_PORTAL_ACTIVATED = 106
     EVENT_COMPLETED_QUEST = 107
+    EVENT_PICKED_TALENT = 108
     WARNING = 200
     INVALID_ACTION = 201
     PLAYER_PAIN = 300
@@ -403,6 +414,7 @@ class SoundId(Enum):
     UI_ITEM_WAS_MOVED = 600
     UI_START_DRAGGING_ITEM = 601
     UI_ITEM_WAS_DROPPED_ON_GROUND = 602
+    UI_TOGGLE = 603
     DIALOG = 700
 
 
@@ -496,6 +508,7 @@ class UiIconSprite(Enum):
     ITEM_WARLORDS_ARMOR = 243
     ITEM_HEALING_WAND = 244
     ITEM_SKULL_SHIELD = 245
+    ITEM_THIEFS_MASK = 246
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
     INVENTORY_TEMPLATE_HELMET = 400
@@ -514,10 +527,11 @@ class PortraitIconSprite(Enum):
     SORCERER = 5
     YOUNG_SORCERESS = 6
     WARPSTONE_MERCHANT = 7
-    HERO_MAGE = 10
-    HERO_WARRIOR = 11
-    HERO_ROGUE = 12
-    HERO_GOD = 13
+    CHALLENGE_STARTER = 9
+    HERO_MAGE = 100
+    HERO_WARRIOR = 101
+    HERO_ROGUE = 102
+    HERO_GOD = 103
 
 
 class HeroStat(Enum):
@@ -530,6 +544,7 @@ class HeroStat(Enum):
     DAMAGE = 7
     LIFE_STEAL = 8
     BLOCK_AMOUNT = 9
+    DODGE_CHANCE = 10
 
 
 # Use to handle timing-related boilerplate for buffs, items, enemy behaviours, etc
@@ -564,3 +579,18 @@ def get_random_hint():
         "Choose talents to improve your stats and abilities"
     ]
     return random.choice(hints)
+
+
+class SceneTransition:
+    def __init__(self, scene_id: SceneId, data: Any):
+        self.scene_id = scene_id
+        self.data = data
+
+
+class AbstractScene:
+
+    def initialize(self, data: Any):
+        pass
+
+    def run_one_frame(self, _time_passed: Millis, _fps_string: str) -> Optional[SceneTransition]:
+        pass

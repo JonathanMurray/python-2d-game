@@ -7,7 +7,8 @@ from pythongame.core.damage_interactions import deal_damage_to_player, deal_npc_
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import register_npc_data, NpcData, register_buff_text, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
-from pythongame.core.math import get_perpendicular_directions, get_position_from_center_position, translate_in_direction
+from pythongame.core.math import get_perpendicular_directions, get_position_from_center_position, \
+    translate_in_direction, get_directions_to_position
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
@@ -22,7 +23,6 @@ BUFF_TYPE = BuffType.ENEMY_GOBLIN_WARLOCK_BURNT
 PROJECTILE_TYPE = ProjectileType.ENEMY_GOBLIN_WARLOCK
 PROJECTILE_SPRITE = Sprite.PROJECTILE_ENEMY_GOBLIN_WARLOCK
 PROJECTILE_SIZE = (20, 20)
-COLOR_SPEECH = (200, 100, 70)
 
 
 class NpcMind(AbstractNpcMind):
@@ -63,7 +63,7 @@ class NpcMind(AbstractNpcMind):
             if self.next_waypoint:
                 direction = self.pathfinder.get_dir_towards_considering_collisions(
                     game_state, enemy_entity, self.next_waypoint)
-                if random.random() < 0.1 and direction:
+                if random.random() < 0.5 and direction:
                     direction = random.choice(get_perpendicular_directions(direction))
                 _move_in_dir(enemy_entity, direction)
             else:
@@ -72,13 +72,18 @@ class NpcMind(AbstractNpcMind):
         if self._time_since_attack > self._attack_interval:
             self._time_since_attack = 0
             self._update_attack_interval()
+            directions_to_player = get_directions_to_position(npc.world_entity, player_entity.get_position())
+            new_direction = directions_to_player[0]
+            if random.random() < 0.3 and directions_to_player[1] is not None:
+                new_direction = directions_to_player[1]
+            npc.world_entity.direction = new_direction
             npc.world_entity.set_not_moving()
             center_position = npc.world_entity.get_center_position()
             distance_from_enemy = 35
             projectile_pos = translate_in_direction(
                 get_position_from_center_position(center_position, PROJECTILE_SIZE),
                 npc.world_entity.direction, distance_from_enemy)
-            projectile_speed = 0.09
+            projectile_speed = 0.11
             projectile_entity = WorldEntity(projectile_pos, PROJECTILE_SIZE, PROJECTILE_SPRITE,
                                             npc.world_entity.direction, projectile_speed)
             projectile = Projectile(projectile_entity, create_projectile_controller(PROJECTILE_TYPE))
@@ -86,7 +91,7 @@ class NpcMind(AbstractNpcMind):
             play_sound(SoundId.ENEMY_ATTACK_GOBLIN_WARLOCK)
 
     def _update_attack_interval(self):
-        self._attack_interval = 1000 + random.random() * 5000
+        self._attack_interval = 500 + random.random() * 4500
 
 
 def _move_in_dir(enemy_entity, direction):
@@ -112,6 +117,11 @@ class ProjectileController(AbstractProjectileController):
         npc.gain_buff_effect(get_buff_effect(BuffType.ENEMY_GOBLIN_WARLOCK_BURNT), Millis(5000))
         game_state.visual_effects.append(
             VisualCircle((180, 50, 50), npc.world_entity.get_center_position(), 25, 50, Millis(100), 0))
+        projectile.has_collided_and_should_be_removed = True
+
+    def apply_wall_collision(self, game_state: GameState, projectile: Projectile):
+        game_state.visual_effects.append(
+            VisualCircle((180, 50, 50), projectile.world_entity.get_center_position(), 12, 24, Millis(100), 0))
         projectile.has_collided_and_should_be_removed = True
 
 
@@ -161,7 +171,7 @@ def register_goblin_warlock_enemy():
     register_entity_sprite_map(enemy_sprite, enemy_sprite_sheet, enemy_original_sprite_size, enemy_scaled_sprite_size,
                                enemy_indices_by_dir, (-12, -24))
 
-    register_projectile_controller(ProjectileType.ENEMY_GOBLIN_WARLOCK, ProjectileController)
+    register_projectile_controller(PROJECTILE_TYPE, ProjectileController)
 
     projectile_sprite_sheet = SpriteSheet("resources/graphics/goblin_fireball_entity.png")
     projectile_original_sprite_size = (132, 156)

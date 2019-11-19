@@ -1,5 +1,5 @@
 from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgrade, UiIconSprite
-from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, register_entity_sprite_map, \
+from pythongame.core.game_data import Sprite, Direction, AbilityType, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
 from pythongame.core.game_state import PlayerLevelBonus
@@ -40,12 +40,13 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
     mana_regen = 3.5
     health_per_level = 5
     mana_per_level = 10
-    armor_per_level = 0
+    armor_per_level = 0.3
     level_bonus = PlayerLevelBonus(health_per_level, mana_per_level, armor_per_level)
     armor = 1
+    dodge_chance = 0
     consumable_slots = {
-        1: [ConsumableType.HEALTH_LESSER],
-        2: [ConsumableType.MANA_LESSER],
+        1: [],
+        2: [],
         3: [],
         4: [],
         5: []
@@ -70,6 +71,7 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
                                            HeroUpgrade.ABILITY_FIREBALL_MANA_COST,
                                            UiIconSprite.ABILITY_FIREBALL))
     })
+    block_chance = 0.1
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus,
-        talents_state, 0.1)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, dodge_chance,
+        level_bonus, talents_state, block_chance)

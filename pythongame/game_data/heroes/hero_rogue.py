@@ -1,5 +1,5 @@
 from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgrade, UiIconSprite
-from pythongame.core.game_data import Sprite, Direction, ConsumableType, AbilityType, register_entity_sprite_map, \
+from pythongame.core.game_data import Sprite, Direction, AbilityType, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
 from pythongame.core.game_state import PlayerLevelBonus
@@ -41,12 +41,13 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
     mana_regen = 2.5
     health_per_level = 10
     mana_per_level = 10
-    armor_per_level = 2
+    armor_per_level = 1
     level_bonus = PlayerLevelBonus(health_per_level, mana_per_level, armor_per_level)
     armor = 2
+    dodge_chance = 0.1
     consumable_slots = {
-        1: [ConsumableType.HEALTH_LESSER],
-        2: [ConsumableType.HEALTH_LESSER],
+        1: [],
+        2: [],
         3: [],
         4: [],
         5: []
@@ -70,10 +71,11 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
             TalentChoiceOption("Reset", "The cooldown and mana-cost of your dash ability is reset if it kills an enemy",
                                HeroUpgrade.ABILITY_DASH_KILL_RESET, UiIconSprite.ABILITY_DASH),
             TalentChoiceOption("Init",
-                               "Shiv deals bonus damage on enemies that are at full health, unless your stealthed",
+                               "Shiv deals bonus damage on enemies that are at full health, unless you're stealthed",
                                HeroUpgrade.ABILITY_SHIV_FULL_HEALTH_BONUS_DAMAGE,
                                UiIconSprite.ABILITY_SHIV)),
     })
+    block_chance = 0.15
     return InitialPlayerStateData(
-        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, level_bonus,
-        talents_state, 0.15)
+        health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, dodge_chance,
+        level_bonus, talents_state, block_chance)

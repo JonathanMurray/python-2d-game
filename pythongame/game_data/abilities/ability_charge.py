@@ -63,10 +63,11 @@ class Charging(AbstractBuffEffect):
             damage = MIN_DMG
             # Talent: Apply damage bonus even if using charge in melee range
             has_melee_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_CHARGE_MELEE)
-            if self.time_since_start > float(CHARGE_DURATION) * 0.3 or has_melee_upgrade:
+            damage_increased = self.time_since_start > float(CHARGE_DURATION) * 0.3 or has_melee_upgrade
+            if damage_increased:
                 # TODO Stun target as a bonus here
                 damage = MAX_DMG
-            deal_player_damage_to_enemy(game_state, enemy, damage)
+            deal_player_damage_to_enemy(game_state, enemy, damage, visual_emphasis=damage_increased)
             game_state.visual_effects.append(
                 VisualRect((250, 170, 0), visual_impact_pos, 45, 25, IMPACT_STUN_DURATION, 2, None))
             game_state.visual_effects.append(
