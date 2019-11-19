@@ -3,8 +3,6 @@
 #### Refactorings:
 * Move non-trivial logic from game_state. Prefer to have game-logic elsewhere.
 * Avoid storing EnemyMind and ProjectileController in game_state. That module should only depend on common
-* Simplify and generalise the handling of visual effects
-* Simplify how channeled abilities work - shouldn't need to define new buff types for that
 * Use PeriodicTimer in enemy behaviour code, to reduce time-keeping boilerplate
 * Clean up enemy movement/attack logic - model as FSM?
 
@@ -13,6 +11,9 @@
 * Use 8 directions instead of 4?
 * save game_state to file on crash
 * Make it more difficult to kite fast enemies. Enemies are too slow at attacking when they get into melee range
+
+#### Sounds:
+* UI option for disabling sound
 
 #### Visuals:
 * Render tiny buff icons above entities that have active buffs (like bloodlust icon from wc2)
@@ -24,10 +25,8 @@
 * show more clearly in UI, which inventory slots are storage and which ones are for equipped items
 
 #### Features:
-* necromancer enemy should have more dangerous attacks
-* goblin mage's fireball should be more threatening
+* Have a UI toggle for saving game
 * zombie/mummy has chance to inflict DOT or other debuff on hit
-* right click items to swap them between inventory and equipped
 * allow some type of items to be stacked in inventory (gold nugget and sapphire)
 * give enemies 'armor'?
     * could add effects that reduce armor on enemies
