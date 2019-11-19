@@ -1,7 +1,7 @@
 import random
 
 from pythongame.core.common import ItemType, Millis, Sprite, UiIconSprite, PeriodicTimer
-from pythongame.core.damage_interactions import deal_player_damage_to_enemy
+from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
@@ -24,7 +24,7 @@ class ItemEffect(AbstractItemEffect):
             close_enemies = game_state.get_enemies_within_x_y_distance_of(140, player_center_position)
             if close_enemies:
                 damage_amount: float = self.min_dmg + random.random() * (self.max_dmg - self.min_dmg)
-                deal_player_damage_to_enemy(game_state, close_enemies[0], damage_amount)
+                deal_player_damage_to_enemy(game_state, close_enemies[0], damage_amount, DamageType.MAGIC)
                 enemy_center_position = close_enemies[0].world_entity.get_center_position()
                 game_state.visual_effects.append(
                     VisualCircle((250, 250, 0), player_center_position, 50, 140, Millis(100), 1, player_entity))
@@ -32,7 +32,7 @@ class ItemEffect(AbstractItemEffect):
                     VisualLine((250, 250, 0), player_center_position, enemy_center_position, Millis(80), 3))
 
     def get_description(self):
-        return ["Periodically damages nearby enemies (" + str(self.min_dmg) + "-" + str(self.max_dmg) + ")"]
+        return ["Periodically deals" + str(self.min_dmg) + "-" + str(self.max_dmg) + " magic damage to nearby enemies"]
 
 
 def register_rod_of_lightning_item():

@@ -1,7 +1,7 @@
 from typing import List
 
 from pythongame.core.common import ItemType, Sprite, HeroStat
-from pythongame.core.damage_interactions import deal_player_damage_to_enemy
+from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import UiIconSprite
 from pythongame.core.game_state import Event, GameState, PlayerBlockedEvent
 from pythongame.core.item_effects import StatModifyingItemEffect
@@ -17,10 +17,10 @@ class ItemEffect(StatModifyingItemEffect):
 
     def item_handle_event(self, event: Event, game_state: GameState):
         if isinstance(event, PlayerBlockedEvent):
-            deal_player_damage_to_enemy(game_state, event.npc_attacker, self.damage_amount)
+            deal_player_damage_to_enemy(game_state, event.npc_attacker, self.damage_amount, DamageType.MAGIC)
 
     def get_description(self) -> List[str]:
-        return super().get_description() + ["On block: deal " + str(self.damage_amount) + " damage to attacker"]
+        return super().get_description() + ["On block: deal " + str(self.damage_amount) + " magic damage to attacker"]
 
 
 def register_skull_shield_item():

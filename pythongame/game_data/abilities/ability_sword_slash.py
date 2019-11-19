@@ -5,7 +5,7 @@ from pygame.rect import Rect
 from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import get_buff_effect
 from pythongame.core.common import AbilityType, Millis, BuffType, HeroId, UiIconSprite, SoundId, HeroUpgrade
-from pythongame.core.damage_interactions import deal_player_damage_to_enemy
+from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     HEROES, ABILITIES
 from pythongame.core.game_state import GameState
@@ -40,7 +40,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
             damage: float = MAX_DMG
         else:
             damage: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
-        deal_player_damage_to_enemy(game_state, enemy, damage)
+        deal_player_damage_to_enemy(game_state, enemy, damage, DamageType.PHYSICAL)
 
     game_state.visual_effects.append(
         VisualRect((100, 0, 0), slash_pos, rect_w, int(rect_w * 0.7), Millis(200), 2, None))
@@ -56,7 +56,7 @@ def register_sword_slash_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_SWORD_SLASH
 
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    description = "Deal " + str(MIN_DMG) + "-" + str(MAX_DMG) + " damage to enemies in front of you."
+    description = "Deal " + str(MIN_DMG) + "-" + str(MAX_DMG) + " physical damage to enemies in front of you."
     register_ability_data(
         ABILITY_TYPE,
         AbilityData("Slash", ui_icon_sprite, 1, COOLDOWN, description, SoundId.ABILITY_SLASH))

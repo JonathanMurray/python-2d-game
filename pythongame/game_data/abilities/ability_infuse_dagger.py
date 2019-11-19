@@ -5,7 +5,7 @@ from pythongame.core.ability_effects import register_ability_effect, AbilityWasU
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
 from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PeriodicTimer, \
     PLAYER_ENTITY_SIZE
-from pythongame.core.damage_interactions import deal_player_damage_to_enemy
+from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, CameraShake
 from pythongame.core.math import translate_in_direction
@@ -59,7 +59,7 @@ class DamagedByInfusedDagger(AbstractBuffEffect):
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         if self.timer.update_and_check_if_ready(time_passed):
-            deal_player_damage_to_enemy(game_state, buffed_npc, DAMAGE_PER_TICK)
+            deal_player_damage_to_enemy(game_state, buffed_npc, DAMAGE_PER_TICK, DamageType.PHYSICAL)
             if self.should_stun:
                 effect_position = buffed_entity.get_center_position()
                 game_state.visual_effects.append(
@@ -77,7 +77,7 @@ def register_infuse_dagger_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_INFUSE_DAGGER
 
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    description = "Poison an enemy, dealing " + str(TOTAL_DOT_DAMAGE) + " damage over " + \
+    description = "Poison an enemy, dealing " + str(TOTAL_DOT_DAMAGE) + " physical damage over " + \
                   "{:.0f}".format(DEBUFF_DURATION / 1000) + "s. [from stealth: stun for full duration]"
     mana_cost = 18
     ability_data = AbilityData(

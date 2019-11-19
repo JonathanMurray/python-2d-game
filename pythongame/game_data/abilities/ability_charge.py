@@ -6,7 +6,7 @@ from pythongame.core.ability_effects import register_ability_effect, AbilityResu
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, AbilityType, SoundId, HeroId, UiIconSprite, PeriodicTimer, \
     HeroUpgrade
-from pythongame.core.damage_interactions import deal_player_damage_to_enemy
+from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     HEROES, register_buff_as_channeling
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, CameraShake
@@ -67,7 +67,8 @@ class Charging(AbstractBuffEffect):
             if damage_increased:
                 # TODO Stun target as a bonus here
                 damage = MAX_DMG
-            deal_player_damage_to_enemy(game_state, enemy, damage, visual_emphasis=damage_increased)
+            deal_player_damage_to_enemy(game_state, enemy, damage, DamageType.PHYSICAL,
+                                        visual_emphasis=damage_increased)
             game_state.visual_effects.append(
                 VisualRect((250, 170, 0), visual_impact_pos, 45, 25, IMPACT_STUN_DURATION, 2, None))
             game_state.visual_effects.append(
@@ -110,8 +111,8 @@ def register_charge_ability():
     ability_type = AbilityType.CHARGE
     register_ability_effect(ability_type, _apply_ability)
     ui_icon_sprite = UiIconSprite.ABILITY_CHARGE
-    description = "Charge forward, dealing " + str(MIN_DMG) + "-" + str(MAX_DMG) + " to enemy hit on impact. " + \
-                  "(Higher damage on long range)"
+    description = "Charge forward, dealing " + str(MIN_DMG) + "-" + str(
+        MAX_DMG) + " physical damage on impact if an enemy is hit. (Higher damage on long range)"
     register_ability_data(
         ability_type,
         AbilityData("Charge", ui_icon_sprite, 12, Millis(5000), description, SoundId.ABILITY_CHARGE))

@@ -2,7 +2,7 @@ import random
 
 from pythongame.core.buff_effects import get_buff_effect, register_buff_effect, AbstractBuffEffect
 from pythongame.core.common import ItemType, Sprite, BuffType, Millis, PeriodicTimer
-from pythongame.core.damage_interactions import deal_player_damage_to_enemy
+from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
     register_entity_sprite_initializer, ITEM_ENTITY_SIZE
 from pythongame.core.game_state import Event, PlayerDamagedEnemy, GameState, WorldEntity, \
@@ -40,7 +40,7 @@ class DebuffedByGoatsRing(AbstractBuffEffect):
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         if self.dmg_timer.update_and_check_if_ready(time_passed):
-            deal_player_damage_to_enemy(game_state, buffed_npc, 1, DAMAGE_SOURCE)
+            deal_player_damage_to_enemy(game_state, buffed_npc, 1, DamageType.MAGIC, damage_source=DAMAGE_SOURCE)
         if self.graphics_timer.update_and_check_if_ready(time_passed):
             position = buffed_entity.get_center_position()
             visual_effect1 = VisualCircle((0, 100, 40), position, 9, 16, Millis(400), 2, buffed_entity)
@@ -61,7 +61,7 @@ def register_goats_ring():
     register_item_effect(ITEM_TYPE, ItemEffect(ITEM_TYPE))
     name = "The Goat's Curse"
     description = ["Whenever you damage an enemy, there is a  " + str(
-        int(PROC_CHANCE * 100)) + "% chance that it will be cursed and take additional damage over time"]
+        int(PROC_CHANCE * 100)) + "% chance that it will be cursed and take additional magic damage over time"]
     item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.RING)
     register_item_data(ITEM_TYPE, item_data)
     register_buff_effect(BUFF_TYPE, DebuffedByGoatsRing)

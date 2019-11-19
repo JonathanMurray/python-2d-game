@@ -2,7 +2,7 @@ from pythongame.core.ability_effects import register_ability_effect, Sprite, Abi
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import AbilityType, Millis, \
     Direction, BuffType, UiIconSprite
-from pythongame.core.damage_interactions import deal_player_damage_to_enemy
+from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_entity_sprite_map
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
@@ -24,7 +24,8 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
     game_state.visual_effects.append(
         VisualSprite(Sprite.EFFECT_ABILITY_FROST_NOVA, effect_position, Millis(200), player_entity))
     for enemy in affected_enemies:
-        damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, 5)
+        damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, 5, DamageType.MAGIC
+                                                       )
         if damage_was_dealt:
             enemy.gain_buff_effect(get_buff_effect(BuffType.REDUCED_MOVEMENT_SPEED), Millis(4000))
     return AbilityWasUsedSuccessfully()

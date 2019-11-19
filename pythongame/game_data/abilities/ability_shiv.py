@@ -5,7 +5,7 @@ from pygame.rect import Rect
 from pythongame.core.ability_effects import register_ability_effect, AbilityResult, AbilityWasUsedSuccessfully
 from pythongame.core.buff_effects import get_buff_effect
 from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PLAYER_ENTITY_SIZE, HeroUpgrade
-from pythongame.core.damage_interactions import deal_player_damage_to_enemy
+from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path
 from pythongame.core.game_state import GameState, CameraShake
 from pythongame.core.math import translate_in_direction
@@ -46,7 +46,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
             if has_damage_upgrade and enemy.health_resource.is_at_max():
                 damage *= 1.5
 
-        deal_player_damage_to_enemy(game_state, enemy, damage, visual_emphasis=is_stealthed)
+        deal_player_damage_to_enemy(game_state, enemy, damage, DamageType.PHYSICAL, visual_emphasis=is_stealthed)
         break
 
     game_state.visual_effects.append(
@@ -62,7 +62,7 @@ def register_shiv_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_SHIV
 
     register_ability_effect(ability_type, _apply_ability)
-    description = "Deal " + str(MIN_DMG) + "-" + str(MAX_DMG) + " damage to one enemy in front of you. " + \
+    description = "Deal " + str(MIN_DMG) + "-" + str(MAX_DMG) + " physical damage to one enemy in front of you. " + \
                   "[from stealth: 350% damage]"
     ability_data = AbilityData("Shiv", ui_icon_sprite, 1, Millis(400), description, None)
     register_ability_data(ability_type, ability_data)

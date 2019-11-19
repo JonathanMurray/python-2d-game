@@ -7,7 +7,7 @@ from pythongame.core.ability_effects import register_ability_effect, AbilityResu
 from pythongame.core.buff_effects import register_buff_effect, get_buff_effect, \
     StatModifyingBuffEffect
 from pythongame.core.common import AbilityType, Millis, UiIconSprite, SoundId, BuffType, HeroUpgrade, HeroStat
-from pythongame.core.damage_interactions import deal_player_damage_to_enemy
+from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, CameraShake
@@ -38,7 +38,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
             enemy_hit = _get_enemy_that_was_hit(game_state, player_entity, distance)
             if enemy_hit:
                 game_state.camera_shake = CameraShake(Millis(50), Millis(150), 4)
-                deal_player_damage_to_enemy(game_state, enemy_hit, DAMAGE)
+                deal_player_damage_to_enemy(game_state, enemy_hit, DAMAGE, DamageType.MAGIC)
                 game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_TYPE), BUFF_DURATION)
                 has_reset_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_DASH_KILL_RESET)
                 enemy_died = enemy_hit.health_resource.is_at_or_below_zero()
@@ -93,7 +93,7 @@ class AfterDash(StatModifyingBuffEffect):
 def register_dash_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_DASH
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    description = "Dash over an enemy, dealing " + str(DAMAGE) + " damage. Then, gain +" + \
+    description = "Dash over an enemy, dealing " + str(DAMAGE) + " magic damage. Then, gain +" + \
                   "{:.0f}".format(DODGE_CHANCE_BOOST * 100) + "% dodge chance and +" + \
                   str(HEALTH_REGEN_BOOST) + " health regen"
     mana_cost = 12

@@ -22,7 +22,9 @@ class DamageType(Enum):
 # False if enemy was invulnerable.
 # damage_source parameter can be used to prevent buffs from triggering themselves
 def deal_player_damage_to_enemy(game_state: GameState, npc: NonPlayerCharacter, base_amount: float,
-                                visual_emphasis: bool = False, damage_source: Optional[str] = None):
+                                damage_type: DamageType, visual_emphasis: bool = False,
+                                damage_source: Optional[str] = None):
+    # TODO Handle physical/magic damage differently
     player_state = game_state.player_state
     damage_modifier: float = player_state.base_damage_modifier + player_state.damage_modifier_bonus
     amount: float = base_amount * damage_modifier

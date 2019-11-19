@@ -2,7 +2,7 @@ from pythongame.core.ability_effects import register_ability_effect, AbilityWasU
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, ProjectileType, UiIconSprite, PeriodicTimer, \
     SoundId
-from pythongame.core.damage_interactions import deal_player_damage_to_enemy
+from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_entity_sprite_initializer, register_buff_as_channeling
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile, CameraShake
@@ -15,6 +15,7 @@ from pythongame.core.visual_effects import VisualCircle, VisualRect
 CHANNEL_DURATION = Millis(1000)
 PROJECTILE_SIZE = (30, 30)
 PROJECTILE_SPEED = 0.7
+DAMAGE = 1
 
 
 def _apply_channel_attack(game_state: GameState) -> AbilityResult:
@@ -56,8 +57,7 @@ class ProjectileController(AbstractProjectileController):
 
     def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState, projectile: Projectile):
         if npc not in self._enemies_hit:
-            damage = 1
-            deal_player_damage_to_enemy(game_state, npc, damage)
+            deal_player_damage_to_enemy(game_state, npc, DAMAGE, DamageType.MAGIC)
             game_state.visual_effects.append(
                 VisualCircle((250, 100, 250), npc.world_entity.get_center_position(), 15, 25, Millis(100), 0))
             self._enemies_hit.append(npc)
@@ -67,7 +67,7 @@ class ProjectileController(AbstractProjectileController):
 def register_arcane_fire_ability():
     register_ability_effect(AbilityType.ARCANE_FIRE, _apply_channel_attack)
     description = "Channel for " + "{:.1f}".format(CHANNEL_DURATION / 1000) + \
-                  "s, firing piercing missiles in front of you that damage enemies."
+                  "s, firing piercing missiles in front of you dealing magic damage to enemies."
     mana_cost = 40
     cooldown = Millis(30000)
     ability_data = AbilityData("Arcane Fire", UiIconSprite.ABILITY_ARCANE_FIRE, mana_cost, cooldown, description,

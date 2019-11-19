@@ -4,7 +4,7 @@ from pythongame.core.ability_effects import register_ability_effect, AbilityWasU
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
 from pythongame.core.common import Sprite, ProjectileType, AbilityType, Millis, \
     Direction, SoundId, BuffType, PeriodicTimer, HeroUpgrade
-from pythongame.core.damage_interactions import deal_player_damage_to_enemy
+from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, register_entity_sprite_map, ABILITIES
 from pythongame.core.game_state import GameState, WorldEntity, Projectile, NonPlayerCharacter
@@ -45,7 +45,7 @@ class ProjectileController(AbstractProjectileController):
     def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState, projectile: Projectile):
         base_damage: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
         damage_amount = base_damage + game_state.player_state.fireball_dmg_boost
-        deal_player_damage_to_enemy(game_state, npc, damage_amount)
+        deal_player_damage_to_enemy(game_state, npc, damage_amount, DamageType.MAGIC)
         _create_visual_splash(npc.world_entity.get_center_position(), game_state)
         has_burn_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_FIREBALL_BURN)
         if has_burn_upgrade:
@@ -64,7 +64,7 @@ class BurntByFireball(AbstractBuffEffect):
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         if self.timer.update_and_check_if_ready(time_passed):
-            deal_player_damage_to_enemy(game_state, buffed_npc, 1)
+            deal_player_damage_to_enemy(game_state, buffed_npc, 1, DamageType.MAGIC)
             game_state.visual_effects.append(
                 VisualCircle((180, 50, 50), buffed_npc.world_entity.get_center_position(), 10, 20, Millis(50), 0,
                              buffed_entity))
@@ -99,7 +99,7 @@ def _upgrade_fireball_mana_cost(_game_state: GameState):
 def register_fireball_ability():
     register_ability_effect(AbilityType.FIREBALL, _apply_ability)
     description = "Shoot a fireball, dealing " + str(MIN_DMG) + "-" + str(MAX_DMG) + \
-                  " damage to the first enemy that it hits."
+                  " magic damage to the first enemy that it hits."
     register_ability_data(
         AbilityType.FIREBALL,
         AbilityData("Fireball", UiIconSprite.ABILITY_FIREBALL, 4, Millis(500), description, SoundId.ABILITY_FIREBALL))

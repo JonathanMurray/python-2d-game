@@ -3,7 +3,7 @@ import random
 from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
 from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PeriodicTimer
-from pythongame.core.damage_interactions import deal_player_damage_to_enemy
+from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_as_channeling
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, CameraShake
@@ -56,7 +56,7 @@ class ChannelingStomp(AbstractBuffEffect):
             VisualRect((250, 250, 0), hero_center_pos, distance, distance * 2, Millis(100), 4, None))
         for enemy in affected_enemies:
             damage: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
-            deal_player_damage_to_enemy(game_state, enemy, damage)
+            deal_player_damage_to_enemy(game_state, enemy, damage, DamageType.PHYSICAL)
             enemy.gain_buff_effect(get_buff_effect(STUNNED_BY_STOMP), STUN_DURATION)
         game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(300))
         play_sound(SoundId.ABILITY_STOMP)
@@ -85,7 +85,7 @@ def register_stomp_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_STOMP
 
     register_ability_effect(ability_type, _apply_ability)
-    description = "Stun and deal " + str(MIN_DMG) + "-" + str(MAX_DMG) + " damage to all enemies around you."
+    description = "Stun and deal " + str(MIN_DMG) + "-" + str(MAX_DMG) + " physical damage to all enemies around you."
     register_ability_data(
         ability_type,
         AbilityData("War Stomp", ui_icon_sprite, 13, Millis(10000), description, None))

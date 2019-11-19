@@ -2,7 +2,7 @@ from pythongame.core.ability_effects import register_ability_effect, AbilityResu
 from pythongame.core.buff_effects import register_buff_effect, AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import Sprite, ProjectileType, AbilityType, Millis, \
     Direction, BuffType, SoundId, UiIconSprite, PeriodicTimer, HeroUpgrade
-from pythongame.core.damage_interactions import deal_player_damage_to_enemy
+from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_entity_sprite_map, ABILITIES
 from pythongame.core.game_state import GameState, WorldEntity, Projectile, NonPlayerCharacter
@@ -29,7 +29,7 @@ class ProjectileController(AbstractProjectileController):
         super().__init__(1500)
 
     def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState, projectile: Projectile):
-        damage_was_dealt = deal_player_damage_to_enemy(game_state, npc, 1)
+        damage_was_dealt = deal_player_damage_to_enemy(game_state, npc, 1, DamageType.MAGIC)
         if damage_was_dealt:
             npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), DEBUFF_DURATION)
             victim_center_pos = npc.world_entity.get_center_position()
@@ -71,7 +71,7 @@ class Rooted(AbstractBuffEffect):
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         if self.timer.update_and_check_if_ready(time_passed):
-            deal_player_damage_to_enemy(game_state, buffed_npc, 1)
+            deal_player_damage_to_enemy(game_state, buffed_npc, 1, DamageType.MAGIC)
             game_state.visual_effects.append(
                 VisualCircle((0, 150, 0), buffed_entity.get_center_position(), 30, 55, Millis(150), 2, buffed_entity))
 
@@ -88,7 +88,7 @@ def _upgrade_entangling_roots_cooldown(_game_state: GameState):
 
 def register_entangling_roots_ability():
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    description = "Stun an enemy for " + "{:.0f}".format(DEBUFF_DURATION / 1000) + "s and deal periodic damage."
+    description = "Stun an enemy for " + "{:.0f}".format(DEBUFF_DURATION / 1000) + "s and deal periodic magic damage."
     mana_cost = 22
     ability_data = AbilityData("Entangling roots", ICON_SPRITE, mana_cost, Millis(12000), description,
                                SoundId.ABILITY_ENTANGLING_ROOTS)
