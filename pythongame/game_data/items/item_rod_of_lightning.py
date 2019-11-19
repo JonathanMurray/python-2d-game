@@ -32,7 +32,7 @@ class ItemEffect(AbstractItemEffect):
                     VisualLine((250, 250, 0), player_center_position, enemy_center_position, Millis(80), 3))
 
     def get_description(self):
-        return ["Periodically deals" + str(self.min_dmg) + "-" + str(self.max_dmg) + " magic damage to nearby enemies"]
+        return ["Periodically deals " + str(self.min_dmg) + "-" + str(self.max_dmg) + " magic damage to nearby enemies"]
 
 
 def register_rod_of_lightning_item():

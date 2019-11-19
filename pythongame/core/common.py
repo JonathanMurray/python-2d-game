@@ -535,17 +535,18 @@ class PortraitIconSprite(Enum):
 
 
 class HeroStat(Enum):
-    # TODO Add MAGIC_DAMAGE and PHYSICAL_DAMAGE
     MAX_HEALTH = 1
     HEALTH_REGEN = 2
     MAX_MANA = 3
     MANA_REGEN = 4
     ARMOR = 5
     MOVEMENT_SPEED = 6
-    DAMAGE = 7
-    LIFE_STEAL = 8
-    BLOCK_AMOUNT = 9
-    DODGE_CHANCE = 10
+    LIFE_STEAL = 7
+    BLOCK_AMOUNT = 8
+    DODGE_CHANCE = 9
+    DAMAGE = 10
+    PHYSICAL_DAMAGE = 11
+    MAGIC_DAMAGE = 12
 
 
 # Use to handle timing-related boilerplate for buffs, items, enemy behaviours, etc

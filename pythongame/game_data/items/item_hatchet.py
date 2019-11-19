@@ -11,5 +11,5 @@ def register_hatchet_item():
         image_file_path="resources/graphics/item_hatchet.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
         name="Hatchet",
-        stat_modifiers={HeroStat.DAMAGE: 0.1}
+        stat_modifiers={HeroStat.PHYSICAL_DAMAGE: 0.1}
     )

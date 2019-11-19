@@ -11,5 +11,5 @@ def register_royal_sword_item():
         image_file_path="resources/graphics/item_royal_sword.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
         name="Royal Sword",
-        stat_modifiers={HeroStat.DAMAGE: 0.15, HeroStat.ARMOR: 1}
+        stat_modifiers={HeroStat.PHYSICAL_DAMAGE: 0.15, HeroStat.ARMOR: 1}
     )

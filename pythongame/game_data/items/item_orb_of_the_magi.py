@@ -17,7 +17,7 @@ def register_orb_of_the_magi_item():
     for i in range(3):
         item_type = item_types[i]
         bonus = multiplier_bonuses[i]
-        effect = StatModifyingItemEffect(item_type, {HeroStat.DAMAGE: bonus})
+        effect = StatModifyingItemEffect(item_type, {HeroStat.MAGIC_DAMAGE: bonus})
         register_item_effect(item_type, effect)
         name = "Orb of the Magi (" + str(i + 1) + ")"
         description = effect.get_description()

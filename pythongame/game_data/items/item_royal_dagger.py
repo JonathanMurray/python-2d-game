@@ -11,5 +11,5 @@ def register_royal_dagger_item():
         image_file_path="resources/graphics/item_royal_dagger.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
         name="Royal Dagger",
-        stat_modifiers={HeroStat.DAMAGE: 0.2}
+        stat_modifiers={HeroStat.PHYSICAL_DAMAGE: 0.2}
     )

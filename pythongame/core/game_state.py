@@ -636,6 +636,10 @@ class GameState:
         elif hero_stat == HeroStat.DAMAGE:
             player_state.physical_damage_modifier_bonus += stat_delta
             player_state.magic_damage_modifier_bonus += stat_delta
+        elif hero_stat == HeroStat.PHYSICAL_DAMAGE:
+            player_state.physical_damage_modifier_bonus += stat_delta
+        elif hero_stat == HeroStat.MAGIC_DAMAGE:
+            player_state.magic_damage_modifier_bonus += stat_delta
         elif hero_stat == HeroStat.LIFE_STEAL:
             player_state.life_steal_ratio += stat_delta
         elif hero_stat == HeroStat.BLOCK_AMOUNT:
