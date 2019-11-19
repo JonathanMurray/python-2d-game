@@ -11,5 +11,5 @@ def register_knights_armor():
         image_file_path="resources/graphics/item_knights_armor.png",
         item_equipment_category=ItemEquipmentCategory.CHEST,
         name="Knight's Armor",
-        stat_modifiers={HeroStat.ARMOR: 2, HeroStat.MOVEMENT_SPEED: -0.1}
+        stat_modifiers={HeroStat.ARMOR: 2}
     )
