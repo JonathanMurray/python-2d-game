@@ -135,6 +135,10 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.HEALING_WAND),
     MapEditorWorldEntity.item(ItemType.SKULL_SHIELD),
     MapEditorWorldEntity.item(ItemType.THIEFS_MASK),
+    MapEditorWorldEntity.item(ItemType.SERPENT_SWORD),
+    MapEditorWorldEntity.item(ItemType.WHIP),
+    MapEditorWorldEntity.item(ItemType.CLEAVER),
+    MapEditorWorldEntity.item(ItemType.DESERT_BLADE),
 
     MapEditorWorldEntity.money(1),
 

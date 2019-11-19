@@ -364,6 +364,34 @@
         150,
         350
       ]
+    },
+    {
+      "item_type": "SERPENT_SWORD",
+      "position": [
+        150,
+        400
+      ]
+    },
+    {
+      "item_type": "WHIP",
+      "position": [
+        200,
+        50
+      ]
+    },
+    {
+      "item_type": "CLEAVER",
+      "position": [
+        200,
+        100
+      ]
+    },
+    {
+      "item_type": "DESERT_BLADE",
+      "position": [
+        200,
+        150
+      ]
     }
   ],
   "money_piles_on_ground": [],

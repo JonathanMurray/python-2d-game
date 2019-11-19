@@ -46,12 +46,13 @@ LOOT_ITEMS_3 = [
     LootEntry.item(ItemType.RING_OF_POWER),
     LootEntry.item(ItemType.ROYAL_SWORD),
     LootEntry.item(ItemType.ROYAL_DAGGER),
-    LootEntry.item(ItemType.MOLTEN_AXE),
     LootEntry.item(ItemType.WAND),
     LootEntry.item(ItemType.ELITE_HELMET),
     LootEntry.item(ItemType.DRUIDS_RING),
     LootEntry.item(ItemType.HEALING_WAND),
     LootEntry.item(ItemType.ELVEN_ARMOR),
+    LootEntry.item(ItemType.WHIP),
+    LootEntry.item(ItemType.SERPENT_SWORD),
 ]
 
 LOOT_ITEMS_4 = [
@@ -64,6 +65,9 @@ LOOT_ITEMS_4 = [
     LootEntry.item(ItemType.WARLOCKS_COWL),
     LootEntry.item(ItemType.NOBLE_DEFENDER),
     LootEntry.item(ItemType.LICH_ARMOR),
+    LootEntry.item(ItemType.MOLTEN_AXE),
+    LootEntry.item(ItemType.CLEAVER),
+    LootEntry.item(ItemType.DESERT_BLADE),
 ]
 
 LOOT_POTIONS_1 = [
@@ -75,7 +79,8 @@ LOOT_POTIONS_2 = [
     LootEntry.consumable(ConsumableType.HEALTH),
     LootEntry.consumable(ConsumableType.MANA),
     LootEntry.consumable(ConsumableType.SPEED),
-    LootEntry.consumable(ConsumableType.WARP_STONE)
+    LootEntry.consumable(ConsumableType.WARP_STONE),
+    LootEntry.consumable(ConsumableType.POWER),
 ]
 
 LOOT_TABLE_1 = LootTable([
@@ -97,7 +102,7 @@ LOOT_TABLE_3 = LootTable([
 ])
 
 LOOT_TABLE_4 = LootTable([
-    LootGroup(1, [LootEntry.money(2), LootEntry.money(3), LootEntry.money(4)], 0.4),
-    LootGroup(1, LOOT_POTIONS_1 + LOOT_POTIONS_2, 0.2),
-    LootGroup(1, LOOT_ITEMS_3 + LOOT_ITEMS_4, 0.2)
+    LootGroup(1, [LootEntry.money(2), LootEntry.money(3), LootEntry.money(4)], 0.3),
+    LootGroup(1, LOOT_POTIONS_1 + LOOT_POTIONS_2, 0.15),
+    LootGroup(1, LOOT_ITEMS_3 + LOOT_ITEMS_4, 0.15)
 ])

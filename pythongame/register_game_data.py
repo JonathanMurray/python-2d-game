@@ -53,6 +53,8 @@ from pythongame.game_data.items.item_amulet_of_mana import register_amulet_of_ma
 from pythongame.game_data.items.item_blessed_shield import register_blessed_shield_item
 from pythongame.game_data.items.item_blood_amulet import register_blood_amulet
 from pythongame.game_data.items.item_blue_robe import register_blue_robe_item
+from pythongame.game_data.items.item_cleaver import register_cleaver_item
+from pythongame.game_data.items.item_desert_blade import register_desert_blade_item
 from pythongame.game_data.items.item_druids_ring import register_druids_ring_item
 from pythongame.game_data.items.item_elite_armor import register_elite_armor
 from pythongame.game_data.items.item_elite_helmet import register_elite_helmet_item
@@ -80,6 +82,7 @@ from pythongame.game_data.items.item_rod_of_lightning import register_rod_of_lig
 from pythongame.game_data.items.item_royal_dagger import register_royal_dagger_item
 from pythongame.game_data.items.item_royal_sword import register_royal_sword_item
 from pythongame.game_data.items.item_saphire import register_saphire
+from pythongame.game_data.items.item_serpent_sword import register_serpent_sword_item
 from pythongame.game_data.items.item_skull_shield import register_skull_shield_item
 from pythongame.game_data.items.item_skull_staff import register_skull_staff_item
 from pythongame.game_data.items.item_soldiers_helmet import register_soldiers_helmet_item
@@ -90,6 +93,7 @@ from pythongame.game_data.items.item_torn_document import register_torn_document
 from pythongame.game_data.items.item_wand import register_wand_item
 from pythongame.game_data.items.item_warlocks_cowl import register_warlocks_cowl_item
 from pythongame.game_data.items.item_warlords_armor import register_warlords_armor_item
+from pythongame.game_data.items.item_whip import register_whip_item
 from pythongame.game_data.items.item_winged_helmet import register_winged_helmet_item
 from pythongame.game_data.items.item_wizards_cowl import register_wizards_cowl
 from pythongame.game_data.items.item_wooden_shield import register_wooden_shield
@@ -208,6 +212,10 @@ def register_all_game_data():
     register_healing_wand_item()
     register_skull_shield_item()
     register_thiefs_mask_item()
+    register_serpent_sword_item()
+    register_whip_item()
+    register_cleaver_item()
+    register_desert_blade_item()
 
     # Register items before NPCs as vendors may rely on item data
 
