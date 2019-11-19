@@ -535,6 +535,7 @@ class PortraitIconSprite(Enum):
 
 
 class HeroStat(Enum):
+    # TODO Add MAGIC_DAMAGE and PHYSICAL_DAMAGE
     MAX_HEALTH = 1
     HEALTH_REGEN = 2
     MAX_MANA = 3

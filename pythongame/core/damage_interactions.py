@@ -24,9 +24,13 @@ class DamageType(Enum):
 def deal_player_damage_to_enemy(game_state: GameState, npc: NonPlayerCharacter, base_amount: float,
                                 damage_type: DamageType, visual_emphasis: bool = False,
                                 damage_source: Optional[str] = None):
-    # TODO Handle physical/magic damage differently
     player_state = game_state.player_state
-    damage_modifier: float = player_state.base_damage_modifier + player_state.damage_modifier_bonus
+    if damage_type == DamageType.PHYSICAL:
+        damage_modifier: float = player_state.base_physical_damage_modifier + player_state.physical_damage_modifier_bonus
+    elif damage_type == DamageType.MAGIC:
+        damage_modifier: float = player_state.base_magic_damage_modifier + player_state.magic_damage_modifier_bonus
+    else:
+        raise Exception("Unhandled damage type: " + str(damage_type))
     amount: float = base_amount * damage_modifier
     if npc.invulnerable:
         return False

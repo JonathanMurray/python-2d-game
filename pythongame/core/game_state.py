@@ -375,8 +375,10 @@ class PlayerState:
         self.fireball_dmg_boost = 0
         self.new_level_abilities: Dict[int, AbilityType] = new_level_abilities
         self.money = 0
-        self.base_damage_modifier: float = 1  # only affected by level. [Changes multiplicatively]
-        self.damage_modifier_bonus: float = 0  # affected by items. [Change it additively]
+        self.base_physical_damage_modifier: float = 1  # only affected by level. [Changes multiplicatively]
+        self.physical_damage_modifier_bonus: float = 0  # affected by items. [Change it additively]
+        self.base_magic_damage_modifier: float = 1  # only affected by level. [Changes multiplicatively]
+        self.magic_damage_modifier_bonus: float = 0  # affected by items. [Change it additively]
         self.hero_id: HeroId = hero_id
         self.base_armor: float = armor  # depends on which hero is being played
         self.armor_bonus: int = 0  # affected by items/buffs. [Change it additively]
@@ -445,7 +447,8 @@ class PlayerState:
         self.mana_resource.increase_max(self.level_bonus.mana)
         self.mana_resource.gain_to_max()
         self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.6)
-        self.base_damage_modifier *= 1.1
+        self.base_physical_damage_modifier *= 1.1
+        self.base_magic_damage_modifier *= 1.1
         self.base_armor += self.level_bonus.armor
 
     def gain_ability(self, ability_type: AbilityType):
@@ -631,7 +634,8 @@ class GameState:
         elif hero_stat == HeroStat.MOVEMENT_SPEED:
             self.player_entity.add_to_speed_multiplier(stat_delta)
         elif hero_stat == HeroStat.DAMAGE:
-            player_state.damage_modifier_bonus += stat_delta
+            player_state.physical_damage_modifier_bonus += stat_delta
+            player_state.magic_damage_modifier_bonus += stat_delta
         elif hero_stat == HeroStat.LIFE_STEAL:
             player_state.life_steal_ratio += stat_delta
         elif hero_stat == HeroStat.BLOCK_AMOUNT:

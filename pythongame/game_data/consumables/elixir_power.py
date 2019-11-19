@@ -24,7 +24,8 @@ class BuffedFromElixirOfPower(AbstractBuffEffect):
         self.timer = PeriodicTimer(Millis(300))
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.damage_modifier_bonus += DAMAGE_MODIFIER_INCREASE
+        game_state.player_state.physical_damage_modifier_bonus += DAMAGE_MODIFIER_INCREASE
+        game_state.player_state.magic_damage_modifier_bonus += DAMAGE_MODIFIER_INCREASE
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
@@ -33,7 +34,8 @@ class BuffedFromElixirOfPower(AbstractBuffEffect):
                 VisualRect((0, 0, 0), game_state.player_entity.get_center_position(), 6, 18, Millis(200), 3))
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.damage_modifier_bonus -= DAMAGE_MODIFIER_INCREASE
+        game_state.player_state.physical_damage_modifier_bonus -= DAMAGE_MODIFIER_INCREASE
+        game_state.player_state.magic_damage_modifier_bonus -= DAMAGE_MODIFIER_INCREASE
 
     def get_buff_type(self):
         return BUFF_TYPE

@@ -10,7 +10,8 @@ def register_generic_talents():
 
 
 def _upgrade_damage(game_state: GameState):
-    game_state.player_state.damage_modifier_bonus += 0.1
+    game_state.player_state.physical_damage_modifier_bonus += 0.1
+    game_state.player_state.magic_damage_modifier_bonus += 0.1
 
 
 def _upgrade_armor(game_state: GameState):
