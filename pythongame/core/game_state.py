@@ -372,7 +372,6 @@ class PlayerState:
         self.exp = 0
         self.level = 1
         self.max_exp_in_this_level = 50
-        self.fireball_dmg_boost = 0
         self.new_level_abilities: Dict[int, AbilityType] = new_level_abilities
         self.money = 0
         self.base_physical_damage_modifier: float = 1  # only affected by level. [Changes multiplicatively]

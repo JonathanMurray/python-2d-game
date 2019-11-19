@@ -43,8 +43,7 @@ class ProjectileController(AbstractProjectileController):
         super().__init__(1500)
 
     def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState, projectile: Projectile):
-        base_damage: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
-        damage_amount = base_damage + game_state.player_state.fireball_dmg_boost
+        damage_amount: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
         deal_player_damage_to_enemy(game_state, npc, damage_amount, DamageType.MAGIC)
         _create_visual_splash(npc.world_entity.get_center_position(), game_state)
         has_burn_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_FIREBALL_BURN)
