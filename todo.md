@@ -25,6 +25,7 @@
 * show more clearly in UI, which inventory slots are storage and which ones are for equipped items
 
 #### Features:
+* Add more talents and improve talent UI
 * Have a UI toggle for saving game
 * zombie/mummy has chance to inflict DOT or other debuff on hit
 * allow some type of items to be stacked in inventory (gold nugget and sapphire)
