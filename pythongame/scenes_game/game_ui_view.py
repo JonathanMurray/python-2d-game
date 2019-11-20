@@ -206,101 +206,75 @@ class GameUiView:
     def _setup_ability_icons(self, abilities):
         self.ability_icons = []
         icon_space = 2
-        x_1 = 140
-        y_3 = 90
-        y_4 = y_3 + 22
+        x_0 = 140
+        y = 112
         for i, ability_type in enumerate(abilities):
-            x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
-            y = y_4
-
+            x = x_0 + i * (UI_ICON_SIZE[0] + icon_space)
             ability = ABILITIES[ability_type]
             rect = Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])
             image = self.images_by_ui_sprite[ability.icon_sprite]
             label = KEYS_BY_ABILITY_TYPE[ability_type].key_string
+            tooltip_details = ["Cooldown: " + str(ability.cooldown / 1000.0) + " s",
+                               "Mana: " + str(ability.mana_cost),
+                               ability.description]
+            tooltip = TooltipGraphics(COLOR_WHITE, ability.name, tooltip_details, bottom_left=(x, y))
 
-            ability_data = ABILITIES[ability_type]
-            tooltip_title = ability_data.name
-            cooldown = str(ability_data.cooldown / 1000.0)
-            mana_cost = str(ability_data.mana_cost)
-            tooltip_details = ["Cooldown: " + cooldown + " s", "Mana: " + mana_cost, ability_data.description]
-            tooltip_bottom_left_position = (x, y)
-            tooltip_for_this_ability = TooltipGraphics(COLOR_WHITE, tooltip_title, tooltip_details,
-                                                       bottom_left=tooltip_bottom_left_position)
-
-            icon = AbilityIcon(self.ui_render, rect, image, label, self.font_ui_icon_keys, tooltip_for_this_ability,
-                               ability_type)
+            icon = AbilityIcon(self.ui_render, rect, image, label, self.font_ui_icon_keys, tooltip, ability_type)
             self.ability_icons.append(icon)
 
     def _setup_consumable_icons(self, consumable_slots: Dict[int, List[ConsumableType]]):
         self.consumable_icons = []
         icon_space = 2
-        x_1 = 140
-        y_1 = 30
-        y_2 = y_1 + 22
+        x_0 = 140
+        y = 52
         for i, slot_number in enumerate(consumable_slots):
-            x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
-            y = y_2
+            x = x_0 + i * (UI_ICON_SIZE[0] + icon_space)
             consumable_types = consumable_slots[slot_number]
-            consumable_type = consumable_types[0] if consumable_types else None
-            tooltip_for_this_consumable = None
+            tooltip = None
             image = None
-            if consumable_type:
-                tooltip_title = CONSUMABLES[consumable_type].name
-                tooltip_details = [CONSUMABLES[consumable_type].description]
-                tooltip_bottom_left_position = (x, y)
-                tooltip_for_this_consumable = TooltipGraphics(COLOR_WHITE, tooltip_title, tooltip_details,
-                                                              bottom_left=tooltip_bottom_left_position)
-                icon_sprite = CONSUMABLES[consumable_type].icon_sprite
-                image = self.images_by_ui_sprite[icon_sprite]
+            if consumable_types:
+                consumable = CONSUMABLES[consumable_types[0]]
+                tooltip = TooltipGraphics(COLOR_WHITE, consumable.name, [consumable.description], bottom_left=(x, y))
+                image = self.images_by_ui_sprite[consumable.icon_sprite]
             rect = Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])
             icon = ConsumableIcon(self.ui_render, rect, image, str(slot_number), self.font_ui_icon_keys,
-                                  tooltip_for_this_consumable, consumable_types, slot_number)
+                                  tooltip, consumable_types, slot_number)
             self.consumable_icons.append(icon)
 
     def _setup_inventory_icons(self, item_slots: List[ItemInventorySlot]):
         self.inventory_icons = []
-        x_2 = 325
-        y_1 = 30
-        y_2 = y_1 + 22
         icon_space = 2
+        x_0 = 325
+        y_0 = 52
         num_slots_per_row = 3
         for i in range(len(item_slots)):
-            x = x_2 + (i % num_slots_per_row) * (UI_ICON_SIZE[0] + icon_space)
-            y = y_2 + (i // num_slots_per_row) * (UI_ICON_SIZE[1] + icon_space)
-            slot: ItemInventorySlot = item_slots[i]
+            x = x_0 + (i % num_slots_per_row) * (UI_ICON_SIZE[0] + icon_space)
+            y = y_0 + (i // num_slots_per_row) * (UI_ICON_SIZE[1] + icon_space)
+            slot = item_slots[i]
             item_type = slot.get_item_type() if not slot.is_empty() else None
             slot_equipment_category = slot.enforced_equipment_category
 
-            rect = Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])
             image = None
+            tooltip = None
             if item_type:
-                image = self.images_by_ui_sprite[ITEMS[item_type].icon_sprite]
+                item = ITEMS[item_type]
+                image = self.images_by_ui_sprite[item.icon_sprite]
+                tooltip_details = []
+                if item.item_equipment_category:
+                    category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[item.item_equipment_category]
+                    tooltip_details.append("[" + category_name + "]")
+                tooltip_details += item.description_lines
+                tooltip = TooltipGraphics(COLOR_ITEM_TOOLTIP_HEADER, item.name, tooltip_details,
+                                          bottom_left=(x, y))
             elif slot_equipment_category:
                 image = self._get_image_for_item_category(slot_equipment_category)
-
-            if item_type:
-                item_data = ITEMS[item_type]
-                tooltip_title = item_data.name
-                tooltip_details = []
-                if item_data.item_equipment_category:
-                    category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[item_data.item_equipment_category]
-                    tooltip_details.append("[" + category_name + "]")
-                tooltip_details += item_data.description_lines
-                tooltip_bottom_left_position = (x, y)
-                tooltip_for_this_slot = TooltipGraphics(COLOR_ITEM_TOOLTIP_HEADER, tooltip_title, tooltip_details,
-                                                        bottom_left=tooltip_bottom_left_position)
-            elif slot_equipment_category:
-                tooltip_title = "..."
                 category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[slot_equipment_category]
                 tooltip_details = ["[" + category_name + "]",
                                    "You have nothing equipped. Drag an item here to equip it!"]
-                tooltip_bottom_left_position = (x, y)
-                tooltip_for_this_slot = TooltipGraphics(COLOR_WHITE, tooltip_title, tooltip_details,
-                                                        bottom_left=tooltip_bottom_left_position)
-            else:
-                tooltip_for_this_slot = None
+                tooltip = TooltipGraphics(COLOR_WHITE, "...", tooltip_details, bottom_left=(x, y))
 
-            icon = ItemIcon(self.ui_render, rect, image, tooltip_for_this_slot, slot_equipment_category, item_type, i)
+            rect = Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])
+            icon = ItemIcon(self.ui_render, rect, image, tooltip, slot_equipment_category, item_type, i)
             self.inventory_icons.append(icon)
 
     def update_abilities(self, abilities: List[AbilityType]):
@@ -648,7 +622,6 @@ class GameUiView:
         player_mana = player_state.mana_resource.value
         player_active_buffs = player_state.active_buffs
         ability_cooldowns_remaining = player_state.ability_cooldowns_remaining
-        item_slots: List[ItemInventorySlot] = player_state.item_inventory.slots
         player_exp = player_state.exp
         player_max_exp_in_this_level = player_state.max_exp_in_this_level
         player_level = player_state.level
