@@ -1,5 +1,5 @@
 import math
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Dict
 
 import pygame
 from pygame.rect import Rect
@@ -85,6 +85,49 @@ class AbilityIcon:
             self._ui_render.rect((180, 30, 30), self._rect, 2)
 
 
+class ConsumableIcon:
+    def __init__(self, ui_render: DrawableArea, rect: Rect, image, label: str, font, tooltip: TooltipGraphics,
+                 consumable_types: List[ConsumableType], slot_number: int):
+        self._ui_render = ui_render
+        self._rect = rect
+        self._image = image
+        self._label = label
+        self._font = font
+        self._consumable_types = consumable_types
+        self.tooltip = tooltip
+        self.slot_number = slot_number
+
+    def contains(self, point: Tuple[int, int]):
+        return self._rect.collidepoint(point[0], point[1])
+
+    def render(self, hovered: bool, recently_clicked: bool):
+        self._ui_render.rect_filled((40, 40, 50), self._rect)
+        if self._image:
+            self._ui_render.image(self._image, self._rect.topleft)
+        self._ui_render.rect((150, 150, 190), self._rect, 1)
+
+        sub_rect_h = 3
+        for i in range(len(self._consumable_types)):
+            sub_consumable_type = self._consumable_types[i]
+            consumable_category = CONSUMABLES[sub_consumable_type].category
+            if consumable_category == ConsumableCategory.HEALTH:
+                sub_rect_color = (160, 110, 110)
+            elif consumable_category == ConsumableCategory.MANA:
+                sub_rect_color = (110, 110, 200)
+            else:
+                sub_rect_color = (170, 170, 170)
+            self._ui_render.rect_filled(
+                sub_rect_color,
+                Rect(self._rect.x, self._rect.y - 2 - (sub_rect_h + 1) * (i + 1), self._rect.w, sub_rect_h))
+
+        if recently_clicked:
+            self._ui_render.rect(COLOR_HIGHLIGHTED_ICON,
+                                 Rect(self._rect.x - 1, self._rect.y - 1, self._rect.w + 2, self._rect.h + 2), 3)
+        elif hovered:
+            self._ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, self._rect, 1)
+        self._ui_render.text(self._font, self._label, (self._rect.x + 12, self._rect.y + self._rect.h + 4))
+
+
 class GameUiView:
 
     def __init__(self, pygame_screen, camera_size: Tuple[int, int], screen_size: Tuple[int, int],
@@ -122,8 +165,10 @@ class GameUiView:
         # This is updated every time the view is called
         self.camera_world_area = None
 
-        self.ability_icons = []
+        self.ability_icons: List[AbilityIcon] = []
         self._setup_ability_icons(abilities)
+        self.consumable_icons: List[ConsumableIcon] = []
+        self._setup_consumable_icons({})
 
     def _setup_ability_icons(self, abilities):
         self.ability_icons = []
@@ -153,44 +198,43 @@ class GameUiView:
                                ability_type)
             self.ability_icons.append(icon)
 
+    def _setup_consumable_icons(self, consumable_slots: Dict[int, List[ConsumableType]]):
+        self.consumable_icons = []
+        icon_space = 2
+        x_1 = 140
+        y_1 = 30
+        y_2 = y_1 + 22
+        for i, slot_number in enumerate(consumable_slots):
+            x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
+            y = y_2
+            consumable_types = consumable_slots[slot_number]
+            consumable_type = consumable_types[0] if consumable_types else None
+            tooltip_for_this_consumable = None
+            image = None
+            if consumable_type:
+                tooltip_title = CONSUMABLES[consumable_type].name
+                tooltip_details = [CONSUMABLES[consumable_type].description]
+                tooltip_bottom_left_position = (x, y)
+                tooltip_for_this_consumable = TooltipGraphics(COLOR_WHITE, tooltip_title, tooltip_details,
+                                                              bottom_left=tooltip_bottom_left_position)
+                icon_sprite = CONSUMABLES[consumable_type].icon_sprite
+                image = self.images_by_ui_sprite[icon_sprite]
+            rect = Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])
+            icon = ConsumableIcon(self.ui_render, rect, image, str(slot_number), self.font_ui_icon_keys,
+                                  tooltip_for_this_consumable, consumable_types, slot_number)
+            self.consumable_icons.append(icon)
+
     def update_abilities(self, abilities: List[AbilityType]):
         self._setup_ability_icons(abilities)
+
+    def update_consumables(self, consumable_slots: Dict[int, List[ConsumableType]]):
+        self._setup_consumable_icons(consumable_slots)
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
 
     def _translate_screen_position_to_ui(self, position: Tuple[int, int]):
         return position[0] - self.ui_screen_area.x, position[1] - self.ui_screen_area.y
-
-    def _consumable_icon_in_ui(self, x, y, size, consumable_number: int, consumable_types: List[ConsumableType],
-                               weak_highlight: bool, strong_highlight: bool):
-        w = size[0]
-        h = size[1]
-        self.ui_render.rect_filled((40, 40, 50), Rect(x, y, w, h))
-        if consumable_types:
-            icon_sprite = CONSUMABLES[consumable_types[0]].icon_sprite
-            self.ui_render.image(self.images_by_ui_sprite[icon_sprite], (x, y))
-        self.ui_render.rect((150, 150, 190), Rect(x, y, w, h), 1)
-        # Render any consumables that are deeper down in the inventory
-        sub_rect_h = 3
-        for i in range(len(consumable_types)):
-            sub_consumable_type = consumable_types[i]
-            consumable_category = CONSUMABLES[sub_consumable_type].category
-            if consumable_category == ConsumableCategory.HEALTH:
-                sub_rect_color = (160, 110, 110)
-            elif consumable_category == ConsumableCategory.MANA:
-                sub_rect_color = (110, 110, 200)
-            else:
-                sub_rect_color = (170, 170, 170)
-            self.ui_render.rect_filled(
-                sub_rect_color, Rect(x, y - 2 - (sub_rect_h + 1) * (i + 1), w, sub_rect_h))
-
-        if strong_highlight:
-            self.ui_render.rect(COLOR_HIGHLIGHTED_ICON, Rect(x - 1, y - 1, w + 2, h + 2), 3)
-        elif weak_highlight:
-            self.ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, Rect(x, y, w, h), 1)
-
-        self.ui_render.text(self.font_ui_icon_keys, str(consumable_number), (x + 12, y + h + 4))
 
     def _item_icon_in_ui(self, x, y, size, item_type: ItemType, slot_equipment_category: ItemEquipmentCategory,
                          highlight: bool):
@@ -543,7 +587,6 @@ class GameUiView:
         player_max_mana = player_state.mana_resource.max_value
         player_mana = player_state.mana_resource.value
         player_active_buffs = player_state.active_buffs
-        consumable_slots = player_state.consumable_inventory.consumables_in_slots
         ability_cooldowns_remaining = player_state.ability_cooldowns_remaining
         item_slots: List[ItemInventorySlot] = player_state.item_inventory.slots
         player_exp = player_state.exp
@@ -616,28 +659,21 @@ class GameUiView:
         icon_space = 2
         icon_rect_padding = 2
         consumables_rect_pos = (x_1 - icon_rect_padding, y_2 - icon_rect_padding)
+        max_num_consumables = 5
         consumables_rect = Rect(
             consumables_rect_pos[0], consumables_rect_pos[1],
-            (UI_ICON_SIZE[0] + icon_space) * len(consumable_slots) - icon_space + icon_rect_padding * 2,
+            (UI_ICON_SIZE[0] + icon_space) * max_num_consumables - icon_space + icon_rect_padding * 2,
             UI_ICON_SIZE[1] + icon_rect_padding * 2)
         self.ui_render.rect_filled((60, 60, 80), consumables_rect)
-        for i, slot_number in enumerate(consumable_slots):
-            x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
-            y = y_2
-            consumable_types = consumable_slots[slot_number]
-            consumable_type = consumable_types[0] if consumable_types else None
-            if is_point_in_rect(mouse_ui_position, Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
-                hovered_consumable_slot_number = slot_number
-                if consumable_type:
-                    tooltip_title = CONSUMABLES[consumable_type].name
-                    tooltip_details = [CONSUMABLES[consumable_type].description]
-                    tooltip_bottom_left_position = (x, y)
-                    tooltip = TooltipGraphics(COLOR_WHITE, tooltip_title, tooltip_details,
-                                              bottom_left=tooltip_bottom_left_position)
-            hovered = slot_number == hovered_consumable_slot_number
-            strong_highlight = slot_number == highlighted_consumable_action
-            self._consumable_icon_in_ui(x, y, UI_ICON_SIZE, slot_number, consumable_types, hovered,
-                                        strong_highlight)
+
+        for icon in self.consumable_icons:
+            hovered = icon.contains(mouse_ui_position)
+            if hovered:
+                hovered_consumable_slot_number = icon.slot_number
+                if icon.tooltip:
+                    tooltip = icon.tooltip
+            strong_highlight = icon.slot_number == highlighted_consumable_action
+            icon.render(hovered, strong_highlight)
 
         # ABILITIES
         abilities_rect_pos = (x_1 - icon_rect_padding, y_4 - icon_rect_padding)
@@ -649,9 +685,8 @@ class GameUiView:
         self.ui_render.rect_filled((60, 60, 80), abilities_rect)
 
         for icon in self.ability_icons:
-            hovered = False
-            if icon.contains(mouse_ui_position):
-                hovered = True
+            hovered = icon.contains(mouse_ui_position)
+            if hovered:
                 tooltip = icon.tooltip
             ability_type = icon.ability_type
             ability = ABILITIES[ability_type]
