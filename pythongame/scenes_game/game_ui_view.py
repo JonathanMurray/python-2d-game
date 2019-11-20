@@ -159,6 +159,28 @@ class ItemIcon:
             self._ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, self._rect, 1)
 
 
+class StatBar:
+    def __init__(self, ui_render: DrawableArea, rect: Rect, color: Tuple[int, int, int], tooltip: TooltipGraphics,
+                 border: bool, show_numbers: bool, font):
+        self.ui_render = ui_render
+        self.rect = rect
+        self.color = color
+        self.border = border
+        self.tooltip = tooltip
+        self.show_numbers = show_numbers
+        self.font = font
+
+    def contains(self, point: Tuple[int, int]) -> bool:
+        return self.rect.collidepoint(point[0], point[1])
+
+    def render(self, value: int, max_value: int):
+        self.ui_render.stat_bar(self.rect.x, self.rect.y, self.rect.w, self.rect.h, value / max_value, self.color,
+                                self.border)
+        if self.show_numbers:
+            text = str(value) + "/" + str(max_value)
+            self.ui_render.text(self.font, text, (self.rect.x + 20, self.rect.y - 1))
+
+
 class GameUiView:
 
     def __init__(self, pygame_screen, camera_size: Tuple[int, int], screen_size: Tuple[int, int],
@@ -207,6 +229,8 @@ class GameUiView:
         self.inventory_icons_row: Rect = Rect(0, 0, 0, 0)
         self.inventory_icons: List[ItemIcon] = []
         self._setup_inventory_icons([])
+
+        self._setup_health_and_mana_bars(0, 0)
 
     def _setup_ability_icons(self, abilities):
         x_0 = 140
@@ -306,6 +330,23 @@ class GameUiView:
             icon = ItemIcon(self.ui_render, rect, image, tooltip, slot_equipment_category, item_type, i)
             self.inventory_icons.append(icon)
 
+    def _setup_health_and_mana_bars(self, health_regen: float, mana_regen: float):
+
+        rect_healthbar = Rect(20, 111, 100, 14)
+        tooltip_details = [
+            "regeneration: " + "{:.1f}".format(health_regen) + "/s"]
+        health_tooltip = TooltipGraphics(COLOR_WHITE, "Health", tooltip_details,
+                                         bottom_left=rect_healthbar.topleft)
+        self.healthbar = StatBar(self.ui_render, rect_healthbar, (200, 0, 50), health_tooltip, border=True,
+                                 show_numbers=True, font=self.font_ui_stat_bar_numbers)
+
+        rect_manabar = Rect(20, 132, 100, 14)
+        tooltip_details = [
+            "regeneration: " + "{:.1f}".format(mana_regen) + "/s"]
+        mana_tooltip = TooltipGraphics(COLOR_WHITE, "Mana", tooltip_details, bottom_left=rect_manabar.topleft)
+        self.manabar = StatBar(self.ui_render, rect_manabar, (50, 0, 200), mana_tooltip, border=True,
+                               show_numbers=True, font=self.font_ui_stat_bar_numbers)
+
     def update_abilities(self, abilities: List[AbilityType]):
         self._setup_ability_icons(abilities)
 
@@ -314,6 +355,9 @@ class GameUiView:
 
     def update_inventory(self, item_slots: List[ItemInventorySlot]):
         self._setup_inventory_icons(item_slots)
+
+    def update_regen(self, health_regen: float, mana_regen: float):
+        self._setup_health_and_mana_bars(health_regen, mana_regen)
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
@@ -693,28 +737,17 @@ class GameUiView:
 
         self._player_portrait(hero_id, (x_0, y_0 + 13))
 
-        rect_healthbar = Rect(x_0, y_4 - 1, 100, 14)
-        self.ui_render.stat_bar(rect_healthbar[0], rect_healthbar[1], rect_healthbar[2], rect_healthbar[3],
-                                player_health / player_max_health, (200, 0, 50), True)
-        if is_point_in_rect(mouse_ui_position, rect_healthbar):
-            tooltip_details = [
-                "regeneration: " + "{:.1f}".format(player_state.health_resource.get_effective_regen()) + "/s"]
-            tooltip_bottom_left_position = (rect_healthbar[0], rect_healthbar[1])
-            tooltip = TooltipGraphics(COLOR_WHITE, "Health", tooltip_details, bottom_left=tooltip_bottom_left_position)
-        health_text = str(player_health) + "/" + str(player_max_health)
-        self.ui_render.text(self.font_ui_stat_bar_numbers, health_text, (x_0 + 20, y_4 - 1))
+        # HEALTHBAR
+        self.healthbar.render(player_health, player_max_health)
+        if self.healthbar.contains(mouse_ui_position):
+            tooltip = self.healthbar.tooltip
 
-        rect_manabar = Rect(x_0, y_4 + 20, 100, 14)
-        self.ui_render.stat_bar(rect_manabar[0], rect_manabar[1], rect_manabar[2], rect_manabar[3],
-                                player_mana / player_max_mana, (50, 0, 200), True)
-        if is_point_in_rect(mouse_ui_position, rect_manabar):
-            tooltip_details = [
-                "regeneration: " + "{:.1f}".format(player_state.mana_resource.get_effective_regen()) + "/s"]
-            tooltip_bottom_left_position = (rect_manabar[0], rect_manabar[1])
-            tooltip = TooltipGraphics(COLOR_WHITE, "Mana", tooltip_details, bottom_left=tooltip_bottom_left_position)
-        mana_text = str(player_mana) + "/" + str(player_max_mana)
-        self.ui_render.text(self.font_ui_stat_bar_numbers, mana_text, (x_0 + 20, y_4 + 20))
+        # MANABAR
+        self.manabar.render(player_mana, player_max_mana)
+        if self.manabar.contains(mouse_ui_position):
+            tooltip = self.manabar.tooltip
 
+        # MONEY
         self.ui_render.text(self.font_ui_money, "Money: " + str(player_money), (x_0 + 4, y_4 + 38))
 
         # CONSUMABLES
