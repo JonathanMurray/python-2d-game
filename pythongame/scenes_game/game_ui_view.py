@@ -140,7 +140,7 @@ class ItemIcon:
         self.inventory_slot_index = inventory_slot_index
 
     def contains(self, point: Tuple[int, int]) -> bool:
-        return self._rect.collidepoint(point)
+        return self._rect.collidepoint(point[0], point[1])
 
     def render(self, hovered: bool):
         self._ui_render.rect_filled((40, 40, 50), self._rect)
@@ -196,18 +196,31 @@ class GameUiView:
         # This is updated every time the view is called
         self.camera_world_area = None
 
+        self.ability_icons_row: Rect = Rect(0, 0, 0, 0)
         self.ability_icons: List[AbilityIcon] = []
         self._setup_ability_icons(abilities)
+
+        self.consumable_icons_row: Rect = Rect(0, 0, 0, 0)
         self.consumable_icons: List[ConsumableIcon] = []
         self._setup_consumable_icons({})
+
+        self.inventory_icons_row: Rect = Rect(0, 0, 0, 0)
         self.inventory_icons: List[ItemIcon] = []
         self._setup_inventory_icons([])
 
     def _setup_ability_icons(self, abilities):
-        self.ability_icons = []
-        icon_space = 2
         x_0 = 140
         y = 112
+        icon_space = 2
+        icon_rect_padding = 2
+        abilities_rect_pos = (x_0 - icon_rect_padding, y - icon_rect_padding)
+        max_num_abilities = 5
+        self.ability_icons_row = Rect(
+            abilities_rect_pos[0], abilities_rect_pos[1],
+            (UI_ICON_SIZE[0] + icon_space) * max_num_abilities - icon_space + icon_rect_padding * 2,
+            UI_ICON_SIZE[1] + icon_rect_padding * 2)
+
+        self.ability_icons = []
         for i, ability_type in enumerate(abilities):
             x = x_0 + i * (UI_ICON_SIZE[0] + icon_space)
             ability = ABILITIES[ability_type]
@@ -223,10 +236,18 @@ class GameUiView:
             self.ability_icons.append(icon)
 
     def _setup_consumable_icons(self, consumable_slots: Dict[int, List[ConsumableType]]):
-        self.consumable_icons = []
-        icon_space = 2
         x_0 = 140
         y = 52
+        icon_space = 2
+        icon_rect_padding = 2
+        consumables_rect_pos = (x_0 - icon_rect_padding, y - icon_rect_padding)
+        max_num_consumables = 5
+        self.consumable_icons_row = Rect(
+            consumables_rect_pos[0], consumables_rect_pos[1],
+            (UI_ICON_SIZE[0] + icon_space) * max_num_consumables - icon_space + icon_rect_padding * 2,
+            UI_ICON_SIZE[1] + icon_rect_padding * 2)
+
+        self.consumable_icons = []
         for i, slot_number in enumerate(consumable_slots):
             x = x_0 + i * (UI_ICON_SIZE[0] + icon_space)
             consumable_types = consumable_slots[slot_number]
@@ -242,11 +263,19 @@ class GameUiView:
             self.consumable_icons.append(icon)
 
     def _setup_inventory_icons(self, item_slots: List[ItemInventorySlot]):
-        self.inventory_icons = []
-        icon_space = 2
         x_0 = 325
         y_0 = 52
+        icon_space = 2
+        icon_rect_padding = 2
+        items_rect_pos = (x_0 - icon_rect_padding, y_0 - icon_rect_padding)
+        num_item_slot_rows = 3
         num_slots_per_row = 3
+        self.inventory_icons_row = Rect(
+            items_rect_pos[0], items_rect_pos[1],
+            (UI_ICON_SIZE[0] + icon_space) * num_slots_per_row - icon_space + icon_rect_padding * 2,
+            num_item_slot_rows * UI_ICON_SIZE[1] + (num_item_slot_rows - 1) * icon_space + icon_rect_padding * 2)
+
+        self.inventory_icons = []
         for i in range(len(item_slots)):
             x = x_0 + (i % num_slots_per_row) * (UI_ICON_SIZE[0] + icon_space)
             y = y_0 + (i // num_slots_per_row) * (UI_ICON_SIZE[1] + icon_space)
@@ -689,16 +718,7 @@ class GameUiView:
         self.ui_render.text(self.font_ui_money, "Money: " + str(player_money), (x_0 + 4, y_4 + 38))
 
         # CONSUMABLES
-        icon_space = 2
-        icon_rect_padding = 2
-        consumables_rect_pos = (x_1 - icon_rect_padding, y_2 - icon_rect_padding)
-        max_num_consumables = 5
-        consumables_rect = Rect(
-            consumables_rect_pos[0], consumables_rect_pos[1],
-            (UI_ICON_SIZE[0] + icon_space) * max_num_consumables - icon_space + icon_rect_padding * 2,
-            UI_ICON_SIZE[1] + icon_rect_padding * 2)
-        self.ui_render.rect_filled((60, 60, 80), consumables_rect)
-
+        self.ui_render.rect_filled((60, 60, 80), self.consumable_icons_row)
         for icon in self.consumable_icons:
             hovered = icon.contains(mouse_ui_position)
             if hovered:
@@ -709,14 +729,7 @@ class GameUiView:
             icon.render(hovered, strong_highlight)
 
         # ABILITIES
-        abilities_rect_pos = (x_1 - icon_rect_padding, y_4 - icon_rect_padding)
-        max_num_abilities = 5
-        abilities_rect = Rect(
-            abilities_rect_pos[0], abilities_rect_pos[1],
-            (UI_ICON_SIZE[0] + icon_space) * max_num_abilities - icon_space + icon_rect_padding * 2,
-            UI_ICON_SIZE[1] + icon_rect_padding * 2)
-        self.ui_render.rect_filled((60, 60, 80), abilities_rect)
-
+        self.ui_render.rect_filled((60, 60, 80), self.ability_icons_row)
         for icon in self.ability_icons:
             hovered = icon.contains(mouse_ui_position)
             if hovered:
@@ -728,16 +741,7 @@ class GameUiView:
             icon.render(hovered, recently_clicked, cooldown_remaining_ratio)
 
         # ITEMS
-        x_2 = 325
-        items_rect_pos = (x_2 - icon_rect_padding, y_2 - icon_rect_padding)
-        num_item_slot_rows = 3
-        num_slots_per_row = 3
-        items_rect = Rect(
-            items_rect_pos[0], items_rect_pos[1],
-            (UI_ICON_SIZE[0] + icon_space) * num_slots_per_row - icon_space + icon_rect_padding * 2,
-            num_item_slot_rows * UI_ICON_SIZE[1] + (num_item_slot_rows - 1) * icon_space + icon_rect_padding * 2)
-        self.ui_render.rect_filled((60, 60, 80), items_rect)
-
+        self.ui_render.rect_filled((60, 60, 80), self.inventory_icons_row)
         for icon in self.inventory_icons:
             hovered = icon.contains(mouse_ui_position)
             if hovered:
