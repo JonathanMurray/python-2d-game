@@ -62,7 +62,7 @@ class AbilityIcon:
         self.tooltip = tooltip
         self.ability_type = ability_type
 
-    def contains(self, point: Tuple[int, int]):
+    def contains(self, point: Tuple[int, int]) -> bool:
         return self._rect.collidepoint(point[0], point[1])
 
     def render(self, hovered: bool, recently_clicked: bool, cooldown_remaining_ratio: float):
@@ -97,7 +97,7 @@ class ConsumableIcon:
         self.tooltip = tooltip
         self.slot_number = slot_number
 
-    def contains(self, point: Tuple[int, int]):
+    def contains(self, point: Tuple[int, int]) -> bool:
         return self._rect.collidepoint(point[0], point[1])
 
     def render(self, hovered: bool, recently_clicked: bool):
@@ -126,6 +126,37 @@ class ConsumableIcon:
         elif hovered:
             self._ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, self._rect, 1)
         self._ui_render.text(self._font, self._label, (self._rect.x + 12, self._rect.y + self._rect.h + 4))
+
+
+class ItemIcon:
+    def __init__(self, ui_render: DrawableArea, rect: Rect, image, tooltip: TooltipGraphics,
+                 slot_equipment_category: ItemEquipmentCategory, item_type: ItemType, inventory_slot_index: int):
+        self._ui_render = ui_render
+        self._rect = rect
+        self._image = image
+        self._slot_equipment_category = slot_equipment_category
+        self.tooltip = tooltip
+        self.item_type = item_type
+        self.inventory_slot_index = inventory_slot_index
+
+    def contains(self, point: Tuple[int, int]) -> bool:
+        return self._rect.collidepoint(point)
+
+    def render(self, hovered: bool):
+        self._ui_render.rect_filled((40, 40, 50), self._rect)
+        if self.item_type:
+            if self._slot_equipment_category:
+                self._ui_render.rect_filled((40, 40, 70), self._rect)
+            self._ui_render.image(self._image, self._rect.topleft)
+        elif self._image:
+            self._ui_render.image(self._image, self._rect.topleft)
+        if self.item_type and self._slot_equipment_category:
+            color_outline = (250, 250, 250)
+        else:
+            color_outline = (100, 100, 140)
+        self._ui_render.rect(color_outline, self._rect, 1)
+        if hovered:
+            self._ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, self._rect, 1)
 
 
 class GameUiView:
@@ -169,6 +200,8 @@ class GameUiView:
         self._setup_ability_icons(abilities)
         self.consumable_icons: List[ConsumableIcon] = []
         self._setup_consumable_icons({})
+        self.inventory_icons: List[ItemIcon] = []
+        self._setup_inventory_icons([])
 
     def _setup_ability_icons(self, abilities):
         self.ability_icons = []
@@ -224,39 +257,66 @@ class GameUiView:
                                   tooltip_for_this_consumable, consumable_types, slot_number)
             self.consumable_icons.append(icon)
 
+    def _setup_inventory_icons(self, item_slots: List[ItemInventorySlot]):
+        self.inventory_icons = []
+        x_2 = 325
+        y_1 = 30
+        y_2 = y_1 + 22
+        icon_space = 2
+        num_slots_per_row = 3
+        for i in range(len(item_slots)):
+            x = x_2 + (i % num_slots_per_row) * (UI_ICON_SIZE[0] + icon_space)
+            y = y_2 + (i // num_slots_per_row) * (UI_ICON_SIZE[1] + icon_space)
+            slot: ItemInventorySlot = item_slots[i]
+            item_type = slot.get_item_type() if not slot.is_empty() else None
+            slot_equipment_category = slot.enforced_equipment_category
+
+            rect = Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])
+            image = None
+            if item_type:
+                image = self.images_by_ui_sprite[ITEMS[item_type].icon_sprite]
+            elif slot_equipment_category:
+                image = self._get_image_for_item_category(slot_equipment_category)
+
+            if item_type:
+                item_data = ITEMS[item_type]
+                tooltip_title = item_data.name
+                tooltip_details = []
+                if item_data.item_equipment_category:
+                    category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[item_data.item_equipment_category]
+                    tooltip_details.append("[" + category_name + "]")
+                tooltip_details += item_data.description_lines
+                tooltip_bottom_left_position = (x, y)
+                tooltip_for_this_slot = TooltipGraphics(COLOR_ITEM_TOOLTIP_HEADER, tooltip_title, tooltip_details,
+                                                        bottom_left=tooltip_bottom_left_position)
+            elif slot_equipment_category:
+                tooltip_title = "..."
+                category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[slot_equipment_category]
+                tooltip_details = ["[" + category_name + "]",
+                                   "You have nothing equipped. Drag an item here to equip it!"]
+                tooltip_bottom_left_position = (x, y)
+                tooltip_for_this_slot = TooltipGraphics(COLOR_WHITE, tooltip_title, tooltip_details,
+                                                        bottom_left=tooltip_bottom_left_position)
+            else:
+                tooltip_for_this_slot = None
+
+            icon = ItemIcon(self.ui_render, rect, image, tooltip_for_this_slot, slot_equipment_category, item_type, i)
+            self.inventory_icons.append(icon)
+
     def update_abilities(self, abilities: List[AbilityType]):
         self._setup_ability_icons(abilities)
 
     def update_consumables(self, consumable_slots: Dict[int, List[ConsumableType]]):
         self._setup_consumable_icons(consumable_slots)
 
+    def update_inventory(self, item_slots: List[ItemInventorySlot]):
+        self._setup_inventory_icons(item_slots)
+
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
 
     def _translate_screen_position_to_ui(self, position: Tuple[int, int]):
         return position[0] - self.ui_screen_area.x, position[1] - self.ui_screen_area.y
-
-    def _item_icon_in_ui(self, x, y, size, item_type: ItemType, slot_equipment_category: ItemEquipmentCategory,
-                         highlight: bool):
-        w = size[0]
-        h = size[1]
-        rect = Rect(x, y, w, h)
-        self.ui_render.rect_filled((40, 40, 50), rect)
-        if item_type:
-            if slot_equipment_category:
-                self.ui_render.rect_filled((40, 40, 70), rect)
-            ui_icon_sprite = ITEMS[item_type].icon_sprite
-            self.ui_render.image(self.images_by_ui_sprite[ui_icon_sprite], (x, y))
-        elif slot_equipment_category:
-            image = self._get_image_for_item_category(slot_equipment_category)
-            self.ui_render.image(image, (x, y))
-        if item_type and slot_equipment_category:
-            color_outline = (250, 250, 250)
-        else:
-            color_outline = (100, 100, 140)
-        self.ui_render.rect(color_outline, rect, 1)
-        if highlight:
-            self.ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, rect, 1)
 
     def _get_image_for_item_category(self, slot_equipment_category: ItemEquipmentCategory):
         if slot_equipment_category == ItemEquipmentCategory.HEAD:
@@ -704,37 +764,13 @@ class GameUiView:
             (UI_ICON_SIZE[0] + icon_space) * num_slots_per_row - icon_space + icon_rect_padding * 2,
             num_item_slot_rows * UI_ICON_SIZE[1] + (num_item_slot_rows - 1) * icon_space + icon_rect_padding * 2)
         self.ui_render.rect_filled((60, 60, 80), items_rect)
-        for i in range(len(item_slots)):
-            x = x_2 + (i % num_slots_per_row) * (UI_ICON_SIZE[0] + icon_space)
-            y = y_2 + (i // num_slots_per_row) * (UI_ICON_SIZE[1] + icon_space)
-            slot: ItemInventorySlot = item_slots[i]
-            item_type = slot.get_item_type() if not slot.is_empty() else None
-            slot_equipment_category = slot.enforced_equipment_category
-            if is_point_in_rect(mouse_ui_position, Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
-                highlight = True
-                hovered_item_slot_number = i
-                if item_type:
-                    item_data = ITEMS[item_type]
-                    tooltip_title = item_data.name
-                    tooltip_details = []
-                    if item_data.item_equipment_category:
-                        category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[item_data.item_equipment_category]
-                        tooltip_details.append("[" + category_name + "]")
-                    tooltip_details += item_data.description_lines
-                    tooltip_bottom_left_position = (x, y)
-                    tooltip = TooltipGraphics(COLOR_ITEM_TOOLTIP_HEADER, tooltip_title, tooltip_details,
-                                              bottom_left=tooltip_bottom_left_position)
-                elif slot_equipment_category:
-                    tooltip_title = "..."
-                    category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[slot_equipment_category]
-                    tooltip_details = ["[" + category_name + "]",
-                                       "You have nothing equipped. Drag an item here to equip it!"]
-                    tooltip_bottom_left_position = (x, y)
-                    tooltip = TooltipGraphics(COLOR_WHITE, tooltip_title, tooltip_details,
-                                              bottom_left=tooltip_bottom_left_position)
-            else:
-                highlight = False
-            self._item_icon_in_ui(x, y, UI_ICON_SIZE, item_type, slot_equipment_category, highlight)
+
+        for icon in self.inventory_icons:
+            hovered = icon.contains(mouse_ui_position)
+            if hovered:
+                hovered_item_slot_number = icon.inventory_slot_index
+                tooltip = icon.tooltip
+            icon.render(hovered)
 
         # MINIMAP
         x_3 = 440

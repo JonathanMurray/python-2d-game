@@ -88,6 +88,9 @@ class PlayingUiController:
         # TODO Only updated consumables when needed
         self.game_ui_view.update_consumables(game_state.player_state.consumable_inventory.consumables_in_slots)
 
+        #TODO Only update items when needed
+        self.game_ui_view.update_inventory(game_state.player_state.item_inventory.slots)
+
         mouse_hover_event: MouseHoverEvent = self.game_ui_view.render_ui(
             player_state=game_state.player_state,
             ui_state=self.ui_state,
@@ -108,6 +111,7 @@ class PlayingUiController:
                 triggered_events.append(StartDraggingItemOrConsumable())
         if right_mouse_was_just_clicked and hovered_item_slot_number is not None:
             triggered_events.append(TrySwitchItemInInventory(hovered_item_slot_number))
+            self.item_slot_being_dragged=None
 
         if self.item_slot_being_dragged is not None:
             item_type = game_state.player_state.item_inventory.get_item_type_in_slot(self.item_slot_being_dragged)
