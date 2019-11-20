@@ -82,6 +82,9 @@ class PlayingUiController:
             game_state.player_state.talents_state, game_state.player_state.level,
             game_state.player_state.chosen_talent_option_indices)
 
+        # TODO Only update abilities when needed
+        self.game_ui_view.update_abilities(game_state.player_state.abilities)
+
         mouse_hover_event: MouseHoverEvent = self.game_ui_view.render_ui(
             player_state=game_state.player_state,
             ui_state=self.ui_state,

@@ -4,7 +4,7 @@ from typing import List, Tuple, Optional
 import pygame
 from pygame.rect import Rect
 
-from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprite
+from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprite, AbilityType
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, \
     KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, HEROES, ConsumableCategory
 from pythongame.core.game_state import PlayerState
@@ -51,10 +51,44 @@ class TooltipGraphics:
         self.bottom_right_corner: Optional[Tuple[int, int]] = bottom_right
 
 
+class AbilityIcon:
+    def __init__(self, ui_render: DrawableArea, rect: Rect, image, label: str, font, tooltip: TooltipGraphics,
+                 ability_type: AbilityType):
+        self._ui_render = ui_render
+        self._rect = rect
+        self._image = image
+        self._label = label
+        self._font = font
+        self.tooltip = tooltip
+        self.ability_type = ability_type
+
+    def contains(self, point: Tuple[int, int]):
+        return self._rect.collidepoint(point[0], point[1])
+
+    def render(self, hovered: bool, recently_clicked: bool, cooldown_remaining_ratio: float):
+        self._ui_render.rect_filled((40, 40, 50), self._rect)
+        self._ui_render.image(self._image, self._rect.topleft)
+        self._ui_render.rect((150, 150, 190), self._rect, 1)
+        if recently_clicked:
+            self._ui_render.rect(COLOR_HIGHLIGHTED_ICON,
+                                 Rect(self._rect.x - 1, self._rect.y - 1, self._rect.w + 2, self._rect.h + 2), 3)
+        elif hovered:
+            self._ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, self._rect, 1)
+        self._ui_render.text(self._font, self._label, (self._rect.x + 12, self._rect.y + self._rect.h + 4))
+
+        if cooldown_remaining_ratio > 0:
+            cooldown_rect = Rect(self._rect.x + 1,
+                                 self._rect.y + 1 + (self._rect.h - 2) * (1 - cooldown_remaining_ratio),
+                                 self._rect.w - 2,
+                                 (self._rect.h - 2) * cooldown_remaining_ratio + 1)
+            self._ui_render.rect_filled((100, 30, 30), cooldown_rect)
+            self._ui_render.rect((180, 30, 30), self._rect, 2)
+
+
 class GameUiView:
 
     def __init__(self, pygame_screen, camera_size: Tuple[int, int], screen_size: Tuple[int, int],
-                 images_by_ui_sprite, images_by_portrait_sprite):
+                 images_by_ui_sprite, images_by_portrait_sprite, abilities: List[AbilityType]):
         pygame.font.init()
         self.screen_render = DrawableArea(pygame_screen)
         self.ui_render = DrawableArea(pygame_screen, self._translate_ui_position_to_screen)
@@ -87,6 +121,40 @@ class GameUiView:
 
         # This is updated every time the view is called
         self.camera_world_area = None
+
+        self.ability_icons = []
+        self._setup_ability_icons(abilities)
+
+    def _setup_ability_icons(self, abilities):
+        self.ability_icons = []
+        icon_space = 2
+        x_1 = 140
+        y_3 = 90
+        y_4 = y_3 + 22
+        for i, ability_type in enumerate(abilities):
+            x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
+            y = y_4
+
+            ability = ABILITIES[ability_type]
+            rect = Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])
+            image = self.images_by_ui_sprite[ability.icon_sprite]
+            label = KEYS_BY_ABILITY_TYPE[ability_type].key_string
+
+            ability_data = ABILITIES[ability_type]
+            tooltip_title = ability_data.name
+            cooldown = str(ability_data.cooldown / 1000.0)
+            mana_cost = str(ability_data.mana_cost)
+            tooltip_details = ["Cooldown: " + cooldown + " s", "Mana: " + mana_cost, ability_data.description]
+            tooltip_bottom_left_position = (x, y)
+            tooltip_for_this_ability = TooltipGraphics(COLOR_WHITE, tooltip_title, tooltip_details,
+                                                       bottom_left=tooltip_bottom_left_position)
+
+            icon = AbilityIcon(self.ui_render, rect, image, label, self.font_ui_icon_keys, tooltip_for_this_ability,
+                               ability_type)
+            self.ability_icons.append(icon)
+
+    def update_abilities(self, abilities: List[AbilityType]):
+        self._setup_ability_icons(abilities)
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
@@ -123,29 +191,6 @@ class GameUiView:
             self.ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, Rect(x, y, w, h), 1)
 
         self.ui_render.text(self.font_ui_icon_keys, str(consumable_number), (x + 12, y + h + 4))
-
-    def _ability_icon_in_ui(self, x, y, size, ability_type, weak_highlight: bool, strong_highlight: bool,
-                            ability_cooldowns_remaining):
-        w = size[0]
-        h = size[1]
-        ability = ABILITIES[ability_type]
-        ability_key = KEYS_BY_ABILITY_TYPE[ability_type]
-        icon_sprite = ability.icon_sprite
-        icon_rect = Rect(x, y, w, h)
-        self.ui_render.rect_filled((40, 40, 50), icon_rect)
-        self.ui_render.image(self.images_by_ui_sprite[icon_sprite], (x, y))
-        self.ui_render.rect((150, 150, 190), icon_rect, 1)
-        if strong_highlight:
-            self.ui_render.rect(COLOR_HIGHLIGHTED_ICON, Rect(x - 1, y - 1, w + 2, h + 2), 3)
-        elif weak_highlight:
-            self.ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, Rect(x, y, w, h), 1)
-        self.ui_render.text(self.font_ui_icon_keys, ability_key.key_string, (x + 12, y + h + 4))
-
-        if ability_cooldowns_remaining[ability_type] > 0:
-            ratio_remaining = ability_cooldowns_remaining[ability_type] / ability.cooldown
-            cooldown_rect = Rect(x + 1, y + 1 + (h - 2) * (1 - ratio_remaining), w - 2, (h - 2) * ratio_remaining + 1)
-            self.ui_render.rect_filled((100, 30, 30), cooldown_rect)
-            self.ui_render.rect((180, 30, 30), icon_rect, 2)
 
     def _item_icon_in_ui(self, x, y, size, item_type: ItemType, slot_equipment_category: ItemEquipmentCategory,
                          highlight: bool):
@@ -500,7 +545,6 @@ class GameUiView:
         player_active_buffs = player_state.active_buffs
         consumable_slots = player_state.consumable_inventory.consumables_in_slots
         ability_cooldowns_remaining = player_state.ability_cooldowns_remaining
-        abilities = player_state.abilities
         item_slots: List[ItemInventorySlot] = player_state.item_inventory.slots
         player_exp = player_state.exp
         player_max_exp_in_this_level = player_state.max_exp_in_this_level
@@ -590,9 +634,9 @@ class GameUiView:
                     tooltip_bottom_left_position = (x, y)
                     tooltip = TooltipGraphics(COLOR_WHITE, tooltip_title, tooltip_details,
                                               bottom_left=tooltip_bottom_left_position)
-            weak_highlight = slot_number == hovered_consumable_slot_number
+            hovered = slot_number == hovered_consumable_slot_number
             strong_highlight = slot_number == highlighted_consumable_action
-            self._consumable_icon_in_ui(x, y, UI_ICON_SIZE, slot_number, consumable_types, weak_highlight,
+            self._consumable_icon_in_ui(x, y, UI_ICON_SIZE, slot_number, consumable_types, hovered,
                                         strong_highlight)
 
         # ABILITIES
@@ -603,24 +647,17 @@ class GameUiView:
             (UI_ICON_SIZE[0] + icon_space) * max_num_abilities - icon_space + icon_rect_padding * 2,
             UI_ICON_SIZE[1] + icon_rect_padding * 2)
         self.ui_render.rect_filled((60, 60, 80), abilities_rect)
-        for i, ability_type in enumerate(abilities):
-            x = x_1 + i * (UI_ICON_SIZE[0] + icon_space)
-            y = y_4
-            weak_highlight = False
-            if is_point_in_rect(mouse_ui_position, Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])):
-                if ability_type:
-                    weak_highlight = True
-                    ability_data = ABILITIES[ability_type]
-                    tooltip_title = ability_data.name
-                    cooldown = str(ability_data.cooldown / 1000.0)
-                    mana_cost = str(ability_data.mana_cost)
-                    tooltip_details = ["Cooldown: " + cooldown + " s", "Mana: " + mana_cost, ability_data.description]
-                    tooltip_bottom_left_position = (x, y)
-                    tooltip = TooltipGraphics(COLOR_WHITE, tooltip_title, tooltip_details,
-                                              bottom_left=tooltip_bottom_left_position)
-            strong_highlight = ability_type == highlighted_ability_action
-            self._ability_icon_in_ui(
-                x, y, UI_ICON_SIZE, ability_type, weak_highlight, strong_highlight, ability_cooldowns_remaining)
+
+        for icon in self.ability_icons:
+            hovered = False
+            if icon.contains(mouse_ui_position):
+                hovered = True
+                tooltip = icon.tooltip
+            ability_type = icon.ability_type
+            ability = ABILITIES[ability_type]
+            cooldown_remaining_ratio = ability_cooldowns_remaining[ability_type] / ability.cooldown
+            recently_clicked = ability_type == highlighted_ability_action
+            icon.render(hovered, recently_clicked, cooldown_remaining_ratio)
 
         # ITEMS
         x_2 = 325

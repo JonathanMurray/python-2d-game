@@ -40,7 +40,7 @@ class Main:
         images_by_portrait_sprite = load_images_by_portrait_sprite(PORTRAIT_ICON_SPRITE_PATHS, PORTRAIT_ICON_SIZE)
         world_view = GameWorldView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite)
         ui_view = GameUiView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_ui_sprite,
-                             images_by_portrait_sprite)
+                             images_by_portrait_sprite, [])
         init_sound_player()
         self.clock = pygame.time.Clock()
         self.scenes_by_id: Dict[SceneId, AbstractScene] = {
