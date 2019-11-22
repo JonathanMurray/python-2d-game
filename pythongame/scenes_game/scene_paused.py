@@ -61,7 +61,6 @@ class PausedScene(AbstractScene):
             ui_state=self.ui_state,
             text_in_topleft_corner="...",
             is_paused=True,
-            mouse_screen_position=(0, 0),  # We don't bother to show tooltips etc when game is paused
             dialog=None,  # We don't bother to show dialog etc when game is paused
         )
 

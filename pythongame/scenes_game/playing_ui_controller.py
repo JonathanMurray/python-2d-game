@@ -4,7 +4,7 @@ from pythongame.core.game_state import GameState
 from pythongame.core.npc_behaviors import DialogGraphics
 from pythongame.core.talents import talents_graphics_from_state
 from pythongame.scenes_game.game_ui_state import GameUiState
-from pythongame.scenes_game.game_ui_view import GameUiView, MouseHoverEvent
+from pythongame.scenes_game.game_ui_view import GameUiView
 
 
 class EventTriggeredFromUi:
@@ -100,12 +100,13 @@ class PlayingUiController:
 
         self.game_ui_view.update_player_stats(game_state.player_state, game_state.player_entity.get_speed_multiplier())
 
-        mouse_hover_event: MouseHoverEvent = self.game_ui_view.render_ui(
+        mouse_hover_event = self.game_ui_view.handle_mouse(mouse_screen_position, self.ui_state.toggle_enabled)
+
+        self.game_ui_view.render_ui(
             player_state=game_state.player_state,
             ui_state=self.ui_state,
             text_in_topleft_corner=text_in_topleft_corner,
             is_paused=False,
-            mouse_screen_position=mouse_screen_position,
             dialog=dialog_graphics)
 
         # DRAGGING ITEMS

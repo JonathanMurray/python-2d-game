@@ -194,6 +194,7 @@ class ToggleButton:
         self.text = text
         self.toggle_id = toggle_id
         self.highlighted = highlighted
+        self.tooltip = None
 
     def contains(self, point: Tuple[int, int]) -> bool:
         return self.rect.collidepoint(point[0], point[1])
