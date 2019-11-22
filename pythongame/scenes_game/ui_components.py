@@ -10,8 +10,10 @@ from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.view.render_util import DrawableArea
 from pythongame.scenes_game.game_ui_state import UiToggle
 
-COLOR_HOVERED = (200, 200, 250)
+COLOR_BLACK = (0, 0, 0)
 COLOR_WHITE = (250, 250, 250)
+
+COLOR_HOVERED = (200, 200, 250)
 COLOR_ICON_HIGHLIGHTED = (250, 250, 150)
 COLOR_TOGGLE_HIGHLIGHTED = (150, 250, 200)
 
@@ -132,6 +134,27 @@ class ItemIcon:
         self._ui_render.rect(color_outline, self._rect, 1)
         if hovered:
             self._ui_render.rect(COLOR_HOVERED, self._rect, 1)
+
+
+class TalentIcon:
+    def __init__(self, ui_render: DrawableArea, rect: Rect, image, tooltip: TooltipGraphics, chosen: bool):
+        self._ui_render = ui_render
+        self._rect = rect
+        self._image = image
+        self._chosen = chosen
+        self.tooltip = tooltip
+
+    def contains(self, point: Tuple[int, int]) -> bool:
+        return self._rect.collidepoint(point[0], point[1])
+
+    def render(self, hovered: bool):
+        self._ui_render.rect_filled(COLOR_BLACK, self._rect)
+        self._ui_render.image(self._image, self._rect.topleft)
+        color_outline = COLOR_ICON_HIGHLIGHTED if self._chosen else COLOR_WHITE
+        width_outline = 2 if self._chosen else 1
+        self._ui_render.rect(color_outline, self._rect, width_outline)
+        if hovered:
+            self._ui_render.rect(COLOR_ICON_HIGHLIGHTED, self._rect, 1)
 
 
 class StatBar:

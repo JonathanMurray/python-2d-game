@@ -14,7 +14,7 @@ from pythongame.core.talents import TalentsGraphics
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
-    ToggleButton, ControlsWindow, StatsWindow
+    ToggleButton, ControlsWindow, StatsWindow, TalentIcon
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -324,22 +324,30 @@ class GameUiView:
             self.ui_render.text(self.font_stats, choice.first.name, (x_text, y_icon + UI_ICON_SIZE[1] + 5), COLOR_WHITE)
             self.ui_render.text(self.font_stats, choice.second.name, (x_text + 60, y_icon + UI_ICON_SIZE[1] + 5),
                                 COLOR_WHITE)
-            is_mouse_hovering_first = self._render_talent_icon(
-                choice.first.ui_icon_sprite, (x_text, y_icon), choice_graphics.chosen_index == 0, mouse_ui_position)
-            is_mouse_hovering_second = self._render_talent_icon(
-                choice.second.ui_icon_sprite, (x_text + 60, y_icon), choice_graphics.chosen_index == 1,
-                mouse_ui_position)
+
+            image_1 = self.images_by_ui_sprite[choice.first.ui_icon_sprite]
+            tooltip_1 = TooltipGraphics(
+                COLOR_WHITE, choice.first.name, [choice.first.description],
+                bottom_right=(x_text + UI_ICON_SIZE[0], y_icon))
+            icon_1 = TalentIcon(self.ui_render, Rect(x_text, y_icon, UI_ICON_SIZE[0], UI_ICON_SIZE[1]), image_1,
+                                tooltip_1, choice_graphics.chosen_index == 0)
+            is_mouse_hovering_first = icon_1.contains(mouse_ui_position)
+            icon_1.render(is_mouse_hovering_first)
+
+            image_2 = self.images_by_ui_sprite[choice.second.ui_icon_sprite]
+            tooltip_2 = TooltipGraphics(COLOR_WHITE, choice.second.name, [choice.second.description],
+                                        bottom_right=(x_text + UI_ICON_SIZE[0] + 60, y_icon))
+            icon_2 = TalentIcon(self.ui_render, Rect(x_text + 60, y_icon, UI_ICON_SIZE[0], UI_ICON_SIZE[1]), image_2,
+                                tooltip_2, choice_graphics.chosen_index == 1)
+            is_mouse_hovering_second = icon_2.contains(mouse_ui_position)
+            icon_2.render(is_mouse_hovering_second)
 
             if is_mouse_hovering_first:
                 hovered_talent_option = (i, 0)
-                tooltip_graphics = TooltipGraphics(
-                    COLOR_WHITE, choice.first.name, [choice.first.description],
-                    bottom_right=(x_text + UI_ICON_SIZE[0], y_icon))
+                tooltip_graphics = icon_1.tooltip
             elif is_mouse_hovering_second:
                 hovered_talent_option = (i, 1)
-                tooltip_graphics = TooltipGraphics(
-                    COLOR_WHITE, choice.second.name, [choice.second.description],
-                    bottom_right=(x_text + UI_ICON_SIZE[0] + 60, y_icon))
+                tooltip_graphics = tooltip_2
 
         y_bot_text = rect_container[1] + rect_container[3] - 26
 
@@ -351,20 +359,6 @@ class GameUiView:
             self.ui_render.text(self.font_stats, "No talents yet!", (x_text, y_bot_text))
 
         return hovered_talent_option, tooltip_graphics
-
-    def _render_talent_icon(self, ui_icon_sprite: UiIconSprite, position: Tuple[int, int], chosen: bool,
-                            mouse_ui_position: Tuple[int, int]) -> bool:
-        rect = Rect(position[0], position[1], UI_ICON_SIZE[0], UI_ICON_SIZE[1])
-        self.ui_render.rect_filled(COLOR_BLACK, rect)
-        image = self.images_by_ui_sprite[ui_icon_sprite]
-        self.ui_render.image(image, position)
-        color_outline = COLOR_HIGHLIGHTED_ICON if chosen else COLOR_WHITE
-        width_outline = 2 if chosen else 1
-        self.ui_render.rect(color_outline, rect, width_outline)
-        is_hovered_by_mouse = is_point_in_rect(mouse_ui_position, rect)
-        if is_hovered_by_mouse:
-            self.ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, rect, 1)
-        return is_hovered_by_mouse
 
     def _player_portrait(self, hero_id: HeroId, ui_position: Tuple[int, int]):
         portrait_sprite = HEROES[hero_id].portrait_icon_sprite
