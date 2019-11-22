@@ -393,3 +393,13 @@ class Buffs:
             self.ui_render.text(self.font, text, (x_buffs, y))
             self.ui_render.stat_bar(x_buffs, y + 20, 60, 2, ratio_remaining,
                                     (250, 250, 0), False)
+
+
+class Text:
+    def __init__(self, ui_render: DrawableArea, font, ui_position: Tuple[int, int]):
+        self.ui_render = ui_render
+        self.font = font
+        self.ui_position = ui_position
+
+    def render(self, text: str):
+        self.ui_render.text(self.font, text, self.ui_position)

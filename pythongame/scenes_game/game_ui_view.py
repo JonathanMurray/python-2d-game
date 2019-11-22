@@ -14,7 +14,7 @@ from pythongame.core.talents import TalentsGraphics
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
-    ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow, ExpBar, Portrait, Minimap, Buffs
+    ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -122,6 +122,8 @@ class GameUiView:
         self.minimap = Minimap(self.ui_render, Rect(440, 52, 80, 80))
 
         self.buffs = Buffs(self.ui_render, self.font_buff_texts)
+
+        self.money_text = Text(self.ui_render, self.font_ui_money, (24, 150))
 
         self.hovered_component = None
 
@@ -531,9 +533,6 @@ class GameUiView:
         self.screen_render.rect_filled((20, 10, 0), Rect(0, self.camera_size[1], self.screen_size[0],
                                                          self.screen_size[1] - self.camera_size[1]))
 
-        x_0 = 20
-        y_4 = 112
-
         # EXP BAR
         self.exp_bar.render(player_state.level, player_state.exp / player_state.max_exp_in_this_level)
 
@@ -547,7 +546,7 @@ class GameUiView:
         self.manabar.render(player_state.mana_resource.value, player_state.mana_resource.max_value)
 
         # MONEY
-        self.ui_render.text(self.font_ui_money, "Money: " + str(player_state.money), (x_0 + 4, y_4 + 38))
+        self.money_text.render("Money: " + str(player_state.money))
 
         # CONSUMABLES
         self.ui_render.rect_filled((60, 60, 80), self.consumable_icons_row)
