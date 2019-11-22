@@ -71,7 +71,6 @@ class GameUiView:
         self.screen_size = screen_size
 
         self.font_splash_screen = pygame.font.Font(DIR_FONTS + 'Arial Rounded Bold.ttf', 64)
-
         self.font_ui_stat_bar_numbers = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_ui_money = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_npc_action = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
@@ -97,33 +96,24 @@ class GameUiView:
 
         self.ability_icons_row: Rect = Rect(0, 0, 0, 0)
         self.ability_icons: List[AbilityIcon] = []
-        self._setup_ability_icons(abilities)
-
         self.consumable_icons_row: Rect = Rect(0, 0, 0, 0)
         self.consumable_icons: List[ConsumableIcon] = []
-        self._setup_consumable_icons({})
-
         self.inventory_icons_row: Rect = Rect(0, 0, 0, 0)
         self.inventory_icons: List[ItemIcon] = []
+        self.exp_bar = ExpBar(self.ui_render, Rect(140, 23, 300, 2), self.font_level)
+        self.minimap = Minimap(self.ui_render, Rect(440, 52, 80, 80))
+        self.buffs = Buffs(self.ui_render, self.font_buff_texts)
+        self.money_text = Text(self.ui_render, self.font_ui_money, (24, 150))
+
+        self._setup_ability_icons(abilities)
+        self._setup_consumable_icons({})
         self._setup_inventory_icons([])
-
         self._setup_health_and_mana_bars(0, 0)
-
         self._setup_toggle_buttons(False)
-
         self._setup_stats_window(None, 0)
         self._setup_talents_window(TalentsGraphics([]))
         self._setup_controls_window()
-
-        self.exp_bar = ExpBar(self.ui_render, Rect(140, 23, 300, 2), self.font_level)
-
         self._setup_portrait(HeroId.GOD)
-
-        self.minimap = Minimap(self.ui_render, Rect(440, 52, 80, 80))
-
-        self.buffs = Buffs(self.ui_render, self.font_buff_texts)
-
-        self.money_text = Text(self.ui_render, self.font_ui_money, (24, 150))
 
         self.hovered_component = None
 
@@ -149,7 +139,7 @@ class GameUiView:
             tooltip_details = ["Cooldown: " + str(ability.cooldown / 1000.0) + " s",
                                "Mana: " + str(ability.mana_cost),
                                ability.description]
-            tooltip = TooltipGraphics(COLOR_WHITE, ability.name, tooltip_details, bottom_left=(x, y))
+            tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, ability.name, tooltip_details, bottom_left=(x, y))
 
             icon = AbilityIcon(self.ui_render, rect, image, label, self.font_ui_icon_keys, tooltip, ability_type)
             self.ability_icons.append(icon)
@@ -174,7 +164,8 @@ class GameUiView:
             image = None
             if consumable_types:
                 consumable = CONSUMABLES[consumable_types[0]]
-                tooltip = TooltipGraphics(COLOR_WHITE, consumable.name, [consumable.description], bottom_left=(x, y))
+                tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, consumable.name, [consumable.description],
+                                          bottom_left=(x, y))
                 image = self.images_by_ui_sprite[consumable.icon_sprite]
             rect = Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])
             icon = ConsumableIcon(self.ui_render, rect, image, str(slot_number), self.font_ui_icon_keys,
@@ -212,14 +203,14 @@ class GameUiView:
                     category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[item.item_equipment_category]
                     tooltip_details.append("[" + category_name + "]")
                 tooltip_details += item.description_lines
-                tooltip = TooltipGraphics(COLOR_ITEM_TOOLTIP_HEADER, item.name, tooltip_details,
+                tooltip = TooltipGraphics(self.ui_render, COLOR_ITEM_TOOLTIP_HEADER, item.name, tooltip_details,
                                           bottom_left=(x, y))
             elif slot_equipment_category:
                 image = self._get_image_for_item_category(slot_equipment_category)
                 category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[slot_equipment_category]
                 tooltip_details = ["[" + category_name + "]",
                                    "You have nothing equipped. Drag an item here to equip it!"]
-                tooltip = TooltipGraphics(COLOR_WHITE, "...", tooltip_details, bottom_left=(x, y))
+                tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "...", tooltip_details, bottom_left=(x, y))
 
             rect = Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])
             icon = ItemIcon(self.ui_render, rect, image, tooltip, slot_equipment_category, item_type, i)
@@ -230,7 +221,7 @@ class GameUiView:
         rect_healthbar = Rect(20, 111, 100, 14)
         tooltip_details = [
             "regeneration: " + "{:.1f}".format(health_regen) + "/s"]
-        health_tooltip = TooltipGraphics(COLOR_WHITE, "Health", tooltip_details,
+        health_tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "Health", tooltip_details,
                                          bottom_left=rect_healthbar.topleft)
         self.healthbar = StatBar(self.ui_render, rect_healthbar, (200, 0, 50), health_tooltip, border=True,
                                  show_numbers=True, font=self.font_ui_stat_bar_numbers)
@@ -238,7 +229,8 @@ class GameUiView:
         rect_manabar = Rect(20, 132, 100, 14)
         tooltip_details = [
             "regeneration: " + "{:.1f}".format(mana_regen) + "/s"]
-        mana_tooltip = TooltipGraphics(COLOR_WHITE, "Mana", tooltip_details, bottom_left=rect_manabar.topleft)
+        mana_tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "Mana", tooltip_details,
+                                       bottom_left=rect_manabar.topleft)
         self.manabar = StatBar(self.ui_render, rect_manabar, (50, 0, 200), mana_tooltip, border=True,
                                show_numbers=True, font=self.font_ui_stat_bar_numbers)
 
@@ -271,15 +263,14 @@ class GameUiView:
             choice = choice_graphics.choice
 
             image_1 = self.images_by_ui_sprite[choice.first.ui_icon_sprite]
-            tooltip_1 = TooltipGraphics(
-                COLOR_WHITE, choice.first.name, [choice.first.description],
-                bottom_right=(x_0 + UI_ICON_SIZE[0], y_icon))
+            tooltip_1 = TooltipGraphics(self.ui_render, COLOR_WHITE, choice.first.name, [choice.first.description],
+                                        bottom_right=(x_0 + UI_ICON_SIZE[0], y_icon))
             icon_1 = TalentIcon(self.ui_render, Rect(x_0, y_icon, UI_ICON_SIZE[0], UI_ICON_SIZE[1]), image_1,
                                 tooltip_1, choice_graphics.chosen_index == 0, choice.first.name, self.font_stats,
                                 i, 0)
 
             image_2 = self.images_by_ui_sprite[choice.second.ui_icon_sprite]
-            tooltip_2 = TooltipGraphics(COLOR_WHITE, choice.second.name, [choice.second.description],
+            tooltip_2 = TooltipGraphics(self.ui_render, COLOR_WHITE, choice.second.name, [choice.second.description],
                                         bottom_right=(x_0 + UI_ICON_SIZE[0] + 60, y_icon))
             icon_2 = TalentIcon(self.ui_render, Rect(x_0 + 60, y_icon, UI_ICON_SIZE[0], UI_ICON_SIZE[1]), image_2,
                                 tooltip_2, choice_graphics.chosen_index == 1, choice.second.name, self.font_stats,
@@ -352,34 +343,6 @@ class GameUiView:
         y_message = self.ui_screen_area.y - 30
         self.screen_render.rect_transparent(Rect(x_message - 10, y_message - 5, w_rect, 28), 135, (0, 0, 0))
         self.screen_render.text(self.font_message, message, (x_message, y_message))
-
-    def _tooltip(self, tooltip: TooltipGraphics):
-
-        detail_lines = []
-        detail_max_line_length = 32
-        for detail in tooltip.details:
-            detail_lines += split_text_into_lines(detail, detail_max_line_length)
-
-        w_tooltip = 260
-        h_tooltip = 60 + 17 * len(detail_lines)
-        if tooltip.bottom_left_corner is not None:
-            bottom_left_corner = tooltip.bottom_left_corner
-        else:
-            bottom_left_corner = (tooltip.bottom_right_corner[0] - w_tooltip, tooltip.bottom_right_corner[1])
-        x_tooltip = bottom_left_corner[0]
-        y_tooltip = bottom_left_corner[1] - h_tooltip - 3
-        rect_tooltip = Rect(x_tooltip, y_tooltip, w_tooltip, h_tooltip)
-        self.ui_render.rect_transparent(Rect(x_tooltip, y_tooltip, w_tooltip, h_tooltip), 200, (0, 0, 30))
-        self.ui_render.rect(COLOR_WHITE, rect_tooltip, 1)
-        self.ui_render.text(self.font_tooltip_header, tooltip.title, (x_tooltip + 20, y_tooltip + 15),
-                            tooltip.title_color)
-        y_separator = y_tooltip + 40
-        self.ui_render.line(COLOR_WHITE, (x_tooltip + 10, y_separator), (x_tooltip + w_tooltip - 10, y_separator),
-                            1)
-
-        for i, line in enumerate(detail_lines):
-            self.ui_render.text(self.font_tooltip_details, line, (x_tooltip + 20, y_tooltip + 50 + i * 18),
-                                COLOR_WHITE)
 
     def _dialog(self, dialog_graphics: DialogGraphics):
 
@@ -613,7 +576,8 @@ class GameUiView:
             self._message(ui_state.message)
 
         if self.hovered_component and self.hovered_component.tooltip and not mouse_drag:
-            self._tooltip(self.hovered_component.tooltip)
+            tooltip: TooltipGraphics = self.hovered_component.tooltip
+            tooltip.render()
 
         if mouse_drag:
             if mouse_drag.item:

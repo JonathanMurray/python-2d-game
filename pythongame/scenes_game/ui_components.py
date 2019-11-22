@@ -1,6 +1,7 @@
 import math
 from typing import List, Tuple, Optional, Any
 
+import pygame
 from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, ItemType, AbilityType
@@ -8,7 +9,7 @@ from pythongame.core.game_data import CONSUMABLES, ConsumableCategory
 from pythongame.core.game_state import PlayerState
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.talents import TalentsGraphics
-from pythongame.core.view.render_util import DrawableArea
+from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
 from pythongame.scenes_game.game_ui_state import UiToggle
 
 COLOR_BLACK = (0, 0, 0)
@@ -17,16 +18,39 @@ COLOR_WHITE = (250, 250, 250)
 COLOR_HOVERED = (200, 200, 250)
 COLOR_ICON_HIGHLIGHTED = (250, 250, 150)
 COLOR_TOGGLE_HIGHLIGHTED = (150, 250, 200)
+DIR_FONTS = './resources/fonts/'
 
 
 class TooltipGraphics:
-    def __init__(self, title_color: Tuple[int, int, int], title: str, details: List[str],
-                 bottom_left: Optional[Tuple[int, int]] = None, bottom_right: Optional[Tuple[int, int]] = None):
-        self.title_color = title_color
-        self.title = title
-        self.details = details
-        self.bottom_left_corner: Optional[Tuple[int, int]] = bottom_left
-        self.bottom_right_corner: Optional[Tuple[int, int]] = bottom_right
+    def __init__(self, ui_render: DrawableArea, title_color: Tuple[int, int, int],
+                 title: str, details: List[str], bottom_left: Optional[Tuple[int, int]] = None,
+                 bottom_right: Optional[Tuple[int, int]] = None):
+        self._ui_render = ui_render
+        self._font_header = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 16)
+        self._font_details = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
+        self._title_color = title_color
+        self._title = title
+        self._detail_lines = []
+        for detail in details:
+            self._detail_lines += split_text_into_lines(detail, 32)
+        w = 260
+        h = 60 + 17 * len(self._detail_lines)
+        if bottom_left:
+            self._rect = Rect(bottom_left[0], bottom_left[1] - h - 3, w, h)
+        else:
+            self._rect = Rect(bottom_right[0] - w, bottom_right[1] - h - 3, w, h)
+
+    def render(self):
+        self._ui_render.rect_transparent(self._rect, 200, (0, 0, 30))
+        self._ui_render.rect(COLOR_WHITE, self._rect, 1)
+        header_position = (self._rect.x + 20, self._rect.y + 12)
+        self._ui_render.text(self._font_header, self._title, header_position, self._title_color)
+        y_separator = self._rect.y + 37
+        separator_start = (self._rect.x + 10, y_separator)
+        separator_end = (self._rect.x + self._rect.w - 10, y_separator)
+        self._ui_render.line(COLOR_WHITE, separator_start, separator_end, 1)
+        for i, line in enumerate(self._detail_lines):
+            self._ui_render.text(self._font_details, line, (self._rect.x + 20, self._rect.y + 47 + i * 18), COLOR_WHITE)
 
 
 class AbilityIcon:
