@@ -14,7 +14,7 @@ from pythongame.core.talents import TalentsGraphics
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
-    ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow
+    ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow, ExpBar, Portrait
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -114,6 +114,10 @@ class GameUiView:
         self._setup_stats_window(None, 0)
         self._setup_talents_window(TalentsGraphics([]))
         self._setup_controls_window()
+
+        self.exp_bar = ExpBar(self.ui_render, Rect(140, 23, 300, 2), self.font_level)
+
+        self._setup_portrait(HeroId.GOD)
 
         self.hovered_component = None
 
@@ -283,6 +287,12 @@ class GameUiView:
         rect = Rect(545, -300, 140, 170)
         self.controls_window = ControlsWindow(self.ui_render, rect, self.font_tooltip_details, self.font_stats)
 
+    def _setup_portrait(self, hero_id: HeroId):
+        sprite = HEROES[hero_id].portrait_icon_sprite
+        image = self.images_by_portrait_sprite[sprite]
+        rect = Rect(20, 18, PORTRAIT_ICON_SIZE[0], PORTRAIT_ICON_SIZE[1])
+        self.portrait = Portrait(self.ui_render, rect, image)
+
     def update_abilities(self, abilities: List[AbilityType]):
         self._setup_ability_icons(abilities)
 
@@ -303,6 +313,9 @@ class GameUiView:
 
     def update_player_stats(self, player_state: PlayerState, player_speed_multiplier: float):
         self._setup_stats_window(player_state, player_speed_multiplier)
+
+    def update_hero(self, hero_id: HeroId):
+        self._setup_portrait(hero_id)
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
@@ -370,13 +383,6 @@ class GameUiView:
         for i, line in enumerate(detail_lines):
             self.ui_render.text(self.font_tooltip_details, line, (x_tooltip + 20, y_tooltip + 50 + i * 18),
                                 COLOR_WHITE)
-
-    def _player_portrait(self, hero_id: HeroId, ui_position: Tuple[int, int]):
-        portrait_sprite = HEROES[hero_id].portrait_icon_sprite
-        player_portrait_image = self.images_by_portrait_sprite[portrait_sprite]
-        self.ui_render.image(player_portrait_image, ui_position)
-        rect = Rect(ui_position[0], ui_position[1], PORTRAIT_ICON_SIZE[0], PORTRAIT_ICON_SIZE[1])
-        self.ui_render.rect((160, 160, 180), rect, 2)
 
     def _dialog(self, dialog_graphics: DialogGraphics):
 
@@ -526,60 +532,34 @@ class GameUiView:
             dialog: Optional[DialogGraphics],
             mouse_drag: Optional[MouseDrag]):
 
-        player_health = player_state.health_resource.value
-        player_max_health = player_state.health_resource.max_value
-        player_max_mana = player_state.mana_resource.max_value
-        player_mana = player_state.mana_resource.value
-        player_active_buffs = player_state.active_buffs
-        ability_cooldowns_remaining = player_state.ability_cooldowns_remaining
-        player_exp = player_state.exp
-        player_max_exp_in_this_level = player_state.max_exp_in_this_level
-        player_level = player_state.level
-        player_money = player_state.money
-        hero_id = player_state.hero_id
-
-        player_minimap_relative_position = ui_state.player_minimap_relative_position
-        message = ui_state.message
-        highlighted_consumable_action = ui_state.highlighted_consumable_action
-        highlighted_ability_action = ui_state.highlighted_ability_action
-
         self.screen_render.rect(COLOR_BORDER, Rect(0, 0, self.camera_size[0], self.camera_size[1]), 1)
         self.screen_render.rect_filled((20, 10, 0), Rect(0, self.camera_size[1], self.screen_size[0],
                                                          self.screen_size[1] - self.camera_size[1]))
 
-        y_0 = 5
-
-        y_1 = 30
-        y_2 = y_1 + 22
-        y_3 = 90
-        y_4 = y_3 + 22
-
-        x_1 = 140
-
-        x_exp_bar = x_1
-        self.ui_render.text(self.font_level, "Level " + str(player_level), (x_exp_bar, y_0))
-        self.ui_render.stat_bar(x_exp_bar, y_0 + 18, 380, 2, player_exp / player_max_exp_in_this_level,
-                                (200, 200, 200),
-                                True)
-
         x_0 = 20
+        y_2 = 30 + 22
+        y_4 = 90 + 22
 
-        self._player_portrait(hero_id, (x_0, y_0 + 13))
+        # EXP BAR
+        self.exp_bar.render(player_state.level, player_state.exp / player_state.max_exp_in_this_level)
+
+        # PORTRAIT
+        self.portrait.render()
 
         # HEALTHBAR
-        self.healthbar.render(player_health, player_max_health)
+        self.healthbar.render(player_state.health_resource.value, player_state.health_resource.max_value)
 
         # MANABAR
-        self.manabar.render(player_mana, player_max_mana)
+        self.manabar.render(player_state.mana_resource.value, player_state.mana_resource.max_value)
 
         # MONEY
-        self.ui_render.text(self.font_ui_money, "Money: " + str(player_money), (x_0 + 4, y_4 + 38))
+        self.ui_render.text(self.font_ui_money, "Money: " + str(player_state.money), (x_0 + 4, y_4 + 38))
 
         # CONSUMABLES
         self.ui_render.rect_filled((60, 60, 80), self.consumable_icons_row)
         for icon in self.consumable_icons:
             hovered = self.hovered_component == icon
-            recently_clicked = icon.slot_number == highlighted_consumable_action
+            recently_clicked = icon.slot_number == ui_state.highlighted_consumable_action
             icon.render(hovered, recently_clicked)
 
         # ABILITIES
@@ -587,8 +567,8 @@ class GameUiView:
         for icon in self.ability_icons:
             ability_type = icon.ability_type
             ability = ABILITIES[ability_type]
-            cooldown_remaining_ratio = ability_cooldowns_remaining[ability_type] / ability.cooldown
-            recently_clicked = ability_type == highlighted_ability_action
+            cooldown_remaining_ratio = player_state.ability_cooldowns_remaining[ability_type] / ability.cooldown
+            recently_clicked = ability_type == ui_state.highlighted_ability_action
             hovered = self.hovered_component == icon
             icon.render(hovered, recently_clicked, cooldown_remaining_ratio)
 
@@ -605,7 +585,7 @@ class GameUiView:
         minimap_padding_rect_pos = (x_3 - 2, y_2 - 2)
         minimap_padding_rect = Rect(minimap_padding_rect_pos[0], minimap_padding_rect_pos[1], 80 + 4, 80 + 4)
         self.ui_render.rect_filled((60, 60, 80), minimap_padding_rect)
-        self._minimap_in_ui((x_3, y_2), (80, 80), player_minimap_relative_position)
+        self._minimap_in_ui((x_3, y_2), (80, 80), ui_state.player_minimap_relative_position)
 
         if dialog:
             self._dialog(dialog)
@@ -614,7 +594,7 @@ class GameUiView:
         x_buffs = 10
         buff_texts = []
         buff_duration_ratios_remaining = []
-        for active_buff in player_active_buffs:
+        for active_buff in player_state.active_buffs:
             buff_type = active_buff.buff_effect.get_buff_type()
             # Buffs that don't have description texts shouldn't be displayed. (They are typically irrelevant to the
             # player)
@@ -658,8 +638,8 @@ class GameUiView:
         self.screen_render.rect_transparent(Rect(0, 0, 70, 20), 100, COLOR_BLACK)
         self.screen_render.text(self.font_debug_info, text_in_topleft_corner, (5, 3))
 
-        if message:
-            self._message(message)
+        if ui_state.message:
+            self._message(ui_state.message)
 
         if self.hovered_component and self.hovered_component.tooltip and not mouse_drag:
             self._tooltip(self.hovered_component.tooltip)

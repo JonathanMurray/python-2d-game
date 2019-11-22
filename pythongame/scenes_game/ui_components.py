@@ -327,3 +327,25 @@ class TalentsWindow:
                 self.ui_render.text(self.font_details, "Choose a talent!", text_pos)
         else:
             self.ui_render.text(self.font_details, "No talents yet!", text_pos)
+
+
+class ExpBar:
+    def __init__(self, ui_render: DrawableArea, rect: Rect, font):
+        self.ui_render = ui_render
+        self.rect = rect
+        self.font = font
+
+    def render(self, level: int, filled_ratio: float):
+        self.ui_render.text(self.font, "Level " + str(level), (self.rect.x, self.rect.y - 18))
+        self.ui_render.stat_bar(self.rect.x, self.rect.y, self.rect.w, self.rect.h, filled_ratio, (200, 200, 200), True)
+
+
+class Portrait:
+    def __init__(self, ui_render: DrawableArea, rect: Rect, image):
+        self.ui_render = ui_render
+        self.rect = rect
+        self.image = image
+
+    def render(self):
+        self.ui_render.image(self.image, self.rect.topleft)
+        self.ui_render.rect((160, 160, 180), self.rect, 2)

@@ -102,6 +102,7 @@ class PlayingUiController:
         self.ui_view.update_talents(talents_graphics_from_state(
             player_state.talents_state, player_state.level, player_state.chosen_talent_option_indices))
         self.ui_view.update_player_stats(player_state, game_state.player_entity.get_speed_multiplier())
+        self.ui_view.update_hero(player_state.hero_id)
 
         mouse_hover_event = self.ui_view.handle_mouse(self.mouse_screen_position, self.ui_state.toggle_enabled)
         self.hovered_item_slot = mouse_hover_event.item
