@@ -175,3 +175,23 @@ class ToggleButton:
             self.ui_render.rect(COLOR_HOVERED, self.rect, 1)
         if self.highlighted:
             self.ui_render.rect(COLOR_TOGGLE_HIGHLIGHTED, self.rect, 1)
+
+
+class ControlsWindow:
+    def __init__(self, ui_render: DrawableArea, rect: Rect, font_header, font_details):
+        self.ui_render = ui_render
+        self.rect = rect
+        self.font_header = font_header
+        self.font_details = font_details
+
+    def render(self):
+        self.ui_render.rect_transparent(self.rect, 140, (0, 0, 30))
+        self.ui_render.text(self.font_header, "CONTROLS:", (self.rect[0] + 35, self.rect[1] + 10))
+        x = self.rect[0] + 15
+        y_0 = self.rect[1] + 45
+        self.ui_render.text(self.font_details, "Move: arrow-keys", (x, y_0))
+        self.ui_render.text(self.font_details, "Abilities: Q W E R", (x, y_0 + 20))
+        self.ui_render.text(self.font_details, "Potions: 1 2 3 4 5", (x, y_0 + 40))
+        self.ui_render.text(self.font_details, "Interact: Space", (x, y_0 + 60))
+        self.ui_render.text(self.font_details, "Inventory: mouse", (x, y_0 + 80))
+        self.ui_render.text(self.font_details, "Dialog: arrow-keys", (x, y_0 + 100))

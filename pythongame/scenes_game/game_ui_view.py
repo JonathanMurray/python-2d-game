@@ -15,7 +15,7 @@ from pythongame.core.talents import TalentsGraphics
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
-    ToggleButton
+    ToggleButton, ControlsWindow
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -405,21 +405,6 @@ class GameUiView:
 
         return hovered_talent_option, tooltip_graphics
 
-    def _render_controls(self, ui_position: Tuple[int, int]):
-
-        rect_container = Rect(ui_position[0], ui_position[1], 140, 170)
-        self.ui_render.rect_transparent(rect_container, 140, (0, 0, 30))
-
-        self.ui_render.text(self.font_tooltip_details, "CONTROLS:", (ui_position[0] + 35, ui_position[1] + 10))
-        x_text = ui_position[0] + 15
-        y_0 = ui_position[1] + 45
-        self.ui_render.text(self.font_stats, "Move: arrow-keys", (x_text, y_0))
-        self.ui_render.text(self.font_stats, "Abilities: Q W E R", (x_text, y_0 + 20))
-        self.ui_render.text(self.font_stats, "Potions: 1 2 3 4 5", (x_text, y_0 + 40))
-        self.ui_render.text(self.font_stats, "Interact: Space", (x_text, y_0 + 60))
-        self.ui_render.text(self.font_stats, "Inventory: mouse", (x_text, y_0 + 80))
-        self.ui_render.text(self.font_stats, "Dialog: arrow-keys", (x_text, y_0 + 100))
-
     def _render_talent_icon(self, ui_icon_sprite: UiIconSprite, position: Tuple[int, int], chosen: bool,
                             mouse_ui_position: Tuple[int, int]) -> bool:
         rect = Rect(position[0], position[1], UI_ICON_SIZE[0], UI_ICON_SIZE[1])
@@ -695,7 +680,9 @@ class GameUiView:
                 talents, pos_toggled_content, mouse_ui_position)
             tooltip = talent_tooltip if talent_tooltip is not None else tooltip
         elif ui_state.toggle_enabled == UiToggle.CONTROLS:
-            self._render_controls(pos_toggled_content)
+            rect = Rect(pos_toggled_content[0], pos_toggled_content[1], 140, 170)
+            window = ControlsWindow(self.ui_render, rect, self.font_tooltip_details, self.font_stats)
+            window.render()
 
         for toggle_button in self.toggle_buttons:
             hovered = toggle_button.contains(mouse_ui_position)
