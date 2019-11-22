@@ -62,8 +62,7 @@ class PausedScene(AbstractScene):
             text_in_topleft_corner="...",
             is_paused=True,
             dialog=None,  # We don't bother to show dialog etc when game is paused
-            dragged_item=None,
-            dragged_consumable=None
+            mouse_drag=None
         )
 
         self.world_view.update_display()

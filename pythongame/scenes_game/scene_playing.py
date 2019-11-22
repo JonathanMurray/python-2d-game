@@ -82,7 +82,6 @@ class PlayingScene(AbstractScene):
         self.world_view = world_view
         self.ui_view = ui_view
         self.render_hit_and_collision_boxes = False
-        self.mouse_screen_position = (0, 0)
         self.dialog_handler = DialogHandler()
         self.is_shift_key_held_down = False
         self.total_time_played = 0
@@ -114,13 +113,11 @@ class PlayingScene(AbstractScene):
             self.player_interactions_state.handle_nearby_entities(
                 self.game_state.player_entity, self.game_state, self.game_engine)
 
-        mouse_was_just_clicked = False
-        mouse_was_just_released = False
-        right_mouse_was_just_clicked = False
-
         # ------------------------------------
         #         HANDLE USER INPUT
         # ------------------------------------
+
+        events_triggered_from_ui: List[EventTriggeredFromUi] = []
 
         if self.dialog_handler.is_player_in_dialog():
             self.game_state.player_entity.set_not_moving()
@@ -153,13 +150,14 @@ class PlayingScene(AbstractScene):
                 if isinstance(action, ActionPauseGame):
                     transition_to_pause = True
                 if isinstance(action, ActionMouseMovement):
-                    self.mouse_screen_position = action.mouse_screen_position
+                    self.ui_controller.handle_mouse_movement(action.mouse_screen_position)
                 if isinstance(action, ActionMouseClicked):
-                    mouse_was_just_clicked = True
+                    events_triggered_from_ui += self.ui_controller.handle_mouse_click(self.game_state.player_state)
                 if isinstance(action, ActionMouseReleased):
-                    mouse_was_just_released = True
+                    events_triggered_from_ui += self.ui_controller.handle_mouse_release(
+                        self.game_state)
                 if isinstance(action, ActionRightMouseClicked):
-                    right_mouse_was_just_clicked = True
+                    events_triggered_from_ui += self.ui_controller.handle_mouse_right_click()
                 if isinstance(action, ActionPressSpaceKey):
                     ready_entity = self.player_interactions_state.get_entity_to_interact_with()
                     if ready_entity is not None:
@@ -233,9 +231,7 @@ class PlayingScene(AbstractScene):
         else:
             text_in_topleft_corner = fps_string + " fps"
 
-        events_triggered_from_ui: List[EventTriggeredFromUi] = self.ui_controller.render_and_handle_mouse(
-            self.game_state, text_in_topleft_corner, dialog, self.mouse_screen_position, mouse_was_just_clicked,
-            mouse_was_just_released, right_mouse_was_just_clicked)
+        self.ui_controller.render(self.game_state, text_in_topleft_corner, dialog)
 
         for event in events_triggered_from_ui:
             if isinstance(event, StartDraggingItemOrConsumable):

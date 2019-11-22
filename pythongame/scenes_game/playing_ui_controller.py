@@ -1,9 +1,9 @@
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple
 
-from pythongame.core.game_state import GameState
+from pythongame.core.game_state import GameState, PlayerState
 from pythongame.core.npc_behaviors import DialogGraphics
 from pythongame.core.talents import talents_graphics_from_state
-from pythongame.scenes_game.game_ui_state import GameUiState
+from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.game_ui_view import GameUiView, ItemSlot, ConsumableSlot, MouseDrag
 
 
@@ -57,12 +57,11 @@ def get_mouse_world_pos(game_state: GameState, mouse_screen_position: Tuple[int,
     return (int(mouse_screen_position[0] + game_state.camera_world_area.x),
             int(mouse_screen_position[1] + game_state.camera_world_area.y))
 
+
 # TODO
 # Fix state handling of view code
 # Currently there are:
 
-# ScenePlaying
-#   mouse screen position
 # PlayingUiController
 #   item/consumable being dragged
 # GameUiState
@@ -72,95 +71,51 @@ def get_mouse_world_pos(game_state: GameState, mouse_screen_position: Tuple[int,
 
 
 # To fix:
-# move mouse screen position downwards (no UI state in scenePlaying)
 #
 
 class PlayingUiController:
 
-    def __init__(
-            self,
-            ui_view: GameUiView,
-            ui_state: GameUiState):
-        self.game_ui_view = ui_view
+    def __init__(self, ui_view: GameUiView, ui_state: GameUiState):
+        self.ui_view = ui_view
         self.ui_state = ui_state
+
+        self.mouse_screen_position: Tuple[int, int] = (0, 0)
         self.item_slot_being_dragged: Optional[ItemSlot] = None
         self.consumable_slot_being_dragged: Optional[ConsumableSlot] = None
+        self.hovered_item_slot: Optional[ItemSlot] = None
+        self.hovered_consumable_slot: Optional[ConsumableSlot] = None
+        self.hovered_ui_toggle: Optional[UiToggle] = None
+        self.hovered_talent_choice_option: Optional[Tuple[int, int]] = None
+        self.is_mouse_over_ui: bool = False
 
-    def render_and_handle_mouse(
-            self, game_state: GameState, text_in_topleft_corner: str, dialog_graphics: DialogGraphics,
-            mouse_screen_pos: Tuple[int, int], mouse_was_just_clicked: bool,
-            mouse_was_just_released: bool, right_mouse_was_just_clicked: bool) -> List[EventTriggeredFromUi]:
-
-        triggered_events: List[EventTriggeredFromUi] = []
+    def render(self, game_state: GameState, text_in_topleft_corner: str, dialog_graphics: DialogGraphics):
 
         player_state = game_state.player_state
 
         # UPDATING UI COMPONENTS
-        self.game_ui_view.update_abilities(player_state.abilities)
-        self.game_ui_view.update_consumables(player_state.consumable_inventory.consumables_in_slots)
-        self.game_ui_view.update_inventory(player_state.item_inventory.slots)
-        self.game_ui_view.update_regen(player_state.health_resource.get_effective_regen(),
-                                       player_state.mana_resource.get_effective_regen())
-        self.game_ui_view.update_has_unseen_talents(self.ui_state.talent_toggle_has_unseen_talents)
-        self.game_ui_view.update_talents(talents_graphics_from_state(
+        self.ui_view.update_abilities(player_state.abilities)
+        self.ui_view.update_consumables(player_state.consumable_inventory.consumables_in_slots)
+        self.ui_view.update_inventory(player_state.item_inventory.slots)
+        self.ui_view.update_regen(player_state.health_resource.get_effective_regen(),
+                                  player_state.mana_resource.get_effective_regen())
+        self.ui_view.update_has_unseen_talents(self.ui_state.talent_toggle_has_unseen_talents)
+        self.ui_view.update_talents(talents_graphics_from_state(
             player_state.talents_state, player_state.level, player_state.chosen_talent_option_indices))
-        self.game_ui_view.update_player_stats(player_state, game_state.player_entity.get_speed_multiplier())
+        self.ui_view.update_player_stats(player_state, game_state.player_entity.get_speed_multiplier())
 
-        mouse_hover_event = self.game_ui_view.handle_mouse(mouse_screen_pos, self.ui_state.toggle_enabled)
-
-        # DRAGGING ITEMS
-        hovered_item_slot = mouse_hover_event.item
-        if mouse_was_just_clicked and hovered_item_slot is not None:
-            if hovered_item_slot.item_type:
-                self.item_slot_being_dragged = hovered_item_slot
-                triggered_events.append(StartDraggingItemOrConsumable())
-        if right_mouse_was_just_clicked and hovered_item_slot is not None:
-            triggered_events.append(TrySwitchItemInInventory(hovered_item_slot.slot_number))
-            self.item_slot_being_dragged = None
-        if mouse_was_just_released and self.item_slot_being_dragged is not None:
-            if hovered_item_slot is not None and self.item_slot_being_dragged.slot_number != hovered_item_slot.slot_number:
-                triggered_events.append(DragItemBetweenInventorySlots(
-                    self.item_slot_being_dragged.slot_number, hovered_item_slot.slot_number))
-            if not mouse_hover_event.is_over_ui:
-                event = DropItemOnGround(
-                    self.item_slot_being_dragged.slot_number, get_mouse_world_pos(game_state, mouse_screen_pos))
-                triggered_events.append(event)
-            self.item_slot_being_dragged = None
-
-        # DRAGGING CONSUMABLES
-        hovered_consumable_slot = mouse_hover_event.consumable
-        if mouse_was_just_clicked and hovered_consumable_slot is not None:
-            if hovered_consumable_slot.consumable_types:
-                self.consumable_slot_being_dragged = hovered_consumable_slot
-                triggered_events.append(StartDraggingItemOrConsumable())
-        if mouse_was_just_released and self.consumable_slot_being_dragged:
-            if hovered_consumable_slot and self.consumable_slot_being_dragged.slot_number != hovered_consumable_slot.slot_number:
-                event = DragConsumableBetweenInventorySlots(
-                    self.consumable_slot_being_dragged.slot_number, hovered_consumable_slot.slot_number)
-                triggered_events.append(event)
-            if not mouse_hover_event.is_over_ui:
-                event = DropConsumableOnGround(
-                    self.consumable_slot_being_dragged.slot_number,
-                    get_mouse_world_pos(game_state, mouse_screen_pos))
-                triggered_events.append(event)
-            self.consumable_slot_being_dragged = None
-
-        # UI TOGGLES
-        if mouse_was_just_clicked and mouse_hover_event.ui_toggle is not None:
-            self.ui_state.notify_toggle_was_clicked(mouse_hover_event.ui_toggle)
-            triggered_events.append(ClickUiToggle())
-
-        # PICKING TALENTS
-        if mouse_was_just_clicked and mouse_hover_event.talent_choice_option is not None:
-            choice_index, option_index = mouse_hover_event.talent_choice_option
-            if len(player_state.chosen_talent_option_indices) == choice_index:
-                triggered_events.append(PickTalent(option_index))
+        mouse_hover_event = self.ui_view.handle_mouse(self.mouse_screen_position, self.ui_state.toggle_enabled)
+        self.hovered_item_slot = mouse_hover_event.item
+        self.hovered_consumable_slot = mouse_hover_event.consumable
+        self.is_mouse_over_ui = mouse_hover_event.is_over_ui
+        self.hovered_ui_toggle = mouse_hover_event.ui_toggle
+        self.hovered_talent_choice_option = mouse_hover_event.talent_choice_option
 
         # RENDERING
         mouse_drag = None
         if self.consumable_slot_being_dragged or self.item_slot_being_dragged:
-            mouse_drag = MouseDrag(self.consumable_slot_being_dragged, self.item_slot_being_dragged, mouse_screen_pos)
-        self.game_ui_view.render_ui(
+            mouse_drag = MouseDrag(self.consumable_slot_being_dragged, self.item_slot_being_dragged,
+                                   self.mouse_screen_position)
+        self.ui_view.render_ui(
             player_state=player_state,
             ui_state=self.ui_state,
             text_in_topleft_corner=text_in_topleft_corner,
@@ -168,5 +123,58 @@ class PlayingUiController:
             dialog=dialog_graphics,
             mouse_drag=mouse_drag
         )
+
+    def handle_mouse_movement(self, mouse_screen_position: Tuple[int, int]):
+        self.mouse_screen_position = mouse_screen_position
+
+    def handle_mouse_right_click(self):
+        triggered_events = []
+        if self.hovered_item_slot is not None:
+            triggered_events.append(TrySwitchItemInInventory(self.hovered_item_slot.slot_number))
+            self.item_slot_being_dragged = None
+        return triggered_events
+
+    def handle_mouse_click(self, player_state: PlayerState):
+        triggered_events = []
+        if self.hovered_item_slot and self.hovered_item_slot.item_type:
+            self.item_slot_being_dragged = self.hovered_item_slot
+            triggered_events.append(StartDraggingItemOrConsumable())
+        if self.hovered_consumable_slot and self.hovered_consumable_slot.consumable_types:
+            self.consumable_slot_being_dragged = self.hovered_consumable_slot
+            triggered_events.append(StartDraggingItemOrConsumable())
+        if self.hovered_ui_toggle:
+            self.ui_state.notify_toggle_was_clicked(self.hovered_ui_toggle)
+            triggered_events.append(ClickUiToggle())
+        if self.hovered_talent_choice_option:
+            choice_index, option_index = self.hovered_talent_choice_option
+            # TODO Don't depend on player state for this
+            if len(player_state.chosen_talent_option_indices) == choice_index:
+                triggered_events.append(PickTalent(option_index))
+        return triggered_events
+
+    def handle_mouse_release(self, game_state: GameState):
+        triggered_events = []
+        if self.item_slot_being_dragged:
+            if self.hovered_item_slot and self.item_slot_being_dragged.slot_number != self.hovered_item_slot.slot_number:
+                triggered_events.append(DragItemBetweenInventorySlots(
+                    self.item_slot_being_dragged.slot_number, self.hovered_item_slot.slot_number))
+            if not self.is_mouse_over_ui:
+                event = DropItemOnGround(
+                    self.item_slot_being_dragged.slot_number,
+                    get_mouse_world_pos(game_state, self.mouse_screen_position))
+                triggered_events.append(event)
+            self.item_slot_being_dragged = None
+
+        if self.consumable_slot_being_dragged:
+            if self.hovered_consumable_slot and self.consumable_slot_being_dragged.slot_number != self.hovered_consumable_slot.slot_number:
+                event = DragConsumableBetweenInventorySlots(
+                    self.consumable_slot_being_dragged.slot_number, self.hovered_consumable_slot.slot_number)
+                triggered_events.append(event)
+            if not self.is_mouse_over_ui:
+                event = DropConsumableOnGround(
+                    self.consumable_slot_being_dragged.slot_number,
+                    get_mouse_world_pos(game_state, self.mouse_screen_position))
+                triggered_events.append(event)
+            self.consumable_slot_being_dragged = None
 
         return triggered_events

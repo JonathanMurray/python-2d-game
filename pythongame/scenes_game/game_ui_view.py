@@ -479,16 +479,16 @@ class GameUiView:
         self.screen_render.text(self.font_splash_screen, text, (x, y), COLOR_WHITE)
         self.screen_render.text(self.font_splash_screen, text, (x + 2, y + 2), COLOR_BLACK)
 
-    def handle_mouse(self, mouse_screen_position: Tuple[int, int], toggle_enabled: Optional[UiToggle]):
+    def handle_mouse(self, mouse_screen_pos: Tuple[int, int], toggle_enabled: Optional[UiToggle]) -> MouseHoverEvent:
         self.hovered_component = None
 
         hovered_item_slot = None
         hovered_consumable_slot = None
-        is_mouse_hovering_ui = is_point_in_rect(mouse_screen_position, self.ui_screen_area)
+        is_mouse_hovering_ui = is_point_in_rect(mouse_screen_pos, self.ui_screen_area)
         hovered_ui_toggle = None
         hovered_talent_option: Optional[Tuple[int, int]] = None
 
-        mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
+        mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_pos)
         if self.healthbar.contains(mouse_ui_position):
             self.hovered_component = self.healthbar
         if self.manabar.contains(mouse_ui_position):
