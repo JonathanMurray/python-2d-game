@@ -14,7 +14,8 @@ from pythongame.core.npc_behaviors import DialogGraphics
 from pythongame.core.talents import TalentsGraphics
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
-from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar
+from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
+    ToggleButton
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -90,6 +91,8 @@ class GameUiView:
         self._setup_inventory_icons([])
 
         self._setup_health_and_mana_bars(0, 0)
+
+        self._setup_toggle_buttons(False)
 
     def _setup_ability_icons(self, abilities):
         x_0 = 140
@@ -206,6 +209,19 @@ class GameUiView:
         self.manabar = StatBar(self.ui_render, rect_manabar, (50, 0, 200), mana_tooltip, border=True,
                                show_numbers=True, font=self.font_ui_stat_bar_numbers)
 
+    def _setup_toggle_buttons(self, has_unseen_talents: bool):
+        x = 555
+        y_0 = 30
+        w = 120
+        h = 20
+        font = self.font_tooltip_details
+        self.toggle_buttons = [
+            ToggleButton(self.ui_render, Rect(x, y_0, w, h), font, "STATS    [A]", UiToggle.STATS, False),
+            ToggleButton(self.ui_render, Rect(x, y_0 + 30, w, h), font, "TALENTS  [T]", UiToggle.TALENTS,
+                         has_unseen_talents),
+            ToggleButton(self.ui_render, Rect(x, y_0 + 60, w, h), font, "CONTROLS [C]", UiToggle.CONTROLS, False)
+        ]
+
     def update_abilities(self, abilities: List[AbilityType]):
         self._setup_ability_icons(abilities)
 
@@ -217,6 +233,9 @@ class GameUiView:
 
     def update_regen(self, health_regen: float, mana_regen: float):
         self._setup_health_and_mana_bars(health_regen, mana_regen)
+
+    def update_has_unseen_talents(self, has_unseen_talents: bool):
+        self._setup_toggle_buttons(has_unseen_talents)
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
@@ -284,20 +303,6 @@ class GameUiView:
         for i, line in enumerate(detail_lines):
             self.ui_render.text(self.font_tooltip_details, line, (x_tooltip + 20, y_tooltip + 50 + i * 18),
                                 COLOR_WHITE)
-
-    def _toggle_in_ui(self, x: int, y: int, text: str, enabled: bool, mouse_ui_position: Tuple[int, int],
-                      highlight: bool) -> bool:
-        rect = Rect(x, y, 120, 20)
-        if enabled:
-            self.ui_render.rect_filled((50, 50, 150), rect)
-        self.ui_render.rect(COLOR_WHITE, rect, 1)
-        self.ui_render.text(self.font_tooltip_details, text, (x + 20, y + 2))
-        is_hovered_by_mouse = is_point_in_rect(mouse_ui_position, rect)
-        if is_hovered_by_mouse:
-            self.ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, rect, 1)
-        if highlight:
-            self.ui_render.rect(COLOR_HIGHLIGHT_HAS_UNSEEN, rect, 1)
-        return is_hovered_by_mouse
 
     def _render_stats(self, player_speed_multiplier: float, player_state: PlayerState, ui_position: Tuple[int, int]):
 
@@ -683,7 +688,6 @@ class GameUiView:
 
         # TOGGLES
         pos_toggled_content = (545, -300)
-        x_toggles = 555
         if ui_state.toggle_enabled == UiToggle.STATS:
             self._render_stats(player_speed_multiplier, player_state, pos_toggled_content)
         elif ui_state.toggle_enabled == UiToggle.TALENTS:
@@ -693,19 +697,12 @@ class GameUiView:
         elif ui_state.toggle_enabled == UiToggle.CONTROLS:
             self._render_controls(pos_toggled_content)
 
-        is_mouse_hovering_stats_toggle = self._toggle_in_ui(
-            x_toggles, y_1, "STATS    [A]", ui_state.toggle_enabled == UiToggle.STATS, mouse_ui_position, False)
-        is_mouse_hovering_talents_toggle = self._toggle_in_ui(
-            x_toggles, y_1 + 30, "TALENTS  [T]", ui_state.toggle_enabled == UiToggle.TALENTS,
-            mouse_ui_position, ui_state.talent_toggle_has_unseen_talents)
-        is_mouse_hovering_help_toggle = self._toggle_in_ui(
-            x_toggles, y_1 + 60, "CONTROLS [C]", ui_state.toggle_enabled == UiToggle.CONTROLS, mouse_ui_position, False)
-        if is_mouse_hovering_stats_toggle:
-            hovered_ui_toggle = UiToggle.STATS
-        elif is_mouse_hovering_talents_toggle:
-            hovered_ui_toggle = UiToggle.TALENTS
-        elif is_mouse_hovering_help_toggle:
-            hovered_ui_toggle = UiToggle.CONTROLS
+        for toggle_button in self.toggle_buttons:
+            hovered = toggle_button.contains(mouse_ui_position)
+            enabled = ui_state.toggle_enabled == toggle_button.toggle_id
+            toggle_button.render(enabled, hovered)
+            if hovered:
+                hovered_ui_toggle = toggle_button.toggle_id
 
         self.screen_render.rect(COLOR_BORDER, self.ui_screen_area, 1)
 

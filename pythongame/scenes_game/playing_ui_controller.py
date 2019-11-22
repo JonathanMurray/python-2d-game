@@ -94,6 +94,8 @@ class PlayingUiController:
         self.game_ui_view.update_regen(game_state.player_state.health_resource.get_effective_regen(),
                                        game_state.player_state.mana_resource.get_effective_regen())
 
+        self.game_ui_view.update_has_unseen_talents(self.ui_state.talent_toggle_has_unseen_talents)
+
         mouse_hover_event: MouseHoverEvent = self.game_ui_view.render_ui(
             player_state=game_state.player_state,
             ui_state=self.ui_state,

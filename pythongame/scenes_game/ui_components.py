@@ -6,9 +6,12 @@ from pythongame.core.common import ConsumableType, ItemType, AbilityType
 from pythongame.core.game_data import CONSUMABLES, ConsumableCategory
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.view.render_util import DrawableArea
+from pythongame.scenes_game.game_ui_state import UiToggle
 
-COLOR_HIGHLIGHTED_ICON = (250, 250, 150)
-COLOR_HOVERED_ICON_HIGHLIGHT = (200, 200, 250)
+COLOR_HOVERED = (200, 200, 250)
+COLOR_WHITE = (250, 250, 250)
+COLOR_ICON_HIGHLIGHTED = (250, 250, 150)
+COLOR_TOGGLE_HIGHLIGHTED = (150, 250, 200)
 
 
 class TooltipGraphics:
@@ -40,10 +43,10 @@ class AbilityIcon:
         self._ui_render.image(self._image, self._rect.topleft)
         self._ui_render.rect((150, 150, 190), self._rect, 1)
         if recently_clicked:
-            self._ui_render.rect(COLOR_HIGHLIGHTED_ICON,
+            self._ui_render.rect(COLOR_ICON_HIGHLIGHTED,
                                  Rect(self._rect.x - 1, self._rect.y - 1, self._rect.w + 2, self._rect.h + 2), 3)
         elif hovered:
-            self._ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, self._rect, 1)
+            self._ui_render.rect(COLOR_HOVERED, self._rect, 1)
         self._ui_render.text(self._font, self._label, (self._rect.x + 12, self._rect.y + self._rect.h + 4))
 
         if cooldown_remaining_ratio > 0:
@@ -91,10 +94,10 @@ class ConsumableIcon:
                 Rect(self._rect.x, self._rect.y - 2 - (sub_rect_h + 1) * (i + 1), self._rect.w, sub_rect_h))
 
         if recently_clicked:
-            self._ui_render.rect(COLOR_HIGHLIGHTED_ICON,
+            self._ui_render.rect(COLOR_ICON_HIGHLIGHTED,
                                  Rect(self._rect.x - 1, self._rect.y - 1, self._rect.w + 2, self._rect.h + 2), 3)
         elif hovered:
-            self._ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, self._rect, 1)
+            self._ui_render.rect(COLOR_HOVERED, self._rect, 1)
         self._ui_render.text(self._font, self._label, (self._rect.x + 12, self._rect.y + self._rect.h + 4))
 
 
@@ -126,7 +129,7 @@ class ItemIcon:
             color_outline = (100, 100, 140)
         self._ui_render.rect(color_outline, self._rect, 1)
         if hovered:
-            self._ui_render.rect(COLOR_HOVERED_ICON_HIGHLIGHT, self._rect, 1)
+            self._ui_render.rect(COLOR_HOVERED, self._rect, 1)
 
 
 class StatBar:
@@ -149,3 +152,26 @@ class StatBar:
         if self.show_numbers:
             text = str(value) + "/" + str(max_value)
             self.ui_render.text(self.font, text, (self.rect.x + 20, self.rect.y - 1))
+
+
+class ToggleButton:
+    def __init__(self, ui_render: DrawableArea, rect: Rect, font, text: str, toggle_id: UiToggle, highlighted: bool):
+        self.ui_render = ui_render
+        self.rect = rect
+        self.font = font
+        self.text = text
+        self.toggle_id = toggle_id
+        self.highlighted = highlighted
+
+    def contains(self, point: Tuple[int, int]) -> bool:
+        return self.rect.collidepoint(point[0], point[1])
+
+    def render(self, enabled: bool, hovered: bool):
+        if enabled:
+            self.ui_render.rect_filled((50, 50, 150), self.rect)
+        self.ui_render.rect(COLOR_WHITE, self.rect, 1)
+        self.ui_render.text(self.font, self.text, (self.rect.x + 20, self.rect.y + 2))
+        if hovered:
+            self.ui_render.rect(COLOR_HOVERED, self.rect, 1)
+        if self.highlighted:
+            self.ui_render.rect(COLOR_TOGGLE_HIGHLIGHTED, self.rect, 1)
