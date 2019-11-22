@@ -137,7 +137,7 @@ class CreatingWorldScene(AbstractScene):
             world_behavior = StoryBehavior(game_state, ui_state)
 
         if saved_player_state:
-            game_state.player_state.gain_exp_worth_n_levels(saved_player_state.level - 1)
+            game_engine.gain_levels(saved_player_state.level - 1)
             game_state.player_state.gain_exp(saved_player_state.exp)
             game_engine.set_item_inventory([ItemType[item] if item else None for item in saved_player_state.items])
             game_state.player_state.consumable_inventory = ConsumableInventory(
@@ -153,7 +153,7 @@ class CreatingWorldScene(AbstractScene):
                 pick_talent(game_state, index)
         else:
             if hero_start_level > 1:
-                game_state.player_state.gain_exp_worth_n_levels(hero_start_level - 1)
+                game_engine.gain_levels(hero_start_level - 1)
             if start_money > 0:
                 game_state.player_state.money += start_money
 
