@@ -14,7 +14,7 @@ from pythongame.core.talents import TalentsGraphics
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
-    ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow, ExpBar, Portrait, Minimap
+    ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow, ExpBar, Portrait, Minimap, Buffs
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -120,6 +120,8 @@ class GameUiView:
         self._setup_portrait(HeroId.GOD)
 
         self.minimap = Minimap(self.ui_render, Rect(440, 52, 80, 80))
+
+        self.buffs = Buffs(self.ui_render, self.font_buff_texts)
 
         self.hovered_component = None
 
@@ -579,34 +581,16 @@ class GameUiView:
             self._dialog(dialog)
 
         # BUFFS
-        x_buffs = 10
-        buff_texts = []
-        buff_duration_ratios_remaining = []
+        buffs = []
         for active_buff in player_state.active_buffs:
             buff_type = active_buff.buff_effect.get_buff_type()
             # Buffs that don't have description texts shouldn't be displayed. (They are typically irrelevant to the
             # player)
             if buff_type in BUFF_TEXTS:
-                buff_texts.append(BUFF_TEXTS[buff_type])
-                buff_duration_ratios_remaining.append(active_buff.get_ratio_duration_remaining())
-        num_buffs_to_render = len(buff_texts)
-        y_buffs = -35 - (num_buffs_to_render - 1) * 25
-        buffs_ui_position = (x_buffs, y_buffs)
-        if num_buffs_to_render:
-            rect_padding = 5
-            # Note: The width of this rect is hard-coded so long buff descriptions aren't well supported
-            buffs_background_rect = Rect(
-                buffs_ui_position[0] - rect_padding,
-                buffs_ui_position[1] - rect_padding,
-                140 + rect_padding * 2,
-                num_buffs_to_render * 25 + rect_padding * 2)
-            self.ui_render.rect_transparent(buffs_background_rect, 125, COLOR_BLACK)
-        for i, text in enumerate(buff_texts):
-            y_offset_buff = i * 25
-            y = y_buffs + y_offset_buff
-            self.ui_render.text(self.font_buff_texts, text, (x_buffs, y))
-            self.ui_render.stat_bar(x_buffs, y + 20, 60, 2, buff_duration_ratios_remaining[i],
-                                    (250, 250, 0), False)
+                text = BUFF_TEXTS[buff_type]
+                ratio_remaining = active_buff.get_ratio_duration_remaining()
+                buffs.append((text, ratio_remaining))
+        self.buffs.render(buffs)
 
         # TOGGLES
         if ui_state.toggle_enabled == UiToggle.STATS:

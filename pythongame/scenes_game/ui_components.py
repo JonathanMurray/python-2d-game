@@ -355,7 +355,7 @@ class Minimap:
     def __init__(self, ui_render: DrawableArea, rect: Rect):
         self.ui_render = ui_render
         self.rect = rect
-        self.padding_rect = (rect.x-2, rect.y-2, rect.w+4,rect.h+4)
+        self.padding_rect = Rect(rect.x - 2, rect.y - 2, rect.w + 4, rect.h + 4)
 
     def render(self, player_relative_position: Tuple[float, float]):
         self.ui_render.rect_filled((60, 60, 80), self.padding_rect)
@@ -365,3 +365,31 @@ class Minimap:
         dot_y = self.rect[1] + player_relative_position[1] * self.rect.h
         dot_w = 4
         self.ui_render.rect_filled((100, 160, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
+
+
+# TODO Make position configurable
+class Buffs:
+    def __init__(self, ui_render: DrawableArea, font):
+        self.ui_render = ui_render
+        self.font = font
+
+    def render(self, buffs: List[Tuple[str, float]]):
+        x_buffs = 10
+        num_buffs_to_render = len(buffs)
+        y_buffs = -35 - (num_buffs_to_render - 1) * 25
+        buffs_ui_position = (x_buffs, y_buffs)
+        if num_buffs_to_render:
+            rect_padding = 5
+            # Note: The width of this rect is hard-coded so long buff descriptions aren't well supported
+            buffs_background_rect = Rect(
+                buffs_ui_position[0] - rect_padding,
+                buffs_ui_position[1] - rect_padding,
+                140 + rect_padding * 2,
+                num_buffs_to_render * 25 + rect_padding * 2)
+            self.ui_render.rect_transparent(buffs_background_rect, 125, COLOR_BLACK)
+        for i, (text, ratio_remaining) in enumerate(buffs):
+            y_offset_buff = i * 25
+            y = y_buffs + y_offset_buff
+            self.ui_render.text(self.font, text, (x_buffs, y))
+            self.ui_render.stat_bar(x_buffs, y + 20, 60, 2, ratio_remaining,
+                                    (250, 250, 0), False)
