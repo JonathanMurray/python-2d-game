@@ -516,15 +516,47 @@ class GameUiView:
 
         self._player_portrait(hero_id, (x_0, y_0 + 13))
 
-        # HEALTHBAR
-        self.healthbar.render(player_health, player_max_health)
+        # HOVERED COMPONENT
+        hovered_component = None
         if self.healthbar.contains(mouse_ui_position):
             tooltip = self.healthbar.tooltip
+        if self.manabar.contains(mouse_ui_position):
+            tooltip = self.manabar.tooltip
+        for icon in self.consumable_icons:
+            hovered = icon.contains(mouse_ui_position)
+            if hovered:
+                hovered_component = icon
+                hovered_consumable_slot_number = icon.slot_number
+                if icon.tooltip:
+                    tooltip = icon.tooltip
+        for icon in self.ability_icons:
+            hovered = icon.contains(mouse_ui_position)
+            if hovered:
+                hovered_component = icon
+                tooltip = icon.tooltip
+        for icon in self.inventory_icons:
+            hovered = icon.contains(mouse_ui_position)
+            if hovered:
+                hovered_component = icon
+                hovered_item_slot_number = icon.inventory_slot_index
+                tooltip = icon.tooltip
+        if ui_state.toggle_enabled == UiToggle.TALENTS:
+            hovered_talent_icon = self.talents_window.get_icon_containing(mouse_ui_position)
+            if hovered_talent_icon:
+                hovered_component = hovered_talent_icon
+                tooltip = hovered_talent_icon.tooltip
+                hovered_talent_option = (hovered_talent_icon.choice_index, hovered_talent_icon.option_index)
+        for toggle_button in self.toggle_buttons:
+            hovered = toggle_button.contains(mouse_ui_position)
+            if hovered:
+                hovered_component = toggle_button
+                hovered_ui_toggle = toggle_button.toggle_id
+
+        # HEALTHBAR
+        self.healthbar.render(player_health, player_max_health)
 
         # MANABAR
         self.manabar.render(player_mana, player_max_mana)
-        if self.manabar.contains(mouse_ui_position):
-            tooltip = self.manabar.tooltip
 
         # MONEY
         self.ui_render.text(self.font_ui_money, "Money: " + str(player_money), (x_0 + 4, y_4 + 38))
@@ -532,33 +564,24 @@ class GameUiView:
         # CONSUMABLES
         self.ui_render.rect_filled((60, 60, 80), self.consumable_icons_row)
         for icon in self.consumable_icons:
-            hovered = icon.contains(mouse_ui_position)
-            if hovered:
-                hovered_consumable_slot_number = icon.slot_number
-                if icon.tooltip:
-                    tooltip = icon.tooltip
-            strong_highlight = icon.slot_number == highlighted_consumable_action
-            icon.render(hovered, strong_highlight)
+            hovered = hovered_component == icon
+            recently_clicked = icon.slot_number == highlighted_consumable_action
+            icon.render(hovered, recently_clicked)
 
         # ABILITIES
         self.ui_render.rect_filled((60, 60, 80), self.ability_icons_row)
         for icon in self.ability_icons:
-            hovered = icon.contains(mouse_ui_position)
-            if hovered:
-                tooltip = icon.tooltip
             ability_type = icon.ability_type
             ability = ABILITIES[ability_type]
             cooldown_remaining_ratio = ability_cooldowns_remaining[ability_type] / ability.cooldown
             recently_clicked = ability_type == highlighted_ability_action
+            hovered = hovered_component == icon
             icon.render(hovered, recently_clicked, cooldown_remaining_ratio)
 
         # ITEMS
         self.ui_render.rect_filled((60, 60, 80), self.inventory_icons_row)
         for icon in self.inventory_icons:
-            hovered = icon.contains(mouse_ui_position)
-            if hovered:
-                hovered_item_slot_number = icon.inventory_slot_index
-                tooltip = icon.tooltip
+            hovered = hovered_component == icon
             icon.render(hovered)
 
         # MINIMAP
@@ -605,20 +628,14 @@ class GameUiView:
         if ui_state.toggle_enabled == UiToggle.STATS:
             self.stats_window.render()
         elif ui_state.toggle_enabled == UiToggle.TALENTS:
-            hovered_talent_icon = self.talents_window.get_icon_containing(mouse_ui_position)
-            if hovered_talent_icon:
-                tooltip = hovered_talent_icon.tooltip
-                hovered_talent_option = (hovered_talent_icon.choice_index, hovered_talent_icon.option_index)
-            self.talents_window.render(hovered_talent_icon)
+            self.talents_window.render(hovered_component)
         elif ui_state.toggle_enabled == UiToggle.CONTROLS:
             self.controls_window.render()
 
         for toggle_button in self.toggle_buttons:
-            hovered = toggle_button.contains(mouse_ui_position)
             enabled = ui_state.toggle_enabled == toggle_button.toggle_id
+            hovered = hovered_component == toggle_button
             toggle_button.render(enabled, hovered)
-            if hovered:
-                hovered_ui_toggle = toggle_button.toggle_id
 
         self.screen_render.rect(COLOR_BORDER, self.ui_screen_area, 1)
 

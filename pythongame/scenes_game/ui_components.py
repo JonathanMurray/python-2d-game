@@ -1,5 +1,5 @@
 import math
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Any
 
 from pygame.rect import Rect
 
@@ -307,13 +307,13 @@ class TalentsWindow:
                 return icon_2
         return None
 
-    def render(self, hovered_talent_icon: TalentIcon):
+    def render(self, hovered_component: Optional[Any]):
         self.ui_render.rect_transparent(self.rect, 140, (0, 0, 30))
         self.ui_render.text(self.font_header, "TALENTS:", (self.rect[0] + 35, self.rect[1] + 10))
 
         for row_index, (icon_1, icon_2) in enumerate(self.icon_rows):
-            icon_1.render(icon_1 == hovered_talent_icon)
-            icon_2.render(icon_2 == hovered_talent_icon)
+            icon_1.render(icon_1 == hovered_component)
+            icon_2.render(icon_2 == hovered_component)
 
         text_pos = self.rect[0] + 22, self.rect[1] + self.rect[3] - 26
         if self.talents.choice_graphics_items:
