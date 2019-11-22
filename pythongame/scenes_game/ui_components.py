@@ -1,9 +1,11 @@
+import math
 from typing import List, Tuple, Optional
 
 from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, ItemType, AbilityType
 from pythongame.core.game_data import CONSUMABLES, ConsumableCategory
+from pythongame.core.game_state import PlayerState
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.view.render_util import DrawableArea
 from pythongame.scenes_game.game_ui_state import UiToggle
@@ -195,3 +197,63 @@ class ControlsWindow:
         self.ui_render.text(self.font_details, "Interact: Space", (x, y_0 + 60))
         self.ui_render.text(self.font_details, "Inventory: mouse", (x, y_0 + 80))
         self.ui_render.text(self.font_details, "Dialog: arrow-keys", (x, y_0 + 100))
+
+
+class StatsWindow:
+    def __init__(self, ui_render: DrawableArea, rect: Rect, font_header, font_details, player_state: PlayerState,
+                 player_speed_multiplier: float):
+        self.ui_render = ui_render
+        self.rect = rect
+        self.font_header = font_header
+        self.font_details = font_details
+        self.player_state = player_state
+        self.player_speed_multiplier = player_speed_multiplier
+
+    def render(self):
+        self.ui_render.rect_transparent(self.rect, 140, (0, 0, 30))
+
+        self.ui_render.text(self.font_header, "STATS:", (self.rect[0] + 45, self.rect[1] + 10))
+
+        health_regen_text = \
+            "    health reg: " + "{:.1f}".format(self.player_state.health_resource.base_regen)
+        if self.player_state.health_resource.regen_bonus > 0:
+            health_regen_text += " +" + "{:.1f}".format(self.player_state.health_resource.regen_bonus)
+        mana_regen_text = \
+            "      mana reg: " + "{:.1f}".format(self.player_state.mana_resource.base_regen)
+        if self.player_state.mana_resource.regen_bonus > 0:
+            mana_regen_text += " +" + "{:.1f}".format(self.player_state.mana_resource.regen_bonus)
+        physical_damage_stat_text = \
+            " % phys damage: " + str(int(round(self.player_state.base_physical_damage_modifier * 100)))
+        if self.player_state.physical_damage_modifier_bonus > 0:
+            physical_damage_stat_text += " +" + str(int(round(self.player_state.physical_damage_modifier_bonus * 100)))
+        magic_damage_stat_text = \
+            "% magic damage: " + str(int(round(self.player_state.base_magic_damage_modifier * 100)))
+        if self.player_state.magic_damage_modifier_bonus > 0:
+            magic_damage_stat_text += " +" + str(int(round(self.player_state.magic_damage_modifier_bonus * 100)))
+        speed_stat_text = \
+            "       % speed: " + ("+" if self.player_speed_multiplier >= 1 else "") \
+            + str(int(round((self.player_speed_multiplier - 1) * 100)))
+        lifesteal_stat_text = \
+            "  % life steal: " + str(int(round(self.player_state.life_steal_ratio * 100)))
+        armor_stat_text = \
+            "         armor: " + str(math.floor(self.player_state.base_armor))
+        if self.player_state.armor_bonus > 0:
+            armor_stat_text += " +" + str(self.player_state.armor_bonus)
+        elif self.player_state.armor_bonus < 0:
+            armor_stat_text += " " + str(self.player_state.armor_bonus)
+        dodge_chance_text = \
+            "       % dodge: " + str(int(round(self.player_state.base_dodge_chance * 100)))
+        if self.player_state.dodge_chance_bonus > 0:
+            dodge_chance_text += " +" + str(int(round(self.player_state.dodge_chance_bonus * 100)))
+        block_chance_text = \
+            "       % block: " + str(int(round(self.player_state.block_chance * 100)))
+        block_reduction_text = \
+            "  block amount: " + str(self.player_state.block_damage_reduction)
+        x_text = self.rect[0] + 7
+        y_0 = self.rect[1] + 45
+        text_lines = [health_regen_text, mana_regen_text, physical_damage_stat_text, magic_damage_stat_text,
+                      speed_stat_text, lifesteal_stat_text, armor_stat_text, dodge_chance_text, block_chance_text,
+                      block_reduction_text]
+        for i, y in enumerate(range(y_0, y_0 + len(text_lines) * 20, 20)):
+            text = text_lines[i]
+            self.ui_render.text(self.font_details, text, (x_text, y), COLOR_WHITE)
