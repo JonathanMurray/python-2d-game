@@ -7,6 +7,7 @@ from pythongame.core.common import ConsumableType, ItemType, AbilityType
 from pythongame.core.game_data import CONSUMABLES, ConsumableCategory
 from pythongame.core.game_state import PlayerState
 from pythongame.core.item_inventory import ItemEquipmentCategory
+from pythongame.core.talents import TalentsGraphics
 from pythongame.core.view.render_util import DrawableArea
 from pythongame.scenes_game.game_ui_state import UiToggle
 
@@ -137,17 +138,23 @@ class ItemIcon:
 
 
 class TalentIcon:
-    def __init__(self, ui_render: DrawableArea, rect: Rect, image, tooltip: TooltipGraphics, chosen: bool):
+    def __init__(self, ui_render: DrawableArea, rect: Rect, image, tooltip: TooltipGraphics, chosen: bool, text: str,
+                 font, choice_index: int, option_index: int):
         self._ui_render = ui_render
         self._rect = rect
         self._image = image
         self._chosen = chosen
         self.tooltip = tooltip
+        self._text = text
+        self._font = font
+        self.choice_index = choice_index
+        self.option_index = option_index
 
     def contains(self, point: Tuple[int, int]) -> bool:
         return self._rect.collidepoint(point[0], point[1])
 
     def render(self, hovered: bool):
+        self._ui_render.text(self._font, self._text, (self._rect[0], self._rect[1] + self._rect[3] + 5), COLOR_WHITE)
         self._ui_render.rect_filled(COLOR_BLACK, self._rect)
         self._ui_render.image(self._image, self._rect.topleft)
         color_outline = COLOR_ICON_HIGHLIGHTED if self._chosen else COLOR_WHITE
@@ -280,3 +287,38 @@ class StatsWindow:
         for i, y in enumerate(range(y_0, y_0 + len(text_lines) * 20, 20)):
             text = text_lines[i]
             self.ui_render.text(self.font_details, text, (x_text, y), COLOR_WHITE)
+
+
+class TalentsWindow:
+    def __init__(self, ui_render: DrawableArea, rect: Rect, font_header, font_details, talents: TalentsGraphics,
+                 icon_rows: List[Tuple[TalentIcon, TalentIcon]]):
+        self.ui_render = ui_render
+        self.rect = rect
+        self.font_header = font_header
+        self.font_details = font_details
+        self.talents = talents
+        self.icon_rows = icon_rows
+
+    def get_icon_containing(self, point: Tuple[int, int]) -> Optional[TalentIcon]:
+        for (icon_1, icon_2) in self.icon_rows:
+            if icon_1.contains(point):
+                return icon_1
+            if icon_2.contains(point):
+                return icon_2
+        return None
+
+    def render(self, hovered_talent_icon: TalentIcon):
+        self.ui_render.rect_transparent(self.rect, 140, (0, 0, 30))
+        self.ui_render.text(self.font_header, "TALENTS:", (self.rect[0] + 35, self.rect[1] + 10))
+
+        for row_index, (icon_1, icon_2) in enumerate(self.icon_rows):
+            icon_1.render(icon_1 == hovered_talent_icon)
+            icon_2.render(icon_2 == hovered_talent_icon)
+
+        text_pos = self.rect[0] + 22, self.rect[1] + self.rect[3] - 26
+        if self.talents.choice_graphics_items:
+            player_can_choose = self.talents.choice_graphics_items[-1].chosen_index is None
+            if player_can_choose:
+                self.ui_render.text(self.font_details, "Choose a talent!", text_pos)
+        else:
+            self.ui_render.text(self.font_details, "No talents yet!", text_pos)

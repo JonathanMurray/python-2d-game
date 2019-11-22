@@ -14,7 +14,7 @@ from pythongame.core.talents import TalentsGraphics
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
-    ToggleButton, ControlsWindow, StatsWindow, TalentIcon
+    ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -92,6 +92,8 @@ class GameUiView:
         self._setup_health_and_mana_bars(0, 0)
 
         self._setup_toggle_buttons(False)
+
+        self._setup_talents_window(TalentsGraphics([]))
 
     def _setup_ability_icons(self, abilities):
         x_0 = 140
@@ -221,6 +223,35 @@ class GameUiView:
             ToggleButton(self.ui_render, Rect(x, y_0 + 60, w, h), font, "CONTROLS [C]", UiToggle.CONTROLS, False)
         ]
 
+    def _setup_talents_window(self, talents: TalentsGraphics):
+        rect = Rect(545, -300, 140, 260)
+        icon_rows = []
+        x_0 = rect[0] + 22
+        y_0 = rect[1] + 35
+        for i, choice_graphics in enumerate(talents.choice_graphics_items):
+            y = y_0 + i * (UI_ICON_SIZE[1] + 30)
+            y_icon = y + 3
+            choice = choice_graphics.choice
+
+            image_1 = self.images_by_ui_sprite[choice.first.ui_icon_sprite]
+            tooltip_1 = TooltipGraphics(
+                COLOR_WHITE, choice.first.name, [choice.first.description],
+                bottom_right=(x_0 + UI_ICON_SIZE[0], y_icon))
+            icon_1 = TalentIcon(self.ui_render, Rect(x_0, y_icon, UI_ICON_SIZE[0], UI_ICON_SIZE[1]), image_1,
+                                tooltip_1, choice_graphics.chosen_index == 0, choice.first.name, self.font_stats,
+                                i, 0)
+
+            image_2 = self.images_by_ui_sprite[choice.second.ui_icon_sprite]
+            tooltip_2 = TooltipGraphics(COLOR_WHITE, choice.second.name, [choice.second.description],
+                                        bottom_right=(x_0 + UI_ICON_SIZE[0] + 60, y_icon))
+            icon_2 = TalentIcon(self.ui_render, Rect(x_0 + 60, y_icon, UI_ICON_SIZE[0], UI_ICON_SIZE[1]), image_2,
+                                tooltip_2, choice_graphics.chosen_index == 1, choice.second.name, self.font_stats,
+                                i, 1)
+
+            icon_rows.append((icon_1, icon_2))
+        self.talents_window = TalentsWindow(self.ui_render, rect, self.font_tooltip_details, self.font_stats, talents,
+                                            icon_rows)
+
     def update_abilities(self, abilities: List[AbilityType]):
         self._setup_ability_icons(abilities)
 
@@ -235,6 +266,9 @@ class GameUiView:
 
     def update_has_unseen_talents(self, has_unseen_talents: bool):
         self._setup_toggle_buttons(has_unseen_talents)
+
+    def update_talents(self, talents: TalentsGraphics):
+        self._setup_talents_window(talents)
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
@@ -302,63 +336,6 @@ class GameUiView:
         for i, line in enumerate(detail_lines):
             self.ui_render.text(self.font_tooltip_details, line, (x_tooltip + 20, y_tooltip + 50 + i * 18),
                                 COLOR_WHITE)
-
-    def _render_talents(self, talents: TalentsGraphics, ui_position: Tuple[int, int],
-                        mouse_ui_position: Tuple[int, int]) -> Tuple[
-        Optional[Tuple[int, int]], Optional[TooltipGraphics]]:
-
-        tooltip_graphics: TooltipGraphics = None
-        hovered_talent_option = None
-
-        rect_container = Rect(ui_position[0], ui_position[1], 140, 260)
-        self.ui_render.rect_transparent(rect_container, 140, (0, 0, 30))
-
-        self.ui_render.text(self.font_tooltip_details, "TALENTS:", (ui_position[0] + 35, ui_position[1] + 10))
-
-        x_text = ui_position[0] + 22
-        y_0 = ui_position[1] + 35
-        for i, choice_graphics in enumerate(talents.choice_graphics_items):
-            y = y_0 + i * (UI_ICON_SIZE[1] + 30)
-            y_icon = y + 3
-            choice = choice_graphics.choice
-            self.ui_render.text(self.font_stats, choice.first.name, (x_text, y_icon + UI_ICON_SIZE[1] + 5), COLOR_WHITE)
-            self.ui_render.text(self.font_stats, choice.second.name, (x_text + 60, y_icon + UI_ICON_SIZE[1] + 5),
-                                COLOR_WHITE)
-
-            image_1 = self.images_by_ui_sprite[choice.first.ui_icon_sprite]
-            tooltip_1 = TooltipGraphics(
-                COLOR_WHITE, choice.first.name, [choice.first.description],
-                bottom_right=(x_text + UI_ICON_SIZE[0], y_icon))
-            icon_1 = TalentIcon(self.ui_render, Rect(x_text, y_icon, UI_ICON_SIZE[0], UI_ICON_SIZE[1]), image_1,
-                                tooltip_1, choice_graphics.chosen_index == 0)
-            is_mouse_hovering_first = icon_1.contains(mouse_ui_position)
-            icon_1.render(is_mouse_hovering_first)
-
-            image_2 = self.images_by_ui_sprite[choice.second.ui_icon_sprite]
-            tooltip_2 = TooltipGraphics(COLOR_WHITE, choice.second.name, [choice.second.description],
-                                        bottom_right=(x_text + UI_ICON_SIZE[0] + 60, y_icon))
-            icon_2 = TalentIcon(self.ui_render, Rect(x_text + 60, y_icon, UI_ICON_SIZE[0], UI_ICON_SIZE[1]), image_2,
-                                tooltip_2, choice_graphics.chosen_index == 1)
-            is_mouse_hovering_second = icon_2.contains(mouse_ui_position)
-            icon_2.render(is_mouse_hovering_second)
-
-            if is_mouse_hovering_first:
-                hovered_talent_option = (i, 0)
-                tooltip_graphics = icon_1.tooltip
-            elif is_mouse_hovering_second:
-                hovered_talent_option = (i, 1)
-                tooltip_graphics = tooltip_2
-
-        y_bot_text = rect_container[1] + rect_container[3] - 26
-
-        if talents.choice_graphics_items:
-            player_can_choose = talents.choice_graphics_items[-1].chosen_index is None
-            if player_can_choose:
-                self.ui_render.text(self.font_stats, "Choose a talent!", (x_text, y_bot_text))
-        else:
-            self.ui_render.text(self.font_stats, "No talents yet!", (x_text, y_bot_text))
-
-        return hovered_talent_option, tooltip_graphics
 
     def _player_portrait(self, hero_id: HeroId, ui_position: Tuple[int, int]):
         portrait_sprite = HEROES[hero_id].portrait_icon_sprite
@@ -476,8 +453,7 @@ class GameUiView:
             is_paused: bool,
             player_speed_multiplier: float,
             mouse_screen_position: Tuple[int, int],
-            dialog: Optional[DialogGraphics],
-            talents: TalentsGraphics) -> MouseHoverEvent:
+            dialog: Optional[DialogGraphics]) -> MouseHoverEvent:
 
         player_health = player_state.health_resource.value
         player_max_health = player_state.health_resource.max_value
@@ -620,9 +596,11 @@ class GameUiView:
                                  player_speed_multiplier)
             window.render()
         elif ui_state.toggle_enabled == UiToggle.TALENTS:
-            hovered_talent_option, talent_tooltip = self._render_talents(
-                talents, pos_toggled_content, mouse_ui_position)
-            tooltip = talent_tooltip if talent_tooltip is not None else tooltip
+            hovered_talent_icon = self.talents_window.get_icon_containing(mouse_ui_position)
+            if hovered_talent_icon:
+                tooltip = hovered_talent_icon.tooltip
+                hovered_talent_option = (hovered_talent_icon.choice_index, hovered_talent_icon.option_index)
+            self.talents_window.render(hovered_talent_icon)
         elif ui_state.toggle_enabled == UiToggle.CONTROLS:
             rect = Rect(pos_toggled_content[0], pos_toggled_content[1], 140, 170)
             window = ControlsWindow(self.ui_render, rect, self.font_tooltip_details, self.font_stats)

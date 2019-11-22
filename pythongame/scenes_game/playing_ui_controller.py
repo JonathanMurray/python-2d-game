@@ -96,6 +96,8 @@ class PlayingUiController:
 
         self.game_ui_view.update_has_unseen_talents(self.ui_state.talent_toggle_has_unseen_talents)
 
+        self.game_ui_view.update_talents(talents_graphics)
+
         mouse_hover_event: MouseHoverEvent = self.game_ui_view.render_ui(
             player_state=game_state.player_state,
             ui_state=self.ui_state,
@@ -103,8 +105,7 @@ class PlayingUiController:
             text_in_topleft_corner=text_in_topleft_corner,
             is_paused=False,
             mouse_screen_position=mouse_screen_position,
-            dialog=dialog_graphics,
-            talents=talents_graphics)
+            dialog=dialog_graphics)
 
         # DRAGGING ITEMS
 
