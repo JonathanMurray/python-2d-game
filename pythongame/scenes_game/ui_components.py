@@ -71,7 +71,7 @@ class ConsumableIcon:
         self._image = image
         self._label = label
         self._font = font
-        self._consumable_types = consumable_types
+        self.consumable_types = consumable_types
         self.tooltip = tooltip
         self.slot_number = slot_number
 
@@ -85,8 +85,8 @@ class ConsumableIcon:
         self._ui_render.rect((150, 150, 190), self._rect, 1)
 
         sub_rect_h = 3
-        for i in range(len(self._consumable_types)):
-            sub_consumable_type = self._consumable_types[i]
+        for i in range(len(self.consumable_types)):
+            sub_consumable_type = self.consumable_types[i]
             consumable_category = CONSUMABLES[sub_consumable_type].category
             if consumable_category == ConsumableCategory.HEALTH:
                 sub_rect_color = (160, 110, 110)
