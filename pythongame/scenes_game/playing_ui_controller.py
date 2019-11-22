@@ -98,10 +98,11 @@ class PlayingUiController:
 
         self.game_ui_view.update_talents(talents_graphics)
 
+        self.game_ui_view.update_player_stats(game_state.player_state, game_state.player_entity.get_speed_multiplier())
+
         mouse_hover_event: MouseHoverEvent = self.game_ui_view.render_ui(
             player_state=game_state.player_state,
             ui_state=self.ui_state,
-            player_speed_multiplier=game_state.player_entity.get_speed_multiplier(),
             text_in_topleft_corner=text_in_topleft_corner,
             is_paused=False,
             mouse_screen_position=mouse_screen_position,

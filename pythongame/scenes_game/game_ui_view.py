@@ -93,7 +93,9 @@ class GameUiView:
 
         self._setup_toggle_buttons(False)
 
+        self._setup_stats_window(None, 0)
         self._setup_talents_window(TalentsGraphics([]))
+        self._setup_controls_window()
 
     def _setup_ability_icons(self, abilities):
         x_0 = 140
@@ -223,6 +225,11 @@ class GameUiView:
             ToggleButton(self.ui_render, Rect(x, y_0 + 60, w, h), font, "CONTROLS [C]", UiToggle.CONTROLS, False)
         ]
 
+    def _setup_stats_window(self, player_state: Optional[PlayerState], player_speed_multiplier: float):
+        rect = Rect(545, -300, 140, 250)
+        self.stats_window = StatsWindow(self.ui_render, rect, self.font_tooltip_details, self.font_stats, player_state,
+                                        player_speed_multiplier)
+
     def _setup_talents_window(self, talents: TalentsGraphics):
         rect = Rect(545, -300, 140, 260)
         icon_rows = []
@@ -252,6 +259,10 @@ class GameUiView:
         self.talents_window = TalentsWindow(self.ui_render, rect, self.font_tooltip_details, self.font_stats, talents,
                                             icon_rows)
 
+    def _setup_controls_window(self):
+        rect = Rect(545, -300, 140, 170)
+        self.controls_window = ControlsWindow(self.ui_render, rect, self.font_tooltip_details, self.font_stats)
+
     def update_abilities(self, abilities: List[AbilityType]):
         self._setup_ability_icons(abilities)
 
@@ -269,6 +280,9 @@ class GameUiView:
 
     def update_talents(self, talents: TalentsGraphics):
         self._setup_talents_window(talents)
+
+    def update_player_stats(self, player_state: PlayerState, player_speed_multiplier: float):
+        self._setup_stats_window(player_state, player_speed_multiplier)
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
@@ -451,7 +465,6 @@ class GameUiView:
             ui_state: GameUiState,
             text_in_topleft_corner: str,
             is_paused: bool,
-            player_speed_multiplier: float,
             mouse_screen_position: Tuple[int, int],
             dialog: Optional[DialogGraphics]) -> MouseHoverEvent:
 
@@ -589,12 +602,8 @@ class GameUiView:
                                     (250, 250, 0), False)
 
         # TOGGLES
-        pos_toggled_content = (545, -300)
         if ui_state.toggle_enabled == UiToggle.STATS:
-            rect = Rect(pos_toggled_content[0], pos_toggled_content[1], 140, 250)
-            window = StatsWindow(self.ui_render, rect, self.font_tooltip_details, self.font_stats, player_state,
-                                 player_speed_multiplier)
-            window.render()
+            self.stats_window.render()
         elif ui_state.toggle_enabled == UiToggle.TALENTS:
             hovered_talent_icon = self.talents_window.get_icon_containing(mouse_ui_position)
             if hovered_talent_icon:
@@ -602,9 +611,7 @@ class GameUiView:
                 hovered_talent_option = (hovered_talent_icon.choice_index, hovered_talent_icon.option_index)
             self.talents_window.render(hovered_talent_icon)
         elif ui_state.toggle_enabled == UiToggle.CONTROLS:
-            rect = Rect(pos_toggled_content[0], pos_toggled_content[1], 140, 170)
-            window = ControlsWindow(self.ui_render, rect, self.font_tooltip_details, self.font_stats)
-            window.render()
+            self.controls_window.render()
 
         for toggle_button in self.toggle_buttons:
             hovered = toggle_button.contains(mouse_ui_position)
