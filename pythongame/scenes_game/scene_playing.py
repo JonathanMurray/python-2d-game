@@ -280,10 +280,6 @@ class PlayingScene(AbstractScene):
             return SceneTransition(SceneId.PAUSED, (self.game_state, self.ui_state))
         return None
 
-    def get_mouse_hover_world_pos(self):
-        return (int(self.mouse_screen_position[0] + self.game_state.camera_world_area.x),
-                int(self.mouse_screen_position[1] + self.game_state.camera_world_area.y))
-
 
 def get_entity_action_text(ready_entity: Any, is_shift_key_held_down: bool) -> EntityActionText:
     if isinstance(ready_entity, NonPlayerCharacter):

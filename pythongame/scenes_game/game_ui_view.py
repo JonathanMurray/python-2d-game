@@ -51,6 +51,13 @@ class MouseHoverEvent:
         self.talent_choice_option = talent_choice_option  # (choice_index, option_index)
 
 
+class MouseDrag:
+    def __init__(self, consumable: Optional[ConsumableSlot], item: Optional[ItemSlot], screen_pos: Tuple[int, int]):
+        self.consumable = consumable
+        self.item = item
+        self.screen_pos = screen_pos
+
+
 class GameUiView:
 
     def __init__(self, pygame_screen, camera_size: Tuple[int, int], screen_size: Tuple[int, int],
@@ -110,7 +117,7 @@ class GameUiView:
 
         self.hovered_component = None
 
-    def _setup_ability_icons(self, abilities):
+    def _setup_ability_icons(self, abilities: List[AbilityType]):
         x_0 = 140
         y = 112
         icon_space = 2
@@ -517,8 +524,7 @@ class GameUiView:
             text_in_topleft_corner: str,
             is_paused: bool,
             dialog: Optional[DialogGraphics],
-            dragged_item: Optional[ItemSlot],
-            dragged_consumable: Optional[ConsumableSlot]):
+            mouse_drag: Optional[MouseDrag]):
 
         player_health = player_state.health_resource.value
         player_max_health = player_state.health_resource.max_value
@@ -590,8 +596,8 @@ class GameUiView:
         self.ui_render.rect_filled((60, 60, 80), self.inventory_icons_row)
         for icon in self.inventory_icons:
             hovered = self.hovered_component == icon
-            highlighted = dragged_item and dragged_item.item_type \
-                          and icon.slot_equipment_category == ITEMS[dragged_item.item_type].item_equipment_category
+            highlighted = mouse_drag and mouse_drag.item and mouse_drag.item.item_type \
+                          and icon.slot_equipment_category == ITEMS[mouse_drag.item.item_type].item_equipment_category
             icon.render(hovered, highlighted)
 
         # MINIMAP
@@ -655,8 +661,14 @@ class GameUiView:
         if message:
             self._message(message)
 
-        if self.hovered_component and self.hovered_component.tooltip and not dragged_item and not dragged_consumable:
+        if self.hovered_component and self.hovered_component.tooltip and not mouse_drag:
             self._tooltip(self.hovered_component.tooltip)
+
+        if mouse_drag:
+            if mouse_drag.item:
+                self.render_item_being_dragged(mouse_drag.item.item_type, mouse_drag.screen_pos)
+            elif mouse_drag.consumable:
+                self.render_consumable_being_dragged(mouse_drag.consumable.consumable_types[0], mouse_drag.screen_pos)
 
         if is_paused:
             self.screen_render.rect_transparent(Rect(0, 0, self.screen_size[0], self.screen_size[1]), 140, COLOR_BLACK)
