@@ -4,7 +4,7 @@ from pythongame.core.game_state import GameState
 from pythongame.core.npc_behaviors import DialogGraphics
 from pythongame.core.talents import talents_graphics_from_state
 from pythongame.scenes_game.game_ui_state import GameUiState
-from pythongame.scenes_game.game_ui_view import GameUiView
+from pythongame.scenes_game.game_ui_view import GameUiView, ItemSlot
 
 
 class EventTriggeredFromUi:
@@ -66,7 +66,7 @@ class PlayingUiController:
             ui_state: GameUiState):
         self.game_ui_view = ui_view
         self.ui_state = ui_state
-        self.item_slot_being_dragged: Optional[int] = None
+        self.item_slot_being_dragged: Optional[ItemSlot] = None
         self.consumable_slot_being_dragged: Optional[int] = None
 
     def render_and_handle_mouse(
@@ -102,53 +102,31 @@ class PlayingUiController:
 
         mouse_hover_event = self.game_ui_view.handle_mouse(mouse_screen_position, self.ui_state.toggle_enabled)
 
-        self.game_ui_view.render_ui(
-            player_state=game_state.player_state,
-            ui_state=self.ui_state,
-            text_in_topleft_corner=text_in_topleft_corner,
-            is_paused=False,
-            dialog=dialog_graphics)
-
         # DRAGGING ITEMS
-
-        hovered_item_slot_number = mouse_hover_event.item_slot_number
-
-        if mouse_was_just_clicked and hovered_item_slot_number is not None:
-            if not game_state.player_state.item_inventory.is_slot_empty(hovered_item_slot_number):
-                self.item_slot_being_dragged = hovered_item_slot_number
+        hovered_item_slot = mouse_hover_event.item_slot
+        if mouse_was_just_clicked and hovered_item_slot is not None:
+            if hovered_item_slot.item_type:
+                self.item_slot_being_dragged = hovered_item_slot
                 triggered_events.append(StartDraggingItemOrConsumable())
-        if right_mouse_was_just_clicked and hovered_item_slot_number is not None:
-            triggered_events.append(TrySwitchItemInInventory(hovered_item_slot_number))
+        if right_mouse_was_just_clicked and hovered_item_slot is not None:
+            triggered_events.append(TrySwitchItemInInventory(hovered_item_slot.slot_number))
             self.item_slot_being_dragged = None
-
-        if self.item_slot_being_dragged is not None:
-            item_type = game_state.player_state.item_inventory.get_item_type_in_slot(self.item_slot_being_dragged)
-            self.game_ui_view.render_item_being_dragged(item_type, mouse_screen_position)
-
         if mouse_was_just_released and self.item_slot_being_dragged is not None:
-            if hovered_item_slot_number is not None and self.item_slot_being_dragged != hovered_item_slot_number:
+            if hovered_item_slot is not None and self.item_slot_being_dragged != hovered_item_slot:
                 triggered_events.append(DragItemBetweenInventorySlots(
-                    self.item_slot_being_dragged, hovered_item_slot_number))
+                    self.item_slot_being_dragged.slot_number, hovered_item_slot.slot_number))
             if not mouse_hover_event.is_over_ui:
                 event = DropItemOnGround(
-                    self.item_slot_being_dragged, get_mouse_world_pos(game_state, mouse_screen_position))
+                    self.item_slot_being_dragged.slot_number, get_mouse_world_pos(game_state, mouse_screen_position))
                 triggered_events.append(event)
             self.item_slot_being_dragged = None
 
         # DRAGGING CONSUMABLES
-
         hovered_consumable_slot_number = mouse_hover_event.consumable_slot_number
-
         if mouse_was_just_clicked and hovered_consumable_slot_number is not None:
             if game_state.player_state.consumable_inventory.consumables_in_slots[hovered_consumable_slot_number]:
                 self.consumable_slot_being_dragged = hovered_consumable_slot_number
                 triggered_events.append(StartDraggingItemOrConsumable())
-
-        if self.consumable_slot_being_dragged is not None:
-            consumable_type = game_state.player_state.consumable_inventory.consumables_in_slots[
-                self.consumable_slot_being_dragged][0]
-            self.game_ui_view.render_consumable_being_dragged(consumable_type, mouse_screen_position)
-
         if mouse_was_just_released and self.consumable_slot_being_dragged is not None:
             if hovered_consumable_slot_number is not None and self.consumable_slot_being_dragged != hovered_consumable_slot_number:
                 event = DragConsumableBetweenInventorySlots(
@@ -159,6 +137,21 @@ class PlayingUiController:
                     self.consumable_slot_being_dragged, get_mouse_world_pos(game_state, mouse_screen_position))
                 triggered_events.append(event)
             self.consumable_slot_being_dragged = None
+
+        # RENDERING
+        self.game_ui_view.render_ui(
+            player_state=game_state.player_state,
+            ui_state=self.ui_state,
+            text_in_topleft_corner=text_in_topleft_corner,
+            is_paused=False,
+            dialog=dialog_graphics,
+            dragged_item_slot=self.item_slot_being_dragged)
+        if self.item_slot_being_dragged is not None:
+            self.game_ui_view.render_item_being_dragged(self.item_slot_being_dragged.item_type, mouse_screen_position)
+        if self.consumable_slot_being_dragged is not None:
+            consumable_type = game_state.player_state.consumable_inventory.consumables_in_slots[
+                self.consumable_slot_being_dragged][0]
+            self.game_ui_view.render_consumable_being_dragged(consumable_type, mouse_screen_position)
 
         # UI TOGGLES
 

@@ -112,7 +112,7 @@ class ItemIcon:
         self._ui_render = ui_render
         self._rect = rect
         self._image = image
-        self._slot_equipment_category = slot_equipment_category
+        self.slot_equipment_category = slot_equipment_category
         self.tooltip = tooltip
         self.item_type = item_type
         self.inventory_slot_index = inventory_slot_index
@@ -120,20 +120,24 @@ class ItemIcon:
     def contains(self, point: Tuple[int, int]) -> bool:
         return self._rect.collidepoint(point[0], point[1])
 
-    def render(self, hovered: bool):
+    def render(self, hovered: bool, highlighted: bool):
         self._ui_render.rect_filled((40, 40, 50), self._rect)
         if self.item_type:
-            if self._slot_equipment_category:
+            if self.slot_equipment_category:
                 self._ui_render.rect_filled((40, 40, 70), self._rect)
             self._ui_render.image(self._image, self._rect.topleft)
         elif self._image:
             self._ui_render.image(self._image, self._rect.topleft)
-        if self.item_type and self._slot_equipment_category:
+        if self.item_type and self.slot_equipment_category:
             color_outline = (250, 250, 250)
         else:
             color_outline = (100, 100, 140)
         self._ui_render.rect(color_outline, self._rect, 1)
-        if hovered:
+
+        if highlighted:
+            self._ui_render.rect(COLOR_ICON_HIGHLIGHTED,
+                                 Rect(self._rect.x - 1, self._rect.y - 1, self._rect.w + 1, self._rect.h + 1), 2)
+        elif hovered:
             self._ui_render.rect(COLOR_HOVERED, self._rect, 1)
 
 

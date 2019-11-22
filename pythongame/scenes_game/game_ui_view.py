@@ -29,11 +29,17 @@ PORTRAIT_ICON_SIZE = (100, 70)
 DIR_FONTS = './resources/fonts/'
 
 
+class ItemSlot:
+    def __init__(self, slot_number: int, item_type: ItemType):
+        self.slot_number = slot_number
+        self.item_type = item_type
+
+
 class MouseHoverEvent:
-    def __init__(self, item_slot_number: Optional[int], consumable_slot_number: Optional[int],
+    def __init__(self, item_slot: Optional[ItemSlot], consumable_slot_number: Optional[int],
                  is_over_ui: bool, ui_toggle: Optional[UiToggle],
                  talent_choice_option: Optional[Tuple[int, int]]):
-        self.item_slot_number = item_slot_number
+        self.item_slot = item_slot
         self.consumable_slot_number = consumable_slot_number
         self.is_over_ui: bool = is_over_ui
         self.ui_toggle = ui_toggle
@@ -462,45 +468,42 @@ class GameUiView:
         self.screen_render.text(self.font_splash_screen, text, (x + 2, y + 2), COLOR_BLACK)
 
     def handle_mouse(self, mouse_screen_position: Tuple[int, int], toggle_enabled: Optional[UiToggle]):
-        hovered_item_slot_number = None
+        self.hovered_component = None
+
+        hovered_item_slot = None
         hovered_consumable_slot_number = None
+        is_mouse_hovering_ui = is_point_in_rect(mouse_screen_position, self.ui_screen_area)
         hovered_ui_toggle = None
         hovered_talent_option: Optional[Tuple[int, int]] = None
-        is_mouse_hovering_ui = is_point_in_rect(mouse_screen_position, self.ui_screen_area)
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
-
         if self.healthbar.contains(mouse_ui_position):
             self.hovered_component = self.healthbar
         if self.manabar.contains(mouse_ui_position):
             self.hovered_component = self.manabar
         for icon in self.consumable_icons:
-            hovered = icon.contains(mouse_ui_position)
-            if hovered:
+            if icon.contains(mouse_ui_position):
                 self.hovered_component = icon
                 hovered_consumable_slot_number = icon.slot_number
         for icon in self.ability_icons:
-            hovered = icon.contains(mouse_ui_position)
-            if hovered:
+            if icon.contains(mouse_ui_position):
                 self.hovered_component = icon
         for icon in self.inventory_icons:
-            hovered = icon.contains(mouse_ui_position)
-            if hovered:
+            if icon.contains(mouse_ui_position):
                 self.hovered_component = icon
-                hovered_item_slot_number = icon.inventory_slot_index
+                hovered_item_slot = ItemSlot(icon.inventory_slot_index, icon.item_type)
         if toggle_enabled == UiToggle.TALENTS:
-            hovered_talent_icon = self.talents_window.get_icon_containing(mouse_ui_position)
-            if hovered_talent_icon:
-                self.hovered_component = hovered_talent_icon
-                hovered_talent_option = (hovered_talent_icon.choice_index, hovered_talent_icon.option_index)
+            hovered_icon = self.talents_window.get_icon_containing(mouse_ui_position)
+            if hovered_icon:
+                self.hovered_component = hovered_icon
+                hovered_talent_option = (hovered_icon.choice_index, hovered_icon.option_index)
         for toggle_button in self.toggle_buttons:
-            hovered = toggle_button.contains(mouse_ui_position)
-            if hovered:
+            if toggle_button.contains(mouse_ui_position):
                 self.hovered_component = toggle_button
                 hovered_ui_toggle = toggle_button.toggle_id
 
-        return MouseHoverEvent(hovered_item_slot_number, hovered_consumable_slot_number, is_mouse_hovering_ui,
-                               hovered_ui_toggle, hovered_talent_option)
+        return MouseHoverEvent(hovered_item_slot, hovered_consumable_slot_number,
+                               is_mouse_hovering_ui, hovered_ui_toggle, hovered_talent_option)
 
     def render_ui(
             self,
@@ -508,7 +511,8 @@ class GameUiView:
             ui_state: GameUiState,
             text_in_topleft_corner: str,
             is_paused: bool,
-            dialog: Optional[DialogGraphics]):
+            dialog: Optional[DialogGraphics],
+            dragged_item_slot: Optional[ItemSlot]):
 
         player_health = player_state.health_resource.value
         player_max_health = player_state.health_resource.max_value
@@ -580,7 +584,9 @@ class GameUiView:
         self.ui_render.rect_filled((60, 60, 80), self.inventory_icons_row)
         for icon in self.inventory_icons:
             hovered = self.hovered_component == icon
-            icon.render(hovered)
+            highlighted = dragged_item_slot and dragged_item_slot.item_type \
+                          and icon.slot_equipment_category == ITEMS[dragged_item_slot.item_type].item_equipment_category
+            icon.render(hovered, highlighted)
 
         # MINIMAP
         x_3 = 440
@@ -643,7 +649,7 @@ class GameUiView:
         if message:
             self._message(message)
 
-        if self.hovered_component and self.hovered_component.tooltip:
+        if self.hovered_component and self.hovered_component.tooltip and not dragged_item_slot:
             self._tooltip(self.hovered_component.tooltip)
 
         if is_paused:
