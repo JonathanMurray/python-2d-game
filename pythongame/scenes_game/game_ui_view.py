@@ -14,7 +14,7 @@ from pythongame.core.talents import TalentsGraphics
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
-    ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow, ExpBar, Portrait
+    ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow, ExpBar, Portrait, Minimap
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -118,6 +118,8 @@ class GameUiView:
         self.exp_bar = ExpBar(self.ui_render, Rect(140, 23, 300, 2), self.font_level)
 
         self._setup_portrait(HeroId.GOD)
+
+        self.minimap = Minimap(self.ui_render, Rect(440, 52, 80, 80))
 
         self.hovered_component = None
 
@@ -340,15 +342,6 @@ class GameUiView:
             raise Exception("Unhandled equipment category: " + str(slot_equipment_category))
         return self.images_by_ui_sprite[ui_icon_sprite]
 
-    def _minimap_in_ui(self, position_in_ui, size, player_relative_position):
-        rect = Rect(position_in_ui[0], position_in_ui[1], size[0], size[1])
-        self.ui_render.rect_filled((40, 40, 50), rect)
-        self.ui_render.rect((150, 150, 190), rect, 1)
-        dot_x = rect[0] + player_relative_position[0] * size[0]
-        dot_y = rect[1] + player_relative_position[1] * size[1]
-        dot_w = 4
-        self.ui_render.rect_filled((100, 160, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
-
     def _message(self, message):
         w_rect = len(message) * 9 + 10
         x_message = self.ui_screen_area.w / 2 - w_rect / 2
@@ -537,8 +530,7 @@ class GameUiView:
                                                          self.screen_size[1] - self.camera_size[1]))
 
         x_0 = 20
-        y_2 = 30 + 22
-        y_4 = 90 + 22
+        y_4 = 112
 
         # EXP BAR
         self.exp_bar.render(player_state.level, player_state.exp / player_state.max_exp_in_this_level)
@@ -581,11 +573,7 @@ class GameUiView:
             icon.render(hovered, highlighted)
 
         # MINIMAP
-        x_3 = 440
-        minimap_padding_rect_pos = (x_3 - 2, y_2 - 2)
-        minimap_padding_rect = Rect(minimap_padding_rect_pos[0], minimap_padding_rect_pos[1], 80 + 4, 80 + 4)
-        self.ui_render.rect_filled((60, 60, 80), minimap_padding_rect)
-        self._minimap_in_ui((x_3, y_2), (80, 80), ui_state.player_minimap_relative_position)
+        self.minimap.render(ui_state.player_minimap_relative_position)
 
         if dialog:
             self._dialog(dialog)

@@ -349,3 +349,19 @@ class Portrait:
     def render(self):
         self.ui_render.image(self.image, self.rect.topleft)
         self.ui_render.rect((160, 160, 180), self.rect, 2)
+
+
+class Minimap:
+    def __init__(self, ui_render: DrawableArea, rect: Rect):
+        self.ui_render = ui_render
+        self.rect = rect
+        self.padding_rect = (rect.x-2, rect.y-2, rect.w+4,rect.h+4)
+
+    def render(self, player_relative_position: Tuple[float, float]):
+        self.ui_render.rect_filled((60, 60, 80), self.padding_rect)
+        self.ui_render.rect_filled((40, 40, 50), self.rect)
+        self.ui_render.rect((150, 150, 190), self.rect, 1)
+        dot_x = self.rect[0] + player_relative_position[0] * self.rect.w
+        dot_y = self.rect[1] + player_relative_position[1] * self.rect.h
+        dot_w = 4
+        self.ui_render.rect_filled((100, 160, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
