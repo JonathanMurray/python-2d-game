@@ -465,12 +465,12 @@ class GameUiView:
         action_text = active_option.detail_action_text
         self.screen_render.text(self.font_dialog, "[Space] : " + action_text, (x_left + 10, y_action_text))
 
-    def render_item_being_dragged(self, item_type: ItemType, mouse_screen_position: Tuple[int, int]):
+    def _render_item_being_dragged(self, item_type: ItemType, mouse_screen_position: Tuple[int, int]):
         ui_icon_sprite = ITEMS[item_type].icon_sprite
         position = (mouse_screen_position[0] - UI_ICON_SIZE[0] // 2, mouse_screen_position[1] - UI_ICON_SIZE[1] // 2)
         self.screen_render.image(self.images_by_ui_sprite[ui_icon_sprite], position)
 
-    def render_consumable_being_dragged(self, consumable_type: ConsumableType, mouse_screen_position: Tuple[int, int]):
+    def _render_consumable_being_dragged(self, consumable_type: ConsumableType, mouse_screen_position: Tuple[int, int]):
         ui_icon_sprite = CONSUMABLES[consumable_type].icon_sprite
         position = (mouse_screen_position[0] - UI_ICON_SIZE[0] // 2, mouse_screen_position[1] - UI_ICON_SIZE[1] // 2)
         self.screen_render.image(self.images_by_ui_sprite[ui_icon_sprite], position)
@@ -666,9 +666,9 @@ class GameUiView:
 
         if mouse_drag:
             if mouse_drag.item:
-                self.render_item_being_dragged(mouse_drag.item.item_type, mouse_drag.screen_pos)
+                self._render_item_being_dragged(mouse_drag.item.item_type, mouse_drag.screen_pos)
             elif mouse_drag.consumable:
-                self.render_consumable_being_dragged(mouse_drag.consumable.consumable_types[0], mouse_drag.screen_pos)
+                self._render_consumable_being_dragged(mouse_drag.consumable.consumable_types[0], mouse_drag.screen_pos)
 
         if is_paused:
             self.screen_render.rect_transparent(Rect(0, 0, self.screen_size[0], self.screen_size[1]), 140, COLOR_BLACK)
