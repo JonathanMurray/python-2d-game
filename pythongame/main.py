@@ -16,7 +16,7 @@ from pythongame.scene_picking_hero.scene_picking_hero import PickingHeroScene
 from pythongame.scene_picking_hero.view_picking_hero import PickingHeroView
 from pythongame.scene_starting_program.scene_starting_program import CommandlineFlags, StartingProgramScene
 from pythongame.scene_victory_screen.scene_victory_screen import VictoryScreenScene
-from pythongame.scenes_game.game_ui_view import GameUiView, UI_ICON_SIZE, PORTRAIT_ICON_SIZE
+from pythongame.scenes_game.game_ui_view import GameUiView, UI_ICON_SIZE, PORTRAIT_ICON_SIZE, UI_ICON_BIG_SIZE
 from pythongame.scenes_game.scene_paused import PausedScene
 from pythongame.scenes_game.scene_playing import PlayingScene
 
@@ -37,9 +37,10 @@ class Main:
         pygame_screen = pygame.display.set_mode(SCREEN_SIZE)
         images_by_sprite = load_images_by_sprite(ENTITY_SPRITE_INITIALIZERS)
         images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, UI_ICON_SIZE)
+        big_images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, UI_ICON_BIG_SIZE)
         images_by_portrait_sprite = load_images_by_portrait_sprite(PORTRAIT_ICON_SPRITE_PATHS, PORTRAIT_ICON_SIZE)
         world_view = GameWorldView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite)
-        ui_view = GameUiView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_ui_sprite,
+        ui_view = GameUiView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_ui_sprite, big_images_by_ui_sprite,
                              images_by_portrait_sprite, [])
         init_sound_player()
         self.clock = pygame.time.Clock()

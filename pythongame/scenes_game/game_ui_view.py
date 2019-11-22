@@ -1,9 +1,9 @@
-from typing import List, Tuple, Optional, Dict
+from typing import List, Tuple, Optional, Dict, Any
 
 import pygame
 from pygame.rect import Rect
 
-from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprite, AbilityType
+from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, \
     KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, HEROES
 from pythongame.core.game_state import PlayerState
@@ -24,25 +24,28 @@ COLOR_HIGHLIGHT_HAS_UNSEEN = (150, 250, 200)
 COLOR_BORDER = (139, 69, 19)
 COLOR_ITEM_TOOLTIP_HEADER = (250, 250, 150)
 UI_ICON_SIZE = (32, 32)
+UI_ICON_BIG_SIZE = (36, 36)
 PORTRAIT_ICON_SIZE = (100, 70)
 
 DIR_FONTS = './resources/fonts/'
 
 
-class ItemSlot:
-    def __init__(self, slot_number: int, item_type: ItemType):
+class DraggedItemSlot:
+    def __init__(self, slot_number: int, item_type: ItemType, relative_mouse_pos: Tuple[int, int]):
         self.slot_number = slot_number
         self.item_type = item_type
+        self.relative_mouse_pos = relative_mouse_pos
 
 
-class ConsumableSlot:
-    def __init__(self, slot_number: int, consumable_types: List[ConsumableType]):
+class DraggedConsumableSlot:
+    def __init__(self, slot_number: int, consumable_types: List[ConsumableType], relative_mouse_pos: Tuple[int, int]):
         self.slot_number = slot_number
         self.consumable_types = consumable_types
+        self.relative_mouse_pos = relative_mouse_pos
 
 
 class MouseHoverEvent:
-    def __init__(self, item: Optional[ItemSlot], consumable: Optional[ConsumableSlot], is_over_ui: bool,
+    def __init__(self, item: Optional[DraggedItemSlot], consumable: Optional[DraggedConsumableSlot], is_over_ui: bool,
                  ui_toggle: Optional[UiToggle], talent_choice_option: Optional[Tuple[int, int]]):
         self.item = item
         self.consumable = consumable
@@ -52,7 +55,8 @@ class MouseHoverEvent:
 
 
 class MouseDrag:
-    def __init__(self, consumable: Optional[ConsumableSlot], item: Optional[ItemSlot], screen_pos: Tuple[int, int]):
+    def __init__(self, consumable: Optional[DraggedConsumableSlot], item: Optional[DraggedItemSlot],
+                 screen_pos: Tuple[int, int]):
         self.consumable = consumable
         self.item = item
         self.screen_pos = screen_pos
@@ -61,7 +65,8 @@ class MouseDrag:
 class GameUiView:
 
     def __init__(self, pygame_screen, camera_size: Tuple[int, int], screen_size: Tuple[int, int],
-                 images_by_ui_sprite, images_by_portrait_sprite, abilities: List[AbilityType]):
+                 images_by_ui_sprite: Dict[UiIconSprite, Any], big_images_by_ui_sprite: Dict[UiIconSprite, Any],
+                 images_by_portrait_sprite: Dict[PortraitIconSprite, Any], abilities: List[AbilityType]):
         pygame.font.init()
         self.screen_render = DrawableArea(pygame_screen)
         self.ui_render = DrawableArea(pygame_screen, self._translate_ui_position_to_screen)
@@ -89,6 +94,7 @@ class GameUiView:
         self.font_dialog_option_detail_body = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
 
         self.images_by_ui_sprite = images_by_ui_sprite
+        self.big_images_by_ui_sprite = big_images_by_ui_sprite
         self.images_by_portrait_sprite = images_by_portrait_sprite
 
         # This is updated every time the view is called
@@ -431,15 +437,22 @@ class GameUiView:
         action_text = active_option.detail_action_text
         self.screen_render.text(self.font_dialog, "[Space] : " + action_text, (x_left + 10, y_action_text))
 
-    def _render_item_being_dragged(self, item_type: ItemType, mouse_screen_position: Tuple[int, int]):
+    def _render_item_being_dragged(self, item_type: ItemType, mouse_screen_position: Tuple[int, int],
+                                   relative_mouse_pos: Tuple[int, int]):
         ui_icon_sprite = ITEMS[item_type].icon_sprite
-        position = (mouse_screen_position[0] - UI_ICON_SIZE[0] // 2, mouse_screen_position[1] - UI_ICON_SIZE[1] // 2)
-        self.screen_render.image(self.images_by_ui_sprite[ui_icon_sprite], position)
+        big_image = self.big_images_by_ui_sprite[ui_icon_sprite]
+        self._render_dragged(big_image, mouse_screen_position, relative_mouse_pos)
 
-    def _render_consumable_being_dragged(self, consumable_type: ConsumableType, mouse_screen_position: Tuple[int, int]):
+    def _render_consumable_being_dragged(self, consumable_type: ConsumableType, mouse_screen_position: Tuple[int, int],
+                                         relative_mouse_pos: Tuple[int, int]):
         ui_icon_sprite = CONSUMABLES[consumable_type].icon_sprite
-        position = (mouse_screen_position[0] - UI_ICON_SIZE[0] // 2, mouse_screen_position[1] - UI_ICON_SIZE[1] // 2)
-        self.screen_render.image(self.images_by_ui_sprite[ui_icon_sprite], position)
+        big_image = self.big_images_by_ui_sprite[ui_icon_sprite]
+        self._render_dragged(big_image, mouse_screen_position, relative_mouse_pos)
+
+    def _render_dragged(self, big_image, mouse_screen_position, relative_mouse_pos):
+        position = (mouse_screen_position[0] - relative_mouse_pos[0] - (UI_ICON_BIG_SIZE[0] - UI_ICON_SIZE[0]) // 2,
+                    mouse_screen_position[1] - relative_mouse_pos[1] - (UI_ICON_BIG_SIZE[1] - UI_ICON_SIZE[1]) // 2)
+        self.screen_render.image(big_image, position)
 
     def _splash_screen_text(self, text, x, y):
         self.screen_render.text(self.font_splash_screen, text, (x, y), COLOR_WHITE)
@@ -460,16 +473,19 @@ class GameUiView:
         if self.manabar.contains(mouse_ui_position):
             self.hovered_component = self.manabar
         for icon in self.consumable_icons:
-            if icon.contains(mouse_ui_position):
+            collision_offset = icon.get_collision_offset(mouse_ui_position)
+            if collision_offset:
                 self.hovered_component = icon
-                hovered_consumable_slot = ConsumableSlot(icon.slot_number, icon.consumable_types)
+                hovered_consumable_slot = DraggedConsumableSlot(icon.slot_number, icon.consumable_types,
+                                                                collision_offset)
         for icon in self.ability_icons:
             if icon.contains(mouse_ui_position):
                 self.hovered_component = icon
         for icon in self.inventory_icons:
-            if icon.contains(mouse_ui_position):
+            collision_offset = icon.get_collision_offset(mouse_ui_position)
+            if collision_offset:
                 self.hovered_component = icon
-                hovered_item_slot = ItemSlot(icon.inventory_slot_index, icon.item_type)
+                hovered_item_slot = DraggedItemSlot(icon.inventory_slot_index, icon.item_type, collision_offset)
         if toggle_enabled == UiToggle.TALENTS:
             hovered_icon = self.talents_window.get_icon_containing(mouse_ui_position)
             if hovered_icon:
@@ -581,9 +597,11 @@ class GameUiView:
 
         if mouse_drag:
             if mouse_drag.item:
-                self._render_item_being_dragged(mouse_drag.item.item_type, mouse_drag.screen_pos)
+                self._render_item_being_dragged(mouse_drag.item.item_type, mouse_drag.screen_pos,
+                                                mouse_drag.item.relative_mouse_pos)
             elif mouse_drag.consumable:
-                self._render_consumable_being_dragged(mouse_drag.consumable.consumable_types[0], mouse_drag.screen_pos)
+                self._render_consumable_being_dragged(mouse_drag.consumable.consumable_types[0], mouse_drag.screen_pos,
+                                                      mouse_drag.consumable.relative_mouse_pos)
 
         if is_paused:
             self.screen_render.rect_transparent(Rect(0, 0, self.screen_size[0], self.screen_size[1]), 140, COLOR_BLACK)

@@ -4,7 +4,7 @@ from pythongame.core.game_state import GameState, PlayerState
 from pythongame.core.npc_behaviors import DialogGraphics
 from pythongame.core.talents import talents_graphics_from_state
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
-from pythongame.scenes_game.game_ui_view import GameUiView, ItemSlot, ConsumableSlot, MouseDrag
+from pythongame.scenes_game.game_ui_view import GameUiView, DraggedItemSlot, DraggedConsumableSlot, MouseDrag
 
 
 class EventTriggeredFromUi:
@@ -80,10 +80,10 @@ class PlayingUiController:
         self.ui_state = ui_state
 
         self.mouse_screen_position: Tuple[int, int] = (0, 0)
-        self.item_slot_being_dragged: Optional[ItemSlot] = None
-        self.consumable_slot_being_dragged: Optional[ConsumableSlot] = None
-        self.hovered_item_slot: Optional[ItemSlot] = None
-        self.hovered_consumable_slot: Optional[ConsumableSlot] = None
+        self.item_slot_being_dragged: Optional[DraggedItemSlot] = None
+        self.consumable_slot_being_dragged: Optional[DraggedConsumableSlot] = None
+        self.hovered_item_slot: Optional[DraggedItemSlot] = None
+        self.hovered_consumable_slot: Optional[DraggedConsumableSlot] = None
         self.hovered_ui_toggle: Optional[UiToggle] = None
         self.hovered_talent_choice_option: Optional[Tuple[int, int]] = None
         self.is_mouse_over_ui: bool = False

@@ -99,8 +99,10 @@ class ConsumableIcon:
         self.tooltip = tooltip
         self.slot_number = slot_number
 
-    def contains(self, point: Tuple[int, int]) -> bool:
-        return self._rect.collidepoint(point[0], point[1])
+    def get_collision_offset(self, point: Tuple[int, int]) -> Optional[Tuple[int, int]]:
+        if self._rect.collidepoint(point[0], point[1]):
+            return point[0] - self._rect.x, point[1] - self._rect.y
+        return None
 
     def render(self, hovered: bool, recently_clicked: bool):
         self._ui_render.rect_filled((40, 40, 50), self._rect)
@@ -141,8 +143,10 @@ class ItemIcon:
         self.item_type = item_type
         self.inventory_slot_index = inventory_slot_index
 
-    def contains(self, point: Tuple[int, int]) -> bool:
-        return self._rect.collidepoint(point[0], point[1])
+    def get_collision_offset(self, point: Tuple[int, int]) -> Optional[Tuple[int, int]]:
+        if self._rect.collidepoint(point[0], point[1]):
+            return point[0] - self._rect.x, point[1] - self._rect.y
+        return None
 
     def render(self, hovered: bool, highlighted: bool):
         self._ui_render.rect_filled((40, 40, 50), self._rect)
