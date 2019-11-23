@@ -549,6 +549,7 @@ class GameUiView:
         for icon in self.inventory_icons:
             hovered = self.hovered_component == icon
             highlighted = mouse_drag and mouse_drag.item and mouse_drag.item.item_type \
+                          and ITEMS[mouse_drag.item.item_type].item_equipment_category \
                           and icon.slot_equipment_category == ITEMS[mouse_drag.item.item_type].item_equipment_category
             icon.render(hovered, highlighted)
 
