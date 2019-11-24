@@ -73,7 +73,7 @@ class GameUiView:
 
     def __init__(self, pygame_screen, camera_size: Tuple[int, int], screen_size: Tuple[int, int],
                  images_by_ui_sprite: Dict[UiIconSprite, Any], big_images_by_ui_sprite: Dict[UiIconSprite, Any],
-                 images_by_portrait_sprite: Dict[PortraitIconSprite, Any], abilities: List[AbilityType]):
+                 images_by_portrait_sprite: Dict[PortraitIconSprite, Any]):
         pygame.font.init()
         self.screen_render = DrawableArea(pygame_screen)
         self.ui_render = DrawableArea(pygame_screen, self._translate_ui_position_to_screen)
@@ -111,27 +111,27 @@ class GameUiView:
         self.ability_icons: List[AbilityIcon] = []
         self.consumable_icons_row: Rect = Rect(0, 0, 0, 0)
         self.consumable_icons: List[ConsumableIcon] = []
-        self.inventory_icons_row: Rect = Rect(0, 0, 0, 0)
+        self.inventory_icons_rect: Rect = Rect(0, 0, 0, 0)
         self.inventory_icons: List[ItemIcon] = []
         self.exp_bar = ExpBar(self.ui_render, Rect(140, 23, 300, 2), self.font_level)
         self.minimap = Minimap(self.ui_render, Rect(440, 52, 80, 80))
         self.buffs = Buffs(self.ui_render, self.font_buff_texts)
         self.money_text = Text(self.ui_render, self.font_ui_money, (24, 150))
 
-        self._setup_ability_icons(abilities)
-        self._setup_consumable_icons({})
-        self._setup_inventory_icons([])
-        self._setup_health_and_mana_bars(0, 0)
-        self._setup_toggle_buttons(False)
-        self._setup_stats_window(None, 0)
+        self._setup_ability_icons()
+        self._setup_consumable_icons()
+        self._setup_inventory_icons()
+        self._setup_health_and_mana_bars()
+        self._setup_toggle_buttons()
+        self._setup_stats_window()
         self._setup_talents_window(TalentsGraphics([]))
         self._setup_controls_window()
-        self._setup_portrait(HeroId.GOD)
-        self._setup_dialog(None)
+        self._setup_portrait()
+        self._setup_dialog()
 
         self.hovered_component = None
 
-    def _setup_ability_icons(self, abilities: List[AbilityType]):
+    def _setup_ability_icons(self):
         x_0 = 140
         y = 112
         icon_space = 2
@@ -144,21 +144,13 @@ class GameUiView:
             UI_ICON_SIZE[1] + icon_rect_padding * 2)
 
         self.ability_icons = []
-        for i, ability_type in enumerate(abilities):
+        for i in range(max_num_abilities):
             x = x_0 + i * (UI_ICON_SIZE[0] + icon_space)
-            ability = ABILITIES[ability_type]
             rect = Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])
-            image = self.images_by_ui_sprite[ability.icon_sprite]
-            label = KEYS_BY_ABILITY_TYPE[ability_type].key_string
-            tooltip_details = ["Cooldown: " + str(ability.cooldown / 1000.0) + " s",
-                               "Mana: " + str(ability.mana_cost),
-                               ability.description]
-            tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, ability.name, tooltip_details, bottom_left=(x, y))
-
-            icon = AbilityIcon(self.ui_render, rect, image, label, self.font_ui_icon_keys, tooltip, ability_type)
+            icon = AbilityIcon(self.ui_render, rect, None, None, self.font_ui_icon_keys, None, None)
             self.ability_icons.append(icon)
 
-    def _setup_consumable_icons(self, consumable_slots: Dict[int, List[ConsumableType]]):
+    def _setup_consumable_icons(self):
         x_0 = 140
         y = 52
         icon_space = 2
@@ -171,22 +163,15 @@ class GameUiView:
             UI_ICON_SIZE[1] + icon_rect_padding * 2)
 
         self.consumable_icons = []
-        for i, slot_number in enumerate(consumable_slots):
+        for i in range(max_num_consumables):
             x = x_0 + i * (UI_ICON_SIZE[0] + icon_space)
-            consumable_types = consumable_slots[slot_number]
-            tooltip = None
-            image = None
-            if consumable_types:
-                consumable = CONSUMABLES[consumable_types[0]]
-                tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, consumable.name, [consumable.description],
-                                          bottom_left=(x, y))
-                image = self.images_by_ui_sprite[consumable.icon_sprite]
             rect = Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])
-            icon = ConsumableIcon(self.ui_render, rect, image, str(slot_number), self.font_ui_icon_keys,
-                                  tooltip, consumable_types, slot_number)
+            slot_number = i + 1
+            icon = ConsumableIcon(self.ui_render, rect, None, str(slot_number), self.font_ui_icon_keys, None, [],
+                                  slot_number)
             self.consumable_icons.append(icon)
 
-    def _setup_inventory_icons(self, item_slots: List[ItemInventorySlot]):
+    def _setup_inventory_icons(self):
         x_0 = 325
         y_0 = 52
         icon_space = 2
@@ -194,61 +179,26 @@ class GameUiView:
         items_rect_pos = (x_0 - icon_rect_padding, y_0 - icon_rect_padding)
         num_item_slot_rows = 3
         num_slots_per_row = 3
-        self.inventory_icons_row = Rect(
+        self.inventory_icons_rect = Rect(
             items_rect_pos[0], items_rect_pos[1],
             (UI_ICON_SIZE[0] + icon_space) * num_slots_per_row - icon_space + icon_rect_padding * 2,
             num_item_slot_rows * UI_ICON_SIZE[1] + (num_item_slot_rows - 1) * icon_space + icon_rect_padding * 2)
-
-        self.inventory_icons = []
-        for i in range(len(item_slots)):
+        for i in range(num_item_slot_rows * num_slots_per_row):
             x = x_0 + (i % num_slots_per_row) * (UI_ICON_SIZE[0] + icon_space)
             y = y_0 + (i // num_slots_per_row) * (UI_ICON_SIZE[1] + icon_space)
-            slot = item_slots[i]
-            item_type = slot.get_item_type() if not slot.is_empty() else None
-            slot_equipment_category = slot.enforced_equipment_category
-
-            image = None
-            tooltip = None
-            if item_type:
-                item = ITEMS[item_type]
-                image = self.images_by_ui_sprite[item.icon_sprite]
-                tooltip_details = []
-                if item.item_equipment_category:
-                    category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[item.item_equipment_category]
-                    tooltip_details.append("[" + category_name + "]")
-                tooltip_details += item.description_lines
-                tooltip = TooltipGraphics(self.ui_render, COLOR_ITEM_TOOLTIP_HEADER, item.name, tooltip_details,
-                                          bottom_left=(x, y))
-            elif slot_equipment_category:
-                image = self._get_image_for_item_category(slot_equipment_category)
-                category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[slot_equipment_category]
-                tooltip_details = ["[" + category_name + "]",
-                                   "You have nothing equipped. Drag an item here to equip it!"]
-                tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "...", tooltip_details, bottom_left=(x, y))
-
             rect = Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])
-            icon = ItemIcon(self.ui_render, rect, image, tooltip, slot_equipment_category, item_type, i)
+            icon = ItemIcon(self.ui_render, rect, None, None, None, None, i)
             self.inventory_icons.append(icon)
 
-    def _setup_health_and_mana_bars(self, health_regen: float, mana_regen: float):
-
+    def _setup_health_and_mana_bars(self):
         rect_healthbar = Rect(20, 111, 100, 14)
-        tooltip_details = [
-            "regeneration: " + "{:.1f}".format(health_regen) + "/s"]
-        health_tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "Health", tooltip_details,
-                                         bottom_left=rect_healthbar.topleft)
-        self.healthbar = StatBar(self.ui_render, rect_healthbar, (200, 0, 50), health_tooltip, border=True,
+        self.healthbar = StatBar(self.ui_render, rect_healthbar, (200, 0, 50), None, border=True,
                                  show_numbers=True, font=self.font_ui_stat_bar_numbers)
-
         rect_manabar = Rect(20, 132, 100, 14)
-        tooltip_details = [
-            "regeneration: " + "{:.1f}".format(mana_regen) + "/s"]
-        mana_tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "Mana", tooltip_details,
-                                       bottom_left=rect_manabar.topleft)
-        self.manabar = StatBar(self.ui_render, rect_manabar, (50, 0, 200), mana_tooltip, border=True,
+        self.manabar = StatBar(self.ui_render, rect_manabar, (50, 0, 200), None, border=True,
                                show_numbers=True, font=self.font_ui_stat_bar_numbers)
 
-    def _setup_toggle_buttons(self, has_unseen_talents: bool):
+    def _setup_toggle_buttons(self):
         x = 555
         y_0 = 30
         w = 120
@@ -256,15 +206,13 @@ class GameUiView:
         font = self.font_tooltip_details
         self.toggle_buttons = [
             ToggleButton(self.ui_render, Rect(x, y_0, w, h), font, "STATS    [A]", UiToggle.STATS, False),
-            ToggleButton(self.ui_render, Rect(x, y_0 + 30, w, h), font, "TALENTS  [T]", UiToggle.TALENTS,
-                         has_unseen_talents),
+            ToggleButton(self.ui_render, Rect(x, y_0 + 30, w, h), font, "TALENTS  [T]", UiToggle.TALENTS, False),
             ToggleButton(self.ui_render, Rect(x, y_0 + 60, w, h), font, "CONTROLS [C]", UiToggle.CONTROLS, False)
         ]
 
-    def _setup_stats_window(self, player_state: Optional[PlayerState], player_speed_multiplier: float):
+    def _setup_stats_window(self):
         rect = Rect(545, -300, 140, 250)
-        self.stats_window = StatsWindow(self.ui_render, rect, self.font_tooltip_details, self.font_stats, player_state,
-                                        player_speed_multiplier)
+        self.stats_window = StatsWindow(self.ui_render, rect, self.font_tooltip_details, self.font_stats, None, 0)
 
     def _setup_talents_window(self, talents: TalentsGraphics):
         rect = Rect(545, -300, 140, 260)
@@ -298,13 +246,96 @@ class GameUiView:
         rect = Rect(545, -300, 140, 170)
         self.controls_window = ControlsWindow(self.ui_render, rect, self.font_tooltip_details, self.font_stats)
 
-    def _setup_portrait(self, hero_id: HeroId):
+    def _setup_portrait(self):
+        rect = Rect(20, 18, PORTRAIT_ICON_SIZE[0], PORTRAIT_ICON_SIZE[1])
+        self.portrait = Portrait(self.ui_render, rect, None)
+
+    def _setup_dialog(self):
+        self.dialog = Dialog(self.screen_render, None, None, [], 0, PORTRAIT_ICON_SIZE, UI_ICON_SIZE)
+
+    def update_abilities(self, abilities: List[AbilityType]):
+        for i, ability_type in enumerate(abilities):
+            ability = ABILITIES[ability_type]
+            icon = self.ability_icons[i]
+            icon.update(
+                image=self.images_by_ui_sprite[ability.icon_sprite],
+                label=KEYS_BY_ABILITY_TYPE[ability_type].key_string,
+                ability=ability,
+                ability_type=ability_type)
+
+    def update_consumables(self, consumable_slots: Dict[int, List[ConsumableType]]):
+        for i, slot_number in enumerate(consumable_slots):
+            icon = self.consumable_icons[i]
+            consumable_types = consumable_slots[slot_number]
+            image = None
+            consumable = None
+            if consumable_types:
+                consumable = CONSUMABLES[consumable_types[0]]
+                image = self.images_by_ui_sprite[consumable.icon_sprite]
+
+            icon.update(image, consumable, consumable_types)
+
+    def update_inventory(self, item_slots: List[ItemInventorySlot]):
+        for i in range(len(item_slots)):
+            icon = self.inventory_icons[i]
+            slot = item_slots[i]
+            item_type = slot.get_item_type() if not slot.is_empty() else None
+            slot_equipment_category = slot.enforced_equipment_category
+            image = None
+            tooltip = None
+            if item_type:
+                item = ITEMS[item_type]
+                image = self.images_by_ui_sprite[item.icon_sprite]
+                tooltip_details = []
+                if item.item_equipment_category:
+                    category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[item.item_equipment_category]
+                    tooltip_details.append("[" + category_name + "]")
+                tooltip_details += item.description_lines
+                tooltip = TooltipGraphics(self.ui_render, COLOR_ITEM_TOOLTIP_HEADER, item.name, tooltip_details,
+                                          bottom_left=icon.rect.topleft)
+            elif slot_equipment_category:
+                image = self._get_image_for_item_category(slot_equipment_category)
+                category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[slot_equipment_category]
+                tooltip_details = ["[" + category_name + "]",
+                                   "You have nothing equipped. Drag an item here to equip it!"]
+                tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "...", tooltip_details,
+                                          bottom_left=icon.rect.topleft)
+
+            icon.image = image
+            icon.tooltip = tooltip
+            icon.slot_equipment_category = slot_equipment_category
+            icon.item_type = item_type
+
+    def update_regen(self, health_regen: float, mana_regen: float):
+        tooltip_details = [
+            "regeneration: " + "{:.1f}".format(health_regen) + "/s"]
+        health_tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "Health", tooltip_details,
+                                         bottom_left=self.healthbar.rect.topleft)
+        self.healthbar.tooltip = health_tooltip
+        tooltip_details = [
+            "regeneration: " + "{:.1f}".format(mana_regen) + "/s"]
+        mana_tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "Mana", tooltip_details,
+                                       bottom_left=self.manabar.rect.topleft)
+        self.manabar.tooltip = mana_tooltip
+
+    def update_has_unseen_talents(self, has_unseen_talents: bool):
+        # TODO Don't rely on TALENTS being second in the list
+        self.toggle_buttons[1].highlighted = has_unseen_talents
+
+    def update_talents(self, talents: TalentsGraphics):
+        # TODO Don't recreate components
+        self._setup_talents_window(talents)
+
+    def update_player_stats(self, player_state: PlayerState, player_speed_multiplier: float):
+        self.stats_window.player_state = player_state
+        self.stats_window.player_speed_multiplier = player_speed_multiplier
+
+    def update_hero(self, hero_id: HeroId):
         sprite = HEROES[hero_id].portrait_icon_sprite
         image = self.images_by_portrait_sprite[sprite]
-        rect = Rect(20, 18, PORTRAIT_ICON_SIZE[0], PORTRAIT_ICON_SIZE[1])
-        self.portrait = Portrait(self.ui_render, rect, image)
+        self.portrait.image = image
 
-    def _setup_dialog(self, dialog_config: DialogConfig):
+    def update_dialog(self, dialog_config: DialogConfig):
         if dialog_config:
             options = [
                 DialogOption(
@@ -315,38 +346,13 @@ class GameUiView:
                     option.detail_body)
                 for option in dialog_config.data.options]
             portrait_image = self.images_by_portrait_sprite[dialog_config.data.portrait_icon_sprite]
-
-            self.dialog = Dialog(self.screen_render, portrait_image, dialog_config.data.text_body,
-                                 options, dialog_config.option_index, PORTRAIT_ICON_SIZE, UI_ICON_SIZE)
+            self.dialog.portrait_image = portrait_image
+            self.dialog.text_body = dialog_config.data.text_body
+            self.dialog.options = options
+            self.dialog.active_option_index = dialog_config.option_index
+            self.dialog.shown = True
         else:
-            self.dialog = None
-
-    def update_abilities(self, abilities: List[AbilityType]):
-        self._setup_ability_icons(abilities)
-
-    def update_consumables(self, consumable_slots: Dict[int, List[ConsumableType]]):
-        self._setup_consumable_icons(consumable_slots)
-
-    def update_inventory(self, item_slots: List[ItemInventorySlot]):
-        self._setup_inventory_icons(item_slots)
-
-    def update_regen(self, health_regen: float, mana_regen: float):
-        self._setup_health_and_mana_bars(health_regen, mana_regen)
-
-    def update_has_unseen_talents(self, has_unseen_talents: bool):
-        self._setup_toggle_buttons(has_unseen_talents)
-
-    def update_talents(self, talents: TalentsGraphics):
-        self._setup_talents_window(talents)
-
-    def update_player_stats(self, player_state: PlayerState, player_speed_multiplier: float):
-        self._setup_stats_window(player_state, player_speed_multiplier)
-
-    def update_hero(self, hero_id: HeroId):
-        self._setup_portrait(hero_id)
-
-    def update_dialog(self, dialog_config: DialogConfig):
-        self._setup_dialog(dialog_config)
+            self.dialog.shown = False
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
@@ -478,14 +484,15 @@ class GameUiView:
         self.ui_render.rect_filled((60, 60, 80), self.ability_icons_row)
         for icon in self.ability_icons:
             ability_type = icon.ability_type
-            ability = ABILITIES[ability_type]
-            cooldown_remaining_ratio = player_state.ability_cooldowns_remaining[ability_type] / ability.cooldown
-            recently_clicked = ability_type == ui_state.highlighted_ability_action
-            hovered = self.hovered_component == icon
-            icon.render(hovered, recently_clicked, cooldown_remaining_ratio)
+            if ability_type:
+                ability = ABILITIES[ability_type]
+                cooldown_remaining_ratio = player_state.ability_cooldowns_remaining[ability_type] / ability.cooldown
+                recently_clicked = ability_type == ui_state.highlighted_ability_action
+                hovered = self.hovered_component == icon
+                icon.render(hovered, recently_clicked, cooldown_remaining_ratio)
 
         # ITEMS
-        self.ui_render.rect_filled((60, 60, 80), self.inventory_icons_row)
+        self.ui_render.rect_filled((60, 60, 80), self.inventory_icons_rect)
         for icon in self.inventory_icons:
             hovered = self.hovered_component == icon
             highlighted = mouse_drag and mouse_drag.item and mouse_drag.item.item_type \
@@ -497,7 +504,7 @@ class GameUiView:
         self.minimap.render(ui_state.player_minimap_relative_position)
 
         # DIALOG
-        if self.dialog:
+        if self.dialog.shown:
             self.dialog.render()
 
         # BUFFS

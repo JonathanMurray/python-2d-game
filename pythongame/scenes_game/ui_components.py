@@ -5,7 +5,7 @@ import pygame
 from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, ItemType, AbilityType, PortraitIconSprite
-from pythongame.core.game_data import CONSUMABLES, ConsumableCategory
+from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData
 from pythongame.core.game_state import PlayerState
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.talents import TalentsGraphics
@@ -44,6 +44,7 @@ class Dialog:
         self.font_dialog_option_detail_body = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.portrait_image_size = portrait_image_size
         self.option_image_size = option_image_size
+        self.shown = False
 
     def render(self):
 
@@ -171,34 +172,44 @@ class AbilityIcon:
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, label: str, font, tooltip: TooltipGraphics,
                  ability_type: AbilityType):
         self._ui_render = ui_render
-        self._rect = rect
-        self._image = image
-        self._label = label
         self._font = font
+        self.rect = rect
+        self.image = image
+        self.label = label
         self.tooltip = tooltip
         self.ability_type = ability_type
 
     def contains(self, point: Tuple[int, int]) -> bool:
-        return self._rect.collidepoint(point[0], point[1])
+        return self.rect.collidepoint(point[0], point[1])
 
     def render(self, hovered: bool, recently_clicked: bool, cooldown_remaining_ratio: float):
-        self._ui_render.rect_filled((40, 40, 50), self._rect)
-        self._ui_render.image(self._image, self._rect.topleft)
-        self._ui_render.rect((150, 150, 190), self._rect, 1)
+        self._ui_render.rect_filled((40, 40, 50), self.rect)
+        self._ui_render.image(self.image, self.rect.topleft)
+        self._ui_render.rect((150, 150, 190), self.rect, 1)
         if recently_clicked:
             self._ui_render.rect(COLOR_ICON_HIGHLIGHTED,
-                                 Rect(self._rect.x - 1, self._rect.y - 1, self._rect.w + 2, self._rect.h + 2), 3)
+                                 Rect(self.rect.x - 1, self.rect.y - 1, self.rect.w + 2, self.rect.h + 2), 3)
         elif hovered:
-            self._ui_render.rect(COLOR_HOVERED, self._rect, 1)
-        self._ui_render.text(self._font, self._label, (self._rect.x + 12, self._rect.y + self._rect.h + 4))
+            self._ui_render.rect(COLOR_HOVERED, self.rect, 1)
+        self._ui_render.text(self._font, self.label, (self.rect.x + 12, self.rect.y + self.rect.h + 4))
 
         if cooldown_remaining_ratio > 0:
-            cooldown_rect = Rect(self._rect.x + 1,
-                                 self._rect.y + 1 + (self._rect.h - 2) * (1 - cooldown_remaining_ratio),
-                                 self._rect.w - 2,
-                                 (self._rect.h - 2) * cooldown_remaining_ratio + 1)
+            cooldown_rect = Rect(self.rect.x + 1,
+                                 self.rect.y + 1 + (self.rect.h - 2) * (1 - cooldown_remaining_ratio),
+                                 self.rect.w - 2,
+                                 (self.rect.h - 2) * cooldown_remaining_ratio + 1)
             self._ui_render.rect_filled((100, 30, 30), cooldown_rect)
-            self._ui_render.rect((180, 30, 30), self._rect, 2)
+            self._ui_render.rect((180, 30, 30), self.rect, 2)
+
+    def update(self, image, label: str, ability: AbilityData, ability_type: AbilityType):
+        self.image = image
+        self.label = label
+        tooltip_details = ["Cooldown: " + str(ability.cooldown / 1000.0) + " s",
+                           "Mana: " + str(ability.mana_cost),
+                           ability.description]
+        self.tooltip = TooltipGraphics(self._ui_render, COLOR_WHITE, ability.name, tooltip_details,
+                                       bottom_left=self.rect.topleft)
+        self.ability_type = ability_type
 
 
 class ConsumableIcon:
@@ -245,42 +256,49 @@ class ConsumableIcon:
             self._ui_render.rect(COLOR_HOVERED, self._rect, 1)
         self._ui_render.text(self._font, self._label, (self._rect.x + 12, self._rect.y + self._rect.h + 4))
 
+    def update(self, image, top_consumable: ConsumableData, consumable_types: List[ConsumableType]):
+        self._image = image
+        if top_consumable:
+            self.tooltip = TooltipGraphics(self._ui_render, COLOR_WHITE, top_consumable.name,
+                                           [top_consumable.description], bottom_left=self._rect.topleft)
+            self.consumable_types = consumable_types
+
 
 class ItemIcon:
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, tooltip: TooltipGraphics,
                  slot_equipment_category: ItemEquipmentCategory, item_type: ItemType, inventory_slot_index: int):
         self._ui_render = ui_render
-        self._rect = rect
-        self._image = image
+        self.rect = rect
+        self.image = image
         self.slot_equipment_category = slot_equipment_category
         self.tooltip = tooltip
         self.item_type = item_type
         self.inventory_slot_index = inventory_slot_index
 
     def get_collision_offset(self, point: Tuple[int, int]) -> Optional[Tuple[int, int]]:
-        if self._rect.collidepoint(point[0], point[1]):
-            return point[0] - self._rect.x, point[1] - self._rect.y
+        if self.rect.collidepoint(point[0], point[1]):
+            return point[0] - self.rect.x, point[1] - self.rect.y
         return None
 
     def render(self, hovered: bool, highlighted: bool):
-        self._ui_render.rect_filled((40, 40, 50), self._rect)
+        self._ui_render.rect_filled((40, 40, 50), self.rect)
         if self.item_type:
             if self.slot_equipment_category:
-                self._ui_render.rect_filled((40, 40, 70), self._rect)
-            self._ui_render.image(self._image, self._rect.topleft)
-        elif self._image:
-            self._ui_render.image(self._image, self._rect.topleft)
+                self._ui_render.rect_filled((40, 40, 70), self.rect)
+            self._ui_render.image(self.image, self.rect.topleft)
+        elif self.image:
+            self._ui_render.image(self.image, self.rect.topleft)
         if self.item_type and self.slot_equipment_category:
             color_outline = (250, 250, 250)
         else:
             color_outline = (100, 100, 140)
-        self._ui_render.rect(color_outline, self._rect, 1)
+        self._ui_render.rect(color_outline, self.rect, 1)
 
         if highlighted:
             self._ui_render.rect(COLOR_ICON_HIGHLIGHTED,
-                                 Rect(self._rect.x - 1, self._rect.y - 1, self._rect.w + 1, self._rect.h + 1), 2)
+                                 Rect(self.rect.x - 1, self.rect.y - 1, self.rect.w + 1, self.rect.h + 1), 2)
         elif hovered:
-            self._ui_render.rect(COLOR_HOVERED, self._rect, 1)
+            self._ui_render.rect(COLOR_HOVERED, self.rect, 1)
 
 
 class TalentIcon:
