@@ -1,10 +1,11 @@
 from typing import Optional, Tuple
 
 from pythongame.core.game_state import GameState, PlayerState, NonPlayerCharacter
-from pythongame.core.npc_behaviors import get_dialog_data, DialogData, get_dialog_graphics
+from pythongame.core.npc_behaviors import get_dialog_data, DialogData
 from pythongame.core.talents import talents_graphics_from_state
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
-from pythongame.scenes_game.game_ui_view import GameUiView, DraggedItemSlot, DraggedConsumableSlot, MouseDrag
+from pythongame.scenes_game.game_ui_view import GameUiView, DraggedItemSlot, DraggedConsumableSlot, MouseDrag, \
+    DialogConfig
 
 
 class EventTriggeredFromUi:
@@ -112,7 +113,13 @@ class PlayingUiController:
             player_state.talents_state, player_state.level, player_state.chosen_talent_option_indices))
         self.ui_view.update_player_stats(player_state, game_state.player_entity.get_speed_multiplier())
         self.ui_view.update_hero(player_state.hero_id)
+        dialog_config = None
+        if self.dialog.active:
+            data = get_dialog_data(self.dialog.npc.npc_type)
+            dialog_config = DialogConfig(data, self.dialog.option_index)
+        self.ui_view.update_dialog(dialog_config)
 
+        # MOUSE HANDLING
         mouse_hover_event = self.ui_view.handle_mouse(self.mouse_screen_position, self.ui_state.toggle_enabled)
         self.hovered_item_slot = mouse_hover_event.item
         self.hovered_consumable_slot = mouse_hover_event.consumable
@@ -125,15 +132,11 @@ class PlayingUiController:
         if self.consumable_slot_being_dragged or self.item_slot_being_dragged:
             mouse_drag = MouseDrag(self.consumable_slot_being_dragged, self.item_slot_being_dragged,
                                    self.mouse_screen_position)
-        dialog_graphics = None
-        if self.dialog.active:
-            dialog_graphics = get_dialog_graphics(self.dialog.npc.npc_type, self.dialog.option_index)
         self.ui_view.render_ui(
             player_state=player_state,
             ui_state=self.ui_state,
             text_in_topleft_corner=text_in_topleft_corner,
             is_paused=False,
-            dialog=dialog_graphics,
             mouse_drag=mouse_drag
         )
 

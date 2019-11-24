@@ -9,12 +9,13 @@ from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, \
 from pythongame.core.game_state import PlayerState
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import is_point_in_rect
-from pythongame.core.npc_behaviors import DialogGraphics
+from pythongame.core.npc_behaviors import DialogData
 from pythongame.core.talents import TalentsGraphics
-from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
+from pythongame.core.view.render_util import DrawableArea
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
-    ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text
+    ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text, \
+    DialogOption, Dialog
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -60,6 +61,12 @@ class MouseDrag:
         self.consumable = consumable
         self.item = item
         self.screen_pos = screen_pos
+
+
+class DialogConfig:
+    def __init__(self, data: DialogData, option_index: int):
+        self.data = data
+        self.option_index = option_index
 
 
 class GameUiView:
@@ -120,6 +127,7 @@ class GameUiView:
         self._setup_talents_window(TalentsGraphics([]))
         self._setup_controls_window()
         self._setup_portrait(HeroId.GOD)
+        self._setup_dialog(None)
 
         self.hovered_component = None
 
@@ -296,6 +304,23 @@ class GameUiView:
         rect = Rect(20, 18, PORTRAIT_ICON_SIZE[0], PORTRAIT_ICON_SIZE[1])
         self.portrait = Portrait(self.ui_render, rect, image)
 
+    def _setup_dialog(self, dialog_config: DialogConfig):
+        if dialog_config:
+            options = [
+                DialogOption(
+                    option.summary,
+                    option.action_text,
+                    self.images_by_ui_sprite[option.ui_icon_sprite] if option.ui_icon_sprite else None,
+                    option.detail_header,
+                    option.detail_body)
+                for option in dialog_config.data.options]
+            portrait_image = self.images_by_portrait_sprite[dialog_config.data.portrait_icon_sprite]
+
+            self.dialog = Dialog(self.screen_render, portrait_image, dialog_config.data.text_body,
+                                 options, dialog_config.option_index, PORTRAIT_ICON_SIZE, UI_ICON_SIZE)
+        else:
+            self.dialog = None
+
     def update_abilities(self, abilities: List[AbilityType]):
         self._setup_ability_icons(abilities)
 
@@ -319,6 +344,9 @@ class GameUiView:
 
     def update_hero(self, hero_id: HeroId):
         self._setup_portrait(hero_id)
+
+    def update_dialog(self, dialog_config: DialogConfig):
+        self._setup_dialog(dialog_config)
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
@@ -349,93 +377,6 @@ class GameUiView:
         y_message = self.ui_screen_area.y - 30
         self.screen_render.rect_transparent(Rect(x_message - 10, y_message - 5, w_rect, 28), 135, (0, 0, 0))
         self.screen_render.text(self.font_message, message, (x_message, y_message))
-
-    def _dialog(self, dialog_graphics: DialogGraphics):
-
-        tall_detail_section = any(
-            [o.detail_body is not None or o.detail_header is not None or o.detail_ui_icon_sprite is not None
-             for o in dialog_graphics.options])
-
-        h_detail_section_expansion = 82
-
-        options_margin = 10
-        option_padding = 4
-        h_option_line = 20
-        if tall_detail_section:
-            h_dialog_container = 310 + len(dialog_graphics.options) * (h_option_line + 2 * option_padding)
-        else:
-            h_dialog_container = 310 + len(dialog_graphics.options) * (h_option_line + 2 * option_padding) \
-                                 - h_detail_section_expansion
-        rect_dialog_container = Rect(100, 35, 500, h_dialog_container)
-
-        x_left = rect_dialog_container[0]
-        x_right = rect_dialog_container[0] + rect_dialog_container[2]
-        self.screen_render.rect((210, 180, 60), rect_dialog_container, 5)
-        self.screen_render.rect_transparent(rect_dialog_container, 200, COLOR_BLACK)
-        color_separator = (170, 140, 20)
-        dialog_container_portrait_padding = 10
-        rect_portrait_pos = (x_left + dialog_container_portrait_padding,
-                             rect_dialog_container[1] + dialog_container_portrait_padding)
-        dialog_image = self.images_by_portrait_sprite[dialog_graphics.portrait_icon_sprite]
-        self.screen_render.image(dialog_image, rect_portrait_pos)
-        rect_portrait = Rect(rect_portrait_pos[0], rect_portrait_pos[1], PORTRAIT_ICON_SIZE[0], PORTRAIT_ICON_SIZE[1])
-        self.screen_render.rect((160, 160, 180), rect_portrait, 2)
-
-        dialog_pos = (x_left + 120, rect_dialog_container[1] + 15)
-        dialog_lines = split_text_into_lines(dialog_graphics.text_body, 35)
-        for i, dialog_text_line in enumerate(dialog_lines):
-            if i == 6:
-                print("WARN: too long dialog for NPC!")
-                break
-            self.screen_render.text(self.font_dialog, dialog_text_line, (dialog_pos[0] + 5, dialog_pos[1] + 32 * i),
-                                    COLOR_WHITE)
-
-        y_above_options = dialog_pos[1] + 150
-        self.screen_render.line(color_separator, (x_left, y_above_options), (x_right, y_above_options), 2)
-
-        for i, option in enumerate(dialog_graphics.options):
-            x_option = x_left + 8
-            y_option = y_above_options + options_margin + i * (h_option_line + 2 * option_padding)
-            x_option_text = x_option + option_padding + 5
-            y_option_text = y_option + option_padding + 2
-            color_highlight = COLOR_WHITE
-
-            is_option_active = dialog_graphics.active_option_index == i
-            color_option_text = COLOR_WHITE if is_option_active else (160, 160, 160)
-            if is_option_active:
-                rect_highlight_active_option = Rect(
-                    x_option, y_option, rect_dialog_container[2] - 16, h_option_line + 2 * option_padding)
-                self.screen_render.rect_transparent(rect_highlight_active_option, 120, COLOR_WHITE)
-                self.screen_render.rect(color_highlight, rect_highlight_active_option, 1)
-            self.screen_render.text(self.font_dialog, option.summary, (x_option_text, y_option_text), color_option_text)
-
-        active_option = dialog_graphics.options[dialog_graphics.active_option_index]
-        y_under_options = y_above_options + 2 * options_margin \
-                          + len(dialog_graphics.options) * (h_option_line + 2 * option_padding)
-        self.screen_render.line(color_separator, (x_left, y_under_options), (x_right, y_under_options), 2)
-
-        if tall_detail_section:
-            y_action_text = y_under_options + 15 + h_detail_section_expansion
-        else:
-            y_action_text = y_under_options + 15
-
-        if tall_detail_section:
-            if active_option.detail_ui_icon_sprite is not None:
-                active_option_image = self.images_by_ui_sprite[active_option.detail_ui_icon_sprite]
-                pos_option_image = x_left + 6, y_under_options + 7
-                self.screen_render.image(active_option_image, pos_option_image)
-                rect_option_image = Rect(pos_option_image[0], pos_option_image[1], UI_ICON_SIZE[0], UI_ICON_SIZE[1])
-                self.screen_render.rect((150, 150, 150), rect_option_image, 1)
-            if active_option.detail_header is not None:
-                self.screen_render.text(self.font_dialog, active_option.detail_header,
-                                        (x_left + 14 + UI_ICON_SIZE[0] + 4, y_action_text - h_detail_section_expansion))
-            if active_option.detail_body is not None:
-                detail_body_lines = split_text_into_lines(active_option.detail_body, 70)
-                for i, line in enumerate(detail_body_lines):
-                    line_pos = (x_left + 10, y_action_text - h_detail_section_expansion + 35 + 20 * i)
-                    self.screen_render.text(self.font_dialog_option_detail_body, line, line_pos)
-        action_text = active_option.detail_action_text
-        self.screen_render.text(self.font_dialog, "[Space] : " + action_text, (x_left + 10, y_action_text))
 
     def _render_item_being_dragged(self, item_type: ItemType, mouse_screen_position: Tuple[int, int],
                                    relative_mouse_pos: Tuple[int, int]):
@@ -505,7 +446,6 @@ class GameUiView:
             ui_state: GameUiState,
             text_in_topleft_corner: str,
             is_paused: bool,
-            dialog: Optional[DialogGraphics],
             mouse_drag: Optional[MouseDrag]):
 
         self.screen_render.rect(COLOR_BORDER, Rect(0, 0, self.camera_size[0], self.camera_size[1]), 1)
@@ -556,8 +496,9 @@ class GameUiView:
         # MINIMAP
         self.minimap.render(ui_state.player_minimap_relative_position)
 
-        if dialog:
-            self._dialog(dialog)
+        # DIALOG
+        if self.dialog:
+            self.dialog.render()
 
         # BUFFS
         buffs = []

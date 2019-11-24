@@ -4,7 +4,7 @@ from typing import List, Tuple, Optional, Any
 import pygame
 from pygame.rect import Rect
 
-from pythongame.core.common import ConsumableType, ItemType, AbilityType
+from pythongame.core.common import ConsumableType, ItemType, AbilityType, PortraitIconSprite
 from pythongame.core.game_data import CONSUMABLES, ConsumableCategory
 from pythongame.core.game_state import PlayerState
 from pythongame.core.item_inventory import ItemEquipmentCategory
@@ -19,6 +19,120 @@ COLOR_HOVERED = (200, 200, 250)
 COLOR_ICON_HIGHLIGHTED = (250, 250, 150)
 COLOR_TOGGLE_HIGHLIGHTED = (150, 250, 200)
 DIR_FONTS = './resources/fonts/'
+
+
+class DialogOption:
+    def __init__(self, summary: str, detail_action_text: str, detail_image: Optional[Any],
+                 detail_header: Optional[str] = None, detail_body: Optional[str] = None):
+        self.summary = summary
+        self.detail_action_text = detail_action_text
+        self.detail_image = detail_image
+        self.detail_header = detail_header
+        self.detail_body = detail_body
+
+
+class Dialog:
+    def __init__(self, screen_render: DrawableArea, portrait_image: PortraitIconSprite, text_body: str,
+                 options: List[DialogOption], active_option_index: int, portrait_image_size: Tuple[int, int],
+                 option_image_size: Tuple[int, int]):
+        self.screen_render = screen_render
+        self.portrait_image = portrait_image
+        self.text_body = text_body
+        self.options = options
+        self.active_option_index = active_option_index
+        self.font_dialog = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 24)
+        self.font_dialog_option_detail_body = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
+        self.portrait_image_size = portrait_image_size
+        self.option_image_size = option_image_size
+
+    def render(self):
+
+        tall_detail_section = any(
+            [o.detail_body is not None or o.detail_header is not None or o.detail_image is not None
+             for o in self.options])
+
+        h_detail_section_expansion = 82
+
+        options_margin = 10
+        option_padding = 4
+        h_option_line = 20
+        if tall_detail_section:
+            h_dialog_container = 310 + len(self.options) * (h_option_line + 2 * option_padding)
+        else:
+            h_dialog_container = 310 + len(self.options) * (h_option_line + 2 * option_padding) \
+                                 - h_detail_section_expansion
+        rect_dialog_container = Rect(100, 35, 500, h_dialog_container)
+
+        x_left = rect_dialog_container[0]
+        x_right = rect_dialog_container[0] + rect_dialog_container[2]
+        self.screen_render.rect((210, 180, 60), rect_dialog_container, 5)
+        self.screen_render.rect_transparent(rect_dialog_container, 200, COLOR_BLACK)
+        color_separator = (170, 140, 20)
+        dialog_container_portrait_padding = 10
+        rect_portrait_pos = (x_left + dialog_container_portrait_padding,
+                             rect_dialog_container[1] + dialog_container_portrait_padding)
+        self.screen_render.image(self.portrait_image, rect_portrait_pos)
+        rect_portrait = Rect(rect_portrait_pos[0], rect_portrait_pos[1], self.portrait_image_size[0],
+                             self.portrait_image_size[1])
+        self.screen_render.rect((160, 160, 180), rect_portrait, 2)
+
+        dialog_pos = (x_left + 120, rect_dialog_container[1] + 15)
+        dialog_lines = split_text_into_lines(self.text_body, 35)
+        for i, dialog_text_line in enumerate(dialog_lines):
+            if i == 6:
+                print("WARN: too long dialog for NPC!")
+                break
+            self.screen_render.text(self.font_dialog, dialog_text_line, (dialog_pos[0] + 5, dialog_pos[1] + 32 * i),
+                                    COLOR_WHITE)
+
+        y_above_options = dialog_pos[1] + 150
+        self.screen_render.line(color_separator, (x_left, y_above_options), (x_right, y_above_options), 2)
+
+        for i, option in enumerate(self.options):
+            x_option = x_left + 8
+            y_option = y_above_options + options_margin + i * (h_option_line + 2 * option_padding)
+            x_option_text = x_option + option_padding + 5
+            y_option_text = y_option + option_padding + 2
+            color_highlight = COLOR_WHITE
+
+            is_option_active = self.active_option_index == i
+            color_option_text = COLOR_WHITE if is_option_active else (160, 160, 160)
+            if is_option_active:
+                rect_highlight_active_option = Rect(
+                    x_option, y_option, rect_dialog_container[2] - 16, h_option_line + 2 * option_padding)
+                self.screen_render.rect_transparent(rect_highlight_active_option, 120, COLOR_WHITE)
+                self.screen_render.rect(color_highlight, rect_highlight_active_option, 1)
+            self.screen_render.text(self.font_dialog, option.summary, (x_option_text, y_option_text), color_option_text)
+
+        active_option = self.options[self.active_option_index]
+        y_under_options = y_above_options + 2 * options_margin \
+                          + len(self.options) * (h_option_line + 2 * option_padding)
+        self.screen_render.line(color_separator, (x_left, y_under_options), (x_right, y_under_options), 2)
+
+        if tall_detail_section:
+            y_action_text = y_under_options + 15 + h_detail_section_expansion
+        else:
+            y_action_text = y_under_options + 15
+
+        if tall_detail_section:
+            if active_option.detail_image is not None:
+                active_option_image = active_option.detail_image
+                pos_option_image = x_left + 6, y_under_options + 7
+                self.screen_render.image(active_option_image, pos_option_image)
+                rect_option_image = Rect(pos_option_image[0], pos_option_image[1], self.option_image_size[0],
+                                         self.option_image_size[1])
+                self.screen_render.rect((150, 150, 150), rect_option_image, 1)
+            if active_option.detail_header is not None:
+                self.screen_render.text(self.font_dialog, active_option.detail_header,
+                                        (x_left + 14 + self.option_image_size[0] + 4,
+                                         y_action_text - h_detail_section_expansion))
+            if active_option.detail_body is not None:
+                detail_body_lines = split_text_into_lines(active_option.detail_body, 70)
+                for i, line in enumerate(detail_body_lines):
+                    line_pos = (x_left + 10, y_action_text - h_detail_section_expansion + 35 + 20 * i)
+                    self.screen_render.text(self.font_dialog_option_detail_body, line, line_pos)
+        action_text = active_option.detail_action_text
+        self.screen_render.text(self.font_dialog, "[Space] : " + action_text, (x_left + 10, y_action_text))
 
 
 class TooltipGraphics:
