@@ -1,7 +1,7 @@
 from typing import Optional, Tuple
 
-from pythongame.core.game_state import GameState, PlayerState
-from pythongame.core.npc_behaviors import DialogGraphics
+from pythongame.core.game_state import GameState, PlayerState, NonPlayerCharacter
+from pythongame.core.npc_behaviors import get_dialog_data, DialogData, get_dialog_graphics
 from pythongame.core.talents import talents_graphics_from_state
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.game_ui_view import GameUiView, DraggedItemSlot, DraggedConsumableSlot, MouseDrag
@@ -73,6 +73,14 @@ def get_mouse_world_pos(game_state: GameState, mouse_screen_position: Tuple[int,
 # To fix:
 #
 
+class DialogState:
+    def __init__(self):
+        self.option_index: int = 0
+        self.data: DialogData = None
+        self.npc: NonPlayerCharacter = None
+        self.active = False
+
+
 class PlayingUiController:
 
     def __init__(self, ui_view: GameUiView, ui_state: GameUiState):
@@ -87,8 +95,9 @@ class PlayingUiController:
         self.hovered_ui_toggle: Optional[UiToggle] = None
         self.hovered_talent_choice_option: Optional[Tuple[int, int]] = None
         self.is_mouse_over_ui: bool = False
+        self.dialog = DialogState()
 
-    def render(self, game_state: GameState, text_in_topleft_corner: str, dialog_graphics: DialogGraphics):
+    def render(self, game_state: GameState, text_in_topleft_corner: str):
 
         player_state = game_state.player_state
 
@@ -116,6 +125,9 @@ class PlayingUiController:
         if self.consumable_slot_being_dragged or self.item_slot_being_dragged:
             mouse_drag = MouseDrag(self.consumable_slot_being_dragged, self.item_slot_being_dragged,
                                    self.mouse_screen_position)
+        dialog_graphics = None
+        if self.dialog.active:
+            dialog_graphics = get_dialog_graphics(self.dialog.npc.npc_type, self.dialog.option_index)
         self.ui_view.render_ui(
             player_state=player_state,
             ui_state=self.ui_state,
@@ -179,3 +191,22 @@ class PlayingUiController:
             self.consumable_slot_being_dragged = None
 
         return triggered_events
+
+    def change_dialog_option(self, delta: int):
+        self.dialog.option_index = (self.dialog.option_index + delta) % len(self.dialog.data.options)
+
+    def start_dialog_with_npc(self, npc: NonPlayerCharacter):
+        self.dialog.active = True
+        self.dialog.npc = npc
+        self.dialog.data = get_dialog_data(npc.npc_type)
+        if self.dialog.option_index >= len(self.dialog.data.options):
+            self.dialog.option_index = 0
+
+    def has_open_dialog(self) -> bool:
+        return self.dialog.active
+
+    def handle_space_click(self) -> Optional[Tuple[NonPlayerCharacter, int]]:
+        if self.dialog.active:
+            self.dialog.active = False
+            return self.dialog.npc, self.dialog.option_index
+        return None

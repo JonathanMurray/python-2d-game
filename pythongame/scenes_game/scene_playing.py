@@ -12,7 +12,7 @@ from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOn
     ConsumableOnGround, ItemOnGround, Chest
 from pythongame.core.hero_upgrades import pick_talent
 from pythongame.core.math import get_directions_to_position
-from pythongame.core.npc_behaviors import get_dialog_data, invoke_npc_action, get_dialog_graphics, DialogGraphics
+from pythongame.core.npc_behaviors import invoke_npc_action
 from pythongame.core.sound_player import play_sound
 from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
@@ -32,47 +32,6 @@ from pythongame.scenes_game.playing_ui_controller import PlayingUiController, Ev
     PickTalent, StartDraggingItemOrConsumable, ClickUiToggle, TrySwitchItemInInventory
 
 
-class DialogHandler:
-    def __init__(self):
-        self.npc_active_in_dialog: NonPlayerCharacter = None
-        self.active_dialog_option_index: int = 0
-
-    def change_dialog_option(self, delta: int):
-        num_options = len(get_dialog_data(self.npc_active_in_dialog.npc_type).options)
-        self.active_dialog_option_index = (self.active_dialog_option_index + delta) % num_options
-        play_sound(SoundId.DIALOG)
-
-    def handle_user_clicked_space(self, game_state: GameState, ui_state: GameUiState):
-        message = invoke_npc_action(self.npc_active_in_dialog.npc_type, self.active_dialog_option_index,
-                                    game_state)
-        if message:
-            ui_state.set_message(message)
-        self.npc_active_in_dialog.stun_status.remove_one()
-        self.npc_active_in_dialog = None
-
-    def is_player_in_dialog(self) -> bool:
-        return self.npc_active_in_dialog is not None
-
-    def start_dialog_with_npc(self, npc: NonPlayerCharacter, game_state: GameState):
-        self.npc_active_in_dialog = npc
-        self.npc_active_in_dialog.world_entity.direction = get_directions_to_position(
-            self.npc_active_in_dialog.world_entity,
-            game_state.player_entity.get_center_position())[0]
-        self.npc_active_in_dialog.world_entity.set_not_moving()
-        self.npc_active_in_dialog.stun_status.add_one()
-        num_dialog_options = len(get_dialog_data(self.npc_active_in_dialog.npc_type).options)
-        if self.active_dialog_option_index >= num_dialog_options:
-            # If you talk to one NPC, and leave with option 2, then start talking to an NPC that has just one option
-            # we'd get an IndexError if we don't clear the index here. Still, it's useful to keep the index in the
-            # case that you want to talk to the same NPC rapidly over and over (to buy potions for example)
-            self.active_dialog_option_index = 0
-        play_sound(SoundId.DIALOG)
-
-    def get_dialog_graphics(self) -> Optional[DialogGraphics]:
-        if self.npc_active_in_dialog:
-            return get_dialog_graphics(self.npc_active_in_dialog.npc_type, self.active_dialog_option_index)
-
-
 class PlayingScene(AbstractScene):
     def __init__(
             self,
@@ -82,7 +41,6 @@ class PlayingScene(AbstractScene):
         self.world_view = world_view
         self.ui_view = ui_view
         self.render_hit_and_collision_boxes = False
-        self.dialog_handler = DialogHandler()
         self.is_shift_key_held_down = False
         self.total_time_played = 0
 
@@ -109,7 +67,7 @@ class PlayingScene(AbstractScene):
 
         transition_to_pause = False
 
-        if not self.dialog_handler.is_player_in_dialog():
+        if not self.ui_controller.has_open_dialog():
             self.player_interactions_state.handle_nearby_entities(
                 self.game_state.player_entity, self.game_state, self.game_engine)
 
@@ -119,16 +77,23 @@ class PlayingScene(AbstractScene):
 
         events_triggered_from_ui: List[EventTriggeredFromUi] = []
 
-        if self.dialog_handler.is_player_in_dialog():
+        if self.ui_controller.has_open_dialog():
             self.game_state.player_entity.set_not_moving()
             user_actions = get_dialog_user_inputs()
             for action in user_actions:
                 if isinstance(action, ActionExitGame):
                     exit_game()
                 if isinstance(action, ActionChangeDialogOption):
-                    self.dialog_handler.change_dialog_option(action.index_delta)
+                    self.ui_controller.change_dialog_option(action.index_delta)
+                    play_sound(SoundId.DIALOG)
                 if isinstance(action, ActionPressSpaceKey):
-                    self.dialog_handler.handle_user_clicked_space(self.game_state, self.ui_state)
+                    result = self.ui_controller.handle_space_click()
+                    if result:
+                        npc_in_dialog, option_index = result
+                        message = invoke_npc_action(npc_in_dialog.npc_type, option_index, self.game_state)
+                        if message:
+                            self.ui_state.set_message(message)
+                        npc_in_dialog.stun_status.remove_one()
         else:
             user_actions = self.user_input_handler.get_main_user_inputs()
             for action in user_actions:
@@ -162,7 +127,12 @@ class PlayingScene(AbstractScene):
                     ready_entity = self.player_interactions_state.get_entity_to_interact_with()
                     if ready_entity is not None:
                         if isinstance(ready_entity, NonPlayerCharacter):
-                            self.dialog_handler.start_dialog_with_npc(ready_entity, self.game_state)
+                            ready_entity.world_entity.direction = get_directions_to_position(
+                                ready_entity.world_entity, self.game_state.player_entity.get_center_position())[0]
+                            ready_entity.world_entity.set_not_moving()
+                            ready_entity.stun_status.add_one()
+                            self.ui_controller.start_dialog_with_npc(ready_entity)
+                            play_sound(SoundId.DIALOG)
                         elif isinstance(ready_entity, LootableOnGround):
                             self.game_engine.try_pick_up_loot_from_ground(ready_entity)
                         elif isinstance(ready_entity, Portal):
@@ -224,14 +194,12 @@ class PlayingScene(AbstractScene):
             entire_world_area=self.game_state.entire_world_area,
             entity_action_text=entity_action_text)
 
-        dialog = self.dialog_handler.get_dialog_graphics()
-
         if isinstance(self.world_behavior, ChallengeBehavior):
             text_in_topleft_corner = "Time: " + str(self.world_behavior.total_time_played // 1000)
         else:
             text_in_topleft_corner = fps_string + " fps"
 
-        self.ui_controller.render(self.game_state, text_in_topleft_corner, dialog)
+        self.ui_controller.render(self.game_state, text_in_topleft_corner)
 
         for event in events_triggered_from_ui:
             if isinstance(event, StartDraggingItemOrConsumable):
