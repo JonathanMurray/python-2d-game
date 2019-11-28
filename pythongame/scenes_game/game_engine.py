@@ -1,4 +1,4 @@
-from typing import List, Tuple, Callable
+from typing import Tuple
 
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import *
@@ -36,10 +36,7 @@ class GameEngine:
     def __init__(self, game_state: GameState, ui_state: GameUiState):
         self.game_state = game_state
         self.ui_state = ui_state
-        self._observers = []
-
-    def register_observer(self, observer: Callable[[Any], Any]):
-        self._observers.append(observer)
+        self.player_abilities_were_updated = Observable()
 
     def try_use_ability(self, ability_type: AbilityType):
         PlayerControls.try_use_ability(ability_type, self.game_state, self.ui_state)
@@ -344,7 +341,7 @@ class GameEngine:
             self.ui_state.set_message("You reached level " + str(self.game_state.player_state.level))
         if new_abilities:
             allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
-            self._notify_observers(PlayerAbilityObserverEvent(self.game_state.player_state.abilities))
+            self.player_abilities_were_updated.notify(PlayerAbilityObserverEvent(self.game_state.player_state.abilities))
         if len(new_abilities) == 1:
             self.ui_state.enqueue_message("New ability: " + new_abilities[0])
         elif len(new_abilities) > 1:
@@ -352,10 +349,6 @@ class GameEngine:
         if did_unlock_new_talent:
             self.ui_state.notify_new_talent_was_unlocked()
             self.ui_state.enqueue_message("You can pick a talent!")
-
-    def _notify_observers(self, event):
-        for observer in self._observers:
-            observer(event)
 
     def _is_npc_close_to_camera(self, npc: NonPlayerCharacter):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(

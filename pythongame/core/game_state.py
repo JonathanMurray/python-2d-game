@@ -1,5 +1,5 @@
 import math
-from typing import List, Dict, Tuple, Union, Callable
+from typing import Dict, Tuple, Union
 
 from pygame.rect import Rect
 
@@ -390,10 +390,7 @@ class PlayerState:
         self._upgrades: List[HeroUpgrade] = []
         self.block_chance: float = block_chance
         self.block_damage_reduction: int = 0
-        self._observers = []
-
-    def register_observer(self, observer: Callable[[Any], Any]):
-        self._observers.append(observer)
+        self.talents_were_updated = Observable()
 
     # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):
@@ -487,11 +484,7 @@ class PlayerState:
 
     def _notify_talent_observers(self):
         talent_graphics = talents_graphics_from_state(self.talents_state, self.level, self.chosen_talent_option_indices)
-        self._notify_observers(talent_graphics)
-
-    def _notify_observers(self, event):
-        for observer in self._observers:
-            observer(event)
+        self.talents_were_updated.notify(talent_graphics)
 
     def has_unpicked_talents(self):
         num_available_talents = len(

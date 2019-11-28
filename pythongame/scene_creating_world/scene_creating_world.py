@@ -132,8 +132,8 @@ class CreatingWorldScene(AbstractScene):
         game_state = create_game_state_from_json_file(
             self.camera_size, self.flags.map_file_path, self.flags.picked_hero)
         game_engine = GameEngine(game_state, ui_state)
-        game_state.player_state.register_observer(self.ui_view.handle_event)
-        game_engine.register_observer(self.ui_view.handle_event)
+        game_state.player_state.talents_were_updated.register_observer(self.ui_view.handle_event)
+        game_engine.player_abilities_were_updated.register_observer(self.ui_view.handle_event)
         if self.flags.map_file_path == 'resources/maps/challenge.json':
             world_behavior = ChallengeBehavior(game_state, ui_state, game_engine, self.flags)
         else:
@@ -160,7 +160,7 @@ class CreatingWorldScene(AbstractScene):
             if start_money > 0:
                 game_state.player_state.money += start_money
 
-        game_state.player_state.consumable_inventory.consumables_were_updated.register_observer(
+        game_state.player_state.consumable_inventory.was_updated.register_observer(
             self.ui_view.handle_event)
         game_state.player_state.consumable_inventory.notify_observers()  # Must notify the initial state
 

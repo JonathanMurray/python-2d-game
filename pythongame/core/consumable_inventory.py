@@ -7,7 +7,7 @@ class ConsumableInventory:
     def __init__(self, slots: Dict[int, List[ConsumableType]]):
         self.consumables_in_slots: Dict[int, List[ConsumableType]] = slots
         self.capacity_per_slot = 2
-        self.consumables_were_updated = Observable()
+        self.was_updated = Observable()
 
     def has_space_for_more(self) -> bool:
         slots_with_space = [consumables for consumables in self.consumables_in_slots.values() if
@@ -55,4 +55,4 @@ class ConsumableInventory:
         return self.consumables_in_slots[slot_number][0] if len(self.consumables_in_slots[slot_number]) > 0 else None
 
     def notify_observers(self):
-        self.consumables_were_updated.notify(self)
+        self.was_updated.notify(self)
