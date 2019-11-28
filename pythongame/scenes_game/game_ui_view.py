@@ -7,7 +7,7 @@ from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprit
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, \
     KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, HEROES
-from pythongame.core.game_state import PlayerState, PlayerStatsObserverEvent, PlayerMovementSpeedObserverEvent, \
+from pythongame.core.game_state import PlayerStatsObserverEvent, PlayerMovementSpeedObserverEvent, \
     PlayerExpObserverEvent, MoneyObserverEvent, BuffWithDuration
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES, \
     ItemInventory
@@ -134,6 +134,8 @@ class GameUiView:
         self._setup_dialog()
 
         self.hovered_component = None
+
+        self.fps_string = ""
 
     def _setup_ability_icons(self):
         x_0 = 140
@@ -400,6 +402,9 @@ class GameUiView:
         else:
             self.dialog.shown = False
 
+    def update_fps_string(self, fps_string: str):
+        self.fps_string = fps_string
+
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
 
@@ -494,9 +499,7 @@ class GameUiView:
 
     def render(
             self,
-            player_state: PlayerState,
             ui_state: GameUiState,
-            text_in_topleft_corner: str,
             is_paused: bool,
             mouse_drag: Optional[MouseDrag]):
 
@@ -573,7 +576,7 @@ class GameUiView:
         self.screen_render.rect(COLOR_BORDER, self.ui_screen_area, 1)
 
         self.screen_render.rect_transparent(Rect(0, 0, 70, 20), 100, COLOR_BLACK)
-        self.screen_render.text(self.font_debug_info, text_in_topleft_corner, (5, 3))
+        self.screen_render.text(self.font_debug_info, "fps: " + self.fps_string, (5, 3))
 
         if ui_state.message:
             self._message(ui_state.message)

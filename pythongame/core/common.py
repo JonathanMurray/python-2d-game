@@ -620,5 +620,5 @@ class AbstractScene:
     def initialize(self, data: Any):
         pass
 
-    def run_one_frame(self, _time_passed: Millis, _fps_string: str) -> Optional[SceneTransition]:
+    def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
         pass

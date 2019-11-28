@@ -29,7 +29,7 @@ class StartingProgramScene(AbstractScene):
     def initialize(self, cmd_flags: CommandlineFlags):
         self.cmd_flags = cmd_flags  # map hero money level
 
-    def run_one_frame(self, _time_passed: Millis, _fps_string: str) -> Optional[SceneTransition]:
+    def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
 
         map_file_name = self.cmd_flags.map_file_name or "map1.json"
         map_file_path = "resources/maps/" + map_file_name

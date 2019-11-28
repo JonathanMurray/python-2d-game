@@ -28,7 +28,7 @@ class PausedScene(AbstractScene):
     def initialize(self, data: Tuple[GameState, GameUiState]):
         self.game_state, self.ui_state = data
 
-    def run_one_frame(self, _time_passed: Millis, _fps_string: str) -> Optional[SceneTransition]:
+    def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
         scene_transition = None
 
         user_actions = get_paused_user_inputs()
@@ -57,9 +57,7 @@ class PausedScene(AbstractScene):
             entity_action_text=None)
 
         self.ui_view.render(
-            player_state=self.game_state.player_state,
             ui_state=self.ui_state,
-            text_in_topleft_corner="...",
             is_paused=True,
             mouse_drag=None
         )

@@ -35,7 +35,7 @@ class ChallengeCompleteScreenScene(AbstractScene):
     def initialize(self, total_time_played: Millis):
         self.total_time_played = total_time_played
 
-    def run_one_frame(self, time_passed: Millis, _fps_string: str) -> Optional[SceneTransition]:
+    def run_one_frame(self, time_passed: Millis) -> Optional[SceneTransition]:
         handle_user_input()
         self.time_since_start += time_passed
         self.render()

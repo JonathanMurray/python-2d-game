@@ -22,7 +22,6 @@ from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, Acti
 from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
 from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.player_file import save_to_file
-from pythongame.scene_creating_world.scene_creating_world import ChallengeBehavior
 from pythongame.scenes_game.game_engine import GameEngine
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.game_ui_view import GameUiView
@@ -46,7 +45,7 @@ class PlayingScene(AbstractScene):
         self.world_behavior: AbstractWorldBehavior = None
         self.ui_state: GameUiState = None
         self.ui_controller: PlayingUiController = None
-        self.ui_view = None
+        self.ui_view: GameUiView = None
         self.user_input_handler = PlayingUserInputHandler()
 
     def initialize(self, data: Tuple[GameState, GameEngine, AbstractWorldBehavior, GameUiState, GameUiView, bool]):
@@ -58,7 +57,7 @@ class PlayingScene(AbstractScene):
         # down would still be considered active!
         self.user_input_handler = PlayingUserInputHandler()
 
-    def run_one_frame(self, time_passed: Millis, fps_string: str) -> Optional[SceneTransition]:
+    def run_one_frame(self, time_passed: Millis) -> Optional[SceneTransition]:
 
         self.total_time_played += time_passed
 
@@ -191,12 +190,7 @@ class PlayingScene(AbstractScene):
             entire_world_area=self.game_state.entire_world_area,
             entity_action_text=entity_action_text)
 
-        if isinstance(self.world_behavior, ChallengeBehavior):
-            text_in_topleft_corner = "Time: " + str(self.world_behavior.total_time_played // 1000)
-        else:
-            text_in_topleft_corner = fps_string + " fps"
-
-        self.ui_controller.render(self.game_state, text_in_topleft_corner)
+        self.ui_controller.render()
 
         for event in events_triggered_from_ui:
             if isinstance(event, StartDraggingItemOrConsumable):

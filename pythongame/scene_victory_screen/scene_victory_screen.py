@@ -23,7 +23,7 @@ class VictoryScreenScene(AbstractScene):
         self.font = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 24)
         self.time_since_start = Millis(0)
 
-    def run_one_frame(self, time_passed: Millis, _fps_string: str) -> Optional[SceneTransition]:
+    def run_one_frame(self, time_passed: Millis) -> Optional[SceneTransition]:
         handle_user_input()
         self.time_since_start += time_passed
         self.render()

@@ -122,7 +122,7 @@ class CreatingWorldScene(AbstractScene):
     def initialize(self, flags: InitFlags):
         self.flags = flags  # map hero money level saved
 
-    def run_one_frame(self, _time_passed: Millis, _fps_string: str) -> Optional[SceneTransition]:
+    def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
 
         saved_player_state = self.flags.saved_player_state
         hero_start_level = self.flags.hero_start_level

@@ -97,9 +97,7 @@ class PlayingUiController:
         self.is_mouse_over_ui: bool = False
         self.dialog = DialogState()
 
-    def render(self, game_state: GameState, text_in_topleft_corner: str):
-
-        player_state = game_state.player_state
+    def render(self):
 
         # MOUSE HANDLING
         mouse_hover_event = self.ui_view.handle_mouse(self.mouse_screen_position, self.ui_state.toggle_enabled)
@@ -115,9 +113,7 @@ class PlayingUiController:
             mouse_drag = MouseDrag(self.consumable_slot_being_dragged, self.item_slot_being_dragged,
                                    self.mouse_screen_position)
         self.ui_view.render(
-            player_state=player_state,
             ui_state=self.ui_state,
-            text_in_topleft_corner=text_in_topleft_corner,
             is_paused=False,
             mouse_drag=mouse_drag
         )
