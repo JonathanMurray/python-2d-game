@@ -141,6 +141,7 @@ class CreatingWorldScene(AbstractScene):
         game_engine.player_abilities_were_updated.register_observer(self.ui_view.handle_event)
         game_state.player_state.money_was_updated.register_observer(self.ui_view.handle_event)
         game_state.player_state.notify_money_observers()  # Must notify the initial state
+        game_state.player_state.cooldowns_were_updated.register_observer(self.ui_view.on_cooldowns_updated)
 
         if self.flags.map_file_path == 'resources/maps/challenge.json':
             world_behavior = ChallengeBehavior(game_state, ui_state, game_engine, self.flags)

@@ -170,7 +170,7 @@ class TooltipGraphics:
 
 class AbilityIcon:
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, label: str, font, tooltip: TooltipGraphics,
-                 ability_type: AbilityType):
+                 ability_type: AbilityType, cooldown_remaining_ratio: float):
         self._ui_render = ui_render
         self._font = font
         self.rect = rect
@@ -178,11 +178,12 @@ class AbilityIcon:
         self.label = label
         self.tooltip = tooltip
         self.ability_type = ability_type
+        self.cooldown_remaining_ratio = cooldown_remaining_ratio
 
     def contains(self, point: Tuple[int, int]) -> bool:
         return self.rect.collidepoint(point[0], point[1])
 
-    def render(self, hovered: bool, recently_clicked: bool, cooldown_remaining_ratio: float):
+    def render(self, hovered: bool, recently_clicked: bool):
         self._ui_render.rect_filled((40, 40, 50), self.rect)
         self._ui_render.image(self.image, self.rect.topleft)
         self._ui_render.rect((150, 150, 190), self.rect, 1)
@@ -193,11 +194,11 @@ class AbilityIcon:
             self._ui_render.rect(COLOR_HOVERED, self.rect, 1)
         self._ui_render.text(self._font, self.label, (self.rect.x + 12, self.rect.y + self.rect.h + 4))
 
-        if cooldown_remaining_ratio > 0:
+        if self.cooldown_remaining_ratio > 0:
             cooldown_rect = Rect(self.rect.x + 1,
-                                 self.rect.y + 1 + (self.rect.h - 2) * (1 - cooldown_remaining_ratio),
+                                 self.rect.y + 1 + (self.rect.h - 2) * (1 - self.cooldown_remaining_ratio),
                                  self.rect.w - 2,
-                                 (self.rect.h - 2) * cooldown_remaining_ratio + 1)
+                                 (self.rect.h - 2) * self.cooldown_remaining_ratio + 1)
             self._ui_render.rect_filled((100, 30, 30), cooldown_rect)
             self._ui_render.rect((180, 30, 30), self.rect, 2)
 

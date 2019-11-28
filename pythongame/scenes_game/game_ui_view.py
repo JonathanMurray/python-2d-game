@@ -151,7 +151,7 @@ class GameUiView:
         for i in range(max_num_abilities):
             x = x_0 + i * (UI_ICON_SIZE[0] + icon_space)
             rect = Rect(x, y, UI_ICON_SIZE[0], UI_ICON_SIZE[1])
-            icon = AbilityIcon(self.ui_render, rect, None, None, self.font_ui_icon_keys, None, None)
+            icon = AbilityIcon(self.ui_render, rect, None, None, self.font_ui_icon_keys, None, None, 0)
             self.ability_icons.append(icon)
 
     def _setup_consumable_icons(self):
@@ -276,6 +276,13 @@ class GameUiView:
             self.money_text.text = "Money: " + str(event.money)
         else:
             raise Exception("Unhandled event: " + str(event))
+
+    def on_cooldowns_updated(self, ability_cooldowns_remaining: Dict[AbilityType, int]):
+        for icon in self.ability_icons:
+            ability_type = icon.ability_type
+            if ability_type:
+                ability = ABILITIES[ability_type]
+                icon.cooldown_remaining_ratio = ability_cooldowns_remaining[ability_type] / ability.cooldown
 
     def _update_player_stats(self, event):
         player_state = event.player_state
@@ -503,11 +510,9 @@ class GameUiView:
         for icon in self.ability_icons:
             ability_type = icon.ability_type
             if ability_type:
-                ability = ABILITIES[ability_type]
-                cooldown_remaining_ratio = player_state.ability_cooldowns_remaining[ability_type] / ability.cooldown
                 recently_clicked = ability_type == ui_state.highlighted_ability_action
                 hovered = self.hovered_component == icon
-                icon.render(hovered, recently_clicked, cooldown_remaining_ratio)
+                icon.render(hovered, recently_clicked)
 
         # ITEMS
         self.ui_render.rect_filled((60, 60, 80), self.inventory_icons_rect)

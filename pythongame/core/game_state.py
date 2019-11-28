@@ -363,7 +363,7 @@ class PlayerState:
         self.mana_resource: HealthOrManaResource = mana_resource
         self.consumable_inventory = consumable_inventory
         self.abilities: List[AbilityType] = abilities
-        self.ability_cooldowns_remaining = {ability_type: 0 for ability_type in abilities}
+        self.ability_cooldowns_remaining: Dict[AbilityType, int] = {ability_type: 0 for ability_type in abilities}
         self.active_buffs: List[BuffWithDuration] = []
         self.is_invisible = False
         self.stun_status = StunStatus()
@@ -394,11 +394,12 @@ class PlayerState:
         self.stats_were_updated = Observable()
         self.exp_was_updated = Observable()
         self.money_was_updated = Observable()
+        self.cooldowns_were_updated = Observable()
 
     def modify_money(self, delta: int):
         self.money += delta
         self.notify_money_observers()
-        
+
     def notify_money_observers(self):
         self.money_was_updated.notify(MoneyObserverEvent(self.money))
 
@@ -465,9 +466,20 @@ class PlayerState:
             b.force_cancel()
 
     def recharge_ability_cooldowns(self, time_passed: Millis):
+        did_update = False
         for ability_type in self.ability_cooldowns_remaining:
             if self.ability_cooldowns_remaining[ability_type] > 0:
                 self.ability_cooldowns_remaining[ability_type] -= time_passed
+                did_update = True
+        if did_update:
+            self.notify_cooldown_observers()
+
+    def add_to_ability_cooldown(self, ability_type: AbilityType, amount: Millis):
+        self.ability_cooldowns_remaining[ability_type] += amount
+        self.notify_cooldown_observers()
+
+    def notify_cooldown_observers(self):
+        self.cooldowns_were_updated.notify(self.ability_cooldowns_remaining)
 
     def gain_exp(self, amount: int) -> List[GainExpEvent]:
         events = []
@@ -514,6 +526,7 @@ class PlayerState:
     def gain_ability(self, ability_type: AbilityType):
         self.ability_cooldowns_remaining[ability_type] = 0
         self.abilities.append(ability_type)
+        self.notify_cooldown_observers()
 
     def notify_about_event(self, event: Event, game_state):
         for buff in self.active_buffs:
