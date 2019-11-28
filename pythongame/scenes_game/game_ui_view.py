@@ -266,11 +266,17 @@ class GameUiView:
         elif isinstance(event, ItemInventory):
             self._update_inventory(event.slots)
         elif isinstance(event, PlayerStatsObserverEvent):
-            self.stats_window.player_state = event.player_state
+            self.update_player_stats(event)
         elif isinstance(event, PlayerMovementSpeedObserverEvent):
             self.stats_window.player_speed_multiplier = event.player_speed_multiplier
         else:
             raise Exception("Unhandled event: " + str(event))
+
+    def update_player_stats(self, event):
+        player_state = event.player_state
+        self.stats_window.player_state = player_state
+        self._update_regen(player_state.health_resource.get_effective_regen(),
+                           player_state.mana_resource.get_effective_regen())
 
     def _update_abilities(self, abilities: List[AbilityType]):
         for i, ability_type in enumerate(abilities):
@@ -325,7 +331,7 @@ class GameUiView:
             icon.slot_equipment_category = slot_equipment_category
             icon.item_type = item_type
 
-    def update_regen(self, health_regen: float, mana_regen: float):
+    def _update_regen(self, health_regen: float, mana_regen: float):
         tooltip_details = [
             "regeneration: " + "{:.1f}".format(health_regen) + "/s"]
         health_tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "Health", tooltip_details,
