@@ -106,11 +106,6 @@ class PlayingUiController:
                                   player_state.mana_resource.get_effective_regen())
         self.ui_view.update_has_unseen_talents(self.ui_state.talent_toggle_has_unseen_talents)
         self.ui_view.update_player_stats(player_state, game_state.player_entity.get_speed_multiplier())
-        dialog_config = None
-        if self.dialog.active:
-            data = get_dialog_data(self.dialog.npc.npc_type)
-            dialog_config = DialogConfig(data, self.dialog.option_index)
-        self.ui_view.update_dialog(dialog_config)
 
         # MOUSE HANDLING
         mouse_hover_event = self.ui_view.handle_mouse(self.mouse_screen_position, self.ui_state.toggle_enabled)
@@ -190,6 +185,7 @@ class PlayingUiController:
 
     def change_dialog_option(self, delta: int):
         self.dialog.option_index = (self.dialog.option_index + delta) % len(self.dialog.data.options)
+        self.ui_view.update_dialog(DialogConfig(self.dialog.data, self.dialog.option_index))
 
     def start_dialog_with_npc(self, npc: NonPlayerCharacter):
         self.dialog.active = True
@@ -197,6 +193,7 @@ class PlayingUiController:
         self.dialog.data = get_dialog_data(npc.npc_type)
         if self.dialog.option_index >= len(self.dialog.data.options):
             self.dialog.option_index = 0
+        self.ui_view.update_dialog(DialogConfig(self.dialog.data, self.dialog.option_index))
 
     def has_open_dialog(self) -> bool:
         return self.dialog.active
@@ -204,5 +201,6 @@ class PlayingUiController:
     def handle_space_click(self) -> Optional[Tuple[NonPlayerCharacter, int]]:
         if self.dialog.active:
             self.dialog.active = False
+            self.ui_view.update_dialog(None)
             return self.dialog.npc, self.dialog.option_index
         return None
