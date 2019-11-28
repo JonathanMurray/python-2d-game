@@ -253,6 +253,12 @@ class GameUiView:
     def _setup_dialog(self):
         self.dialog = Dialog(self.screen_render, None, None, [], 0, PORTRAIT_ICON_SIZE, UI_ICON_SIZE)
 
+    def handle_event(self, event):
+        if isinstance(event, TalentsGraphics):
+            self._setup_talents_window(event)
+        else:
+            raise Exception("Unhandled event: " + str(event))
+
     def update_abilities(self, abilities: List[AbilityType]):
         for i, ability_type in enumerate(abilities):
             ability = ABILITIES[ability_type]
@@ -321,10 +327,6 @@ class GameUiView:
     def update_has_unseen_talents(self, has_unseen_talents: bool):
         # TODO Don't rely on TALENTS being second in the list
         self.toggle_buttons[1].highlighted = has_unseen_talents
-
-    def update_talents(self, talents: TalentsGraphics):
-        # TODO Don't recreate components
-        self._setup_talents_window(talents)
 
     def update_player_stats(self, player_state: PlayerState, player_speed_multiplier: float):
         self.stats_window.player_state = player_state

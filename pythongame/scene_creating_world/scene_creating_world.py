@@ -17,6 +17,7 @@ from pythongame.map_file import create_game_state_from_json_file
 from pythongame.player_file import SavedPlayerState
 from pythongame.scenes_game.game_engine import GameEngine, EngineEvent
 from pythongame.scenes_game.game_ui_state import GameUiState
+from pythongame.scenes_game.game_ui_view import GameUiView
 
 
 class InitFlags:
@@ -112,9 +113,9 @@ class ChallengeBehavior(AbstractWorldBehavior):
 
 
 class CreatingWorldScene(AbstractScene):
-    def __init__(self, camera_size: Tuple[int, int]):
-
+    def __init__(self, camera_size: Tuple[int, int], ui_view: GameUiView):
         self.camera_size = camera_size
+        self.ui_view = ui_view
 
         self.flags: InitFlags = None
 
@@ -129,6 +130,7 @@ class CreatingWorldScene(AbstractScene):
 
         game_state = create_game_state_from_json_file(self.camera_size, self.flags.map_file_path,
                                                       self.flags.picked_hero)
+        game_state.player_state.register_observer(self.ui_view.handle_event)
         ui_state = GameUiState()
         game_engine = GameEngine(game_state, ui_state)
         if self.flags.map_file_path == 'resources/maps/challenge.json':
@@ -162,5 +164,5 @@ class CreatingWorldScene(AbstractScene):
         game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
 
         new_hero_was_created = saved_player_state is None
-        scene_transition_data = (game_state, game_engine, world_behavior, ui_state, new_hero_was_created)
+        scene_transition_data = (game_state, game_engine, world_behavior, ui_state, self.ui_view, new_hero_was_created)
         return SceneTransition(SceneId.PLAYING, scene_transition_data)

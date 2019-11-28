@@ -47,8 +47,8 @@ class Main:
         self.scenes_by_id: Dict[SceneId, AbstractScene] = {
             SceneId.STARTING_PROGRAM: StartingProgramScene(),
             SceneId.PICKING_HERO: PickingHeroScene(PickingHeroView(pygame_screen, images_by_portrait_sprite)),
-            SceneId.CREATING_GAME_WORLD: CreatingWorldScene(CAMERA_SIZE),
-            SceneId.PLAYING: PlayingScene(world_view, ui_view),
+            SceneId.CREATING_GAME_WORLD: CreatingWorldScene(CAMERA_SIZE, ui_view),
+            SceneId.PLAYING: PlayingScene(world_view),
             SceneId.PAUSED: PausedScene(world_view, ui_view),
             SceneId.VICTORY_SCREEN: VictoryScreenScene(pygame_screen),
             SceneId.CHALLENGE_COMPLETE_SCREEN: ChallengeCompleteScreenScene(pygame_screen)

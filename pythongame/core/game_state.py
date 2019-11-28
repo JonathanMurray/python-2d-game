@@ -1,5 +1,5 @@
 import math
-from typing import List, Dict, Tuple, Union
+from typing import List, Dict, Tuple, Union, Callable
 
 from pygame.rect import Rect
 
@@ -10,7 +10,7 @@ from pythongame.core.item_inventory import ItemInventory
 from pythongame.core.loot import LootTable
 from pythongame.core.math import boxes_intersect, rects_intersect, get_position_from_center_position, \
     translate_in_direction, is_x_and_y_within_distance
-from pythongame.core.talents import TalentsState, TalentChoice
+from pythongame.core.talents import TalentsState, TalentChoice, talents_graphics_from_state
 
 GRID_CELL_WIDTH = 25
 
@@ -390,6 +390,10 @@ class PlayerState:
         self._upgrades: List[HeroUpgrade] = []
         self.block_chance: float = block_chance
         self.block_damage_reduction: int = 0
+        self._observers = []
+
+    def register_observer(self, observer: Callable[[Any], Any]):
+        self._observers.append(observer)
 
     # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):
@@ -427,6 +431,7 @@ class PlayerState:
                 events.append(PlayerLearnedNewAbility(new_ability))
             if self.level in self.talents_state.choices_by_level:
                 events.append(PlayerUnlockedNewTalent())
+                self._notify_talent_observers()
         return events
 
     def lose_exp_from_death(self):
@@ -477,7 +482,16 @@ class PlayerState:
         else:
             raise Exception("Illegal talent choice option: " + str(option_index))
         self._upgrades.append(option.upgrade)
+        self._notify_talent_observers()
         return option.name, option.upgrade
+
+    def _notify_talent_observers(self):
+        talent_graphics = talents_graphics_from_state(self.talents_state, self.level, self.chosen_talent_option_indices)
+        self._notify_observers(talent_graphics)
+
+    def _notify_observers(self, event):
+        for observer in self._observers:
+            observer(event)
 
     def has_unpicked_talents(self):
         num_available_talents = len(

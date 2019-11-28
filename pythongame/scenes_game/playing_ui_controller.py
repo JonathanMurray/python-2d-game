@@ -2,7 +2,6 @@ from typing import Optional, Tuple
 
 from pythongame.core.game_state import GameState, PlayerState, NonPlayerCharacter
 from pythongame.core.npc_behaviors import get_dialog_data, DialogData
-from pythongame.core.talents import talents_graphics_from_state
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.game_ui_view import GameUiView, DraggedItemSlot, DraggedConsumableSlot, MouseDrag, \
     DialogConfig
@@ -109,8 +108,6 @@ class PlayingUiController:
         self.ui_view.update_regen(player_state.health_resource.get_effective_regen(),
                                   player_state.mana_resource.get_effective_regen())
         self.ui_view.update_has_unseen_talents(self.ui_state.talent_toggle_has_unseen_talents)
-        self.ui_view.update_talents(talents_graphics_from_state(
-            player_state.talents_state, player_state.level, player_state.chosen_talent_option_indices))
         self.ui_view.update_player_stats(player_state, game_state.player_entity.get_speed_multiplier())
         self.ui_view.update_hero(player_state.hero_id)
         dialog_config = None

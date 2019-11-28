@@ -33,13 +33,9 @@ from pythongame.scenes_game.playing_ui_controller import PlayingUiController, Ev
 
 
 class PlayingScene(AbstractScene):
-    def __init__(
-            self,
-            world_view: GameWorldView,
-            ui_view: GameUiView):
+    def __init__(self, world_view: GameWorldView):
         self.player_interactions_state = PlayerInteractionsState()
         self.world_view = world_view
-        self.ui_view = ui_view
         self.render_hit_and_collision_boxes = False
         self.is_shift_key_held_down = False
         self.total_time_played = 0
@@ -50,11 +46,12 @@ class PlayingScene(AbstractScene):
         self.world_behavior: AbstractWorldBehavior = None
         self.ui_state: GameUiState = None
         self.ui_controller: PlayingUiController = None
+        self.ui_view = None
         self.user_input_handler = PlayingUserInputHandler()
 
-    def initialize(self, data: Tuple[GameState, GameEngine, AbstractWorldBehavior, GameUiState, bool]):
+    def initialize(self, data: Tuple[GameState, GameEngine, AbstractWorldBehavior, GameUiState, GameUiView, bool]):
         if data is not None:
-            self.game_state, self.game_engine, self.world_behavior, self.ui_state, new_hero_was_created = data
+            self.game_state, self.game_engine, self.world_behavior, self.ui_state, self.ui_view, new_hero_was_created = data
             self.ui_controller = PlayingUiController(self.ui_view, self.ui_state)
             self.world_behavior.on_startup(new_hero_was_created)
         # In case this scene has been running before, we make sure to clear any state. Otherwise keys that were held
