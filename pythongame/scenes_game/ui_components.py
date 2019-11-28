@@ -545,32 +545,30 @@ class Minimap:
         self.ui_render.rect_filled((100, 160, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
 
-# TODO Make position configurable
 class Buffs:
-    def __init__(self, ui_render: DrawableArea, font):
+    def __init__(self, ui_render: DrawableArea, font, bottomleft: Tuple[int, int]):
         self.ui_render = ui_render
         self.font = font
+        self.bottomleft = bottomleft
+        self.rect_padding = 5
+        self.w = 140 + self.rect_padding * 2
+        self.buffs = []
+        h = len(self.buffs) * 25 + self.rect_padding * 2
+        self.rect = Rect(self.bottomleft[0], self.bottomleft[1] - h, self.w, h)
 
-    def render(self, buffs: List[Tuple[str, float]]):
-        x_buffs = 10
-        num_buffs_to_render = len(buffs)
-        y_buffs = -35 - (num_buffs_to_render - 1) * 25
-        buffs_ui_position = (x_buffs, y_buffs)
-        if num_buffs_to_render:
-            rect_padding = 5
-            # Note: The width of this rect is hard-coded so long buff descriptions aren't well supported
-            buffs_background_rect = Rect(
-                buffs_ui_position[0] - rect_padding,
-                buffs_ui_position[1] - rect_padding,
-                140 + rect_padding * 2,
-                num_buffs_to_render * 25 + rect_padding * 2)
-            self.ui_render.rect_transparent(buffs_background_rect, 125, COLOR_BLACK)
-        for i, (text, ratio_remaining) in enumerate(buffs):
-            y_offset_buff = i * 25
-            y = y_buffs + y_offset_buff
-            self.ui_render.text(self.font, text, (x_buffs, y))
-            self.ui_render.stat_bar(x_buffs, y + 20, 60, 2, ratio_remaining,
-                                    (250, 250, 0), False)
+    def render(self):
+        if self.buffs:
+            self.ui_render.rect_transparent(self.rect, 125, COLOR_BLACK)
+            for i, (text, ratio_remaining) in enumerate(self.buffs):
+                x = self.rect[0] + self.rect_padding
+                y = self.rect[1] + self.rect_padding + i * 25
+                self.ui_render.text(self.font, text, (x, y))
+                self.ui_render.stat_bar(x, y + 20, 60, 2, ratio_remaining, (250, 250, 0), False)
+
+    def update(self, buffs: List[Tuple[str, float]]):
+        self.buffs = buffs
+        h = len(self.buffs) * 25 + self.rect_padding * 2
+        self.rect = Rect(self.bottomleft[0], self.bottomleft[1] - h, self.w, h)
 
 
 class Text:

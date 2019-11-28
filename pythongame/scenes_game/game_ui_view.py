@@ -8,7 +8,7 @@ from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, \
     KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, HEROES
 from pythongame.core.game_state import PlayerState, PlayerStatsObserverEvent, PlayerMovementSpeedObserverEvent, \
-    PlayerExpObserverEvent, MoneyObserverEvent
+    PlayerExpObserverEvent, MoneyObserverEvent, BuffWithDuration
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES, \
     ItemInventory
 from pythongame.core.math import is_point_in_rect
@@ -119,7 +119,7 @@ class GameUiView:
         self.inventory_icons: List[ItemIcon] = []
         self.exp_bar = ExpBar(self.ui_render, Rect(140, 23, 300, 2), self.font_level)
         self.minimap = Minimap(self.ui_render, Rect(440, 52, 80, 80))
-        self.buffs = Buffs(self.ui_render, self.font_buff_texts)
+        self.buffs = Buffs(self.ui_render, self.font_buff_texts, (10, -35))
         self.money_text = Text(self.ui_render, self.font_ui_money, (24, 150), "NO MONEY")
 
         self._setup_ability_icons()
@@ -291,6 +291,19 @@ class GameUiView:
     def on_mana_updated(self, mana: Tuple[int, int]):
         value, max_value = mana
         self.manabar.update(value, max_value)
+
+    def on_buffs_updated(self, active_buffs: List[BuffWithDuration]):
+        buffs = []
+        for active_buff in active_buffs:
+            buff_type = active_buff.buff_effect.get_buff_type()
+            # Buffs that don't have description texts shouldn't be displayed. (They are typically irrelevant to the
+            # player)
+            if buff_type in BUFF_TEXTS:
+                text = BUFF_TEXTS[buff_type]
+                ratio_remaining = active_buff.get_ratio_duration_remaining()
+                buffs.append((text, ratio_remaining))
+        self.buffs.update(buffs)
+        print("BUFFFS")
 
     def _update_player_stats(self, event):
         player_state = event.player_state
@@ -539,16 +552,8 @@ class GameUiView:
             self.dialog.render()
 
         # BUFFS
-        buffs = []
-        for active_buff in player_state.active_buffs:
-            buff_type = active_buff.buff_effect.get_buff_type()
-            # Buffs that don't have description texts shouldn't be displayed. (They are typically irrelevant to the
-            # player)
-            if buff_type in BUFF_TEXTS:
-                text = BUFF_TEXTS[buff_type]
-                ratio_remaining = active_buff.get_ratio_duration_remaining()
-                buffs.append((text, ratio_remaining))
-        self.buffs.render(buffs)
+
+        self.buffs.render()
 
         # TOGGLES
         if ui_state.toggle_enabled == UiToggle.STATS:

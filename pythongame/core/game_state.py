@@ -363,6 +363,14 @@ class PlayerUnlockedNewTalent(GainExpEvent):
     pass
 
 
+class AgentBuffsUpdate:
+    def __init__(self, buffs_that_started: List[BuffWithDuration], buffs_that_were_active: List[BuffWithDuration],
+                 buffs_that_ended: List[BuffWithDuration]):
+        self.buffs_that_started = buffs_that_started
+        self.buffs_that_were_active = buffs_that_were_active
+        self.buffs_that_ended = buffs_that_ended
+
+
 class PlayerState:
     def __init__(self, health_resource: HealthOrManaResource, mana_resource: HealthOrManaResource,
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
@@ -405,6 +413,7 @@ class PlayerState:
         self.exp_was_updated = Observable()
         self.money_was_updated = Observable()
         self.cooldowns_were_updated = Observable()
+        self.buffs_were_updated = Observable()
 
     def modify_money(self, delta: int):
         self.money += delta
@@ -467,6 +476,10 @@ class PlayerState:
             existing_buffs_with_this_type[0].set_remaining_duration(duration)
         else:
             self.active_buffs.append(BuffWithDuration(buff, duration))
+        self.notify_buff_observers()
+
+    def notify_buff_observers(self):
+        self.buffs_were_updated.notify(self.active_buffs)
 
     def has_active_buff(self, buff_type: BuffType):
         return len([b for b in self.active_buffs if b.buff_effect.get_buff_type() == buff_type]) > 0
@@ -474,6 +487,26 @@ class PlayerState:
     def force_cancel_all_buffs(self):
         for b in self.active_buffs:
             b.force_cancel()
+        self.notify_buff_observers()
+
+    def handle_buffs(self, time_passed: Millis):
+        # NOTE: duplication between NPC's and player's buff handling
+        copied_buffs_list = list(self.active_buffs)
+        buffs_that_started = []
+        buffs_that_ended = []
+        buffs_that_were_active = []
+        for buff in copied_buffs_list:
+            buff.notify_time_passed(time_passed)
+            if not buff.has_been_force_cancelled:
+                buffs_that_were_active.append(buff)
+            if not buff.has_applied_start_effect:
+                buffs_that_started.append(buff)
+                buff.has_applied_start_effect = True
+            elif buff.has_expired():
+                self.active_buffs.remove(buff)
+                buffs_that_ended.append(buff)
+        self.notify_buff_observers()
+        return AgentBuffsUpdate(buffs_that_started, buffs_that_were_active, buffs_that_ended)
 
     def recharge_ability_cooldowns(self, time_passed: Millis):
         did_update = False
@@ -546,6 +579,7 @@ class PlayerState:
                     buff.change_remaining_duration(outcome.change_remaining_duration)
                 if outcome.cancel_effect:
                     buff.force_cancel()
+                self.notify_buff_observers()
         for item_effect in self.item_inventory.get_all_active_item_effects():
             item_effect.item_handle_event(event, game_state)
 

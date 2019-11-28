@@ -8,7 +8,7 @@ from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS,
     NpcCategory, PORTALS, ABILITIES
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
     EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest, \
-    PlayerUnlockedNewTalent
+    PlayerUnlockedNewTalent, AgentBuffsUpdate
 from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
 from pythongame.core.loot import LootEntry
@@ -221,7 +221,7 @@ class GameEngine:
         self.game_state.remove_expired_visual_effects()
         self.game_state.remove_opened_chests()
 
-        player_buffs_update = handle_buffs(self.game_state.player_state.active_buffs, time_passed)
+        player_buffs_update = self.game_state.player_state.handle_buffs(time_passed)
         for buff in player_buffs_update.buffs_that_started:
             buff.buff_effect.apply_start_effect(self.game_state, self.game_state.player_entity, None)
         for buff in player_buffs_update.buffs_that_were_active:
@@ -377,15 +377,8 @@ class GameEngine:
                 self.game_state.consumables_on_ground.append(consumable_on_ground)
 
 
-class AgentBuffsUpdate:
-    def __init__(self, buffs_that_started: List[BuffWithDuration], buffs_that_were_active: List[BuffWithDuration],
-                 buffs_that_ended: List[BuffWithDuration]):
-        self.buffs_that_started = buffs_that_started
-        self.buffs_that_were_active = buffs_that_were_active
-        self.buffs_that_ended = buffs_that_ended
-
-
 def handle_buffs(active_buffs: List[BuffWithDuration], time_passed: Millis) -> AgentBuffsUpdate:
+    # NOTE: duplication between NPC's and player's buff handling
     copied_buffs_list = list(active_buffs)
     buffs_that_started = []
     buffs_that_ended = []
