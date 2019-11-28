@@ -266,13 +266,13 @@ class GameUiView:
         elif isinstance(event, ItemInventory):
             self._update_inventory(event.slots)
         elif isinstance(event, PlayerStatsObserverEvent):
-            self.update_player_stats(event)
+            self._update_player_stats(event)
         elif isinstance(event, PlayerMovementSpeedObserverEvent):
             self.stats_window.player_speed_multiplier = event.player_speed_multiplier
         else:
             raise Exception("Unhandled event: " + str(event))
 
-    def update_player_stats(self, event):
+    def _update_player_stats(self, event):
         player_state = event.player_state
         self.stats_window.player_state = player_state
         self._update_regen(player_state.health_resource.get_effective_regen(),
@@ -348,7 +348,7 @@ class GameUiView:
         image = self.images_by_portrait_sprite[sprite]
         self.portrait.image = image
 
-    def update_dialog(self, dialog_config: DialogConfig):
+    def update_dialog(self, dialog_config: Optional[DialogConfig]):
         if dialog_config:
             options = [
                 DialogOption(
@@ -459,7 +459,7 @@ class GameUiView:
         return MouseHoverEvent(hovered_item_slot, hovered_consumable_slot, is_mouse_hovering_ui, hovered_ui_toggle,
                                hovered_talent_option)
 
-    def render_ui(
+    def render(
             self,
             player_state: PlayerState,
             ui_state: GameUiState,

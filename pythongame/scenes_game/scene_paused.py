@@ -56,7 +56,7 @@ class PausedScene(AbstractScene):
             entire_world_area=self.game_state.entire_world_area,
             entity_action_text=None)
 
-        self.ui_view.render_ui(
+        self.ui_view.render(
             player_state=self.game_state.player_state,
             ui_state=self.ui_state,
             text_in_topleft_corner="...",

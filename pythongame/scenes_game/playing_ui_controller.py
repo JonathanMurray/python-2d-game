@@ -114,7 +114,7 @@ class PlayingUiController:
         if self.consumable_slot_being_dragged or self.item_slot_being_dragged:
             mouse_drag = MouseDrag(self.consumable_slot_being_dragged, self.item_slot_being_dragged,
                                    self.mouse_screen_position)
-        self.ui_view.render_ui(
+        self.ui_view.render(
             player_state=player_state,
             ui_state=self.ui_state,
             text_in_topleft_corner=text_in_topleft_corner,

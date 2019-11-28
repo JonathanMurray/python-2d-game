@@ -1,4 +1,4 @@
-from typing import Dict, Type, List
+from typing import Dict, Type
 
 from pythongame.core.common import *
 from pythongame.core.damage_interactions import deal_npc_damage, DamageType
@@ -10,7 +10,6 @@ from pythongame.core.math import is_x_and_y_within_distance, get_perpendicular_d
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.sound_player import play_sound
-
 
 
 class AbstractNpcMind:
