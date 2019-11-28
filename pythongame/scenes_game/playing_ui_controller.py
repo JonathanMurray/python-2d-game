@@ -101,9 +101,6 @@ class PlayingUiController:
 
         player_state = game_state.player_state
 
-        # UPDATING UI COMPONENTS
-        self.ui_view.update_has_unseen_talents(self.ui_state.talent_toggle_has_unseen_talents)
-
         # MOUSE HANDLING
         mouse_hover_event = self.ui_view.handle_mouse(self.mouse_screen_position, self.ui_state.toggle_enabled)
         self.hovered_item_slot = mouse_hover_event.item

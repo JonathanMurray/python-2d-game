@@ -343,10 +343,6 @@ class GameUiView:
                                        bottom_left=self.manabar.rect.topleft)
         self.manabar.tooltip = mana_tooltip
 
-    def update_has_unseen_talents(self, has_unseen_talents: bool):
-        # TODO Don't rely on TALENTS being second in the list
-        self.toggle_buttons[1].highlighted = has_unseen_talents
-
     def update_hero(self, hero_id: HeroId):
         sprite = HEROES[hero_id].portrait_icon_sprite
         image = self.images_by_portrait_sprite[sprite]
@@ -545,6 +541,8 @@ class GameUiView:
             self.controls_window.render()
 
         for toggle_button in self.toggle_buttons:
+            if toggle_button.toggle_id == UiToggle.TALENTS:
+                toggle_button.highlighted = ui_state.talent_toggle_has_unseen_talents
             enabled = ui_state.toggle_enabled == toggle_button.toggle_id
             hovered = self.hovered_component == toggle_button
             toggle_button.render(enabled, hovered)
