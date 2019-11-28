@@ -77,7 +77,7 @@ class ChallengeBehavior(AbstractWorldBehavior):
     def on_startup(self, new_hero_was_created: bool):
         self.ui_state.set_message("Challenge starting...")
         if new_hero_was_created:
-            self.game_state.player_state.money += 100
+            self.game_state.player_state.modify_money(100)
             self.game_engine.gain_levels(4)
 
             consumables = [ConsumableType.HEALTH,
@@ -139,6 +139,9 @@ class CreatingWorldScene(AbstractScene):
         game_state.player_state.stats_were_updated.register_observer(self.ui_view.handle_event)
         game_state.player_state.notify_stats_observers()  # Must notify the initial state
         game_engine.player_abilities_were_updated.register_observer(self.ui_view.handle_event)
+        game_state.player_state.money_was_updated.register_observer(self.ui_view.handle_event)
+        game_state.player_state.notify_money_observers()  # Must notify the initial state
+
         if self.flags.map_file_path == 'resources/maps/challenge.json':
             world_behavior = ChallengeBehavior(game_state, ui_state, game_engine, self.flags)
         else:
@@ -152,7 +155,7 @@ class CreatingWorldScene(AbstractScene):
                 {int(slot_number): [ConsumableType[c] for c in consumables] for (slot_number, consumables)
                  in saved_player_state.consumables_in_slots.items()}
             )
-            game_state.player_state.money += saved_player_state.money
+            game_state.player_state.modify_money(saved_player_state.money)
             for portal in game_state.portals:
                 if portal.portal_id.name in saved_player_state.enabled_portals:
                     sprite = saved_player_state.enabled_portals[portal.portal_id.name]
@@ -163,7 +166,7 @@ class CreatingWorldScene(AbstractScene):
             if hero_start_level > 1:
                 game_engine.gain_levels(hero_start_level - 1)
             if start_money > 0:
-                game_state.player_state.money += start_money
+                game_state.player_state.modify_money(start_money)
 
         game_state.player_state.item_inventory.was_updated.register_observer(self.ui_view.handle_event)
         game_state.player_state.item_inventory.notify_observers()  # Must notify the initial state

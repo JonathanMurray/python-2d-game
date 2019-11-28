@@ -114,7 +114,7 @@ class SellConsumableNpcAction(AbstractNpcAction):
         if not has_space:
             play_sound(SoundId.WARNING)
             return "Not enough space!"
-        player_state.money -= self.cost
+        player_state.modify_money(-self.cost)
         player_state.consumable_inventory.add_consumable(self.consumable_type)
         play_sound(SoundId.EVENT_PURCHASED_SOMETHING)
         return "Bought " + self.name
@@ -140,7 +140,7 @@ class SellItemNpcAction(AbstractNpcAction):
             play_sound(SoundId.WARNING)
             return "Not enough space!"
 
-        player_state.money -= self.cost
+        player_state.modify_money(- self.cost)
         play_sound(SoundId.EVENT_PURCHASED_SOMETHING)
         return "Bought " + self.name
 
@@ -156,7 +156,7 @@ class BuyItemNpcAction(AbstractNpcAction):
         player_has_it = game_state.player_state.item_inventory.has_item_in_inventory(self.item_type)
         if player_has_it:
             game_state.player_state.item_inventory.lose_item_from_inventory(self.item_type)
-            game_state.player_state.money += self.price
+            game_state.player_state.modify_money(self.price)
             return "Sold " + self.name
         else:
             return "You don't have that!"

@@ -8,7 +8,7 @@ from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, \
     KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, HEROES
 from pythongame.core.game_state import PlayerState, PlayerStatsObserverEvent, PlayerMovementSpeedObserverEvent, \
-    PlayerExpObserverEvent
+    PlayerExpObserverEvent, MoneyObserverEvent
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES, \
     ItemInventory
 from pythongame.core.math import is_point_in_rect
@@ -120,7 +120,7 @@ class GameUiView:
         self.exp_bar = ExpBar(self.ui_render, Rect(140, 23, 300, 2), self.font_level)
         self.minimap = Minimap(self.ui_render, Rect(440, 52, 80, 80))
         self.buffs = Buffs(self.ui_render, self.font_buff_texts)
-        self.money_text = Text(self.ui_render, self.font_ui_money, (24, 150))
+        self.money_text = Text(self.ui_render, self.font_ui_money, (24, 150), "NO MONEY")
 
         self._setup_ability_icons()
         self._setup_consumable_icons()
@@ -272,6 +272,8 @@ class GameUiView:
             self.stats_window.player_speed_multiplier = event.player_speed_multiplier
         elif isinstance(event, PlayerExpObserverEvent):
             self.exp_bar.update(event.level, event.ratio_exp_until_next_level)
+        elif isinstance(event, MoneyObserverEvent):
+            self.money_text.text = "Money: " + str(event.money)
         else:
             raise Exception("Unhandled event: " + str(event))
 
@@ -487,7 +489,7 @@ class GameUiView:
         self.manabar.render(player_state.mana_resource.value, player_state.mana_resource.max_value)
 
         # MONEY
-        self.money_text.render("Money: " + str(player_state.money))
+        self.money_text.render()
 
         # CONSUMABLES
         self.ui_render.rect_filled((60, 60, 80), self.consumable_icons_row)

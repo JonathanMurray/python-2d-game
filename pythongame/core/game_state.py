@@ -393,6 +393,14 @@ class PlayerState:
         self.talents_were_updated = Observable()
         self.stats_were_updated = Observable()
         self.exp_was_updated = Observable()
+        self.money_was_updated = Observable()
+
+    def modify_money(self, delta: int):
+        self.money += delta
+        self.notify_money_observers()
+        
+    def notify_money_observers(self):
+        self.money_was_updated.notify(MoneyObserverEvent(self.money))
 
     def get_effective_physical_damage_modifier(self) -> float:
         return self.base_physical_damage_modifier + self.physical_damage_modifier_bonus
@@ -628,6 +636,11 @@ class PlayerExpObserverEvent:
     def __init__(self, level: int, ratio_exp_until_next_level: float):
         self.level = level
         self.ratio_exp_until_next_level = ratio_exp_until_next_level
+
+
+class MoneyObserverEvent:
+    def __init__(self, money: int):
+        self.money = money
 
 
 class GameState:

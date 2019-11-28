@@ -284,7 +284,7 @@ class GameEngine:
             if boxes_intersect(self.game_state.player_entity.rect(), money_pile.world_entity.rect()):
                 play_sound(SoundId.EVENT_PICKED_UP_MONEY)
                 money_pile.has_been_picked_up_and_should_be_removed = True
-                self.game_state.player_state.money += money_pile.amount
+                self.game_state.player_state.modify_money(money_pile.amount)
 
         for enemy in [e for e in self.game_state.non_player_characters if e.is_enemy]:
             for projectile in self.game_state.get_projectiles_intersecting_with(enemy.world_entity):

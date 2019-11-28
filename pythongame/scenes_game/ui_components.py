@@ -565,10 +565,11 @@ class Buffs:
 
 
 class Text:
-    def __init__(self, ui_render: DrawableArea, font, ui_position: Tuple[int, int]):
+    def __init__(self, ui_render: DrawableArea, font, ui_position: Tuple[int, int], text: str):
         self.ui_render = ui_render
         self.font = font
         self.ui_position = ui_position
+        self.text = text
 
-    def render(self, text: str):
-        self.ui_render.text(self.font, text, self.ui_position)
+    def render(self):
+        self.ui_render.text(self.font, self.text, self.ui_position)
