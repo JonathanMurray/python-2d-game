@@ -5,7 +5,7 @@ from pygame.rect import Rect
 from pythongame.core.ability_effects import register_ability_effect, AbilityResult, AbilityWasUsedSuccessfully
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, AbilityType, SoundId, HeroId, UiIconSprite, PeriodicTimer, \
-    HeroUpgrade
+    HeroUpgrade, HeroStat
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     HEROES, register_buff_as_channeling
@@ -36,7 +36,7 @@ class Charging(AbstractBuffEffect):
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.add_one()
-        game_state.player_entity.add_to_speed_multiplier(BONUS_SPEED_MULTIPLIER)
+        game_state.modify_hero_stat(HeroStat.MOVEMENT_SPEED, BONUS_SPEED_MULTIPLIER)
         game_state.player_entity.set_moving_in_dir(game_state.player_entity.direction)
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
@@ -82,7 +82,7 @@ class Charging(AbstractBuffEffect):
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.remove_one()
-        game_state.player_entity.add_to_speed_multiplier(-BONUS_SPEED_MULTIPLIER)
+        game_state.modify_hero_stat(HeroStat.MOVEMENT_SPEED, -BONUS_SPEED_MULTIPLIER)
 
     def get_buff_type(self):
         return BUFF_TYPE_CHARGING

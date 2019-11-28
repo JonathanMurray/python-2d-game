@@ -1,5 +1,6 @@
-from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
-from pythongame.core.common import Millis, NpcType, Sprite, Direction, BuffType
+from pythongame.core.buff_effects import register_buff_effect, get_buff_effect, \
+    StatModifyingBuffEffect
+from pythongame.core.common import Millis, NpcType, Sprite, Direction, BuffType, HeroStat
 from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
@@ -73,15 +74,9 @@ class NpcMind(AbstractNpcMind):
                     game_state.player_state.gain_buff_effect(get_buff_effect(SLOW_BUFF_TYPE), Millis(1500))
 
 
-class SlowedByIceWitch(AbstractBuffEffect):
-    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        buffed_entity.add_to_speed_multiplier(-SLOW_AMOUNT)
-
-    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        buffed_entity.add_to_speed_multiplier(SLOW_AMOUNT)
-
-    def get_buff_type(self):
-        return SLOW_BUFF_TYPE
+class SlowedByIceWitch(StatModifyingBuffEffect):
+    def __init__(self):
+        super().__init__(SLOW_BUFF_TYPE, {HeroStat.MOVEMENT_SPEED: -SLOW_AMOUNT})
 
 
 def _move_in_dir(enemy_entity, direction):

@@ -7,8 +7,7 @@ from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprit
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, \
     KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, HEROES
-from pythongame.core.game_state import PlayerStatsObserverEvent, PlayerMovementSpeedObserverEvent, \
-    BuffWithDuration
+from pythongame.core.game_state import PlayerStatsObserverEvent, BuffWithDuration
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES, \
     ItemInventory
 from pythongame.core.math import is_point_in_rect
@@ -273,7 +272,7 @@ class GameUiView:
         else:
             raise Exception("Unhandled event: " + str(event))
 
-    def on_player_movement_speed_updated(self, speed_multiplier:float):
+    def on_player_movement_speed_updated(self, speed_multiplier: float):
         self.stats_window.player_speed_multiplier = speed_multiplier
 
     def on_player_exp_updated(self, event: Tuple[int, float]):
@@ -309,7 +308,6 @@ class GameUiView:
                 ratio_remaining = active_buff.get_ratio_duration_remaining()
                 buffs.append((text, ratio_remaining))
         self.buffs.update(buffs)
-        print("BUFFFS")
 
     def _update_player_stats(self, event):
         player_state = event.player_state
