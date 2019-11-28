@@ -46,10 +46,10 @@ class ConsumableInventory:
 
     def remove_consumable_from_slot(self, slot_number: int) -> Optional[ConsumableType]:
         if self.consumables_in_slots[slot_number]:
+            removed = self.consumables_in_slots[slot_number].pop(0)
             self.notify_observers()
-            return self.consumables_in_slots[slot_number].pop(0)
-        else:
-            return None
+            return removed
+        return None
 
     def get_consumable_at_slot(self, slot_number: int) -> Optional[ConsumableType]:
         return self.consumables_in_slots[slot_number][0] if len(self.consumables_in_slots[slot_number]) > 0 else None
