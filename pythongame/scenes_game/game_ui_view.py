@@ -12,6 +12,7 @@ from pythongame.core.math import is_point_in_rect
 from pythongame.core.npc_behaviors import DialogData
 from pythongame.core.talents import TalentsGraphics
 from pythongame.core.view.render_util import DrawableArea
+from pythongame.scenes_game.game_engine import PlayerAbilityObserverEvent
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
     ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text, \
@@ -256,6 +257,8 @@ class GameUiView:
     def handle_event(self, event):
         if isinstance(event, TalentsGraphics):
             self._setup_talents_window(event)
+        elif isinstance(event, PlayerAbilityObserverEvent):
+            self.update_abilities(event.abilities)
         else:
             raise Exception("Unhandled event: " + str(event))
 

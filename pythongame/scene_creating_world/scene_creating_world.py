@@ -128,11 +128,12 @@ class CreatingWorldScene(AbstractScene):
         hero_start_level = self.flags.hero_start_level
         start_money = self.flags.start_money
 
-        game_state = create_game_state_from_json_file(self.camera_size, self.flags.map_file_path,
-                                                      self.flags.picked_hero)
-        game_state.player_state.register_observer(self.ui_view.handle_event)
         ui_state = GameUiState()
+        game_state = create_game_state_from_json_file(
+            self.camera_size, self.flags.map_file_path, self.flags.picked_hero)
         game_engine = GameEngine(game_state, ui_state)
+        game_state.player_state.register_observer(self.ui_view.handle_event)
+        game_engine.register_observer(self.ui_view.handle_event)
         if self.flags.map_file_path == 'resources/maps/challenge.json':
             world_behavior = ChallengeBehavior(game_state, ui_state, game_engine, self.flags)
         else:
