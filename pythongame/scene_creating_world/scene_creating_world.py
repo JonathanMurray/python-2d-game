@@ -132,14 +132,14 @@ class CreatingWorldScene(AbstractScene):
         game_state = create_game_state_from_json_file(
             self.camera_size, self.flags.map_file_path, self.flags.picked_hero)
         game_engine = GameEngine(game_state, ui_state)
-        game_state.player_state.exp_was_updated.register_observer(self.ui_view.handle_event)
+        game_state.player_state.exp_was_updated.register_observer(self.ui_view.on_player_exp_updated)
         game_state.player_state.talents_were_updated.register_observer(self.ui_view.handle_event)
-        game_state.player_movement_speed_was_updated.register_observer(self.ui_view.handle_event)
+        game_state.player_movement_speed_was_updated.register_observer(self.ui_view.on_player_movement_speed_updated)
         game_state.notify_movement_speed_observers()  # Must notify the initial state
         game_state.player_state.stats_were_updated.register_observer(self.ui_view.handle_event)
         game_state.player_state.notify_stats_observers()  # Must notify the initial state
         game_engine.player_abilities_were_updated.register_observer(self.ui_view.handle_event)
-        game_state.player_state.money_was_updated.register_observer(self.ui_view.handle_event)
+        game_state.player_state.money_was_updated.register_observer(self.ui_view.on_money_updated)
         game_state.player_state.notify_money_observers()  # Must notify the initial state
         game_state.player_state.cooldowns_were_updated.register_observer(self.ui_view.on_cooldowns_updated)
         game_state.player_state.health_resource.value_was_updated.register_observer(self.ui_view.on_health_updated)

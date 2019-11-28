@@ -8,7 +8,7 @@ from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, \
     KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, HEROES
 from pythongame.core.game_state import PlayerStatsObserverEvent, PlayerMovementSpeedObserverEvent, \
-    PlayerExpObserverEvent, MoneyObserverEvent, BuffWithDuration
+    BuffWithDuration
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES, \
     ItemInventory
 from pythongame.core.math import is_point_in_rect
@@ -270,14 +270,18 @@ class GameUiView:
             self._update_inventory(event.slots)
         elif isinstance(event, PlayerStatsObserverEvent):
             self._update_player_stats(event)
-        elif isinstance(event, PlayerMovementSpeedObserverEvent):
-            self.stats_window.player_speed_multiplier = event.player_speed_multiplier
-        elif isinstance(event, PlayerExpObserverEvent):
-            self.exp_bar.update(event.level, event.ratio_exp_until_next_level)
-        elif isinstance(event, MoneyObserverEvent):
-            self.money_text.text = "Money: " + str(event.money)
         else:
             raise Exception("Unhandled event: " + str(event))
+
+    def on_player_movement_speed_updated(self, speed_multiplier:float):
+        self.stats_window.player_speed_multiplier = speed_multiplier
+
+    def on_player_exp_updated(self, event: Tuple[int, float]):
+        level, ratio_exp_until_next_level = event
+        self.exp_bar.update(level, ratio_exp_until_next_level)
+
+    def on_money_updated(self, money: int):
+        self.money_text.text = "Money: " + str(money)
 
     def on_cooldowns_updated(self, ability_cooldowns_remaining: Dict[AbilityType, int]):
         for icon in self.ability_icons:

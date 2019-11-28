@@ -420,7 +420,7 @@ class PlayerState:
         self.notify_money_observers()
 
     def notify_money_observers(self):
-        self.money_was_updated.notify(MoneyObserverEvent(self.money))
+        self.money_was_updated.notify(self.money)
 
     def get_effective_physical_damage_modifier(self) -> float:
         return self.base_physical_damage_modifier + self.physical_damage_modifier_bonus
@@ -540,13 +540,16 @@ class PlayerState:
             if self.level in self.talents_state.choices_by_level:
                 events.append(PlayerUnlockedNewTalent())
                 self._notify_talent_observers()
-        self.exp_was_updated.notify(PlayerExpObserverEvent(self.level, self.exp / self.max_exp_in_this_level))
+        self.notify_exp_observers()
         return events
 
     def lose_exp_from_death(self):
         partial_exp_loss = 0.5
         self.exp = max(0, self.exp - int(self.max_exp_in_this_level * partial_exp_loss))
-        self.exp_was_updated.notify(PlayerExpObserverEvent(self.level, self.exp / self.max_exp_in_this_level))
+        self.notify_exp_observers()
+
+    def notify_exp_observers(self):
+        self.exp_was_updated.notify((self.level, self.exp / self.max_exp_in_this_level))
 
     def gain_exp_worth_n_levels(self, num_levels: int) -> List[GainExpEvent]:
         events = []
@@ -689,17 +692,6 @@ class PlayerMovementSpeedObserverEvent:
         self.player_speed_multiplier = player_speed_multiplier
 
 
-class PlayerExpObserverEvent:
-    def __init__(self, level: int, ratio_exp_until_next_level: float):
-        self.level = level
-        self.ratio_exp_until_next_level = ratio_exp_until_next_level
-
-
-class MoneyObserverEvent:
-    def __init__(self, money: int):
-        self.money = money
-
-
 class GameState:
     def __init__(self, player_entity: WorldEntity, consumables_on_ground: List[ConsumableOnGround],
                  items_on_ground: List[ItemOnGround], money_piles_on_ground: List[MoneyPileOnGround],
@@ -765,8 +757,7 @@ class GameState:
             self.player_state.modify_stat(hero_stat, stat_delta)
 
     def notify_movement_speed_observers(self):
-        event = PlayerMovementSpeedObserverEvent(self.player_entity.get_speed_multiplier())
-        self.player_movement_speed_was_updated.notify(event)
+        self.player_movement_speed_was_updated.notify(self.player_entity.get_speed_multiplier())
 
     def add_non_player_character(self, npc: NonPlayerCharacter):
         self.non_player_characters.append(npc)
