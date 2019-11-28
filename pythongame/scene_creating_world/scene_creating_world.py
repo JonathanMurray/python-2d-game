@@ -133,6 +133,10 @@ class CreatingWorldScene(AbstractScene):
             self.camera_size, self.flags.map_file_path, self.flags.picked_hero)
         game_engine = GameEngine(game_state, ui_state)
         game_state.player_state.talents_were_updated.register_observer(self.ui_view.handle_event)
+        game_state.player_movement_speed_was_updated.register_observer(self.ui_view.handle_event)
+        game_state.notify_movement_speed_observers()  # Must notify the initial state
+        game_state.player_state.stats_were_updated.register_observer(self.ui_view.handle_event)
+        game_state.player_state.notify_stats_observers()  # Must notify the initial state
         game_engine.player_abilities_were_updated.register_observer(self.ui_view.handle_event)
         if self.flags.map_file_path == 'resources/maps/challenge.json':
             world_behavior = ChallengeBehavior(game_state, ui_state, game_engine, self.flags)

@@ -105,7 +105,6 @@ class PlayingUiController:
         self.ui_view.update_regen(player_state.health_resource.get_effective_regen(),
                                   player_state.mana_resource.get_effective_regen())
         self.ui_view.update_has_unseen_talents(self.ui_state.talent_toggle_has_unseen_talents)
-        self.ui_view.update_player_stats(player_state, game_state.player_entity.get_speed_multiplier())
 
         # MOUSE HANDLING
         mouse_hover_event = self.ui_view.handle_mouse(self.mouse_screen_position, self.ui_state.toggle_enabled)

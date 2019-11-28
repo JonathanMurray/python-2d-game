@@ -7,7 +7,7 @@ from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprit
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, \
     KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, HEROES
-from pythongame.core.game_state import PlayerState
+from pythongame.core.game_state import PlayerState, PlayerStatsObserverEvent, PlayerMovementSpeedObserverEvent
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES, \
     ItemInventory
 from pythongame.core.math import is_point_in_rect
@@ -265,6 +265,10 @@ class GameUiView:
             self._update_consumables(event.consumables_in_slots)
         elif isinstance(event, ItemInventory):
             self._update_inventory(event.slots)
+        elif isinstance(event, PlayerStatsObserverEvent):
+            self.stats_window.player_state = event.player_state
+        elif isinstance(event, PlayerMovementSpeedObserverEvent):
+            self.stats_window.player_speed_multiplier = event.player_speed_multiplier
         else:
             raise Exception("Unhandled event: " + str(event))
 
@@ -336,10 +340,6 @@ class GameUiView:
     def update_has_unseen_talents(self, has_unseen_talents: bool):
         # TODO Don't rely on TALENTS being second in the list
         self.toggle_buttons[1].highlighted = has_unseen_talents
-
-    def update_player_stats(self, player_state: PlayerState, player_speed_multiplier: float):
-        self.stats_window.player_state = player_state
-        self.stats_window.player_speed_multiplier = player_speed_multiplier
 
     def update_hero(self, hero_id: HeroId):
         sprite = HEROES[hero_id].portrait_icon_sprite

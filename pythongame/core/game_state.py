@@ -391,6 +391,53 @@ class PlayerState:
         self.block_chance: float = block_chance
         self.block_damage_reduction: int = 0
         self.talents_were_updated = Observable()
+        self.stats_were_updated = Observable()
+
+    def get_effective_physical_damage_modifier(self) -> float:
+        return self.base_physical_damage_modifier + self.physical_damage_modifier_bonus
+
+    def get_effective_magic_damage_modifier(self) -> float:
+        return self.base_magic_damage_modifier + self.magic_damage_modifier_bonus
+
+    def get_effective_dodge_change(self) -> float:
+        return self.base_dodge_chance + self.dodge_chance_bonus
+
+    def modify_stat(self, hero_stat: HeroStat, stat_delta: Union[int, float]):
+        if hero_stat == HeroStat.MAX_HEALTH:
+            if stat_delta >= 0:
+                self.health_resource.increase_max(stat_delta)
+            elif stat_delta < 0:
+                self.health_resource.decrease_max(-stat_delta)
+        elif hero_stat == HeroStat.HEALTH_REGEN:
+            self.health_resource.regen_bonus += stat_delta
+        elif hero_stat == HeroStat.MAX_MANA:
+            if stat_delta >= 0:
+                self.mana_resource.increase_max(stat_delta)
+            elif stat_delta < 0:
+                self.mana_resource.decrease_max(-stat_delta)
+        elif hero_stat == HeroStat.MANA_REGEN:
+            self.mana_resource.regen_bonus += stat_delta
+        elif hero_stat == HeroStat.ARMOR:
+            self.armor_bonus += stat_delta
+        elif hero_stat == HeroStat.DAMAGE:
+            self.physical_damage_modifier_bonus += stat_delta
+            self.magic_damage_modifier_bonus += stat_delta
+        elif hero_stat == HeroStat.PHYSICAL_DAMAGE:
+            self.physical_damage_modifier_bonus += stat_delta
+        elif hero_stat == HeroStat.MAGIC_DAMAGE:
+            self.magic_damage_modifier_bonus += stat_delta
+        elif hero_stat == HeroStat.LIFE_STEAL:
+            self.life_steal_ratio += stat_delta
+        elif hero_stat == HeroStat.BLOCK_AMOUNT:
+            self.block_damage_reduction += stat_delta
+        elif hero_stat == HeroStat.DODGE_CHANCE:
+            self.dodge_chance_bonus += stat_delta
+        else:
+            raise Exception("Unhandled stat: " + str(hero_stat))
+        self.notify_stats_observers()
+
+    def notify_stats_observers(self):
+        self.stats_were_updated.notify(PlayerStatsObserverEvent(self))
 
     # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):
@@ -421,7 +468,7 @@ class PlayerState:
         while self.exp >= self.max_exp_in_this_level:
             self.exp -= self.max_exp_in_this_level
             self.level += 1
-            self.update_stats_for_new_level()
+            self._update_stats_for_new_level()
             if self.level in self.new_level_abilities:
                 new_ability = self.new_level_abilities[self.level]
                 self.gain_ability(new_ability)
@@ -442,7 +489,7 @@ class PlayerState:
             events += self.gain_exp(amount)
         return events
 
-    def update_stats_for_new_level(self):
+    def _update_stats_for_new_level(self):
         self.health_resource.increase_max(self.level_bonus.health)
         self.health_resource.gain_to_max()
         self.mana_resource.increase_max(self.level_bonus.mana)
@@ -451,6 +498,7 @@ class PlayerState:
         self.base_physical_damage_modifier *= 1.1
         self.base_magic_damage_modifier *= 1.1
         self.base_armor += self.level_bonus.armor
+        self.notify_stats_observers()
 
     def gain_ability(self, ability_type: AbilityType):
         self.ability_cooldowns_remaining[ability_type] = 0
@@ -563,6 +611,16 @@ class CameraShake:
         return self._time_left > 0
 
 
+class PlayerStatsObserverEvent:
+    def __init__(self, player_state: PlayerState):
+        self.player_state = player_state
+
+
+class PlayerMovementSpeedObserverEvent:
+    def __init__(self, player_speed_multiplier: float):
+        self.player_speed_multiplier = player_speed_multiplier
+
+
 class GameState:
     def __init__(self, player_entity: WorldEntity, consumables_on_ground: List[ConsumableOnGround],
                  items_on_ground: List[ItemOnGround], money_piles_on_ground: List[MoneyPileOnGround],
@@ -591,6 +649,7 @@ class GameState:
         self.player_spawn_position: Tuple[int, int] = player_entity.get_position()
         self.warp_points: List[WarpPoint] = []
         self.chests: List[Chest] = chests
+        self.player_movement_speed_was_updated = Observable()
 
     @staticmethod
     def _setup_pathfinder_wall_grid(entire_world_area: Rect, walls: List[WorldEntity]):
@@ -620,40 +679,15 @@ class GameState:
         return camera_world_area
 
     def modify_hero_stat(self, hero_stat: HeroStat, stat_delta: Union[int, float]):
-        player_state = self.player_state
-        if hero_stat == HeroStat.MAX_HEALTH:
-            if stat_delta >= 0:
-                player_state.health_resource.increase_max(stat_delta)
-            elif stat_delta < 0:
-                player_state.health_resource.decrease_max(-stat_delta)
-        elif hero_stat == HeroStat.HEALTH_REGEN:
-            player_state.health_resource.regen_bonus += stat_delta
-        elif hero_stat == HeroStat.MAX_MANA:
-            if stat_delta >= 0:
-                player_state.mana_resource.increase_max(stat_delta)
-            elif stat_delta < 0:
-                player_state.mana_resource.decrease_max(-stat_delta)
-        elif hero_stat == HeroStat.MANA_REGEN:
-            player_state.mana_resource.regen_bonus += stat_delta
-        elif hero_stat == HeroStat.ARMOR:
-            player_state.armor_bonus += stat_delta
-        elif hero_stat == HeroStat.MOVEMENT_SPEED:
+        if hero_stat == HeroStat.MOVEMENT_SPEED:
             self.player_entity.add_to_speed_multiplier(stat_delta)
-        elif hero_stat == HeroStat.DAMAGE:
-            player_state.physical_damage_modifier_bonus += stat_delta
-            player_state.magic_damage_modifier_bonus += stat_delta
-        elif hero_stat == HeroStat.PHYSICAL_DAMAGE:
-            player_state.physical_damage_modifier_bonus += stat_delta
-        elif hero_stat == HeroStat.MAGIC_DAMAGE:
-            player_state.magic_damage_modifier_bonus += stat_delta
-        elif hero_stat == HeroStat.LIFE_STEAL:
-            player_state.life_steal_ratio += stat_delta
-        elif hero_stat == HeroStat.BLOCK_AMOUNT:
-            player_state.block_damage_reduction += stat_delta
-        elif hero_stat == HeroStat.DODGE_CHANCE:
-            player_state.dodge_chance_bonus += stat_delta
+            self.notify_movement_speed_observers()
         else:
-            raise Exception("Unhandled stat: " + str(hero_stat))
+            self.player_state.modify_stat(hero_stat, stat_delta)
+
+    def notify_movement_speed_observers(self):
+        event = PlayerMovementSpeedObserverEvent(self.player_entity.get_speed_multiplier())
+        self.player_movement_speed_was_updated.notify(event)
 
     def add_non_player_character(self, npc: NonPlayerCharacter):
         self.non_player_characters.append(npc)

@@ -1,7 +1,8 @@
 import random
 
-from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
-from pythongame.core.common import ItemType, Sprite, Millis, PeriodicTimer, BuffType
+from pythongame.core.buff_effects import register_buff_effect, get_buff_effect, \
+    StatModifyingBuffEffect
+from pythongame.core.common import ItemType, Sprite, Millis, PeriodicTimer, BuffType, HeroStat
 from pythongame.core.game_data import UiIconSprite, register_buff_text
 from pythongame.core.game_state import Event, EnemyDiedEvent, GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.item_effects import AbstractItemEffect
@@ -30,13 +31,11 @@ class ItemEffect(AbstractItemEffect):
                 "{:.0f}".format(BUFF_DURATION / 1000) + "s"]
 
 
-class ProtectedByStoneAmulet(AbstractBuffEffect):
+class ProtectedByStoneAmulet(StatModifyingBuffEffect):
 
     def __init__(self):
+        super().__init__(BUFF_TYPE, {HeroStat.ARMOR: ARMOR_BONUS})
         self.timer = PeriodicTimer(Millis(300))
-
-    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.armor_bonus += ARMOR_BONUS
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
@@ -44,12 +43,6 @@ class ProtectedByStoneAmulet(AbstractBuffEffect):
             game_state.visual_effects.append(
                 VisualCircle((130, 100, 60), buffed_entity.get_center_position(), 20, 40, Millis(100), 1,
                              buffed_entity))
-
-    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.armor_bonus -= ARMOR_BONUS
-
-    def get_buff_type(self):
-        return BUFF_TYPE
 
 
 def register_stone_amulet_item():
