@@ -1,12 +1,13 @@
 from typing import Dict, List, Optional
 
-from pythongame.core.common import ConsumableType
+from pythongame.core.common import ConsumableType, Observable
 
 
 class ConsumableInventory:
     def __init__(self, slots: Dict[int, List[ConsumableType]]):
         self.consumables_in_slots: Dict[int, List[ConsumableType]] = slots
         self.capacity_per_slot = 2
+        self.consumables_were_updated = Observable()
 
     def has_space_for_more(self) -> bool:
         slots_with_space = [consumables for consumables in self.consumables_in_slots.values() if
@@ -19,14 +20,17 @@ class ConsumableInventory:
                                          and consumables[0] == consumable_type]
         if non_full_slots_with_same_type:
             non_full_slots_with_same_type[0].append(consumable_type)
+            self.notify_observers()
             return
         empty_slots = [consumables for consumables in self.consumables_in_slots.values() if len(consumables) == 0]
         if empty_slots:
             empty_slots[0].append(consumable_type)
+            self.notify_observers()
             return
         for consumables in self.consumables_in_slots.values():
             if len(consumables) < self.capacity_per_slot:
                 consumables.append(consumable_type)
+                self.notify_observers()
                 return
         raise Exception("No space for consumable!")
 
@@ -38,12 +42,17 @@ class ConsumableInventory:
             consumable_type_2 = self.remove_consumable_from_slot(to_slot)
             self.consumables_in_slots[to_slot].insert(0, consumable_type_1)
             self.consumables_in_slots[from_slot].insert(0, consumable_type_2)
+        self.notify_observers()
 
     def remove_consumable_from_slot(self, slot_number: int) -> Optional[ConsumableType]:
         if self.consumables_in_slots[slot_number]:
+            self.notify_observers()
             return self.consumables_in_slots[slot_number].pop(0)
         else:
             return None
 
     def get_consumable_at_slot(self, slot_number: int) -> Optional[ConsumableType]:
         return self.consumables_in_slots[slot_number][0] if len(self.consumables_in_slots[slot_number]) > 0 else None
+
+    def notify_observers(self):
+        self.consumables_were_updated.notify(self)

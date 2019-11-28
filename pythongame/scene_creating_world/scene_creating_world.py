@@ -160,6 +160,10 @@ class CreatingWorldScene(AbstractScene):
             if start_money > 0:
                 game_state.player_state.money += start_money
 
+        game_state.player_state.consumable_inventory.consumables_were_updated.register_observer(
+            self.ui_view.handle_event)
+        game_state.player_state.consumable_inventory.notify_observers()  # Must notify the initial state
+
         allocate_input_keys_for_abilities(game_state.player_state.abilities)
 
         game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))

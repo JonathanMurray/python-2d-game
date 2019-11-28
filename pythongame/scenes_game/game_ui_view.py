@@ -4,6 +4,7 @@ import pygame
 from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite
+from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, \
     KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, HEROES
 from pythongame.core.game_state import PlayerState
@@ -258,11 +259,13 @@ class GameUiView:
         if isinstance(event, TalentsGraphics):
             self._setup_talents_window(event)
         elif isinstance(event, PlayerAbilityObserverEvent):
-            self.update_abilities(event.abilities)
+            self._update_abilities(event.abilities)
+        elif isinstance(event, ConsumableInventory):
+            self._update_consumables(event.consumables_in_slots)
         else:
             raise Exception("Unhandled event: " + str(event))
 
-    def update_abilities(self, abilities: List[AbilityType]):
+    def _update_abilities(self, abilities: List[AbilityType]):
         for i, ability_type in enumerate(abilities):
             ability = ABILITIES[ability_type]
             icon = self.ability_icons[i]
@@ -272,7 +275,7 @@ class GameUiView:
                 ability=ability,
                 ability_type=ability_type)
 
-    def update_consumables(self, consumable_slots: Dict[int, List[ConsumableType]]):
+    def _update_consumables(self, consumable_slots: Dict[int, List[ConsumableType]]):
         for i, slot_number in enumerate(consumable_slots):
             icon = self.consumable_icons[i]
             consumable_types = consumable_slots[slot_number]
