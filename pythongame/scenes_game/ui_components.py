@@ -333,7 +333,7 @@ class TalentIcon:
 
 class StatBar:
     def __init__(self, ui_render: DrawableArea, rect: Rect, color: Tuple[int, int, int], tooltip: TooltipGraphics,
-                 border: bool, show_numbers: bool, font):
+                 value: int, max_value: int, border: bool, show_numbers: bool, font):
         self.ui_render = ui_render
         self.rect = rect
         self.color = color
@@ -341,16 +341,24 @@ class StatBar:
         self.tooltip = tooltip
         self.show_numbers = show_numbers
         self.font = font
+        self._value = value
+        self._max_value = max_value
+        self.ratio_filled = self._value / self._max_value
 
     def contains(self, point: Tuple[int, int]) -> bool:
         return self.rect.collidepoint(point[0], point[1])
 
-    def render(self, value: int, max_value: int):
-        self.ui_render.stat_bar(self.rect.x, self.rect.y, self.rect.w, self.rect.h, value / max_value, self.color,
-                                self.border)
+    def render(self):
+        self.ui_render.stat_bar(
+            self.rect.x, self.rect.y, self.rect.w, self.rect.h, self.ratio_filled, self.color, self.border)
         if self.show_numbers:
-            text = str(value) + "/" + str(max_value)
+            text = str(self._value) + "/" + str(self._max_value)
             self.ui_render.text(self.font, text, (self.rect.x + 20, self.rect.y - 1))
+
+    def update(self, value: int, max_value: int):
+        self._value = value
+        self._max_value = max_value
+        self.ratio_filled = self._value / self._max_value
 
 
 class ToggleButton:

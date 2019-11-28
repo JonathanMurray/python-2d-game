@@ -196,10 +196,10 @@ class GameUiView:
 
     def _setup_health_and_mana_bars(self):
         rect_healthbar = Rect(20, 111, 100, 14)
-        self.healthbar = StatBar(self.ui_render, rect_healthbar, (200, 0, 50), None, border=True,
+        self.healthbar = StatBar(self.ui_render, rect_healthbar, (200, 0, 50), None, 0, 1, border=True,
                                  show_numbers=True, font=self.font_ui_stat_bar_numbers)
         rect_manabar = Rect(20, 132, 100, 14)
-        self.manabar = StatBar(self.ui_render, rect_manabar, (50, 0, 200), None, border=True,
+        self.manabar = StatBar(self.ui_render, rect_manabar, (50, 0, 200), None, 0, 1, border=True,
                                show_numbers=True, font=self.font_ui_stat_bar_numbers)
 
     def _setup_toggle_buttons(self):
@@ -283,6 +283,14 @@ class GameUiView:
             if ability_type:
                 ability = ABILITIES[ability_type]
                 icon.cooldown_remaining_ratio = ability_cooldowns_remaining[ability_type] / ability.cooldown
+
+    def on_health_updated(self, health: Tuple[int, int]):
+        value, max_value = health
+        self.healthbar.update(value, max_value)
+
+    def on_mana_updated(self, mana: Tuple[int, int]):
+        value, max_value = mana
+        self.manabar.update(value, max_value)
 
     def _update_player_stats(self, event):
         player_state = event.player_state
@@ -490,10 +498,10 @@ class GameUiView:
         self.portrait.render()
 
         # HEALTHBAR
-        self.healthbar.render(player_state.health_resource.value, player_state.health_resource.max_value)
+        self.healthbar.render()
 
         # MANABAR
-        self.manabar.render(player_state.mana_resource.value, player_state.mana_resource.max_value)
+        self.manabar.render()
 
         # MONEY
         self.money_text.render()
