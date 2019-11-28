@@ -132,6 +132,7 @@ class CreatingWorldScene(AbstractScene):
         game_state = create_game_state_from_json_file(
             self.camera_size, self.flags.map_file_path, self.flags.picked_hero)
         game_engine = GameEngine(game_state, ui_state)
+        game_state.player_state.exp_was_updated.register_observer(self.ui_view.handle_event)
         game_state.player_state.talents_were_updated.register_observer(self.ui_view.handle_event)
         game_state.player_movement_speed_was_updated.register_observer(self.ui_view.handle_event)
         game_state.notify_movement_speed_observers()  # Must notify the initial state

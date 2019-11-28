@@ -7,7 +7,8 @@ from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprit
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, \
     KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, HEROES
-from pythongame.core.game_state import PlayerState, PlayerStatsObserverEvent, PlayerMovementSpeedObserverEvent
+from pythongame.core.game_state import PlayerState, PlayerStatsObserverEvent, PlayerMovementSpeedObserverEvent, \
+    PlayerExpObserverEvent
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES, \
     ItemInventory
 from pythongame.core.math import is_point_in_rect
@@ -269,6 +270,8 @@ class GameUiView:
             self._update_player_stats(event)
         elif isinstance(event, PlayerMovementSpeedObserverEvent):
             self.stats_window.player_speed_multiplier = event.player_speed_multiplier
+        elif isinstance(event, PlayerExpObserverEvent):
+            self.exp_bar.update(event.level, event.ratio_exp_until_next_level)
         else:
             raise Exception("Unhandled event: " + str(event))
 
@@ -472,7 +475,7 @@ class GameUiView:
                                                          self.screen_size[1] - self.camera_size[1]))
 
         # EXP BAR
-        self.exp_bar.render(player_state.level, player_state.exp / player_state.max_exp_in_this_level)
+        self.exp_bar.render()
 
         # PORTRAIT
         self.portrait.render()

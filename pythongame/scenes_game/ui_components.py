@@ -496,10 +496,17 @@ class ExpBar:
         self.ui_render = ui_render
         self.rect = rect
         self.font = font
+        self.level = 1
+        self.filled_ratio = 0
 
-    def render(self, level: int, filled_ratio: float):
-        self.ui_render.text(self.font, "Level " + str(level), (self.rect.x, self.rect.y - 18))
-        self.ui_render.stat_bar(self.rect.x, self.rect.y, self.rect.w, self.rect.h, filled_ratio, (200, 200, 200), True)
+    def render(self):
+        self.ui_render.text(self.font, "Level " + str(self.level), (self.rect.x, self.rect.y - 18))
+        self.ui_render.stat_bar(self.rect.x, self.rect.y, self.rect.w, self.rect.h, self.filled_ratio, (200, 200, 200),
+                                True)
+
+    def update(self, level: int, filled_ratio: float):
+        self.level = level
+        self.filled_ratio = filled_ratio
 
 
 class Portrait:

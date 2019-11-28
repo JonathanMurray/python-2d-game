@@ -392,6 +392,7 @@ class PlayerState:
         self.block_damage_reduction: int = 0
         self.talents_were_updated = Observable()
         self.stats_were_updated = Observable()
+        self.exp_was_updated = Observable()
 
     def get_effective_physical_damage_modifier(self) -> float:
         return self.base_physical_damage_modifier + self.physical_damage_modifier_bonus
@@ -476,11 +477,13 @@ class PlayerState:
             if self.level in self.talents_state.choices_by_level:
                 events.append(PlayerUnlockedNewTalent())
                 self._notify_talent_observers()
+        self.exp_was_updated.notify(PlayerExpObserverEvent(self.level, self.exp / self.max_exp_in_this_level))
         return events
 
     def lose_exp_from_death(self):
         partial_exp_loss = 0.5
         self.exp = max(0, self.exp - int(self.max_exp_in_this_level * partial_exp_loss))
+        self.exp_was_updated.notify(PlayerExpObserverEvent(self.level, self.exp / self.max_exp_in_this_level))
 
     def gain_exp_worth_n_levels(self, num_levels: int) -> List[GainExpEvent]:
         events = []
@@ -619,6 +622,12 @@ class PlayerStatsObserverEvent:
 class PlayerMovementSpeedObserverEvent:
     def __init__(self, player_speed_multiplier: float):
         self.player_speed_multiplier = player_speed_multiplier
+
+
+class PlayerExpObserverEvent:
+    def __init__(self, level: int, ratio_exp_until_next_level: float):
+        self.level = level
+        self.ratio_exp_until_next_level = ratio_exp_until_next_level
 
 
 class GameState:
