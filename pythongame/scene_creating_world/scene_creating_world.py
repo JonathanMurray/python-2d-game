@@ -164,6 +164,7 @@ class CreatingWorldScene(AbstractScene):
         game_state.player_state.item_inventory.notify_observers()  # Must notify the initial state
         game_state.player_state.consumable_inventory.was_updated.register_observer(self.ui_view.handle_event)
         game_state.player_state.consumable_inventory.notify_observers()  # Must notify the initial state
+        self.ui_view.update_hero(game_state.player_state.hero_id)
 
         allocate_input_keys_for_abilities(game_state.player_state.abilities)
 

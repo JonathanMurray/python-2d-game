@@ -106,7 +106,6 @@ class PlayingUiController:
                                   player_state.mana_resource.get_effective_regen())
         self.ui_view.update_has_unseen_talents(self.ui_state.talent_toggle_has_unseen_talents)
         self.ui_view.update_player_stats(player_state, game_state.player_entity.get_speed_multiplier())
-        self.ui_view.update_hero(player_state.hero_id)
         dialog_config = None
         if self.dialog.active:
             data = get_dialog_data(self.dialog.npc.npc_type)
