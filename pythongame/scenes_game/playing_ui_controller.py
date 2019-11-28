@@ -102,7 +102,6 @@ class PlayingUiController:
         player_state = game_state.player_state
 
         # UPDATING UI COMPONENTS
-        self.ui_view.update_inventory(player_state.item_inventory.slots)
         self.ui_view.update_regen(player_state.health_resource.get_effective_regen(),
                                   player_state.mana_resource.get_effective_regen())
         self.ui_view.update_has_unseen_talents(self.ui_state.talent_toggle_has_unseen_talents)

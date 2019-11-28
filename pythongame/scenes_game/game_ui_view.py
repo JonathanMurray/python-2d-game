@@ -8,7 +8,8 @@ from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, \
     KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, HEROES
 from pythongame.core.game_state import PlayerState
-from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES
+from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES, \
+    ItemInventory
 from pythongame.core.math import is_point_in_rect
 from pythongame.core.npc_behaviors import DialogData
 from pythongame.core.talents import TalentsGraphics
@@ -262,6 +263,8 @@ class GameUiView:
             self._update_abilities(event.abilities)
         elif isinstance(event, ConsumableInventory):
             self._update_consumables(event.consumables_in_slots)
+        elif isinstance(event, ItemInventory):
+            self._update_inventory(event.slots)
         else:
             raise Exception("Unhandled event: " + str(event))
 
@@ -287,7 +290,7 @@ class GameUiView:
 
             icon.update(image, consumable, consumable_types)
 
-    def update_inventory(self, item_slots: List[ItemInventorySlot]):
+    def _update_inventory(self, item_slots: List[ItemInventorySlot]):
         for i in range(len(item_slots)):
             icon = self.inventory_icons[i]
             slot = item_slots[i]

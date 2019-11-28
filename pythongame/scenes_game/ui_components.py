@@ -258,10 +258,12 @@ class ConsumableIcon:
 
     def update(self, image, top_consumable: ConsumableData, consumable_types: List[ConsumableType]):
         self._image = image
+        self.consumable_types = consumable_types
         if top_consumable:
             self.tooltip = TooltipGraphics(self._ui_render, COLOR_WHITE, top_consumable.name,
                                            [top_consumable.description], bottom_left=self._rect.topleft)
-            self.consumable_types = consumable_types
+        else:
+            self.tooltip = None
 
 
 class ItemIcon:

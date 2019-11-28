@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional, List, Any
 
-from pythongame.core.common import ItemType
+from pythongame.core.common import ItemType, Observable
 
 
 class ItemEquipmentCategory(Enum):
@@ -74,6 +74,7 @@ class ItemInventorySlot:
 class ItemInventory:
     def __init__(self, slots: List[ItemInventorySlot]):
         self.slots = slots
+        self.was_updated = Observable()
 
     def switch_item_slots(self, slot_1_index: int, slot_2_index: int) -> List[ItemActivationEvent]:
         slot_1 = self.slots[slot_1_index]
@@ -103,6 +104,7 @@ class ItemInventory:
                 events.append(event_2)
             slot_1.item = content_2
             slot_2.item = content_1
+        self.notify_observers()
         return events
 
     def try_switch_item_at_slot(self, slot_index: int) -> List[ItemActivationEvent]:
@@ -111,6 +113,7 @@ class ItemInventory:
         for other_slot_index in [s for s in range(len(self.slots)) if s != slot_index]:
             events = self.switch_item_slots(slot_index, other_slot_index)
             if events:
+                self.notify_observers()
                 return events
         return []
 
@@ -119,15 +122,16 @@ class ItemInventory:
         if len(matches) > 0:
             return True
 
-    # Note: this will need to return events, if it's used for items that have effects
     def lose_item_from_inventory(self, item_type: ItemType):
         for slot_number in range(len(self.slots)):
             slot = self.slots[slot_number]
             if not slot.is_empty() and slot.get_item_type() == item_type:
                 self.slots[slot_number].item = None
+                self.notify_observers()
                 return
         print("WARN: item not found in inventory: " + item_type.name)
 
+    # Note: this will need to return events, if it's used for items that have effects
     def is_slot_empty(self, slot_index: int) -> bool:
         return self.slots[slot_index].is_empty()
 
@@ -138,6 +142,7 @@ class ItemInventory:
         if empty_slot_index is not None:
             slot = self.slots[empty_slot_index]
             slot.item = item_in_slot
+            self.notify_observers()
             if slot.is_active():
                 return ItemWasActivated(item_effect.get_item_type())
             else:
@@ -151,6 +156,7 @@ class ItemInventory:
         if not slot.is_empty():
             raise Exception("Can't put item in non-empty slot!")
         slot.item = item_in_slot
+        self.notify_observers()
         if slot.is_active():
             return ItemWasActivated(item_effect.get_item_type())
         else:
@@ -174,9 +180,13 @@ class ItemInventory:
             raise Exception("Can't remove item from empty inventory slot: " + str(slot_index))
         item_type = slot.get_item_type()
         slot.item = None
+        self.notify_observers()
         if slot.is_active():
             return ItemWasDeactivated(item_type)
         return ItemActivationStateDidNotChange(item_type)
 
     def get_all_active_item_effects(self) -> List[Any]:
         return [slot.item.item_effect for slot in self.slots if slot.is_active() and not slot.is_empty()]
+
+    def notify_observers(self):
+        self.was_updated.notify(self)
