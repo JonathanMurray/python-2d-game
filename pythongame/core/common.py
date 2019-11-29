@@ -16,7 +16,7 @@ class Observable:
 
     def notify(self, event):
         for observer in self._observers:
-            print("DEBUG Notifying observer " + str(observer) + ": " + str(event))
+            # print("DEBUG Notifying observer " + str(observer) + ": " + str(event))
             observer(event)
 
 
