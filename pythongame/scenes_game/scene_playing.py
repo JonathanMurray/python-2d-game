@@ -28,7 +28,7 @@ from pythongame.scenes_game.game_ui_view import GameUiView
 from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
 from pythongame.scenes_game.playing_ui_controller import PlayingUiController, EventTriggeredFromUi, \
     DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
-    PickTalent, StartDraggingItemOrConsumable, ClickUiToggle, TrySwitchItemInInventory
+    PickTalent, StartDraggingItemOrConsumable, TrySwitchItemInInventory
 
 
 class PlayingScene(AbstractScene):
@@ -146,13 +146,13 @@ class PlayingScene(AbstractScene):
                 if isinstance(action, ActionSaveGameState):
                     save_to_file(self.game_state)
                 if isinstance(action, ActionToggleUiTalents):
-                    self.ui_state.notify_toggle_was_clicked(UiToggle.TALENTS)
+                    self.ui_view.on_click_toggle(UiToggle.TALENTS)
                     play_sound(SoundId.UI_TOGGLE)
                 if isinstance(action, ActionToggleUiStats):
-                    self.ui_state.notify_toggle_was_clicked(UiToggle.STATS)
+                    self.ui_view.on_click_toggle(UiToggle.STATS)
                     play_sound(SoundId.UI_TOGGLE)
                 if isinstance(action, ActionToggleUiControls):
-                    self.ui_state.notify_toggle_was_clicked(UiToggle.CONTROLS)
+                    self.ui_view.on_click_toggle(UiToggle.CONTROLS)
                     play_sound(SoundId.UI_TOGGLE)
 
         # ------------------------------------
@@ -213,11 +213,9 @@ class PlayingScene(AbstractScene):
             elif isinstance(event, PickTalent):
                 name_of_picked = pick_talent(self.game_state, event.option_index)
                 if not self.game_state.player_state.has_unpicked_talents():
-                    self.ui_state.close_talent_toggle()
+                    self.ui_view.close_talent_toggle()
                 self.ui_state.set_message("Talent picked: " + name_of_picked)
                 play_sound(SoundId.EVENT_PICKED_TALENT)
-            elif isinstance(event, ClickUiToggle):
-                play_sound(SoundId.UI_TOGGLE)
             elif isinstance(event, TrySwitchItemInInventory):
                 did_switch_succeed = self.game_engine.try_switch_item_at_slot(event.slot)
                 if did_switch_succeed:

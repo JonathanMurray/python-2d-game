@@ -3,7 +3,8 @@ from typing import List, Tuple, Optional, Dict, Any
 import pygame
 from pygame.rect import Rect
 
-from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite
+from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite, \
+    SoundId
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, \
     KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, HEROES
@@ -12,6 +13,7 @@ from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCateg
     ItemInventory
 from pythongame.core.math import is_point_in_rect
 from pythongame.core.npc_behaviors import DialogData
+from pythongame.core.sound_player import play_sound
 from pythongame.core.talents import TalentsGraphics
 from pythongame.core.view.render_util import DrawableArea
 from pythongame.scenes_game.game_engine import PlayerAbilityObserverEvent
@@ -50,11 +52,10 @@ class DraggedConsumableSlot:
 
 class MouseHoverEvent:
     def __init__(self, item: Optional[DraggedItemSlot], consumable: Optional[DraggedConsumableSlot], is_over_ui: bool,
-                 ui_toggle: Optional[UiToggle], talent_choice_option: Optional[Tuple[int, int]]):
+                 talent_choice_option: Optional[Tuple[int, int]]):
         self.item = item
         self.consumable = consumable
         self.is_over_ui: bool = is_over_ui
-        self.ui_toggle = ui_toggle
         self.talent_choice_option = talent_choice_option  # (choice_index, option_index)
 
 
@@ -145,6 +146,8 @@ class GameUiView:
 
         self.fps_string = ""
 
+        self.enabled_toggle: ToggleButton = None
+
     def _setup_ability_icons(self):
         x_0 = 140
         y = 112
@@ -218,11 +221,13 @@ class GameUiView:
         w = 120
         h = 20
         font = self.font_tooltip_details
-        self.toggle_buttons = [
-            ToggleButton(self.ui_render, Rect(x, y_0, w, h), font, "STATS    [A]", UiToggle.STATS, False),
-            ToggleButton(self.ui_render, Rect(x, y_0 + 30, w, h), font, "TALENTS  [T]", UiToggle.TALENTS, False),
-            ToggleButton(self.ui_render, Rect(x, y_0 + 60, w, h), font, "CONTROLS [C]", UiToggle.CONTROLS, False)
-        ]
+        self.stats_toggle = ToggleButton(self.ui_render, Rect(x, y_0, w, h), font, "STATS    [A]", UiToggle.STATS,
+                                         False)
+        self.talents_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 30, w, h), font, "TALENTS  [T]",
+                                           UiToggle.TALENTS, False)
+        self.controls_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 60, w, h), font, "CONTROLS [C]",
+                                            UiToggle.CONTROLS, False)
+        self.toggle_buttons = [self.stats_toggle, self.talents_toggle, self.controls_toggle]
 
     def _setup_stats_window(self):
         rect = Rect(545, -300, 140, 250)
@@ -267,6 +272,27 @@ class GameUiView:
     def _setup_dialog(self):
         self.dialog = Dialog(self.screen_render, None, None, [], 0, PORTRAIT_ICON_SIZE, UI_ICON_SIZE)
 
+    def handle_mouse_click(self):
+        if self.hovered_component in self.toggle_buttons:
+            self._on_click_toggle(self.hovered_component)
+
+    def _on_click_toggle(self, clicked: ToggleButton):
+        play_sound(SoundId.UI_TOGGLE)
+        if clicked == self.enabled_toggle:
+            self.enabled_toggle = None
+        else:
+            self.enabled_toggle = clicked
+            if self.enabled_toggle == self.talents_toggle:
+                self.talents_toggle.highlighted = False
+
+    def on_click_toggle(self, ui_toggle: UiToggle):
+        toggle = [tb for tb in self.toggle_buttons if tb.toggle_id == ui_toggle][0]
+        self._on_click_toggle(toggle)
+
+    def close_talent_toggle(self):
+        if self.enabled_toggle == self.talents_toggle:
+            self.enabled_toggle = None
+
     # TODO Break up event handling into separate methods
     def handle_event(self, event):
         if isinstance(event, TalentsGraphics):
@@ -281,6 +307,10 @@ class GameUiView:
             self._update_player_stats(event)
         else:
             raise Exception("Unhandled event: " + str(event))
+
+    def on_talent_was_unlocked(self, _event):
+        if self.enabled_toggle != self.talents_toggle:
+            self.talents_toggle.highlighted = True
 
     def on_player_movement_speed_updated(self, speed_multiplier: float):
         self.stats_window.player_speed_multiplier = speed_multiplier
@@ -451,13 +481,12 @@ class GameUiView:
         self.screen_render.text(self.font_splash_screen, text, (x, y), COLOR_WHITE)
         self.screen_render.text(self.font_splash_screen, text, (x + 2, y + 2), COLOR_BLACK)
 
-    def handle_mouse(self, mouse_screen_pos: Tuple[int, int], toggle_enabled: Optional[UiToggle]) -> MouseHoverEvent:
+    def handle_mouse(self, mouse_screen_pos: Tuple[int, int]) -> MouseHoverEvent:
         self.hovered_component = None
 
         hovered_item_slot = None
         hovered_consumable_slot = None
         is_mouse_hovering_ui = is_point_in_rect(mouse_screen_pos, self.ui_screen_area)
-        hovered_ui_toggle = None
         hovered_talent_option: Optional[Tuple[int, int]] = None
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_pos)
@@ -479,7 +508,7 @@ class GameUiView:
             if collision_offset:
                 self.hovered_component = icon
                 hovered_item_slot = DraggedItemSlot(icon.inventory_slot_index, icon.item_type, collision_offset)
-        if toggle_enabled == UiToggle.TALENTS:
+        if self.enabled_toggle == self.talents_toggle:
             hovered_icon = self.talents_window.get_icon_containing(mouse_ui_position)
             if hovered_icon:
                 self.hovered_component = hovered_icon
@@ -487,10 +516,8 @@ class GameUiView:
         for toggle_button in self.toggle_buttons:
             if toggle_button.contains(mouse_ui_position):
                 self.hovered_component = toggle_button
-                hovered_ui_toggle = toggle_button.toggle_id
 
-        return MouseHoverEvent(hovered_item_slot, hovered_consumable_slot, is_mouse_hovering_ui, hovered_ui_toggle,
-                               hovered_talent_option)
+        return MouseHoverEvent(hovered_item_slot, hovered_consumable_slot, is_mouse_hovering_ui, hovered_talent_option)
 
     def render(
             self,
@@ -554,17 +581,15 @@ class GameUiView:
         self.buffs.render()
 
         # TOGGLES
-        if ui_state.toggle_enabled == UiToggle.STATS:
+        if self.enabled_toggle == self.stats_toggle:
             self.stats_window.render()
-        elif ui_state.toggle_enabled == UiToggle.TALENTS:
+        elif self.enabled_toggle == self.talents_toggle:
             self.talents_window.render(self.hovered_component)
-        elif ui_state.toggle_enabled == UiToggle.CONTROLS:
+        elif self.enabled_toggle == self.controls_toggle:
             self.controls_window.render()
 
         for toggle_button in self.toggle_buttons:
-            if toggle_button.toggle_id == UiToggle.TALENTS:
-                toggle_button.highlighted = ui_state.talent_toggle_has_unseen_talents
-            enabled = ui_state.toggle_enabled == toggle_button.toggle_id
+            enabled = self.enabled_toggle == toggle_button
             hovered = self.hovered_component == toggle_button
             toggle_button.render(enabled, hovered)
 

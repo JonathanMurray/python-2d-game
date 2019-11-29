@@ -35,10 +35,6 @@ class GameUiState:
         self.highlighted_consumable_action: Optional[int] = None
         self.highlighted_ability_action: Optional[AbilityType] = None
 
-        self.toggle_enabled: Optional[UiToggle] = None
-
-        self.talent_toggle_has_unseen_talents = False
-
     def notify_ability_was_clicked(self, ability_type: AbilityType):
         self.highlighted_ability_action = ability_type
         self._ticks_since_last_ability_action = 0
@@ -52,28 +48,12 @@ class GameUiState:
         self._player_entity_center_position = player_entity_center_position
         self._entire_world_area = entire_world_area
 
-    def notify_toggle_was_clicked(self, ui_toggle: UiToggle):
-        if self.toggle_enabled == ui_toggle:
-            self.toggle_enabled = None
-        else:
-            self.toggle_enabled = ui_toggle
-            if ui_toggle == UiToggle.TALENTS:
-                self.talent_toggle_has_unseen_talents = False
-
     def set_message(self, message: str):
         self.message = message
         self._ticks_since_message_updated = 0
 
     def enqueue_message(self, message: str):
         self._enqueued_messages.append(message)
-
-    def notify_new_talent_was_unlocked(self):
-        if self.toggle_enabled != UiToggle.TALENTS:
-            self.talent_toggle_has_unseen_talents = True
-
-    def close_talent_toggle(self):
-        if self.toggle_enabled == UiToggle.TALENTS:
-            self.toggle_enabled = None
 
     def notify_time_passed(self, time_passed: Millis):
         self._ticks_since_minimap_updated += time_passed

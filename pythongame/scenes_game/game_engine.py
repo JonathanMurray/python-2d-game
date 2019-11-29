@@ -37,6 +37,7 @@ class GameEngine:
         self.game_state = game_state
         self.ui_state = ui_state
         self.player_abilities_were_updated = Observable()
+        self.talent_was_unlocked = Observable()
 
     def try_use_ability(self, ability_type: AbilityType):
         PlayerControls.try_use_ability(ability_type, self.game_state, self.ui_state)
@@ -347,7 +348,7 @@ class GameEngine:
         elif len(new_abilities) > 1:
             self.ui_state.enqueue_message("Gained several new abilities")
         if did_unlock_new_talent:
-            self.ui_state.notify_new_talent_was_unlocked()
+            self.talent_was_unlocked.notify(None)
             self.ui_state.enqueue_message("You can pick a talent!")
 
     def notify_ability_observers(self):

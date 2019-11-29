@@ -2,7 +2,7 @@ from typing import Optional, Tuple
 
 from pythongame.core.game_state import GameState, PlayerState, NonPlayerCharacter
 from pythongame.core.npc_behaviors import get_dialog_data, DialogData
-from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
+from pythongame.scenes_game.game_ui_state import GameUiState
 from pythongame.scenes_game.game_ui_view import GameUiView, DraggedItemSlot, DraggedConsumableSlot, MouseDrag, \
     DialogConfig
 
@@ -49,10 +49,6 @@ class TrySwitchItemInInventory(EventTriggeredFromUi):
         self.slot = slot
 
 
-class ClickUiToggle(EventTriggeredFromUi):
-    pass
-
-
 def get_mouse_world_pos(game_state: GameState, mouse_screen_position: Tuple[int, int]):
     return (int(mouse_screen_position[0] + game_state.camera_world_area.x),
             int(mouse_screen_position[1] + game_state.camera_world_area.y))
@@ -92,7 +88,6 @@ class PlayingUiController:
         self.consumable_slot_being_dragged: Optional[DraggedConsumableSlot] = None
         self.hovered_item_slot: Optional[DraggedItemSlot] = None
         self.hovered_consumable_slot: Optional[DraggedConsumableSlot] = None
-        self.hovered_ui_toggle: Optional[UiToggle] = None
         self.hovered_talent_choice_option: Optional[Tuple[int, int]] = None
         self.is_mouse_over_ui: bool = False
         self.dialog = DialogState()
@@ -100,11 +95,10 @@ class PlayingUiController:
     def render(self):
 
         # MOUSE HANDLING
-        mouse_hover_event = self.ui_view.handle_mouse(self.mouse_screen_position, self.ui_state.toggle_enabled)
+        mouse_hover_event = self.ui_view.handle_mouse(self.mouse_screen_position)
         self.hovered_item_slot = mouse_hover_event.item
         self.hovered_consumable_slot = mouse_hover_event.consumable
         self.is_mouse_over_ui = mouse_hover_event.is_over_ui
-        self.hovered_ui_toggle = mouse_hover_event.ui_toggle
         self.hovered_talent_choice_option = mouse_hover_event.talent_choice_option
 
         # RENDERING
@@ -129,6 +123,7 @@ class PlayingUiController:
         return triggered_events
 
     def handle_mouse_click(self, player_state: PlayerState):
+        self.ui_view.handle_mouse_click()
         triggered_events = []
         if self.hovered_item_slot and self.hovered_item_slot.item_type:
             self.item_slot_being_dragged = self.hovered_item_slot
@@ -136,9 +131,6 @@ class PlayingUiController:
         if self.hovered_consumable_slot and self.hovered_consumable_slot.consumable_types:
             self.consumable_slot_being_dragged = self.hovered_consumable_slot
             triggered_events.append(StartDraggingItemOrConsumable())
-        if self.hovered_ui_toggle:
-            self.ui_state.notify_toggle_was_clicked(self.hovered_ui_toggle)
-            triggered_events.append(ClickUiToggle())
         if self.hovered_talent_choice_option:
             choice_index, option_index = self.hovered_talent_choice_option
             # TODO Don't depend on player state for this
