@@ -52,6 +52,10 @@ class Dialog:
         self.shown = False
 
     def render(self):
+        if self.shown:
+            self._render()
+
+    def _render(self):
 
         tall_detail_section = any(
             [o.detail_body is not None or o.detail_header is not None or o.detail_image is not None
@@ -370,8 +374,14 @@ class StatBar:
         self.ratio_filled = self._value / self._max_value
 
 
+class UiWindow:
+    def __init__(self):
+        self.shown = False
+
+
 class ToggleButton(UiComponent):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, font, text: str, toggle_id: UiToggle, highlighted: bool):
+    def __init__(self, ui_render: DrawableArea, rect: Rect, font, text: str, toggle_id: UiToggle, highlighted: bool,
+                 linked_window: UiWindow):
         super().__init__()
         self.ui_render = ui_render
         self.rect = rect
@@ -380,13 +390,14 @@ class ToggleButton(UiComponent):
         self.toggle_id = toggle_id
         self.highlighted = highlighted
         self.tooltip = None
-        self.enabled = False
+        self.is_open = False
+        self.linked_window = linked_window
 
     def contains(self, point: Tuple[int, int]) -> bool:
         return self.rect.collidepoint(point[0], point[1])
 
     def render(self):
-        if self.enabled:
+        if self.is_open:
             self.ui_render.rect_filled((50, 50, 150), self.rect)
         self.ui_render.rect(COLOR_WHITE, self.rect, 1)
         self.ui_render.text(self.font, self.text, (self.rect.x + 20, self.rect.y + 2))
@@ -395,15 +406,29 @@ class ToggleButton(UiComponent):
         if self.highlighted:
             self.ui_render.rect(COLOR_TOGGLE_HIGHLIGHTED, self.rect, 1)
 
+    def open(self):
+        self.is_open = True
+        self.highlighted = False
+        self.linked_window.shown = True
 
-class ControlsWindow:
+    def close(self):
+        self.is_open = False
+        self.linked_window.shown = False
+
+
+class ControlsWindow(UiWindow):
     def __init__(self, ui_render: DrawableArea, rect: Rect, font_header, font_details):
+        super().__init__()
         self.ui_render = ui_render
         self.rect = rect
         self.font_header = font_header
         self.font_details = font_details
 
     def render(self):
+        if self.shown:
+            self._render()
+
+    def _render(self):
         self.ui_render.rect_transparent(self.rect, 140, (0, 0, 30))
         self.ui_render.text(self.font_header, "CONTROLS:", (self.rect[0] + 35, self.rect[1] + 10))
         x = self.rect[0] + 15
@@ -416,9 +441,10 @@ class ControlsWindow:
         self.ui_render.text(self.font_details, "Dialog: arrow-keys", (x, y_0 + 100))
 
 
-class StatsWindow:
+class StatsWindow(UiWindow):
     def __init__(self, ui_render: DrawableArea, rect: Rect, font_header, font_details, player_state: PlayerState,
                  player_speed_multiplier: float):
+        super().__init__()
         self.ui_render = ui_render
         self.rect = rect
         self.font_header = font_header
@@ -427,6 +453,10 @@ class StatsWindow:
         self.player_speed_multiplier = player_speed_multiplier
 
     def render(self):
+        if self.shown:
+            self._render()
+
+    def _render(self):
         self.ui_render.rect_transparent(self.rect, 140, (0, 0, 30))
 
         self.ui_render.text(self.font_header, "STATS:", (self.rect[0] + 45, self.rect[1] + 10))
@@ -476,9 +506,10 @@ class StatsWindow:
             self.ui_render.text(self.font_details, text, (x_text, y), COLOR_WHITE)
 
 
-class TalentsWindow:
+class TalentsWindow(UiWindow):
     def __init__(self, ui_render: DrawableArea, rect: Rect, font_header, font_details, talents: TalentsGraphics,
                  icon_rows: List[Tuple[TalentIcon, TalentIcon]]):
+        super().__init__()
         self.ui_render = ui_render
         self.rect = rect
         self.font_header = font_header
@@ -495,6 +526,10 @@ class TalentsWindow:
         return None
 
     def render(self):
+        if self.shown:
+            self._render()
+
+    def _render(self):
         self.ui_render.rect_transparent(self.rect, 140, (0, 0, 30))
         self.ui_render.text(self.font_header, "TALENTS:", (self.rect[0] + 35, self.rect[1] + 10))
 
@@ -509,6 +544,11 @@ class TalentsWindow:
                 self.ui_render.text(self.font_details, "Choose a talent!", text_pos)
         else:
             self.ui_render.text(self.font_details, "No talents yet!", text_pos)
+
+    def update(self, rect: Rect, talents: TalentsGraphics, icon_rows: List[Tuple[TalentIcon, TalentIcon]]):
+        self.rect = rect
+        self.talents = talents
+        self.icon_rows = icon_rows
 
 
 class ExpBar:

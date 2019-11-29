@@ -135,10 +135,11 @@ class GameUiView:
         self._setup_consumable_icons()
         self._setup_inventory_icons()
         self._setup_health_and_mana_bars()
-        self._setup_toggle_buttons()
         self._setup_stats_window()
+        self.talents_window: TalentsWindow = None
         self._setup_talents_window(TalentsGraphics([]))
         self._setup_controls_window()
+        self._setup_toggle_buttons()
         self._setup_portrait()
         self._setup_dialog()
 
@@ -222,11 +223,11 @@ class GameUiView:
         h = 20
         font = self.font_tooltip_details
         self.stats_toggle = ToggleButton(self.ui_render, Rect(x, y_0, w, h), font, "STATS    [A]", UiToggle.STATS,
-                                         False)
+                                         False, self.stats_window)
         self.talents_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 30, w, h), font, "TALENTS  [T]",
-                                           UiToggle.TALENTS, False)
+                                           UiToggle.TALENTS, False, self.talents_window)
         self.controls_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 60, w, h), font, "CONTROLS [C]",
-                                            UiToggle.CONTROLS, False)
+                                            UiToggle.CONTROLS, False, self.controls_window)
         self.toggle_buttons = [self.stats_toggle, self.talents_toggle, self.controls_toggle]
 
     def _setup_stats_window(self):
@@ -258,8 +259,11 @@ class GameUiView:
                                 i, 1)
 
             icon_rows.append((icon_1, icon_2))
-        self.talents_window = TalentsWindow(self.ui_render, rect, self.font_tooltip_details, self.font_stats, talents,
-                                            icon_rows)
+        if self.talents_window is None:
+            self.talents_window = TalentsWindow(
+                self.ui_render, rect, self.font_tooltip_details, self.font_stats, talents, icon_rows)
+        else:
+            self.talents_window.update(rect, talents, icon_rows)
 
     def _setup_controls_window(self):
         rect = Rect(545, -300, 140, 170)
@@ -276,26 +280,24 @@ class GameUiView:
         if self.hovered_component in self.toggle_buttons:
             self._on_click_toggle(self.hovered_component)
 
-    def _on_click_toggle(self, clicked: ToggleButton):
-        play_sound(SoundId.UI_TOGGLE)
-        if clicked == self.enabled_toggle:
-            self.enabled_toggle.enabled = False
-            self.enabled_toggle = None
-        else:
-            if self.enabled_toggle is not None:
-                self.enabled_toggle.enabled = False
-            self.enabled_toggle = clicked
-            self.enabled_toggle.enabled = True
-            if self.enabled_toggle == self.talents_toggle:
-                self.talents_toggle.highlighted = False
-
     def on_click_toggle(self, ui_toggle: UiToggle):
         toggle = [tb for tb in self.toggle_buttons if tb.toggle_id == ui_toggle][0]
         self._on_click_toggle(toggle)
 
+    def _on_click_toggle(self, clicked_toggle: ToggleButton):
+        play_sound(SoundId.UI_TOGGLE)
+        if clicked_toggle.is_open:
+            self.enabled_toggle.close()
+            self.enabled_toggle = None
+        else:
+            if self.enabled_toggle is not None:
+                self.enabled_toggle.close()
+            self.enabled_toggle = clicked_toggle
+            self.enabled_toggle.open()
+
     def close_talent_toggle(self):
         if self.enabled_toggle == self.talents_toggle:
-            self.enabled_toggle.enabled = False
+            self.enabled_toggle.close()
             self.enabled_toggle = None
 
     # TODO Break up event handling into separate methods
@@ -517,7 +519,7 @@ class GameUiView:
                 self.on_hover_component(icon)
                 did_find_some_hovered_component = True
                 hovered_item_slot = DraggedItemSlot(icon.inventory_slot_index, icon.item_type, collision_offset)
-        if self.enabled_toggle == self.talents_toggle:
+        if self.talents_window.shown:
             hovered_icon = self.talents_window.get_icon_containing(mouse_ui_position)
             if hovered_icon:
                 self.on_hover_component(hovered_icon)
@@ -593,24 +595,18 @@ class GameUiView:
         self.minimap.render(ui_state.player_minimap_relative_position)
 
         # DIALOG
-        if self.dialog.shown:
-            self.dialog.render()
+        self.dialog.render()
 
         # BUFFS
 
         self.buffs.render()
 
         # TOGGLES
-        # TODO Don't switch like this. Instead keep a "visible" flag inside the window components
-        if self.enabled_toggle == self.stats_toggle:
-            self.stats_window.render()
-        elif self.enabled_toggle == self.talents_toggle:
-            self.talents_window.render()
-        elif self.enabled_toggle == self.controls_toggle:
-            self.controls_window.render()
-
         for toggle_button in self.toggle_buttons:
             toggle_button.render()
+        self.stats_window.render()
+        self.talents_window.render()
+        self.controls_window.render()
 
         self.screen_render.rect(COLOR_BORDER, self.ui_screen_area, 1)
 
