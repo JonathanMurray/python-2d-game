@@ -107,6 +107,15 @@ class GameUiView:
         self.big_images_by_ui_sprite = big_images_by_ui_sprite
         self.images_by_portrait_sprite = images_by_portrait_sprite
 
+        self.images_by_item_category = {
+            ItemEquipmentCategory.HEAD: self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_HELMET],
+            ItemEquipmentCategory.CHEST: self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_CHEST],
+            ItemEquipmentCategory.MAIN_HAND: self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_MAINHAND],
+            ItemEquipmentCategory.OFF_HAND: self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_OFFHAND],
+            ItemEquipmentCategory.NECK: self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_NECK],
+            ItemEquipmentCategory.RING: self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_RING],
+        }
+
         # This is updated every time the view is called
         self.camera_world_area = None
 
@@ -258,6 +267,7 @@ class GameUiView:
     def _setup_dialog(self):
         self.dialog = Dialog(self.screen_render, None, None, [], 0, PORTRAIT_ICON_SIZE, UI_ICON_SIZE)
 
+    # TODO Break up event handling into separate methods
     def handle_event(self, event):
         if isinstance(event, TalentsGraphics):
             self._setup_talents_window(event)
@@ -356,7 +366,7 @@ class GameUiView:
                 tooltip = TooltipGraphics(self.ui_render, COLOR_ITEM_TOOLTIP_HEADER, item.name, tooltip_details,
                                           bottom_left=icon.rect.topleft)
             elif slot_equipment_category:
-                image = self._get_image_for_item_category(slot_equipment_category)
+                image = self.images_by_item_category[slot_equipment_category]
                 category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[slot_equipment_category]
                 tooltip_details = ["[" + category_name + "]",
                                    "You have nothing equipped. Drag an item here to equip it!"]
@@ -412,23 +422,6 @@ class GameUiView:
 
     def _translate_screen_position_to_ui(self, position: Tuple[int, int]):
         return position[0] - self.ui_screen_area.x, position[1] - self.ui_screen_area.y
-
-    def _get_image_for_item_category(self, slot_equipment_category: ItemEquipmentCategory):
-        if slot_equipment_category == ItemEquipmentCategory.HEAD:
-            ui_icon_sprite = UiIconSprite.INVENTORY_TEMPLATE_HELMET
-        elif slot_equipment_category == ItemEquipmentCategory.CHEST:
-            ui_icon_sprite = UiIconSprite.INVENTORY_TEMPLATE_CHEST
-        elif slot_equipment_category == ItemEquipmentCategory.MAIN_HAND:
-            ui_icon_sprite = UiIconSprite.INVENTORY_TEMPLATE_MAINHAND
-        elif slot_equipment_category == ItemEquipmentCategory.OFF_HAND:
-            ui_icon_sprite = UiIconSprite.INVENTORY_TEMPLATE_OFFHAND
-        elif slot_equipment_category == ItemEquipmentCategory.NECK:
-            ui_icon_sprite = UiIconSprite.INVENTORY_TEMPLATE_NECK
-        elif slot_equipment_category == ItemEquipmentCategory.RING:
-            ui_icon_sprite = UiIconSprite.INVENTORY_TEMPLATE_RING
-        else:
-            raise Exception("Unhandled equipment category: " + str(slot_equipment_category))
-        return self.images_by_ui_sprite[ui_icon_sprite]
 
     def _message(self, message):
         w_rect = len(message) * 9 + 10

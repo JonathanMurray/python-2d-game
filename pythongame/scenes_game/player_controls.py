@@ -20,6 +20,7 @@ class PlayerControls:
 
         if game_state.player_state.stun_status.is_stunned():
             return
+        # Handle this with observer pattern instead?
         ui_state.notify_ability_was_clicked(ability_type)
         player_state = game_state.player_state
 
@@ -57,7 +58,7 @@ class PlayerControls:
 
     @staticmethod
     def try_use_consumable(slot_number: int, game_state: GameState, ui_state: GameUiState):
-
+        # Handle this with observer pattern instead?
         ui_state.notify_consumable_was_clicked(slot_number)
         consumable_type_in_this_slot = \
             game_state.player_state.consumable_inventory.get_consumable_at_slot(slot_number)
