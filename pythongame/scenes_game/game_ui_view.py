@@ -279,9 +279,13 @@ class GameUiView:
     def _on_click_toggle(self, clicked: ToggleButton):
         play_sound(SoundId.UI_TOGGLE)
         if clicked == self.enabled_toggle:
+            self.enabled_toggle.enabled = False
             self.enabled_toggle = None
         else:
+            if self.enabled_toggle is not None:
+                self.enabled_toggle.enabled = False
             self.enabled_toggle = clicked
+            self.enabled_toggle.enabled = True
             if self.enabled_toggle == self.talents_toggle:
                 self.talents_toggle.highlighted = False
 
@@ -291,6 +295,7 @@ class GameUiView:
 
     def close_talent_toggle(self):
         if self.enabled_toggle == self.talents_toggle:
+            self.enabled_toggle.enabled = False
             self.enabled_toggle = None
 
     # TODO Break up event handling into separate methods
@@ -482,42 +487,60 @@ class GameUiView:
         self.screen_render.text(self.font_splash_screen, text, (x + 2, y + 2), COLOR_BLACK)
 
     def handle_mouse(self, mouse_screen_pos: Tuple[int, int]) -> MouseHoverEvent:
-        self.hovered_component = None
-
         hovered_item_slot = None
         hovered_consumable_slot = None
         is_mouse_hovering_ui = is_point_in_rect(mouse_screen_pos, self.ui_screen_area)
         hovered_talent_option: Optional[Tuple[int, int]] = None
+        did_find_some_hovered_component = False
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_pos)
         if self.healthbar.contains(mouse_ui_position):
-            self.hovered_component = self.healthbar
+            self.on_hover_component(self.healthbar)
+            did_find_some_hovered_component = True
         if self.manabar.contains(mouse_ui_position):
-            self.hovered_component = self.manabar
+            self.on_hover_component(self.manabar)
+            did_find_some_hovered_component = True
         for icon in self.consumable_icons:
             collision_offset = icon.get_collision_offset(mouse_ui_position)
             if collision_offset:
-                self.hovered_component = icon
+                self.on_hover_component(icon)
+                did_find_some_hovered_component = True
                 hovered_consumable_slot = DraggedConsumableSlot(icon.slot_number, icon.consumable_types,
                                                                 collision_offset)
         for icon in self.ability_icons:
             if icon.contains(mouse_ui_position):
-                self.hovered_component = icon
+                self.on_hover_component(icon)
+                did_find_some_hovered_component = True
         for icon in self.inventory_icons:
             collision_offset = icon.get_collision_offset(mouse_ui_position)
             if collision_offset:
-                self.hovered_component = icon
+                self.on_hover_component(icon)
+                did_find_some_hovered_component = True
                 hovered_item_slot = DraggedItemSlot(icon.inventory_slot_index, icon.item_type, collision_offset)
         if self.enabled_toggle == self.talents_toggle:
             hovered_icon = self.talents_window.get_icon_containing(mouse_ui_position)
             if hovered_icon:
-                self.hovered_component = hovered_icon
+                self.on_hover_component(hovered_icon)
+                did_find_some_hovered_component = True
                 hovered_talent_option = (hovered_icon.choice_index, hovered_icon.option_index)
         for toggle_button in self.toggle_buttons:
             if toggle_button.contains(mouse_ui_position):
-                self.hovered_component = toggle_button
+                self.on_hover_component(toggle_button)
+                did_find_some_hovered_component = True
+
+        if not did_find_some_hovered_component:
+            self.set_currently_hovered_component_not_hovered()
 
         return MouseHoverEvent(hovered_item_slot, hovered_consumable_slot, is_mouse_hovering_ui, hovered_talent_option)
+
+    def on_hover_component(self, component):
+        self.set_currently_hovered_component_not_hovered()
+        self.hovered_component = component
+        self.hovered_component.hovered = True
+
+    def set_currently_hovered_component_not_hovered(self):
+        if self.hovered_component is not None:
+            self.hovered_component.hovered = False
 
     def render(
             self,
@@ -547,9 +570,8 @@ class GameUiView:
         # CONSUMABLES
         self.ui_render.rect_filled((60, 60, 80), self.consumable_icons_row)
         for icon in self.consumable_icons:
-            hovered = self.hovered_component == icon
             recently_clicked = icon.slot_number == ui_state.highlighted_consumable_action
-            icon.render(hovered, recently_clicked)
+            icon.render(recently_clicked)
 
         # ABILITIES
         self.ui_render.rect_filled((60, 60, 80), self.ability_icons_row)
@@ -557,17 +579,15 @@ class GameUiView:
             ability_type = icon.ability_type
             if ability_type:
                 recently_clicked = ability_type == ui_state.highlighted_ability_action
-                hovered = self.hovered_component == icon
-                icon.render(hovered, recently_clicked)
+                icon.render(recently_clicked)
 
         # ITEMS
         self.ui_render.rect_filled((60, 60, 80), self.inventory_icons_rect)
         for icon in self.inventory_icons:
-            hovered = self.hovered_component == icon
             highlighted = mouse_drag and mouse_drag.item and mouse_drag.item.item_type \
                           and ITEMS[mouse_drag.item.item_type].item_equipment_category \
                           and icon.slot_equipment_category == ITEMS[mouse_drag.item.item_type].item_equipment_category
-            icon.render(hovered, highlighted)
+            icon.render(highlighted)
 
         # MINIMAP
         self.minimap.render(ui_state.player_minimap_relative_position)
@@ -581,17 +601,16 @@ class GameUiView:
         self.buffs.render()
 
         # TOGGLES
+        # TODO Don't switch like this. Instead keep a "visible" flag inside the window components
         if self.enabled_toggle == self.stats_toggle:
             self.stats_window.render()
         elif self.enabled_toggle == self.talents_toggle:
-            self.talents_window.render(self.hovered_component)
+            self.talents_window.render()
         elif self.enabled_toggle == self.controls_toggle:
             self.controls_window.render()
 
         for toggle_button in self.toggle_buttons:
-            enabled = self.enabled_toggle == toggle_button
-            hovered = self.hovered_component == toggle_button
-            toggle_button.render(enabled, hovered)
+            toggle_button.render()
 
         self.screen_render.rect(COLOR_BORDER, self.ui_screen_area, 1)
 

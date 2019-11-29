@@ -21,6 +21,11 @@ COLOR_TOGGLE_HIGHLIGHTED = (150, 250, 200)
 DIR_FONTS = './resources/fonts/'
 
 
+class UiComponent:
+    def __init__(self):
+        self.hovered = False
+
+
 class DialogOption:
     def __init__(self, summary: str, detail_action_text: str, detail_image: Optional[Any],
                  detail_header: Optional[str] = None, detail_body: Optional[str] = None):
@@ -168,9 +173,10 @@ class TooltipGraphics:
             self._ui_render.text(self._font_details, line, (self._rect.x + 20, self._rect.y + 47 + i * 18), COLOR_WHITE)
 
 
-class AbilityIcon:
+class AbilityIcon(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, label: str, font, tooltip: TooltipGraphics,
                  ability_type: AbilityType, cooldown_remaining_ratio: float):
+        super().__init__()
         self._ui_render = ui_render
         self._font = font
         self.rect = rect
@@ -183,14 +189,14 @@ class AbilityIcon:
     def contains(self, point: Tuple[int, int]) -> bool:
         return self.rect.collidepoint(point[0], point[1])
 
-    def render(self, hovered: bool, recently_clicked: bool):
+    def render(self, recently_clicked: bool):
         self._ui_render.rect_filled((40, 40, 50), self.rect)
         self._ui_render.image(self.image, self.rect.topleft)
         self._ui_render.rect((150, 150, 190), self.rect, 1)
         if recently_clicked:
             self._ui_render.rect(COLOR_ICON_HIGHLIGHTED,
                                  Rect(self.rect.x - 1, self.rect.y - 1, self.rect.w + 2, self.rect.h + 2), 3)
-        elif hovered:
+        elif self.hovered:
             self._ui_render.rect(COLOR_HOVERED, self.rect, 1)
         self._ui_render.text(self._font, self.label, (self.rect.x + 12, self.rect.y + self.rect.h + 4))
 
@@ -213,9 +219,10 @@ class AbilityIcon:
         self.ability_type = ability_type
 
 
-class ConsumableIcon:
+class ConsumableIcon(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, label: str, font, tooltip: TooltipGraphics,
                  consumable_types: List[ConsumableType], slot_number: int):
+        super().__init__()
         self._ui_render = ui_render
         self._rect = rect
         self._image = image
@@ -230,7 +237,7 @@ class ConsumableIcon:
             return point[0] - self._rect.x, point[1] - self._rect.y
         return None
 
-    def render(self, hovered: bool, recently_clicked: bool):
+    def render(self, recently_clicked: bool):
         self._ui_render.rect_filled((40, 40, 50), self._rect)
         if self._image:
             self._ui_render.image(self._image, self._rect.topleft)
@@ -253,7 +260,7 @@ class ConsumableIcon:
         if recently_clicked:
             self._ui_render.rect(COLOR_ICON_HIGHLIGHTED,
                                  Rect(self._rect.x - 1, self._rect.y - 1, self._rect.w + 2, self._rect.h + 2), 3)
-        elif hovered:
+        elif self.hovered:
             self._ui_render.rect(COLOR_HOVERED, self._rect, 1)
         self._ui_render.text(self._font, self._label, (self._rect.x + 12, self._rect.y + self._rect.h + 4))
 
@@ -267,9 +274,10 @@ class ConsumableIcon:
             self.tooltip = None
 
 
-class ItemIcon:
+class ItemIcon(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, tooltip: TooltipGraphics,
                  slot_equipment_category: ItemEquipmentCategory, item_type: ItemType, inventory_slot_index: int):
+        super().__init__()
         self._ui_render = ui_render
         self.rect = rect
         self.image = image
@@ -283,7 +291,7 @@ class ItemIcon:
             return point[0] - self.rect.x, point[1] - self.rect.y
         return None
 
-    def render(self, hovered: bool, highlighted: bool):
+    def render(self, highlighted: bool):
         self._ui_render.rect_filled((40, 40, 50), self.rect)
         if self.item_type:
             if self.slot_equipment_category:
@@ -300,13 +308,14 @@ class ItemIcon:
         if highlighted:
             self._ui_render.rect(COLOR_ICON_HIGHLIGHTED,
                                  Rect(self.rect.x - 1, self.rect.y - 1, self.rect.w + 1, self.rect.h + 1), 2)
-        elif hovered:
+        elif self.hovered:
             self._ui_render.rect(COLOR_HOVERED, self.rect, 1)
 
 
-class TalentIcon:
+class TalentIcon(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, tooltip: TooltipGraphics, chosen: bool, text: str,
                  font, choice_index: int, option_index: int):
+        super().__init__()
         self._ui_render = ui_render
         self._rect = rect
         self._image = image
@@ -320,14 +329,14 @@ class TalentIcon:
     def contains(self, point: Tuple[int, int]) -> bool:
         return self._rect.collidepoint(point[0], point[1])
 
-    def render(self, hovered: bool):
+    def render(self):
         self._ui_render.text(self._font, self._text, (self._rect[0], self._rect[1] + self._rect[3] + 5), COLOR_WHITE)
         self._ui_render.rect_filled(COLOR_BLACK, self._rect)
         self._ui_render.image(self._image, self._rect.topleft)
         color_outline = COLOR_ICON_HIGHLIGHTED if self._chosen else COLOR_WHITE
         width_outline = 2 if self._chosen else 1
         self._ui_render.rect(color_outline, self._rect, width_outline)
-        if hovered:
+        if self.hovered:
             self._ui_render.rect(COLOR_ICON_HIGHLIGHTED, self._rect, 1)
 
 
@@ -361,8 +370,9 @@ class StatBar:
         self.ratio_filled = self._value / self._max_value
 
 
-class ToggleButton:
+class ToggleButton(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, font, text: str, toggle_id: UiToggle, highlighted: bool):
+        super().__init__()
         self.ui_render = ui_render
         self.rect = rect
         self.font = font
@@ -370,16 +380,17 @@ class ToggleButton:
         self.toggle_id = toggle_id
         self.highlighted = highlighted
         self.tooltip = None
+        self.enabled = False
 
     def contains(self, point: Tuple[int, int]) -> bool:
         return self.rect.collidepoint(point[0], point[1])
 
-    def render(self, enabled: bool, hovered: bool):
-        if enabled:
+    def render(self):
+        if self.enabled:
             self.ui_render.rect_filled((50, 50, 150), self.rect)
         self.ui_render.rect(COLOR_WHITE, self.rect, 1)
         self.ui_render.text(self.font, self.text, (self.rect.x + 20, self.rect.y + 2))
-        if hovered:
+        if self.hovered:
             self.ui_render.rect(COLOR_HOVERED, self.rect, 1)
         if self.highlighted:
             self.ui_render.rect(COLOR_TOGGLE_HIGHLIGHTED, self.rect, 1)
@@ -483,13 +494,13 @@ class TalentsWindow:
                 return icon_2
         return None
 
-    def render(self, hovered_component: Optional[Any]):
+    def render(self):
         self.ui_render.rect_transparent(self.rect, 140, (0, 0, 30))
         self.ui_render.text(self.font_header, "TALENTS:", (self.rect[0] + 35, self.rect[1] + 10))
 
         for row_index, (icon_1, icon_2) in enumerate(self.icon_rows):
-            icon_1.render(icon_1 == hovered_component)
-            icon_2.render(icon_2 == hovered_component)
+            icon_1.render()
+            icon_2.render()
 
         text_pos = self.rect[0] + 22, self.rect[1] + self.rect[3] - 26
         if self.talents.choice_graphics_items:
