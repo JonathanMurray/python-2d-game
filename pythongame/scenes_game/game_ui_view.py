@@ -509,12 +509,15 @@ class GameUiView:
         did_find_some_hovered_component = False
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_pos)
-        if self.healthbar.contains(mouse_ui_position):
-            self.on_hover_component(self.healthbar)
-            did_find_some_hovered_component = True
-        if self.manabar.contains(mouse_ui_position):
-            self.on_hover_component(self.manabar)
-            did_find_some_hovered_component = True
+
+        simple_components = [self.healthbar, self.manabar, self.sound_checkbox, self.save_button] + \
+                            self.ability_icons + self.toggle_buttons
+
+        for component in simple_components:
+            if component.contains(mouse_ui_position):
+                self.on_hover_component(component)
+                did_find_some_hovered_component = True
+
         for icon in self.consumable_icons:
             collision_offset = icon.get_collision_offset(mouse_ui_position)
             if collision_offset:
@@ -522,10 +525,6 @@ class GameUiView:
                 did_find_some_hovered_component = True
                 hovered_consumable_slot = DraggedConsumableSlot(icon.slot_number, icon.consumable_types,
                                                                 collision_offset)
-        for icon in self.ability_icons:
-            if icon.contains(mouse_ui_position):
-                self.on_hover_component(icon)
-                did_find_some_hovered_component = True
         for icon in self.inventory_icons:
             collision_offset = icon.get_collision_offset(mouse_ui_position)
             if collision_offset:
@@ -538,16 +537,6 @@ class GameUiView:
                 self.on_hover_component(hovered_icon)
                 did_find_some_hovered_component = True
                 hovered_talent_option = (hovered_icon.choice_index, hovered_icon.option_index)
-        for toggle_button in self.toggle_buttons:
-            if toggle_button.contains(mouse_ui_position):
-                self.on_hover_component(toggle_button)
-                did_find_some_hovered_component = True
-        if self.sound_checkbox.contains(mouse_ui_position):
-            self.on_hover_component(self.sound_checkbox)
-            did_find_some_hovered_component = True
-        if self.save_button.contains(mouse_ui_position):
-            self.on_hover_component(self.save_button)
-            did_find_some_hovered_component = True
 
         if not did_find_some_hovered_component:
             self.set_currently_hovered_component_not_hovered()
@@ -574,21 +563,6 @@ class GameUiView:
         self.screen_render.rect_filled((20, 10, 0), Rect(0, self.camera_size[1], self.screen_size[0],
                                                          self.screen_size[1] - self.camera_size[1]))
 
-        # EXP BAR
-        self.exp_bar.render()
-
-        # PORTRAIT
-        self.portrait.render()
-
-        # HEALTHBAR
-        self.healthbar.render()
-
-        # MANABAR
-        self.manabar.render()
-
-        # MONEY
-        self.money_text.render()
-
         # CONSUMABLES
         self.ui_render.rect_filled((60, 60, 80), self.consumable_icons_row)
         for icon in self.consumable_icons:
@@ -614,21 +588,12 @@ class GameUiView:
         # MINIMAP
         self.minimap.render(ui_state.player_minimap_relative_position)
 
-        # DIALOG
-        self.dialog.render()
+        simple_components = [self.exp_bar, self.portrait, self.healthbar, self.manabar, self.money_text, self.dialog,
+                             self.buffs, self.sound_checkbox, self.save_button, self.stats_window, self.talents_window,
+                             self.controls_window] + self.toggle_buttons
 
-        # BUFFS
-
-        self.buffs.render()
-
-        # TOGGLES
-        for toggle_button in self.toggle_buttons:
-            toggle_button.render()
-        self.sound_checkbox.render()
-        self.save_button.render()
-        self.stats_window.render()
-        self.talents_window.render()
-        self.controls_window.render()
+        for component in simple_components:
+            component.render()
 
         self.screen_render.rect(COLOR_BORDER, self.ui_screen_area, 1)
 
