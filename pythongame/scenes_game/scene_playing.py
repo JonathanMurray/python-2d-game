@@ -13,7 +13,7 @@ from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOn
 from pythongame.core.hero_upgrades import pick_talent
 from pythongame.core.math import get_directions_to_position
 from pythongame.core.npc_behaviors import invoke_npc_action
-from pythongame.core.sound_player import play_sound
+from pythongame.core.sound_player import play_sound, toggle_muted
 from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_dialog_user_inputs, \
@@ -28,7 +28,7 @@ from pythongame.scenes_game.game_ui_view import GameUiView
 from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
 from pythongame.scenes_game.playing_ui_controller import PlayingUiController, EventTriggeredFromUi, \
     DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
-    PickTalent, StartDraggingItemOrConsumable, TrySwitchItemInInventory
+    PickTalent, StartDraggingItemOrConsumable, TrySwitchItemInInventory, ToggleSound
 
 
 class PlayingScene(AbstractScene):
@@ -222,6 +222,8 @@ class PlayingScene(AbstractScene):
                     play_sound(SoundId.UI_ITEM_WAS_MOVED)
                 else:
                     play_sound(SoundId.INVALID_ACTION)
+            elif isinstance(event, ToggleSound):
+                toggle_muted()
             else:
                 raise Exception("Unhandled event: " + str(event))
 

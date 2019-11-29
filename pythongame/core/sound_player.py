@@ -7,6 +7,8 @@ from pythongame.core.common import SoundId
 
 _sounds_by_id: Dict[SoundId, List[Any]] = {}
 
+muted = False
+
 
 def init_sound_player():
     global _sounds_by_id
@@ -59,6 +61,9 @@ def init_sound_player():
 
 
 def play_sound(sound_id: SoundId):
+    global muted
+    if muted:
+        return
     if not _sounds_by_id:
         raise Exception("Initialize sound player before playing sounds!")
     if sound_id in _sounds_by_id:
@@ -74,3 +79,9 @@ def load_sound_file(*filenames, volume: float = 1):
     for sound in sounds:
         sound.set_volume(0.1 * volume)
     return sounds
+
+
+# TODO Rework sound_player into a class, to avoid global state
+def toggle_muted():
+    global muted
+    muted = not muted

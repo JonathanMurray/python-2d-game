@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import List, Tuple, Optional, Dict, Any
 
 import pygame
@@ -20,7 +21,7 @@ from pythongame.scenes_game.game_engine import PlayerAbilityObserverEvent
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
     ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text, \
-    DialogOption, Dialog
+    DialogOption, Dialog, Checkbox
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -71,6 +72,10 @@ class DialogConfig:
     def __init__(self, data: DialogData, option_index: int):
         self.data = data
         self.option_index = option_index
+
+
+class MouseClickEvent(Enum):
+    TOGGLE_SOUND = 1
 
 
 class GameUiView:
@@ -229,6 +234,7 @@ class GameUiView:
         self.controls_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 60, w, h), font, "CONTROLS [C]",
                                             UiToggle.CONTROLS, False, self.controls_window)
         self.toggle_buttons = [self.stats_toggle, self.talents_toggle, self.controls_toggle]
+        self.sound_checkbox = Checkbox(self.ui_render, Rect(x + 15, y_0 + 90, w - 30, h), font, "SOUND", True)
 
     def _setup_stats_window(self):
         rect = Rect(545, -300, 140, 250)
@@ -276,9 +282,12 @@ class GameUiView:
     def _setup_dialog(self):
         self.dialog = Dialog(self.screen_render, None, None, [], 0, PORTRAIT_ICON_SIZE, UI_ICON_SIZE)
 
-    def handle_mouse_click(self):
+    def handle_mouse_click(self) -> Optional[MouseClickEvent]:
         if self.hovered_component in self.toggle_buttons:
             self._on_click_toggle(self.hovered_component)
+        elif self.hovered_component == self.sound_checkbox:
+            self.sound_checkbox.on_click()
+            return MouseClickEvent.TOGGLE_SOUND
 
     def on_click_toggle(self, ui_toggle: UiToggle):
         toggle = [tb for tb in self.toggle_buttons if tb.toggle_id == ui_toggle][0]
@@ -529,6 +538,9 @@ class GameUiView:
             if toggle_button.contains(mouse_ui_position):
                 self.on_hover_component(toggle_button)
                 did_find_some_hovered_component = True
+        if self.sound_checkbox.contains(mouse_ui_position):
+            self.on_hover_component(self.sound_checkbox)
+            did_find_some_hovered_component = True
 
         if not did_find_some_hovered_component:
             self.set_currently_hovered_component_not_hovered()
@@ -604,6 +616,7 @@ class GameUiView:
         # TOGGLES
         for toggle_button in self.toggle_buttons:
             toggle_button.render()
+        self.sound_checkbox.render()
         self.stats_window.render()
         self.talents_window.render()
         self.controls_window.render()

@@ -416,6 +416,30 @@ class ToggleButton(UiComponent):
         self.linked_window.shown = False
 
 
+class Checkbox(UiComponent):
+    def __init__(self, ui_render: DrawableArea, rect: Rect, font, label: str, checked: bool):
+        super().__init__()
+        self.ui_render = ui_render
+        self.rect = rect
+        self.font = font
+        self.label = label
+        self.checked = checked
+        self.tooltip = None
+
+    def contains(self, point: Tuple[int, int]) -> bool:
+        return self.rect.collidepoint(point[0], point[1])
+
+    def render(self):
+        self.ui_render.rect(COLOR_WHITE, self.rect, 1)
+        text = self.label + " : " + ("ON" if self.checked else "OFF")
+        self.ui_render.text(self.font, text, (self.rect.x + 7, self.rect.y + 2))
+        if self.hovered:
+            self.ui_render.rect(COLOR_HOVERED, self.rect, 1)
+
+    def on_click(self):
+        self.checked = not self.checked
+
+
 class ControlsWindow(UiWindow):
     def __init__(self, ui_render: DrawableArea, rect: Rect, font_header, font_details):
         super().__init__()

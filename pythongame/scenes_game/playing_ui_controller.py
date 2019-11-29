@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
 from pythongame.core.game_state import GameState, PlayerState, NonPlayerCharacter
 from pythongame.core.npc_behaviors import get_dialog_data, DialogData
@@ -38,6 +38,10 @@ class DropConsumableOnGround(EventTriggeredFromUi):
 class PickTalent(EventTriggeredFromUi):
     def __init__(self, option_index: int):
         self.option_index = option_index
+
+
+class ToggleSound(EventTriggeredFromUi):
+    pass
 
 
 class StartDraggingItemOrConsumable(EventTriggeredFromUi):
@@ -122,9 +126,11 @@ class PlayingUiController:
             self.item_slot_being_dragged = None
         return triggered_events
 
-    def handle_mouse_click(self, player_state: PlayerState):
-        self.ui_view.handle_mouse_click()
-        triggered_events = []
+    def handle_mouse_click(self, player_state: PlayerState) -> List[EventTriggeredFromUi]:
+        mouse_click_event = self.ui_view.handle_mouse_click()
+        triggered_events: List[EventTriggeredFromUi] = []
+        if mouse_click_event and mouse_click_event.TOGGLE_SOUND:
+            triggered_events.append(ToggleSound())
         if self.hovered_item_slot and self.hovered_item_slot.item_type:
             self.item_slot_being_dragged = self.hovered_item_slot
             triggered_events.append(StartDraggingItemOrConsumable())
