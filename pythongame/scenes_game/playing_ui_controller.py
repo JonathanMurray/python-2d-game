@@ -44,6 +44,10 @@ class ToggleSound(EventTriggeredFromUi):
     pass
 
 
+class SaveGame(EventTriggeredFromUi):
+    pass
+
+
 class StartDraggingItemOrConsumable(EventTriggeredFromUi):
     pass
 
@@ -129,8 +133,12 @@ class PlayingUiController:
     def handle_mouse_click(self, player_state: PlayerState) -> List[EventTriggeredFromUi]:
         mouse_click_event = self.ui_view.handle_mouse_click()
         triggered_events: List[EventTriggeredFromUi] = []
-        if mouse_click_event and mouse_click_event.TOGGLE_SOUND:
-            triggered_events.append(ToggleSound())
+        if mouse_click_event:
+            if mouse_click_event == mouse_click_event.TOGGLE_SOUND:
+                triggered_events.append(ToggleSound())
+            elif mouse_click_event == mouse_click_event.SAVE:
+                triggered_events.append(SaveGame())
+
         if self.hovered_item_slot and self.hovered_item_slot.item_type:
             self.item_slot_being_dragged = self.hovered_item_slot
             triggered_events.append(StartDraggingItemOrConsumable())

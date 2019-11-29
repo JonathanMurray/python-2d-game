@@ -28,7 +28,7 @@ from pythongame.scenes_game.game_ui_view import GameUiView
 from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
 from pythongame.scenes_game.playing_ui_controller import PlayingUiController, EventTriggeredFromUi, \
     DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
-    PickTalent, StartDraggingItemOrConsumable, TrySwitchItemInInventory, ToggleSound
+    PickTalent, StartDraggingItemOrConsumable, TrySwitchItemInInventory, ToggleSound, SaveGame
 
 
 class PlayingScene(AbstractScene):
@@ -144,7 +144,7 @@ class PlayingScene(AbstractScene):
                 if isinstance(action, ActionReleaseShiftKey):
                     self.is_shift_key_held_down = False
                 if isinstance(action, ActionSaveGameState):
-                    save_to_file(self.game_state)
+                    self.save_game()
                 if isinstance(action, ActionToggleUiTalents):
                     self.ui_view.on_click_toggle(UiToggle.TALENTS)
                     play_sound(SoundId.UI_TOGGLE)
@@ -224,6 +224,8 @@ class PlayingScene(AbstractScene):
                     play_sound(SoundId.INVALID_ACTION)
             elif isinstance(event, ToggleSound):
                 toggle_muted()
+            elif isinstance(event, SaveGame):
+                self.save_game()
             else:
                 raise Exception("Unhandled event: " + str(event))
 
@@ -234,6 +236,10 @@ class PlayingScene(AbstractScene):
         if transition_to_pause:
             return SceneTransition(SceneId.PAUSED, (self.game_state, self.ui_state))
         return None
+
+    def save_game(self):
+        save_to_file(self.game_state)
+        self.ui_state.set_message("Game was saved.")
 
 
 def get_entity_action_text(ready_entity: Any, is_shift_key_held_down: bool) -> EntityActionText:
