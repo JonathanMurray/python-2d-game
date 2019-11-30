@@ -23,7 +23,7 @@ from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
 from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.player_file import save_to_file
 from pythongame.scenes_game.game_engine import GameEngine
-from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
+from pythongame.scenes_game.game_ui_state import GameUiState, ToggleButtonId
 from pythongame.scenes_game.game_ui_view import DragItemBetweenInventorySlots, DropItemOnGround, \
     DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
     PickTalent, StartDraggingItemOrConsumable, TrySwitchItemInInventory, ToggleSound, SaveGame, EventTriggeredFromUi
@@ -143,13 +143,13 @@ class PlayingScene(AbstractScene):
                 if isinstance(action, ActionSaveGameState):
                     self.save_game()
                 if isinstance(action, ActionToggleUiTalents):
-                    self.ui_view.on_click_toggle(UiToggle.TALENTS)
+                    self.ui_view.click_toggle_button(ToggleButtonId.TALENTS)
                     play_sound(SoundId.UI_TOGGLE)
                 if isinstance(action, ActionToggleUiStats):
-                    self.ui_view.on_click_toggle(UiToggle.STATS)
+                    self.ui_view.click_toggle_button(ToggleButtonId.STATS)
                     play_sound(SoundId.UI_TOGGLE)
                 if isinstance(action, ActionToggleUiControls):
-                    self.ui_view.on_click_toggle(UiToggle.CONTROLS)
+                    self.ui_view.click_toggle_button(ToggleButtonId.CONTROLS)
                     play_sound(SoundId.UI_TOGGLE)
 
         # ------------------------------------
@@ -212,7 +212,7 @@ class PlayingScene(AbstractScene):
             elif isinstance(event, PickTalent):
                 name_of_picked = pick_talent(self.game_state, event.option_index)
                 if not self.game_state.player_state.has_unpicked_talents():
-                    self.ui_view.close_talent_toggle()
+                    self.ui_view.close_talent_window()
                 self.ui_state.set_message("Talent picked: " + name_of_picked)
                 play_sound(SoundId.EVENT_PICKED_TALENT)
             elif isinstance(event, TrySwitchItemInInventory):

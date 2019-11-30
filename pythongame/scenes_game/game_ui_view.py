@@ -14,7 +14,7 @@ from pythongame.core.npc_behaviors import DialogData
 from pythongame.core.sound_player import play_sound
 from pythongame.core.talents import TalentsGraphics
 from pythongame.core.view.render_util import DrawableArea
-from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
+from pythongame.scenes_game.game_ui_state import GameUiState, ToggleButtonId
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
     ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text, \
     DialogOption, Dialog, Checkbox, Button
@@ -42,7 +42,6 @@ class DialogState:
         self.data: DialogData = None
         self.npc: NonPlayerCharacter = None
         self.active = False
-
 
 
 class GameUiView:
@@ -201,12 +200,12 @@ class GameUiView:
         w = 140
         h = 20
         font = self.font_tooltip_details
-        self.stats_toggle = ToggleButton(self.ui_render, Rect(x, y_0, w, h), font, "STATS    [A]", UiToggle.STATS,
+        self.stats_toggle = ToggleButton(self.ui_render, Rect(x, y_0, w, h), font, "STATS    [A]", ToggleButtonId.STATS,
                                          False, self.stats_window)
         self.talents_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 30, w, h), font, "TALENTS  [T]",
-                                           UiToggle.TALENTS, False, self.talents_window)
+                                           ToggleButtonId.TALENTS, False, self.talents_window)
         self.controls_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 60, w, h), font, "CONTROLS [C]",
-                                            UiToggle.CONTROLS, False, self.controls_window)
+                                            ToggleButtonId.CONTROLS, False, self.controls_window)
         self.toggle_buttons = [self.stats_toggle, self.talents_toggle, self.controls_toggle]
         self.sound_checkbox = Checkbox(self.ui_render, Rect(x, y_0 + 90, 65, h), font, "SOUND", True)
         self.save_button = Button(self.ui_render, Rect(x + 75, y_0 + 90, 65, h), font, "SAVE")
@@ -256,6 +255,45 @@ class GameUiView:
 
     def _setup_dialog(self):
         self.dialog = Dialog(self.screen_render, None, None, [], 0, PORTRAIT_ICON_SIZE, UI_ICON_SIZE)
+
+    # --------------------------------------------------------------------------------------------------------
+    #                                     HANDLE USER INPUT
+    # --------------------------------------------------------------------------------------------------------
+
+    def handle_mouse_movement(self, mouse_screen_pos: Tuple[int, int]):
+        self.mouse_screen_position = mouse_screen_pos
+        self.is_mouse_hovering_ui = is_point_in_rect(mouse_screen_pos, self.ui_screen_area)
+
+        mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_pos)
+
+        simple_components = [self.healthbar, self.manabar, self.sound_checkbox, self.save_button] + \
+                            self.ability_icons + self.toggle_buttons
+
+        for component in simple_components:
+            if component.contains(mouse_ui_position):
+                self._on_hover_component(component)
+                return
+        # TODO Unify hover handling for consumables/items
+        for icon in self.consumable_icons + self.inventory_icons:
+            collision_offset = icon.get_collision_offset(mouse_ui_position)
+            if collision_offset:
+                self._on_hover_component(icon)
+                return
+
+        # TODO Unify hover handling of window icons
+        if self.talents_window.shown:
+            hovered_icon = self.talents_window.get_icon_containing(mouse_ui_position)
+            if hovered_icon:
+                self._on_hover_component(hovered_icon)
+                return
+
+        # If something was hovered, we would have returned from the method
+        self._set_currently_hovered_component_not_hovered()
+
+    def _on_hover_component(self, component):
+        self._set_currently_hovered_component_not_hovered()
+        self.hovered_component = component
+        self.hovered_component.hovered = True
 
     def handle_mouse_click(self) -> List[EventTriggeredFromUi]:
         if self.hovered_component in self.toggle_buttons:
@@ -309,6 +347,10 @@ class GameUiView:
 
         return triggered_events
 
+    # --------------------------------------------------------------------------------------------------------
+    #                              HANDLE TOGGLE BUTTON USER INTERACTIONS
+    # --------------------------------------------------------------------------------------------------------
+
     def handle_space_click(self) -> Optional[Tuple[NonPlayerCharacter, int]]:
         if self.dialog_state.active:
             self.dialog_state.active = False
@@ -316,7 +358,7 @@ class GameUiView:
             return self.dialog_state.npc, self.dialog_state.option_index
         return None
 
-    def on_click_toggle(self, ui_toggle: UiToggle):
+    def click_toggle_button(self, ui_toggle: ToggleButtonId):
         toggle = [tb for tb in self.toggle_buttons if tb.toggle_id == ui_toggle][0]
         self._on_click_toggle(toggle)
 
@@ -331,7 +373,11 @@ class GameUiView:
             self.enabled_toggle = clicked_toggle
             self.enabled_toggle.open()
 
-    def close_talent_toggle(self):
+    # --------------------------------------------------------------------------------------------------------
+    #                              REACT TO OBSERVABLE EVENTS
+    # --------------------------------------------------------------------------------------------------------
+
+    def close_talent_window(self):
         if self.enabled_toggle == self.talents_toggle:
             self.enabled_toggle.close()
             self.enabled_toggle = None
@@ -382,8 +428,19 @@ class GameUiView:
 
     def on_player_stats_updated(self, player_state: PlayerState):
         self.stats_window.player_state = player_state
-        self._update_regen(player_state.health_resource.get_effective_regen(),
-                           player_state.mana_resource.get_effective_regen())
+        health_regen = player_state.health_resource.get_effective_regen()
+        mana_regen = player_state.mana_resource.get_effective_regen()
+
+        tooltip_details = [
+            "regeneration: " + "{:.1f}".format(health_regen) + "/s"]
+        health_tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "Health", tooltip_details,
+                                         bottom_left=self.healthbar.rect.topleft)
+        self.healthbar.tooltip = health_tooltip
+        tooltip_details = [
+            "regeneration: " + "{:.1f}".format(mana_regen) + "/s"]
+        mana_tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "Mana", tooltip_details,
+                                       bottom_left=self.manabar.rect.topleft)
+        self.manabar.tooltip = mana_tooltip
 
     def on_abilities_updated(self, abilities: List[AbilityType]):
         for i, ability_type in enumerate(abilities):
@@ -438,17 +495,9 @@ class GameUiView:
             icon.slot_equipment_category = slot_equipment_category
             icon.item_type = item_type
 
-    def _update_regen(self, health_regen: float, mana_regen: float):
-        tooltip_details = [
-            "regeneration: " + "{:.1f}".format(health_regen) + "/s"]
-        health_tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "Health", tooltip_details,
-                                         bottom_left=self.healthbar.rect.topleft)
-        self.healthbar.tooltip = health_tooltip
-        tooltip_details = [
-            "regeneration: " + "{:.1f}".format(mana_regen) + "/s"]
-        mana_tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "Mana", tooltip_details,
-                                       bottom_left=self.manabar.rect.topleft)
-        self.manabar.tooltip = mana_tooltip
+    # --------------------------------------------------------------------------------------------------------
+    #                              HANDLE DIALOG USER INTERACTIONS
+    # --------------------------------------------------------------------------------------------------------
 
     def update_hero(self, hero_id: HeroId):
         sprite = HEROES[hero_id].portrait_icon_sprite
@@ -487,6 +536,10 @@ class GameUiView:
     def has_open_dialog(self) -> bool:
         return self.dialog_state.active
 
+    # --------------------------------------------------------------------------------------------------------
+    #                                          RENDERING
+    # --------------------------------------------------------------------------------------------------------
+
     def update_fps_string(self, fps_string: str):
         self.fps_string = fps_string
 
@@ -523,41 +576,6 @@ class GameUiView:
     def _splash_screen_text(self, text, x, y):
         self.screen_render.text(self.font_splash_screen, text, (x, y), COLOR_WHITE)
         self.screen_render.text(self.font_splash_screen, text, (x + 2, y + 2), COLOR_BLACK)
-
-    def handle_mouse_movement(self, mouse_screen_pos: Tuple[int, int]):
-        self.mouse_screen_position = mouse_screen_pos
-        self.is_mouse_hovering_ui = is_point_in_rect(mouse_screen_pos, self.ui_screen_area)
-
-        mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_pos)
-
-        simple_components = [self.healthbar, self.manabar, self.sound_checkbox, self.save_button] + \
-                            self.ability_icons + self.toggle_buttons
-
-        for component in simple_components:
-            if component.contains(mouse_ui_position):
-                self._on_hover_component(component)
-                return
-        # TODO Unify hover handling for consumables/items
-        for icon in self.consumable_icons + self.inventory_icons:
-            collision_offset = icon.get_collision_offset(mouse_ui_position)
-            if collision_offset:
-                self._on_hover_component(icon)
-                return
-
-        # TODO Unify hover handling of window icons
-        if self.talents_window.shown:
-            hovered_icon = self.talents_window.get_icon_containing(mouse_ui_position)
-            if hovered_icon:
-                self._on_hover_component(hovered_icon)
-                return
-
-        # If something was hovered, we would have returned from the method
-        self._set_currently_hovered_component_not_hovered()
-
-    def _on_hover_component(self, component):
-        self._set_currently_hovered_component_not_hovered()
-        self.hovered_component = component
-        self.hovered_component.hovered = True
 
     def _set_currently_hovered_component_not_hovered(self):
         if self.hovered_component is not None:

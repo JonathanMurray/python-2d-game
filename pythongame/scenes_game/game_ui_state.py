@@ -11,7 +11,7 @@ HIGHLIGHT_consumable_ACTION_DURATION = 120
 HIGHLIGHT_ABILITY_ACTION_DURATION = 120
 
 
-class UiToggle(Enum):
+class ToggleButtonId(Enum):
     STATS = 1
     TALENTS = 2
     CONTROLS = 3

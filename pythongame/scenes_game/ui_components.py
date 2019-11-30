@@ -10,7 +10,7 @@ from pythongame.core.game_state import PlayerState
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.talents import TalentsGraphics
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
-from pythongame.scenes_game.game_ui_state import UiToggle
+from pythongame.scenes_game.game_ui_state import ToggleButtonId
 
 COLOR_BLACK = (0, 0, 0)
 COLOR_WHITE = (250, 250, 250)
@@ -380,7 +380,7 @@ class UiWindow:
 
 
 class ToggleButton(UiComponent):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, font, text: str, toggle_id: UiToggle, highlighted: bool,
+    def __init__(self, ui_render: DrawableArea, rect: Rect, font, text: str, toggle_id: ToggleButtonId, highlighted: bool,
                  linked_window: UiWindow):
         super().__init__()
         self.ui_render = ui_render
