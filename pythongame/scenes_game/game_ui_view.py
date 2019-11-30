@@ -356,16 +356,16 @@ class GameUiView:
 
         return triggered_events
 
-    # --------------------------------------------------------------------------------------------------------
-    #                              HANDLE TOGGLE BUTTON USER INTERACTIONS
-    # --------------------------------------------------------------------------------------------------------
-
     def handle_space_click(self) -> Optional[Tuple[NonPlayerCharacter, int]]:
         if self.dialog_state.active:
             self.dialog_state.active = False
             self._update_dialog_graphics()
             return self.dialog_state.npc, self.dialog_state.option_index
         return None
+
+    # --------------------------------------------------------------------------------------------------------
+    #                              HANDLE TOGGLE BUTTON USER INTERACTIONS
+    # --------------------------------------------------------------------------------------------------------
 
     def click_toggle_button(self, ui_toggle: ToggleButtonId):
         toggle = [tb for tb in self.toggle_buttons if tb.toggle_id == ui_toggle][0]
@@ -382,14 +382,14 @@ class GameUiView:
             self.enabled_toggle = clicked_toggle
             self.enabled_toggle.open()
 
-    # --------------------------------------------------------------------------------------------------------
-    #                              REACT TO OBSERVABLE EVENTS
-    # --------------------------------------------------------------------------------------------------------
-
     def close_talent_window(self):
         if self.enabled_toggle == self.talents_toggle:
             self.enabled_toggle.close()
             self.enabled_toggle = None
+
+    # --------------------------------------------------------------------------------------------------------
+    #                              REACT TO OBSERVABLE EVENTS
+    # --------------------------------------------------------------------------------------------------------
 
     def on_talents_updated(self, talent_graphics: TalentsGraphics):
         self._setup_talents_window(talent_graphics)
@@ -508,11 +508,6 @@ class GameUiView:
     #                              HANDLE DIALOG USER INTERACTIONS
     # --------------------------------------------------------------------------------------------------------
 
-    def update_hero(self, hero_id: HeroId):
-        sprite = HEROES[hero_id].portrait_icon_sprite
-        image = self.images_by_portrait_sprite[sprite]
-        self.portrait.image = image
-
     def start_dialog_with_npc(self, npc: NonPlayerCharacter, dialog_data: DialogData):
         self.dialog_state.active = True
         self.dialog_state.npc = npc
@@ -546,14 +541,23 @@ class GameUiView:
         return self.dialog_state.active
 
     # --------------------------------------------------------------------------------------------------------
-    #                                          RENDERING
+    #                                     UPDATE MISC. STATE
     # --------------------------------------------------------------------------------------------------------
+
+    def update_hero(self, hero_id: HeroId):
+        sprite = HEROES[hero_id].portrait_icon_sprite
+        image = self.images_by_portrait_sprite[sprite]
+        self.portrait.image = image
 
     def set_paused(self, paused: bool):
         self.paused_splash_screen.shown = paused
 
     def update_fps_string(self, fps_string: str):
         self.fps_string = fps_string
+
+    # --------------------------------------------------------------------------------------------------------
+    #                                          RENDERING
+    # --------------------------------------------------------------------------------------------------------
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
