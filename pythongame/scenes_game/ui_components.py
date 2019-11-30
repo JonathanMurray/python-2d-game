@@ -15,6 +15,8 @@ from pythongame.scenes_game.game_ui_state import ToggleButtonId
 COLOR_BLACK = (0, 0, 0)
 COLOR_WHITE = (250, 250, 250)
 
+COLOR_ICON_OUTLINE = (150, 150, 190)
+COLOR_BUTTON_OUTLINE = (150, 150, 190)
 COLOR_HOVERED = (200, 200, 250)
 COLOR_ICON_HIGHLIGHTED = (250, 250, 150)
 COLOR_TOGGLE_HIGHLIGHTED = (150, 250, 200)
@@ -196,7 +198,7 @@ class AbilityIcon(UiComponent):
     def render(self, recently_clicked: bool):
         self._ui_render.rect_filled((40, 40, 50), self.rect)
         self._ui_render.image(self.image, self.rect.topleft)
-        self._ui_render.rect((150, 150, 190), self.rect, 1)
+        self._ui_render.rect(COLOR_ICON_OUTLINE, self.rect, 1)
         if recently_clicked:
             self._ui_render.rect(COLOR_ICON_HIGHLIGHTED,
                                  Rect(self.rect.x - 1, self.rect.y - 1, self.rect.w + 2, self.rect.h + 2), 3)
@@ -245,7 +247,7 @@ class ConsumableIcon(UiComponent):
         self._ui_render.rect_filled((40, 40, 50), self._rect)
         if self._image:
             self._ui_render.image(self._image, self._rect.topleft)
-        self._ui_render.rect((150, 150, 190), self._rect, 1)
+        self._ui_render.rect(COLOR_ICON_OUTLINE, self._rect, 1)
 
         sub_rect_h = 3
         for i in range(len(self.consumable_types)):
@@ -400,7 +402,7 @@ class ToggleButton(UiComponent):
     def render(self):
         if self.is_open:
             self.ui_render.rect_filled((50, 50, 150), self.rect)
-        self.ui_render.rect(COLOR_WHITE, self.rect, 1)
+        self.ui_render.rect(COLOR_BUTTON_OUTLINE, self.rect, 1)
         self.ui_render.text(self.font, self.text, (self.rect.x + 20, self.rect.y + 2))
         if self.hovered:
             self.ui_render.rect(COLOR_HOVERED, self.rect, 1)
@@ -431,7 +433,7 @@ class Checkbox(UiComponent):
         return self.rect.collidepoint(point[0], point[1])
 
     def render(self):
-        self.ui_render.rect(COLOR_WHITE, self.rect, 1)
+        self.ui_render.rect(COLOR_BUTTON_OUTLINE, self.rect, 1)
         text = self.label + ": " + ("Y" if self.checked else "N")
         self.ui_render.text(self.font, text, (self.rect.x + 4, self.rect.y + 2))
         if self.hovered:
@@ -454,7 +456,7 @@ class Button(UiComponent):
         return self.rect.collidepoint(point[0], point[1])
 
     def render(self):
-        self.ui_render.rect(COLOR_WHITE, self.rect, 1)
+        self.ui_render.rect(COLOR_BUTTON_OUTLINE, self.rect, 1)
         self.ui_render.text(self.font, self.text, (self.rect.x + 7, self.rect.y + 2))
         if self.hovered:
             self.ui_render.rect(COLOR_HOVERED, self.rect, 1)
