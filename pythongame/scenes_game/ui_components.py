@@ -568,6 +568,12 @@ class TalentsWindow(UiWindow):
                 return icon_2
         return None
 
+    def get_last_row_icons(self):
+        if self.icon_rows:
+            last_row = self.icon_rows[-1]
+            return [last_row[0], last_row[1]]
+        return []
+
     def render(self):
         if self.shown:
             self._render()

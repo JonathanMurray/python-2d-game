@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import List, Tuple, Optional, Dict, Any
 
 import pygame
@@ -37,46 +36,60 @@ PORTRAIT_ICON_SIZE = (100, 70)
 DIR_FONTS = './resources/fonts/'
 
 
-class DraggedItemSlot:
-    def __init__(self, slot_number: int, item_type: ItemType, relative_mouse_pos: Tuple[int, int]):
-        self.slot_number = slot_number
-        self.item_type = item_type
-        self.relative_mouse_pos = relative_mouse_pos
-
-
-class DraggedConsumableSlot:
-    def __init__(self, slot_number: int, consumable_types: List[ConsumableType], relative_mouse_pos: Tuple[int, int]):
-        self.slot_number = slot_number
-        self.consumable_types = consumable_types
-        self.relative_mouse_pos = relative_mouse_pos
-
-
-class MouseHoverEvent:
-    def __init__(self, item: Optional[DraggedItemSlot], consumable: Optional[DraggedConsumableSlot], is_over_ui: bool,
-                 talent_choice_option: Optional[Tuple[int, int]]):
-        self.item = item
-        self.consumable = consumable
-        self.is_over_ui: bool = is_over_ui
-        self.talent_choice_option = talent_choice_option  # (choice_index, option_index)
-
-
-class MouseDrag:
-    def __init__(self, consumable: Optional[DraggedConsumableSlot], item: Optional[DraggedItemSlot],
-                 screen_pos: Tuple[int, int]):
-        self.consumable = consumable
-        self.item = item
-        self.screen_pos = screen_pos
-
-
 class DialogConfig:
     def __init__(self, data: DialogData, option_index: int):
         self.data = data
         self.option_index = option_index
 
 
-class MouseClickEvent(Enum):
-    TOGGLE_SOUND = 1
-    SAVE = 2
+class EventTriggeredFromUi:
+    pass
+
+
+class DragItemBetweenInventorySlots(EventTriggeredFromUi):
+    def __init__(self, from_slot: int, to_slot: int):
+        self.from_slot = from_slot
+        self.to_slot = to_slot
+
+
+class DropItemOnGround(EventTriggeredFromUi):
+    def __init__(self, from_slot: int, screen_position: Tuple[int, int]):
+        self.from_slot = from_slot
+        self.screen_position = screen_position
+
+
+class DragConsumableBetweenInventorySlots(EventTriggeredFromUi):
+    def __init__(self, from_slot: int, to_slot: int):
+        self.from_slot = from_slot
+        self.to_slot = to_slot
+
+
+class DropConsumableOnGround(EventTriggeredFromUi):
+    def __init__(self, from_slot: int, screen_position: Tuple[int, int]):
+        self.from_slot = from_slot
+        self.screen_position = screen_position
+
+
+class PickTalent(EventTriggeredFromUi):
+    def __init__(self, option_index: int):
+        self.option_index = option_index
+
+
+class ToggleSound(EventTriggeredFromUi):
+    pass
+
+
+class SaveGame(EventTriggeredFromUi):
+    pass
+
+
+class StartDraggingItemOrConsumable(EventTriggeredFromUi):
+    pass
+
+
+class TrySwitchItemInInventory(EventTriggeredFromUi):
+    def __init__(self, slot: int):
+        self.slot = slot
 
 
 class GameUiView:
@@ -84,14 +97,18 @@ class GameUiView:
     def __init__(self, pygame_screen, camera_size: Tuple[int, int], screen_size: Tuple[int, int],
                  images_by_ui_sprite: Dict[UiIconSprite, Any], big_images_by_ui_sprite: Dict[UiIconSprite, Any],
                  images_by_portrait_sprite: Dict[PortraitIconSprite, Any]):
+
+        # INIT PYGAME FONTS
         pygame.font.init()
+
+        # SETUP FUNDAMENTALS
         self.screen_render = DrawableArea(pygame_screen)
         self.ui_render = DrawableArea(pygame_screen, self._translate_ui_position_to_screen)
-
         self.ui_screen_area = Rect(0, camera_size[1], screen_size[0], screen_size[1] - camera_size[1])
         self.camera_size = camera_size
         self.screen_size = screen_size
 
+        # FONTS
         self.font_splash_screen = pygame.font.Font(DIR_FONTS + 'Arial Rounded Bold.ttf', 64)
         self.font_ui_stat_bar_numbers = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_ui_money = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
@@ -110,10 +127,10 @@ class GameUiView:
         self.font_dialog = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 24)
         self.font_dialog_option_detail_body = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
 
+        # IMAGES
         self.images_by_ui_sprite = images_by_ui_sprite
         self.big_images_by_ui_sprite = big_images_by_ui_sprite
         self.images_by_portrait_sprite = images_by_portrait_sprite
-
         self.images_by_item_category = {
             ItemEquipmentCategory.HEAD: self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_HELMET],
             ItemEquipmentCategory.CHEST: self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_CHEST],
@@ -123,9 +140,7 @@ class GameUiView:
             ItemEquipmentCategory.RING: self.images_by_ui_sprite[UiIconSprite.INVENTORY_TEMPLATE_RING],
         }
 
-        # This is updated every time the view is called
-        self.camera_world_area = None
-
+        # UI COMPONENTS
         self.ability_icons_row: Rect = Rect(0, 0, 0, 0)
         self.ability_icons: List[AbilityIcon] = []
         self.consumable_icons_row: Rect = Rect(0, 0, 0, 0)
@@ -136,24 +151,28 @@ class GameUiView:
         self.minimap = Minimap(self.ui_render, Rect(440, 52, 80, 80))
         self.buffs = Buffs(self.ui_render, self.font_buff_texts, (10, -35))
         self.money_text = Text(self.ui_render, self.font_ui_money, (24, 150), "NO MONEY")
+        self.talents_window: TalentsWindow = None
 
+        # SETUP UI COMPONENTS
         self._setup_ability_icons()
         self._setup_consumable_icons()
         self._setup_inventory_icons()
         self._setup_health_and_mana_bars()
         self._setup_stats_window()
-        self.talents_window: TalentsWindow = None
         self._setup_talents_window(TalentsGraphics([]))
         self._setup_controls_window()
         self._setup_toggle_buttons()
         self._setup_portrait()
         self._setup_dialog()
 
+        # QUICKLY CHANGING STATE
         self.hovered_component = None
-
         self.fps_string = ""
-
         self.enabled_toggle: ToggleButton = None
+        self.item_slot_being_dragged: ItemIcon = None
+        self.consumable_slot_being_dragged: ConsumableIcon = None
+        self.is_mouse_hovering_ui = False
+        self.mouse_screen_position = (0, 0)
 
     def _setup_ability_icons(self):
         x_0 = 140
@@ -284,14 +303,56 @@ class GameUiView:
     def _setup_dialog(self):
         self.dialog = Dialog(self.screen_render, None, None, [], 0, PORTRAIT_ICON_SIZE, UI_ICON_SIZE)
 
-    def handle_mouse_click(self) -> Optional[MouseClickEvent]:
+    def handle_mouse_click(self) -> Optional[EventTriggeredFromUi]:
         if self.hovered_component in self.toggle_buttons:
             self._on_click_toggle(self.hovered_component)
         elif self.hovered_component == self.sound_checkbox:
             self.sound_checkbox.on_click()
-            return MouseClickEvent.TOGGLE_SOUND
+            return ToggleSound()
         elif self.hovered_component == self.save_button:
-            return MouseClickEvent.SAVE
+            return SaveGame()
+        elif self.hovered_component in self.inventory_icons and self.hovered_component.item_type:
+            self.item_slot_being_dragged = self.hovered_component
+            return StartDraggingItemOrConsumable()
+        elif self.hovered_component in self.consumable_icons and self.hovered_component.consumable_types:
+            self.consumable_slot_being_dragged = self.hovered_component
+            return StartDraggingItemOrConsumable()
+        elif self.hovered_component in self.talents_window.get_last_row_icons():
+            return PickTalent(self.hovered_component.option_index)
+
+    def handle_mouse_right_click(self) -> List[EventTriggeredFromUi]:
+        if self.hovered_component in self.inventory_icons:
+            self.item_slot_being_dragged = None
+            item_icon: ItemIcon = self.hovered_component
+            return [TrySwitchItemInInventory(item_icon.inventory_slot_index)]
+        return []
+
+    def handle_mouse_release(self) -> List[EventTriggeredFromUi]:
+        triggered_events = []
+        if self.item_slot_being_dragged:
+            if self.hovered_component in self.inventory_icons and self.hovered_component != self.item_slot_being_dragged:
+                item_icon: ItemIcon = self.hovered_component
+                event = DragItemBetweenInventorySlots(self.item_slot_being_dragged.inventory_slot_index,
+                                                      item_icon.inventory_slot_index)
+                triggered_events.append(event)
+            if not self.is_mouse_hovering_ui:
+                event = DropItemOnGround(self.item_slot_being_dragged.inventory_slot_index, self.mouse_screen_position)
+                triggered_events.append(event)
+            self.item_slot_being_dragged = None
+
+        if self.consumable_slot_being_dragged:
+            if self.hovered_component in self.consumable_icons and self.hovered_component != self.consumable_slot_being_dragged:
+                consumable_icon: ConsumableIcon = self.hovered_component
+                event = DragConsumableBetweenInventorySlots(self.consumable_slot_being_dragged.slot_number,
+                                                            consumable_icon.slot_number)
+                triggered_events.append(event)
+            if not self.is_mouse_hovering_ui:
+                event = DropConsumableOnGround(self.consumable_slot_being_dragged.slot_number,
+                                               self.mouse_screen_position)
+                triggered_events.append(event)
+            self.consumable_slot_being_dragged = None
+
+        return triggered_events
 
     def on_click_toggle(self, ui_toggle: UiToggle):
         toggle = [tb for tb in self.toggle_buttons if tb.toggle_id == ui_toggle][0]
@@ -501,12 +562,9 @@ class GameUiView:
         self.screen_render.text(self.font_splash_screen, text, (x, y), COLOR_WHITE)
         self.screen_render.text(self.font_splash_screen, text, (x + 2, y + 2), COLOR_BLACK)
 
-    def handle_mouse(self, mouse_screen_pos: Tuple[int, int]) -> MouseHoverEvent:
-        hovered_item_slot = None
-        hovered_consumable_slot = None
-        is_mouse_hovering_ui = is_point_in_rect(mouse_screen_pos, self.ui_screen_area)
-        hovered_talent_option: Optional[Tuple[int, int]] = None
-        did_find_some_hovered_component = False
+    def handle_mouse(self, mouse_screen_pos: Tuple[int, int]):
+        self.mouse_screen_position = mouse_screen_pos
+        self.is_mouse_hovering_ui = is_point_in_rect(mouse_screen_pos, self.ui_screen_area)
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_pos)
 
@@ -515,40 +573,31 @@ class GameUiView:
 
         for component in simple_components:
             if component.contains(mouse_ui_position):
-                self.on_hover_component(component)
-                did_find_some_hovered_component = True
+                self._on_hover_component(component)
+                return
+        # TODO Unify hover handling for consumables/items
+        for icon in self.consumable_icons + self.inventory_icons:
+            collision_offset = icon.get_collision_offset(mouse_ui_position)
+            if collision_offset:
+                self._on_hover_component(icon)
+                return
 
-        for icon in self.consumable_icons:
-            collision_offset = icon.get_collision_offset(mouse_ui_position)
-            if collision_offset:
-                self.on_hover_component(icon)
-                did_find_some_hovered_component = True
-                hovered_consumable_slot = DraggedConsumableSlot(icon.slot_number, icon.consumable_types,
-                                                                collision_offset)
-        for icon in self.inventory_icons:
-            collision_offset = icon.get_collision_offset(mouse_ui_position)
-            if collision_offset:
-                self.on_hover_component(icon)
-                did_find_some_hovered_component = True
-                hovered_item_slot = DraggedItemSlot(icon.inventory_slot_index, icon.item_type, collision_offset)
+        # TODO Unify hover handling of window icons
         if self.talents_window.shown:
             hovered_icon = self.talents_window.get_icon_containing(mouse_ui_position)
             if hovered_icon:
-                self.on_hover_component(hovered_icon)
-                did_find_some_hovered_component = True
-                hovered_talent_option = (hovered_icon.choice_index, hovered_icon.option_index)
+                self._on_hover_component(hovered_icon)
+                return
 
-        if not did_find_some_hovered_component:
-            self.set_currently_hovered_component_not_hovered()
+        # If something was hovered, we would have returned from the method
+        self._set_currently_hovered_component_not_hovered()
 
-        return MouseHoverEvent(hovered_item_slot, hovered_consumable_slot, is_mouse_hovering_ui, hovered_talent_option)
-
-    def on_hover_component(self, component):
-        self.set_currently_hovered_component_not_hovered()
+    def _on_hover_component(self, component):
+        self._set_currently_hovered_component_not_hovered()
         self.hovered_component = component
         self.hovered_component.hovered = True
 
-    def set_currently_hovered_component_not_hovered(self):
+    def _set_currently_hovered_component_not_hovered(self):
         if self.hovered_component is not None:
             self.hovered_component.hovered = False
             self.hovered_component = None
@@ -556,8 +605,7 @@ class GameUiView:
     def render(
             self,
             ui_state: GameUiState,
-            is_paused: bool,
-            mouse_drag: Optional[MouseDrag]):
+            is_paused: bool):
 
         self.screen_render.rect(COLOR_BORDER, Rect(0, 0, self.camera_size[0], self.camera_size[1]), 1)
         self.screen_render.rect_filled((20, 10, 0), Rect(0, self.camera_size[1], self.screen_size[0],
@@ -566,6 +614,7 @@ class GameUiView:
         # CONSUMABLES
         self.ui_render.rect_filled((60, 60, 80), self.consumable_icons_row)
         for icon in self.consumable_icons:
+            # TODO treat this as state and update it elsewhere
             recently_clicked = icon.slot_number == ui_state.highlighted_consumable_action
             icon.render(recently_clicked)
 
@@ -573,6 +622,7 @@ class GameUiView:
         self.ui_render.rect_filled((60, 60, 80), self.ability_icons_row)
         for icon in self.ability_icons:
             ability_type = icon.ability_type
+            # TODO treat this as state and update it elsewhere
             if ability_type:
                 recently_clicked = ability_type == ui_state.highlighted_ability_action
                 icon.render(recently_clicked)
@@ -580,9 +630,11 @@ class GameUiView:
         # ITEMS
         self.ui_render.rect_filled((60, 60, 80), self.inventory_icons_rect)
         for icon in self.inventory_icons:
-            highlighted = mouse_drag and mouse_drag.item and mouse_drag.item.item_type \
-                          and ITEMS[mouse_drag.item.item_type].item_equipment_category \
-                          and icon.slot_equipment_category == ITEMS[mouse_drag.item.item_type].item_equipment_category
+            # TODO treat this as state and update it elsewhere
+            highlighted = self.item_slot_being_dragged and self.item_slot_being_dragged.item_type \
+                          and ITEMS[self.item_slot_being_dragged.item_type].item_equipment_category \
+                          and icon.slot_equipment_category == ITEMS[
+                              self.item_slot_being_dragged.item_type].item_equipment_category
             icon.render(highlighted)
 
         # MINIMAP
@@ -603,17 +655,19 @@ class GameUiView:
         if ui_state.message:
             self._message(ui_state.message)
 
-        if self.hovered_component and self.hovered_component.tooltip and not mouse_drag:
+        if self.hovered_component and self.hovered_component.tooltip and not self.item_slot_being_dragged \
+                and not self.consumable_slot_being_dragged:
             tooltip: TooltipGraphics = self.hovered_component.tooltip
             tooltip.render()
 
-        if mouse_drag:
-            if mouse_drag.item:
-                self._render_item_being_dragged(mouse_drag.item.item_type, mouse_drag.screen_pos,
-                                                mouse_drag.item.relative_mouse_pos)
-            elif mouse_drag.consumable:
-                self._render_consumable_being_dragged(mouse_drag.consumable.consumable_types[0], mouse_drag.screen_pos,
-                                                      mouse_drag.consumable.relative_mouse_pos)
+        # TODO Bring back relative render position for dragged entities
+        if self.item_slot_being_dragged:
+            self._render_item_being_dragged(self.item_slot_being_dragged.item_type, self.mouse_screen_position,
+                                            (UI_ICON_SIZE[0] // 2, (UI_ICON_SIZE[1] // 2)))
+        elif self.consumable_slot_being_dragged:
+            self._render_consumable_being_dragged(self.consumable_slot_being_dragged.consumable_types[0],
+                                                  self.mouse_screen_position,
+                                                  (UI_ICON_SIZE[0] // 2, (UI_ICON_SIZE[1] // 2)))
 
         if is_paused:
             self.screen_render.rect_transparent(Rect(0, 0, self.screen_size[0], self.screen_size[1]), 140, COLOR_BLACK)

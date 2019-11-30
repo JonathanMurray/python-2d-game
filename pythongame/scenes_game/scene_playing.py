@@ -24,11 +24,12 @@ from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.player_file import save_to_file
 from pythongame.scenes_game.game_engine import GameEngine
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
+from pythongame.scenes_game.game_ui_view import DragItemBetweenInventorySlots, DropItemOnGround, \
+    DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
+    PickTalent, StartDraggingItemOrConsumable, TrySwitchItemInInventory, ToggleSound, SaveGame
 from pythongame.scenes_game.game_ui_view import GameUiView
 from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
-from pythongame.scenes_game.playing_ui_controller import PlayingUiController, EventTriggeredFromUi, \
-    DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
-    PickTalent, StartDraggingItemOrConsumable, TrySwitchItemInInventory, ToggleSound, SaveGame
+from pythongame.scenes_game.playing_ui_controller import PlayingUiController, EventTriggeredFromUi
 
 
 class PlayingScene(AbstractScene):
@@ -113,10 +114,9 @@ class PlayingScene(AbstractScene):
                 if isinstance(action, ActionMouseMovement):
                     self.ui_controller.handle_mouse_movement(action.mouse_screen_position)
                 if isinstance(action, ActionMouseClicked):
-                    events_triggered_from_ui += self.ui_controller.handle_mouse_click(self.game_state.player_state)
+                    events_triggered_from_ui += self.ui_controller.handle_mouse_click()
                 if isinstance(action, ActionMouseReleased):
-                    events_triggered_from_ui += self.ui_controller.handle_mouse_release(
-                        self.game_state)
+                    events_triggered_from_ui += self.ui_controller.handle_mouse_release()
                 if isinstance(action, ActionRightMouseClicked):
                     events_triggered_from_ui += self.ui_controller.handle_mouse_right_click()
                 if isinstance(action, ActionPressSpaceKey):
@@ -202,13 +202,15 @@ class PlayingScene(AbstractScene):
                 else:
                     play_sound(SoundId.INVALID_ACTION)
             elif isinstance(event, DropItemOnGround):
-                self.game_engine.drop_inventory_item_on_ground(event.from_slot, event.world_position)
+                world_position = _get_mouse_world_pos(self.game_state, event.screen_position)
+                self.game_engine.drop_inventory_item_on_ground(event.from_slot, world_position)
                 play_sound(SoundId.UI_ITEM_WAS_DROPPED_ON_GROUND)
             elif isinstance(event, DragConsumableBetweenInventorySlots):
                 self.game_engine.drag_consumable_between_inventory_slots(event.from_slot, event.to_slot)
                 play_sound(SoundId.UI_ITEM_WAS_MOVED)
             elif isinstance(event, DropConsumableOnGround):
-                self.game_engine.drop_consumable_on_ground(event.from_slot, event.world_position)
+                world_position = _get_mouse_world_pos(self.game_state, event.screen_position)
+                self.game_engine.drop_consumable_on_ground(event.from_slot, world_position)
                 play_sound(SoundId.UI_ITEM_WAS_DROPPED_ON_GROUND)
             elif isinstance(event, PickTalent):
                 name_of_picked = pick_talent(self.game_state, event.option_index)
@@ -282,3 +284,8 @@ def _get_loot_details(lootable: LootableOnGround) -> List[str]:
 def exit_game():
     pygame.quit()
     sys.exit()
+
+
+def _get_mouse_world_pos(game_state: GameState, mouse_screen_position: Tuple[int, int]):
+    return (int(mouse_screen_position[0] + game_state.camera_world_area.x),
+            int(mouse_screen_position[1] + game_state.camera_world_area.y))

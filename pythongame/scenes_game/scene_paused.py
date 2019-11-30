@@ -58,8 +58,7 @@ class PausedScene(AbstractScene):
 
         self.ui_view.render(
             ui_state=self.ui_state,
-            is_paused=True,
-            mouse_drag=None
+            is_paused=True
         )
 
         self.world_view.update_display()
