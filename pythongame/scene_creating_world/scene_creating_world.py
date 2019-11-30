@@ -133,12 +133,12 @@ class CreatingWorldScene(AbstractScene):
             self.camera_size, self.flags.map_file_path, self.flags.picked_hero)
         game_engine = GameEngine(game_state, ui_state)
         game_state.player_state.exp_was_updated.register_observer(self.ui_view.on_player_exp_updated)
-        game_state.player_state.talents_were_updated.register_observer(self.ui_view.handle_event)
+        game_state.player_state.talents_were_updated.register_observer(self.ui_view.on_talents_updated)
         game_state.player_movement_speed_was_updated.register_observer(self.ui_view.on_player_movement_speed_updated)
         game_state.notify_movement_speed_observers()  # Must notify the initial state
-        game_state.player_state.stats_were_updated.register_observer(self.ui_view.handle_event)
+        game_state.player_state.stats_were_updated.register_observer(self.ui_view.on_player_stats_updated)
         game_state.player_state.notify_stats_observers()  # Must notify the initial state
-        game_engine.player_abilities_were_updated.register_observer(self.ui_view.handle_event)
+        game_engine.player_abilities_were_updated.register_observer(self.ui_view.on_abilities_updated)
         game_engine.talent_was_unlocked.register_observer(self.ui_view.on_talent_was_unlocked)
         game_state.player_state.money_was_updated.register_observer(self.ui_view.on_money_updated)
         game_state.player_state.notify_money_observers()  # Must notify the initial state
@@ -173,9 +173,9 @@ class CreatingWorldScene(AbstractScene):
             if start_money > 0:
                 game_state.player_state.modify_money(start_money)
 
-        game_state.player_state.item_inventory.was_updated.register_observer(self.ui_view.handle_event)
+        game_state.player_state.item_inventory.was_updated.register_observer(self.ui_view.on_inventory_updated)
         game_state.player_state.item_inventory.notify_observers()  # Must notify the initial state
-        game_state.player_state.consumable_inventory.was_updated.register_observer(self.ui_view.handle_event)
+        game_state.player_state.consumable_inventory.was_updated.register_observer(self.ui_view.on_consumables_updated)
         game_state.player_state.consumable_inventory.notify_observers()  # Must notify the initial state
         self.ui_view.update_hero(game_state.player_state.hero_id)
 

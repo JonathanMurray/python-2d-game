@@ -26,11 +26,6 @@ class EngineEvent(Enum):
     ENEMY_DIED = 2
 
 
-class PlayerAbilityObserverEvent:
-    def __init__(self, abilities: List[AbilityType]):
-        self.abilities = abilities
-
-
 class GameEngine:
 
     def __init__(self, game_state: GameState, ui_state: GameUiState):
@@ -352,7 +347,7 @@ class GameEngine:
             self.ui_state.enqueue_message("You can pick a talent!")
 
     def notify_ability_observers(self):
-        self.player_abilities_were_updated.notify(PlayerAbilityObserverEvent(self.game_state.player_state.abilities))
+        self.player_abilities_were_updated.notify(self.game_state.player_state.abilities)
 
     def _is_npc_close_to_camera(self, npc: NonPlayerCharacter):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(

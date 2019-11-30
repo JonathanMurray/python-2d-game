@@ -55,4 +55,4 @@ class ConsumableInventory:
         return self.consumables_in_slots[slot_number][0] if len(self.consumables_in_slots[slot_number]) > 0 else None
 
     def notify_observers(self):
-        self.was_updated.notify(self)
+        self.was_updated.notify(self.consumables_in_slots)

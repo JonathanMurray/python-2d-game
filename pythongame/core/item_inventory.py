@@ -189,4 +189,4 @@ class ItemInventory:
         return [slot.item.item_effect for slot in self.slots if slot.is_active() and not slot.is_empty()]
 
     def notify_observers(self):
-        self.was_updated.notify(self)
+        self.was_updated.notify(self.slots)

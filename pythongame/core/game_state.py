@@ -466,7 +466,7 @@ class PlayerState:
         self.notify_stats_observers()
 
     def notify_stats_observers(self):
-        self.stats_were_updated.notify(PlayerStatsObserverEvent(self))
+        self.stats_were_updated.notify(self)
 
     # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):
@@ -680,16 +680,6 @@ class CameraShake:
 
     def has_time_left(self) -> bool:
         return self._time_left > 0
-
-
-class PlayerStatsObserverEvent:
-    def __init__(self, player_state: PlayerState):
-        self.player_state = player_state
-
-
-class PlayerMovementSpeedObserverEvent:
-    def __init__(self, player_speed_multiplier: float):
-        self.player_speed_multiplier = player_speed_multiplier
 
 
 class GameState:

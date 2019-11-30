@@ -5,18 +5,15 @@ from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite, \
     SoundId
-from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, \
     KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, HEROES
-from pythongame.core.game_state import PlayerStatsObserverEvent, BuffWithDuration, NonPlayerCharacter
-from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES, \
-    ItemInventory
+from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState
+from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import is_point_in_rect
 from pythongame.core.npc_behaviors import DialogData
 from pythongame.core.sound_player import play_sound
 from pythongame.core.talents import TalentsGraphics
 from pythongame.core.view.render_util import DrawableArea
-from pythongame.scenes_game.game_engine import PlayerAbilityObserverEvent
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
     ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text, \
@@ -385,20 +382,8 @@ class GameUiView:
             self.enabled_toggle.close()
             self.enabled_toggle = None
 
-    # TODO Break up event handling into separate methods
-    def handle_event(self, event):
-        if isinstance(event, TalentsGraphics):
-            self._setup_talents_window(event)
-        elif isinstance(event, PlayerAbilityObserverEvent):
-            self._update_abilities(event.abilities)
-        elif isinstance(event, ConsumableInventory):
-            self._update_consumables(event.consumables_in_slots)
-        elif isinstance(event, ItemInventory):
-            self._update_inventory(event.slots)
-        elif isinstance(event, PlayerStatsObserverEvent):
-            self._update_player_stats(event)
-        else:
-            raise Exception("Unhandled event: " + str(event))
+    def on_talents_updated(self, talent_graphics: TalentsGraphics):
+        self._setup_talents_window(talent_graphics)
 
     def on_talent_was_unlocked(self, _event):
         if self.enabled_toggle != self.talents_toggle:
@@ -441,13 +426,12 @@ class GameUiView:
                 buffs.append((text, ratio_remaining))
         self.buffs.update(buffs)
 
-    def _update_player_stats(self, event):
-        player_state = event.player_state
+    def on_player_stats_updated(self, player_state: PlayerState):
         self.stats_window.player_state = player_state
         self._update_regen(player_state.health_resource.get_effective_regen(),
                            player_state.mana_resource.get_effective_regen())
 
-    def _update_abilities(self, abilities: List[AbilityType]):
+    def on_abilities_updated(self, abilities: List[AbilityType]):
         for i, ability_type in enumerate(abilities):
             ability = ABILITIES[ability_type]
             icon = self.ability_icons[i]
@@ -457,7 +441,7 @@ class GameUiView:
                 ability=ability,
                 ability_type=ability_type)
 
-    def _update_consumables(self, consumable_slots: Dict[int, List[ConsumableType]]):
+    def on_consumables_updated(self, consumable_slots: Dict[int, List[ConsumableType]]):
         for i, slot_number in enumerate(consumable_slots):
             icon = self.consumable_icons[i]
             consumable_types = consumable_slots[slot_number]
@@ -469,7 +453,7 @@ class GameUiView:
 
             icon.update(image, consumable, consumable_types)
 
-    def _update_inventory(self, item_slots: List[ItemInventorySlot]):
+    def on_inventory_updated(self, item_slots: List[ItemInventorySlot]):
         for i in range(len(item_slots)):
             icon = self.inventory_icons[i]
             slot = item_slots[i]
