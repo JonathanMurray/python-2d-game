@@ -44,12 +44,6 @@ class DialogState:
         self.active = False
 
 
-class DialogConfig:
-    def __init__(self, data: DialogData, option_index: int):
-        self.data = data
-        self.option_index = option_index
-
-
 class EventTriggeredFromUi:
     pass
 
@@ -367,7 +361,7 @@ class GameUiView:
     def handle_space_click(self) -> Optional[Tuple[NonPlayerCharacter, int]]:
         if self.dialog_state.active:
             self.dialog_state.active = False
-            self.update_dialog(None)
+            self._update_dialog_graphics()
             return self.dialog_state.npc, self.dialog_state.option_index
         return None
 
@@ -529,27 +523,25 @@ class GameUiView:
         self.dialog_state.data = dialog_data
         if self.dialog_state.option_index >= len(dialog_data.options):
             self.dialog_state.option_index = 0
-        self.update_dialog(DialogConfig(dialog_data, self.dialog_state.option_index))
+        self._update_dialog_graphics()
 
     def change_dialog_option(self, delta: int):
         self.dialog_state.option_index = (self.dialog_state.option_index + delta) % len(self.dialog_state.data.options)
-        self.update_dialog(DialogConfig(self.dialog_state.data, self.dialog_state.option_index))
+        self._update_dialog_graphics()
 
-    def update_dialog(self, dialog_config: Optional[DialogConfig]):
-        if dialog_config:
-            options = [
-                DialogOption(
-                    option.summary,
-                    option.action_text,
-                    self.images_by_ui_sprite[option.ui_icon_sprite] if option.ui_icon_sprite else None,
-                    option.detail_header,
-                    option.detail_body)
-                for option in dialog_config.data.options]
-            portrait_image = self.images_by_portrait_sprite[dialog_config.data.portrait_icon_sprite]
-            self.dialog.portrait_image = portrait_image
-            self.dialog.text_body = dialog_config.data.text_body
-            self.dialog.options = options
-            self.dialog.active_option_index = dialog_config.option_index
+    def _update_dialog_graphics(self):
+        if self.dialog_state.active:
+
+            build_dialog_option = lambda option: DialogOption(
+                option.summary, option.action_text,
+                self.images_by_ui_sprite[option.ui_icon_sprite] if option.ui_icon_sprite else None,
+                option.detail_header, option.detail_body)
+
+            data = self.dialog_state.data
+            self.dialog.portrait_image = self.images_by_portrait_sprite[data.portrait_icon_sprite]
+            self.dialog.text_body = data.text_body
+            self.dialog.options = [build_dialog_option(option) for option in data.options]
+            self.dialog.active_option_index = self.dialog_state.option_index
             self.dialog.shown = True
         else:
             self.dialog.shown = False
