@@ -18,6 +18,9 @@ from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
     ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text, \
     DialogOption, Dialog, Checkbox, Button
+from pythongame.scenes_game.ui_events import TrySwitchItemInInventory, EventTriggeredFromUi, \
+    DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
+    PickTalent, StartDraggingItemOrConsumable, SaveGame, ToggleSound
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -40,55 +43,6 @@ class DialogState:
         self.npc: NonPlayerCharacter = None
         self.active = False
 
-
-class EventTriggeredFromUi:
-    pass
-
-
-class DragItemBetweenInventorySlots(EventTriggeredFromUi):
-    def __init__(self, from_slot: int, to_slot: int):
-        self.from_slot = from_slot
-        self.to_slot = to_slot
-
-
-class DropItemOnGround(EventTriggeredFromUi):
-    def __init__(self, from_slot: int, screen_position: Tuple[int, int]):
-        self.from_slot = from_slot
-        self.screen_position = screen_position
-
-
-class DragConsumableBetweenInventorySlots(EventTriggeredFromUi):
-    def __init__(self, from_slot: int, to_slot: int):
-        self.from_slot = from_slot
-        self.to_slot = to_slot
-
-
-class DropConsumableOnGround(EventTriggeredFromUi):
-    def __init__(self, from_slot: int, screen_position: Tuple[int, int]):
-        self.from_slot = from_slot
-        self.screen_position = screen_position
-
-
-class PickTalent(EventTriggeredFromUi):
-    def __init__(self, option_index: int):
-        self.option_index = option_index
-
-
-class ToggleSound(EventTriggeredFromUi):
-    pass
-
-
-class SaveGame(EventTriggeredFromUi):
-    pass
-
-
-class StartDraggingItemOrConsumable(EventTriggeredFromUi):
-    pass
-
-
-class TrySwitchItemInInventory(EventTriggeredFromUi):
-    def __init__(self, slot: int):
-        self.slot = slot
 
 
 class GameUiView:
@@ -610,10 +564,7 @@ class GameUiView:
             self.hovered_component.hovered = False
             self.hovered_component = None
 
-    def render(
-            self,
-            ui_state: GameUiState,
-            is_paused: bool):
+    def render(self, ui_state: GameUiState, is_paused: bool):
 
         self.screen_render.rect(COLOR_BORDER, Rect(0, 0, self.camera_size[0], self.camera_size[1]), 1)
         self.screen_render.rect_filled((20, 10, 0), Rect(0, self.camera_size[1], self.screen_size[0],
