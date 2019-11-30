@@ -12,7 +12,7 @@ from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOn
     ConsumableOnGround, ItemOnGround, Chest
 from pythongame.core.hero_upgrades import pick_talent
 from pythongame.core.math import get_directions_to_position
-from pythongame.core.npc_behaviors import invoke_npc_action
+from pythongame.core.npc_behaviors import invoke_npc_action, get_dialog_data
 from pythongame.core.sound_player import play_sound, toggle_muted
 from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
@@ -26,10 +26,9 @@ from pythongame.scenes_game.game_engine import GameEngine
 from pythongame.scenes_game.game_ui_state import GameUiState, UiToggle
 from pythongame.scenes_game.game_ui_view import DragItemBetweenInventorySlots, DropItemOnGround, \
     DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
-    PickTalent, StartDraggingItemOrConsumable, TrySwitchItemInInventory, ToggleSound, SaveGame
+    PickTalent, StartDraggingItemOrConsumable, TrySwitchItemInInventory, ToggleSound, SaveGame, EventTriggeredFromUi
 from pythongame.scenes_game.game_ui_view import GameUiView
 from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
-from pythongame.scenes_game.playing_ui_controller import PlayingUiController, EventTriggeredFromUi
 
 
 class PlayingScene(AbstractScene):
@@ -45,14 +44,12 @@ class PlayingScene(AbstractScene):
         self.game_engine: GameEngine = None
         self.world_behavior: AbstractWorldBehavior = None
         self.ui_state: GameUiState = None
-        self.ui_controller: PlayingUiController = None
         self.ui_view: GameUiView = None
         self.user_input_handler = PlayingUserInputHandler()
 
     def initialize(self, data: Tuple[GameState, GameEngine, AbstractWorldBehavior, GameUiState, GameUiView, bool]):
         if data is not None:
             self.game_state, self.game_engine, self.world_behavior, self.ui_state, self.ui_view, new_hero_was_created = data
-            self.ui_controller = PlayingUiController(self.ui_view, self.ui_state)
             self.world_behavior.on_startup(new_hero_was_created)
         # In case this scene has been running before, we make sure to clear any state. Otherwise keys that were held
         # down would still be considered active!
@@ -64,7 +61,7 @@ class PlayingScene(AbstractScene):
 
         transition_to_pause = False
 
-        if not self.ui_controller.has_open_dialog():
+        if not self.ui_view.has_open_dialog():
             self.player_interactions_state.handle_nearby_entities(
                 self.game_state.player_entity, self.game_state, self.game_engine)
 
@@ -74,17 +71,17 @@ class PlayingScene(AbstractScene):
 
         events_triggered_from_ui: List[EventTriggeredFromUi] = []
 
-        if self.ui_controller.has_open_dialog():
+        if self.ui_view.has_open_dialog():
             self.game_state.player_entity.set_not_moving()
             user_actions = get_dialog_user_inputs()
             for action in user_actions:
                 if isinstance(action, ActionExitGame):
                     exit_game()
                 if isinstance(action, ActionChangeDialogOption):
-                    self.ui_controller.change_dialog_option(action.index_delta)
+                    self.ui_view.change_dialog_option(action.index_delta)
                     play_sound(SoundId.DIALOG)
                 if isinstance(action, ActionPressSpaceKey):
-                    result = self.ui_controller.handle_space_click()
+                    result = self.ui_view.handle_space_click()
                     if result:
                         npc_in_dialog, option_index = result
                         message = invoke_npc_action(npc_in_dialog.npc_type, option_index, self.game_state)
@@ -112,13 +109,13 @@ class PlayingScene(AbstractScene):
                 if isinstance(action, ActionPauseGame):
                     transition_to_pause = True
                 if isinstance(action, ActionMouseMovement):
-                    self.ui_controller.handle_mouse_movement(action.mouse_screen_position)
+                    self.ui_view.handle_mouse_movement(action.mouse_screen_position)
                 if isinstance(action, ActionMouseClicked):
-                    events_triggered_from_ui += self.ui_controller.handle_mouse_click()
+                    events_triggered_from_ui += self.ui_view.handle_mouse_click()
                 if isinstance(action, ActionMouseReleased):
-                    events_triggered_from_ui += self.ui_controller.handle_mouse_release()
+                    events_triggered_from_ui += self.ui_view.handle_mouse_release()
                 if isinstance(action, ActionRightMouseClicked):
-                    events_triggered_from_ui += self.ui_controller.handle_mouse_right_click()
+                    events_triggered_from_ui += self.ui_view.handle_mouse_right_click()
                 if isinstance(action, ActionPressSpaceKey):
                     ready_entity = self.player_interactions_state.get_entity_to_interact_with()
                     if ready_entity is not None:
@@ -127,7 +124,7 @@ class PlayingScene(AbstractScene):
                                 ready_entity.world_entity, self.game_state.player_entity.get_center_position())[0]
                             ready_entity.world_entity.set_not_moving()
                             ready_entity.stun_status.add_one()
-                            self.ui_controller.start_dialog_with_npc(ready_entity)
+                            self.ui_view.start_dialog_with_npc(ready_entity, get_dialog_data(ready_entity.npc_type))
                             play_sound(SoundId.DIALOG)
                         elif isinstance(ready_entity, LootableOnGround):
                             self.game_engine.try_pick_up_loot_from_ground(ready_entity)
@@ -190,7 +187,7 @@ class PlayingScene(AbstractScene):
             entire_world_area=self.game_state.entire_world_area,
             entity_action_text=entity_action_text)
 
-        self.ui_controller.render()
+        self.ui_view.render(self.ui_state, False)
 
         for event in events_triggered_from_ui:
             if isinstance(event, StartDraggingItemOrConsumable):

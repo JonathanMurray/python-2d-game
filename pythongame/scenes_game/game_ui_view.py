@@ -312,22 +312,23 @@ class GameUiView:
     def _setup_dialog(self):
         self.dialog = Dialog(self.screen_render, None, None, [], 0, PORTRAIT_ICON_SIZE, UI_ICON_SIZE)
 
-    def handle_mouse_click(self) -> Optional[EventTriggeredFromUi]:
+    def handle_mouse_click(self) -> List[EventTriggeredFromUi]:
         if self.hovered_component in self.toggle_buttons:
             self._on_click_toggle(self.hovered_component)
         elif self.hovered_component == self.sound_checkbox:
             self.sound_checkbox.on_click()
-            return ToggleSound()
+            return [ToggleSound()]
         elif self.hovered_component == self.save_button:
-            return SaveGame()
+            return [SaveGame()]
         elif self.hovered_component in self.inventory_icons and self.hovered_component.item_type:
             self.item_slot_being_dragged = self.hovered_component
-            return StartDraggingItemOrConsumable()
+            return [StartDraggingItemOrConsumable()]
         elif self.hovered_component in self.consumable_icons and self.hovered_component.consumable_types:
             self.consumable_slot_being_dragged = self.hovered_component
-            return StartDraggingItemOrConsumable()
+            return [StartDraggingItemOrConsumable()]
         elif self.hovered_component in self.talents_window.get_last_row_icons():
-            return PickTalent(self.hovered_component.option_index)
+            return [PickTalent(self.hovered_component.option_index)]
+        return []
 
     def handle_mouse_right_click(self) -> List[EventTriggeredFromUi]:
         if self.hovered_component in self.inventory_icons:
