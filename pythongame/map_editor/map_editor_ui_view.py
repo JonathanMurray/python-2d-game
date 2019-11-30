@@ -147,4 +147,3 @@ class MapEditorView:
     def is_screen_position_within_ui(self, screen_position: Tuple[int, int]):
         ui_position = self._translate_screen_position_to_ui(screen_position)
         return ui_position[1] >= 0
-

@@ -1,4 +1,4 @@
-from typing import Dict, Type, List
+from typing import Dict, Type
 
 from pythongame.core.common import *
 from pythongame.core.damage_interactions import deal_npc_damage, DamageType
@@ -10,26 +10,6 @@ from pythongame.core.math import is_x_and_y_within_distance, get_perpendicular_d
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.sound_player import play_sound
-
-
-class DialogOptionGraphics:
-    def __init__(self, summary: str, detail_action_text: str, detail_ui_icon_sprite: Optional[UiIconSprite],
-                 detail_header: Optional[str] = None, detail_body: Optional[str] = None):
-        self.summary = summary
-        self.detail_action_text = detail_action_text
-        self.detail_ui_icon_sprite = detail_ui_icon_sprite
-        self.detail_header = detail_header
-        self.detail_body = detail_body
-
-
-# Used to display dialog from an npc along with the NPC's portrait
-class DialogGraphics:
-    def __init__(self, portrait_icon_sprite: PortraitIconSprite, text_body: str, options: List[DialogOptionGraphics],
-                 active_option_index: int):
-        self.portrait_icon_sprite = portrait_icon_sprite
-        self.text_body = text_body
-        self.options = options
-        self.active_option_index = active_option_index
 
 
 class AbstractNpcMind:
@@ -134,7 +114,7 @@ class SellConsumableNpcAction(AbstractNpcAction):
         if not has_space:
             play_sound(SoundId.WARNING)
             return "Not enough space!"
-        player_state.money -= self.cost
+        player_state.modify_money(-self.cost)
         player_state.consumable_inventory.add_consumable(self.consumable_type)
         play_sound(SoundId.EVENT_PURCHASED_SOMETHING)
         return "Bought " + self.name
@@ -160,7 +140,7 @@ class SellItemNpcAction(AbstractNpcAction):
             play_sound(SoundId.WARNING)
             return "Not enough space!"
 
-        player_state.money -= self.cost
+        player_state.modify_money(- self.cost)
         play_sound(SoundId.EVENT_PURCHASED_SOMETHING)
         return "Bought " + self.name
 
@@ -176,7 +156,7 @@ class BuyItemNpcAction(AbstractNpcAction):
         player_has_it = game_state.player_state.item_inventory.has_item_in_inventory(self.item_type)
         if player_has_it:
             game_state.player_state.item_inventory.lose_item_from_inventory(self.item_type)
-            game_state.player_state.money += self.price
+            game_state.player_state.modify_money(self.price)
             return "Sold " + self.name
         else:
             return "You don't have that!"
@@ -229,13 +209,6 @@ def invoke_npc_action(npc_type: NpcType, option_index: int, game_state: GameStat
 
 def has_npc_dialog(npc_type: NpcType) -> bool:
     return npc_type in _npc_dialog_data
-
-
-def get_dialog_graphics(npc_type: NpcType, active_option_index: int) -> DialogGraphics:
-    data = _npc_dialog_data[npc_type]
-    options_graphics = [DialogOptionGraphics(o.summary, o.action_text, o.ui_icon_sprite, o.detail_header, o.detail_body)
-                        for o in data.options]
-    return DialogGraphics(data.portrait_icon_sprite, data.text_body, options_graphics, active_option_index)
 
 
 def get_dialog_data(npc_type: NpcType) -> DialogData:

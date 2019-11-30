@@ -1,8 +1,10 @@
 from typing import Optional
 
 from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
-from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
-from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PeriodicTimer, HeroUpgrade
+from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect, \
+    StatModifyingBuffEffect
+from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PeriodicTimer, HeroUpgrade, \
+    HeroStat
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text, ABILITIES
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, BuffEventOutcome, \
@@ -25,19 +27,19 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
     return AbilityWasUsedSuccessfully()
 
 
-class Stealthing(AbstractBuffEffect):
+class Stealthing(StatModifyingBuffEffect):
+
+    def __init__(self):
+        super().__init__(BUFF_STEALTH,
+                         {HeroStat.MOVEMENT_SPEED: -SPEED_DECREASE, HeroStat.DODGE_CHANCE: DODGE_CHANCE_BONUS})
+
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
+        super().apply_start_effect(game_state, buffed_entity, buffed_npc)
         game_state.player_state.is_invisible = True
-        game_state.player_entity.add_to_speed_multiplier(-SPEED_DECREASE)
-        game_state.player_state.dodge_chance_bonus += DODGE_CHANCE_BONUS
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
+        super().apply_end_effect(game_state, buffed_entity, buffed_npc)
         game_state.player_state.is_invisible = False
-        game_state.player_entity.add_to_speed_multiplier(SPEED_DECREASE)
-        game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_POST_STEALTH), DURATION_POST_STEALTH)
-
-    def get_buff_type(self):
-        return BUFF_STEALTH
 
     def buff_handle_event(self, event: Event) -> Optional[BuffEventOutcome]:
         used_ability = isinstance(event, PlayerUsedAbilityEvent) and event.ability != AbilityType.STEALTH
@@ -59,7 +61,7 @@ class AfterStealthing(AbstractBuffEffect):
             game_state.visual_effects.append(visual_effect)
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.dodge_chance_bonus -= DODGE_CHANCE_BONUS
+        game_state.player_state.modify_stat(HeroStat.DODGE_CHANCE, -DODGE_CHANCE_BONUS)
 
     def get_buff_type(self):
         return BUFF_POST_STEALTH

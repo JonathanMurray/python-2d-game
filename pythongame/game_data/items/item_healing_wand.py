@@ -22,7 +22,6 @@ class ItemEffect(AbstractItemEffect):
             game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_TYPE), BUFF_DURATION)
 
 
-
 class BuffedByHealingWand(StatModifyingBuffEffect):
     def __init__(self):
         super().__init__(BUFF_TYPE, {HeroStat.HEALTH_REGEN: HEALTH_REGEN_BONUS})

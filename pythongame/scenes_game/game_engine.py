@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import Tuple
 
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import *
@@ -8,7 +8,7 @@ from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS,
     NpcCategory, PORTALS, ABILITIES
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
     EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest, \
-    PlayerUnlockedNewTalent
+    PlayerUnlockedNewTalent, AgentBuffsUpdate
 from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
 from pythongame.core.loot import LootEntry
@@ -31,6 +31,8 @@ class GameEngine:
     def __init__(self, game_state: GameState, ui_state: GameUiState):
         self.game_state = game_state
         self.ui_state = ui_state
+        self.player_abilities_were_updated = Observable()
+        self.talent_was_unlocked = Observable()
 
     def try_use_ability(self, ability_type: AbilityType):
         PlayerControls.try_use_ability(ability_type, self.game_state, self.ui_state)
@@ -215,7 +217,7 @@ class GameEngine:
         self.game_state.remove_expired_visual_effects()
         self.game_state.remove_opened_chests()
 
-        player_buffs_update = handle_buffs(self.game_state.player_state.active_buffs, time_passed)
+        player_buffs_update = self.game_state.player_state.handle_buffs(time_passed)
         for buff in player_buffs_update.buffs_that_started:
             buff.buff_effect.apply_start_effect(self.game_state, self.game_state.player_entity, None)
         for buff in player_buffs_update.buffs_that_were_active:
@@ -278,7 +280,7 @@ class GameEngine:
             if boxes_intersect(self.game_state.player_entity.rect(), money_pile.world_entity.rect()):
                 play_sound(SoundId.EVENT_PICKED_UP_MONEY)
                 money_pile.has_been_picked_up_and_should_be_removed = True
-                self.game_state.player_state.money += money_pile.amount
+                self.game_state.player_state.modify_money(money_pile.amount)
 
         for enemy in [e for e in self.game_state.non_player_characters if e.is_enemy]:
             for projectile in self.game_state.get_projectiles_intersecting_with(enemy.world_entity):
@@ -333,14 +335,19 @@ class GameEngine:
                 VisualCircle((150, 150, 250), self.game_state.player_entity.get_center_position(), 9, 35,
                              Millis(150), 2))
             self.ui_state.set_message("You reached level " + str(self.game_state.player_state.level))
+        if new_abilities:
             allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
+            self.notify_ability_observers()
         if len(new_abilities) == 1:
             self.ui_state.enqueue_message("New ability: " + new_abilities[0])
         elif len(new_abilities) > 1:
             self.ui_state.enqueue_message("Gained several new abilities")
         if did_unlock_new_talent:
-            self.ui_state.notify_new_talent_was_unlocked()
+            self.talent_was_unlocked.notify(None)
             self.ui_state.enqueue_message("You can pick a talent!")
+
+    def notify_ability_observers(self):
+        self.player_abilities_were_updated.notify(self.game_state.player_state.abilities)
 
     def _is_npc_close_to_camera(self, npc: NonPlayerCharacter):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(
@@ -366,15 +373,8 @@ class GameEngine:
                 self.game_state.consumables_on_ground.append(consumable_on_ground)
 
 
-class AgentBuffsUpdate:
-    def __init__(self, buffs_that_started: List[BuffWithDuration], buffs_that_were_active: List[BuffWithDuration],
-                 buffs_that_ended: List[BuffWithDuration]):
-        self.buffs_that_started = buffs_that_started
-        self.buffs_that_were_active = buffs_that_were_active
-        self.buffs_that_ended = buffs_that_ended
-
-
 def handle_buffs(active_buffs: List[BuffWithDuration], time_passed: Millis) -> AgentBuffsUpdate:
+    # NOTE: duplication between NPC's and player's buff handling
     copied_buffs_list = list(active_buffs)
     buffs_that_started = []
     buffs_that_ended = []

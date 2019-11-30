@@ -16,7 +16,7 @@ from pythongame.scene_picking_hero.scene_picking_hero import PickingHeroScene
 from pythongame.scene_picking_hero.view_picking_hero import PickingHeroView
 from pythongame.scene_starting_program.scene_starting_program import CommandlineFlags, StartingProgramScene
 from pythongame.scene_victory_screen.scene_victory_screen import VictoryScreenScene
-from pythongame.scenes_game.game_ui_view import GameUiView, UI_ICON_SIZE, PORTRAIT_ICON_SIZE
+from pythongame.scenes_game.game_ui_view import GameUiView, UI_ICON_SIZE, PORTRAIT_ICON_SIZE, UI_ICON_BIG_SIZE
 from pythongame.scenes_game.scene_paused import PausedScene
 from pythongame.scenes_game.scene_playing import PlayingScene
 
@@ -37,18 +37,19 @@ class Main:
         pygame_screen = pygame.display.set_mode(SCREEN_SIZE)
         images_by_sprite = load_images_by_sprite(ENTITY_SPRITE_INITIALIZERS)
         images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, UI_ICON_SIZE)
+        big_images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, UI_ICON_BIG_SIZE)
         images_by_portrait_sprite = load_images_by_portrait_sprite(PORTRAIT_ICON_SPRITE_PATHS, PORTRAIT_ICON_SIZE)
         world_view = GameWorldView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite)
-        ui_view = GameUiView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_ui_sprite,
-                             images_by_portrait_sprite)
+        self.ui_view = GameUiView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_ui_sprite, big_images_by_ui_sprite,
+                                  images_by_portrait_sprite)
         init_sound_player()
         self.clock = pygame.time.Clock()
         self.scenes_by_id: Dict[SceneId, AbstractScene] = {
             SceneId.STARTING_PROGRAM: StartingProgramScene(),
             SceneId.PICKING_HERO: PickingHeroScene(PickingHeroView(pygame_screen, images_by_portrait_sprite)),
-            SceneId.CREATING_GAME_WORLD: CreatingWorldScene(CAMERA_SIZE),
-            SceneId.PLAYING: PlayingScene(world_view, ui_view),
-            SceneId.PAUSED: PausedScene(world_view, ui_view),
+            SceneId.CREATING_GAME_WORLD: CreatingWorldScene(CAMERA_SIZE, self.ui_view),
+            SceneId.PLAYING: PlayingScene(world_view),
+            SceneId.PAUSED: PausedScene(world_view, self.ui_view),
             SceneId.VICTORY_SCREEN: VictoryScreenScene(pygame_screen),
             SceneId.CHALLENGE_COMPLETE_SCREEN: ChallengeCompleteScreenScene(pygame_screen)
         }
@@ -60,10 +61,11 @@ class Main:
             self.clock.tick()
             time_passed = Millis(self.clock.get_time())
             fps_string = str(int(self.clock.get_fps()))
+            self.ui_view.update_fps_string(fps_string)
 
             if self.scene_id in self.scenes_by_id:
                 scene = self.scenes_by_id[self.scene_id]
-                scene_transition: Optional[SceneTransition] = scene.run_one_frame(time_passed, fps_string)
+                scene_transition: Optional[SceneTransition] = scene.run_one_frame(time_passed)
                 if scene_transition is not None:
                     self.transition_to_new_scene(scene_transition)
 

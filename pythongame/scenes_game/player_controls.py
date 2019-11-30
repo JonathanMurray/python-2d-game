@@ -20,6 +20,7 @@ class PlayerControls:
 
         if game_state.player_state.stun_status.is_stunned():
             return
+        # Handle this with observer pattern instead?
         ui_state.notify_ability_was_clicked(ability_type)
         player_state = game_state.player_state
 
@@ -32,7 +33,7 @@ class PlayerControls:
         if player_state.mana_resource.value < mana_cost:
             play_sound(SoundId.INVALID_ACTION)
             ui_state.set_message("Not enough mana!")
-            player_state.ability_cooldowns_remaining[ability_type] = Millis(500)
+            player_state.add_to_ability_cooldown(ability_type, Millis(500))
             return
 
         ability_result = apply_ability_effect(game_state, ability_type)
@@ -40,24 +41,24 @@ class PlayerControls:
             message = "Can't do that!" + (" (" + ability_result.reason + ")" if ability_result.reason else "")
             ui_state.set_message(message)
             play_sound(SoundId.INVALID_ACTION)
-            player_state.ability_cooldowns_remaining[ability_type] = Millis(500)
+            player_state.add_to_ability_cooldown(ability_type, Millis(500))
         elif isinstance(ability_result, AbilityWasUsedSuccessfully):
             if ability_data.sound_id:
                 play_sound(ability_data.sound_id)
             if ability_result.should_regain_mana_and_cd:
                 # The cooldown is reset to almost 0. We set it to 500 to avoid it being used twice because of ability
                 # key being held down by user.
-                player_state.ability_cooldowns_remaining[ability_type] += Millis(500)
+                player_state.add_to_ability_cooldown(ability_type, Millis(500))
             else:
                 player_state.mana_resource.lose(mana_cost)
-                player_state.ability_cooldowns_remaining[ability_type] += ability_data.cooldown
+                player_state.add_to_ability_cooldown(ability_type, ability_data.cooldown)
             game_state.player_state.notify_about_event(PlayerUsedAbilityEvent(ability_type), game_state)
         else:
             raise Exception("Unhandled ability effect result: " + str(ability_result))
 
     @staticmethod
     def try_use_consumable(slot_number: int, game_state: GameState, ui_state: GameUiState):
-
+        # Handle this with observer pattern instead?
         ui_state.notify_consumable_was_clicked(slot_number)
         consumable_type_in_this_slot = \
             game_state.player_state.consumable_inventory.get_consumable_at_slot(slot_number)

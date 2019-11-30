@@ -1,4 +1,4 @@
-from pythongame.core.common import HeroUpgrade, UiIconSprite
+from pythongame.core.common import HeroUpgrade, UiIconSprite, HeroStat
 from pythongame.core.game_state import GameState
 from pythongame.core.hero_upgrades import register_hero_upgrade_effect
 from pythongame.core.talents import TalentChoice, TalentChoiceOption
@@ -10,12 +10,11 @@ def register_generic_talents():
 
 
 def _upgrade_damage(game_state: GameState):
-    game_state.player_state.physical_damage_modifier_bonus += 0.1
-    game_state.player_state.magic_damage_modifier_bonus += 0.1
+    game_state.modify_hero_stat(HeroStat.DAMAGE, 0.1)
 
 
 def _upgrade_armor(game_state: GameState):
-    game_state.player_state.armor_bonus += 1
+    game_state.modify_hero_stat(HeroStat.ARMOR, 1)
 
 
 GENERIC_TALENT_CHOICE = TalentChoice(

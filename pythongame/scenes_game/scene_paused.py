@@ -5,7 +5,6 @@ import pygame
 
 from pythongame.core.common import SceneId, Millis, AbstractScene, SceneTransition
 from pythongame.core.game_state import GameState
-from pythongame.core.talents import talents_graphics_from_state
 from pythongame.core.user_input import ActionExitGame, ActionPauseGame, ActionSaveGameState, \
     get_paused_user_inputs
 from pythongame.core.view.game_world_view import GameWorldView
@@ -28,8 +27,9 @@ class PausedScene(AbstractScene):
 
     def initialize(self, data: Tuple[GameState, GameUiState]):
         self.game_state, self.ui_state = data
+        self.ui_view.set_paused(True)
 
-    def run_one_frame(self, _time_passed: Millis, _fps_string: str) -> Optional[SceneTransition]:
+    def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
         scene_transition = None
 
         user_actions = get_paused_user_inputs()
@@ -57,19 +57,9 @@ class PausedScene(AbstractScene):
             entire_world_area=self.game_state.entire_world_area,
             entity_action_text=None)
 
-        talents_graphics = talents_graphics_from_state(
-            self.game_state.player_state.talents_state, self.game_state.player_state.level,
-            self.game_state.player_state.chosen_talent_option_indices)
-
-        self.ui_view.render_ui(
-            player_state=self.game_state.player_state,
+        self.ui_view.render(
             ui_state=self.ui_state,
-            player_speed_multiplier=self.game_state.player_entity.get_speed_multiplier(),
-            text_in_topleft_corner="...",
-            is_paused=True,
-            mouse_screen_position=(0, 0),  # We don't bother to show tooltips etc when game is paused
-            dialog=None,  # We don't bother to show dialog etc when game is paused
-            talents=talents_graphics)
+        )
 
         self.world_view.update_display()
 

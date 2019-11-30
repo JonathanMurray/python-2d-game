@@ -1,8 +1,10 @@
 from typing import Optional
 
 from pythongame.core.ability_effects import register_ability_effect, AbilityResult, AbilityWasUsedSuccessfully
-from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
-from pythongame.core.common import BuffType, Millis, AbilityType, UiIconSprite, SoundId, PeriodicTimer, HeroUpgrade
+from pythongame.core.buff_effects import register_buff_effect, get_buff_effect, \
+    StatModifyingBuffEffect
+from pythongame.core.common import BuffType, Millis, AbilityType, UiIconSprite, SoundId, PeriodicTimer, HeroUpgrade, \
+    HeroStat
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text, ABILITIES
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, BuffEventOutcome, \
@@ -28,14 +30,14 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
     return AbilityWasUsedSuccessfully()
 
 
-class BloodLust(AbstractBuffEffect):
+class BloodLust(StatModifyingBuffEffect):
 
     def __init__(self):
+        super().__init__(BUFF_TYPE, {HeroStat.LIFE_STEAL: LIFE_STEAL_BONUS_RATIO, HeroStat.MOVEMENT_SPEED: SPEED_BONUS})
         self.timer = PeriodicTimer(Millis(250))
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.life_steal_ratio += LIFE_STEAL_BONUS_RATIO
-        game_state.player_entity.add_to_speed_multiplier(SPEED_BONUS)
+        super().apply_start_effect(game_state, buffed_entity, buffed_npc)
         sword_slash_data = ABILITIES[AbilityType.SWORD_SLASH]
         sword_slash_data.cooldown -= SWORD_SLASH_CD_BONUS
 
@@ -47,13 +49,9 @@ class BloodLust(AbstractBuffEffect):
             game_state.visual_effects.append(visual_effect)
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_state.life_steal_ratio -= LIFE_STEAL_BONUS_RATIO
-        game_state.player_entity.add_to_speed_multiplier(-SPEED_BONUS)
+        super().apply_end_effect(game_state, buffed_entity, buffed_npc)
         sword_slash_data = ABILITIES[AbilityType.SWORD_SLASH]
         sword_slash_data.cooldown += SWORD_SLASH_CD_BONUS
-
-    def get_buff_type(self):
-        return BUFF_TYPE
 
     def buff_handle_event(self, event: Event) -> Optional[BuffEventOutcome]:
         if isinstance(event, EnemyDiedEvent):

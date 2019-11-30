@@ -1,10 +1,23 @@
 import random
 from enum import Enum
-from typing import NewType, Optional, Any
+from typing import NewType, Optional, Any, List, Callable
 
 Millis = NewType('Millis', int)
 
 PLAYER_ENTITY_SIZE = (30, 30)
+
+
+class Observable:
+    def __init__(self):
+        self._observers: List[Callable[[Any], Any]] = []
+
+    def register_observer(self, observer: Callable[[Any], Any]):
+        self._observers.append(observer)
+
+    def notify(self, event):
+        for observer in self._observers:
+            # print("DEBUG Notifying observer " + str(observer) + ": " + str(event))
+            observer(event)
 
 
 class SceneId(Enum):
@@ -607,5 +620,5 @@ class AbstractScene:
     def initialize(self, data: Any):
         pass
 
-    def run_one_frame(self, _time_passed: Millis, _fps_string: str) -> Optional[SceneTransition]:
+    def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
         pass

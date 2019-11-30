@@ -1,5 +1,7 @@
-from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
-from pythongame.core.common import ConsumableType, BuffType, Millis, UiIconSprite, Sprite, PeriodicTimer, SoundId
+from pythongame.core.buff_effects import register_buff_effect, get_buff_effect, \
+    StatModifyingBuffEffect
+from pythongame.core.common import ConsumableType, BuffType, Millis, UiIconSprite, Sprite, PeriodicTimer, SoundId, \
+    HeroStat
 from pythongame.core.consumable_effects import create_potion_visual_effect_at_player, ConsumableWasConsumed, \
     register_consumable_effect
 from pythongame.core.game_data import register_ui_icon_sprite_path, register_buff_text, \
@@ -7,6 +9,8 @@ from pythongame.core.game_data import register_ui_icon_sprite_path, register_buf
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
 from pythongame.core.view.image_loading import SpriteInitializer
 from pythongame.core.visual_effects import VisualCircle
+
+BUFF_TYPE = BuffType.INCREASED_MOVE_SPEED
 
 DURATION = Millis(15000)
 SPEED_INCREASE = 0.5
@@ -18,12 +22,10 @@ def _apply_speed(game_state: GameState):
     return ConsumableWasConsumed()
 
 
-class IncreasedMoveSpeed(AbstractBuffEffect):
+class IncreasedMoveSpeed(StatModifyingBuffEffect):
     def __init__(self):
+        super().__init__(BUFF_TYPE, {HeroStat.MOVEMENT_SPEED: SPEED_INCREASE})
         self.timer = PeriodicTimer(Millis(100))
-
-    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_entity.add_to_speed_multiplier(SPEED_INCREASE)
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
@@ -31,19 +33,16 @@ class IncreasedMoveSpeed(AbstractBuffEffect):
             game_state.visual_effects.append(
                 VisualCircle((150, 200, 250), game_state.player_entity.get_center_position(), 5, 10, Millis(200), 0))
 
-    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
-        game_state.player_entity.add_to_speed_multiplier(-SPEED_INCREASE)
-
     def get_buff_type(self):
-        return BuffType.INCREASED_MOVE_SPEED
+        return BUFF_TYPE
 
 
 def register_speed_potion():
     ui_icon_sprite = UiIconSprite.POTION_SPEED
     sprite = Sprite.POTION_SPEED
     register_consumable_effect(ConsumableType.SPEED, _apply_speed)
-    register_buff_effect(BuffType.INCREASED_MOVE_SPEED, IncreasedMoveSpeed)
-    register_buff_text(BuffType.INCREASED_MOVE_SPEED, "Speed potion")
+    register_buff_effect(BUFF_TYPE, IncreasedMoveSpeed)
+    register_buff_text(BUFF_TYPE, "Speed potion")
     image_path = "resources/graphics/item_speed_potion.png"
     register_ui_icon_sprite_path(ui_icon_sprite, image_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_path, POTION_ENTITY_SIZE))

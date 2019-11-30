@@ -26,9 +26,9 @@ def deal_player_damage_to_enemy(game_state: GameState, npc: NonPlayerCharacter, 
                                 damage_source: Optional[str] = None):
     player_state = game_state.player_state
     if damage_type == DamageType.PHYSICAL:
-        damage_modifier: float = player_state.base_physical_damage_modifier + player_state.physical_damage_modifier_bonus
+        damage_modifier: float = player_state.get_effective_physical_damage_modifier()
     elif damage_type == DamageType.MAGIC:
-        damage_modifier: float = player_state.base_magic_damage_modifier + player_state.magic_damage_modifier_bonus
+        damage_modifier: float = player_state.get_effective_magic_damage_modifier()
     else:
         raise Exception("Unhandled damage type: " + str(damage_type))
     amount: float = base_amount * damage_modifier
@@ -51,7 +51,7 @@ def deal_damage_to_player(game_state: GameState, base_amount: float, damage_type
     damage_reduction = 0
     # Armor only reduces physical damage
     if damage_type == DamageType.PHYSICAL:
-        dodge_chance = player_state.base_dodge_chance + player_state.dodge_chance_bonus
+        dodge_chance = player_state.get_effective_dodge_change()
         if random.random() < dodge_chance:
             game_state.visual_effects.append(create_visual_dodge_text(game_state.player_entity))
             damage_reduction = base_amount  # Somewhat of a hack. All damage is mitigated when dodging

@@ -1,4 +1,4 @@
-from typing import Dict, Union, List
+from typing import Dict, Union
 
 from pythongame.core.common import *
 from pythongame.core.game_state import GameState, Event

@@ -1,5 +1,5 @@
 import math
-from typing import List, Dict, Tuple, Union
+from typing import Dict, Tuple, Union
 
 from pygame.rect import Rect
 
@@ -10,7 +10,7 @@ from pythongame.core.item_inventory import ItemInventory
 from pythongame.core.loot import LootTable
 from pythongame.core.math import boxes_intersect, rects_intersect, get_position_from_center_position, \
     translate_in_direction, is_x_and_y_within_distance
-from pythongame.core.talents import TalentsState, TalentChoice
+from pythongame.core.talents import TalentsState, TalentChoice, talents_graphics_from_state
 
 GRID_CELL_WIDTH = 25
 
@@ -146,12 +146,14 @@ class HealthOrManaResource:
         self.max_value = max_value
         self.base_regen = regen
         self.regen_bonus = 0
+        self.value_was_updated = Observable()
 
     def gain(self, amount: float) -> int:
         value_before = self.value
         self._value_float = min(self._value_float + amount, self.max_value)
         self.value = int(math.floor(self._value_float))
         amount_gained = self.value - value_before
+        self._notify_observers()
         return amount_gained
 
     def lose(self, amount: float) -> int:
@@ -159,22 +161,26 @@ class HealthOrManaResource:
         self._value_float = min(self._value_float - amount, self.max_value)
         self.value = int(math.floor(self._value_float))
         amount_lost = value_before - self.value
+        self._notify_observers()
         return amount_lost
 
     def set_zero(self):
         self._value_float = 0
         self.value = 0
+        self._notify_observers()
 
     def gain_to_max(self) -> int:
         value_before = self.value
         self._value_float = self.max_value
         self.value = self.max_value
         amount_gained = self.value - value_before
+        self._notify_observers()
         return amount_gained
 
     def set_to_partial_of_max(self, partial: float):
         self._value_float = partial * self.max_value
         self.value = int(math.floor(self._value_float))
+        self._notify_observers()
 
     def regenerate(self, time_passed: Millis):
         self.gain(self.get_effective_regen() / 1000.0 * float(time_passed))
@@ -193,12 +199,16 @@ class HealthOrManaResource:
         if self.value > self.max_value:
             self._value_float = self.max_value
             self.value = int(math.floor(self._value_float))
+            self._notify_observers()
 
     def get_partial(self) -> float:
         return self.value / self.max_value
 
     def get_effective_regen(self) -> float:
         return self.base_regen + self.regen_bonus
+
+    def _notify_observers(self):
+        self.value_was_updated.notify((self.value, self.max_value))
 
 
 class StunStatus:
@@ -353,6 +363,14 @@ class PlayerUnlockedNewTalent(GainExpEvent):
     pass
 
 
+class AgentBuffsUpdate:
+    def __init__(self, buffs_that_started: List[BuffWithDuration], buffs_that_were_active: List[BuffWithDuration],
+                 buffs_that_ended: List[BuffWithDuration]):
+        self.buffs_that_started = buffs_that_started
+        self.buffs_that_were_active = buffs_that_were_active
+        self.buffs_that_ended = buffs_that_ended
+
+
 class PlayerState:
     def __init__(self, health_resource: HealthOrManaResource, mana_resource: HealthOrManaResource,
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
@@ -363,7 +381,7 @@ class PlayerState:
         self.mana_resource: HealthOrManaResource = mana_resource
         self.consumable_inventory = consumable_inventory
         self.abilities: List[AbilityType] = abilities
-        self.ability_cooldowns_remaining = {ability_type: 0 for ability_type in abilities}
+        self.ability_cooldowns_remaining: Dict[AbilityType, int] = {ability_type: 0 for ability_type in abilities}
         self.active_buffs: List[BuffWithDuration] = []
         self.is_invisible = False
         self.stun_status = StunStatus()
@@ -390,6 +408,65 @@ class PlayerState:
         self._upgrades: List[HeroUpgrade] = []
         self.block_chance: float = block_chance
         self.block_damage_reduction: int = 0
+        self.talents_were_updated = Observable()
+        self.stats_were_updated = Observable()
+        self.exp_was_updated = Observable()
+        self.money_was_updated = Observable()
+        self.cooldowns_were_updated = Observable()
+        self.buffs_were_updated = Observable()
+
+    def modify_money(self, delta: int):
+        self.money += delta
+        self.notify_money_observers()
+
+    def notify_money_observers(self):
+        self.money_was_updated.notify(self.money)
+
+    def get_effective_physical_damage_modifier(self) -> float:
+        return self.base_physical_damage_modifier + self.physical_damage_modifier_bonus
+
+    def get_effective_magic_damage_modifier(self) -> float:
+        return self.base_magic_damage_modifier + self.magic_damage_modifier_bonus
+
+    def get_effective_dodge_change(self) -> float:
+        return self.base_dodge_chance + self.dodge_chance_bonus
+
+    def modify_stat(self, hero_stat: HeroStat, stat_delta: Union[int, float]):
+        if hero_stat == HeroStat.MAX_HEALTH:
+            if stat_delta >= 0:
+                self.health_resource.increase_max(stat_delta)
+            elif stat_delta < 0:
+                self.health_resource.decrease_max(-stat_delta)
+        elif hero_stat == HeroStat.HEALTH_REGEN:
+            self.health_resource.regen_bonus += stat_delta
+        elif hero_stat == HeroStat.MAX_MANA:
+            if stat_delta >= 0:
+                self.mana_resource.increase_max(stat_delta)
+            elif stat_delta < 0:
+                self.mana_resource.decrease_max(-stat_delta)
+        elif hero_stat == HeroStat.MANA_REGEN:
+            self.mana_resource.regen_bonus += stat_delta
+        elif hero_stat == HeroStat.ARMOR:
+            self.armor_bonus += stat_delta
+        elif hero_stat == HeroStat.DAMAGE:
+            self.physical_damage_modifier_bonus += stat_delta
+            self.magic_damage_modifier_bonus += stat_delta
+        elif hero_stat == HeroStat.PHYSICAL_DAMAGE:
+            self.physical_damage_modifier_bonus += stat_delta
+        elif hero_stat == HeroStat.MAGIC_DAMAGE:
+            self.magic_damage_modifier_bonus += stat_delta
+        elif hero_stat == HeroStat.LIFE_STEAL:
+            self.life_steal_ratio += stat_delta
+        elif hero_stat == HeroStat.BLOCK_AMOUNT:
+            self.block_damage_reduction += stat_delta
+        elif hero_stat == HeroStat.DODGE_CHANCE:
+            self.dodge_chance_bonus += stat_delta
+        else:
+            raise Exception("Unhandled stat: " + str(hero_stat))
+        self.notify_stats_observers()
+
+    def notify_stats_observers(self):
+        self.stats_were_updated.notify(self)
 
     # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):
@@ -399,6 +476,10 @@ class PlayerState:
             existing_buffs_with_this_type[0].set_remaining_duration(duration)
         else:
             self.active_buffs.append(BuffWithDuration(buff, duration))
+        self.notify_buff_observers()
+
+    def notify_buff_observers(self):
+        self.buffs_were_updated.notify(self.active_buffs)
 
     def has_active_buff(self, buff_type: BuffType):
         return len([b for b in self.active_buffs if b.buff_effect.get_buff_type() == buff_type]) > 0
@@ -406,11 +487,42 @@ class PlayerState:
     def force_cancel_all_buffs(self):
         for b in self.active_buffs:
             b.force_cancel()
+        self.notify_buff_observers()
+
+    def handle_buffs(self, time_passed: Millis):
+        # NOTE: duplication between NPC's and player's buff handling
+        copied_buffs_list = list(self.active_buffs)
+        buffs_that_started = []
+        buffs_that_ended = []
+        buffs_that_were_active = []
+        for buff in copied_buffs_list:
+            buff.notify_time_passed(time_passed)
+            if not buff.has_been_force_cancelled:
+                buffs_that_were_active.append(buff)
+            if not buff.has_applied_start_effect:
+                buffs_that_started.append(buff)
+                buff.has_applied_start_effect = True
+            elif buff.has_expired():
+                self.active_buffs.remove(buff)
+                buffs_that_ended.append(buff)
+        self.notify_buff_observers()
+        return AgentBuffsUpdate(buffs_that_started, buffs_that_were_active, buffs_that_ended)
 
     def recharge_ability_cooldowns(self, time_passed: Millis):
+        did_update = False
         for ability_type in self.ability_cooldowns_remaining:
             if self.ability_cooldowns_remaining[ability_type] > 0:
                 self.ability_cooldowns_remaining[ability_type] -= time_passed
+                did_update = True
+        if did_update:
+            self.notify_cooldown_observers()
+
+    def add_to_ability_cooldown(self, ability_type: AbilityType, amount: Millis):
+        self.ability_cooldowns_remaining[ability_type] += amount
+        self.notify_cooldown_observers()
+
+    def notify_cooldown_observers(self):
+        self.cooldowns_were_updated.notify(self.ability_cooldowns_remaining)
 
     def gain_exp(self, amount: int) -> List[GainExpEvent]:
         events = []
@@ -420,18 +532,24 @@ class PlayerState:
         while self.exp >= self.max_exp_in_this_level:
             self.exp -= self.max_exp_in_this_level
             self.level += 1
-            self.update_stats_for_new_level()
+            self._update_stats_for_new_level()
             if self.level in self.new_level_abilities:
                 new_ability = self.new_level_abilities[self.level]
                 self.gain_ability(new_ability)
                 events.append(PlayerLearnedNewAbility(new_ability))
             if self.level in self.talents_state.choices_by_level:
                 events.append(PlayerUnlockedNewTalent())
+                self._notify_talent_observers()
+        self.notify_exp_observers()
         return events
 
     def lose_exp_from_death(self):
         partial_exp_loss = 0.5
         self.exp = max(0, self.exp - int(self.max_exp_in_this_level * partial_exp_loss))
+        self.notify_exp_observers()
+
+    def notify_exp_observers(self):
+        self.exp_was_updated.notify((self.level, self.exp / self.max_exp_in_this_level))
 
     def gain_exp_worth_n_levels(self, num_levels: int) -> List[GainExpEvent]:
         events = []
@@ -440,7 +558,7 @@ class PlayerState:
             events += self.gain_exp(amount)
         return events
 
-    def update_stats_for_new_level(self):
+    def _update_stats_for_new_level(self):
         self.health_resource.increase_max(self.level_bonus.health)
         self.health_resource.gain_to_max()
         self.mana_resource.increase_max(self.level_bonus.mana)
@@ -449,10 +567,12 @@ class PlayerState:
         self.base_physical_damage_modifier *= 1.1
         self.base_magic_damage_modifier *= 1.1
         self.base_armor += self.level_bonus.armor
+        self.notify_stats_observers()
 
     def gain_ability(self, ability_type: AbilityType):
         self.ability_cooldowns_remaining[ability_type] = 0
         self.abilities.append(ability_type)
+        self.notify_cooldown_observers()
 
     def notify_about_event(self, event: Event, game_state):
         for buff in self.active_buffs:
@@ -462,6 +582,7 @@ class PlayerState:
                     buff.change_remaining_duration(outcome.change_remaining_duration)
                 if outcome.cancel_effect:
                     buff.force_cancel()
+                self.notify_buff_observers()
         for item_effect in self.item_inventory.get_all_active_item_effects():
             item_effect.item_handle_event(event, game_state)
 
@@ -477,7 +598,12 @@ class PlayerState:
         else:
             raise Exception("Illegal talent choice option: " + str(option_index))
         self._upgrades.append(option.upgrade)
+        self._notify_talent_observers()
         return option.name, option.upgrade
+
+    def _notify_talent_observers(self):
+        talent_graphics = talents_graphics_from_state(self.talents_state, self.level, self.chosen_talent_option_indices)
+        self.talents_were_updated.notify(talent_graphics)
 
     def has_unpicked_talents(self):
         num_available_talents = len(
@@ -584,6 +710,7 @@ class GameState:
         self.player_spawn_position: Tuple[int, int] = player_entity.get_position()
         self.warp_points: List[WarpPoint] = []
         self.chests: List[Chest] = chests
+        self.player_movement_speed_was_updated = Observable()
 
     @staticmethod
     def _setup_pathfinder_wall_grid(entire_world_area: Rect, walls: List[WorldEntity]):
@@ -613,40 +740,14 @@ class GameState:
         return camera_world_area
 
     def modify_hero_stat(self, hero_stat: HeroStat, stat_delta: Union[int, float]):
-        player_state = self.player_state
-        if hero_stat == HeroStat.MAX_HEALTH:
-            if stat_delta >= 0:
-                player_state.health_resource.increase_max(stat_delta)
-            elif stat_delta < 0:
-                player_state.health_resource.decrease_max(-stat_delta)
-        elif hero_stat == HeroStat.HEALTH_REGEN:
-            player_state.health_resource.regen_bonus += stat_delta
-        elif hero_stat == HeroStat.MAX_MANA:
-            if stat_delta >= 0:
-                player_state.mana_resource.increase_max(stat_delta)
-            elif stat_delta < 0:
-                player_state.mana_resource.decrease_max(-stat_delta)
-        elif hero_stat == HeroStat.MANA_REGEN:
-            player_state.mana_resource.regen_bonus += stat_delta
-        elif hero_stat == HeroStat.ARMOR:
-            player_state.armor_bonus += stat_delta
-        elif hero_stat == HeroStat.MOVEMENT_SPEED:
+        if hero_stat == HeroStat.MOVEMENT_SPEED:
             self.player_entity.add_to_speed_multiplier(stat_delta)
-        elif hero_stat == HeroStat.DAMAGE:
-            player_state.physical_damage_modifier_bonus += stat_delta
-            player_state.magic_damage_modifier_bonus += stat_delta
-        elif hero_stat == HeroStat.PHYSICAL_DAMAGE:
-            player_state.physical_damage_modifier_bonus += stat_delta
-        elif hero_stat == HeroStat.MAGIC_DAMAGE:
-            player_state.magic_damage_modifier_bonus += stat_delta
-        elif hero_stat == HeroStat.LIFE_STEAL:
-            player_state.life_steal_ratio += stat_delta
-        elif hero_stat == HeroStat.BLOCK_AMOUNT:
-            player_state.block_damage_reduction += stat_delta
-        elif hero_stat == HeroStat.DODGE_CHANCE:
-            player_state.dodge_chance_bonus += stat_delta
+            self.notify_movement_speed_observers()
         else:
-            raise Exception("Unhandled stat: " + str(hero_stat))
+            self.player_state.modify_stat(hero_stat, stat_delta)
+
+    def notify_movement_speed_observers(self):
+        self.player_movement_speed_was_updated.notify(self.player_entity.get_speed_multiplier())
 
     def add_non_player_character(self, npc: NonPlayerCharacter):
         self.non_player_characters.append(npc)

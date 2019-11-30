@@ -17,6 +17,7 @@ from pythongame.map_file import create_game_state_from_json_file
 from pythongame.player_file import SavedPlayerState
 from pythongame.scenes_game.game_engine import GameEngine, EngineEvent
 from pythongame.scenes_game.game_ui_state import GameUiState
+from pythongame.scenes_game.game_ui_view import GameUiView
 
 
 class InitFlags:
@@ -76,7 +77,7 @@ class ChallengeBehavior(AbstractWorldBehavior):
     def on_startup(self, new_hero_was_created: bool):
         self.ui_state.set_message("Challenge starting...")
         if new_hero_was_created:
-            self.game_state.player_state.money += 100
+            self.game_state.player_state.modify_money(100)
             self.game_engine.gain_levels(4)
 
             consumables = [ConsumableType.HEALTH,
@@ -112,39 +113,54 @@ class ChallengeBehavior(AbstractWorldBehavior):
 
 
 class CreatingWorldScene(AbstractScene):
-    def __init__(self, camera_size: Tuple[int, int]):
-
+    def __init__(self, camera_size: Tuple[int, int], ui_view: GameUiView):
         self.camera_size = camera_size
+        self.ui_view = ui_view
 
         self.flags: InitFlags = None
 
     def initialize(self, flags: InitFlags):
         self.flags = flags  # map hero money level saved
 
-    def run_one_frame(self, _time_passed: Millis, _fps_string: str) -> Optional[SceneTransition]:
+    def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
 
         saved_player_state = self.flags.saved_player_state
         hero_start_level = self.flags.hero_start_level
         start_money = self.flags.start_money
 
-        game_state = create_game_state_from_json_file(self.camera_size, self.flags.map_file_path,
-                                                      self.flags.picked_hero)
         ui_state = GameUiState()
+        game_state = create_game_state_from_json_file(
+            self.camera_size, self.flags.map_file_path, self.flags.picked_hero)
         game_engine = GameEngine(game_state, ui_state)
+        game_state.player_state.exp_was_updated.register_observer(self.ui_view.on_player_exp_updated)
+        game_state.player_state.talents_were_updated.register_observer(self.ui_view.on_talents_updated)
+        game_state.player_movement_speed_was_updated.register_observer(self.ui_view.on_player_movement_speed_updated)
+        game_state.notify_movement_speed_observers()  # Must notify the initial state
+        game_state.player_state.stats_were_updated.register_observer(self.ui_view.on_player_stats_updated)
+        game_state.player_state.notify_stats_observers()  # Must notify the initial state
+        game_engine.player_abilities_were_updated.register_observer(self.ui_view.on_abilities_updated)
+        game_engine.talent_was_unlocked.register_observer(self.ui_view.on_talent_was_unlocked)
+        game_state.player_state.money_was_updated.register_observer(self.ui_view.on_money_updated)
+        game_state.player_state.notify_money_observers()  # Must notify the initial state
+        game_state.player_state.cooldowns_were_updated.register_observer(self.ui_view.on_cooldowns_updated)
+        game_state.player_state.health_resource.value_was_updated.register_observer(self.ui_view.on_health_updated)
+        game_state.player_state.mana_resource.value_was_updated.register_observer(self.ui_view.on_mana_updated)
+        game_state.player_state.buffs_were_updated.register_observer(self.ui_view.on_buffs_updated)
+
         if self.flags.map_file_path == 'resources/maps/challenge.json':
             world_behavior = ChallengeBehavior(game_state, ui_state, game_engine, self.flags)
         else:
             world_behavior = StoryBehavior(game_state, ui_state)
 
         if saved_player_state:
-            game_state.player_state.gain_exp_worth_n_levels(saved_player_state.level - 1)
+            game_engine.gain_levels(saved_player_state.level - 1)
             game_state.player_state.gain_exp(saved_player_state.exp)
             game_engine.set_item_inventory([ItemType[item] if item else None for item in saved_player_state.items])
             game_state.player_state.consumable_inventory = ConsumableInventory(
                 {int(slot_number): [ConsumableType[c] for c in consumables] for (slot_number, consumables)
                  in saved_player_state.consumables_in_slots.items()}
             )
-            game_state.player_state.money += saved_player_state.money
+            game_state.player_state.modify_money(saved_player_state.money)
             for portal in game_state.portals:
                 if portal.portal_id.name in saved_player_state.enabled_portals:
                     sprite = saved_player_state.enabled_portals[portal.portal_id.name]
@@ -153,14 +169,21 @@ class CreatingWorldScene(AbstractScene):
                 pick_talent(game_state, index)
         else:
             if hero_start_level > 1:
-                game_state.player_state.gain_exp_worth_n_levels(hero_start_level - 1)
+                game_engine.gain_levels(hero_start_level - 1)
             if start_money > 0:
-                game_state.player_state.money += start_money
+                game_state.player_state.modify_money(start_money)
+
+        game_state.player_state.item_inventory.was_updated.register_observer(self.ui_view.on_inventory_updated)
+        game_state.player_state.item_inventory.notify_observers()  # Must notify the initial state
+        game_state.player_state.consumable_inventory.was_updated.register_observer(self.ui_view.on_consumables_updated)
+        game_state.player_state.consumable_inventory.notify_observers()  # Must notify the initial state
+        self.ui_view.update_hero(game_state.player_state.hero_id)
 
         allocate_input_keys_for_abilities(game_state.player_state.abilities)
+        game_engine.notify_ability_observers()  # Must notify the initial state
 
         game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
 
         new_hero_was_created = saved_player_state is None
-        scene_transition_data = (game_state, game_engine, world_behavior, ui_state, new_hero_was_created)
+        scene_transition_data = (game_state, game_engine, world_behavior, ui_state, self.ui_view, new_hero_was_created)
         return SceneTransition(SceneId.PLAYING, scene_transition_data)
