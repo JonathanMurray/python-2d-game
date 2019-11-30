@@ -15,6 +15,7 @@ from pythongame.scenes_game.game_ui_state import ToggleButtonId
 COLOR_BLACK = (0, 0, 0)
 COLOR_LIGHT_GRAY = (240, 240, 240)
 COLOR_GRAY = (200, 200, 200)
+COLOR_DARK_GRAY = (100, 100, 100)
 COLOR_WHITE = (250, 250, 250)
 
 COLOR_ICON_OUTLINE = (150, 150, 190)
@@ -170,8 +171,8 @@ class TooltipGraphics:
             self._rect = Rect(bottom_right[0] - w, bottom_right[1] - h - 3, w, h)
 
     def render(self):
-        self._ui_render.rect_transparent(self._rect, 200, (0, 0, 30))
-        self._ui_render.rect(COLOR_WHITE, self._rect, 1)
+        self._ui_render.rect_transparent(self._rect, 200, (0, 0, 0))
+        self._ui_render.rect(COLOR_DARK_GRAY, self._rect, 1)
         header_position = (self._rect.x + 20, self._rect.y + 12)
         self._ui_render.text(self._font_header, self._title, header_position, self._title_color)
         y_separator = self._rect.y + 37
