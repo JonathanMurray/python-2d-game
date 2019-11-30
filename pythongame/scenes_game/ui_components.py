@@ -380,7 +380,8 @@ class UiWindow:
 
 
 class ToggleButton(UiComponent):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, font, text: str, toggle_id: ToggleButtonId, highlighted: bool,
+    def __init__(self, ui_render: DrawableArea, rect: Rect, font, text: str, toggle_id: ToggleButtonId,
+                 highlighted: bool,
                  linked_window: UiWindow):
         super().__init__()
         self.ui_render = ui_render
@@ -680,3 +681,20 @@ class Text:
 
     def render(self):
         self.ui_render.text(self.font, self.text, self.ui_position)
+
+
+class Message:
+
+    def __init__(self, screen_render: DrawableArea, font, center_x: int, y: int):
+        self.screen_render = screen_render
+        self.font = font
+        self.center_x = center_x
+        self.y = y
+
+    def render(self, message: Optional[str]):
+        if message:
+            w = len(message) * 9 + 10
+            text_x = self.center_x - w // 2
+            rect = Rect(text_x - 10, self.y - 5, w, 28)
+            self.screen_render.rect_transparent(rect, 135, (0, 0, 0))
+            self.screen_render.text(self.font, message, (text_x, self.y))

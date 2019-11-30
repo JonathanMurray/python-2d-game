@@ -17,7 +17,7 @@ from pythongame.core.view.render_util import DrawableArea
 from pythongame.scenes_game.game_ui_state import GameUiState, ToggleButtonId
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
     ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text, \
-    DialogOption, Dialog, Checkbox, Button
+    DialogOption, Dialog, Checkbox, Button, Message
 from pythongame.scenes_game.ui_events import TrySwitchItemInInventory, EventTriggeredFromUi, \
     DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
     PickTalent, StartDraggingItemOrConsumable, SaveGame, ToggleSound
@@ -104,6 +104,8 @@ class GameUiView:
         self.buffs = Buffs(self.ui_render, self.font_buff_texts, (10, -35))
         self.money_text = Text(self.ui_render, self.font_ui_money, (24, 150), "NO MONEY")
         self.talents_window: TalentsWindow = None
+        self.message = Message(self.screen_render, self.font_message, self.ui_screen_area.w // 2,
+                               self.ui_screen_area.y - 30)
 
         # SETUP UI COMPONENTS
         self._setup_ability_icons()
@@ -294,6 +296,11 @@ class GameUiView:
         self._set_currently_hovered_component_not_hovered()
         self.hovered_component = component
         self.hovered_component.hovered = True
+
+    def _set_currently_hovered_component_not_hovered(self):
+        if self.hovered_component is not None:
+            self.hovered_component.hovered = False
+            self.hovered_component = None
 
     def handle_mouse_click(self) -> List[EventTriggeredFromUi]:
         if self.hovered_component in self.toggle_buttons:
@@ -549,13 +556,6 @@ class GameUiView:
     def _translate_screen_position_to_ui(self, position: Tuple[int, int]):
         return position[0] - self.ui_screen_area.x, position[1] - self.ui_screen_area.y
 
-    def _message(self, message):
-        w_rect = len(message) * 9 + 10
-        x_message = self.ui_screen_area.w / 2 - w_rect / 2
-        y_message = self.ui_screen_area.y - 30
-        self.screen_render.rect_transparent(Rect(x_message - 10, y_message - 5, w_rect, 28), 135, (0, 0, 0))
-        self.screen_render.text(self.font_message, message, (x_message, y_message))
-
     def _render_item_being_dragged(self, item_type: ItemType, mouse_screen_position: Tuple[int, int],
                                    relative_mouse_pos: Tuple[int, int]):
         ui_icon_sprite = ITEMS[item_type].icon_sprite
@@ -576,11 +576,6 @@ class GameUiView:
     def _splash_screen_text(self, text, x, y):
         self.screen_render.text(self.font_splash_screen, text, (x, y), COLOR_WHITE)
         self.screen_render.text(self.font_splash_screen, text, (x + 2, y + 2), COLOR_BLACK)
-
-    def _set_currently_hovered_component_not_hovered(self):
-        if self.hovered_component is not None:
-            self.hovered_component.hovered = False
-            self.hovered_component = None
 
     def render(self, ui_state: GameUiState, is_paused: bool):
 
@@ -629,8 +624,7 @@ class GameUiView:
         self.screen_render.rect_transparent(Rect(0, 0, 70, 20), 100, COLOR_BLACK)
         self.screen_render.text(self.font_debug_info, "fps: " + self.fps_string, (5, 3))
 
-        if ui_state.message:
-            self._message(ui_state.message)
+        self.message.render(ui_state.message)
 
         if self.hovered_component and self.hovered_component.tooltip and not self.item_slot_being_dragged \
                 and not self.consumable_slot_being_dragged:
