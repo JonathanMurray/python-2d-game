@@ -698,3 +698,21 @@ class Message:
             rect = Rect(text_x - 10, self.y - 5, w, 28)
             self.screen_render.rect_transparent(rect, 135, (0, 0, 0))
             self.screen_render.text(self.font, message, (text_x, self.y))
+
+
+class PausedSplashScreen:
+
+    def __init__(self, screen_render: DrawableArea, font, rect: Rect):
+        self._screen_render = screen_render
+        self._font = font
+        self._rect = rect
+        self.shown = False
+
+    def render(self):
+        if self.shown:
+            self._screen_render.rect_transparent(self._rect, 140, COLOR_BLACK)
+            self._double_text("PAUSED", self._rect.w // 2 - 110, self._rect.h // 2 - 50)
+
+    def _double_text(self, text, x, y):
+        self._screen_render.text(self._font, text, (x, y), COLOR_WHITE)
+        self._screen_render.text(self._font, text, (x + 2, y + 2), COLOR_BLACK)

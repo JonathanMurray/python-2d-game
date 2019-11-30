@@ -54,6 +54,7 @@ class PlayingScene(AbstractScene):
         # In case this scene has been running before, we make sure to clear any state. Otherwise keys that were held
         # down would still be considered active!
         self.user_input_handler = PlayingUserInputHandler()
+        self.ui_view.set_paused(False)
 
     def run_one_frame(self, time_passed: Millis) -> Optional[SceneTransition]:
 
@@ -187,7 +188,7 @@ class PlayingScene(AbstractScene):
             entire_world_area=self.game_state.entire_world_area,
             entity_action_text=entity_action_text)
 
-        self.ui_view.render(self.ui_state, False)
+        self.ui_view.render(self.ui_state)
 
         for event in events_triggered_from_ui:
             if isinstance(event, StartDraggingItemOrConsumable):

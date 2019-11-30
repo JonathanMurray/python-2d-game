@@ -27,6 +27,7 @@ class PausedScene(AbstractScene):
 
     def initialize(self, data: Tuple[GameState, GameUiState]):
         self.game_state, self.ui_state = data
+        self.ui_view.set_paused(True)
 
     def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
         scene_transition = None
@@ -58,7 +59,6 @@ class PausedScene(AbstractScene):
 
         self.ui_view.render(
             ui_state=self.ui_state,
-            is_paused=True
         )
 
         self.world_view.update_display()

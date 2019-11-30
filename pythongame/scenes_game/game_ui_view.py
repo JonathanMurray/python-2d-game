@@ -17,7 +17,7 @@ from pythongame.core.view.render_util import DrawableArea
 from pythongame.scenes_game.game_ui_state import GameUiState, ToggleButtonId
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
     ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text, \
-    DialogOption, Dialog, Checkbox, Button, Message
+    DialogOption, Dialog, Checkbox, Button, Message, PausedSplashScreen
 from pythongame.scenes_game.ui_events import TrySwitchItemInInventory, EventTriggeredFromUi, \
     DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
     PickTalent, StartDraggingItemOrConsumable, SaveGame, ToggleSound
@@ -106,6 +106,8 @@ class GameUiView:
         self.talents_window: TalentsWindow = None
         self.message = Message(self.screen_render, self.font_message, self.ui_screen_area.w // 2,
                                self.ui_screen_area.y - 30)
+        self.paused_splash_screen = PausedSplashScreen(self.screen_render, self.font_splash_screen,
+                                                       Rect(0, 0, self.screen_size[0], self.screen_size[1]))
 
         # SETUP UI COMPONENTS
         self._setup_ability_icons()
@@ -547,6 +549,9 @@ class GameUiView:
     #                                          RENDERING
     # --------------------------------------------------------------------------------------------------------
 
+    def set_paused(self, paused: bool):
+        self.paused_splash_screen.shown = paused
+
     def update_fps_string(self, fps_string: str):
         self.fps_string = fps_string
 
@@ -573,11 +578,7 @@ class GameUiView:
                     mouse_screen_position[1] - relative_mouse_pos[1] - (UI_ICON_BIG_SIZE[1] - UI_ICON_SIZE[1]) // 2)
         self.screen_render.image(big_image, position)
 
-    def _splash_screen_text(self, text, x, y):
-        self.screen_render.text(self.font_splash_screen, text, (x, y), COLOR_WHITE)
-        self.screen_render.text(self.font_splash_screen, text, (x + 2, y + 2), COLOR_BLACK)
-
-    def render(self, ui_state: GameUiState, is_paused: bool):
+    def render(self, ui_state: GameUiState):
 
         self.screen_render.rect(COLOR_BORDER, Rect(0, 0, self.camera_size[0], self.camera_size[1]), 1)
         self.screen_render.rect_filled((20, 10, 0), Rect(0, self.camera_size[1], self.screen_size[0],
@@ -640,6 +641,4 @@ class GameUiView:
                                                   self.mouse_screen_position,
                                                   (UI_ICON_SIZE[0] // 2, (UI_ICON_SIZE[1] // 2)))
 
-        if is_paused:
-            self.screen_render.rect_transparent(Rect(0, 0, self.screen_size[0], self.screen_size[1]), 140, COLOR_BLACK)
-            self._splash_screen_text("PAUSED", self.screen_size[0] / 2 - 110, self.screen_size[1] / 2 - 50)
+        self.paused_splash_screen.render()
