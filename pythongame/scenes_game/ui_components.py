@@ -1,10 +1,10 @@
-import math
+from math import floor
 from typing import List, Tuple, Optional, Any
 
 import pygame
 from pygame.rect import Rect
 
-from pythongame.core.common import ConsumableType, ItemType, AbilityType, PortraitIconSprite
+from pythongame.core.common import ConsumableType, ItemType, AbilityType, PortraitIconSprite, HeroId
 from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData
 from pythongame.core.game_state import PlayerState
 from pythongame.core.item_inventory import ItemEquipmentCategory
@@ -14,6 +14,7 @@ from pythongame.scenes_game.game_ui_state import ToggleButtonId
 
 COLOR_BLACK = (0, 0, 0)
 COLOR_LIGHT_GRAY = (240, 240, 240)
+COLOR_GRAY = (200, 200, 200)
 COLOR_WHITE = (250, 250, 250)
 
 COLOR_ICON_OUTLINE = (150, 150, 190)
@@ -488,68 +489,111 @@ class ControlsWindow(UiWindow):
 
 
 class StatsWindow(UiWindow):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, font_header, font_details, player_state: PlayerState,
-                 player_speed_multiplier: float):
+    def __init__(self, ui_render: DrawableArea, font_header, font_details, player_state: PlayerState,
+                 player_speed_multiplier: float, hero_id: HeroId, level: int):
         super().__init__()
         self.ui_render = ui_render
-        self.rect = rect
+        self.rect = Rect(365, -380, 320, 330)
         self.font_header = font_header
         self.font_details = font_details
         self.player_state = player_state
         self.player_speed_multiplier = player_speed_multiplier
+        self.hero_id = hero_id
+        self.level = level
 
     def render(self):
         if self.shown:
             self._render()
 
     def _render(self):
-        self.ui_render.rect_transparent(self.rect, 140, (0, 0, 30))
+        self.ui_render.rect_filled((50, 50, 50), self.rect)
+        self.ui_render.rect((80, 50, 50), self.rect, 2)
 
-        self.ui_render.text(self.font_header, "STATS:", (self.rect[0] + 45, self.rect[1] + 10))
+        player_state = self.player_state
+        health = player_state.health_resource
+        mana = player_state.mana_resource
 
-        health_regen_text = \
-            "    health reg: " + "{:.1f}".format(self.player_state.health_resource.base_regen)
-        if self.player_state.health_resource.regen_bonus > 0:
-            health_regen_text += " +" + "{:.1f}".format(self.player_state.health_resource.regen_bonus)
-        mana_regen_text = \
-            "      mana reg: " + "{:.1f}".format(self.player_state.mana_resource.base_regen)
-        if self.player_state.mana_resource.regen_bonus > 0:
-            mana_regen_text += " +" + "{:.1f}".format(self.player_state.mana_resource.regen_bonus)
-        physical_damage_stat_text = \
-            " % phys damage: " + str(int(round(self.player_state.base_physical_damage_modifier * 100)))
-        if self.player_state.physical_damage_modifier_bonus > 0:
-            physical_damage_stat_text += " +" + str(int(round(self.player_state.physical_damage_modifier_bonus * 100)))
-        magic_damage_stat_text = \
-            "% magic damage: " + str(int(round(self.player_state.base_magic_damage_modifier * 100)))
-        if self.player_state.magic_damage_modifier_bonus > 0:
-            magic_damage_stat_text += " +" + str(int(round(self.player_state.magic_damage_modifier_bonus * 100)))
-        speed_stat_text = \
-            "       % speed: " + ("+" if self.player_speed_multiplier >= 1 else "") \
-            + str(int(round((self.player_speed_multiplier - 1) * 100)))
-        lifesteal_stat_text = \
-            "  % life steal: " + str(int(round(self.player_state.life_steal_ratio * 100)))
-        armor_stat_text = \
-            "         armor: " + str(math.floor(self.player_state.base_armor))
-        if self.player_state.armor_bonus > 0:
-            armor_stat_text += " +" + str(self.player_state.armor_bonus)
-        elif self.player_state.armor_bonus < 0:
-            armor_stat_text += " " + str(self.player_state.armor_bonus)
-        dodge_chance_text = \
-            "       % dodge: " + str(int(round(self.player_state.base_dodge_chance * 100)))
-        if self.player_state.dodge_chance_bonus > 0:
-            dodge_chance_text += " +" + str(int(round(self.player_state.dodge_chance_bonus * 100)))
-        block_chance_text = \
-            "       % block: " + str(int(round(self.player_state.block_chance * 100)))
-        block_reduction_text = \
-            "  block amount: " + str(self.player_state.block_damage_reduction)
-        x_text = self.rect[0] + 7
-        y_0 = self.rect[1] + 45
-        text_lines = [health_regen_text, mana_regen_text, physical_damage_stat_text, magic_damage_stat_text,
-                      speed_stat_text, lifesteal_stat_text, armor_stat_text, dodge_chance_text, block_chance_text,
-                      block_reduction_text]
-        for i, y in enumerate(range(y_0, y_0 + len(text_lines) * 20, 20)):
-            text = text_lines[i]
-            self.ui_render.text(self.font_details, text, (x_text, y), COLOR_WHITE)
+        x_left = self.rect[0] + 15
+        x_right = x_left + 155
+        y_0 = self.rect[1] + 15
+
+        perc = lambda value: int(value * 100)
+
+        y_hero_and_level = y_0
+        self._render_header((x_left, y_hero_and_level), self.hero_id.name)
+        self._render_header((x_right, y_hero_and_level), "Level " + str(self.level))
+        # self.ui_render.text(self.font_header, self.hero_id.name, (x_left, y_hero_and_level))
+        # self.ui_render.text(self.font_header, "Level " + str(self.level), (x_left + 40, y_hero_and_level))
+
+        y_health = y_0 + 40
+        self._render_sub_header((x_left, y_health), "HEALTH")
+        self._render_stat((x_left, y_health + 25), "max", health.max_value)
+        self._render_stat((x_left, y_health + 45), "regen", health.base_regen, health.get_effective_regen())
+
+        y_mana = y_0 + 40
+        self._render_sub_header((x_right, y_mana), "MANA")
+        self._render_stat((x_right, y_mana + 25), "max", mana.max_value)
+        self._render_stat((x_right, y_mana + 45), "regen", mana.base_regen, mana.get_effective_regen())
+
+        y_damage = y_0 + 130
+        self._render_sub_header((x_left, y_damage), "DAMAGE")
+        self._render_stat((x_left, y_damage + 25), "physical %", perc(player_state.base_physical_damage_modifier),
+                          perc(player_state.get_effective_physical_damage_modifier()))
+        self._render_stat((x_left, y_damage + 45), "magic %", perc(player_state.base_magic_damage_modifier),
+                          perc(player_state.get_effective_magic_damage_modifier()))
+
+        y_defense = y_0 + 130
+        self._render_sub_header((x_right, y_defense), "DEFENSE")
+        self._render_stat((x_right, y_defense + 25), "armor", str(floor(player_state.base_armor)),
+                          str(floor(player_state.base_armor + player_state.armor_bonus)))
+        self._render_stat((x_right, y_defense + 45), "dodge %", perc(player_state.base_dodge_chance),
+                          perc(player_state.get_effective_dodge_change()))
+        self._render_stat((x_right, y_defense + 65), "block %", perc(player_state.block_chance))
+        self._render_stat((x_right, y_defense + 85), "amount", player_state.block_damage_reduction)
+
+        y_misc = y_0 + 220
+        self._render_sub_header((x_left, y_misc), "MISC.")
+        self._render_stat((x_left, y_misc + 25), "speed %", perc(self.player_speed_multiplier))
+        self._render_stat((x_left, y_misc + 45), "lifesteal %", perc(player_state.life_steal_ratio))
+
+    def _render_header(self, pos: Tuple[int, int], text: str):
+        w = 135
+        h = 20
+        rect = Rect(pos[0], pos[1] - 3, w, h)
+        self.ui_render.rect_filled((40, 40, 40), rect)
+        #self.ui_render.rect(COLOR_GRAY, rect, 1)
+        text_pos = (pos[0] + w // 2 - 2 - len(text) * 3, pos[1])
+        self.ui_render.text(self.font_header, text, text_pos)
+
+    def _render_sub_header(self, pos: Tuple[int, int], text: str):
+        w = 70
+        text_pos = (pos[0] + w // 2 - 2 - len(text) * 3, pos[1])
+        self.ui_render.text(self.font_header, text, text_pos, (220, 220, 250))
+
+    def _render_stat(self, label_pos: Tuple[int, int], label: str, value: Any, value_with_bonus: Optional[Any] = None):
+        x_label, y = label_pos
+        w_label_rect = 70
+        rect_label = Rect(x_label, y - 2, w_label_rect, 15)
+        self.ui_render.rect_filled((40, 40, 40), rect_label)
+        x_label_text = x_label + w_label_rect // 2 - len(label) * 3
+        self.ui_render.text(self.font_details, label, (x_label_text, y))
+        x_value = x_label + 80
+        w_value_rect = 30
+        color_rect_bg = (20, 20, 20)
+        self._render_value(color_rect_bg, value, w_value_rect, (x_value, y), COLOR_WHITE)
+        if value_with_bonus is not None:
+            color = (170, 230, 170) if value_with_bonus > value else COLOR_WHITE
+            x_value_2 = x_value + w_value_rect - 1
+            self._render_value(color_rect_bg, value_with_bonus, w_value_rect, (x_value_2, y), color)
+
+    def _render_value(self, color_bg, value, w_rect, position: Tuple[int, int], color: Tuple[int, int, int]):
+        text = str(value)
+        x, y = position
+        rect = Rect(x - 5, y - 2, w_rect, 15)
+        x_text = x + w_rect // 2 - 3 - len(text) * 4
+        self.ui_render.rect_filled(color_bg, rect)
+        self.ui_render.rect(COLOR_GRAY, rect, 1)
+        self.ui_render.text(self.font_details, text, (x_text, y), color)
 
 
 class TalentsWindow(UiWindow):

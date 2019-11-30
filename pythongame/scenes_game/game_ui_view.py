@@ -216,8 +216,9 @@ class GameUiView:
         self.save_button = Button(self.ui_render, Rect(x + 80, y_0 + 90, 70, h), font, "SAVE [S]")
 
     def _setup_stats_window(self):
-        rect = Rect(545, -300, 140, 250)
-        self.stats_window = StatsWindow(self.ui_render, rect, self.font_tooltip_details, self.font_stats, None, 0)
+
+        self.stats_window = StatsWindow(self.ui_render, self.font_tooltip_details, self.font_stats, None, 0, None,
+                                        1)
 
     def _setup_talents_window(self, talents: TalentsGraphics):
         rect = Rect(545, -300, 140, 260)
@@ -405,6 +406,7 @@ class GameUiView:
     def on_player_exp_updated(self, event: Tuple[int, float]):
         level, ratio_exp_until_next_level = event
         self.exp_bar.update(level, ratio_exp_until_next_level)
+        self.stats_window.level = level
 
     def on_money_updated(self, money: int):
         self.money_text.text = "Money: " + str(money)
@@ -549,6 +551,7 @@ class GameUiView:
         sprite = HEROES[hero_id].portrait_icon_sprite
         image = self.images_by_portrait_sprite[sprite]
         self.portrait.image = image
+        self.stats_window.hero_id=hero_id
 
     def set_paused(self, paused: bool):
         self.paused_splash_screen.shown = paused

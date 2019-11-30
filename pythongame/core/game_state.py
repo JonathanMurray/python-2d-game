@@ -398,6 +398,7 @@ class PlayerState:
         self.magic_damage_modifier_bonus: float = 0  # affected by items. [Change it additively]
         self.hero_id: HeroId = hero_id
         self.base_armor: float = armor  # depends on which hero is being played
+        # TODO add method for getting effective value
         self.armor_bonus: int = 0  # affected by items/buffs. [Change it additively]
         self.base_dodge_chance: float = base_dodge_chance  # depends on which hero is being used
         self.dodge_chance_bonus: float = 0  # affected by items/buffs. [Change it additively]
