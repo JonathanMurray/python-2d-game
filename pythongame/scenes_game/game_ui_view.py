@@ -8,7 +8,7 @@ from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprit
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, \
     KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, HEROES
-from pythongame.core.game_state import PlayerStatsObserverEvent, BuffWithDuration
+from pythongame.core.game_state import PlayerStatsObserverEvent, BuffWithDuration, NonPlayerCharacter
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES, \
     ItemInventory
 from pythongame.core.math import is_point_in_rect
@@ -34,6 +34,14 @@ UI_ICON_BIG_SIZE = (36, 36)
 PORTRAIT_ICON_SIZE = (100, 70)
 
 DIR_FONTS = './resources/fonts/'
+
+
+class DialogState:
+    def __init__(self):
+        self.option_index: int = 0
+        self.data: DialogData = None
+        self.npc: NonPlayerCharacter = None
+        self.active = False
 
 
 class DialogConfig:
@@ -173,6 +181,7 @@ class GameUiView:
         self.consumable_slot_being_dragged: ConsumableIcon = None
         self.is_mouse_hovering_ui = False
         self.mouse_screen_position = (0, 0)
+        self.dialog_state = DialogState()
 
     def _setup_ability_icons(self):
         x_0 = 140
@@ -354,6 +363,13 @@ class GameUiView:
 
         return triggered_events
 
+    def handle_space_click(self) -> Optional[Tuple[NonPlayerCharacter, int]]:
+        if self.dialog_state.active:
+            self.dialog_state.active = False
+            self.update_dialog(None)
+            return self.dialog_state.npc, self.dialog_state.option_index
+        return None
+
     def on_click_toggle(self, ui_toggle: UiToggle):
         toggle = [tb for tb in self.toggle_buttons if tb.toggle_id == ui_toggle][0]
         self._on_click_toggle(toggle)
@@ -506,6 +522,18 @@ class GameUiView:
         image = self.images_by_portrait_sprite[sprite]
         self.portrait.image = image
 
+    def start_dialog_with_npc(self, npc: NonPlayerCharacter, dialog_data: DialogData):
+        self.dialog_state.active = True
+        self.dialog_state.npc = npc
+        self.dialog_state.data = dialog_data
+        if self.dialog_state.option_index >= len(dialog_data.options):
+            self.dialog_state.option_index = 0
+        self.update_dialog(DialogConfig(dialog_data, self.dialog_state.option_index))
+
+    def change_dialog_option(self, delta: int):
+        self.dialog_state.option_index = (self.dialog_state.option_index + delta) % len(self.dialog_state.data.options)
+        self.update_dialog(DialogConfig(self.dialog_state.data, self.dialog_state.option_index))
+
     def update_dialog(self, dialog_config: Optional[DialogConfig]):
         if dialog_config:
             options = [
@@ -524,6 +552,9 @@ class GameUiView:
             self.dialog.shown = True
         else:
             self.dialog.shown = False
+
+    def has_open_dialog(self) -> bool:
+        return self.dialog_state.active
 
     def update_fps_string(self, fps_string: str):
         self.fps_string = fps_string
@@ -562,7 +593,7 @@ class GameUiView:
         self.screen_render.text(self.font_splash_screen, text, (x, y), COLOR_WHITE)
         self.screen_render.text(self.font_splash_screen, text, (x + 2, y + 2), COLOR_BLACK)
 
-    def handle_mouse(self, mouse_screen_pos: Tuple[int, int]):
+    def handle_mouse_movement(self, mouse_screen_pos: Tuple[int, int]):
         self.mouse_screen_position = mouse_screen_pos
         self.is_mouse_hovering_ui = is_point_in_rect(mouse_screen_pos, self.ui_screen_area)
 

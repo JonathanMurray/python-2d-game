@@ -1,9 +1,9 @@
 from typing import Optional, Tuple, List
 
 from pythongame.core.game_state import NonPlayerCharacter
-from pythongame.core.npc_behaviors import get_dialog_data, DialogData
+from pythongame.core.npc_behaviors import get_dialog_data
 from pythongame.scenes_game.game_ui_state import GameUiState
-from pythongame.scenes_game.game_ui_view import GameUiView, DialogConfig, EventTriggeredFromUi
+from pythongame.scenes_game.game_ui_view import GameUiView, EventTriggeredFromUi
 
 
 # TODO
@@ -21,31 +21,21 @@ from pythongame.scenes_game.game_ui_view import GameUiView, DialogConfig, EventT
 # To fix:
 #
 
-class DialogState:
-    def __init__(self):
-        self.option_index: int = 0
-        self.data: DialogData = None
-        self.npc: NonPlayerCharacter = None
-        self.active = False
-
 
 class PlayingUiController:
 
     def __init__(self, ui_view: GameUiView, ui_state: GameUiState):
         self.ui_view = ui_view
         self.ui_state = ui_state
-        self.dialog = DialogState()
 
     def render(self):
-
-        # RENDERING
         self.ui_view.render(
             ui_state=self.ui_state,
             is_paused=False,
         )
 
     def handle_mouse_movement(self, mouse_screen_position: Tuple[int, int]):
-        self.ui_view.handle_mouse(mouse_screen_position)
+        self.ui_view.handle_mouse_movement(mouse_screen_position)
 
     def handle_mouse_right_click(self):
         return self.ui_view.handle_mouse_right_click()
@@ -58,25 +48,13 @@ class PlayingUiController:
         return self.ui_view.handle_mouse_release()
 
     def change_dialog_option(self, delta: int):
-        self.dialog.option_index = (self.dialog.option_index + delta) % len(self.dialog.data.options)
-        self.ui_view.update_dialog(DialogConfig(self.dialog.data, self.dialog.option_index))
+        self.ui_view.change_dialog_option(delta)
 
-    # TODO move this down into UiView
     def start_dialog_with_npc(self, npc: NonPlayerCharacter):
-        self.dialog.active = True
-        self.dialog.npc = npc
-        self.dialog.data = get_dialog_data(npc.npc_type)
-        if self.dialog.option_index >= len(self.dialog.data.options):
-            self.dialog.option_index = 0
-        self.ui_view.update_dialog(DialogConfig(self.dialog.data, self.dialog.option_index))
+        self.ui_view.start_dialog_with_npc(npc, get_dialog_data(npc.npc_type))
 
     def has_open_dialog(self) -> bool:
-        return self.dialog.active
+        return self.ui_view.has_open_dialog()
 
-    # TODO move this down into UiView
     def handle_space_click(self) -> Optional[Tuple[NonPlayerCharacter, int]]:
-        if self.dialog.active:
-            self.dialog.active = False
-            self.ui_view.update_dialog(None)
-            return self.dialog.npc, self.dialog.option_index
-        return None
+        return self.ui_view.handle_space_click()
