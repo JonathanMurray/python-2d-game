@@ -68,6 +68,7 @@ class GameUiView:
         self.font_ui_headers = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 18)
         self.font_tooltip_header = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 16)
         self.font_tooltip_details = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
+        self.font_buttons = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_stats = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 9)
         self.font_buff_texts = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_message = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 14)
@@ -192,18 +193,18 @@ class GameUiView:
 
     def _setup_health_and_mana_bars(self):
         rect_healthbar = Rect(20, 111, 100, 14)
-        self.healthbar = StatBar(self.ui_render, rect_healthbar, (200, 0, 50), None, 0, 1, border=True,
+        self.healthbar = StatBar(self.ui_render, rect_healthbar, (200, 0, 50), None, 0, 1,
                                  show_numbers=True, font=self.font_ui_stat_bar_numbers)
         rect_manabar = Rect(20, 132, 100, 14)
-        self.manabar = StatBar(self.ui_render, rect_manabar, (50, 0, 200), None, 0, 1, border=True,
+        self.manabar = StatBar(self.ui_render, rect_manabar, (50, 0, 200), None, 0, 1,
                                show_numbers=True, font=self.font_ui_stat_bar_numbers)
 
     def _setup_toggle_buttons(self):
-        x = 545
+        x = 540
         y_0 = 30
-        w = 140
+        w = 150
         h = 20
-        font = self.font_tooltip_details
+        font = self.font_buttons
         self.stats_toggle = ToggleButton(self.ui_render, Rect(x, y_0, w, h), font, "STATS    [A]", ToggleButtonId.STATS,
                                          False, self.stats_window)
         self.talents_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 30, w, h), font, "TALENTS  [T]",
@@ -211,8 +212,8 @@ class GameUiView:
         self.controls_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 60, w, h), font, "CONTROLS [C]",
                                             ToggleButtonId.CONTROLS, False, self.controls_window)
         self.toggle_buttons = [self.stats_toggle, self.talents_toggle, self.controls_toggle]
-        self.sound_checkbox = Checkbox(self.ui_render, Rect(x, y_0 + 90, 65, h), font, "SOUND", True)
-        self.save_button = Button(self.ui_render, Rect(x + 75, y_0 + 90, 65, h), font, "SAVE")
+        self.sound_checkbox = Checkbox(self.ui_render, Rect(x, y_0 + 90, 70, h), font, "SOUND", True)
+        self.save_button = Button(self.ui_render, Rect(x + 80, y_0 + 90, 70, h), font, "SAVE [S]")
 
     def _setup_stats_window(self):
         rect = Rect(545, -300, 140, 250)

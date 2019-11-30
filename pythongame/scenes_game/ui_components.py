@@ -13,6 +13,7 @@ from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
 from pythongame.scenes_game.game_ui_state import ToggleButtonId
 
 COLOR_BLACK = (0, 0, 0)
+COLOR_LIGHT_GRAY = (240, 240, 240)
 COLOR_WHITE = (250, 250, 250)
 
 COLOR_ICON_OUTLINE = (150, 150, 190)
@@ -20,6 +21,7 @@ COLOR_BUTTON_OUTLINE = (150, 150, 190)
 COLOR_HOVERED = (200, 200, 250)
 COLOR_ICON_HIGHLIGHTED = (250, 250, 150)
 COLOR_TOGGLE_HIGHLIGHTED = (150, 250, 200)
+COLOR_TOGGLE_OPENED = (50, 50, 120)
 DIR_FONTS = './resources/fonts/'
 
 
@@ -286,6 +288,7 @@ class ItemIcon(UiComponent):
         super().__init__()
         self._ui_render = ui_render
         self.rect = rect
+        self._rect_highlighted = Rect(self.rect.x - 1, self.rect.y - 1, self.rect.w + 1, self.rect.h + 1)
         self.image = image
         self.slot_equipment_category = slot_equipment_category
         self.tooltip = tooltip
@@ -298,22 +301,17 @@ class ItemIcon(UiComponent):
         return None
 
     def render(self, highlighted: bool):
-        self._ui_render.rect_filled((40, 40, 50), self.rect)
-        if self.item_type:
-            if self.slot_equipment_category:
-                self._ui_render.rect_filled((40, 40, 70), self.rect)
+        has_equipped_item = self.slot_equipment_category and self.item_type
+        color_bg = (60, 60, 90) if has_equipped_item else (40, 40, 50)
+        color_outline = (160, 160, 160) if has_equipped_item else (100, 100, 140)
+
+        self._ui_render.rect_filled(color_bg, self.rect)
+        if self.image:
             self._ui_render.image(self.image, self.rect.topleft)
-        elif self.image:
-            self._ui_render.image(self.image, self.rect.topleft)
-        if self.item_type and self.slot_equipment_category:
-            color_outline = (250, 250, 250)
-        else:
-            color_outline = (100, 100, 140)
         self._ui_render.rect(color_outline, self.rect, 1)
 
         if highlighted:
-            self._ui_render.rect(COLOR_ICON_HIGHLIGHTED,
-                                 Rect(self.rect.x - 1, self.rect.y - 1, self.rect.w + 1, self.rect.h + 1), 2)
+            self._ui_render.rect(COLOR_ICON_HIGHLIGHTED, self._rect_highlighted, 2)
         elif self.hovered:
             self._ui_render.rect(COLOR_HOVERED, self.rect, 1)
 
@@ -348,11 +346,10 @@ class TalentIcon(UiComponent):
 
 class StatBar:
     def __init__(self, ui_render: DrawableArea, rect: Rect, color: Tuple[int, int, int], tooltip: TooltipGraphics,
-                 value: int, max_value: int, border: bool, show_numbers: bool, font):
+                 value: int, max_value: int, show_numbers: bool, font):
         self.ui_render = ui_render
         self.rect = rect
         self.color = color
-        self.border = border
         self.tooltip = tooltip
         self.show_numbers = show_numbers
         self.font = font
@@ -365,7 +362,7 @@ class StatBar:
 
     def render(self):
         self.ui_render.stat_bar(
-            self.rect.x, self.rect.y, self.rect.w, self.rect.h, self.ratio_filled, self.color, self.border)
+            self.rect.x, self.rect.y, self.rect.w, self.rect.h, self.ratio_filled, self.color, (160, 160, 180))
         if self.show_numbers:
             text = str(self._value) + "/" + str(self._max_value)
             self.ui_render.text(self.font, text, (self.rect.x + 20, self.rect.y - 1))
@@ -401,9 +398,10 @@ class ToggleButton(UiComponent):
 
     def render(self):
         if self.is_open:
-            self.ui_render.rect_filled((50, 50, 150), self.rect)
+            self.ui_render.rect_filled(COLOR_TOGGLE_OPENED, self.rect)
         self.ui_render.rect(COLOR_BUTTON_OUTLINE, self.rect, 1)
-        self.ui_render.text(self.font, self.text, (self.rect.x + 20, self.rect.y + 2))
+        text_color = COLOR_WHITE if self.hovered or self.highlighted else COLOR_LIGHT_GRAY
+        self.ui_render.text(self.font, self.text, (self.rect.x + 20, self.rect.y + 2), text_color)
         if self.hovered:
             self.ui_render.rect(COLOR_HOVERED, self.rect, 1)
         if self.highlighted:
@@ -435,7 +433,8 @@ class Checkbox(UiComponent):
     def render(self):
         self.ui_render.rect(COLOR_BUTTON_OUTLINE, self.rect, 1)
         text = self.label + ": " + ("Y" if self.checked else "N")
-        self.ui_render.text(self.font, text, (self.rect.x + 4, self.rect.y + 2))
+        text_color = COLOR_WHITE if self.hovered else COLOR_LIGHT_GRAY
+        self.ui_render.text(self.font, text, (self.rect.x + 4, self.rect.y + 2), text_color)
         if self.hovered:
             self.ui_render.rect(COLOR_HOVERED, self.rect, 1)
 
@@ -457,7 +456,8 @@ class Button(UiComponent):
 
     def render(self):
         self.ui_render.rect(COLOR_BUTTON_OUTLINE, self.rect, 1)
-        self.ui_render.text(self.font, self.text, (self.rect.x + 7, self.rect.y + 2))
+        text_color = COLOR_WHITE if self.hovered else COLOR_LIGHT_GRAY
+        self.ui_render.text(self.font, self.text, (self.rect.x + 7, self.rect.y + 2), text_color)
         if self.hovered:
             self.ui_render.rect(COLOR_HOVERED, self.rect, 1)
 
@@ -612,9 +612,9 @@ class ExpBar:
         self.filled_ratio = 0
 
     def render(self):
-        self.ui_render.text(self.font, "Level " + str(self.level), (self.rect.x, self.rect.y - 18))
+        self.ui_render.text(self.font, "LEVEL: " + str(self.level), (self.rect.x, self.rect.y - 18))
         self.ui_render.stat_bar(self.rect.x, self.rect.y, self.rect.w, self.rect.h, self.filled_ratio, (200, 200, 200),
-                                True)
+                                (160, 160, 180))
 
     def update(self, level: int, filled_ratio: float):
         self.level = level
@@ -666,7 +666,7 @@ class Buffs:
                 x = self.rect[0] + self.rect_padding
                 y = self.rect[1] + self.rect_padding + i * 25
                 self.ui_render.text(self.font, text, (x, y))
-                self.ui_render.stat_bar(x, y + 20, 60, 2, ratio_remaining, (250, 250, 0), False)
+                self.ui_render.stat_bar(x, y + 20, 60, 2, ratio_remaining, (250, 250, 0))
 
     def update(self, buffs: List[Tuple[str, float]]):
         self.buffs = buffs

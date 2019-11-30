@@ -218,7 +218,7 @@ class GameWorldView:
 
     def _stat_bar_for_world_entity(self, world_entity, h, relative_y, ratio, color):
         self.world_render.stat_bar(world_entity.x + 1, world_entity.y + relative_y,
-                                   world_entity.w - 2, h, ratio, color, False)
+                                   world_entity.w - 2, h, ratio, color)
 
     def _entity_action_text(self, entity_action_text: EntityActionText):
         entity_center_pos = entity_action_text.entity.get_center_position()
