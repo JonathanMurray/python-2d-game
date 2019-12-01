@@ -18,7 +18,7 @@ from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, Acti
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_dialog_user_inputs, \
     ActionChangeDialogOption, ActionSaveGameState, ActionPressShiftKey, ActionReleaseShiftKey, PlayingUserInputHandler, \
-    ActionToggleUiTalents, ActionToggleUiStats, ActionToggleUiControls, ActionRightMouseClicked
+    ActionToggleUiTalents, ActionToggleUiStats, ActionToggleUiHelp, ActionRightMouseClicked
 from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
 from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.player_file import save_to_file
@@ -149,8 +149,8 @@ class PlayingScene(AbstractScene):
                 if isinstance(action, ActionToggleUiStats):
                     self.ui_view.click_toggle_button(ToggleButtonId.STATS)
                     play_sound(SoundId.UI_TOGGLE)
-                if isinstance(action, ActionToggleUiControls):
-                    self.ui_view.click_toggle_button(ToggleButtonId.CONTROLS)
+                if isinstance(action, ActionToggleUiHelp):
+                    self.ui_view.click_toggle_button(ToggleButtonId.HELP)
                     play_sound(SoundId.UI_TOGGLE)
 
         # ------------------------------------

@@ -109,6 +109,7 @@ class GameUiView:
                                self.ui_screen_area.y - 30)
         self.paused_splash_screen = PausedSplashScreen(self.screen_render, self.font_splash_screen,
                                                        Rect(0, 0, self.screen_size[0], self.screen_size[1]))
+        self.controls_window = ControlsWindow(self.ui_render, self.font_tooltip_details, self.font_stats)
 
         # SETUP UI COMPONENTS
         self._setup_ability_icons()
@@ -117,7 +118,6 @@ class GameUiView:
         self._setup_health_and_mana_bars()
         self._setup_stats_window()
         self._setup_talents_window(TalentsState(TalentsConfig({})))
-        self._setup_controls_window()
         self._setup_toggle_buttons()
         self._setup_portrait()
         self._setup_dialog()
@@ -209,8 +209,8 @@ class GameUiView:
                                          False, self.stats_window)
         self.talents_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 30, w, h), font, "TALENTS  [N]",
                                            ToggleButtonId.TALENTS, False, self.talents_window)
-        self.controls_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 60, w, h), font, "CONTROLS [C]",
-                                            ToggleButtonId.CONTROLS, False, self.controls_window)
+        self.controls_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 60, w, h), font, "HELP     [H]",
+                                            ToggleButtonId.HELP, False, self.controls_window)
         self.toggle_buttons = [self.stats_toggle, self.talents_toggle, self.controls_toggle]
         self.sound_checkbox = Checkbox(self.ui_render, Rect(x, y_0 + 90, 70, h), font, "SOUND", True)
         self.save_button = Button(self.ui_render, Rect(x + 80, y_0 + 90, 70, h), font, "SAVE [S]")
@@ -233,10 +233,6 @@ class GameUiView:
                 self.ui_render, self.font_tooltip_details, self.font_stats, talent_tiers)
         else:
             self.talents_window.update(talent_tiers)
-
-    def _setup_controls_window(self):
-        rect = Rect(545, -300, 140, 170)
-        self.controls_window = ControlsWindow(self.ui_render, rect, self.font_tooltip_details, self.font_stats)
 
     def _setup_portrait(self):
         rect = Rect(20, 18, PORTRAIT_ICON_SIZE[0], PORTRAIT_ICON_SIZE[1])

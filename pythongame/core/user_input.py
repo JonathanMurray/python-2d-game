@@ -63,7 +63,7 @@ class ActionToggleUiStats:
     pass
 
 
-class ActionToggleUiControls:
+class ActionToggleUiHelp:
     pass
 
 
@@ -178,8 +178,8 @@ class PlayingUserInputHandler:
                     actions.append(ActionToggleUiTalents())
                 elif event.key == pygame.K_a:
                     actions.append(ActionToggleUiStats())
-                elif event.key == pygame.K_c:
-                    actions.append(ActionToggleUiControls())
+                elif event.key == pygame.K_h:
+                    actions.append(ActionToggleUiHelp())
                 else:
                     for ability_type in KEYS_BY_ABILITY_TYPE:
                         if event.key == KEYS_BY_ABILITY_TYPE[ability_type].pygame_key:

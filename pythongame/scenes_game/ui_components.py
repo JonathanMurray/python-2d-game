@@ -440,28 +440,57 @@ class Button(UiComponent):
 
 
 class ControlsWindow(UiWindow):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, font_header, font_details):
+    def __init__(self, ui_render: DrawableArea, font_header, font_details):
         super().__init__()
-        self.ui_render = ui_render
-        self.rect = rect
-        self.font_header = font_header
-        self.font_details = font_details
+        self._ui_render = ui_render
+        self._rect = Rect(365, -360, 320, 310)
+        self._font_header = font_header
+        self._font_details = font_details
 
     def render(self):
         if self.shown:
             self._render()
 
     def _render(self):
-        self.ui_render.rect_transparent(self.rect, 140, (0, 0, 30))
-        self.ui_render.text(self.font_header, "CONTROLS:", (self.rect[0] + 35, self.rect[1] + 10))
-        x = self.rect[0] + 15
-        y_0 = self.rect[1] + 45
-        self.ui_render.text(self.font_details, "Move: arrow-keys", (x, y_0))
-        self.ui_render.text(self.font_details, "Abilities: Q W E R", (x, y_0 + 20))
-        self.ui_render.text(self.font_details, "Potions: 1 2 3 4 5", (x, y_0 + 40))
-        self.ui_render.text(self.font_details, "Interact: Space", (x, y_0 + 60))
-        self.ui_render.text(self.font_details, "Inventory: mouse", (x, y_0 + 80))
-        self.ui_render.text(self.font_details, "Dialog: arrow-keys", (x, y_0 + 100))
+
+        self._ui_render.rect_filled((50, 50, 50), self._rect)
+        self._ui_render.rect((80, 50, 50), self._rect, 2)
+        w = 135
+        h = 20
+        x = self._rect.left + self._rect.w // 2 - w // 2
+        y = self._rect.top + 15
+        rect = Rect(x, y - 3, w, h)
+        self._ui_render.rect_filled((40, 40, 40), rect)
+        self._ui_render.text(self._font_header, "HELP", (x + 50, y))
+
+        x = self._rect[0] + 15
+
+        y = self._rect[1] + 45
+        self._ui_render.text(self._font_header, "Basic controls", (x, y), (220, 220, 250))
+        y += 24
+        text_basic_controls = split_text_into_lines(
+            "Move with the arrow-keys. Attack with 'Q'. Use potions with the number-keys ('1' through '5').", 47)
+        for line in text_basic_controls:
+            self._ui_render.text(self._font_details, line, (x, y))
+            y += 16
+
+        y += 10
+        self._ui_render.text(self._font_header, "Inventory", (x, y), (220, 220, 250))
+        y += 24
+        text_inventory = "Potions and items can be moved around in your inventory by dragging them with the mouse. " \
+                         "Wearables must be put in the appropriate inventory slot to be effective!"
+        for line in split_text_into_lines(text_inventory, 47):
+            self._ui_render.text(self._font_details, line, (x, y))
+            y += 16
+
+        y += 10
+        self._ui_render.text(self._font_header, "Interactions", (x, y), (220, 220, 250))
+        y += 24
+        text_inventory = "Use the 'Space' key to interact with NPC's and objects in your surroundings. Be sure to " \
+                         "talk to NPC's to fill up on potions, and complete quests. "
+        for line in split_text_into_lines(text_inventory, 47):
+            self._ui_render.text(self._font_details, line, (x, y))
+            y += 16
 
 
 class StatsWindow(UiWindow):
