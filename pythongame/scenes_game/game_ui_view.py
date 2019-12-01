@@ -223,13 +223,10 @@ class GameUiView:
     def _setup_talents_window(self, talents: TalentsState):
         rect = Rect(485, -410, 200, 370)
         talent_tiers: List[TalentTierData] = []
+        option_data_from_config = lambda config: TalentOptionData(
+            config.name, config.description, self.images_by_ui_sprite[config.ui_icon_sprite])
         for tier_state in talents.tiers:
-            first = tier_state.first
-            second = tier_state.second
-            options = [
-                TalentOptionData(first.name, first.description, self.images_by_ui_sprite[first.ui_icon_sprite]),
-                TalentOptionData(second.name, second.description, self.images_by_ui_sprite[second.ui_icon_sprite])
-            ]
+            options = [option_data_from_config(config) for config in tier_state.options]
             tier_data = TalentTierData(tier_state.status, tier_state.required_level, tier_state.picked_index, options)
             talent_tiers.append(tier_data)
         if self.talents_window is None:
