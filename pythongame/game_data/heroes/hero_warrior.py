@@ -63,19 +63,19 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
     talents_state = TalentsConfig({
         3: TALENT_CHOICE_ARMOR_DAMAGE,
         4: TalentTierConfig(
-            TalentTierOptionConfig("Melee", "Your charge ability deals full damage even when used at close range",
+            TalentTierOptionConfig("Close combat",
+                                   "Your charge ability deals full damage even when used at close range",
                                    HeroUpgrade.ABILITY_CHARGE_MELEE, UiIconSprite.ABILITY_CHARGE),
-            TalentTierOptionConfig("AoE",
+            TalentTierOptionConfig("Brawl",
                                    "The damage of your slash ability is increased if at least 2 enemies are hit",
-                                   HeroUpgrade.ABILITY_SLASH_AOE_BONUS_DAMAGE,
-                                   UiIconSprite.ABILITY_SWORD_SLASH)),
+                                   HeroUpgrade.ABILITY_SLASH_AOE_BONUS_DAMAGE, UiIconSprite.ABILITY_SWORD_SLASH)),
         5: TALENT_CHOICE_HEALTH_MANA,
         6: TalentTierConfig(
-            TalentTierOptionConfig("Persist",
+            TalentTierOptionConfig("Bloodthirst",
                                    "The duration of your bloodlust ability is increased additionally on kills",
                                    HeroUpgrade.ABILITY_BLOODLUST_DURATION, UiIconSprite.ABILITY_BLOODLUST),
-            TalentTierOptionConfig("Quick", "Reduces the cooldown of your slash ability", HeroUpgrade.ABILITY_SLASH_CD,
-                                   UiIconSprite.ABILITY_SWORD_SLASH)),
+            TalentTierOptionConfig("Berserker", "Reduces the cooldown of your slash ability",
+                                   HeroUpgrade.ABILITY_SLASH_CD, UiIconSprite.ABILITY_SWORD_SLASH)),
         7: TALENT_CHOICE_HEALTH_MANA_REGEN
     })
     block_chance = 0.2

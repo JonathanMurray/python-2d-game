@@ -38,17 +38,17 @@ def _upgrade_mana_regen(game_state: GameState):
 
 
 TALENT_CHOICE_ARMOR_DAMAGE = TalentTierConfig(
-    TalentTierOptionConfig("Armor", "Increases your armor by 1", HeroUpgrade.ARMOR, UiIconSprite.ITEM_ZULS_AEGIS),
-    TalentTierOptionConfig("Damage", "Increases your damage bonus by 10%", HeroUpgrade.DAMAGE,
+    TalentTierOptionConfig("+ Armor", "Increases your armor by 1", HeroUpgrade.ARMOR, UiIconSprite.ITEM_ZULS_AEGIS),
+    TalentTierOptionConfig("+ Damage", "Increases your damage bonus by 10%", HeroUpgrade.DAMAGE,
                            UiIconSprite.ITEM_ROYAL_SWORD))
 TALENT_CHOICE_HEALTH_MANA = TalentTierConfig(
-    TalentTierOptionConfig("Health", "Increases your max health by 10", HeroUpgrade.MAX_HEALTH,
+    TalentTierOptionConfig("+ Health", "Increases your max health by 10", HeroUpgrade.MAX_HEALTH,
                            UiIconSprite.POTION_HEALTH_LESSER),
-    TalentTierOptionConfig("Mana", "Increases your max mana by 10", HeroUpgrade.MAX_MANA,
+    TalentTierOptionConfig("+ Mana", "Increases your max mana by 10", HeroUpgrade.MAX_MANA,
                            UiIconSprite.POTION_MANA_LESSER))
 
 TALENT_CHOICE_HEALTH_MANA_REGEN = TalentTierConfig(
-    TalentTierOptionConfig("Regen", "Increases your health regen by 0.5/s", HeroUpgrade.HEALTH_REGEN,
+    TalentTierOptionConfig("+ Health regen", "Increases your health regen by 0.5/s", HeroUpgrade.HEALTH_REGEN,
                            UiIconSprite.POTION_HEALTH),
-    TalentTierOptionConfig("Regen", "Increases your mana regen by 0.5/s", HeroUpgrade.MANA_REGEN,
+    TalentTierOptionConfig("+ Mana regen", "Increases your mana regen by 0.5/s", HeroUpgrade.MANA_REGEN,
                            UiIconSprite.POTION_MANA))

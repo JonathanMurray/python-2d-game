@@ -63,16 +63,16 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
         {
             3: TALENT_CHOICE_ARMOR_DAMAGE,
             4: TalentTierConfig(
-                TalentTierOptionConfig("Burn", "Enemies hit by your fireballs take additional damage over time",
+                TalentTierOptionConfig("Raging fire", "Enemies hit by your fireballs take additional damage over time",
                                        HeroUpgrade.ABILITY_FIREBALL_BURN, UiIconSprite.ABILITY_FIREBALL),
-                TalentTierOptionConfig("Stun", "Whirlwind periodically stuns enemies it hits for a short moment",
+                TalentTierOptionConfig("Hurricane", "Whirlwind periodically stuns enemies it hits for a short moment",
                                        HeroUpgrade.ABILITY_WHIRLWIND_STUN, UiIconSprite.ABILITY_WHIRLWIND)),
             5: TALENT_CHOICE_HEALTH_MANA,
             6: TalentTierConfig(
-                TalentTierOptionConfig("Quick", "Reduces the cooldown of your root ability",
+                TalentTierOptionConfig("Swift justice", "Reduces the cooldown of your root ability",
                                        HeroUpgrade.ABILITY_ENTANGLING_ROOTS_COOLDOWN,
                                        UiIconSprite.ABILITY_ENTANGLING_ROOTS),
-                TalentTierOptionConfig("Cheap", "Reduces the mana-cost of your fireball ability",
+                TalentTierOptionConfig("Flamethrower", "Reduces the mana-cost of your fireball ability",
                                        HeroUpgrade.ABILITY_FIREBALL_MANA_COST, UiIconSprite.ABILITY_FIREBALL)),
             7: TALENT_CHOICE_HEALTH_MANA_REGEN
         })
