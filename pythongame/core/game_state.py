@@ -598,6 +598,9 @@ class PlayerState:
     def has_unpicked_talents(self):
         return self._talents_state.has_unpicked_talents()
 
+    def get_serilized_talent_tier_choices(self):
+        return [tier.picked_index for tier in self._talents_state.tiers]
+
     def gain_upgrade(self, upgrade: HeroUpgrade):
         self._upgrades.append(upgrade)
 

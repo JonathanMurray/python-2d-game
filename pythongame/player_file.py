@@ -8,7 +8,7 @@ from pythongame.core.game_state import GameState
 class SavedPlayerState:
     def __init__(self, hero_id: str, level: int, exp: int, consumables_in_slots: Dict[str, List[str]],
                  items: List[str], money: int, enabled_portals: Dict[str, str],
-                 chosen_talent_option_indices: List[int]):
+                 talent_tier_choices: List[int]):
         self.hero_id = hero_id
         self.level = level
         self.exp = exp
@@ -16,7 +16,7 @@ class SavedPlayerState:
         self.items = items
         self.money = money
         self.enabled_portals = enabled_portals
-        self.chosen_talent_option_indices = chosen_talent_option_indices
+        self.talent_tier_choices = talent_tier_choices
 
 
 class PlayerStateJson:
@@ -30,7 +30,7 @@ class PlayerStateJson:
             "items": player_state.items,
             "money": player_state.money,
             "enabled_portals": player_state.enabled_portals,
-            "talents": player_state.chosen_talent_option_indices
+            "talents": player_state.talent_tier_choices
         }
 
     @staticmethod
@@ -72,7 +72,7 @@ def save_to_file(game_state: GameState):
                for slot in player_state.item_inventory.slots],
         money=player_state.money,
         enabled_portals={p.portal_id.name: p.world_entity.sprite.name for p in game_state.portals if p.is_enabled},
-        chosen_talent_option_indices=player_state.chosen_talent_option_indices
+        talent_tier_choices=player_state.get_serilized_talent_tier_choices()
     )
     save_player_state_to_json_file(saved_player_state, filename)
     print("Saved game state to file: " + filename)

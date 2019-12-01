@@ -166,8 +166,9 @@ class CreatingWorldScene(AbstractScene):
                 if portal.portal_id.name in saved_player_state.enabled_portals:
                     sprite = saved_player_state.enabled_portals[portal.portal_id.name]
                     portal.activate(Sprite[sprite])
-            for index in saved_player_state.chosen_talent_option_indices:
-                pick_talent(game_state, index)
+            for tier_index, option_index in enumerate(saved_player_state.talent_tier_choices):
+                if option_index is not None:
+                    pick_talent(game_state, tier_index, option_index)
         else:
             if hero_start_level > 1:
                 game_engine.gain_levels(hero_start_level - 1)
