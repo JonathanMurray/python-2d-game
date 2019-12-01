@@ -7,7 +7,7 @@ from pythongame.core.common import *
 from pythongame.core.common import UiIconSprite, PortraitIconSprite
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.loot import LootTable
-from pythongame.core.talents import TalentsState
+from pythongame.core.talents import TalentsConfig
 from pythongame.core.view.image_loading import SpriteInitializer, SpriteSheet, SpriteMapInitializer, Animation
 
 ITEM_ENTITY_SIZE = (30, 30)
@@ -135,7 +135,7 @@ class InitialPlayerStateData:
     def __init__(
             self, health: int, mana: int, mana_regen: float, consumable_slots: Dict[int, List[ConsumableType]],
             abilities: List[AbilityType], new_level_abilities: Dict[int, AbilityType], hero_id: HeroId, armor: int,
-            dodge_chance: float, level_bonus: PlayerLevelBonus, talents_state: TalentsState, block_chance: float):
+            dodge_chance: float, level_bonus: PlayerLevelBonus, talents_state: TalentsConfig, block_chance: float):
         self.health = health
         self.mana = mana
         self.mana_regen = mana_regen

@@ -10,7 +10,7 @@ from pythongame.core.item_inventory import ItemInventory
 from pythongame.core.loot import LootTable
 from pythongame.core.math import boxes_intersect, rects_intersect, get_position_from_center_position, \
     translate_in_direction, is_x_and_y_within_distance
-from pythongame.core.talents import TalentsState, TalentChoice, talents_graphics_from_state
+from pythongame.core.talents import TalentsConfig, TalentsState
 
 GRID_CELL_WIDTH = 25
 
@@ -375,7 +375,7 @@ class PlayerState:
     def __init__(self, health_resource: HealthOrManaResource, mana_resource: HealthOrManaResource,
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
                  item_inventory: ItemInventory, new_level_abilities: Dict[int, AbilityType], hero_id: HeroId,
-                 armor: int, base_dodge_chance: float, level_bonus: PlayerLevelBonus, talents_state: TalentsState,
+                 armor: int, base_dodge_chance: float, level_bonus: PlayerLevelBonus, talents_config: TalentsConfig,
                  block_chance: float):
         self.health_resource: HealthOrManaResource = health_resource
         self.mana_resource: HealthOrManaResource = mana_resource
@@ -403,9 +403,7 @@ class PlayerState:
         self.base_dodge_chance: float = base_dodge_chance  # depends on which hero is being used
         self.dodge_chance_bonus: float = 0  # affected by items/buffs. [Change it additively]
         self.level_bonus = level_bonus
-        # TODO Improve encapsulation of talents logic and state
-        self.talents_state: TalentsState = talents_state
-        self.chosen_talent_option_indices: List[int] = []
+        self._talents_state: TalentsState = TalentsState(talents_config)
         self._upgrades: List[HeroUpgrade] = []
         self.block_chance: float = block_chance
         self.block_damage_reduction: int = 0
@@ -538,9 +536,10 @@ class PlayerState:
                 new_ability = self.new_level_abilities[self.level]
                 self.gain_ability(new_ability)
                 events.append(PlayerLearnedNewAbility(new_ability))
-            if self.level in self.talents_state.choices_by_level:
+            if self._talents_state.has_tier_for_level(self.level):
+                self._talents_state.unlock_tier(self.level)
                 events.append(PlayerUnlockedNewTalent())
-                self._notify_talent_observers()
+                self.notify_talent_observers()
         self.notify_exp_observers()
         return events
 
@@ -587,30 +586,17 @@ class PlayerState:
         for item_effect in self.item_inventory.get_all_active_item_effects():
             item_effect.item_handle_event(event, game_state)
 
-    def choose_talent(self, option_index: int) -> Tuple[str, HeroUpgrade]:
-        self.chosen_talent_option_indices.append(option_index)
-        choice_index = len(self.chosen_talent_option_indices) - 1
-        choices: List[TalentChoice] = [choice for level, choice in sorted(self.talents_state.choices_by_level.items())]
-        choice = choices[choice_index]
-        if option_index == 0:
-            option = choice.first
-        elif option_index == 1:
-            option = choice.second
-        else:
-            raise Exception("Illegal talent choice option: " + str(option_index))
+    def choose_talent(self, tier_index: int, option_index: int) -> Tuple[str, HeroUpgrade]:
+        option = self._talents_state.pick(tier_index, option_index)
         self._upgrades.append(option.upgrade)
-        self._notify_talent_observers()
+        self.notify_talent_observers()
         return option.name, option.upgrade
 
-    def _notify_talent_observers(self):
-        talent_graphics = talents_graphics_from_state(self.talents_state, self.level, self.chosen_talent_option_indices)
-        self.talents_were_updated.notify(talent_graphics)
+    def notify_talent_observers(self):
+        self.talents_were_updated.notify(self._talents_state)
 
     def has_unpicked_talents(self):
-        num_available_talents = len(
-            [level for (level, choice) in self.talents_state.choices_by_level.items() if level <= self.level])
-        num_picked_talents = len(self.chosen_talent_option_indices)
-        return num_picked_talents < num_available_talents
+        return self._talents_state.has_unpicked_talents()
 
     def gain_upgrade(self, upgrade: HeroUpgrade):
         self._upgrades.append(upgrade)

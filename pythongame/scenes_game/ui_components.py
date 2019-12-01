@@ -1,5 +1,6 @@
+from enum import Enum
 from math import floor
-from typing import List, Tuple, Optional, Any
+from typing import List, Tuple, Optional, Any, Iterable
 
 import pygame
 from pygame.rect import Rect
@@ -8,7 +9,7 @@ from pythongame.core.common import ConsumableType, ItemType, AbilityType, Portra
 from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData
 from pythongame.core.game_state import PlayerState
 from pythongame.core.item_inventory import ItemEquipmentCategory
-from pythongame.core.talents import TalentsGraphics
+from pythongame.core.talents import TalentTierStatus
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
 from pythongame.scenes_game.game_ui_state import ToggleButtonId
 
@@ -318,34 +319,6 @@ class ItemIcon(UiComponent):
             self._ui_render.rect(COLOR_HOVERED, self.rect, 1)
 
 
-class TalentIcon(UiComponent):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, image, tooltip: TooltipGraphics, chosen: bool, text: str,
-                 font, choice_index: int, option_index: int):
-        super().__init__()
-        self._ui_render = ui_render
-        self._rect = rect
-        self._image = image
-        self._chosen = chosen
-        self.tooltip = tooltip
-        self._text = text
-        self._font = font
-        self.choice_index = choice_index
-        self.option_index = option_index
-
-    def contains(self, point: Tuple[int, int]) -> bool:
-        return self._rect.collidepoint(point[0], point[1])
-
-    def render(self):
-        self._ui_render.text(self._font, self._text, (self._rect[0], self._rect[1] + self._rect[3] + 5), COLOR_WHITE)
-        self._ui_render.rect_filled(COLOR_BLACK, self._rect)
-        self._ui_render.image(self._image, self._rect.topleft)
-        color_outline = COLOR_ICON_HIGHLIGHTED if self._chosen else COLOR_WHITE
-        width_outline = 2 if self._chosen else 1
-        self._ui_render.rect(color_outline, self._rect, width_outline)
-        if self.hovered:
-            self._ui_render.rect(COLOR_ICON_HIGHLIGHTED, self._rect, 1)
-
-
 class StatBar:
     def __init__(self, ui_render: DrawableArea, rect: Rect, color: Tuple[int, int, int], tooltip: TooltipGraphics,
                  value: int, max_value: int, show_numbers: bool, font):
@@ -562,7 +535,6 @@ class StatsWindow(UiWindow):
         h = 20
         rect = Rect(pos[0], pos[1] - 3, w, h)
         self.ui_render.rect_filled((40, 40, 40), rect)
-        #self.ui_render.rect(COLOR_GRAY, rect, 1)
         text_pos = (pos[0] + w // 2 - 2 - len(text) * 3, pos[1])
         self.ui_render.text(self.font_header, text, text_pos)
 
@@ -597,55 +569,155 @@ class StatsWindow(UiWindow):
         self.ui_render.text(self.font_details, text, (x_text, y), color)
 
 
-class TalentsWindow(UiWindow):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, font_header, font_details, talents: TalentsGraphics,
-                 icon_rows: List[Tuple[TalentIcon, TalentIcon]]):
+class TalentIconStatus(Enum):
+    PENDING = 1
+    PICKED = 2
+    FADED = 3
+
+
+class TalentOptionData:
+    def __init__(self, name: str, description: str, image):
+        self.name = name
+        self.description = description
+        self.image = image
+
+
+class TalentTierData:
+    def __init__(self, status: TalentTierStatus, level_required: int, picked_index: Optional[int],
+                 options: List[TalentOptionData]):
+        self.status = status
+        self.level_required = level_required
+        self.picked_index = picked_index
+        self.options = options
+
+
+class TalentIcon(UiComponent):
+    def __init__(self, ui_render: DrawableArea, rect: Rect, image, tooltip: TooltipGraphics, chosen: bool,
+                 talent_name: str, font, tier_index: int, option_index: int, status: TalentIconStatus):
         super().__init__()
-        self.ui_render = ui_render
-        self.rect = rect
-        self.font_header = font_header
-        self.font_details = font_details
-        self.talents = talents
-        self.icon_rows = icon_rows
+        self._ui_render = ui_render
+        self._rect = rect
+        self._image = image
+        self._chosen = chosen
+        self._font = font
+        self._status = status
+
+        self.tooltip = tooltip
+        self.talent_name = talent_name
+        self.tier_index = tier_index
+        self.option_index = option_index
+
+    def contains(self, point: Tuple[int, int]) -> bool:
+        return self._rect.collidepoint(point[0], point[1])
+
+    def render(self):
+        self._ui_render.rect_filled(COLOR_BLACK, self._rect)
+        self._ui_render.image(self._image, self._rect.topleft)
+        if self.hovered:
+            self._ui_render.rect(COLOR_ICON_HIGHLIGHTED, self._rect, 1)
+        if self._status == TalentIconStatus.FADED:
+            self._ui_render.rect_transparent(self._rect, 150, (100, 0, 0))
+        elif self._status == TalentIconStatus.PICKED:
+            self._ui_render.rect((250, 250, 150), self._rect, 2)
+        elif self._status == TalentIconStatus.PENDING:
+            self._ui_render.rect((200, 200, 100), self._rect, 1)
+
+
+class TalentTier:
+    def __init__(self, ui_render: DrawableArea, rect: Rect, font, icons: List[TalentIcon],
+                 status: TalentTierStatus, picked_index: int, level_required: int):
+        super().__init__()
+        self._ui_render = ui_render
+        self._rect = rect
+        self._font = font
+        self.icons = icons
+        self._status = status
+        self._picked_index = picked_index
+        self._level_required = level_required
+
+    def render(self):
+        if self._status == TalentTierStatus.PENDING:
+            self._ui_render.rect_transparent(self._rect, 30, (50, 150, 50))
+            self._render_text("<-- Pick one!")
+        elif self._status == TalentTierStatus.PICKED:
+            self._render_text(self.icons[self._picked_index].talent_name)
+        elif self._status == TalentTierStatus.LOCKED:
+            self._render_text("Locked (level " + str(self._level_required) + ")")
+        self.icons[0].render()
+        self.icons[1].render()
+
+    def _render_text(self, text: str):
+        x = self._rect.right - 50 - len(text) * 3
+        y = self._rect.top + 17
+        self._ui_render.text(self._font, text, (x, y))
+
+    def is_pickable(self) -> bool:
+        return self._status == TalentTierStatus.PENDING
+
+
+class TalentsWindow(UiWindow):
+    def __init__(self, ui_render: DrawableArea, rect: Rect, font_header, font_details,
+                 talent_tiers: List[TalentTierData]):
+        super().__init__()
+        self._ui_render = ui_render
+        self._rect = rect
+        self._font_header = font_header
+        self._font_details = font_details
+
+        self._talent_tiers: List[TalentTier] = []
+        self.update(talent_tiers)
 
     def get_icon_containing(self, point: Tuple[int, int]) -> Optional[TalentIcon]:
-        for (icon_1, icon_2) in self.icon_rows:
-            if icon_1.contains(point):
-                return icon_1
-            if icon_2.contains(point):
-                return icon_2
+        for tier in self._talent_tiers:
+            for icon in tier.icons:
+                if icon.contains(point):
+                    return icon
         return None
 
-    def get_last_row_icons(self):
-        if self.icon_rows:
-            last_row = self.icon_rows[-1]
-            return [last_row[0], last_row[1]]
-        return []
+    def get_pickable_talent_icons(self) -> Iterable[TalentIcon]:
+        if self._talent_tiers:
+            for tier in self._talent_tiers:
+                if tier.is_pickable():
+                    yield from tier.icons
 
     def render(self):
         if self.shown:
             self._render()
 
     def _render(self):
-        self.ui_render.rect_transparent(self.rect, 140, (0, 0, 30))
-        self.ui_render.text(self.font_header, "TALENTS:", (self.rect[0] + 35, self.rect[1] + 10))
+        self._ui_render.rect_filled((50, 50, 50), self._rect)
+        self._ui_render.rect((80, 50, 50), self._rect, 2)
+        for tier in self._talent_tiers:
+            tier.render()
 
-        for row_index, (icon_1, icon_2) in enumerate(self.icon_rows):
-            icon_1.render()
-            icon_2.render()
+    def update(self, talent_tiers: List[TalentTierData]):
+        x = self._rect.left
+        y = self._rect.top
+        h_tier = 32 + 10
+        self._talent_tiers: List[TalentTier] = []
+        for tier_index, tier_data in enumerate(talent_tiers):
+            rect_tier = Rect(x + 5, y + 5, self._rect.w - 10, h_tier)
 
-        text_pos = self.rect[0] + 22, self.rect[1] + self.rect[3] - 26
-        if self.talents.choice_graphics_items:
-            player_can_choose = self.talents.choice_graphics_items[-1].chosen_index is None
-            if player_can_choose:
-                self.ui_render.text(self.font_details, "Choose a talent!", text_pos)
-        else:
-            self.ui_render.text(self.font_details, "No talents yet!", text_pos)
+            icons = []
+            for option_index, option in enumerate(tier_data.options):
+                if tier_data.status == TalentTierStatus.PICKED:
+                    status = TalentIconStatus.PICKED if tier_data.picked_index == option_index else TalentIconStatus.FADED
+                elif tier_data.status == TalentTierStatus.PENDING:
+                    status = TalentIconStatus.PENDING
+                else:
+                    status = TalentIconStatus.FADED
+                rect_icon = Rect(rect_tier.left + 5 + (32 + 15) * option_index, rect_tier.top + 5, 32, 32)
+                tooltip = TooltipGraphics(self._ui_render, COLOR_WHITE, option.name, [option.description],
+                                          bottom_right=(rect_icon.right, rect_icon.top - 2))
+                icons.append(
+                    TalentIcon(self._ui_render, rect_icon,
+                               option.image, tooltip, False, option.name, self._font_details, tier_index, option_index,
+                               status))
 
-    def update(self, rect: Rect, talents: TalentsGraphics, icon_rows: List[Tuple[TalentIcon, TalentIcon]]):
-        self.rect = rect
-        self.talents = talents
-        self.icon_rows = icon_rows
+            tier = TalentTier(self._ui_render, rect_tier, self._font_details, icons,
+                              tier_data.status, tier_data.picked_index, tier_data.level_required)
+            self._talent_tiers.append(tier)
+            y += h_tier + 5
 
 
 class ExpBar:

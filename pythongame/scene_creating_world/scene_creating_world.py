@@ -134,6 +134,7 @@ class CreatingWorldScene(AbstractScene):
         game_engine = GameEngine(game_state, ui_state)
         game_state.player_state.exp_was_updated.register_observer(self.ui_view.on_player_exp_updated)
         game_state.player_state.talents_were_updated.register_observer(self.ui_view.on_talents_updated)
+        game_state.player_state.notify_talent_observers()  # Must notify the initial state
         game_state.player_movement_speed_was_updated.register_observer(self.ui_view.on_player_movement_speed_updated)
         game_state.notify_movement_speed_observers()  # Must notify the initial state
         game_state.player_state.stats_were_updated.register_observer(self.ui_view.on_player_stats_updated)

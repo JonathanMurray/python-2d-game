@@ -3,7 +3,7 @@ from pythongame.core.game_data import Sprite, Direction, AbilityType, register_e
     register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
 from pythongame.core.game_state import PlayerLevelBonus
-from pythongame.core.talents import TalentsState, TalentChoice, TalentChoiceOption
+from pythongame.core.talents import TalentsConfig, TalentTierConfig, TalentTierOptionConfig
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.game_data.heroes.generic_talents import TALENT_CHOICE_ARMOR_DAMAGE, TALENT_CHOICE_HEALTH_MANA, \
     TALENT_CHOICE_HEALTH_MANA_REGEN
@@ -59,21 +59,21 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
         7: AbilityType.ARCANE_FIRE
     }
 
-    talents_state = TalentsState(
+    talents_state = TalentsConfig(
         {
             3: TALENT_CHOICE_ARMOR_DAMAGE,
-            4: TalentChoice(
-                TalentChoiceOption("Burn", "Enemies hit by your fireballs take additional damage over time",
-                                   HeroUpgrade.ABILITY_FIREBALL_BURN, UiIconSprite.ABILITY_FIREBALL),
-                TalentChoiceOption("Stun", "Whirlwind periodically stuns enemies it hits for a short moment",
-                                   HeroUpgrade.ABILITY_WHIRLWIND_STUN, UiIconSprite.ABILITY_WHIRLWIND)),
+            4: TalentTierConfig(
+                TalentTierOptionConfig("Burn", "Enemies hit by your fireballs take additional damage over time",
+                                       HeroUpgrade.ABILITY_FIREBALL_BURN, UiIconSprite.ABILITY_FIREBALL),
+                TalentTierOptionConfig("Stun", "Whirlwind periodically stuns enemies it hits for a short moment",
+                                       HeroUpgrade.ABILITY_WHIRLWIND_STUN, UiIconSprite.ABILITY_WHIRLWIND)),
             5: TALENT_CHOICE_HEALTH_MANA,
-            6: TalentChoice(
-                TalentChoiceOption("Quick", "Reduces the cooldown of your root ability",
-                                   HeroUpgrade.ABILITY_ENTANGLING_ROOTS_COOLDOWN,
-                                   UiIconSprite.ABILITY_ENTANGLING_ROOTS),
-                TalentChoiceOption("Cheap", "Reduces the mana-cost of your fireball ability",
-                                   HeroUpgrade.ABILITY_FIREBALL_MANA_COST, UiIconSprite.ABILITY_FIREBALL)),
+            6: TalentTierConfig(
+                TalentTierOptionConfig("Quick", "Reduces the cooldown of your root ability",
+                                       HeroUpgrade.ABILITY_ENTANGLING_ROOTS_COOLDOWN,
+                                       UiIconSprite.ABILITY_ENTANGLING_ROOTS),
+                TalentTierOptionConfig("Cheap", "Reduces the mana-cost of your fireball ability",
+                                       HeroUpgrade.ABILITY_FIREBALL_MANA_COST, UiIconSprite.ABILITY_FIREBALL)),
             7: TALENT_CHOICE_HEALTH_MANA_REGEN
         })
     block_chance = 0.1

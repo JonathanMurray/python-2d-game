@@ -211,7 +211,7 @@ class PlayingScene(AbstractScene):
                 self.game_engine.drop_consumable_on_ground(event.from_slot, world_position)
                 play_sound(SoundId.UI_ITEM_WAS_DROPPED_ON_GROUND)
             elif isinstance(event, PickTalent):
-                name_of_picked = pick_talent(self.game_state, event.option_index)
+                name_of_picked = pick_talent(self.game_state, event.tier_index, event.option_index)
                 if not self.game_state.player_state.has_unpicked_talents():
                     self.ui_view.close_talent_window()
                 self.ui_state.set_message("Talent picked: " + name_of_picked)

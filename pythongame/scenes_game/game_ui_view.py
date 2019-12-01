@@ -12,12 +12,12 @@ from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCateg
 from pythongame.core.math import is_point_in_rect
 from pythongame.core.npc_behaviors import DialogData
 from pythongame.core.sound_player import play_sound
-from pythongame.core.talents import TalentsGraphics
+from pythongame.core.talents import TalentsState, TalentsConfig
 from pythongame.core.view.render_util import DrawableArea
 from pythongame.scenes_game.game_ui_state import GameUiState, ToggleButtonId
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
-    ToggleButton, ControlsWindow, StatsWindow, TalentIcon, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text, \
-    DialogOption, Dialog, Checkbox, Button, Message, PausedSplashScreen
+    ToggleButton, ControlsWindow, StatsWindow, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text, \
+    DialogOption, Dialog, Checkbox, Button, Message, PausedSplashScreen, TalentTierData, TalentOptionData, TalentIcon
 from pythongame.scenes_game.ui_events import TrySwitchItemInInventory, EventTriggeredFromUi, \
     DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
     PickTalent, StartDraggingItemOrConsumable, SaveGame, ToggleSound
@@ -116,7 +116,7 @@ class GameUiView:
         self._setup_inventory_icons()
         self._setup_health_and_mana_bars()
         self._setup_stats_window()
-        self._setup_talents_window(TalentsGraphics([]))
+        self._setup_talents_window(TalentsState(TalentsConfig({})))
         self._setup_controls_window()
         self._setup_toggle_buttons()
         self._setup_portrait()
@@ -220,36 +220,23 @@ class GameUiView:
         self.stats_window = StatsWindow(self.ui_render, self.font_tooltip_details, self.font_stats, None, 0, None,
                                         1)
 
-    def _setup_talents_window(self, talents: TalentsGraphics):
-        rect = Rect(545, -410, 140, 370)
-        icon_rows = []
-        x_0 = rect[0] + 22
-        y_0 = rect[1] + 35
-        for i, choice_graphics in enumerate(talents.choice_graphics_items):
-            y = y_0 + i * (UI_ICON_SIZE[1] + 30)
-            y_icon = y + 3
-            choice = choice_graphics.choice
-
-            image_1 = self.images_by_ui_sprite[choice.first.ui_icon_sprite]
-            tooltip_1 = TooltipGraphics(self.ui_render, COLOR_WHITE, choice.first.name, [choice.first.description],
-                                        bottom_right=(x_0 + UI_ICON_SIZE[0], y_icon))
-            icon_1 = TalentIcon(self.ui_render, Rect(x_0, y_icon, UI_ICON_SIZE[0], UI_ICON_SIZE[1]), image_1,
-                                tooltip_1, choice_graphics.chosen_index == 0, choice.first.name, self.font_stats,
-                                i, 0)
-
-            image_2 = self.images_by_ui_sprite[choice.second.ui_icon_sprite]
-            tooltip_2 = TooltipGraphics(self.ui_render, COLOR_WHITE, choice.second.name, [choice.second.description],
-                                        bottom_right=(x_0 + UI_ICON_SIZE[0] + 60, y_icon))
-            icon_2 = TalentIcon(self.ui_render, Rect(x_0 + 60, y_icon, UI_ICON_SIZE[0], UI_ICON_SIZE[1]), image_2,
-                                tooltip_2, choice_graphics.chosen_index == 1, choice.second.name, self.font_stats,
-                                i, 1)
-
-            icon_rows.append((icon_1, icon_2))
+    def _setup_talents_window(self, talents: TalentsState):
+        rect = Rect(485, -410, 200, 370)
+        talent_tiers: List[TalentTierData] = []
+        for tier_state in talents.tiers:
+            first = tier_state.first
+            second = tier_state.second
+            options = [
+                TalentOptionData(first.name, first.description, self.images_by_ui_sprite[first.ui_icon_sprite]),
+                TalentOptionData(second.name, second.description, self.images_by_ui_sprite[second.ui_icon_sprite])
+            ]
+            tier_data = TalentTierData(tier_state.status, tier_state.required_level, tier_state.picked_index, options)
+            talent_tiers.append(tier_data)
         if self.talents_window is None:
             self.talents_window = TalentsWindow(
-                self.ui_render, rect, self.font_tooltip_details, self.font_stats, talents, icon_rows)
+                self.ui_render, rect, self.font_tooltip_details, self.font_stats, talent_tiers)
         else:
-            self.talents_window.update(rect, talents, icon_rows)
+            self.talents_window.update(talent_tiers)
 
     def _setup_controls_window(self):
         rect = Rect(545, -300, 140, 170)
@@ -320,8 +307,9 @@ class GameUiView:
         elif self.hovered_component in self.consumable_icons and self.hovered_component.consumable_types:
             self.consumable_slot_being_dragged = self.hovered_component
             return [StartDraggingItemOrConsumable()]
-        elif self.hovered_component in self.talents_window.get_last_row_icons():
-            return [PickTalent(self.hovered_component.option_index)]
+        elif self.hovered_component in self.talents_window.get_pickable_talent_icons():
+            talent_icon: TalentIcon = self.hovered_component
+            return [PickTalent(talent_icon.tier_index, talent_icon.option_index)]
         return []
 
     def handle_mouse_right_click(self) -> List[EventTriggeredFromUi]:
@@ -393,8 +381,8 @@ class GameUiView:
     #                              REACT TO OBSERVABLE EVENTS
     # --------------------------------------------------------------------------------------------------------
 
-    def on_talents_updated(self, talent_graphics: TalentsGraphics):
-        self._setup_talents_window(talent_graphics)
+    def on_talents_updated(self, talents_state: TalentsState):
+        self._setup_talents_window(talents_state)
 
     def on_talent_was_unlocked(self, _event):
         if self.enabled_toggle != self.talents_toggle:
