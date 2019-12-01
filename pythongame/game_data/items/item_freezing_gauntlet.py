@@ -10,7 +10,7 @@ from pythongame.core.view.image_loading import SpriteInitializer
 from pythongame.core.visual_effects import VisualCircle
 
 SLOW_DURATION = Millis(2000)
-SLOW_AMOUNT = 0.6
+SLOW_AMOUNT = 0.4
 
 ITEM_TYPE = ItemType.FREEZING_GAUNTLET
 BUFF_TYPE = BuffType.DEBUFFED_BY_FREEZING_GAUNTLET
