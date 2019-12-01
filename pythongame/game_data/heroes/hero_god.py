@@ -6,7 +6,7 @@ from pythongame.core.game_data import Sprite, Direction, AbilityType, register_e
 from pythongame.core.game_state import PlayerLevelBonus, GameState
 from pythongame.core.talents import TalentsState
 from pythongame.core.view.image_loading import SpriteSheet
-from pythongame.game_data.heroes.generic_talents import GENERIC_TALENT_CHOICE
+from pythongame.game_data.heroes.generic_talents import TALENT_CHOICE_ARMOR_DAMAGE
 
 HERO_ID = HeroId.GOD
 
@@ -51,7 +51,7 @@ def _get_initial_player_state_god() -> InitialPlayerStateData:
     abilities = [AbilityType.KILL_EVERYTHING, AbilityType.TELEPORT]
     new_level_abilities = {}
     talents_state = TalentsState({
-        2: GENERIC_TALENT_CHOICE
+        2: TALENT_CHOICE_ARMOR_DAMAGE
     })
     block_chance = 0
     return InitialPlayerStateData(

@@ -44,6 +44,10 @@ def get_all_directions():
 class HeroUpgrade(Enum):
     ARMOR = 1
     DAMAGE = 2
+    MAX_HEALTH = 3
+    MAX_MANA = 4
+    HEALTH_REGEN = 5
+    MANA_REGEN = 6
     ABILITY_WHIRLWIND_STUN = 10
     ABILITY_FIREBALL_BURN = 11
     ABILITY_ENTANGLING_ROOTS_COOLDOWN = 12

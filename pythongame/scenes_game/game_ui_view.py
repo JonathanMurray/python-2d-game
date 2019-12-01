@@ -207,7 +207,7 @@ class GameUiView:
         font = self.font_buttons
         self.stats_toggle = ToggleButton(self.ui_render, Rect(x, y_0, w, h), font, "STATS    [A]", ToggleButtonId.STATS,
                                          False, self.stats_window)
-        self.talents_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 30, w, h), font, "TALENTS  [T]",
+        self.talents_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 30, w, h), font, "TALENTS  [N]",
                                            ToggleButtonId.TALENTS, False, self.talents_window)
         self.controls_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 60, w, h), font, "CONTROLS [C]",
                                             ToggleButtonId.CONTROLS, False, self.controls_window)
@@ -221,7 +221,7 @@ class GameUiView:
                                         1)
 
     def _setup_talents_window(self, talents: TalentsGraphics):
-        rect = Rect(545, -300, 140, 260)
+        rect = Rect(545, -410, 140, 370)
         icon_rows = []
         x_0 = rect[0] + 22
         y_0 = rect[1] + 35
@@ -551,7 +551,7 @@ class GameUiView:
         sprite = HEROES[hero_id].portrait_icon_sprite
         image = self.images_by_portrait_sprite[sprite]
         self.portrait.image = image
-        self.stats_window.hero_id=hero_id
+        self.stats_window.hero_id = hero_id
 
     def set_paused(self, paused: bool):
         self.paused_splash_screen.shown = paused
