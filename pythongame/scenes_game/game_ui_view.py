@@ -221,7 +221,6 @@ class GameUiView:
                                         1)
 
     def _setup_talents_window(self, talents: TalentsState):
-        rect = Rect(485, -410, 200, 370)
         talent_tiers: List[TalentTierData] = []
         option_data_from_config = lambda config: TalentOptionData(
             config.name, config.description, self.images_by_ui_sprite[config.ui_icon_sprite])
@@ -231,7 +230,7 @@ class GameUiView:
             talent_tiers.append(tier_data)
         if self.talents_window is None:
             self.talents_window = TalentsWindow(
-                self.ui_render, rect, self.font_tooltip_details, self.font_stats, talent_tiers)
+                self.ui_render, self.font_tooltip_details, self.font_stats, talent_tiers)
         else:
             self.talents_window.update(talent_tiers)
 

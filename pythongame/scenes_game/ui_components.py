@@ -27,6 +27,8 @@ COLOR_TOGGLE_HIGHLIGHTED = (150, 250, 200)
 COLOR_TOGGLE_OPENED = (50, 50, 120)
 DIR_FONTS = './resources/fonts/'
 
+TALENT_ICON_SIZE = (32, 32)
+
 
 class UiComponent:
     def __init__(self):
@@ -496,8 +498,6 @@ class StatsWindow(UiWindow):
         y_hero_and_level = y_0
         self._render_header((x_left, y_hero_and_level), self.hero_id.name)
         self._render_header((x_right, y_hero_and_level), "Level " + str(self.level))
-        # self.ui_render.text(self.font_header, self.hero_id.name, (x_left, y_hero_and_level))
-        # self.ui_render.text(self.font_header, "Level " + str(self.level), (x_left + 40, y_hero_and_level))
 
         y_health = y_0 + 40
         self._render_sub_header((x_left, y_health), "HEALTH")
@@ -613,14 +613,15 @@ class TalentIcon(UiComponent):
     def render(self):
         self._ui_render.rect_filled(COLOR_BLACK, self._rect)
         self._ui_render.image(self._image, self._rect.topleft)
-        if self.hovered:
-            self._ui_render.rect(COLOR_ICON_HIGHLIGHTED, self._rect, 1)
+
         if self._status == TalentIconStatus.FADED:
-            self._ui_render.rect_transparent(self._rect, 150, (100, 0, 0))
+            self._ui_render.rect_transparent(self._rect, 150, (50, 0, 0))
         elif self._status == TalentIconStatus.PICKED:
             self._ui_render.rect((250, 250, 150), self._rect, 2)
         elif self._status == TalentIconStatus.PENDING:
-            self._ui_render.rect((200, 200, 100), self._rect, 1)
+            self._ui_render.rect((150, 150, 150), self._rect, 1)
+        if self.hovered:
+            self._ui_render.rect(COLOR_HOVERED, self._rect, 1)
 
 
 class TalentTier:
@@ -637,30 +638,34 @@ class TalentTier:
 
     def render(self):
         if self._status == TalentTierStatus.PENDING:
-            self._ui_render.rect_transparent(self._rect, 30, (50, 150, 50))
-            self._render_text("<-- Pick one!")
+            self._ui_render.rect_transparent(self._rect, 30, (50, 250, 50))
+            self._render_text("<-- Pick one!", COLOR_WHITE, False)
         elif self._status == TalentTierStatus.PICKED:
-            self._render_text(self.icons[self._picked_index].talent_name)
+            self._render_text(self.icons[self._picked_index].talent_name, COLOR_WHITE, True)
         elif self._status == TalentTierStatus.LOCKED:
-            self._render_text("Locked (level " + str(self._level_required) + ")")
+            self._render_text("Locked (level " + str(self._level_required) + ")", (150, 75, 75), False)
         self.icons[0].render()
         self.icons[1].render()
 
-    def _render_text(self, text: str):
+    def _render_text(self, text: str, color: Tuple[int, int, int], background: bool):
         x = self._rect.right - 50 - len(text) * 3
         y = self._rect.top + 17
-        self._ui_render.text(self._font, text, (x, y))
+        if background:
+            w_label_rect = 90
+            rect_label = Rect(self._rect.right - 95, y - 2, w_label_rect, 15)
+            self._ui_render.rect_filled((40, 40, 40), rect_label)
+        self._ui_render.text(self._font, text, (x, y), color)
 
     def is_pickable(self) -> bool:
         return self._status == TalentTierStatus.PENDING
 
 
 class TalentsWindow(UiWindow):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, font_header, font_details,
+    def __init__(self, ui_render: DrawableArea, font_header, font_details,
                  talent_tiers: List[TalentTierData]):
         super().__init__()
         self._ui_render = ui_render
-        self._rect = rect
+        self._rect = Rect(475, -420, 210, 370)
         self._font_header = font_header
         self._font_details = font_details
 
@@ -687,16 +692,30 @@ class TalentsWindow(UiWindow):
     def _render(self):
         self._ui_render.rect_filled((50, 50, 50), self._rect)
         self._ui_render.rect((80, 50, 50), self._rect, 2)
+        w = 135
+        h = 20
+        x = self._rect.left + self._rect.w // 2 - w // 2
+        y = self._rect.top + 15
+        rect = Rect(x, y - 3, w, h)
+        self._ui_render.rect_filled((40, 40, 40), rect)
+        self._ui_render.text(self._font_header, "TALENTS", (x + 40, y))
+
         for tier in self._talent_tiers:
             tier.render()
 
     def update(self, talent_tiers: List[TalentTierData]):
-        x = self._rect.left
-        y = self._rect.top
-        h_tier = 32 + 10
+        window_padding = 10
+        tier_padding = 5
+        h_tier = TALENT_ICON_SIZE[1] + tier_padding * 2
         self._talent_tiers: List[TalentTier] = []
+        tier_row_space = 5
         for tier_index, tier_data in enumerate(talent_tiers):
-            rect_tier = Rect(x + 5, y + 5, self._rect.w - 10, h_tier)
+
+            rect_tier = Rect(
+                self._rect.left + window_padding,
+                self._rect.top + 45 + (h_tier + tier_row_space) * tier_index,
+                self._rect.w - window_padding * 2,
+                h_tier)
 
             icons = []
             for option_index, option in enumerate(tier_data.options):
@@ -706,7 +725,10 @@ class TalentsWindow(UiWindow):
                     status = TalentIconStatus.PENDING
                 else:
                     status = TalentIconStatus.FADED
-                rect_icon = Rect(rect_tier.left + 5 + (32 + 15) * option_index, rect_tier.top + 5, 32, 32)
+                rect_icon = Rect(rect_tier.left + tier_padding + (TALENT_ICON_SIZE[0] + 15) * option_index,
+                                 rect_tier.top + tier_padding,
+                                 TALENT_ICON_SIZE[0],
+                                 TALENT_ICON_SIZE[1])
                 tooltip = TooltipGraphics(self._ui_render, COLOR_WHITE, option.name, [option.description],
                                           bottom_right=(rect_icon.right, rect_icon.top - 2))
                 icons.append(
@@ -717,7 +739,6 @@ class TalentsWindow(UiWindow):
             tier = TalentTier(self._ui_render, rect_tier, self._font_details, icons,
                               tier_data.status, tier_data.picked_index, tier_data.level_required)
             self._talent_tiers.append(tier)
-            y += h_tier + 5
 
 
 class ExpBar:
