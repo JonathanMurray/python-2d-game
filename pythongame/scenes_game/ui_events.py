@@ -30,7 +30,8 @@ class DropConsumableOnGround(EventTriggeredFromUi):
 
 
 class PickTalent(EventTriggeredFromUi):
-    def __init__(self, option_index: int):
+    def __init__(self, tier_index: int, option_index: int):
+        self.tier_index = tier_index
         self.option_index = option_index
 
 

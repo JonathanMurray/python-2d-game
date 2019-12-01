@@ -174,7 +174,7 @@ class PlayingUserInputHandler:
                     actions.append(ActionPressShiftKey())
                 elif event.key == pygame.K_s:
                     actions.append(ActionSaveGameState())
-                elif event.key == pygame.K_t:
+                elif event.key == pygame.K_n:
                     actions.append(ActionToggleUiTalents())
                 elif event.key == pygame.K_a:
                     actions.append(ActionToggleUiStats())

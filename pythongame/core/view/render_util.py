@@ -1,4 +1,4 @@
-from typing import Tuple, Callable, List
+from typing import Tuple, Callable, List, Optional
 
 import pygame
 from pygame.rect import Rect
@@ -36,10 +36,11 @@ class DrawableArea:
     def circle(self, color, pos: Tuple[int, int], radius: int, line_width: int):
         pygame.draw.circle(self.screen, color, self._translate_pos(pos), radius, line_width)
 
-    def stat_bar(self, x: int, y: int, w: int, h: int, ratio_filled: float, color, border: bool):
+    def stat_bar(self, x: int, y: int, w: int, h: int, ratio_filled: float, color,
+                 border_color: Optional[Tuple[int, int, int]] = None):
         self.rect_filled((0, 0, 0), Rect(x - 1, y - 1, w + 2, h + 2))
-        if border:
-            self.rect((250, 250, 250), Rect(x - 2, y - 2, w + 4, h + 4), 1)
+        if border_color:
+            self.rect(border_color, Rect(x - 2, y - 2, w + 4, h + 4), 1)
         self.rect_filled(color, Rect(x, y, max(w * ratio_filled, 0), h))
 
     def text(self, font, text: str, pos: Tuple[int, int], color=COLOR_WHITE):

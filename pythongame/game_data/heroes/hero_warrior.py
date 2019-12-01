@@ -3,9 +3,10 @@ from pythongame.core.game_data import Sprite, Direction, AbilityType, register_e
     register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
 from pythongame.core.game_state import PlayerLevelBonus
-from pythongame.core.talents import TalentsState, TalentChoice, TalentChoiceOption
+from pythongame.core.talents import TalentsConfig, TalentTierConfig, TalentTierOptionConfig
 from pythongame.core.view.image_loading import SpriteSheet
-from pythongame.game_data.heroes.generic_talents import GENERIC_TALENT_CHOICE
+from pythongame.game_data.heroes.generic_talents import TALENT_CHOICE_ARMOR_DAMAGE, TALENT_CHOICE_HEALTH_MANA, \
+    TALENT_CHOICE_HEALTH_MANA_REGEN
 
 HERO_ID = HeroId.WARRIOR
 
@@ -54,25 +55,28 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
     }
     abilities = [AbilityType.SWORD_SLASH]
     new_level_abilities = {
-        3: AbilityType.CHARGE,
+        2: AbilityType.CHARGE,
         5: AbilityType.BLOOD_LUST,
         7: AbilityType.STOMP
     }
-    # TODO Add more talents (unique to this hero)
-    talents_state = TalentsState({
-        2: GENERIC_TALENT_CHOICE,
-        4: TalentChoice(
-            TalentChoiceOption("Melee", "Your charge ability deals full damage even when used at close range",
-                               HeroUpgrade.ABILITY_CHARGE_MELEE, UiIconSprite.ABILITY_CHARGE),
-            TalentChoiceOption("AoE",
-                               "The damage of your slash ability is increased if at least 2 enemies are hit",
-                               HeroUpgrade.ABILITY_SLASH_AOE_BONUS_DAMAGE,
-                               UiIconSprite.ABILITY_SWORD_SLASH)),
-        6: TalentChoice(
-            TalentChoiceOption("Persist", "The duration of your bloodlust ability is increased additionally on kills",
-                               HeroUpgrade.ABILITY_BLOODLUST_DURATION, UiIconSprite.ABILITY_BLOODLUST),
-            TalentChoiceOption("Quick", "Reduces the cooldown of your slash ability", HeroUpgrade.ABILITY_SLASH_CD,
-                               UiIconSprite.ABILITY_SWORD_SLASH))
+
+    talents_state = TalentsConfig({
+        3: TALENT_CHOICE_ARMOR_DAMAGE,
+        4: TalentTierConfig(
+            TalentTierOptionConfig("Close combat",
+                                   "Your charge ability deals full damage even when used at close range",
+                                   HeroUpgrade.ABILITY_CHARGE_MELEE, UiIconSprite.ABILITY_CHARGE),
+            TalentTierOptionConfig("Brawl",
+                                   "The damage of your slash ability is increased if at least 2 enemies are hit",
+                                   HeroUpgrade.ABILITY_SLASH_AOE_BONUS_DAMAGE, UiIconSprite.ABILITY_SWORD_SLASH)),
+        5: TALENT_CHOICE_HEALTH_MANA,
+        6: TalentTierConfig(
+            TalentTierOptionConfig("Bloodthirst",
+                                   "The duration of your bloodlust ability is increased additionally on kills",
+                                   HeroUpgrade.ABILITY_BLOODLUST_DURATION, UiIconSprite.ABILITY_BLOODLUST),
+            TalentTierOptionConfig("Berserker", "Reduces the cooldown of your slash ability",
+                                   HeroUpgrade.ABILITY_SLASH_CD, UiIconSprite.ABILITY_SWORD_SLASH)),
+        7: TALENT_CHOICE_HEALTH_MANA_REGEN
     })
     block_chance = 0.2
     return InitialPlayerStateData(

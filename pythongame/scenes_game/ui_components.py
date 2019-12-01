@@ -1,24 +1,33 @@
-import math
-from typing import List, Tuple, Optional, Any
+from enum import Enum
+from math import floor
+from typing import List, Tuple, Optional, Any, Iterable
 
 import pygame
 from pygame.rect import Rect
 
-from pythongame.core.common import ConsumableType, ItemType, AbilityType, PortraitIconSprite
+from pythongame.core.common import ConsumableType, ItemType, AbilityType, PortraitIconSprite, HeroId
 from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData
 from pythongame.core.game_state import PlayerState
 from pythongame.core.item_inventory import ItemEquipmentCategory
-from pythongame.core.talents import TalentsGraphics
+from pythongame.core.talents import TalentTierStatus
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
 from pythongame.scenes_game.game_ui_state import ToggleButtonId
 
 COLOR_BLACK = (0, 0, 0)
+COLOR_LIGHT_GRAY = (240, 240, 240)
+COLOR_GRAY = (200, 200, 200)
+COLOR_DARK_GRAY = (100, 100, 100)
 COLOR_WHITE = (250, 250, 250)
 
+COLOR_ICON_OUTLINE = (150, 150, 190)
+COLOR_BUTTON_OUTLINE = (150, 150, 190)
 COLOR_HOVERED = (200, 200, 250)
 COLOR_ICON_HIGHLIGHTED = (250, 250, 150)
 COLOR_TOGGLE_HIGHLIGHTED = (150, 250, 200)
+COLOR_TOGGLE_OPENED = (50, 50, 120)
 DIR_FONTS = './resources/fonts/'
+
+TALENT_ICON_SIZE = (32, 32)
 
 
 class UiComponent:
@@ -165,8 +174,8 @@ class TooltipGraphics:
             self._rect = Rect(bottom_right[0] - w, bottom_right[1] - h - 3, w, h)
 
     def render(self):
-        self._ui_render.rect_transparent(self._rect, 200, (0, 0, 30))
-        self._ui_render.rect(COLOR_WHITE, self._rect, 1)
+        self._ui_render.rect_transparent(self._rect, 200, (0, 0, 0))
+        self._ui_render.rect(COLOR_DARK_GRAY, self._rect, 1)
         header_position = (self._rect.x + 20, self._rect.y + 12)
         self._ui_render.text(self._font_header, self._title, header_position, self._title_color)
         y_separator = self._rect.y + 37
@@ -196,7 +205,7 @@ class AbilityIcon(UiComponent):
     def render(self, recently_clicked: bool):
         self._ui_render.rect_filled((40, 40, 50), self.rect)
         self._ui_render.image(self.image, self.rect.topleft)
-        self._ui_render.rect((150, 150, 190), self.rect, 1)
+        self._ui_render.rect(COLOR_ICON_OUTLINE, self.rect, 1)
         if recently_clicked:
             self._ui_render.rect(COLOR_ICON_HIGHLIGHTED,
                                  Rect(self.rect.x - 1, self.rect.y - 1, self.rect.w + 2, self.rect.h + 2), 3)
@@ -245,7 +254,7 @@ class ConsumableIcon(UiComponent):
         self._ui_render.rect_filled((40, 40, 50), self._rect)
         if self._image:
             self._ui_render.image(self._image, self._rect.topleft)
-        self._ui_render.rect((150, 150, 190), self._rect, 1)
+        self._ui_render.rect(COLOR_ICON_OUTLINE, self._rect, 1)
 
         sub_rect_h = 3
         for i in range(len(self.consumable_types)):
@@ -284,6 +293,7 @@ class ItemIcon(UiComponent):
         super().__init__()
         self._ui_render = ui_render
         self.rect = rect
+        self._rect_highlighted = Rect(self.rect.x - 1, self.rect.y - 1, self.rect.w + 1, self.rect.h + 1)
         self.image = image
         self.slot_equipment_category = slot_equipment_category
         self.tooltip = tooltip
@@ -296,61 +306,27 @@ class ItemIcon(UiComponent):
         return None
 
     def render(self, highlighted: bool):
-        self._ui_render.rect_filled((40, 40, 50), self.rect)
-        if self.item_type:
-            if self.slot_equipment_category:
-                self._ui_render.rect_filled((40, 40, 70), self.rect)
+        has_equipped_item = self.slot_equipment_category and self.item_type
+        color_bg = (60, 60, 90) if has_equipped_item else (40, 40, 50)
+        color_outline = (160, 160, 160) if has_equipped_item else (100, 100, 140)
+
+        self._ui_render.rect_filled(color_bg, self.rect)
+        if self.image:
             self._ui_render.image(self.image, self.rect.topleft)
-        elif self.image:
-            self._ui_render.image(self.image, self.rect.topleft)
-        if self.item_type and self.slot_equipment_category:
-            color_outline = (250, 250, 250)
-        else:
-            color_outline = (100, 100, 140)
         self._ui_render.rect(color_outline, self.rect, 1)
 
         if highlighted:
-            self._ui_render.rect(COLOR_ICON_HIGHLIGHTED,
-                                 Rect(self.rect.x - 1, self.rect.y - 1, self.rect.w + 1, self.rect.h + 1), 2)
+            self._ui_render.rect(COLOR_ICON_HIGHLIGHTED, self._rect_highlighted, 2)
         elif self.hovered:
             self._ui_render.rect(COLOR_HOVERED, self.rect, 1)
 
 
-class TalentIcon(UiComponent):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, image, tooltip: TooltipGraphics, chosen: bool, text: str,
-                 font, choice_index: int, option_index: int):
-        super().__init__()
-        self._ui_render = ui_render
-        self._rect = rect
-        self._image = image
-        self._chosen = chosen
-        self.tooltip = tooltip
-        self._text = text
-        self._font = font
-        self.choice_index = choice_index
-        self.option_index = option_index
-
-    def contains(self, point: Tuple[int, int]) -> bool:
-        return self._rect.collidepoint(point[0], point[1])
-
-    def render(self):
-        self._ui_render.text(self._font, self._text, (self._rect[0], self._rect[1] + self._rect[3] + 5), COLOR_WHITE)
-        self._ui_render.rect_filled(COLOR_BLACK, self._rect)
-        self._ui_render.image(self._image, self._rect.topleft)
-        color_outline = COLOR_ICON_HIGHLIGHTED if self._chosen else COLOR_WHITE
-        width_outline = 2 if self._chosen else 1
-        self._ui_render.rect(color_outline, self._rect, width_outline)
-        if self.hovered:
-            self._ui_render.rect(COLOR_ICON_HIGHLIGHTED, self._rect, 1)
-
-
 class StatBar:
     def __init__(self, ui_render: DrawableArea, rect: Rect, color: Tuple[int, int, int], tooltip: TooltipGraphics,
-                 value: int, max_value: int, border: bool, show_numbers: bool, font):
+                 value: int, max_value: int, show_numbers: bool, font):
         self.ui_render = ui_render
         self.rect = rect
         self.color = color
-        self.border = border
         self.tooltip = tooltip
         self.show_numbers = show_numbers
         self.font = font
@@ -363,7 +339,7 @@ class StatBar:
 
     def render(self):
         self.ui_render.stat_bar(
-            self.rect.x, self.rect.y, self.rect.w, self.rect.h, self.ratio_filled, self.color, self.border)
+            self.rect.x, self.rect.y, self.rect.w, self.rect.h, self.ratio_filled, self.color, (160, 160, 180))
         if self.show_numbers:
             text = str(self._value) + "/" + str(self._max_value)
             self.ui_render.text(self.font, text, (self.rect.x + 20, self.rect.y - 1))
@@ -399,9 +375,10 @@ class ToggleButton(UiComponent):
 
     def render(self):
         if self.is_open:
-            self.ui_render.rect_filled((50, 50, 150), self.rect)
-        self.ui_render.rect(COLOR_WHITE, self.rect, 1)
-        self.ui_render.text(self.font, self.text, (self.rect.x + 20, self.rect.y + 2))
+            self.ui_render.rect_filled(COLOR_TOGGLE_OPENED, self.rect)
+        self.ui_render.rect(COLOR_BUTTON_OUTLINE, self.rect, 1)
+        text_color = COLOR_WHITE if self.hovered or self.highlighted else COLOR_LIGHT_GRAY
+        self.ui_render.text(self.font, self.text, (self.rect.x + 20, self.rect.y + 2), text_color)
         if self.hovered:
             self.ui_render.rect(COLOR_HOVERED, self.rect, 1)
         if self.highlighted:
@@ -431,9 +408,10 @@ class Checkbox(UiComponent):
         return self.rect.collidepoint(point[0], point[1])
 
     def render(self):
-        self.ui_render.rect(COLOR_WHITE, self.rect, 1)
+        self.ui_render.rect(COLOR_BUTTON_OUTLINE, self.rect, 1)
         text = self.label + ": " + ("Y" if self.checked else "N")
-        self.ui_render.text(self.font, text, (self.rect.x + 4, self.rect.y + 2))
+        text_color = COLOR_WHITE if self.hovered else COLOR_LIGHT_GRAY
+        self.ui_render.text(self.font, text, (self.rect.x + 4, self.rect.y + 2), text_color)
         if self.hovered:
             self.ui_render.rect(COLOR_HOVERED, self.rect, 1)
 
@@ -454,8 +432,9 @@ class Button(UiComponent):
         return self.rect.collidepoint(point[0], point[1])
 
     def render(self):
-        self.ui_render.rect(COLOR_WHITE, self.rect, 1)
-        self.ui_render.text(self.font, self.text, (self.rect.x + 7, self.rect.y + 2))
+        self.ui_render.rect(COLOR_BUTTON_OUTLINE, self.rect, 1)
+        text_color = COLOR_WHITE if self.hovered else COLOR_LIGHT_GRAY
+        self.ui_render.text(self.font, self.text, (self.rect.x + 7, self.rect.y + 2), text_color)
         if self.hovered:
             self.ui_render.rect(COLOR_HOVERED, self.rect, 1)
 
@@ -486,119 +465,280 @@ class ControlsWindow(UiWindow):
 
 
 class StatsWindow(UiWindow):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, font_header, font_details, player_state: PlayerState,
-                 player_speed_multiplier: float):
+    def __init__(self, ui_render: DrawableArea, font_header, font_details, player_state: PlayerState,
+                 player_speed_multiplier: float, hero_id: HeroId, level: int):
         super().__init__()
         self.ui_render = ui_render
-        self.rect = rect
+        self.rect = Rect(365, -380, 320, 330)
         self.font_header = font_header
         self.font_details = font_details
         self.player_state = player_state
         self.player_speed_multiplier = player_speed_multiplier
+        self.hero_id = hero_id
+        self.level = level
 
     def render(self):
         if self.shown:
             self._render()
 
     def _render(self):
-        self.ui_render.rect_transparent(self.rect, 140, (0, 0, 30))
+        self.ui_render.rect_filled((50, 50, 50), self.rect)
+        self.ui_render.rect((80, 50, 50), self.rect, 2)
 
-        self.ui_render.text(self.font_header, "STATS:", (self.rect[0] + 45, self.rect[1] + 10))
+        player_state = self.player_state
+        health = player_state.health_resource
+        mana = player_state.mana_resource
 
-        health_regen_text = \
-            "    health reg: " + "{:.1f}".format(self.player_state.health_resource.base_regen)
-        if self.player_state.health_resource.regen_bonus > 0:
-            health_regen_text += " +" + "{:.1f}".format(self.player_state.health_resource.regen_bonus)
-        mana_regen_text = \
-            "      mana reg: " + "{:.1f}".format(self.player_state.mana_resource.base_regen)
-        if self.player_state.mana_resource.regen_bonus > 0:
-            mana_regen_text += " +" + "{:.1f}".format(self.player_state.mana_resource.regen_bonus)
-        physical_damage_stat_text = \
-            " % phys damage: " + str(int(round(self.player_state.base_physical_damage_modifier * 100)))
-        if self.player_state.physical_damage_modifier_bonus > 0:
-            physical_damage_stat_text += " +" + str(int(round(self.player_state.physical_damage_modifier_bonus * 100)))
-        magic_damage_stat_text = \
-            "% magic damage: " + str(int(round(self.player_state.base_magic_damage_modifier * 100)))
-        if self.player_state.magic_damage_modifier_bonus > 0:
-            magic_damage_stat_text += " +" + str(int(round(self.player_state.magic_damage_modifier_bonus * 100)))
-        speed_stat_text = \
-            "       % speed: " + ("+" if self.player_speed_multiplier >= 1 else "") \
-            + str(int(round((self.player_speed_multiplier - 1) * 100)))
-        lifesteal_stat_text = \
-            "  % life steal: " + str(int(round(self.player_state.life_steal_ratio * 100)))
-        armor_stat_text = \
-            "         armor: " + str(math.floor(self.player_state.base_armor))
-        if self.player_state.armor_bonus > 0:
-            armor_stat_text += " +" + str(self.player_state.armor_bonus)
-        elif self.player_state.armor_bonus < 0:
-            armor_stat_text += " " + str(self.player_state.armor_bonus)
-        dodge_chance_text = \
-            "       % dodge: " + str(int(round(self.player_state.base_dodge_chance * 100)))
-        if self.player_state.dodge_chance_bonus > 0:
-            dodge_chance_text += " +" + str(int(round(self.player_state.dodge_chance_bonus * 100)))
-        block_chance_text = \
-            "       % block: " + str(int(round(self.player_state.block_chance * 100)))
-        block_reduction_text = \
-            "  block amount: " + str(self.player_state.block_damage_reduction)
-        x_text = self.rect[0] + 7
-        y_0 = self.rect[1] + 45
-        text_lines = [health_regen_text, mana_regen_text, physical_damage_stat_text, magic_damage_stat_text,
-                      speed_stat_text, lifesteal_stat_text, armor_stat_text, dodge_chance_text, block_chance_text,
-                      block_reduction_text]
-        for i, y in enumerate(range(y_0, y_0 + len(text_lines) * 20, 20)):
-            text = text_lines[i]
-            self.ui_render.text(self.font_details, text, (x_text, y), COLOR_WHITE)
+        x_left = self.rect[0] + 15
+        x_right = x_left + 155
+        y_0 = self.rect[1] + 15
+
+        perc = lambda value: int(value * 100)
+
+        y_hero_and_level = y_0
+        self._render_header((x_left, y_hero_and_level), self.hero_id.name)
+        self._render_header((x_right, y_hero_and_level), "Level " + str(self.level))
+
+        y_health = y_0 + 40
+        self._render_sub_header((x_left, y_health), "HEALTH")
+        self._render_stat((x_left, y_health + 25), "max", health.max_value)
+        self._render_stat((x_left, y_health + 45), "regen", health.base_regen, health.get_effective_regen())
+
+        y_mana = y_0 + 40
+        self._render_sub_header((x_right, y_mana), "MANA")
+        self._render_stat((x_right, y_mana + 25), "max", mana.max_value)
+        self._render_stat((x_right, y_mana + 45), "regen", mana.base_regen, mana.get_effective_regen())
+
+        y_damage = y_0 + 130
+        self._render_sub_header((x_left, y_damage), "DAMAGE")
+        self._render_stat((x_left, y_damage + 25), "physical %", perc(player_state.base_physical_damage_modifier),
+                          perc(player_state.get_effective_physical_damage_modifier()))
+        self._render_stat((x_left, y_damage + 45), "magic %", perc(player_state.base_magic_damage_modifier),
+                          perc(player_state.get_effective_magic_damage_modifier()))
+
+        y_defense = y_0 + 130
+        self._render_sub_header((x_right, y_defense), "DEFENSE")
+        self._render_stat((x_right, y_defense + 25), "armor", str(floor(player_state.base_armor)),
+                          str(floor(player_state.base_armor + player_state.armor_bonus)))
+        self._render_stat((x_right, y_defense + 45), "dodge %", perc(player_state.base_dodge_chance),
+                          perc(player_state.get_effective_dodge_change()))
+        self._render_stat((x_right, y_defense + 65), "block %", perc(player_state.block_chance))
+        self._render_stat((x_right, y_defense + 85), "amount", player_state.block_damage_reduction)
+
+        y_misc = y_0 + 220
+        self._render_sub_header((x_left, y_misc), "MISC.")
+        self._render_stat((x_left, y_misc + 25), "speed %", perc(self.player_speed_multiplier))
+        self._render_stat((x_left, y_misc + 45), "lifesteal %", perc(player_state.life_steal_ratio))
+
+    def _render_header(self, pos: Tuple[int, int], text: str):
+        w = 135
+        h = 20
+        rect = Rect(pos[0], pos[1] - 3, w, h)
+        self.ui_render.rect_filled((40, 40, 40), rect)
+        text_pos = (pos[0] + w // 2 - 2 - len(text) * 3, pos[1])
+        self.ui_render.text(self.font_header, text, text_pos)
+
+    def _render_sub_header(self, pos: Tuple[int, int], text: str):
+        w = 70
+        text_pos = (pos[0] + w // 2 - 2 - len(text) * 3, pos[1])
+        self.ui_render.text(self.font_header, text, text_pos, (220, 220, 250))
+
+    def _render_stat(self, label_pos: Tuple[int, int], label: str, value: Any, value_with_bonus: Optional[Any] = None):
+        x_label, y = label_pos
+        w_label_rect = 70
+        rect_label = Rect(x_label, y - 2, w_label_rect, 15)
+        self.ui_render.rect_filled((40, 40, 40), rect_label)
+        x_label_text = x_label + w_label_rect // 2 - len(label) * 3
+        self.ui_render.text(self.font_details, label, (x_label_text, y))
+        x_value = x_label + 80
+        w_value_rect = 30
+        color_rect_bg = (20, 20, 20)
+        self._render_value(color_rect_bg, value, w_value_rect, (x_value, y), COLOR_WHITE)
+        if value_with_bonus is not None:
+            color = (170, 230, 170) if value_with_bonus > value else COLOR_WHITE
+            x_value_2 = x_value + w_value_rect - 1
+            self._render_value(color_rect_bg, value_with_bonus, w_value_rect, (x_value_2, y), color)
+
+    def _render_value(self, color_bg, value, w_rect, position: Tuple[int, int], color: Tuple[int, int, int]):
+        text = str(value)
+        x, y = position
+        rect = Rect(x - 5, y - 2, w_rect, 15)
+        x_text = x + w_rect // 2 - 3 - len(text) * 4
+        self.ui_render.rect_filled(color_bg, rect)
+        self.ui_render.rect(COLOR_GRAY, rect, 1)
+        self.ui_render.text(self.font_details, text, (x_text, y), color)
+
+
+class TalentIconStatus(Enum):
+    PENDING = 1
+    PICKED = 2
+    FADED = 3
+
+
+class TalentOptionData:
+    def __init__(self, name: str, description: str, image):
+        self.name = name
+        self.description = description
+        self.image = image
+
+
+class TalentTierData:
+    def __init__(self, status: TalentTierStatus, level_required: int, picked_index: Optional[int],
+                 options: List[TalentOptionData]):
+        self.status = status
+        self.level_required = level_required
+        self.picked_index = picked_index
+        self.options = options
+
+
+class TalentIcon(UiComponent):
+    def __init__(self, ui_render: DrawableArea, rect: Rect, image, tooltip: TooltipGraphics, chosen: bool,
+                 talent_name: str, font, tier_index: int, option_index: int, status: TalentIconStatus):
+        super().__init__()
+        self._ui_render = ui_render
+        self._rect = rect
+        self._image = image
+        self._chosen = chosen
+        self._font = font
+        self._status = status
+
+        self.tooltip = tooltip
+        self.talent_name = talent_name
+        self.tier_index = tier_index
+        self.option_index = option_index
+
+    def contains(self, point: Tuple[int, int]) -> bool:
+        return self._rect.collidepoint(point[0], point[1])
+
+    def render(self):
+        self._ui_render.rect_filled(COLOR_BLACK, self._rect)
+        self._ui_render.image(self._image, self._rect.topleft)
+
+        if self._status == TalentIconStatus.FADED:
+            self._ui_render.rect_transparent(self._rect, 150, (50, 0, 0))
+        elif self._status == TalentIconStatus.PICKED:
+            self._ui_render.rect((250, 250, 150), self._rect, 2)
+        elif self._status == TalentIconStatus.PENDING:
+            self._ui_render.rect((150, 150, 150), self._rect, 1)
+        if self.hovered:
+            self._ui_render.rect(COLOR_HOVERED, self._rect, 1)
+
+
+class TalentTier:
+    def __init__(self, ui_render: DrawableArea, rect: Rect, font, icons: List[TalentIcon],
+                 status: TalentTierStatus, picked_index: int, level_required: int):
+        super().__init__()
+        self._ui_render = ui_render
+        self._rect = rect
+        self._font = font
+        self.icons = icons
+        self._status = status
+        self._picked_index = picked_index
+        self._level_required = level_required
+
+    def render(self):
+        if self._status == TalentTierStatus.PENDING:
+            self._ui_render.rect_transparent(self._rect, 30, (50, 250, 50))
+            self._render_text("<-- Pick one!", COLOR_WHITE, False)
+        elif self._status == TalentTierStatus.PICKED:
+            self._render_text(self.icons[self._picked_index].talent_name, COLOR_WHITE, True)
+        elif self._status == TalentTierStatus.LOCKED:
+            self._render_text("Locked (level " + str(self._level_required) + ")", (150, 75, 75), False)
+        self.icons[0].render()
+        self.icons[1].render()
+
+    def _render_text(self, text: str, color: Tuple[int, int, int], background: bool):
+        x = self._rect.right - 50 - len(text) * 3
+        y = self._rect.top + 17
+        if background:
+            w_label_rect = 90
+            rect_label = Rect(self._rect.right - 95, y - 2, w_label_rect, 15)
+            self._ui_render.rect_filled((40, 40, 40), rect_label)
+        self._ui_render.text(self._font, text, (x, y), color)
+
+    def is_pickable(self) -> bool:
+        return self._status == TalentTierStatus.PENDING
 
 
 class TalentsWindow(UiWindow):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, font_header, font_details, talents: TalentsGraphics,
-                 icon_rows: List[Tuple[TalentIcon, TalentIcon]]):
+    def __init__(self, ui_render: DrawableArea, font_header, font_details,
+                 talent_tiers: List[TalentTierData]):
         super().__init__()
-        self.ui_render = ui_render
-        self.rect = rect
-        self.font_header = font_header
-        self.font_details = font_details
-        self.talents = talents
-        self.icon_rows = icon_rows
+        self._ui_render = ui_render
+        self._rect = Rect(475, -420, 210, 370)
+        self._font_header = font_header
+        self._font_details = font_details
+
+        self._talent_tiers: List[TalentTier] = []
+        self.update(talent_tiers)
 
     def get_icon_containing(self, point: Tuple[int, int]) -> Optional[TalentIcon]:
-        for (icon_1, icon_2) in self.icon_rows:
-            if icon_1.contains(point):
-                return icon_1
-            if icon_2.contains(point):
-                return icon_2
+        for tier in self._talent_tiers:
+            for icon in tier.icons:
+                if icon.contains(point):
+                    return icon
         return None
 
-    def get_last_row_icons(self):
-        if self.icon_rows:
-            last_row = self.icon_rows[-1]
-            return [last_row[0], last_row[1]]
-        return []
+    def get_pickable_talent_icons(self) -> Iterable[TalentIcon]:
+        if self._talent_tiers:
+            for tier in self._talent_tiers:
+                if tier.is_pickable():
+                    yield from tier.icons
 
     def render(self):
         if self.shown:
             self._render()
 
     def _render(self):
-        self.ui_render.rect_transparent(self.rect, 140, (0, 0, 30))
-        self.ui_render.text(self.font_header, "TALENTS:", (self.rect[0] + 35, self.rect[1] + 10))
+        self._ui_render.rect_filled((50, 50, 50), self._rect)
+        self._ui_render.rect((80, 50, 50), self._rect, 2)
+        w = 135
+        h = 20
+        x = self._rect.left + self._rect.w // 2 - w // 2
+        y = self._rect.top + 15
+        rect = Rect(x, y - 3, w, h)
+        self._ui_render.rect_filled((40, 40, 40), rect)
+        self._ui_render.text(self._font_header, "TALENTS", (x + 40, y))
 
-        for row_index, (icon_1, icon_2) in enumerate(self.icon_rows):
-            icon_1.render()
-            icon_2.render()
+        for tier in self._talent_tiers:
+            tier.render()
 
-        text_pos = self.rect[0] + 22, self.rect[1] + self.rect[3] - 26
-        if self.talents.choice_graphics_items:
-            player_can_choose = self.talents.choice_graphics_items[-1].chosen_index is None
-            if player_can_choose:
-                self.ui_render.text(self.font_details, "Choose a talent!", text_pos)
-        else:
-            self.ui_render.text(self.font_details, "No talents yet!", text_pos)
+    def update(self, talent_tiers: List[TalentTierData]):
+        window_padding = 10
+        tier_padding = 5
+        h_tier = TALENT_ICON_SIZE[1] + tier_padding * 2
+        self._talent_tiers: List[TalentTier] = []
+        tier_row_space = 5
+        for tier_index, tier_data in enumerate(talent_tiers):
 
-    def update(self, rect: Rect, talents: TalentsGraphics, icon_rows: List[Tuple[TalentIcon, TalentIcon]]):
-        self.rect = rect
-        self.talents = talents
-        self.icon_rows = icon_rows
+            rect_tier = Rect(
+                self._rect.left + window_padding,
+                self._rect.top + 45 + (h_tier + tier_row_space) * tier_index,
+                self._rect.w - window_padding * 2,
+                h_tier)
+
+            icons = []
+            for option_index, option in enumerate(tier_data.options):
+                if tier_data.status == TalentTierStatus.PICKED:
+                    status = TalentIconStatus.PICKED if tier_data.picked_index == option_index else TalentIconStatus.FADED
+                elif tier_data.status == TalentTierStatus.PENDING:
+                    status = TalentIconStatus.PENDING
+                else:
+                    status = TalentIconStatus.FADED
+                rect_icon = Rect(rect_tier.left + tier_padding + (TALENT_ICON_SIZE[0] + 15) * option_index,
+                                 rect_tier.top + tier_padding,
+                                 TALENT_ICON_SIZE[0],
+                                 TALENT_ICON_SIZE[1])
+                tooltip = TooltipGraphics(self._ui_render, COLOR_WHITE, option.name, [option.description],
+                                          bottom_right=(rect_icon.right, rect_icon.top - 2))
+                icons.append(
+                    TalentIcon(self._ui_render, rect_icon,
+                               option.image, tooltip, False, option.name, self._font_details, tier_index, option_index,
+                               status))
+
+            tier = TalentTier(self._ui_render, rect_tier, self._font_details, icons,
+                              tier_data.status, tier_data.picked_index, tier_data.level_required)
+            self._talent_tiers.append(tier)
 
 
 class ExpBar:
@@ -610,9 +750,9 @@ class ExpBar:
         self.filled_ratio = 0
 
     def render(self):
-        self.ui_render.text(self.font, "Level " + str(self.level), (self.rect.x, self.rect.y - 18))
+        self.ui_render.text(self.font, "LEVEL: " + str(self.level), (self.rect.x, self.rect.y - 18))
         self.ui_render.stat_bar(self.rect.x, self.rect.y, self.rect.w, self.rect.h, self.filled_ratio, (200, 200, 200),
-                                True)
+                                (160, 160, 180))
 
     def update(self, level: int, filled_ratio: float):
         self.level = level
@@ -664,7 +804,7 @@ class Buffs:
                 x = self.rect[0] + self.rect_padding
                 y = self.rect[1] + self.rect_padding + i * 25
                 self.ui_render.text(self.font, text, (x, y))
-                self.ui_render.stat_bar(x, y + 20, 60, 2, ratio_remaining, (250, 250, 0), False)
+                self.ui_render.stat_bar(x, y + 20, 60, 2, ratio_remaining, (250, 250, 0))
 
     def update(self, buffs: List[Tuple[str, float]]):
         self.buffs = buffs

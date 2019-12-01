@@ -16,7 +16,7 @@ def _apply_hero_upgrade(hero_upgrade: HeroUpgrade, game_state: GameState):
         effect(game_state)
 
 
-def pick_talent(game_state: GameState, talent_option_index: int):
-    name_of_picked, upgrade_picked = game_state.player_state.choose_talent(talent_option_index)
+def pick_talent(game_state: GameState, tier_index: int, option_index: int):
+    name_of_picked, upgrade_picked = game_state.player_state.choose_talent(tier_index, option_index)
     _apply_hero_upgrade(upgrade_picked, game_state)
     return name_of_picked
