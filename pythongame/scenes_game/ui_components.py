@@ -224,11 +224,14 @@ class AbilityIcon(UiComponent):
     def update(self, image, label: str, ability: AbilityData, ability_type: AbilityType):
         self.image = image
         self.label = label
-        tooltip_details = ["Cooldown: " + str(ability.cooldown / 1000.0) + " s",
-                           "Mana: " + str(ability.mana_cost),
-                           ability.description]
-        self.tooltip = TooltipGraphics(self._ui_render, COLOR_WHITE, ability.name, tooltip_details,
-                                       bottom_left=self.rect.topleft)
+        if ability:
+            tooltip_details = ["Cooldown: " + str(ability.cooldown / 1000.0) + " s",
+                               "Mana: " + str(ability.mana_cost),
+                               ability.description]
+            self.tooltip = TooltipGraphics(self._ui_render, COLOR_WHITE, ability.name, tooltip_details,
+                                           bottom_left=self.rect.topleft)
+        else:
+            self.tooltip = None
         self.ability_type = ability_type
 
 

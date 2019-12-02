@@ -69,10 +69,11 @@ class CreatingWorldScene(AbstractScene):
         game_state.notify_movement_speed_observers()  # Must notify the initial state
         game_state.player_state.stats_were_updated.register_observer(self.ui_view.on_player_stats_updated)
         game_state.player_state.notify_stats_observers()  # Must notify the initial state
-        game_engine.player_abilities_were_updated.register_observer(self.ui_view.on_abilities_updated)
         game_engine.talent_was_unlocked.register_observer(self.ui_view.on_talent_was_unlocked)
         game_state.player_state.money_was_updated.register_observer(self.ui_view.on_money_updated)
         game_state.player_state.notify_money_observers()  # Must notify the initial state
+        game_state.player_state.abilities_were_updated.register_observer(self.ui_view.on_abilities_updated)
+        game_state.player_state.notify_ability_observers()  # Must notify the initial state
         game_state.player_state.cooldowns_were_updated.register_observer(self.ui_view.on_cooldowns_updated)
         game_state.player_state.health_resource.value_was_updated.register_observer(self.ui_view.on_health_updated)
         game_state.player_state.mana_resource.value_was_updated.register_observer(self.ui_view.on_mana_updated)
@@ -113,7 +114,6 @@ class CreatingWorldScene(AbstractScene):
         self.ui_view.update_hero(game_state.player_state.hero_id)
 
         allocate_input_keys_for_abilities(game_state.player_state.abilities)
-        game_engine.notify_ability_observers()  # Must notify the initial state
 
         game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
 

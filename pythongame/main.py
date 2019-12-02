@@ -23,6 +23,7 @@ from pythongame.scenes_game.game_ui_state import GameUiState
 from pythongame.scenes_game.game_ui_view import GameUiView, UI_ICON_SIZE, PORTRAIT_ICON_SIZE, UI_ICON_BIG_SIZE
 from pythongame.scenes_game.scene_playing import PlayingScene
 
+ABILITY_KEY_LABELS = ["Q", "W", "E", "R", "T"]
 SCREEN_SIZE = (700, 700)
 CAMERA_SIZE = (700, 530)
 
@@ -45,7 +46,7 @@ class Main:
         self.world_view = GameWorldView(self.pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite)
         self.ui_view = GameUiView(
             self.pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_ui_sprite, big_images_by_ui_sprite,
-            self.images_by_portrait_sprite)
+            self.images_by_portrait_sprite, ABILITY_KEY_LABELS)
         init_sound_player()
         self.clock = pygame.time.Clock()
 
