@@ -1,9 +1,9 @@
 import sys
-from typing import Optional
+from typing import Optional, Callable
 
 import pygame
 
-from pythongame.core.common import HeroId, SoundId, Millis, AbstractScene, SceneTransition, SceneId
+from pythongame.core.common import HeroId, SoundId, Millis, AbstractScene, SceneTransition
 from pythongame.core.sound_player import play_sound
 from pythongame.core.user_input import ActionExitGame
 from pythongame.scene_creating_world.scene_creating_world import InitFlags
@@ -15,16 +15,12 @@ HEROES = [HeroId.MAGE, HeroId.WARRIOR, HeroId.ROGUE]
 
 
 class PickingHeroScene(AbstractScene):
-    def __init__(self, view: PickingHeroView):
+    def __init__(self, creating_world_scene: Callable[[InitFlags], AbstractScene], view: PickingHeroView,
+                 flags: InitFlags):
+        self.creating_world_scene = creating_world_scene
         self.view = view
         self.selected_hero_index = 0
-
-        # Set on initialization
-        self.flags: InitFlags = None
-
-    def initialize(self, flags: Optional[InitFlags]):
-        if flags is not None:
-            self.flags = flags
+        self.flags: InitFlags = flags
 
     def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
         action = get_picking_hero_user_input()
@@ -36,7 +32,7 @@ class PickingHeroScene(AbstractScene):
             play_sound(SoundId.DIALOG)
         elif isinstance(action, ActionPickHeroAccept):
             self.flags.picked_hero = HEROES[self.selected_hero_index]
-            return SceneTransition(SceneId.CREATING_GAME_WORLD, self.flags)
+            return SceneTransition(self.creating_world_scene(self.flags))
 
         self.view.render(HEROES, self.selected_hero_index)
         self.view.update_display()

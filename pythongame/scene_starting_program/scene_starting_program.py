@@ -1,6 +1,6 @@
-from typing import Optional
+from typing import Optional, Callable
 
-from pythongame.core.common import HeroId, Millis, AbstractScene, SceneTransition, SceneId
+from pythongame.core.common import HeroId, Millis, AbstractScene, SceneTransition
 from pythongame.player_file import load_player_state_from_json_file
 from pythongame.scene_creating_world.scene_creating_world import InitFlags
 
@@ -21,13 +21,13 @@ class CommandlineFlags:
 
 
 class StartingProgramScene(AbstractScene):
-    def __init__(self):
+    def __init__(self, creating_world_scene: Callable[[InitFlags], AbstractScene],
+                 picking_hero_scene: Callable[[InitFlags], AbstractScene], cmd_flags: CommandlineFlags):
 
-        # Set on initialization
-        self.cmd_flags: CommandlineFlags = None
-
-    def initialize(self, cmd_flags: CommandlineFlags):
-        self.cmd_flags = cmd_flags  # map hero money level
+        # map hero money level
+        self.cmd_flags = cmd_flags
+        self.creating_world_scene = creating_world_scene
+        self.picking_hero_scene = picking_hero_scene
 
     def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
 
@@ -58,7 +58,7 @@ class StartingProgramScene(AbstractScene):
                 saved_player_state,
                 hero_start_level,
                 start_money)
-            return SceneTransition(SceneId.CREATING_GAME_WORLD, flags)
+            return SceneTransition(self.creating_world_scene(flags))
 
         else:
             flags = InitFlags(
@@ -67,4 +67,4 @@ class StartingProgramScene(AbstractScene):
                 saved_player_state=None,
                 hero_start_level=1,
                 start_money=0)
-            return SceneTransition(SceneId.PICKING_HERO, flags)
+            return SceneTransition(self.picking_hero_scene(flags))

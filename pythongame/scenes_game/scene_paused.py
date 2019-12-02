@@ -1,9 +1,9 @@
 import sys
-from typing import Optional, Tuple
+from typing import Optional
 
 import pygame
 
-from pythongame.core.common import SceneId, Millis, AbstractScene, SceneTransition
+from pythongame.core.common import Millis, AbstractScene, SceneTransition
 from pythongame.core.game_state import GameState
 from pythongame.core.user_input import ActionExitGame, ActionPauseGame, ActionSaveGameState, \
     get_paused_user_inputs
@@ -16,21 +16,21 @@ from pythongame.scenes_game.game_ui_view import GameUiView
 class PausedScene(AbstractScene):
     def __init__(
             self,
+            playing_scene: AbstractScene,
             world_view: GameWorldView,
-            ui_view: GameUiView):
+            ui_view: GameUiView,
+            game_state: GameState,
+            ui_state: GameUiState):
+        self.playing_scene = playing_scene
         self.world_view = world_view
         self.ui_view = ui_view
+        self.game_state = game_state
+        self.ui_state = ui_state
 
-        # Set on initialization
-        self.game_state = None
-        self.ui_state = None
-
-    def initialize(self, data: Tuple[GameState, GameUiState]):
-        self.game_state, self.ui_state = data
+    def on_enter(self):
         self.ui_view.set_paused(True)
 
     def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
-        scene_transition = None
 
         user_actions = get_paused_user_inputs()
         for action in user_actions:
@@ -38,7 +38,7 @@ class PausedScene(AbstractScene):
                 pygame.quit()
                 sys.exit()
             if isinstance(action, ActionPauseGame):
-                scene_transition = SceneTransition(SceneId.PLAYING, None)
+                return SceneTransition(self.playing_scene)
             if isinstance(action, ActionSaveGameState):
                 save_to_file(self.game_state)
 
@@ -57,10 +57,8 @@ class PausedScene(AbstractScene):
             entire_world_area=self.game_state.entire_world_area,
             entity_action_text=None)
 
-        self.ui_view.render(
-            ui_state=self.ui_state,
-        )
+        self.ui_view.render(ui_state=self.ui_state)
 
         self.world_view.update_display()
 
-        return scene_transition
+        return None

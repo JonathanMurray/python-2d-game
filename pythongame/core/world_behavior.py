@@ -1,9 +1,9 @@
-from typing import Optional
+from typing import Optional, Callable, Any
 
 from pythongame.core.buff_effects import get_buff_effect
-from pythongame.core.common import ConsumableType
+from pythongame.core.common import ConsumableType, AbstractScene
 from pythongame.core.common import ItemType
-from pythongame.core.common import SceneId, Millis, BuffType, get_random_hint, \
+from pythongame.core.common import Millis, BuffType, get_random_hint, \
     SoundId, HeroUpgrade, SceneTransition
 from pythongame.core.game_data import ITEMS
 from pythongame.core.game_state import GameState
@@ -28,7 +28,8 @@ class AbstractWorldBehavior:
 
 class StoryBehavior(AbstractWorldBehavior):
 
-    def __init__(self, game_state: GameState, ui_state: GameUiState):
+    def __init__(self, victory_screen_scene: Callable[[], AbstractScene], game_state: GameState, ui_state: GameUiState):
+        self.victory_screen_scene = victory_screen_scene
         self.game_state = game_state
         self.ui_state = ui_state
 
@@ -42,7 +43,7 @@ class StoryBehavior(AbstractWorldBehavior):
 
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:
         if self.game_state.player_state.has_upgrade(HeroUpgrade.HAS_WON_GAME):
-            return SceneTransition(SceneId.VICTORY_SCREEN, None)
+            return SceneTransition(self.victory_screen_scene())
 
     def handle_event(self, event: EngineEvent) -> Optional[SceneTransition]:
         if event == EngineEvent.PLAYER_DIED:
@@ -58,11 +59,18 @@ class StoryBehavior(AbstractWorldBehavior):
 
 class ChallengeBehavior(AbstractWorldBehavior):
 
-    def __init__(self, game_state: GameState, ui_state: GameUiState, game_engine: GameEngine, init_flags):
+    def __init__(self, picking_hero_scene: Callable[[Any], AbstractScene],
+                 challenge_complete_scene: Callable[[Millis], AbstractScene],
+                 game_state: GameState,
+                 ui_state: GameUiState,
+                 game_engine: GameEngine,
+                 init_flags):
+        self.picking_hero_scene = picking_hero_scene
+        self.challenge_complete_scene = challenge_complete_scene
         self.game_state = game_state
         self.ui_state = ui_state
         self.game_engine = game_engine
-        self.total_time_played = 0
+        self.total_time_played: Millis = 0
         self.init_flags = init_flags
 
     def on_startup(self, new_hero_was_created: bool):
@@ -94,10 +102,10 @@ class ChallengeBehavior(AbstractWorldBehavior):
 
     def handle_event(self, event: EngineEvent) -> Optional[SceneTransition]:
         if event == EngineEvent.PLAYER_DIED:
-            return SceneTransition(SceneId.PICKING_HERO, self.init_flags)
+            return SceneTransition(self.picking_hero_scene(self.init_flags))
         elif event == EngineEvent.ENEMY_DIED:
             num_enemies = len([npc for npc in self.game_state.non_player_characters if npc.is_enemy])
             if num_enemies == 0:
-                return SceneTransition(SceneId.CHALLENGE_COMPLETE_SCREEN, self.total_time_played)
+                return SceneTransition(self.challenge_complete_scene(self.total_time_played))
             self.ui_state.set_message(str(num_enemies) + " enemies remaining")
         return None

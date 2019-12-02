@@ -26,13 +26,10 @@ def get_time_str(millis: Millis):
 
 
 class ChallengeCompleteScreenScene(AbstractScene):
-    def __init__(self, pygame_screen):
+    def __init__(self, pygame_screen, total_time_played: Millis):
         self.screen_render = DrawableArea(pygame_screen)
         self.font = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 24)
         self.time_since_start = Millis(0)
-        self.total_time_played = None  # Is assigned when transitioning to this scene
-
-    def initialize(self, total_time_played: Millis):
         self.total_time_played = total_time_played
 
     def run_one_frame(self, time_passed: Millis) -> Optional[SceneTransition]:

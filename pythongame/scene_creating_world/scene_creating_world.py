@@ -1,14 +1,15 @@
-from typing import Optional
+from typing import Optional, Callable
 from typing import Tuple
 
 from pythongame.core.buff_effects import get_buff_effect
 from pythongame.core.common import ItemType, \
     ConsumableType, Sprite
-from pythongame.core.common import SceneId, Millis, HeroId, BuffType, AbstractScene, SceneTransition
+from pythongame.core.common import Millis, HeroId, BuffType, AbstractScene, SceneTransition
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import allocate_input_keys_for_abilities
+from pythongame.core.game_state import GameState
 from pythongame.core.hero_upgrades import pick_talent
-from pythongame.core.world_behavior import ChallengeBehavior, StoryBehavior
+from pythongame.core.world_behavior import ChallengeBehavior, StoryBehavior, AbstractWorldBehavior
 from pythongame.map_file import create_game_state_from_json_file
 from pythongame.player_file import SavedPlayerState
 from pythongame.scenes_game.game_engine import GameEngine
@@ -32,14 +33,24 @@ class InitFlags:
 
 
 class CreatingWorldScene(AbstractScene):
-    def __init__(self, camera_size: Tuple[int, int], ui_view: GameUiView):
+    def __init__(
+            self,
+            playing_scene: Callable[
+                [GameState, GameEngine, AbstractWorldBehavior, GameUiState, GameUiView, bool], AbstractScene],
+            picking_hero_scene: Callable[[InitFlags], AbstractScene],
+            challenge_complete_scene: Callable[[Millis], AbstractScene],
+            victory_screen_scene: Callable[[], AbstractScene],
+            camera_size: Tuple[int, int], ui_view: GameUiView,
+            flags: InitFlags):
+        self.playing_scene = playing_scene
+        self.picking_hero_scene = picking_hero_scene
+        self.challenge_complete_scene = challenge_complete_scene
+        self.victory_screen_scene = victory_screen_scene
         self.camera_size = camera_size
         self.ui_view = ui_view
 
-        self.flags: InitFlags = None
-
-    def initialize(self, flags: InitFlags):
-        self.flags = flags  # map hero money level saved
+        # map hero money level saved
+        self.flags: InitFlags = flags
 
     def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
 
@@ -68,9 +79,10 @@ class CreatingWorldScene(AbstractScene):
         game_state.player_state.buffs_were_updated.register_observer(self.ui_view.on_buffs_updated)
 
         if self.flags.map_file_path == 'resources/maps/challenge.json':
-            world_behavior = ChallengeBehavior(game_state, ui_state, game_engine, self.flags)
+            world_behavior = ChallengeBehavior(
+                self.picking_hero_scene, self.challenge_complete_scene, game_state, ui_state, game_engine, self.flags)
         else:
-            world_behavior = StoryBehavior(game_state, ui_state)
+            world_behavior = StoryBehavior(self.victory_screen_scene, game_state, ui_state)
 
         if saved_player_state:
             game_engine.gain_levels(saved_player_state.level - 1)
@@ -106,5 +118,7 @@ class CreatingWorldScene(AbstractScene):
         game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
 
         new_hero_was_created = saved_player_state is None
-        scene_transition_data = (game_state, game_engine, world_behavior, ui_state, self.ui_view, new_hero_was_created)
-        return SceneTransition(SceneId.PLAYING, scene_transition_data)
+
+        playing_scene = self.playing_scene(game_state, game_engine, world_behavior, ui_state, self.ui_view,
+                                           new_hero_was_created)
+        return SceneTransition(playing_scene)

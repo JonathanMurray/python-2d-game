@@ -614,15 +614,14 @@ def get_random_hint():
 
 
 class SceneTransition:
-    def __init__(self, scene_id: SceneId, data: Any):
-        self.scene_id = scene_id
-        self.data = data
+    def __init__(self, scene):
+        self.scene = scene
 
 
 class AbstractScene:
 
-    def initialize(self, data: Any):
+    def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
         pass
 
-    def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
+    def on_enter(self):
         pass

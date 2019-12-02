@@ -6,7 +6,7 @@ import pygame
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis, SoundId, SceneId, AbstractScene, SceneTransition
+from pythongame.core.common import Millis, SoundId, AbstractScene, SceneTransition
 from pythongame.core.game_data import CONSUMABLES, ITEMS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     ConsumableOnGround, ItemOnGround, Chest
@@ -29,31 +29,29 @@ from pythongame.scenes_game.game_ui_view import DragItemBetweenInventorySlots, D
     PickTalent, StartDraggingItemOrConsumable, TrySwitchItemInInventory, ToggleSound, SaveGame, EventTriggeredFromUi
 from pythongame.scenes_game.game_ui_view import GameUiView
 from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
+from pythongame.scenes_game.scene_paused import PausedScene
 
 
 class PlayingScene(AbstractScene):
-    def __init__(self, world_view: GameWorldView):
+    def __init__(self,
+                 world_view: GameWorldView,
+                 game_state: GameState, game_engine: GameEngine, world_behavior: AbstractWorldBehavior,
+                 ui_state: GameUiState, ui_view: GameUiView, new_hero_was_created: bool):
         self.player_interactions_state = PlayerInteractionsState()
         self.world_view = world_view
         self.render_hit_and_collision_boxes = False
         self.is_shift_key_held_down = False
         self.total_time_played = 0
 
-        # Set on initialization
-        self.game_state: GameState = None
-        self.game_engine: GameEngine = None
-        self.world_behavior: AbstractWorldBehavior = None
-        self.ui_state: GameUiState = None
-        self.ui_view: GameUiView = None
+        self.game_state: GameState = game_state
+        self.game_engine: GameEngine = game_engine
+        self.world_behavior: AbstractWorldBehavior = world_behavior
+        self.ui_state: GameUiState = ui_state
+        self.ui_view: GameUiView = ui_view
         self.user_input_handler = PlayingUserInputHandler()
+        self.world_behavior.on_startup(new_hero_was_created)
 
-    def initialize(self, data: Tuple[GameState, GameEngine, AbstractWorldBehavior, GameUiState, GameUiView, bool]):
-        if data is not None:
-            self.game_state, self.game_engine, self.world_behavior, self.ui_state, self.ui_view, new_hero_was_created = data
-            self.world_behavior.on_startup(new_hero_was_created)
-        # In case this scene has been running before, we make sure to clear any state. Otherwise keys that were held
-        # down would still be considered active!
-        self.user_input_handler = PlayingUserInputHandler()
+    def on_enter(self):
         self.ui_view.set_paused(False)
 
     def run_one_frame(self, time_passed: Millis) -> Optional[SceneTransition]:
@@ -234,7 +232,7 @@ class PlayingScene(AbstractScene):
         if scene_transition is not None:
             return scene_transition
         if transition_to_pause:
-            return SceneTransition(SceneId.PAUSED, (self.game_state, self.ui_state))
+            return SceneTransition(PausedScene(self, self.world_view, self.ui_view, self.game_state, self.ui_state))
         return None
 
     def save_game(self):
