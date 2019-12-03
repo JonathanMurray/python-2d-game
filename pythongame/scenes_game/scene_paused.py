@@ -1,14 +1,10 @@
-import sys
-from typing import Optional
+from typing import Optional, Any, List
 
 import pygame
 
 from pythongame.core.common import Millis, AbstractScene, SceneTransition
 from pythongame.core.game_state import GameState
-from pythongame.core.user_input import ActionExitGame, ActionPauseGame, ActionSaveGameState, \
-    get_paused_user_inputs
 from pythongame.core.view.game_world_view import GameWorldView
-from pythongame.player_file import save_to_file
 from pythongame.scenes_game.game_ui_state import GameUiState
 from pythongame.scenes_game.game_ui_view import GameUiView
 
@@ -30,17 +26,13 @@ class PausedScene(AbstractScene):
     def on_enter(self):
         self.ui_view.set_paused(True)
 
-    def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
+    def handle_user_input(self, events: List[Any]) -> Optional[SceneTransition]:
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    return SceneTransition(self.playing_scene)
 
-        user_actions = get_paused_user_inputs()
-        for action in user_actions:
-            if isinstance(action, ActionExitGame):
-                pygame.quit()
-                sys.exit()
-            if isinstance(action, ActionPauseGame):
-                return SceneTransition(self.playing_scene)
-            if isinstance(action, ActionSaveGameState):
-                save_to_file(self.game_state)
+    def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
 
         self.world_view.render_world(
             all_entities_to_render=self.game_state.get_all_entities_to_render(),

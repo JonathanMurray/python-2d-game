@@ -1,4 +1,3 @@
-import sys
 from typing import Optional
 
 import pygame
@@ -8,13 +7,6 @@ from pythongame.core.view.render_util import DrawableArea
 
 COLOR_BLACK = (0, 0, 0)
 DIR_FONTS = './resources/fonts/'
-
-
-def handle_user_input():
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
 
 
 def get_time_str(millis: Millis):
@@ -33,7 +25,6 @@ class ChallengeCompleteScreenScene(AbstractScene):
         self.total_time_played = total_time_played
 
     def run_one_frame(self, time_passed: Millis) -> Optional[SceneTransition]:
-        handle_user_input()
         self.time_since_start += time_passed
         self.render()
         return None

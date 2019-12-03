@@ -1,8 +1,9 @@
-from typing import Optional
+import sys
+from typing import Optional, List, Any
 
 import pygame
 
-from pythongame.core.common import Millis, SceneTransition
+from pythongame.core.common import Millis, SceneTransition, AbstractScene
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, \
     UI_ICON_SPRITE_PATHS, PORTRAIT_ICON_SPRITE_PATHS
 from pythongame.core.game_state import GameState
@@ -50,7 +51,7 @@ class Main:
         init_sound_player()
         self.clock = pygame.time.Clock()
 
-        self.scene = StartingProgramScene(self.creating_world_scene, self.picking_hero_scene, cmd_flags)
+        self.scene: AbstractScene = StartingProgramScene(self.creating_world_scene, self.picking_hero_scene, cmd_flags)
 
     def main_loop(self):
         while True:
@@ -59,10 +60,24 @@ class Main:
             fps_string = str(int(self.clock.get_fps()))
             self.ui_view.update_fps_string(fps_string)
 
-            scene_transition: Optional[SceneTransition] = self.scene.run_one_frame(time_passed)
-            if scene_transition:
-                self.scene = scene_transition.scene
-                self.scene.on_enter()
+            input_events: List[Any] = pygame.event.get()
+            for event in input_events:
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+            transition: Optional[SceneTransition] = self.scene.handle_user_input(input_events)
+            if transition:
+                self.change_scene(transition)
+                continue
+
+            transition: Optional[SceneTransition] = self.scene.run_one_frame(time_passed)
+            if transition:
+                self.change_scene(transition)
+
+    def change_scene(self, scene_transition: SceneTransition):
+        self.scene = scene_transition.scene
+        self.scene.on_enter()
 
     def creating_world_scene(self, flags: InitFlags):
         return CreatingWorldScene(self.playing_scene, self.picking_hero_scene, self.challenge_complete_scene,

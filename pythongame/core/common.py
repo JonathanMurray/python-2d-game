@@ -620,6 +620,9 @@ class SceneTransition:
 
 class AbstractScene:
 
+    def handle_user_input(self, events: List[Any]) -> Optional[SceneTransition]:
+        pass
+
     def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
         pass
 

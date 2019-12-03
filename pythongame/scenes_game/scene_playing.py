@@ -14,7 +14,7 @@ from pythongame.core.hero_upgrades import pick_talent
 from pythongame.core.math import get_directions_to_position
 from pythongame.core.npc_behaviors import invoke_npc_action, get_dialog_data
 from pythongame.core.sound_player import play_sound, toggle_muted
-from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
+from pythongame.core.user_input import ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_dialog_user_inputs, \
     ActionChangeDialogOption, ActionSaveGameState, ActionPressShiftKey, ActionReleaseShiftKey, PlayingUserInputHandler, \
@@ -54,28 +54,18 @@ class PlayingScene(AbstractScene):
     def on_enter(self):
         self.ui_view.set_paused(False)
 
-    def run_one_frame(self, time_passed: Millis) -> Optional[SceneTransition]:
-
-        self.total_time_played += time_passed
+    def handle_user_input(self, events: List[Any]) -> Optional[SceneTransition]:
 
         transition_to_pause = False
 
-        if not self.ui_view.has_open_dialog():
-            self.player_interactions_state.handle_nearby_entities(
-                self.game_state.player_entity, self.game_state, self.game_engine)
-
-        # ------------------------------------
-        #         HANDLE USER INPUT
-        # ------------------------------------
-
         events_triggered_from_ui: List[EventTriggeredFromUi] = []
+
+        # TODO handle dialog/no dialog more explicitly as states, and delegate more things to them (?)
 
         if self.ui_view.has_open_dialog():
             self.game_state.player_entity.set_not_moving()
-            user_actions = get_dialog_user_inputs()
+            user_actions = get_dialog_user_inputs(events)
             for action in user_actions:
-                if isinstance(action, ActionExitGame):
-                    exit_game()
                 if isinstance(action, ActionChangeDialogOption):
                     self.ui_view.change_dialog_option(action.index_delta)
                     play_sound(SoundId.DIALOG)
@@ -88,10 +78,8 @@ class PlayingScene(AbstractScene):
                             self.ui_state.set_message(message)
                         npc_in_dialog.stun_status.remove_one()
         else:
-            user_actions = self.user_input_handler.get_main_user_inputs()
+            user_actions = self.user_input_handler.get_main_user_inputs(events)
             for action in user_actions:
-                if isinstance(action, ActionExitGame):
-                    exit_game()
                 if isinstance(action, ActionToggleRenderDebugging):
                     self.render_hit_and_collision_boxes = not self.render_hit_and_collision_boxes
                     # TODO: Handle this better than accessing a global variable from here
@@ -151,43 +139,7 @@ class PlayingScene(AbstractScene):
                     self.ui_view.click_toggle_button(ToggleButtonId.HELP)
                     play_sound(SoundId.UI_TOGGLE)
 
-        # ------------------------------------
-        #     UPDATE STATE BASED ON CLOCK
-        # ------------------------------------
-
-        scene_transition = self.world_behavior.control(time_passed)
-        engine_events = self.game_engine.run_one_frame(time_passed)
-        for event in engine_events:
-            scene_transition = self.world_behavior.handle_event(event)
-
-        # ------------------------------------
-        #          RENDER EVERYTHING
-        # ------------------------------------
-
-        entity_action_text = None
-        # Don't display any actions on screen if player is stunned. It would look weird when using warp stones
-        if not self.game_state.player_state.stun_status.is_stunned():
-            ready_entity = self.player_interactions_state.get_entity_to_interact_with()
-            if ready_entity is not None:
-                entity_action_text = get_entity_action_text(ready_entity, self.is_shift_key_held_down)
-
-        self.world_view.render_world(
-            all_entities_to_render=self.game_state.get_all_entities_to_render(),
-            decorations_to_render=self.game_state.get_decorations_to_render(),
-            player_entity=self.game_state.player_entity,
-            is_player_invisible=self.game_state.player_state.is_invisible,
-            player_active_buffs=self.game_state.player_state.active_buffs,
-            camera_world_area=self.game_state.get_camera_world_area_including_camera_shake(),
-            non_player_characters=self.game_state.non_player_characters,
-            visual_effects=self.game_state.visual_effects,
-            render_hit_and_collision_boxes=self.render_hit_and_collision_boxes,
-            player_health=self.game_state.player_state.health_resource.value,
-            player_max_health=self.game_state.player_state.health_resource.max_value,
-            entire_world_area=self.game_state.entire_world_area,
-            entity_action_text=entity_action_text)
-
-        self.ui_view.render(self.ui_state)
-
+        # TODO Much noise below around playing sounds. Perhaps game_engine should play the sounds in these cases?
         for event in events_triggered_from_ui:
             if isinstance(event, StartDraggingItemOrConsumable):
                 play_sound(SoundId.UI_START_DRAGGING_ITEM)
@@ -227,12 +179,59 @@ class PlayingScene(AbstractScene):
             else:
                 raise Exception("Unhandled event: " + str(event))
 
+        if transition_to_pause:
+            return SceneTransition(PausedScene(self, self.world_view, self.ui_view, self.game_state, self.ui_state))
+
+    def run_one_frame(self, time_passed: Millis) -> Optional[SceneTransition]:
+
+        self.total_time_played += time_passed
+
+        if not self.ui_view.has_open_dialog():
+            self.player_interactions_state.handle_nearby_entities(
+                self.game_state.player_entity, self.game_state, self.game_engine)
+
+        # ------------------------------------
+        #     UPDATE STATE BASED ON CLOCK
+        # ------------------------------------
+
+        scene_transition = self.world_behavior.control(time_passed)
+        engine_events = self.game_engine.run_one_frame(time_passed)
+        for event in engine_events:
+            scene_transition = self.world_behavior.handle_event(event)
+
+        # ------------------------------------
+        #          RENDER EVERYTHING
+        # ------------------------------------
+
+        entity_action_text = None
+        # Don't display any actions on screen if player is stunned. It would look weird when using warp stones
+        if not self.game_state.player_state.stun_status.is_stunned():
+            ready_entity = self.player_interactions_state.get_entity_to_interact_with()
+            if ready_entity is not None:
+                entity_action_text = get_entity_action_text(ready_entity, self.is_shift_key_held_down)
+
+        self.world_view.render_world(
+            all_entities_to_render=self.game_state.get_all_entities_to_render(),
+            decorations_to_render=self.game_state.get_decorations_to_render(),
+            player_entity=self.game_state.player_entity,
+            is_player_invisible=self.game_state.player_state.is_invisible,
+            player_active_buffs=self.game_state.player_state.active_buffs,
+            camera_world_area=self.game_state.get_camera_world_area_including_camera_shake(),
+            non_player_characters=self.game_state.non_player_characters,
+            visual_effects=self.game_state.visual_effects,
+            render_hit_and_collision_boxes=self.render_hit_and_collision_boxes,
+            player_health=self.game_state.player_state.health_resource.value,
+            player_max_health=self.game_state.player_state.health_resource.max_value,
+            entire_world_area=self.game_state.entire_world_area,
+            entity_action_text=entity_action_text)
+
+        self.ui_view.render(self.ui_state)
+
         self.world_view.update_display()
 
         if scene_transition is not None:
             return scene_transition
-        if transition_to_pause:
-            return SceneTransition(PausedScene(self, self.world_view, self.ui_view, self.game_state, self.ui_state))
+
         return None
 
     def save_game(self):

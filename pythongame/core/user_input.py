@@ -105,15 +105,11 @@ PYGAME_MOUSE_LEFT_BUTTON = 1
 PYGAME_MOUSE_RIGHT_BUTTON = 3
 
 
-def get_dialog_user_inputs() -> List[Any]:
+def get_dialog_user_inputs(events) -> List[Any]:
     actions = []
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            actions.append(ActionExitGame())
+    for event in events:
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE and EXIT_ON_ESCAPE:
-                actions.append(ActionExitGame())
-            elif event.key == pygame.K_LEFT or event.key == pygame.K_UP:
+            if event.key == pygame.K_LEFT or event.key == pygame.K_UP:
                 actions.append(ActionChangeDialogOption(-1))
             elif event.key == pygame.K_RIGHT or event.key == pygame.K_DOWN:
                 actions.append(ActionChangeDialogOption(1))
@@ -124,29 +120,14 @@ def get_dialog_user_inputs() -> List[Any]:
     return actions
 
 
-def get_paused_user_inputs() -> List[Any]:
-    actions = []
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            actions.append(ActionExitGame())
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE and EXIT_ON_ESCAPE:
-                actions.append(ActionExitGame())
-            elif event.key == pygame.K_RETURN:
-                actions.append(ActionPauseGame())
-    return actions
-
-
 class PlayingUserInputHandler:
     def __init__(self):
         self._movement_keys_down = []
         self._ability_keys_down: List[AbilityType] = []
 
-    def get_main_user_inputs(self) -> List[Any]:
+    def get_main_user_inputs(self, events) -> List[Any]:
         actions = []
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                actions.append(ActionExitGame())
+        for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key in PYGAME_MOVEMENT_KEYS:
                     if event.key in self._movement_keys_down:
