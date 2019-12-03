@@ -74,6 +74,10 @@ class Main:
             transition: Optional[SceneTransition] = self.scene.run_one_frame(time_passed)
             if transition:
                 self.change_scene(transition)
+                continue
+
+            self.scene.render()
+            pygame.display.update()
 
     def change_scene(self, scene_transition: SceneTransition):
         self.scene = scene_transition.scene

@@ -293,11 +293,3 @@ class GameWorldView:
 
         if entity_action_text:
             self._entity_action_text(entity_action_text)
-
-    # ------------------------------------
-    #           DRAWING THE UI
-    # ------------------------------------
-
-    @staticmethod
-    def update_display():
-        pygame.display.update()

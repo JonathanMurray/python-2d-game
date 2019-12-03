@@ -45,7 +45,3 @@ class PickingHeroView:
             self.screen_render.text(self.font, description_line, (x_base, y_1 + i * 20))
         y_2 = 500
         self.screen_render.text(self.font, "SELECT YOUR HERO (Space to confirm)", (x_base, y_2))
-
-    @staticmethod
-    def update_display():
-        pygame.display.update()

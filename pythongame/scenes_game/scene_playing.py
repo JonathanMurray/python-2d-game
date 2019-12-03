@@ -1,7 +1,4 @@
-import sys
 from typing import Optional, Any, List, Tuple
-
-import pygame
 
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
@@ -128,7 +125,7 @@ class PlayingScene(AbstractScene):
                 if isinstance(action, ActionReleaseShiftKey):
                     self.is_shift_key_held_down = False
                 if isinstance(action, ActionSaveGameState):
-                    self.save_game()
+                    self._save_game()
                 if isinstance(action, ActionToggleUiTalents):
                     self.ui_view.click_toggle_button(ToggleButtonId.TALENTS)
                     play_sound(SoundId.UI_TOGGLE)
@@ -175,7 +172,7 @@ class PlayingScene(AbstractScene):
             elif isinstance(event, ToggleSound):
                 toggle_muted()
             elif isinstance(event, SaveGame):
-                self.save_game()
+                self._save_game()
             else:
                 raise Exception("Unhandled event: " + str(event))
 
@@ -199,16 +196,19 @@ class PlayingScene(AbstractScene):
         for event in engine_events:
             scene_transition = self.world_behavior.handle_event(event)
 
-        # ------------------------------------
-        #          RENDER EVERYTHING
-        # ------------------------------------
+        if scene_transition is not None:
+            return scene_transition
+
+        return None
+
+    def render(self):
 
         entity_action_text = None
         # Don't display any actions on screen if player is stunned. It would look weird when using warp stones
         if not self.game_state.player_state.stun_status.is_stunned():
             ready_entity = self.player_interactions_state.get_entity_to_interact_with()
             if ready_entity is not None:
-                entity_action_text = get_entity_action_text(ready_entity, self.is_shift_key_held_down)
+                entity_action_text = _get_entity_action_text(ready_entity, self.is_shift_key_held_down)
 
         self.world_view.render_world(
             all_entities_to_render=self.game_state.get_all_entities_to_render(),
@@ -227,19 +227,12 @@ class PlayingScene(AbstractScene):
 
         self.ui_view.render(self.ui_state)
 
-        self.world_view.update_display()
-
-        if scene_transition is not None:
-            return scene_transition
-
-        return None
-
-    def save_game(self):
+    def _save_game(self):
         save_to_file(self.game_state)
         self.ui_state.set_message("Game was saved.")
 
 
-def get_entity_action_text(ready_entity: Any, is_shift_key_held_down: bool) -> EntityActionText:
+def _get_entity_action_text(ready_entity: Any, is_shift_key_held_down: bool) -> EntityActionText:
     if isinstance(ready_entity, NonPlayerCharacter):
         return EntityActionText(ready_entity.world_entity, "[Space] ...", [])
     elif isinstance(ready_entity, LootableOnGround):
@@ -274,11 +267,6 @@ def _get_loot_details(lootable: LootableOnGround) -> List[str]:
         return [CONSUMABLES[lootable.consumable_type].description]
     if isinstance(lootable, ItemOnGround):
         return ITEMS[lootable.item_type].description_lines
-
-
-def exit_game():
-    pygame.quit()
-    sys.exit()
 
 
 def _get_mouse_world_pos(game_state: GameState, mouse_screen_position: Tuple[int, int]):

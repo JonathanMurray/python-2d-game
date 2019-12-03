@@ -2,7 +2,7 @@ from typing import Optional, Any, List
 
 import pygame
 
-from pythongame.core.common import Millis, AbstractScene, SceneTransition
+from pythongame.core.common import AbstractScene, SceneTransition
 from pythongame.core.game_state import GameState
 from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.scenes_game.game_ui_state import GameUiState
@@ -32,8 +32,7 @@ class PausedScene(AbstractScene):
                 if event.key == pygame.K_RETURN:
                     return SceneTransition(self.playing_scene)
 
-    def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
-
+    def render(self):
         self.world_view.render_world(
             all_entities_to_render=self.game_state.get_all_entities_to_render(),
             decorations_to_render=self.game_state.get_decorations_to_render(),
@@ -50,7 +49,3 @@ class PausedScene(AbstractScene):
             entity_action_text=None)
 
         self.ui_view.render(ui_state=self.ui_state)
-
-        self.world_view.update_display()
-
-        return None

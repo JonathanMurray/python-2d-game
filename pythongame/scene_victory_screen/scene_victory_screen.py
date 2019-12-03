@@ -17,7 +17,6 @@ class VictoryScreenScene(AbstractScene):
 
     def run_one_frame(self, time_passed: Millis) -> Optional[SceneTransition]:
         self.time_since_start += time_passed
-        self.render()
         return None
 
     def render(self):
@@ -44,5 +43,3 @@ class VictoryScreenScene(AbstractScene):
                 line = text_lines[i]
                 self.screen_render.text(self.font, line[:num_chars_to_show - accumulated], (x, lines_y[i]))
                 accumulated += len(line)
-
-        pygame.display.update()

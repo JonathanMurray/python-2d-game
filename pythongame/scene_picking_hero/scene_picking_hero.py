@@ -2,7 +2,7 @@ from typing import Optional, Callable, List, Any
 
 import pygame
 
-from pythongame.core.common import HeroId, Millis, AbstractScene, SceneTransition, SoundId
+from pythongame.core.common import HeroId, AbstractScene, SceneTransition, SoundId
 from pythongame.core.sound_player import play_sound
 from pythongame.scene_creating_world.scene_creating_world import InitFlags
 from pythongame.scene_picking_hero.view_picking_hero import PickingHeroView
@@ -33,9 +33,5 @@ class PickingHeroScene(AbstractScene):
         self.selected_hero_index = (self.selected_hero_index + delta) % 3
         play_sound(SoundId.DIALOG)
 
-    def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
-
+    def render(self):
         self.view.render(HEROES, self.selected_hero_index)
-        self.view.update_display()
-
-        return None
