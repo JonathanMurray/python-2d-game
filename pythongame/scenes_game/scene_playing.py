@@ -13,9 +13,9 @@ from pythongame.core.npc_behaviors import invoke_npc_action, get_dialog_data
 from pythongame.core.sound_player import play_sound, toggle_muted
 from pythongame.core.user_input import ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
-    ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_dialog_user_inputs, \
-    ActionChangeDialogOption, ActionSaveGameState, ActionPressShiftKey, ActionReleaseShiftKey, PlayingUserInputHandler, \
-    ActionToggleUiTalents, ActionToggleUiStats, ActionToggleUiHelp, ActionRightMouseClicked
+    ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_dialog_actions, \
+    ActionChangeDialogOption, ActionSaveGameState, PlayingUserInputHandler, ActionToggleUiTalents, ActionToggleUiStats, \
+    ActionToggleUiHelp, ActionRightMouseClicked
 from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
 from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.player_file import save_to_file
@@ -37,7 +37,6 @@ class PlayingScene(AbstractScene):
         self.player_interactions_state = PlayerInteractionsState()
         self.world_view = world_view
         self.render_hit_and_collision_boxes = False
-        self.is_shift_key_held_down = False
         self.total_time_played = 0
 
         self.game_state: GameState = game_state
@@ -51,6 +50,10 @@ class PlayingScene(AbstractScene):
     def on_enter(self):
         self.ui_view.set_paused(False)
 
+        # User may have been holding down a key when pausing, and then releasing it while paused. It's safer then to
+        # treat all keys as released when we re-enter this state.
+        self.user_input_handler.forget_held_down_keys()
+
     def handle_user_input(self, events: List[Any]) -> Optional[SceneTransition]:
 
         transition_to_pause = False
@@ -61,7 +64,7 @@ class PlayingScene(AbstractScene):
 
         if self.ui_view.has_open_dialog():
             self.game_state.player_entity.set_not_moving()
-            user_actions = get_dialog_user_inputs(events)
+            user_actions = get_dialog_actions(events)
             for action in user_actions:
                 if isinstance(action, ActionChangeDialogOption):
                     self.ui_view.change_dialog_option(action.index_delta)
@@ -74,8 +77,12 @@ class PlayingScene(AbstractScene):
                         if message:
                             self.ui_state.set_message(message)
                         npc_in_dialog.stun_status.remove_one()
+
+                        # User may have been holding down a key when starting dialog, and then releasing it while in
+                        # dialog. It's safer then to treat all keys as released when we exit the dialog.
+                        self.user_input_handler.forget_held_down_keys()
         else:
-            user_actions = self.user_input_handler.get_main_user_inputs(events)
+            user_actions = self.user_input_handler.get_actions(events)
             for action in user_actions:
                 if isinstance(action, ActionToggleRenderDebugging):
                     self.render_hit_and_collision_boxes = not self.render_hit_and_collision_boxes
@@ -120,10 +127,6 @@ class PlayingScene(AbstractScene):
                             self.game_engine.open_chest(ready_entity)
                         else:
                             raise Exception("Unhandled entity: " + str(ready_entity))
-                if isinstance(action, ActionPressShiftKey):
-                    self.is_shift_key_held_down = True
-                if isinstance(action, ActionReleaseShiftKey):
-                    self.is_shift_key_held_down = False
                 if isinstance(action, ActionSaveGameState):
                     self._save_game()
                 if isinstance(action, ActionToggleUiTalents):
@@ -208,7 +211,7 @@ class PlayingScene(AbstractScene):
         if not self.game_state.player_state.stun_status.is_stunned():
             ready_entity = self.player_interactions_state.get_entity_to_interact_with()
             if ready_entity is not None:
-                entity_action_text = _get_entity_action_text(ready_entity, self.is_shift_key_held_down)
+                entity_action_text = _get_entity_action_text(ready_entity, self.user_input_handler.is_shift_held_down())
 
         self.world_view.render_world(
             all_entities_to_render=self.game_state.get_all_entities_to_render(),

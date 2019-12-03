@@ -39,14 +39,6 @@ class ActionPressSpaceKey:
     pass
 
 
-class ActionPressShiftKey:
-    pass
-
-
-class ActionReleaseShiftKey:
-    pass
-
-
 class ActionSaveGameState:
     pass
 
@@ -105,7 +97,7 @@ PYGAME_MOUSE_LEFT_BUTTON = 1
 PYGAME_MOUSE_RIGHT_BUTTON = 3
 
 
-def get_dialog_user_inputs(events) -> List[Any]:
+def get_dialog_actions(events) -> List[Any]:
     actions = []
     for event in events:
         if event.type == pygame.KEYDOWN:
@@ -124,8 +116,9 @@ class PlayingUserInputHandler:
     def __init__(self):
         self._movement_keys_down = []
         self._ability_keys_down: List[AbilityType] = []
+        self._is_shift_held_down: bool = False
 
-    def get_main_user_inputs(self, events) -> List[Any]:
+    def get_actions(self, events) -> List[Any]:
         actions = []
         for event in events:
             if event.type == pygame.KEYDOWN:
@@ -152,7 +145,7 @@ class PlayingUserInputHandler:
                 elif event.key == pygame.K_SPACE:
                     actions.append(ActionPressSpaceKey())
                 elif event.key == pygame.K_LSHIFT:
-                    actions.append(ActionPressShiftKey())
+                    self._is_shift_held_down = True
                 elif event.key == pygame.K_s:
                     actions.append(ActionSaveGameState())
                 elif event.key == pygame.K_n:
@@ -170,7 +163,7 @@ class PlayingUserInputHandler:
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LSHIFT:
-                    actions.append(ActionReleaseShiftKey())
+                    self._is_shift_held_down = False
                 elif event.key in PYGAME_MOVEMENT_KEYS:
                     if event.key in self._movement_keys_down:
                         self._movement_keys_down.remove(event.key)
@@ -204,3 +197,11 @@ class PlayingUserInputHandler:
             actions.append(ActionTryUseAbility(ability_type))
 
         return actions
+
+    def forget_held_down_keys(self):
+        self._movement_keys_down.clear()
+        self._ability_keys_down.clear()
+        self._is_shift_held_down: bool = False
+
+    def is_shift_held_down(self) -> bool:
+        return self._is_shift_held_down
