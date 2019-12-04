@@ -55,6 +55,10 @@ class GameUiState:
     def enqueue_message(self, message: str):
         self._enqueued_messages.append(message)
 
+    def clear_messages(self):
+        self.message = None
+        self._enqueued_messages.clear()
+
     def notify_time_passed(self, time_passed: Millis):
         self._ticks_since_minimap_updated += time_passed
         if self._ticks_since_minimap_updated > MINIMAP_UPDATE_INTERVAL:

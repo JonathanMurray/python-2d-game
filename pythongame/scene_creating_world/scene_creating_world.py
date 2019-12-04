@@ -130,6 +130,14 @@ class CreatingWorldScene(AbstractScene):
         game_state.player_state.consumable_inventory.notify_observers()  # Must notify the initial state
         self.ui_view.update_hero(game_state.player_state.hero_id)
 
+        # When loading from a savefile a bunch of messages are generated (levelup, learning talents, etc), but they
+        # are irrelevant, since we're loading an exiting character
+        ui_state.clear_messages()
+
+        # Talent toggle is highlighted when new talents are unlocked, but we don't want it to be highlighted on startup
+        # when loading from a savefile
+        self.ui_view.remove_highlight_from_talent_toggle()
+
         allocate_input_keys_for_abilities(game_state.player_state.abilities)
 
         new_hero_was_created = saved_player_state is None

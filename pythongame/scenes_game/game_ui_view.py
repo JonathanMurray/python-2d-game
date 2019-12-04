@@ -540,6 +540,9 @@ class GameUiView:
     def update_fps_string(self, fps_string: str):
         self.fps_string = fps_string
 
+    def remove_highlight_from_talent_toggle(self):
+        self.talents_toggle.highlighted = False
+
     # --------------------------------------------------------------------------------------------------------
     #                                          RENDERING
     # --------------------------------------------------------------------------------------------------------
