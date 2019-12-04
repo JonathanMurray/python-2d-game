@@ -1,7 +1,7 @@
 from typing import Optional, Callable
 
 from pythongame.core.common import HeroId, Millis, AbstractScene, SceneTransition
-from pythongame.player_file import load_player_state_from_json_file
+from pythongame.player_file import SaveFileHandler
 from pythongame.scene_creating_world.scene_creating_world import InitFlags
 
 
@@ -21,13 +21,17 @@ class CommandlineFlags:
 
 
 class StartingProgramScene(AbstractScene):
-    def __init__(self, creating_world_scene: Callable[[InitFlags], AbstractScene],
-                 picking_hero_scene: Callable[[InitFlags], AbstractScene], cmd_flags: CommandlineFlags):
+    def __init__(self,
+                 main_menu_scene: Callable[[InitFlags], AbstractScene],
+                 creating_world_scene: Callable[[InitFlags], AbstractScene],
+                 picking_hero_scene: Callable[[InitFlags], AbstractScene],
+                 cmd_flags: CommandlineFlags, save_file_handler: SaveFileHandler):
 
-        # map hero money level
-        self.cmd_flags = cmd_flags
+        self.main_menu_scene = main_menu_scene
         self.creating_world_scene = creating_world_scene
         self.picking_hero_scene = picking_hero_scene
+        self.cmd_flags = cmd_flags
+        self.save_file_handler = save_file_handler
 
     def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
 
@@ -41,7 +45,7 @@ class StartingProgramScene(AbstractScene):
                 or self.cmd_flags.load_from_file is not None)
 
         if start_immediately_and_skip_hero_selection:
-            saved_player_state = load_player_state_from_json_file(
+            saved_player_state = self.save_file_handler.load_player_state_from_json_file(
                 "savefiles/" + self.cmd_flags.load_from_file) if self.cmd_flags.load_from_file else None
             if saved_player_state:
                 picked_hero = HeroId[saved_player_state.hero_id]
@@ -57,7 +61,8 @@ class StartingProgramScene(AbstractScene):
                 picked_hero,
                 saved_player_state,
                 hero_start_level,
-                start_money)
+                start_money,
+                None)
             return SceneTransition(self.creating_world_scene(flags))
 
         else:
@@ -66,5 +71,6 @@ class StartingProgramScene(AbstractScene):
                 picked_hero=None,
                 saved_player_state=None,
                 hero_start_level=1,
-                start_money=0)
-            return SceneTransition(self.picking_hero_scene(flags))
+                start_money=0,
+                character_file=None)
+            return SceneTransition(self.main_menu_scene(flags))

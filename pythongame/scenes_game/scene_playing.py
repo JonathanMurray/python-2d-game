@@ -18,7 +18,7 @@ from pythongame.core.user_input import ActionTryUseAbility, ActionTryUsePotion, 
     ActionToggleUiHelp, ActionRightMouseClicked
 from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
 from pythongame.core.world_behavior import AbstractWorldBehavior
-from pythongame.player_file import save_to_file
+from pythongame.player_file import SaveFileHandler
 from pythongame.scenes_game.game_engine import GameEngine
 from pythongame.scenes_game.game_ui_state import GameUiState, ToggleButtonId
 from pythongame.scenes_game.game_ui_view import DragItemBetweenInventorySlots, DropItemOnGround, \
@@ -32,13 +32,20 @@ from pythongame.scenes_game.scene_paused import PausedScene
 class PlayingScene(AbstractScene):
     def __init__(self,
                  world_view: GameWorldView,
-                 game_state: GameState, game_engine: GameEngine, world_behavior: AbstractWorldBehavior,
-                 ui_state: GameUiState, ui_view: GameUiView, new_hero_was_created: bool):
+                 game_state: GameState,
+                 game_engine: GameEngine,
+                 world_behavior: AbstractWorldBehavior,
+                 ui_state: GameUiState,
+                 ui_view: GameUiView,
+                 new_hero_was_created: bool,
+                 character_file: Optional[str],
+                 save_file_handler: SaveFileHandler,
+                 total_time_played_on_character: Millis):
+
         self.player_interactions_state = PlayerInteractionsState()
         self.world_view = world_view
         self.render_hit_and_collision_boxes = False
         self.total_time_played = 0
-
         self.game_state: GameState = game_state
         self.game_engine: GameEngine = game_engine
         self.world_behavior: AbstractWorldBehavior = world_behavior
@@ -46,6 +53,9 @@ class PlayingScene(AbstractScene):
         self.ui_view: GameUiView = ui_view
         self.user_input_handler = PlayingUserInputHandler()
         self.world_behavior.on_startup(new_hero_was_created)
+        self.character_file = character_file
+        self.save_file_handler = save_file_handler
+        self.total_time_played_on_character = total_time_played_on_character
 
     def on_enter(self):
         self.ui_view.set_paused(False)
@@ -185,6 +195,7 @@ class PlayingScene(AbstractScene):
     def run_one_frame(self, time_passed: Millis) -> Optional[SceneTransition]:
 
         self.total_time_played += time_passed
+        self.total_time_played_on_character += time_passed
 
         if not self.ui_view.has_open_dialog():
             self.player_interactions_state.handle_nearby_entities(
@@ -231,7 +242,12 @@ class PlayingScene(AbstractScene):
         self.ui_view.render(self.ui_state)
 
     def _save_game(self):
-        save_to_file(self.game_state)
+        filename = self.save_file_handler.save_to_file(
+            self.game_state, self.character_file, self.total_time_played_on_character)
+        if self.character_file is None:
+            # This is relevant when saving a character for the first time. If we didn't update the field, we would
+            # be creating a new file everytime we saved.
+            self.character_file = filename
         self.ui_state.set_message("Game was saved.")
 
 
