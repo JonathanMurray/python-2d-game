@@ -1,10 +1,9 @@
 from typing import Optional, Callable
 from typing import Tuple
 
-from pythongame.core.buff_effects import get_buff_effect
 from pythongame.core.common import ItemType, \
     ConsumableType, Sprite
-from pythongame.core.common import Millis, HeroId, BuffType, AbstractScene, SceneTransition
+from pythongame.core.common import Millis, HeroId, AbstractScene, SceneTransition
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_state import GameState
@@ -133,10 +132,7 @@ class CreatingWorldScene(AbstractScene):
 
         allocate_input_keys_for_abilities(game_state.player_state.abilities)
 
-        game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
-
         new_hero_was_created = saved_player_state is None
-
         playing_scene = self.playing_scene(
             game_state, game_engine, world_behavior, ui_state, self.ui_view, new_hero_was_created, character_file,
             total_time_played_on_character)

@@ -34,6 +34,7 @@ class StoryBehavior(AbstractWorldBehavior):
         self.ui_state = ui_state
 
     def on_startup(self, new_hero_was_created: bool):
+        self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
         self.ui_state.set_message("Hint: " + get_random_hint())
         if new_hero_was_created:
             self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.HEALTH_LESSER)
@@ -74,6 +75,7 @@ class ChallengeBehavior(AbstractWorldBehavior):
         self.init_flags = init_flags
 
     def on_startup(self, new_hero_was_created: bool):
+        self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
         self.ui_state.set_message("Challenge starting...")
         if new_hero_was_created:
             self.game_state.player_state.modify_money(100)
