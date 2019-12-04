@@ -17,6 +17,7 @@ from pythongame.register_game_data import register_all_game_data
 from pythongame.scene_challenge_complete_screen.scene_challenge_complete_screen import ChallengeCompleteScreenScene
 from pythongame.scene_creating_world.scene_creating_world import CreatingWorldScene, InitFlags
 from pythongame.scene_main_menu.scene_main_menu import MainMenuScene
+from pythongame.scene_main_menu.view_main_menu import MainMenuView
 from pythongame.scene_picking_hero.scene_picking_hero import PickingHeroScene
 from pythongame.scene_picking_hero.view_picking_hero import PickingHeroView
 from pythongame.scene_starting_program.scene_starting_program import CommandlineFlags, StartingProgramScene
@@ -88,8 +89,9 @@ class Main:
         self.scene.on_enter()
 
     def main_menu_scene(self, flags: InitFlags):
+        view = MainMenuView(self.pygame_screen, self.images_by_portrait_sprite)
         return MainMenuScene(
-            self.pygame_screen, self.save_file_handler, self.picking_hero_scene, self.creating_world_scene, flags)
+            self.save_file_handler, self.picking_hero_scene, self.creating_world_scene, flags, view)
 
     def creating_world_scene(self, flags: InitFlags):
         return CreatingWorldScene(self.playing_scene, self.picking_hero_scene, self.challenge_complete_scene,
