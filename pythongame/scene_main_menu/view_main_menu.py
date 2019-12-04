@@ -24,18 +24,20 @@ class MainMenuView:
         self._screen_render = DrawableArea(pygame_screen)
         self._font = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 24)
         self.images_by_portrait_sprite = images_by_portrait_sprite
+        self.font_width = 4.5
 
     def render(self, saved_characters: List[SavedPlayerState], option_index: int):
         self._screen_render.fill(COLOR_BLACK)
         x = 180
-        x_text = x + PORTRAIT_ICON_SIZE[0] + 20
+        x_text = x + PORTRAIT_ICON_SIZE[0] + 25
         y = 100
 
         if len(saved_characters) == 1:
             top_text = "You have 1 saved character"
         else:
             top_text = "You have " + str(len(saved_characters)) + " saved characters"
-        self._screen_render.text(self._font, top_text, (x + 50, y))
+        x_mid = 350
+        self._screen_render.text_centered(self._font, top_text, (x_mid, y), self.font_width)
         y += 100
 
         w_rect = 340
@@ -58,7 +60,7 @@ class MainMenuView:
         y += 40
         color = COLOR_HIGHLIGHTED_RECT if option_index == len(saved_characters) else COLOR_RECT
         self._screen_render.rect(color, Rect(x, y, w_rect, h_rect), 2)
-        self._screen_render.text(self._font, "CREATE NEW CHARACTER", (x + 71, y + 32))
+        self._screen_render.text_centered(self._font, "CREATE NEW CHARACTER", (x_mid, y + 32), self.font_width)
 
     def _get_portrait_image(self, saved_player_state):
         hero_data: HeroData = HEROES[HeroId[saved_player_state.hero_id]]

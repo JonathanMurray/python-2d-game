@@ -19,13 +19,17 @@ class PickingHeroView:
 
     def __init__(self, pygame_screen, images_by_portrait_sprite: Dict[PortraitIconSprite, Any]):
         self.screen_render = DrawableArea(pygame_screen)
+        self.font_large = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 32)
         self.font = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 24)
+        self.font_width = 4.5
         self.images_by_portrait_sprite = images_by_portrait_sprite
 
     def render(self, heroes: List[HeroId], selected_index: int):
         self.screen_render.fill(COLOR_BLACK)
-        x_base = 170
+        x_base = 177
         y_0 = 200
+        x_mid = 350
+        self.screen_render.text_centered(self.font_large, "SELECT HERO", (x_mid, y_0 - 100), 5.5)
         for i, hero in enumerate(heroes):
             hero_data = HEROES[hero]
             sprite = hero_data.portrait_icon_sprite
@@ -37,11 +41,16 @@ class PickingHeroView:
                                         Rect(x, y_0, PORTRAIT_ICON_SIZE[0], PORTRAIT_ICON_SIZE[1]), 3)
             else:
                 self.screen_render.rect(COLOR_WHITE, Rect(x, y_0, PORTRAIT_ICON_SIZE[0], PORTRAIT_ICON_SIZE[1]), 1)
-            self.screen_render.text(self.font, hero.name, (x, y_0 + PORTRAIT_ICON_SIZE[1] + 10))
+            self.screen_render.text_centered(
+                self.font, hero.name, (x + PORTRAIT_ICON_SIZE[0] // 2, y_0 + PORTRAIT_ICON_SIZE[1] + 10),
+                self.font_width)
         description = HEROES[heroes[selected_index]].description
         description_lines = split_text_into_lines(description, 40)
         y_1 = 350
         for i, description_line in enumerate(description_lines):
-            self.screen_render.text(self.font, description_line, (x_base, y_1 + i * 20))
-        y_2 = 500
-        self.screen_render.text(self.font, "SELECT YOUR HERO (Space to confirm)", (x_base, y_2))
+            self.screen_render.text(self.font, description_line, (x_base - 8, y_1 + i * 20))
+
+        y_2 = 540
+        self.screen_render.text_centered(self.font, "Choose with arrow-keys", (x_mid, y_2), self.font_width)
+        y_3 = 570
+        self.screen_render.text_centered(self.font, "Press Space/Enter to confirm", (x_mid, y_3), self.font_width)
