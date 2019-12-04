@@ -7,17 +7,15 @@ from pythongame.scene_creating_world.scene_creating_world import InitFlags
 
 class CommandlineFlags:
     def __init__(self, map_file_name: Optional[str], picked_hero: Optional[HeroId],
-                 load_from_file: Optional[str],
                  hero_start_level: int, start_money: int):
         self.map_file_name = map_file_name
         self.chosen_hero_id = picked_hero
-        self.load_from_file = load_from_file
         self.hero_start_level = hero_start_level
         self.start_money = start_money
 
     def __repr__(self):
         return "(" + str(self.map_file_name) + ", " + str(self.chosen_hero_id) + ", " + \
-               str(self.load_from_file) + ", " + str(self.hero_start_level) + ", " + str(self.start_money) + ")"
+               str(self.hero_start_level) + ", " + str(self.start_money) + ")"
 
 
 class StartingProgramScene(AbstractScene):
@@ -41,15 +39,9 @@ class StartingProgramScene(AbstractScene):
         start_immediately_and_skip_hero_selection = (
                 self.cmd_flags.chosen_hero_id is not None
                 or self.cmd_flags.hero_start_level is not None
-                or self.cmd_flags.start_money is not None
-                or self.cmd_flags.load_from_file is not None)
-
+                or self.cmd_flags.start_money is not None)
         if start_immediately_and_skip_hero_selection:
-            saved_player_state = self.save_file_handler.load_player_state_from_json_file(
-                "savefiles/" + self.cmd_flags.load_from_file) if self.cmd_flags.load_from_file else None
-            if saved_player_state:
-                picked_hero = HeroId[saved_player_state.hero_id]
-            elif self.cmd_flags.chosen_hero_id:
+            if self.cmd_flags.chosen_hero_id:
                 picked_hero = HeroId[self.cmd_flags.chosen_hero_id]
             else:
                 picked_hero = HeroId.MAGE
@@ -57,12 +49,12 @@ class StartingProgramScene(AbstractScene):
             start_money = int(self.cmd_flags.start_money) if self.cmd_flags.start_money else 0
 
             flags = InitFlags(
-                map_file_path,
-                picked_hero,
-                saved_player_state,
-                hero_start_level,
-                start_money,
-                None)
+                map_file_path=map_file_path,
+                picked_hero=picked_hero,
+                saved_player_state=None,
+                hero_start_level=hero_start_level,
+                start_money=start_money,
+                character_file=None)
             return SceneTransition(self.creating_world_scene(flags))
 
         else:

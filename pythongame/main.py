@@ -36,9 +36,9 @@ register_all_game_data()
 
 class Main:
     def __init__(self, map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start_level: Optional[int],
-                 start_money: Optional[int], load_from_file: Optional[str]):
+                 start_money: Optional[int]):
 
-        cmd_flags = CommandlineFlags(map_file_name, chosen_hero_id, load_from_file, hero_start_level, start_money)
+        cmd_flags = CommandlineFlags(map_file_name, chosen_hero_id, hero_start_level, start_money)
 
         pygame.init()
 
@@ -117,6 +117,6 @@ class Main:
 
 
 def start(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start_level: Optional[int],
-          start_money: Optional[int], load_from_file: Optional[str]):
-    main = Main(map_file_name, chosen_hero_id, hero_start_level, start_money, load_from_file)
+          start_money: Optional[int]):
+    main = Main(map_file_name, chosen_hero_id, hero_start_level, start_money)
     main.main_loop()
