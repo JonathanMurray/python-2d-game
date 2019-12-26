@@ -1,12 +1,9 @@
-import sys
 from typing import Optional, Any, List, Tuple
 
-import pygame
-
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis, SoundId, SceneId, AbstractScene, SceneTransition
+from pythongame.core.common import Millis, SoundId, AbstractScene, SceneTransition
 from pythongame.core.game_data import CONSUMABLES, ITEMS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     ConsumableOnGround, ItemOnGround, Chest
@@ -14,14 +11,14 @@ from pythongame.core.hero_upgrades import pick_talent
 from pythongame.core.math import get_directions_to_position
 from pythongame.core.npc_behaviors import invoke_npc_action, get_dialog_data
 from pythongame.core.sound_player import play_sound, toggle_muted
-from pythongame.core.user_input import ActionExitGame, ActionTryUseAbility, ActionTryUsePotion, \
+from pythongame.core.user_input import ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
-    ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_dialog_user_inputs, \
-    ActionChangeDialogOption, ActionSaveGameState, ActionPressShiftKey, ActionReleaseShiftKey, PlayingUserInputHandler, \
-    ActionToggleUiTalents, ActionToggleUiStats, ActionToggleUiHelp, ActionRightMouseClicked
+    ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_dialog_actions, \
+    ActionChangeDialogOption, ActionSaveGameState, PlayingUserInputHandler, ActionToggleUiTalents, ActionToggleUiStats, \
+    ActionToggleUiHelp, ActionRightMouseClicked
 from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
 from pythongame.core.world_behavior import AbstractWorldBehavior
-from pythongame.player_file import save_to_file
+from pythongame.player_file import SaveFileHandler
 from pythongame.scenes_game.game_engine import GameEngine
 from pythongame.scenes_game.game_ui_state import GameUiState, ToggleButtonId
 from pythongame.scenes_game.game_ui_view import DragItemBetweenInventorySlots, DropItemOnGround, \
@@ -29,55 +26,56 @@ from pythongame.scenes_game.game_ui_view import DragItemBetweenInventorySlots, D
     PickTalent, StartDraggingItemOrConsumable, TrySwitchItemInInventory, ToggleSound, SaveGame, EventTriggeredFromUi
 from pythongame.scenes_game.game_ui_view import GameUiView
 from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
+from pythongame.scenes_game.scene_paused import PausedScene
 
 
 class PlayingScene(AbstractScene):
-    def __init__(self, world_view: GameWorldView):
+    def __init__(self,
+                 world_view: GameWorldView,
+                 game_state: GameState,
+                 game_engine: GameEngine,
+                 world_behavior: AbstractWorldBehavior,
+                 ui_state: GameUiState,
+                 ui_view: GameUiView,
+                 new_hero_was_created: bool,
+                 character_file: Optional[str],
+                 save_file_handler: SaveFileHandler,
+                 total_time_played_on_character: Millis):
+
         self.player_interactions_state = PlayerInteractionsState()
         self.world_view = world_view
         self.render_hit_and_collision_boxes = False
-        self.is_shift_key_held_down = False
         self.total_time_played = 0
-
-        # Set on initialization
-        self.game_state: GameState = None
-        self.game_engine: GameEngine = None
-        self.world_behavior: AbstractWorldBehavior = None
-        self.ui_state: GameUiState = None
-        self.ui_view: GameUiView = None
+        self.game_state: GameState = game_state
+        self.game_engine: GameEngine = game_engine
+        self.world_behavior: AbstractWorldBehavior = world_behavior
+        self.ui_state: GameUiState = ui_state
+        self.ui_view: GameUiView = ui_view
         self.user_input_handler = PlayingUserInputHandler()
+        self.world_behavior.on_startup(new_hero_was_created)
+        self.character_file = character_file
+        self.save_file_handler = save_file_handler
+        self.total_time_played_on_character = total_time_played_on_character
 
-    def initialize(self, data: Tuple[GameState, GameEngine, AbstractWorldBehavior, GameUiState, GameUiView, bool]):
-        if data is not None:
-            self.game_state, self.game_engine, self.world_behavior, self.ui_state, self.ui_view, new_hero_was_created = data
-            self.world_behavior.on_startup(new_hero_was_created)
-        # In case this scene has been running before, we make sure to clear any state. Otherwise keys that were held
-        # down would still be considered active!
-        self.user_input_handler = PlayingUserInputHandler()
+    def on_enter(self):
         self.ui_view.set_paused(False)
 
-    def run_one_frame(self, time_passed: Millis) -> Optional[SceneTransition]:
+        # User may have been holding down a key when pausing, and then releasing it while paused. It's safer then to
+        # treat all keys as released when we re-enter this state.
+        self.user_input_handler.forget_held_down_keys()
 
-        self.total_time_played += time_passed
+    def handle_user_input(self, events: List[Any]) -> Optional[SceneTransition]:
 
         transition_to_pause = False
 
-        if not self.ui_view.has_open_dialog():
-            self.player_interactions_state.handle_nearby_entities(
-                self.game_state.player_entity, self.game_state, self.game_engine)
-
-        # ------------------------------------
-        #         HANDLE USER INPUT
-        # ------------------------------------
-
         events_triggered_from_ui: List[EventTriggeredFromUi] = []
+
+        # TODO handle dialog/no dialog more explicitly as states, and delegate more things to them (?)
 
         if self.ui_view.has_open_dialog():
             self.game_state.player_entity.set_not_moving()
-            user_actions = get_dialog_user_inputs()
+            user_actions = get_dialog_actions(events)
             for action in user_actions:
-                if isinstance(action, ActionExitGame):
-                    exit_game()
                 if isinstance(action, ActionChangeDialogOption):
                     self.ui_view.change_dialog_option(action.index_delta)
                     play_sound(SoundId.DIALOG)
@@ -89,11 +87,13 @@ class PlayingScene(AbstractScene):
                         if message:
                             self.ui_state.set_message(message)
                         npc_in_dialog.stun_status.remove_one()
+
+                        # User may have been holding down a key when starting dialog, and then releasing it while in
+                        # dialog. It's safer then to treat all keys as released when we exit the dialog.
+                        self.user_input_handler.forget_held_down_keys()
         else:
-            user_actions = self.user_input_handler.get_main_user_inputs()
+            user_actions = self.user_input_handler.get_actions(events)
             for action in user_actions:
-                if isinstance(action, ActionExitGame):
-                    exit_game()
                 if isinstance(action, ActionToggleRenderDebugging):
                     self.render_hit_and_collision_boxes = not self.render_hit_and_collision_boxes
                     # TODO: Handle this better than accessing a global variable from here
@@ -137,12 +137,8 @@ class PlayingScene(AbstractScene):
                             self.game_engine.open_chest(ready_entity)
                         else:
                             raise Exception("Unhandled entity: " + str(ready_entity))
-                if isinstance(action, ActionPressShiftKey):
-                    self.is_shift_key_held_down = True
-                if isinstance(action, ActionReleaseShiftKey):
-                    self.is_shift_key_held_down = False
                 if isinstance(action, ActionSaveGameState):
-                    self.save_game()
+                    self._save_game()
                 if isinstance(action, ActionToggleUiTalents):
                     self.ui_view.click_toggle_button(ToggleButtonId.TALENTS)
                     play_sound(SoundId.UI_TOGGLE)
@@ -153,43 +149,7 @@ class PlayingScene(AbstractScene):
                     self.ui_view.click_toggle_button(ToggleButtonId.HELP)
                     play_sound(SoundId.UI_TOGGLE)
 
-        # ------------------------------------
-        #     UPDATE STATE BASED ON CLOCK
-        # ------------------------------------
-
-        scene_transition = self.world_behavior.control(time_passed)
-        engine_events = self.game_engine.run_one_frame(time_passed)
-        for event in engine_events:
-            scene_transition = self.world_behavior.handle_event(event)
-
-        # ------------------------------------
-        #          RENDER EVERYTHING
-        # ------------------------------------
-
-        entity_action_text = None
-        # Don't display any actions on screen if player is stunned. It would look weird when using warp stones
-        if not self.game_state.player_state.stun_status.is_stunned():
-            ready_entity = self.player_interactions_state.get_entity_to_interact_with()
-            if ready_entity is not None:
-                entity_action_text = get_entity_action_text(ready_entity, self.is_shift_key_held_down)
-
-        self.world_view.render_world(
-            all_entities_to_render=self.game_state.get_all_entities_to_render(),
-            decorations_to_render=self.game_state.get_decorations_to_render(),
-            player_entity=self.game_state.player_entity,
-            is_player_invisible=self.game_state.player_state.is_invisible,
-            player_active_buffs=self.game_state.player_state.active_buffs,
-            camera_world_area=self.game_state.get_camera_world_area_including_camera_shake(),
-            non_player_characters=self.game_state.non_player_characters,
-            visual_effects=self.game_state.visual_effects,
-            render_hit_and_collision_boxes=self.render_hit_and_collision_boxes,
-            player_health=self.game_state.player_state.health_resource.value,
-            player_max_health=self.game_state.player_state.health_resource.max_value,
-            entire_world_area=self.game_state.entire_world_area,
-            entity_action_text=entity_action_text)
-
-        self.ui_view.render(self.ui_state)
-
+        # TODO Much noise below around playing sounds. Perhaps game_engine should play the sounds in these cases?
         for event in events_triggered_from_ui:
             if isinstance(event, StartDraggingItemOrConsumable):
                 play_sound(SoundId.UI_START_DRAGGING_ITEM)
@@ -225,24 +185,73 @@ class PlayingScene(AbstractScene):
             elif isinstance(event, ToggleSound):
                 toggle_muted()
             elif isinstance(event, SaveGame):
-                self.save_game()
+                self._save_game()
             else:
                 raise Exception("Unhandled event: " + str(event))
 
-        self.world_view.update_display()
+        if transition_to_pause:
+            return SceneTransition(PausedScene(self, self.world_view, self.ui_view, self.game_state, self.ui_state))
+
+    def run_one_frame(self, time_passed: Millis) -> Optional[SceneTransition]:
+
+        self.total_time_played += time_passed
+        self.total_time_played_on_character += time_passed
+
+        if not self.ui_view.has_open_dialog():
+            self.player_interactions_state.handle_nearby_entities(
+                self.game_state.player_entity, self.game_state, self.game_engine)
+
+        # ------------------------------------
+        #     UPDATE STATE BASED ON CLOCK
+        # ------------------------------------
+
+        scene_transition = self.world_behavior.control(time_passed)
+        engine_events = self.game_engine.run_one_frame(time_passed)
+        for event in engine_events:
+            scene_transition = self.world_behavior.handle_event(event)
 
         if scene_transition is not None:
             return scene_transition
-        if transition_to_pause:
-            return SceneTransition(SceneId.PAUSED, (self.game_state, self.ui_state))
+
         return None
 
-    def save_game(self):
-        save_to_file(self.game_state)
+    def render(self):
+
+        entity_action_text = None
+        # Don't display any actions on screen if player is stunned. It would look weird when using warp stones
+        if not self.game_state.player_state.stun_status.is_stunned():
+            ready_entity = self.player_interactions_state.get_entity_to_interact_with()
+            if ready_entity is not None:
+                entity_action_text = _get_entity_action_text(ready_entity, self.user_input_handler.is_shift_held_down())
+
+        self.world_view.render_world(
+            all_entities_to_render=self.game_state.get_all_entities_to_render(),
+            decorations_to_render=self.game_state.get_decorations_to_render(),
+            player_entity=self.game_state.player_entity,
+            is_player_invisible=self.game_state.player_state.is_invisible,
+            player_active_buffs=self.game_state.player_state.active_buffs,
+            camera_world_area=self.game_state.get_camera_world_area_including_camera_shake(),
+            non_player_characters=self.game_state.non_player_characters,
+            visual_effects=self.game_state.visual_effects,
+            render_hit_and_collision_boxes=self.render_hit_and_collision_boxes,
+            player_health=self.game_state.player_state.health_resource.value,
+            player_max_health=self.game_state.player_state.health_resource.max_value,
+            entire_world_area=self.game_state.entire_world_area,
+            entity_action_text=entity_action_text)
+
+        self.ui_view.render(self.ui_state)
+
+    def _save_game(self):
+        filename = self.save_file_handler.save_to_file(
+            self.game_state, self.character_file, self.total_time_played_on_character)
+        if self.character_file is None:
+            # This is relevant when saving a character for the first time. If we didn't update the field, we would
+            # be creating a new file everytime we saved.
+            self.character_file = filename
         self.ui_state.set_message("Game was saved.")
 
 
-def get_entity_action_text(ready_entity: Any, is_shift_key_held_down: bool) -> EntityActionText:
+def _get_entity_action_text(ready_entity: Any, is_shift_key_held_down: bool) -> EntityActionText:
     if isinstance(ready_entity, NonPlayerCharacter):
         return EntityActionText(ready_entity.world_entity, "[Space] ...", [])
     elif isinstance(ready_entity, LootableOnGround):
@@ -277,11 +286,6 @@ def _get_loot_details(lootable: LootableOnGround) -> List[str]:
         return [CONSUMABLES[lootable.consumable_type].description]
     if isinstance(lootable, ItemOnGround):
         return ITEMS[lootable.item_type].description_lines
-
-
-def exit_game():
-    pygame.quit()
-    sys.exit()
 
 
 def _get_mouse_world_pos(game_state: GameState, mouse_screen_position: Tuple[int, int]):

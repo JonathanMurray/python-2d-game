@@ -411,6 +411,7 @@ class PlayerState:
         self.stats_were_updated = Observable()
         self.exp_was_updated = Observable()
         self.money_was_updated = Observable()
+        self.abilities_were_updated = Observable()
         self.cooldowns_were_updated = Observable()
         self.buffs_were_updated = Observable()
 
@@ -520,6 +521,9 @@ class PlayerState:
         self.ability_cooldowns_remaining[ability_type] += amount
         self.notify_cooldown_observers()
 
+    def notify_ability_observers(self):
+        self.abilities_were_updated.notify(self.abilities)
+
     def notify_cooldown_observers(self):
         self.cooldowns_were_updated.notify(self.ability_cooldowns_remaining)
 
@@ -572,6 +576,7 @@ class PlayerState:
     def gain_ability(self, ability_type: AbilityType):
         self.ability_cooldowns_remaining[ability_type] = 0
         self.abilities.append(ability_type)
+        self.notify_ability_observers()
         self.notify_cooldown_observers()
 
     def notify_about_event(self, event: Event, game_state):

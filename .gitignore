@@ -1,4 +1,6 @@
 .idea
 __pycache__
 .DS_Store
-savefiles
+# dist and build are created by pyinstaller as part of generating an executable
+dist
+build

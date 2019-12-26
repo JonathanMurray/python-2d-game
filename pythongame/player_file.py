@@ -1,14 +1,15 @@
-import datetime
 import json
-from typing import Dict, List
+import os
+from typing import Dict, List, Optional
 
+from pythongame.core.common import Millis
 from pythongame.core.game_state import GameState
 
 
 class SavedPlayerState:
     def __init__(self, hero_id: str, level: int, exp: int, consumables_in_slots: Dict[str, List[str]],
                  items: List[str], money: int, enabled_portals: Dict[str, str],
-                 talent_tier_choices: List[int]):
+                 talent_tier_choices: List[int], total_time_played_on_character: Millis):
         self.hero_id = hero_id
         self.level = level
         self.exp = exp
@@ -17,6 +18,7 @@ class SavedPlayerState:
         self.money = money
         self.enabled_portals = enabled_portals
         self.talent_tier_choices = talent_tier_choices
+        self.total_time_played_on_character = total_time_played_on_character
 
 
 class PlayerStateJson:
@@ -30,7 +32,8 @@ class PlayerStateJson:
             "items": player_state.items,
             "money": player_state.money,
             "enabled_portals": player_state.enabled_portals,
-            "talents": player_state.talent_tier_choices
+            "talents": player_state.talent_tier_choices,
+            "total_time_played": player_state.total_time_played_on_character
         }
 
     @staticmethod
@@ -43,36 +46,62 @@ class PlayerStateJson:
             data["items"],
             data["money"],
             data["enabled_portals"],
-            data.get("talents", [])
+            data.get("talents", []),
+            data.get("total_time_played", 0)
         )
 
 
-def load_player_state_from_json_file(file_path: str) -> SavedPlayerState:
-    with open(file_path) as file:
-        json_data = json.loads(file.read())
-        return PlayerStateJson.deserialize(json_data)
+class SaveFileHandler:
 
+    def __init__(self):
+        self.directory = "saved_characters"
+        if not os.path.exists(self.directory):
+            print("Save directory not found. Creating new directory: " + self.directory)
+            os.makedirs(self.directory)
 
-def save_player_state_to_json_file(player_state: SavedPlayerState, file_path: str):
-    json_data = PlayerStateJson.serialize(player_state)
-    with open(file_path, 'w') as file:
-        file.write(json.dumps(json_data, indent=2))
+    def load_player_state_from_json_file(self, filename: str) -> SavedPlayerState:
+        with open(self.directory + "/" + filename) as file:
+            json_data = json.loads(file.read())
+            return PlayerStateJson.deserialize(json_data)
 
+    def _save_player_state_to_json_file(self, player_state: SavedPlayerState, filename: str):
+        json_data = PlayerStateJson.serialize(player_state)
+        with open(self.directory + "/" + filename, 'w') as file:
+            file.write(json.dumps(json_data, indent=2))
 
-def save_to_file(game_state: GameState):
-    filename = "savefiles/DEBUG_" + str(datetime.datetime.now()).replace(" ", "_") + ".json"
-    player_state = game_state.player_state
-    saved_player_state = SavedPlayerState(
-        hero_id=player_state.hero_id.name,
-        level=player_state.level,
-        exp=player_state.exp,
-        consumables_in_slots={slot_number: [c.name for c in consumables] for (slot_number, consumables)
-                              in player_state.consumable_inventory.consumables_in_slots.items()},
-        items=[slot.get_item_type().name if not slot.is_empty() else None
-               for slot in player_state.item_inventory.slots],
-        money=player_state.money,
-        enabled_portals={p.portal_id.name: p.world_entity.sprite.name for p in game_state.portals if p.is_enabled},
-        talent_tier_choices=player_state.get_serilized_talent_tier_choices()
-    )
-    save_player_state_to_json_file(saved_player_state, filename)
-    print("Saved game state to file: " + filename)
+    def save_to_file(self, game_state: GameState, existing_save_file: Optional[str],
+                     total_time_played_on_character: Millis) -> str:
+        if existing_save_file:
+            filename = existing_save_file
+        else:
+            filename = self._generate_filename_for_new_character()
+        player_state = game_state.player_state
+        saved_player_state = SavedPlayerState(
+            hero_id=player_state.hero_id.name,
+            level=player_state.level,
+            exp=player_state.exp,
+            consumables_in_slots={slot_number: [c.name for c in consumables] for (slot_number, consumables)
+                                  in player_state.consumable_inventory.consumables_in_slots.items()},
+            items=[slot.get_item_type().name if not slot.is_empty() else None
+                   for slot in player_state.item_inventory.slots],
+            money=player_state.money,
+            enabled_portals={p.portal_id.name: p.world_entity.sprite.name for p in game_state.portals if p.is_enabled},
+            talent_tier_choices=player_state.get_serilized_talent_tier_choices(),
+            total_time_played_on_character=total_time_played_on_character
+        )
+        self._save_player_state_to_json_file(saved_player_state, filename)
+        print("Saved to file: " + filename)
+        return filename
+
+    def list_save_files(self):
+        return os.listdir(self.directory)
+
+    def _generate_filename_for_new_character(self):
+        existing_files = self.list_save_files()
+        if existing_files:
+            id_from_filename = lambda f: int(f.split(".json")[0])
+            existing_character_ids = [id_from_filename(f) for f in existing_files]
+            next_available_id = max(existing_character_ids) + 1
+        else:
+            next_available_id = 1
+        return str(next_available_id) + ".json"

@@ -46,6 +46,9 @@ class DrawableArea:
     def text(self, font, text: str, pos: Tuple[int, int], color=COLOR_WHITE):
         self.screen.blit(font.render(text, True, color), self._translate_pos(pos))
 
+    def text_centered(self, font, text: str, pos: Tuple[int, int], digit_pixel_width: float, color=COLOR_WHITE):
+        self.text(font, text, (int(pos[0] - len(text) * digit_pixel_width), pos[1]), color)
+
     def image(self, image, pos: Tuple[int, int]):
         self.screen.blit(image, self._translate_pos(pos))
 

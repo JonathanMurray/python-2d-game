@@ -376,7 +376,7 @@ def main(map_file_name: Optional[str]):
         else:
             raise Exception("Unhandled user_state: " + str(user_state))
 
-        world_view.update_display()
+        pygame.display.update()
 
 
 def _add_money(amount: int, game_state, snapped_mouse_world_position):

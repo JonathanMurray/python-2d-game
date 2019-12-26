@@ -5,8 +5,7 @@ from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite, \
     SoundId
-from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, \
-    KEYS_BY_ABILITY_TYPE, CONSUMABLES, ITEMS, HEROES
+from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, ITEMS, HEROES
 from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import is_point_in_rect
@@ -48,7 +47,7 @@ class GameUiView:
 
     def __init__(self, pygame_screen, camera_size: Tuple[int, int], screen_size: Tuple[int, int],
                  images_by_ui_sprite: Dict[UiIconSprite, Any], big_images_by_ui_sprite: Dict[UiIconSprite, Any],
-                 images_by_portrait_sprite: Dict[PortraitIconSprite, Any]):
+                 images_by_portrait_sprite: Dict[PortraitIconSprite, Any], ability_key_labels: List[str]):
 
         # INIT PYGAME FONTS
         pygame.font.init()
@@ -59,26 +58,20 @@ class GameUiView:
         self.ui_screen_area = Rect(0, camera_size[1], screen_size[0], screen_size[1] - camera_size[1])
         self.camera_size = camera_size
         self.screen_size = screen_size
+        self.ability_key_labels = ability_key_labels
 
         # FONTS
         self.font_splash_screen = pygame.font.Font(DIR_FONTS + 'Arial Rounded Bold.ttf', 64)
         self.font_ui_stat_bar_numbers = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_ui_money = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
-        self.font_npc_action = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
-        self.font_ui_headers = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 18)
-        self.font_tooltip_header = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 16)
         self.font_tooltip_details = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_buttons = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_stats = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 9)
         self.font_buff_texts = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_message = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 14)
-        self.font_debug_info = pygame.font.Font(None, 19)
-        self.font_game_world_text = pygame.font.Font(DIR_FONTS + 'Arial Rounded Bold.ttf', 12)
-        self.font_game_world_text = pygame.font.Font(None, 19)
+        self.font_debug_info = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.font_ui_icon_keys = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 12)
         self.font_level = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 11)
-        self.font_dialog = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 24)
-        self.font_dialog_option_detail_body = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
 
         # IMAGES
         self.images_by_ui_sprite = images_by_ui_sprite
@@ -435,12 +428,13 @@ class GameUiView:
         self.manabar.tooltip = mana_tooltip
 
     def on_abilities_updated(self, abilities: List[AbilityType]):
-        for i, ability_type in enumerate(abilities):
-            ability = ABILITIES[ability_type]
-            icon = self.ability_icons[i]
+        for i, icon in enumerate(self.ability_icons):
+            ability_type = abilities[i] if i < len(abilities) else None
+            ability = ABILITIES[ability_type] if ability_type else None
+            image = self.images_by_ui_sprite[ability.icon_sprite] if ability else None
             icon.update(
-                image=self.images_by_ui_sprite[ability.icon_sprite],
-                label=KEYS_BY_ABILITY_TYPE[ability_type].key_string,
+                image=image,
+                label=self.ability_key_labels[i],
                 ability=ability,
                 ability_type=ability_type)
 
@@ -538,6 +532,9 @@ class GameUiView:
 
     def update_fps_string(self, fps_string: str):
         self.fps_string = fps_string
+
+    def remove_highlight_from_talent_toggle(self):
+        self.talents_toggle.highlighted = False
 
     # --------------------------------------------------------------------------------------------------------
     #                                          RENDERING

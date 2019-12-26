@@ -31,7 +31,6 @@ class GameEngine:
     def __init__(self, game_state: GameState, ui_state: GameUiState):
         self.game_state = game_state
         self.ui_state = ui_state
-        self.player_abilities_were_updated = Observable()
         self.talent_was_unlocked = Observable()
 
     def try_use_ability(self, ability_type: AbilityType):
@@ -337,7 +336,6 @@ class GameEngine:
             self.ui_state.set_message("You reached level " + str(self.game_state.player_state.level))
         if new_abilities:
             allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
-            self.notify_ability_observers()
         if len(new_abilities) == 1:
             self.ui_state.enqueue_message("New ability: " + new_abilities[0])
         elif len(new_abilities) > 1:
@@ -345,9 +343,6 @@ class GameEngine:
         if did_unlock_new_talent:
             self.talent_was_unlocked.notify(None)
             self.ui_state.enqueue_message("You can pick a talent!")
-
-    def notify_ability_observers(self):
-        self.player_abilities_were_updated.notify(self.game_state.player_state.abilities)
 
     def _is_npc_close_to_camera(self, npc: NonPlayerCharacter):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(
