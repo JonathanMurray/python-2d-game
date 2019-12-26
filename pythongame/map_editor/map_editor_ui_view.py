@@ -41,7 +41,7 @@ class MapEditorView:
         self.ui_render = DrawableArea(pygame_screen, self._translate_ui_position_to_screen)
 
         self.font_ui_headers = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 18)
-        self.font_debug_info = pygame.font.Font(None, 19)
+        self.font_debug_info = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 12)
         self.font_ui_icon_keys = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 12)
 
     def _translate_ui_position_to_screen(self, position):
