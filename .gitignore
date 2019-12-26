@@ -4,3 +4,4 @@ __pycache__
 # dist and build are created by pyinstaller as part of generating an executable
 dist
 build
+.profile_stats
