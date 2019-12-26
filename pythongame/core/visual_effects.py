@@ -213,7 +213,7 @@ def create_teleport_effects(effect_position: Tuple) -> List[VisualEffect]:
 def _get_entity_text_positions(entity: WorldEntity, text_y_travel_distance: int) -> Tuple[
     Tuple[int, int], Tuple[int, int]]:
     sprite_size = ENTITY_SPRITE_SIZES[entity.sprite]
-    y_start = entity.y + entity.h - sprite_size[1]
+    y_start = entity.y + entity.pygame_collision_rect.h - sprite_size[1]
     random_x_offset = random.randint(-10, 10)
     x = entity.get_center_position()[0] - 5 + random_x_offset
     start_position = (x, y_start)

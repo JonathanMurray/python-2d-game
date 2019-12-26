@@ -34,35 +34,35 @@ class MapEditorWorldEntity:
     def player():
         # The choice of hero shouldn't matter in the map editor, as we only store its position in the map file
         entity = create_hero_world_entity(HeroId.MAGE, (0, 0))
-        e = MapEditorWorldEntity(entity.sprite, (entity.w, entity.h))
+        e = MapEditorWorldEntity(entity.sprite, (entity.pygame_collision_rect.w, entity.pygame_collision_rect.h))
         e.is_player = True
         return e
 
     @staticmethod
     def npc(npc_type: NpcType):
         entity = create_npc(npc_type, (0, 0)).world_entity
-        e = MapEditorWorldEntity(entity.sprite, (entity.w, entity.h))
+        e = MapEditorWorldEntity(entity.sprite, (entity.pygame_collision_rect.w, entity.pygame_collision_rect.h))
         e.npc_type = npc_type
         return e
 
     @staticmethod
     def wall(wall_type: WallType):
         entity = create_wall(wall_type, (0, 0)).world_entity
-        e = MapEditorWorldEntity(entity.sprite, (entity.w, entity.h))
+        e = MapEditorWorldEntity(entity.sprite, (entity.pygame_collision_rect.w, entity.pygame_collision_rect.h))
         e.wall_type = wall_type
         return e
 
     @staticmethod
     def consumable(consumable_type: ConsumableType):
         entity = create_consumable_on_ground(consumable_type, (0, 0)).world_entity
-        e = MapEditorWorldEntity(entity.sprite, (entity.w, entity.h))
+        e = MapEditorWorldEntity(entity.sprite, (entity.pygame_collision_rect.w, entity.pygame_collision_rect.h))
         e.consumable_type = consumable_type
         return e
 
     @staticmethod
     def item(item_type: ItemType):
         entity = create_item_on_ground(item_type, (0, 0)).world_entity
-        e = MapEditorWorldEntity(entity.sprite, (entity.w, entity.h))
+        e = MapEditorWorldEntity(entity.sprite, (entity.pygame_collision_rect.w, entity.pygame_collision_rect.h))
         e.item_type = item_type
         return e
 
@@ -76,20 +76,20 @@ class MapEditorWorldEntity:
     @staticmethod
     def money(amount: int):
         entity = create_money_pile_on_ground(amount, (0, 0)).world_entity
-        e = MapEditorWorldEntity(entity.sprite, (entity.w, entity.h))
+        e = MapEditorWorldEntity(entity.sprite, (entity.pygame_collision_rect.w, entity.pygame_collision_rect.h))
         e.money_amount = amount
         return e
 
     @staticmethod
     def portal(portal_id: PortalId):
         entity = create_portal(portal_id, (0, 0)).world_entity
-        e = MapEditorWorldEntity(entity.sprite, (entity.w, entity.h))
+        e = MapEditorWorldEntity(entity.sprite, (entity.pygame_collision_rect.w, entity.pygame_collision_rect.h))
         e.portal_id = portal_id
         return e
 
     @staticmethod
     def chest():
         entity = create_chest((0, 0)).world_entity
-        e = MapEditorWorldEntity(entity.sprite, (entity.w, entity.h))
+        e = MapEditorWorldEntity(entity.sprite, (entity.pygame_collision_rect.w, entity.pygame_collision_rect.h))
         e.is_chest = True
         return e

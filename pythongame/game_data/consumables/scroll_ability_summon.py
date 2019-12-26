@@ -22,7 +22,7 @@ def _apply_scroll(game_state: GameState):
     player_entity = game_state.player_entity
 
     summon_size = NON_PLAYER_CHARACTERS[NpcType.PLAYER_SUMMON_DRAGON].size
-    player_size = game_state.player_entity.w, game_state.player_entity.h
+    player_size = game_state.player_entity.pygame_collision_rect.w, game_state.player_entity.h
     candidate_relative_positions = [
         (0, - summon_size[1]),  # top
         (player_size[0], - summon_size[1]),  # top right

@@ -64,7 +64,8 @@ def _get_enemy_that_was_hit(game_state: GameState, player_entity: WorldEntity, d
     while partial_distance < distance_jumped:
         intermediate_position = translate_in_direction(previous_position, player_entity.direction, partial_distance)
         enemies_hit = game_state.get_enemy_intersecting_rect(
-            Rect(intermediate_position[0], intermediate_position[1], player_entity.w, player_entity.h))
+            Rect(intermediate_position[0], intermediate_position[1], player_entity.pygame_collision_rect.w,
+                 player_entity.pygame_collision_rect.h))
         if enemies_hit:
             return enemies_hit[0]
         partial_distance += 10
@@ -77,7 +78,7 @@ def _would_collide_with_wall(game_state: GameState, player_entity: WorldEntity, 
     while partial_distance < distance_jumped:
         intermediate_position = translate_in_direction(previous_position, player_entity.direction, partial_distance)
         intersection = game_state.walls_state.does_rect_intersect_with_wall(
-            (intermediate_position[0], intermediate_position[1], player_entity.w, player_entity.h))
+            (intermediate_position[0], intermediate_position[1], player_entity.pygame_collision_rect.w, player_entity.pygame_collision_rect.h))
         if intersection:
             return True
         partial_distance += 10

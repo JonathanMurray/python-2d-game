@@ -26,8 +26,9 @@ class TeleportingWithWarpStone(AbstractBuffEffect):
         player_entity.set_not_moving()
         player_entity.visible = False
         game_state.visual_effects += create_teleport_effects(buffed_entity.get_center_position())
-        home_warp_point = create_warp_point(game_state.player_spawn_position, (player_entity.w, player_entity.h))
-        remote_warp_point = create_warp_point(player_entity.get_center_position(), (player_entity.w, player_entity.h))
+        player_collision_rect = (player_entity.pygame_collision_rect.w, player_entity.pygame_collision_rect.h)
+        home_warp_point = create_warp_point(game_state.player_spawn_position, player_collision_rect)
+        remote_warp_point = create_warp_point(player_entity.get_center_position(), player_collision_rect)
         game_state.warp_points = [home_warp_point, remote_warp_point]
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
