@@ -28,11 +28,13 @@ from pythongame.scenes_game.game_ui_view import GameUiView, UI_ICON_SIZE, PORTRA
 from pythongame.scenes_game.scene_playing import PlayingScene
 
 ABILITY_KEY_LABELS = ["Q", "W", "E", "R", "T"]
-SCREEN_SIZE = (700, 700)
-CAMERA_SIZE = (700, 530)
+SCREEN_SIZE = (800, 600)  # If this is not a supported resolution, performance takes a big hit
+CAMERA_SIZE = (800, 430)
 
 register_all_game_data()
 
+# TODO let user toggle this
+FULLSCREEN = False
 
 class Main:
     def __init__(self, map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start_level: Optional[int],
@@ -42,7 +44,12 @@ class Main:
 
         pygame.init()
 
-        self.pygame_screen = pygame.display.set_mode(SCREEN_SIZE)
+        print("Available display modes: " + str(pygame.display.list_modes()))
+
+        flags = pygame.DOUBLEBUF
+        if FULLSCREEN:
+            flags = flags | pygame.FULLSCREEN | pygame.HWSURFACE
+        self.pygame_screen = pygame.display.set_mode(SCREEN_SIZE, flags)
         images_by_sprite = load_images_by_sprite(ENTITY_SPRITE_INITIALIZERS)
         images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, UI_ICON_SIZE)
         big_images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, UI_ICON_BIG_SIZE)
@@ -68,8 +75,9 @@ class Main:
             input_events: List[Any] = pygame.event.get()
             for event in input_events:
                 if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
+                    self.quit_game()
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and FULLSCREEN:
+                    self.quit_game()
 
             transition: Optional[SceneTransition] = self.scene.handle_user_input(input_events)
             if transition:
@@ -83,6 +91,10 @@ class Main:
 
             self.scene.render()
             pygame.display.update()
+
+    def quit_game(self):
+        pygame.quit()
+        sys.exit()
 
     def change_scene(self, scene_transition: SceneTransition):
         self.scene = scene_transition.scene

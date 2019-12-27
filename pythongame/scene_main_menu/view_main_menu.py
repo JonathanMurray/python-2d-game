@@ -21,14 +21,17 @@ DIR_FONTS = './resources/fonts/'
 class MainMenuView:
 
     def __init__(self, pygame_screen, images_by_portrait_sprite: Dict[PortraitIconSprite, Any]):
+        self._screen_size = pygame_screen.get_size()
         self._screen_render = DrawableArea(pygame_screen)
         self._font = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 24)
-        self.images_by_portrait_sprite = images_by_portrait_sprite
-        self.font_width = 4.5
+        self._images_by_portrait_sprite = images_by_portrait_sprite
+        self._font_width = 2.5
 
     def render(self, saved_characters: List[SavedPlayerState], option_index: int):
         self._screen_render.fill(COLOR_BLACK)
-        x = 180
+        self._screen_render.rect(COLOR_WHITE, Rect(0, 0, self._screen_size[0], self._screen_size[1]), 1)
+        x_mid = self._screen_size[0] // 2
+        x = x_mid - 175
         x_text = x + PORTRAIT_ICON_SIZE[0] + 25
         y = 100
 
@@ -37,7 +40,7 @@ class MainMenuView:
         else:
             top_text = "You have " + str(len(saved_characters)) + " saved characters"
         x_mid = 350
-        self._screen_render.text_centered(self._font, top_text, (x_mid, y), self.font_width)
+        self._screen_render.text_centered(self._font, top_text, (x_mid, y), self._font_width)
         y += 100
 
         w_rect = 340
@@ -60,12 +63,12 @@ class MainMenuView:
         y += 40
         color = COLOR_HIGHLIGHTED_RECT if option_index == len(saved_characters) else COLOR_RECT
         self._screen_render.rect(color, Rect(x, y, w_rect, h_rect), 2)
-        self._screen_render.text_centered(self._font, "CREATE NEW CHARACTER", (x_mid, y + 32), self.font_width)
+        self._screen_render.text_centered(self._font, "CREATE NEW CHARACTER", (x_mid, y + 32), self._font_width)
 
     def _get_portrait_image(self, saved_player_state):
         hero_data: HeroData = HEROES[HeroId[saved_player_state.hero_id]]
         sprite = hero_data.portrait_icon_sprite
-        image = self.images_by_portrait_sprite[sprite]
+        image = self._images_by_portrait_sprite[sprite]
         return image
 
 

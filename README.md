@@ -103,3 +103,17 @@ or with a specific hero
 ```
 
 There may be more flags to use for debugging purposes.
+
+## Profiling the game:
+To profile the game code, run:
+```
+./profile_game.sh
+```
+You will be running the game through `cProfiler`, and when you're done
+stats will be printed and saved to a file.
+
+If you're using a mac and the game is running at a very low framerate, 
+it may be due to an issue with Pygame and Retina displays. Follow these
+instructions to open Python in low-resolution mode: 
+https://support.apple.com/en-us/HT202471. (For me it led to a big
+performance improvement.)

@@ -22,7 +22,8 @@ class NpcPathfinder:
         agent_cell = _translate_world_position_to_cell(agent_entity.get_position(), game_state.entire_world_area)
         target_cell = _translate_world_position_to_cell(target_entity.get_position(), game_state.entire_world_area)
 
-        agent_cell_size = (agent_entity.w // GRID_CELL_WIDTH + 1, agent_entity.h // GRID_CELL_WIDTH + 1)
+        agent_cell_size = (agent_entity.pygame_collision_rect.w // GRID_CELL_WIDTH + 1,
+                           agent_entity.pygame_collision_rect.h // GRID_CELL_WIDTH + 1)
         self.global_path_finder.register_entity_size(agent_cell_size)
         path_with_cells = self.global_path_finder.run(agent_cell_size, agent_cell, target_cell)
         if path_with_cells:
@@ -125,7 +126,8 @@ def _would_collide_with_dir(direction: Direction, agent_entity: WorldEntity, gam
     # TODO Is this too naive to work?
     future_time = Millis(100)
     future_pos = agent_entity.get_new_position_according_to_other_dir_and_speed(direction, future_time)
-    future_pos_within_world = game_state.get_within_world(future_pos, (agent_entity.w, agent_entity.h))
+    future_pos_within_world = game_state.get_within_world(
+        future_pos, (agent_entity.pygame_collision_rect.w, agent_entity.pygame_collision_rect.h))
     would_collide = game_state.would_entity_collide_if_new_pos(agent_entity, future_pos_within_world)
     return would_collide
 

@@ -157,7 +157,7 @@ class Dialog:
 class TooltipGraphics:
     def __init__(self, ui_render: DrawableArea, title_color: Tuple[int, int, int],
                  title: str, details: List[str], bottom_left: Optional[Tuple[int, int]] = None,
-                 bottom_right: Optional[Tuple[int, int]] = None):
+                 bottom_right: Optional[Tuple[int, int]] = None, top_right: Optional[Tuple[int, int]] = None):
         self._ui_render = ui_render
         self._font_header = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 16)
         self._font_details = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
@@ -170,8 +170,12 @@ class TooltipGraphics:
         h = 60 + 17 * len(self._detail_lines)
         if bottom_left:
             self._rect = Rect(bottom_left[0], bottom_left[1] - h - 3, w, h)
-        else:
+        elif bottom_right:
             self._rect = Rect(bottom_right[0] - w, bottom_right[1] - h - 3, w, h)
+        elif top_right:
+            self._rect = Rect(top_right[0] - w, top_right[1] - 3, w, h)
+        else:
+            raise Exception("No position given for tooltip!")
 
     def render(self):
         self._ui_render.rect_transparent(self._rect, 200, (0, 0, 0))
@@ -762,7 +766,7 @@ class TalentsWindow(UiWindow):
                                  TALENT_ICON_SIZE[0],
                                  TALENT_ICON_SIZE[1])
                 tooltip = TooltipGraphics(self._ui_render, COLOR_WHITE, option.name, [option.description],
-                                          bottom_right=(rect_icon.right, rect_icon.top - 2))
+                                          top_right=(rect_icon.left - 2, rect_icon.top))
                 icons.append(
                     TalentIcon(self._ui_render, rect_icon,
                                option.image, tooltip, False, option.name, self._font_details, tier_index, option_index,

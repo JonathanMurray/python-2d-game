@@ -19,15 +19,13 @@ class WorldEntity:
     def __init__(self, pos: Tuple[int, int], size: Tuple[int, int], sprite: Sprite, direction=Direction.LEFT, speed=0):
         self.x: int = pos[0]
         self.y: int = pos[1]
-        self.w: int = size[0]
-        self.h: int = size[1]
         self.sprite: Sprite = sprite
         self.direction: Direction = direction
         self._speed = speed
         self._speed_multiplier = 1  # update and get using methods
         self._effective_speed = speed
         self._is_moving = True
-        self.pygame_collision_rect: Rect = Rect(self.x, self.y, self.w, self.h)
+        self.pygame_collision_rect: Rect = Rect(self.x, self.y, size[0], size[1])
         self.movement_animation_progress: float = 0  # goes from 0 to 1 repeatedly
         self.visible = True  # Should only be used to control rendering
         self.view_z = 0  # increasing Z values = moving into the screen
@@ -76,16 +74,11 @@ class WorldEntity:
     def rect(self) -> Rect:
         return self.pygame_collision_rect
 
-    def translate_x(self, amount):
-        self.set_position((self.x + amount, self.y))
-
-    def translate_y(self, amount):
-        self.set_position((self.x, self.y + amount))
-
     def set_position(self, new_position: Tuple[int, int]):
         self.x = new_position[0]
         self.y = new_position[1]
-        self.pygame_collision_rect = Rect(self.x, self.y, self.w, self.h)
+        self.pygame_collision_rect.x = self.x
+        self.pygame_collision_rect.y = self.y
 
     def rotate_right(self):
         dirs = {
@@ -797,7 +790,8 @@ class GameState:
     def update_world_entity_position_within_game_world(self, entity: WorldEntity, time_passed: Millis):
         new_position = entity.get_new_position_according_to_dir_and_speed(time_passed)
         if new_position:
-            new_pos_within_world = self.get_within_world(new_position, (entity.w, entity.h))
+            new_pos_within_world = self.get_within_world(
+                new_position, (entity.pygame_collision_rect.w, entity.pygame_collision_rect.h))
             if not self.would_entity_collide_if_new_pos(entity, new_pos_within_world):
                 entity.set_position(new_pos_within_world)
 
@@ -811,7 +805,8 @@ class GameState:
                     npc.start_position, new_position, npc.max_distance_allowed_from_start_position)
                 if not is_close_to_start_position:
                     return
-            new_pos_within_world = self.get_within_world(new_position, (entity.w, entity.h))
+            new_pos_within_world = self.get_within_world(
+                new_position, (entity.pygame_collision_rect.w, entity.pygame_collision_rect.h))
             if not self.would_entity_collide_if_new_pos(entity, new_pos_within_world):
                 entity.set_position(new_pos_within_world)
 
