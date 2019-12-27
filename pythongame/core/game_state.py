@@ -74,12 +74,6 @@ class WorldEntity:
     def rect(self) -> Rect:
         return self.pygame_collision_rect
 
-    def translate_x(self, amount):
-        self.set_position((self.x + amount, self.y))
-
-    def translate_y(self, amount):
-        self.set_position((self.x, self.y + amount))
-
     def set_position(self, new_position: Tuple[int, int]):
         self.x = new_position[0]
         self.y = new_position[1]
