@@ -30,7 +30,9 @@ class MeleeEnemyNpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder, attack_interval: Millis, damage_amount: int,
                  chance_to_stray_from_path: float, update_path_interval: Millis):
         super().__init__(global_path_finder)
-        self._attack_interval = attack_interval
+        self._base_attack_interval = attack_interval
+        self._attack_interval = None
+        self.randomize_attack_interval()
         self._time_since_attack = self._attack_interval
         self._update_path_interval = update_path_interval
         self._time_since_updated_path = self._update_path_interval
@@ -41,6 +43,9 @@ class MeleeEnemyNpcMind(AbstractNpcMind):
         self.damage_amount = damage_amount
         self.chance_to_stray_from_path = chance_to_stray_from_path
         self._is_in_melee_with_target = False
+
+    def randomize_attack_interval(self):
+        self._attack_interval = self._base_attack_interval + random.randint(-250, 250)
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
                     is_player_invisible: bool, time_passed: Millis):
@@ -75,12 +80,12 @@ class MeleeEnemyNpcMind(AbstractNpcMind):
                 enemy_entity.set_not_moving()
 
         if self._time_since_attack > self._attack_interval:
-            # TODO Only reset attack cooldown when enemy was in range to actually attack
-            self._time_since_attack = 0
             if not is_player_invisible:
                 enemy_position = enemy_entity.get_center_position()
                 target_center_pos = target.entity.get_center_position()
                 if is_x_and_y_within_distance(enemy_position, target_center_pos, 80):
+                    self._time_since_attack = 0
+                    self.randomize_attack_interval()
                     deal_npc_damage(self.damage_amount, DamageType.PHYSICAL, game_state, enemy_entity, npc, target)
 
 
