@@ -11,6 +11,7 @@ DIR_FONTS = './resources/fonts/'
 
 class VictoryScreenScene(AbstractScene):
     def __init__(self, pygame_screen):
+        self.screen_size = pygame_screen.get_size()
         self.screen_render = DrawableArea(pygame_screen)
         self.font = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 24)
         self.time_since_start = Millis(0)
@@ -21,10 +22,11 @@ class VictoryScreenScene(AbstractScene):
 
     def render(self):
         self.screen_render.fill(COLOR_BLACK)
-        x = 70
-        lines_y = [200,
-                   325, 350,
-                   500, 525, 550]
+        x_mid = self.screen_size[0] // 2
+        x = x_mid - 280
+        lines_y = [150,
+                   275, 300,
+                   450, 475, 500]
         text_lines = [
             " Well done! You have finished the demo version of this game!",
 
