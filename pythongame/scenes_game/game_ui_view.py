@@ -419,12 +419,12 @@ class GameUiView:
         tooltip_details = [
             "regeneration: " + "{:.1f}".format(health_regen) + "/s"]
         health_tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "Health", tooltip_details,
-                                         bottom_left=self.healthbar.rect.topleft)
+                                         bottom_left=(self.healthbar.rect.left - 2, self.healthbar.rect.top - 1))
         self.healthbar.tooltip = health_tooltip
         tooltip_details = [
             "regeneration: " + "{:.1f}".format(mana_regen) + "/s"]
         mana_tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "Mana", tooltip_details,
-                                       bottom_left=self.manabar.rect.topleft)
+                                       bottom_left=(self.manabar.rect.left - 2, self.manabar.rect.top - 1))
         self.manabar.tooltip = mana_tooltip
 
     def on_abilities_updated(self, abilities: List[AbilityType]):
