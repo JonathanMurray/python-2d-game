@@ -52,6 +52,7 @@ def init_sound_player():
         SoundId.ENEMY_ATTACK_GOBLIN_WARLOCK: load_sound_file('goblin_fireball_1.ogg', 'goblin_fireball_2.ogg',
                                                              'goblin_fireball_3.ogg', volume=4),
         SoundId.ENEMY_ATTACK_ICE_WITCH: load_sound_file('enemy_icewitch_ability.ogg'),
+        SoundId.ENEMY_ATTACK_NECRO: load_sound_file('enemy_necro_attack.ogg'),
         SoundId.ENEMY_ATTACK: load_sound_file('enemy_hit.ogg'),
         SoundId.ENEMY_ATTACK_WAS_BLOCKED: load_sound_file('enemy_hit_blocked_2.ogg', volume=0.5),
         SoundId.ENEMY_NECROMANCER_SUMMON: load_sound_file('SciFi01.ogg'),

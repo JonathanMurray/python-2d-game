@@ -105,6 +105,7 @@ class NpcMind(AbstractNpcMind):
                                             projectile_speed)
             projectile = Projectile(projectile_entity, create_projectile_controller(PROJECTILE_TYPE))
             game_state.projectile_entities.append(projectile)
+            play_sound(SoundId.ENEMY_ATTACK_NECRO)
 
         if self._time_since_decision > self._decision_interval:
             self._time_since_decision = 0
