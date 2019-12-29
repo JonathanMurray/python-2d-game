@@ -1,7 +1,7 @@
 import random
 
 from pythongame.core.buff_effects import get_buff_effect
-from pythongame.core.common import NpcType, Sprite, Direction, Millis, BuffType
+from pythongame.core.common import NpcType, Sprite, Direction, Millis, BuffType, SoundId
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.math import get_manhattan_distance
@@ -42,7 +42,7 @@ def register_goblin_spearman_elite_enemy():
     movement_speed = 0.08
     health = 60
     exp_reward = 32
-    register_npc_data(npc_type, NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_4))
+    register_npc_data(npc_type, NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_4, SoundId.DEATH_GOBLIN))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")
     original_sprite_size = (32, 32)

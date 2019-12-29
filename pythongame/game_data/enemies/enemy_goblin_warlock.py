@@ -155,7 +155,7 @@ def register_goblin_warlock_enemy():
     npc_type = NpcType.GOBLIN_WARLOCK
     health = 21
     exp_reward = 14
-    npc_data = NpcData.enemy(enemy_sprite, enemy_size, health, 0, 0.032, exp_reward, LOOT_TABLE_3)
+    npc_data = NpcData.enemy(enemy_sprite, enemy_size, health, 0, 0.032, exp_reward, LOOT_TABLE_3, SoundId.DEATH_GOBLIN)
     register_npc_data(npc_type, npc_data)
     register_npc_behavior(npc_type, NpcMind)
 
