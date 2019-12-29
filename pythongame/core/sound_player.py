@@ -48,6 +48,7 @@ def init_sound_player():
         SoundId.INVALID_ACTION: load_sound_file('invalid_action.ogg'),
         SoundId.PLAYER_PAIN: load_sound_file('pain1.ogg', 'pain2.ogg', 'pain3.ogg', 'pain4.ogg'),
         SoundId.ENEMY_ATTACK_GOBLIN_WARLOCK: load_sound_file('Shot08.ogg'),
+        SoundId.ENEMY_ATTACK_ICE_WITCH: load_sound_file('enemy_icewitch_ability.ogg'),
         SoundId.ENEMY_ATTACK: load_sound_file('enemy_hit.ogg'),
         SoundId.ENEMY_ATTACK_WAS_BLOCKED: load_sound_file('enemy_hit_blocked_2.ogg', volume=0.5),
         SoundId.ENEMY_NECROMANCER_SUMMON: load_sound_file('SciFi01.ogg'),
@@ -55,7 +56,7 @@ def init_sound_player():
         SoundId.UI_ITEM_WAS_DROPPED_ON_GROUND: load_sound_file('UI06.ogg', volume=2),
         SoundId.UI_START_DRAGGING_ITEM: load_sound_file('drag.ogg'),
         SoundId.UI_TOGGLE: load_sound_file('Retro_8-Bit_Game-Interface_UI_20.wav', volume=2),
-        SoundId.DIALOG: load_sound_file('UI04.ogg'),
+        SoundId.DIALOG: load_sound_file('Menu_Select_00.ogg'),
         SoundId.EVENT_PORTAL_ACTIVATED: load_sound_file('UI06.wav')
     }
 
