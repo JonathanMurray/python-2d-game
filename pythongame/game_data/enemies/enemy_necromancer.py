@@ -89,6 +89,7 @@ class NpcMind(AbstractNpcMind):
                 healing_target_pos = healing_target.world_entity.get_center_position()
                 visual_line = VisualLine((80, 200, 150), necro_center_pos, healing_target_pos, Millis(350), 3)
                 game_state.visual_effects.append(visual_line)
+                play_sound(SoundId.ENEMY_NECROMANCER_HEAL)
 
         if self._time_since_shoot > self._shoot_cooldown:
             self._time_since_shoot = 0
