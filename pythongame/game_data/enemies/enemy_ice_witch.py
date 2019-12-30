@@ -69,7 +69,7 @@ class NpcMind(AbstractNpcMind):
                 target_center_pos = target.entity.get_center_position()
                 if is_x_and_y_within_distance(enemy_position, target_center_pos, 200):
                     play_sound(SoundId.ENEMY_ATTACK_ICE_WITCH)
-                    deal_npc_damage(DAMAGE_AMOUNT, DamageType.PHYSICAL, game_state, enemy_entity, npc, target)
+                    deal_npc_damage(DAMAGE_AMOUNT, DamageType.MAGIC, game_state, enemy_entity, npc, target)
                     game_state.visual_effects += [
                         (VisualLine((100, 100, 200), enemy_position, target_center_pos, Millis(120), 3)),
                         (VisualLine((150, 150, 250), enemy_position, target_center_pos, Millis(240), 2))]
