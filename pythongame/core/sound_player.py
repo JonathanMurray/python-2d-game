@@ -52,6 +52,7 @@ def init_sound_player():
         SoundId.DEATH_BOSS: load_sound_file('Retro_8-Bit_Game-Powerup_Achievement_11.wav'),
         SoundId.DEATH_ICE_WITCH: load_sound_file('ice_witch_death_1.ogg', 'ice_witch_death_2.ogg', 'ice_witch_death_3.ogg', volume=3),
         SoundId.DEATH_HUMAN: load_sound_file('human_death_1.ogg', 'human_death_2.ogg', 'human_death_3.ogg', volume=3),
+        SoundId.DEATH_NECRO: load_sound_file('necro_death_1.ogg', 'necro_death_2.ogg', 'necro_death_3.ogg', volume=3),
         SoundId.WARNING: load_sound_file('UI06.ogg'),
         SoundId.INVALID_ACTION: load_sound_file('invalid_action.ogg'),
         SoundId.PLAYER_PAIN: load_sound_file('pain1.ogg', 'pain2.ogg', 'pain3.ogg', 'pain4.ogg'),
