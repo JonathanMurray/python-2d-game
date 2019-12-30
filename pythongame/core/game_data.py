@@ -135,7 +135,8 @@ class InitialPlayerStateData:
     def __init__(
             self, health: int, mana: int, mana_regen: float, consumable_slots: Dict[int, List[ConsumableType]],
             abilities: List[AbilityType], new_level_abilities: Dict[int, AbilityType], hero_id: HeroId, armor: int,
-            dodge_chance: float, level_bonus: PlayerLevelBonus, talents_state: TalentsConfig, block_chance: float):
+            dodge_chance: float, level_bonus: PlayerLevelBonus, talents_state: TalentsConfig, block_chance: float,
+            starting_items: List[ItemType]):
         self.health = health
         self.mana = mana
         self.mana_regen = mana_regen
@@ -148,6 +149,7 @@ class InitialPlayerStateData:
         self.level_bonus = level_bonus
         self.talents_state = talents_state
         self.block_chance = block_chance
+        self.starting_items = starting_items
 
 
 class HeroData:

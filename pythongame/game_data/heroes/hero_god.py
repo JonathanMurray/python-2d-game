@@ -56,7 +56,7 @@ def _get_initial_player_state_god() -> InitialPlayerStateData:
     block_chance = 0
     return InitialPlayerStateData(
         health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, dodge_chance,
-        level_bonus, talents_state, block_chance)
+        level_bonus, talents_state, block_chance, [])
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:

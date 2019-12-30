@@ -392,6 +392,13 @@
         200,
         150
       ]
+    },
+    {
+      "item_type": "PRACTICE_SWORD",
+      "position": [
+        200,
+        200
+      ]
     }
   ],
   "money_piles_on_ground": [],

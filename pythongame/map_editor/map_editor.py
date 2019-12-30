@@ -127,6 +127,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.STONE_AMULET),
     MapEditorWorldEntity.item(ItemType.TORN_DOCUMENT),
     MapEditorWorldEntity.item(ItemType.KEY),
+    MapEditorWorldEntity.item(ItemType.PRACTICE_SWORD),
     MapEditorWorldEntity.item(ItemType.WOODEN_SWORD),
     MapEditorWorldEntity.item(ItemType.DRUIDS_RING),
     MapEditorWorldEntity.item(ItemType.WARLOCKS_COWL),
@@ -139,6 +140,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.WHIP),
     MapEditorWorldEntity.item(ItemType.CLEAVER),
     MapEditorWorldEntity.item(ItemType.DESERT_BLADE),
+    MapEditorWorldEntity.item(ItemType.NOVICE_WAND),
 
     MapEditorWorldEntity.money(1),
 

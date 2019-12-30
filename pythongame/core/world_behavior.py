@@ -5,7 +5,7 @@ from pythongame.core.common import ConsumableType, AbstractScene
 from pythongame.core.common import ItemType
 from pythongame.core.common import Millis, BuffType, get_random_hint, \
     SoundId, HeroUpgrade, SceneTransition
-from pythongame.core.game_data import ITEMS
+from pythongame.core.game_data import ITEMS, HEROES
 from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
 from pythongame.core.sound_player import play_sound
@@ -41,6 +41,14 @@ class StoryBehavior(AbstractWorldBehavior):
             self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.HEALTH_LESSER)
             self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.MANA_LESSER)
             self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.MANA_LESSER)
+            for item_type in HEROES[self.game_state.player_state.hero_id].initial_player_state.starting_items:
+                self.add_starting_item(item_type)
+
+    def add_starting_item(self, item_type: ItemType):
+        data = ITEMS[item_type]
+        item_effect = get_item_effect(item_type)
+        try_add_item_to_inventory(self.game_state, item_effect, data.item_equipment_category)
+
 
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:
         if self.game_state.player_state.has_upgrade(HeroUpgrade.HAS_WON_GAME):

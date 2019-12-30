@@ -74,9 +74,11 @@ from pythongame.game_data.items.item_lich_armor import register_lich_armor_item
 from pythongame.game_data.items.item_messengers_hat import register_messengers_hat_item
 from pythongame.game_data.items.item_molten_axe import register_molten_axe_item
 from pythongame.game_data.items.item_noble_defender import register_noble_defender
+from pythongame.game_data.items.item_novice_wand import register_novice_wand_item
 from pythongame.game_data.items.item_orb_of_life import register_orb_of_life_item
 from pythongame.game_data.items.item_orb_of_the_magi import register_orb_of_the_magi_item
 from pythongame.game_data.items.item_orb_of_wisdom import register_orb_of_wisdom_item
+from pythongame.game_data.items.item_practice_sword import register_practice_sword_item
 from pythongame.game_data.items.item_ring_of_power import register_ring_of_power_item
 from pythongame.game_data.items.item_rod_of_lightning import register_rod_of_lightning_item
 from pythongame.game_data.items.item_royal_dagger import register_royal_dagger_item
@@ -204,6 +206,7 @@ def register_all_game_data():
     register_stone_amulet_item()
     register_torn_document_item()
     register_key_item()
+    register_practice_sword_item()
     register_wooden_sword_item()
     register_druids_ring_item()
     register_warlocks_cowl_item()
@@ -216,6 +219,7 @@ def register_all_game_data():
     register_whip_item()
     register_cleaver_item()
     register_desert_blade_item()
+    register_novice_wand_item()
 
     # Register items before NPCs as vendors may rely on item data
 
