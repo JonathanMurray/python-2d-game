@@ -10,6 +10,7 @@ from pythongame.core.hero_upgrades import register_hero_upgrade_effect
 from pythongame.core.math import get_position_from_center_position, translate_in_direction
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
+from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualCircle, VisualSprite, create_visual_stun_text
 
@@ -38,6 +39,7 @@ class ProjectileController(AbstractProjectileController):
             debuff_visual_effect = VisualSprite(Sprite.DECORATION_ENTANGLING_ROOTS_EFFECT, visual_effect_pos,
                                                 DEBUFF_DURATION, npc.world_entity)
             game_state.visual_effects.append(debuff_visual_effect)
+            play_sound(SoundId.ABILITY_ENTANGLING_ROOTS_HIT)
         projectile.has_collided_and_should_be_removed = True
 
 
