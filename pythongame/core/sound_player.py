@@ -61,9 +61,9 @@ def init_sound_player():
         SoundId.ENEMY_ATTACK_WAS_BLOCKED: load_sound_file('enemy_hit_blocked_2.ogg', volume=0.5),
         SoundId.ENEMY_NECROMANCER_SUMMON: load_sound_file('SciFi01.ogg'),
         SoundId.ENEMY_NECROMANCER_HEAL: load_sound_file('enemy_necro_heal.ogg'),
-        SoundId.UI_ITEM_WAS_MOVED: load_sound_file('UI04.ogg'),
+        SoundId.UI_ITEM_WAS_MOVED: load_sound_file('ui_drag_drop.ogg',volume=3),
         SoundId.UI_ITEM_WAS_DROPPED_ON_GROUND: load_sound_file('UI06.ogg', volume=2),
-        SoundId.UI_START_DRAGGING_ITEM: load_sound_file('drag.ogg'),
+        SoundId.UI_START_DRAGGING_ITEM: load_sound_file('ui_drag.ogg', volume=3),
         SoundId.UI_TOGGLE: load_sound_file('Retro_8-Bit_Game-Interface_UI_20.wav', volume=2),
         SoundId.DIALOG: load_sound_file('Menu_Select_00.ogg'),
         SoundId.EVENT_PORTAL_ACTIVATED: load_sound_file('UI06.wav')
