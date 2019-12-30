@@ -11,3 +11,6 @@ build
 
 # This directory contains savefiles
 saved_characters
+
+# This directory can be used for storing resources that aren't used yet
+playground
