@@ -12,6 +12,7 @@ from pythongame.core.hero_upgrades import register_hero_upgrade_effect
 from pythongame.core.math import get_position_from_center_position, translate_in_direction
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
+from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualCircle, VisualParticleSystem
 
@@ -49,10 +50,12 @@ class ProjectileController(AbstractProjectileController):
         has_burn_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_FIREBALL_BURN)
         if has_burn_upgrade:
             npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(2500))
+        play_sound(SoundId.ABILITY_FIREBALL_HIT)
         projectile.has_collided_and_should_be_removed = True
 
     def apply_wall_collision(self, game_state: GameState, projectile: Projectile):
         _create_visual_splash(projectile.world_entity.get_center_position(), game_state)
+        play_sound(SoundId.ABILITY_FIREBALL_HIT)
         projectile.has_collided_and_should_be_removed = True
 
 
