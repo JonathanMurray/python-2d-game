@@ -1,3 +1,5 @@
+import random
+
 from pythongame.core.buff_effects import register_buff_effect, get_buff_effect, \
     StatModifyingBuffEffect
 from pythongame.core.common import Millis, NpcType, Sprite, Direction, BuffType, HeroStat, SoundId
@@ -15,7 +17,8 @@ from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualLine
 from pythongame.game_data.loot_tables import LOOT_TABLE_4
 
-DAMAGE_AMOUNT = 12
+DAMAGE_MIN = 6
+DAMAGE_MAX = 12
 SLOW_AMOUNT = 0.35
 SLOW_BUFF_TYPE = BuffType.SLOWED_BY_ICE_WITCH
 
@@ -23,7 +26,9 @@ SLOW_BUFF_TYPE = BuffType.SLOWED_BY_ICE_WITCH
 class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
-        self._attack_interval = 3000
+        self._base_attack_interval = 3000
+        self._attack_interval = None
+        self.randomize_attack_interval()
         self._time_since_attack = self._attack_interval
         self._update_path_interval = 600
         self._time_since_updated_path = self._update_path_interval
@@ -31,6 +36,9 @@ class NpcMind(AbstractNpcMind):
         self.next_waypoint = None
         self._reevaluate_next_waypoint_direction_interval = 1000
         self._time_since_reevaluated = self._reevaluate_next_waypoint_direction_interval
+
+    def randomize_attack_interval(self):
+        self._attack_interval = self._base_attack_interval + random.randint(-250, 250)
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
                     is_player_invisible: bool, time_passed: Millis):
@@ -63,13 +71,15 @@ class NpcMind(AbstractNpcMind):
                 enemy_entity.set_not_moving()
 
         if self._time_since_attack > self._attack_interval:
-            self._time_since_attack = 0
             if not is_player_invisible:
                 enemy_position = enemy_entity.get_center_position()
                 target_center_pos = target.entity.get_center_position()
                 if is_x_and_y_within_distance(enemy_position, target_center_pos, 200):
+                    self._time_since_attack = 0
+                    self.randomize_attack_interval()
                     play_sound(SoundId.ENEMY_ATTACK_ICE_WITCH)
-                    deal_npc_damage(DAMAGE_AMOUNT, DamageType.MAGIC, game_state, enemy_entity, npc, target)
+                    damage = random.randint(DAMAGE_MIN, DAMAGE_MAX)
+                    deal_npc_damage(damage, DamageType.MAGIC, game_state, enemy_entity, npc, target)
                     game_state.visual_effects += [
                         (VisualLine((100, 100, 200), enemy_position, target_center_pos, Millis(120), 3)),
                         (VisualLine((150, 150, 250), enemy_position, target_center_pos, Millis(240), 2))]
@@ -95,7 +105,7 @@ def register_ice_witch_enemy():
     movement_speed = 0.07
     health = 50
     exp_reward = 40
-    npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_4)
+    npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_4, SoundId.DEATH_ICE_WITCH)
     register_npc_data(npc_type, npc_data)
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_ice_witch.png")
