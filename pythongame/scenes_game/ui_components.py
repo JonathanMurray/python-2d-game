@@ -591,7 +591,7 @@ class StatsWindow(UiWindow):
         color_rect_bg = (20, 20, 20)
         self._render_value(color_rect_bg, value, w_value_rect, (x_value, y), COLOR_WHITE)
         if value_with_bonus is not None:
-            color = (170, 230, 170) if value_with_bonus > value else COLOR_WHITE
+            color = (170, 230, 170) if float(value_with_bonus) > float(value) else COLOR_WHITE
             x_value_2 = x_value + w_value_rect - 1
             self._render_value(color_rect_bg, value_with_bonus, w_value_rect, (x_value_2, y), color)
 
