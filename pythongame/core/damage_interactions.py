@@ -54,7 +54,8 @@ def deal_damage_to_player(game_state: GameState, base_amount: float, damage_type
         dodge_chance = player_state.get_effective_dodge_change()
         if random.random() < dodge_chance:
             game_state.visual_effects.append(create_visual_dodge_text(game_state.player_entity))
-            damage_reduction = base_amount  # Somewhat of a hack. All damage is mitigated when dodging
+            play_sound(SoundId.ENEMY_ATTACK_WAS_DODGED)
+            return
         elif random.random() < player_state.block_chance:
             if player_state.block_damage_reduction > 0:
                 game_state.visual_effects.append(create_visual_block_text(game_state.player_entity))

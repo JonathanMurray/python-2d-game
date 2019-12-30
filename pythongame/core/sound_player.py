@@ -59,6 +59,7 @@ def init_sound_player():
         SoundId.ENEMY_ATTACK_NECRO: load_sound_file('enemy_necro_attack.ogg'),
         SoundId.ENEMY_ATTACK: load_sound_file('enemy_hit.ogg'),
         SoundId.ENEMY_ATTACK_WAS_BLOCKED: load_sound_file('enemy_hit_blocked_2.ogg', volume=0.5),
+        SoundId.ENEMY_ATTACK_WAS_DODGED: load_sound_file('combat_dodge_1.ogg', volume=3),
         SoundId.ENEMY_NECROMANCER_SUMMON: load_sound_file('SciFi01.ogg'),
         SoundId.ENEMY_NECROMANCER_HEAL: load_sound_file('enemy_necro_heal.ogg'),
         SoundId.UI_ITEM_WAS_MOVED: load_sound_file('ui_drag_drop.ogg',volume=3),
