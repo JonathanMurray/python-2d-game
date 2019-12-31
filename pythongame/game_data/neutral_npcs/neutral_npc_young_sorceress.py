@@ -62,6 +62,7 @@ class AcceptFrog(AbstractNpcAction):
             play_sound(SoundId.EVENT_COMPLETED_QUEST)
             return "Reward gained: " + reward_data.name
         else:
+            play_sound(SoundId.WARNING)
             return "You don't have that!"
 
 

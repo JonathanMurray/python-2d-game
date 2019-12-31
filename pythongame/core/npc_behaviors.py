@@ -162,8 +162,10 @@ class BuyItemNpcAction(AbstractNpcAction):
         if player_has_it:
             game_state.player_state.item_inventory.lose_item_from_inventory(self.item_type)
             game_state.player_state.modify_money(self.price)
+            play_sound(SoundId.EVENT_SOLD_SOMETHING)
             return "Sold " + self.name
         else:
+            play_sound(SoundId.WARNING)
             return "You don't have that!"
 
 
