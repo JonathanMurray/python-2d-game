@@ -11,6 +11,7 @@ from pythongame.core.game_data import register_ability_data, AbilityData, regist
     HEROES, register_buff_as_channeling
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, CameraShake
 from pythongame.core.math import translate_in_direction, get_middle_point
+from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import VisualRect, VisualCircle
 
 CHARGE_DURATION = Millis(500)
@@ -76,6 +77,7 @@ class Charging(AbstractBuffEffect):
             game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_TYPE_STUNNED), IMPACT_STUN_DURATION)
             enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE_STUNNED), IMPACT_STUN_DURATION)
             game_state.camera_shake = CameraShake(Millis(50), Millis(150), 12)
+            play_sound(SoundId.ABILITY_CHARGE_HIT)
             # The buff should end upon impact
             return True
         return False
