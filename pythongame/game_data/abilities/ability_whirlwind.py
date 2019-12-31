@@ -28,7 +28,9 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
     entity = WorldEntity(aoe_pos, PROJECTILE_SIZE, PROJECTILE_SPRITE, player_entity.direction, projectile_speed)
     projectile = Projectile(entity, create_projectile_controller(PROJECTILE_TYPE))
     game_state.projectile_entities.append(projectile)
-    game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(300))
+    has_lightfooted_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.MAGE_LIGHT_FOOTED)
+    if not has_lightfooted_upgrade:
+        game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(300))
     return AbilityWasUsedSuccessfully()
 
 

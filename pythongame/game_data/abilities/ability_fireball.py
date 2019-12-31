@@ -90,7 +90,9 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
     effect_position = (projectile_pos[0] + PROJECTILE_SIZE[0] // 2,
                        projectile_pos[1] + PROJECTILE_SIZE[1] // 2)
     game_state.visual_effects.append(VisualCircle((250, 150, 50), effect_position, 15, 5, Millis(300), 0))
-    game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(300))
+    has_lightfooted_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.MAGE_LIGHT_FOOTED)
+    if not has_lightfooted_upgrade:
+        game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(300))
     return AbilityWasUsedSuccessfully()
 
 

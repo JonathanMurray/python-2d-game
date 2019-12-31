@@ -52,6 +52,7 @@ class HeroUpgrade(Enum):
     ABILITY_FIREBALL_BURN = 11
     ABILITY_ENTANGLING_ROOTS_COOLDOWN = 12
     ABILITY_FIREBALL_MANA_COST = 13
+    ABILITY_ARCANE_FIRE_COOLDOWN = 14
     ABILITY_STEALTH_MANA_COST = 20
     ABILITY_SHIV_SNEAK_BONUS_DAMAGE = 21
     ABILITY_DASH_KILL_RESET = 22
@@ -60,6 +61,7 @@ class HeroUpgrade(Enum):
     ABILITY_SLASH_AOE_BONUS_DAMAGE = 31
     ABILITY_BLOODLUST_DURATION = 32
     ABILITY_SLASH_CD = 33
+    MAGE_LIGHT_FOOTED = 50
     HAS_WON_GAME = 100  # TODO This should probably not be modelled as a "hero upgrade"
 
 
@@ -568,6 +570,7 @@ class UiIconSprite(Enum):
     INVENTORY_TEMPLATE_OFFHAND = 403
     INVENTORY_TEMPLATE_NECK = 404
     INVENTORY_TEMPLATE_RING = 405
+    TALENT_LIGHT_FOOTED = 500
 
 
 # Portraits that are shown in UI (player portrait and dialog portraits)
