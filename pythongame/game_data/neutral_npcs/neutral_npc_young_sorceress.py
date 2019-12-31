@@ -38,8 +38,7 @@ def get_reward_for_hero(hero_id: HeroId):
     elif hero_id == HeroId.ROGUE:
         return ItemType.THIEFS_MASK
     elif hero_id == HeroId.WARRIOR:
-        # TODO use a more interesting reward
-        return ItemType.ROYAL_SWORD
+        return ItemType.CLEAVER
     else:
         return ItemType.LEATHER_ARMOR
 
