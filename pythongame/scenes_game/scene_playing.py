@@ -242,6 +242,7 @@ class PlayingScene(AbstractScene):
         self.ui_view.render(self.ui_state)
 
     def _save_game(self):
+        play_sound(SoundId.EVENT_SAVED_GAME)
         filename = self.save_file_handler.save_to_file(
             self.game_state, self.character_file, self.total_time_played_on_character)
         if self.character_file is None:

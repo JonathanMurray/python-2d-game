@@ -49,6 +49,7 @@ def init_sound_player():
         SoundId.EVENT_ENEMY_DIED: load_sound_file('Damage02.ogg'),
         SoundId.EVENT_COMPLETED_QUEST: load_sound_file('PowerUp01.ogg'),
         SoundId.EVENT_PICKED_TALENT: load_sound_file('Retro_8-Bit_Game-Pickup_Object_Item_Coin_08.wav'),
+        SoundId.EVENT_SAVED_GAME: load_sound_file('Retro_8-Bit_Game-Pickup_Object_Item_Coin_08.wav'),
         SoundId.DEATH_RAT: load_sound_file('rat_death.ogg', volume=2),
         SoundId.DEATH_GOBLIN: load_sound_file('goblin_1.ogg', 'goblin_2.ogg', 'goblin_3.ogg', 'goblin_4.ogg',
                                               'goblin_5.ogg', volume=2),
