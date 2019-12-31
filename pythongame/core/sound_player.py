@@ -9,6 +9,8 @@ _sounds_by_id: Dict[SoundId, List[Any]] = {}
 
 muted = False
 
+LOOPING_SOUNDS = [SoundId.FOOTSTEPS]
+
 
 def init_sound_player():
     global _sounds_by_id
@@ -19,7 +21,8 @@ def init_sound_player():
                                                   'ability_fireball_3.ogg', volume=3),
         SoundId.ABILITY_FIREBALL_HIT: load_sound_file('ability_fireball_hit_1.ogg', 'ability_fireball_hit_2.ogg',
                                                       volume=2),
-        SoundId.ABILITY_WHIRLWIND: load_sound_file('ability_whirlwind_1.ogg', 'ability_whirlwind_2.ogg', 'ability_whirlwind_3.ogg', volume=3),
+        SoundId.ABILITY_WHIRLWIND: load_sound_file('ability_whirlwind_1.ogg', 'ability_whirlwind_2.ogg',
+                                                   'ability_whirlwind_3.ogg', volume=3),
         SoundId.ABILITY_TELEPORT: load_sound_file('SciFi06.ogg'),
         SoundId.ABILITY_ENTANGLING_ROOTS: load_sound_file('ability_entangling_roots.ogg', volume=4),
         SoundId.ABILITY_ENTANGLING_ROOTS_HIT: load_sound_file('SciFi03.ogg', volume=0.5),
@@ -50,7 +53,8 @@ def init_sound_player():
                                               'goblin_5.ogg', volume=2),
         SoundId.DEATH_ZOMBIE: load_sound_file('zombie_death.ogg', 'zombie_death_2.ogg', 'zombie_death_3.ogg'),
         SoundId.DEATH_BOSS: load_sound_file('Retro_8-Bit_Game-Powerup_Achievement_11.wav'),
-        SoundId.DEATH_ICE_WITCH: load_sound_file('ice_witch_death_1.ogg', 'ice_witch_death_2.ogg', 'ice_witch_death_3.ogg', volume=3),
+        SoundId.DEATH_ICE_WITCH: load_sound_file('ice_witch_death_1.ogg', 'ice_witch_death_2.ogg',
+                                                 'ice_witch_death_3.ogg', volume=3),
         SoundId.DEATH_HUMAN: load_sound_file('human_death_1.ogg', 'human_death_2.ogg', 'human_death_3.ogg', volume=3),
         SoundId.DEATH_NECRO: load_sound_file('necro_death_1.ogg', 'necro_death_2.ogg', 'necro_death_3.ogg', volume=3),
         SoundId.WARNING: load_sound_file('UI06.ogg'),
@@ -65,12 +69,13 @@ def init_sound_player():
         SoundId.ENEMY_ATTACK_WAS_DODGED: load_sound_file('combat_dodge_1.ogg', volume=3),
         SoundId.ENEMY_NECROMANCER_SUMMON: load_sound_file('SciFi01.ogg'),
         SoundId.ENEMY_NECROMANCER_HEAL: load_sound_file('enemy_necro_heal.ogg'),
-        SoundId.UI_ITEM_WAS_MOVED: load_sound_file('ui_drag_drop.ogg',volume=3),
+        SoundId.UI_ITEM_WAS_MOVED: load_sound_file('ui_drag_drop.ogg', volume=3),
         SoundId.UI_ITEM_WAS_DROPPED_ON_GROUND: load_sound_file('UI06.ogg', volume=2),
         SoundId.UI_START_DRAGGING_ITEM: load_sound_file('ui_drag.ogg', volume=3),
         SoundId.UI_TOGGLE: load_sound_file('Retro_8-Bit_Game-Interface_UI_20.wav', volume=2),
         SoundId.DIALOG: load_sound_file('Menu_Select_00.ogg'),
-        SoundId.EVENT_PORTAL_ACTIVATED: load_sound_file('UI06.wav')
+        SoundId.EVENT_PORTAL_ACTIVATED: load_sound_file('UI06.wav'),
+        SoundId.FOOTSTEPS: load_sound_file('footsteps_loop.ogg', volume=1)
     }
 
 
@@ -83,7 +88,23 @@ def play_sound(sound_id: SoundId):
     if sound_id in _sounds_by_id:
         sounds = _sounds_by_id[sound_id]
         randomly_chosen_sound = random.choice(sounds)
-        randomly_chosen_sound.play()
+        if sound_id in LOOPING_SOUNDS:
+            randomly_chosen_sound.play(-1)
+        else:
+            randomly_chosen_sound.play()
+    else:
+        raise Exception("No sound defined for: " + str(sound_id))
+
+
+def stop_looping_sound(sound_id: SoundId):
+    if sound_id not in LOOPING_SOUNDS:
+        raise Exception("Only use this method for looping sounds!")
+    if not _sounds_by_id:
+        raise Exception("Initialize sound player before playing sounds!")
+    if sound_id in _sounds_by_id:
+        sounds = _sounds_by_id[sound_id]
+        for sound in sounds:
+            sound.stop()
     else:
         raise Exception("No sound defined for: " + str(sound_id))
 

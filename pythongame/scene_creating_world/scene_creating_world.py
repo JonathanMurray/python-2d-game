@@ -2,9 +2,10 @@ from typing import Optional, Callable
 from typing import Tuple
 
 from pythongame.core.common import ItemType, \
-    ConsumableType, Sprite
+    ConsumableType, Sprite, Observable
 from pythongame.core.common import Millis, HeroId, AbstractScene, SceneTransition
 from pythongame.core.consumable_inventory import ConsumableInventory
+from pythongame.core.footsteps import play_or_stop_footstep_sounds
 from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_state import GameState
 from pythongame.core.hero_upgrades import pick_talent
@@ -95,6 +96,8 @@ class CreatingWorldScene(AbstractScene):
         game_state.player_state.health_resource.value_was_updated.register_observer(self.ui_view.on_health_updated)
         game_state.player_state.mana_resource.value_was_updated.register_observer(self.ui_view.on_mana_updated)
         game_state.player_state.buffs_were_updated.register_observer(self.ui_view.on_buffs_updated)
+        game_state.player_entity.movement_changed = Observable()
+        game_state.player_entity.movement_changed.register_observer(play_or_stop_footstep_sounds)
 
         if map_file_path == 'resources/maps/challenge.json':
             world_behavior = ChallengeBehavior(

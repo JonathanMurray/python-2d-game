@@ -29,15 +29,24 @@ class WorldEntity:
         self.movement_animation_progress: float = 0  # goes from 0 to 1 repeatedly
         self.visible = True  # Should only be used to control rendering
         self.view_z = 0  # increasing Z values = moving into the screen
+        self.movement_changed: Observable = None  # space optimization: Only allocate when needed (i.e. for player entity)
 
     def set_moving_in_dir(self, direction: Direction):
         if direction is None:
             raise Exception("Need to provide a valid direciton to move in")
         self.direction = direction
+        if not self._is_moving:
+            self.notify_movement_observers(True)
         self._is_moving = True
 
     def set_not_moving(self):
+        if self._is_moving:
+            self.notify_movement_observers(False)
         self._is_moving = False
+
+    def notify_movement_observers(self, is_moving: bool):
+        if self.movement_changed is not None:
+            self.movement_changed.notify(is_moving)
 
     def get_new_position_according_to_dir_and_speed(self, time_passed: Millis) -> Optional[Tuple[int, int]]:
         distance = self._effective_speed * time_passed
@@ -50,7 +59,7 @@ class WorldEntity:
             self.update_animation(time_passed)
 
     def update_animation(self, time_passed):
-        self.movement_animation_progress = (self.movement_animation_progress + float(time_passed) / 1000) % 1
+        self.movement_animation_progress = (self.movement_animation_progress + float(time_passed) / 700) % 1
 
     def get_new_position_according_to_other_dir_and_speed(self, direction: Direction, time_passed: Millis) \
             -> Optional[Tuple[int, int]]:

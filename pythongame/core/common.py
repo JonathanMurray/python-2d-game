@@ -456,6 +456,7 @@ class SoundId(Enum):
     UI_ITEM_WAS_DROPPED_ON_GROUND = 602
     UI_TOGGLE = 603
     DIALOG = 700
+    FOOTSTEPS = 800
 
 
 class PortalId(Enum):
