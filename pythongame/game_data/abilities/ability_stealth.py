@@ -17,21 +17,23 @@ BUFF_STEALTH = BuffType.STEALTHING
 BUFF_POST_STEALTH = BuffType.AFTER_STEALTHING
 DURATION_STEALTH = Millis(15000)
 DURATION_POST_STEALTH = Millis(2500)
-SPEED_DECREASE = 0.3
+MOVEMENT_SPEED_DECREASE = 0.3
 DODGE_CHANCE_BONUS = 0.05
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
     game_state.player_state.force_cancel_all_buffs()
-    game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_STEALTH), DURATION_STEALTH)
+    has_speed_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_STEALTH_MOVEMENT_SPEED)
+    speed_decrease = MOVEMENT_SPEED_DECREASE if not has_speed_upgrade else 0
+    game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_STEALTH, speed_decrease), DURATION_STEALTH)
     return AbilityWasUsedSuccessfully()
 
 
 class Stealthing(StatModifyingBuffEffect):
 
-    def __init__(self):
+    def __init__(self, movement_speed_decrease: float):
         super().__init__(BUFF_STEALTH,
-                         {HeroStat.MOVEMENT_SPEED: -SPEED_DECREASE, HeroStat.DODGE_CHANCE: DODGE_CHANCE_BONUS})
+                         {HeroStat.MOVEMENT_SPEED: -movement_speed_decrease, HeroStat.DODGE_CHANCE: DODGE_CHANCE_BONUS})
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         super().apply_start_effect(game_state, buffed_entity, buffed_npc)
@@ -71,6 +73,10 @@ def _upgrade_mana_cost(_game_state: GameState):
     ABILITIES[ABILITY_TYPE].mana_cost = 20
 
 
+def _upgrade_movement_speed(_game_state: GameState):
+    ABILITIES[ABILITY_TYPE].mana_cost = 20
+
+
 def register_stealth_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_STEALTH
 
@@ -88,3 +94,4 @@ def register_stealth_ability():
     register_buff_effect(BUFF_POST_STEALTH, AfterStealthing)
     register_buff_text(BUFF_POST_STEALTH, "Element of surprise")
     register_hero_upgrade_effect(HeroUpgrade.ABILITY_STEALTH_MANA_COST, _upgrade_mana_cost)
+    register_hero_upgrade_effect(HeroUpgrade.ABILITY_STEALTH_MANA_COST, _upgrade_movement_speed)
