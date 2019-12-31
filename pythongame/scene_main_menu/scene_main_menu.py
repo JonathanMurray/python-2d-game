@@ -6,7 +6,7 @@ from pythongame.core.common import AbstractScene, SceneTransition, Millis, Sound
 from pythongame.core.sound_player import play_sound
 from pythongame.player_file import SavedPlayerState, SaveFileHandler
 from pythongame.scene_creating_world.scene_creating_world import InitFlags
-from pythongame.scene_main_menu.view_main_menu import MainMenuView
+from pythongame.scene_main_menu.view_main_menu import MainMenuView, NUM_SHOWN_SAVE_FILES
 
 DIR_FONTS = './resources/fonts/'
 
@@ -18,11 +18,13 @@ class MainMenuScene(AbstractScene):
                  picking_hero_scene: Callable[[InitFlags], AbstractScene],
                  creating_world_scene: Callable[[InitFlags], AbstractScene], flags: InitFlags,
                  view: MainMenuView):
-        self._option_index = 0
+        self._selected_option_index = 0
+        self._first_shown_option_index = 0
         self.picking_hero_scene = picking_hero_scene
         self.creating_world_scene = creating_world_scene
         self.flags = flags
         self._files = save_file_handler.list_save_files()
+        self._files.sort()
         self._saved_characters: List[SavedPlayerState] = [
             save_file_handler.load_player_state_from_json_file(file) for file in self._files]
         self._view = view
@@ -39,13 +41,20 @@ class MainMenuScene(AbstractScene):
 
     def _change_option(self, delta: int):
         num_options = len(self._saved_characters) + 1
-        self._option_index = (self._option_index + delta) % num_options
+        self._selected_option_index = (self._selected_option_index + delta) % num_options
+
+        if self._first_shown_option_index + NUM_SHOWN_SAVE_FILES <= self._selected_option_index \
+                < len(self._saved_characters):
+            self._first_shown_option_index = self._selected_option_index - NUM_SHOWN_SAVE_FILES + 1
+        elif self._selected_option_index < self._first_shown_option_index:
+            self._first_shown_option_index = self._selected_option_index
+
         play_sound(SoundId.DIALOG)
 
     def _confirm_option(self) -> Optional[SceneTransition]:
-        if self._option_index < len(self._saved_characters):
-            self.flags.saved_player_state = self._saved_characters[self._option_index]
-            self.flags.character_file = self._files[self._option_index]
+        if self._selected_option_index < len(self._saved_characters):
+            self.flags.saved_player_state = self._saved_characters[self._selected_option_index]
+            self.flags.character_file = self._files[self._selected_option_index]
             return SceneTransition(self.creating_world_scene(self.flags))
         else:
             return SceneTransition(self.picking_hero_scene(self.flags))
@@ -55,4 +64,4 @@ class MainMenuScene(AbstractScene):
             return SceneTransition(self.picking_hero_scene(self.flags))
 
     def render(self):
-        self._view.render(self._saved_characters, self._option_index)
+        self._view.render(self._saved_characters, self._selected_option_index, self._first_shown_option_index)

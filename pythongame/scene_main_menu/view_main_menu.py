@@ -8,6 +8,8 @@ from pythongame.core.game_data import HEROES, HeroData
 from pythongame.core.view.render_util import DrawableArea
 from pythongame.player_file import SavedPlayerState
 
+NUM_SHOWN_SAVE_FILES = 3
+
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
 
@@ -27,13 +29,13 @@ class MainMenuView:
         self._images_by_portrait_sprite = images_by_portrait_sprite
         self._font_width = 2.5
 
-    def render(self, saved_characters: List[SavedPlayerState], option_index: int):
+    def render(self, saved_characters: List[SavedPlayerState], selected_option_index: int, first_shown_index: int):
         self._screen_render.fill(COLOR_BLACK)
         self._screen_render.rect(COLOR_WHITE, Rect(0, 0, self._screen_size[0], self._screen_size[1]), 1)
         x_mid = self._screen_size[0] // 2
         x = x_mid - 175
         x_text = x + PORTRAIT_ICON_SIZE[0] + 25
-        y = 100
+        y = 50
 
         if len(saved_characters) == 1:
             top_text = "You have 1 saved character"
@@ -46,8 +48,9 @@ class MainMenuView:
         w_rect = 340
         h_rect = 80
         padding = 5
-        for i, saved_player_state in enumerate(saved_characters):
-            color = COLOR_HIGHLIGHTED_RECT if i == option_index else COLOR_RECT
+        for i in range(first_shown_index, min(len(saved_characters), first_shown_index + NUM_SHOWN_SAVE_FILES)):
+            saved_player_state = saved_characters[i]
+            color = COLOR_HIGHLIGHTED_RECT if i == selected_option_index else COLOR_RECT
             self._screen_render.rect(color, Rect(x, y, w_rect, h_rect), 2)
             image = self._get_portrait_image(saved_player_state)
             self._screen_render.image(image, (x + padding, y + padding))
@@ -61,7 +64,7 @@ class MainMenuView:
             y += 90
 
         y += 40
-        color = COLOR_HIGHLIGHTED_RECT if option_index == len(saved_characters) else COLOR_RECT
+        color = COLOR_HIGHLIGHTED_RECT if selected_option_index == len(saved_characters) else COLOR_RECT
         self._screen_render.rect(color, Rect(x, y, w_rect, h_rect), 2)
         self._screen_render.text_centered(self._font, "CREATE NEW CHARACTER", (x_mid, y + 32), self._font_width)
 
