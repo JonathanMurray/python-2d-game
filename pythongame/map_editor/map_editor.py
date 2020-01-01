@@ -361,6 +361,12 @@ def main(map_file_name: Optional[str]):
             entire_world_area=game_state.entire_world_area,
             entity_action_text=None)
 
+        camera_world_area = game_state.camera_world_area
+        world_area = game_state.entire_world_area
+        camera_world_area_percentage = Rect((camera_world_area.x - world_area.x) / world_area.w * 100,
+                                            (camera_world_area.y - world_area.y) / world_area.h * 100,
+                                            camera_world_area.w / world_area.w * 100,
+                                            camera_world_area.h / world_area.h * 100)
         entity_icon_hovered_by_mouse = ui_view.render(
             chars_by_entities=CHARS_BY_ENTITY,
             entities=MAP_EDITOR_ENTITIES,
@@ -371,7 +377,8 @@ def main(map_file_name: Optional[str]):
             num_walls=len(game_state.walls_state.walls),
             num_decorations=len(game_state.decorations_state.decoration_entities),
             grid_cell_size=grid_cell_size,
-            mouse_screen_position=exact_mouse_screen_position)
+            mouse_screen_position=exact_mouse_screen_position,
+            camera_world_area_percentage=camera_world_area_percentage)
 
         if is_mouse_button_down and entity_icon_hovered_by_mouse:
             user_state = UserState.placing_entity(entity_icon_hovered_by_mouse)

@@ -66,7 +66,8 @@ class MapEditorView:
             self, chars_by_entities: Dict[MapEditorWorldEntity, str], entities: List[MapEditorWorldEntity],
             placing_entity: Optional[MapEditorWorldEntity], deleting_entities: bool, deleting_decorations: bool,
             num_enemies: int, num_walls: int, num_decorations: int, grid_cell_size: int,
-            mouse_screen_position: Tuple[int, int]) -> Optional[MapEditorWorldEntity]:
+            mouse_screen_position: Tuple[int, int], camera_world_area_percentage: Rect
+    ) -> Optional[MapEditorWorldEntity]:
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
 
@@ -89,7 +90,7 @@ class MapEditorView:
 
         x_1 = 155
         self.ui_render.text(self.font_ui_headers, "ENTITIES", (x_1, y_1))
-        num_icons_per_row = 27
+        num_icons_per_row = 23
         for i, entity in enumerate(entities):
             if entity in chars_by_entities:
                 char = chars_by_entities[entity]
@@ -111,6 +112,16 @@ class MapEditorView:
         self.screen_render.text(self.font_debug_info, "# walls: " + str(num_walls), (5, 20))
         self.screen_render.text(self.font_debug_info, "# decorations: " + str(num_decorations), (5, 37))
         self.screen_render.text(self.font_debug_info, "Cell size: " + str(grid_cell_size), (5, 54))
+
+        rect_minimap = Rect(self.screen_size[0] - 180, self.screen_size[1] - 180, 160, 160)
+        self.screen_render.rect(COLOR_WHITE, rect_minimap, 2)
+        self.screen_render.rect(
+            (100, 250, 100),
+            Rect(rect_minimap.x + camera_world_area_percentage.x * rect_minimap.w / 100,
+                 rect_minimap.y + camera_world_area_percentage.y * rect_minimap.h / 100,
+                 camera_world_area_percentage.w * rect_minimap.w / 100,
+                 camera_world_area_percentage.h * rect_minimap.h / 100),
+            1)
 
         return hovered_by_mouse
 
