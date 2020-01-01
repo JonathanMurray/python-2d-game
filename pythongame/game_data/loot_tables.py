@@ -57,6 +57,7 @@ LOOT_ITEMS_3 = [
 ]
 
 LOOT_ITEMS_4 = [
+    LootEntry.item(ItemType.BLESSED_CHALICE),
     LootEntry.item(ItemType.WINGED_HELMET),
     LootEntry.item(ItemType.WARLORDS_ARMOR),
     LootEntry.item(ItemType.ELITE_ARMOR),

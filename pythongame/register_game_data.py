@@ -50,6 +50,7 @@ from pythongame.game_data.heroes.hero_mage import register_hero_mage
 from pythongame.game_data.heroes.hero_rogue import register_hero_rogue
 from pythongame.game_data.heroes.hero_warrior import register_hero_warrior
 from pythongame.game_data.items.item_amulet_of_mana import register_amulet_of_mana_item
+from pythongame.game_data.items.item_blessed_chalice import register_blessed_chalice_item
 from pythongame.game_data.items.item_blessed_shield import register_blessed_shield_item
 from pythongame.game_data.items.item_blood_amulet import register_blood_amulet
 from pythongame.game_data.items.item_blue_robe import register_blue_robe_item
@@ -222,6 +223,7 @@ def register_all_game_data():
     register_desert_blade_item()
     register_novice_wand_item()
     register_sorceress_robe_item()
+    register_blessed_chalice_item()
 
     # Register items before NPCs as vendors may rely on item data
 

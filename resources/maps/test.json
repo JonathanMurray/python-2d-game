@@ -406,6 +406,13 @@
         200,
         250
       ]
+    },
+    {
+      "item_type": "BLESSED_CHALICE",
+      "position": [
+        200,
+        300
+      ]
     }
   ],
   "money_piles_on_ground": [],
