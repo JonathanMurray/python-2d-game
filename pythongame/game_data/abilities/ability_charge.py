@@ -78,6 +78,10 @@ class Charging(AbstractBuffEffect):
             enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE_STUNNED), IMPACT_STUN_DURATION)
             game_state.camera_shake = CameraShake(Millis(50), Millis(150), 12)
             play_sound(SoundId.ABILITY_CHARGE_HIT)
+            has_stomp_cooldown_upgrade = game_state.player_state.has_upgrade(
+                HeroUpgradeId.ABILITY_CHARGE_RESET_STOMP_COOLDOWN)
+            if has_stomp_cooldown_upgrade:
+                game_state.player_state.set_ability_cooldown_to_zero(AbilityType.STOMP)
             # The buff should end upon impact
             return True
         return False
