@@ -52,7 +52,7 @@ class WinAction(AbstractNpcAction):
     def act(self, game_state: GameState):
         if game_state.player_state.item_inventory.has_item_in_inventory(ItemType.KEY):
             play_sound(SoundId.EVENT_COMPLETED_QUEST)
-            game_state.player_state.gain_upgrade(HeroUpgrade.HAS_WON_GAME)
+            game_state.player_state.has_finished_main_quest = True
         else:
             play_sound(SoundId.WARNING)
             return "You don't have that!"

@@ -65,7 +65,6 @@ class HeroUpgrade(Enum):
     ABILITY_SLASH_CD = 33
     MAGE_LIGHT_FOOTED = 50
     WARRIOR_RETRIBUTION = 51
-    HAS_WON_GAME = 100  # TODO This should probably not be modelled as a "hero upgrade"
 
 
 class ConsumableType(Enum):

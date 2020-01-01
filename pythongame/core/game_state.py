@@ -417,6 +417,7 @@ class PlayerState:
         self.abilities_were_updated = Observable()
         self.cooldowns_were_updated = Observable()
         self.buffs_were_updated = Observable()
+        self.has_finished_main_quest = False
 
     def modify_money(self, delta: int):
         self.money += delta
@@ -434,7 +435,7 @@ class PlayerState:
     def get_effective_dodge_chance(self) -> float:
         return self.base_dodge_chance + self.dodge_chance_bonus
 
-    def get_effective_block_chance(self)->float:
+    def get_effective_block_chance(self) -> float:
         return self.base_block_chance + self.block_chance_bonus
 
     def modify_stat(self, hero_stat: HeroStat, stat_delta: Union[int, float]):
@@ -613,9 +614,6 @@ class PlayerState:
 
     def get_serilized_talent_tier_choices(self):
         return [tier.picked_index for tier in self._talents_state.tiers]
-
-    def gain_upgrade(self, upgrade: HeroUpgrade):
-        self._upgrades.append(upgrade)
 
     def has_upgrade(self, upgrade: HeroUpgrade) -> bool:
         return upgrade in self._upgrades

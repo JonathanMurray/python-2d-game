@@ -51,7 +51,7 @@ class StoryBehavior(AbstractWorldBehavior):
 
 
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:
-        if self.game_state.player_state.has_upgrade(HeroUpgrade.HAS_WON_GAME):
+        if self.game_state.player_state.has_finished_main_quest:
             return SceneTransition(self.victory_screen_scene())
 
     def handle_event(self, event: EngineEvent) -> Optional[SceneTransition]:
