@@ -64,6 +64,7 @@ class HeroUpgrade(Enum):
     ABILITY_BLOODLUST_DURATION = 32
     ABILITY_SLASH_CD = 33
     MAGE_LIGHT_FOOTED = 50
+    WARRIOR_RETRIBUTION = 51
     HAS_WON_GAME = 100  # TODO This should probably not be modelled as a "hero upgrade"
 
 
@@ -604,6 +605,7 @@ class HeroStat(Enum):
     DAMAGE = 10
     PHYSICAL_DAMAGE = 11
     MAGIC_DAMAGE = 12
+    BLOCK_CHANCE = 13
 
 
 # Use to handle timing-related boilerplate for buffs, items, enemy behaviours, etc

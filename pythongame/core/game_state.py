@@ -378,7 +378,7 @@ class PlayerState:
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
                  item_inventory: ItemInventory, new_level_abilities: Dict[int, AbilityType], hero_id: HeroId,
                  armor: int, base_dodge_chance: float, level_bonus: PlayerLevelBonus, talents_config: TalentsConfig,
-                 block_chance: float):
+                 base_block_chance: float):
         self.health_resource: HealthOrManaResource = health_resource
         self.mana_resource: HealthOrManaResource = mana_resource
         self.consumable_inventory = consumable_inventory
@@ -407,7 +407,8 @@ class PlayerState:
         self.level_bonus = level_bonus
         self._talents_state: TalentsState = TalentsState(talents_config)
         self._upgrades: List[HeroUpgrade] = []
-        self.block_chance: float = block_chance
+        self.base_block_chance: float = base_block_chance  # depends on which hero is being used
+        self.block_chance_bonus: float = 0  # affected by items/buffs. [Change it additively]
         self.block_damage_reduction: int = 0
         self.talents_were_updated = Observable()
         self.stats_were_updated = Observable()
@@ -430,8 +431,11 @@ class PlayerState:
     def get_effective_magic_damage_modifier(self) -> float:
         return self.base_magic_damage_modifier + self.magic_damage_modifier_bonus
 
-    def get_effective_dodge_change(self) -> float:
+    def get_effective_dodge_chance(self) -> float:
         return self.base_dodge_chance + self.dodge_chance_bonus
+
+    def get_effective_block_chance(self)->float:
+        return self.base_block_chance + self.block_chance_bonus
 
     def modify_stat(self, hero_stat: HeroStat, stat_delta: Union[int, float]):
         if hero_stat == HeroStat.MAX_HEALTH:
@@ -463,6 +467,8 @@ class PlayerState:
             self.block_damage_reduction += stat_delta
         elif hero_stat == HeroStat.DODGE_CHANCE:
             self.dodge_chance_bonus += stat_delta
+        elif hero_stat == HeroStat.BLOCK_CHANCE:
+            self.block_chance_bonus += stat_delta
         else:
             raise Exception("Unhandled stat: " + str(hero_stat))
         self.notify_stats_observers()

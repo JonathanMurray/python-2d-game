@@ -557,8 +557,9 @@ class StatsWindow(UiWindow):
         self._render_stat((x_right, y_defense + 25), "armor", str(floor(player_state.base_armor)),
                           str(floor(player_state.base_armor + player_state.armor_bonus)))
         self._render_stat((x_right, y_defense + 45), "dodge %", perc(player_state.base_dodge_chance),
-                          perc(player_state.get_effective_dodge_change()))
-        self._render_stat((x_right, y_defense + 65), "block %", perc(player_state.block_chance))
+                          perc(player_state.get_effective_dodge_chance()))
+        self._render_stat((x_right, y_defense + 65), "block %", perc(player_state.base_block_chance),
+                          perc(player_state.get_effective_block_chance()))
         self._render_stat((x_right, y_defense + 85), "amount", player_state.block_damage_reduction)
 
         y_misc = y_0 + 220

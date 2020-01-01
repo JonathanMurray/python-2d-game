@@ -1,8 +1,10 @@
-from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgrade, UiIconSprite, ItemType
+from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgrade, UiIconSprite, ItemType, \
+    HeroStat
 from pythongame.core.game_data import Sprite, Direction, AbilityType, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
-from pythongame.core.game_state import PlayerLevelBonus
+from pythongame.core.game_state import PlayerLevelBonus, GameState
+from pythongame.core.hero_upgrades import register_hero_upgrade_effect
 from pythongame.core.talents import TalentsConfig, TalentTierConfig, TalentTierOptionConfig
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.game_data.heroes.generic_talents import TALENT_CHOICE_ARMOR_DAMAGE, TALENT_CHOICE_HEALTH_MANA, \
@@ -34,6 +36,11 @@ def register_hero_warrior():
     hero_data = HeroData(sprite, portrait_icon_sprite, _get_initial_player_state_warrior(), entity_speed,
                          PLAYER_ENTITY_SIZE, description)
     register_hero_data(HERO_ID, hero_data)
+    register_hero_upgrade_effect(HeroUpgrade.WARRIOR_RETRIBUTION, _apply_retribution_talent)
+
+
+def _apply_retribution_talent(game_state: GameState):
+    game_state.player_state.modify_stat(HeroStat.BLOCK_CHANCE, 0.05)
 
 
 def _get_initial_player_state_warrior() -> InitialPlayerStateData:
@@ -65,18 +72,32 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
         4: TalentTierConfig(
             TalentTierOptionConfig("Close combat",
                                    "Your charge ability deals full damage even when used at close range",
-                                   HeroUpgrade.ABILITY_CHARGE_MELEE, UiIconSprite.ABILITY_CHARGE),
+                                   HeroUpgrade.ABILITY_CHARGE_MELEE,
+                                   UiIconSprite.ABILITY_CHARGE),
             TalentTierOptionConfig("Brawl",
                                    "The damage of your slash ability is increased if at least 2 enemies are hit",
-                                   HeroUpgrade.ABILITY_SLASH_AOE_BONUS_DAMAGE, UiIconSprite.ABILITY_SWORD_SLASH)),
+                                   HeroUpgrade.ABILITY_SLASH_AOE_BONUS_DAMAGE,
+                                   UiIconSprite.ABILITY_SWORD_SLASH)),
         5: TALENT_CHOICE_HEALTH_MANA,
         6: TalentTierConfig(
             TalentTierOptionConfig("Bloodthirst",
                                    "The duration of your bloodlust ability is increased additionally on kills",
-                                   HeroUpgrade.ABILITY_BLOODLUST_DURATION, UiIconSprite.ABILITY_BLOODLUST),
-            TalentTierOptionConfig("Berserker", "Reduces the cooldown of your slash ability",
-                                   HeroUpgrade.ABILITY_SLASH_CD, UiIconSprite.ABILITY_SWORD_SLASH)),
-        7: TALENT_CHOICE_HEALTH_MANA_REGEN
+                                   HeroUpgrade.ABILITY_BLOODLUST_DURATION,
+                                   UiIconSprite.ABILITY_BLOODLUST),
+            TalentTierOptionConfig("Berserker",
+                                   "Reduces the cooldown of your slash ability",
+                                   HeroUpgrade.ABILITY_SLASH_CD,
+                                   UiIconSprite.ABILITY_SWORD_SLASH)),
+        7: TALENT_CHOICE_HEALTH_MANA_REGEN,
+        8: TalentTierConfig(
+            TalentTierOptionConfig("TODO",
+                                   "TODO",
+                                   HeroUpgrade.ABILITY_BLOODLUST_DURATION,
+                                   UiIconSprite.ABILITY_BLOODLUST),
+            TalentTierOptionConfig("Retribution",
+                                   "Increases your block chance by 5%",
+                                   HeroUpgrade.WARRIOR_RETRIBUTION,
+                                   UiIconSprite.ITEM_SKULL_SHIELD)),
     })
     block_chance = 0.2
     return InitialPlayerStateData(
