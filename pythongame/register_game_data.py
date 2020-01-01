@@ -60,6 +60,7 @@ from pythongame.game_data.items.item_druids_ring import register_druids_ring_ite
 from pythongame.game_data.items.item_elite_armor import register_elite_armor
 from pythongame.game_data.items.item_elite_helmet import register_elite_helmet_item
 from pythongame.game_data.items.item_elven_armor import register_elven_armor
+from pythongame.game_data.items.item_fire_wand import register_fire_wand_item
 from pythongame.game_data.items.item_freezing_gauntlet import register_freezing_gauntlet_item
 from pythongame.game_data.items.item_frog import register_frog_item
 from pythongame.game_data.items.item_gladiator_armor import register_gladiator_armor
@@ -226,6 +227,7 @@ def register_all_game_data():
     register_sorceress_robe_item()
     register_blessed_chalice_item()
     register_necklace_of_suffering_item()
+    register_fire_wand_item()
 
     # Register items before NPCs as vendors may rely on item data
 

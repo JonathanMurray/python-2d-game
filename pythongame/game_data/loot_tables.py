@@ -17,6 +17,7 @@ LOOT_ITEMS_2 = [
     LootEntry.item(ItemType.BLESSED_SHIELD_1),
     LootEntry.item(ItemType.SOLDIERS_HELMET_1),
     LootEntry.item(ItemType.HATCHET),
+    LootEntry.item(ItemType.WAND),
 ]
 
 LOOT_ITEMS_3 = [
@@ -46,7 +47,7 @@ LOOT_ITEMS_3 = [
     LootEntry.item(ItemType.RING_OF_POWER),
     LootEntry.item(ItemType.ROYAL_SWORD),
     LootEntry.item(ItemType.ROYAL_DAGGER),
-    LootEntry.item(ItemType.WAND),
+    LootEntry.item(ItemType.FIRE_WAND),
     LootEntry.item(ItemType.ELITE_HELMET),
     LootEntry.item(ItemType.DRUIDS_RING),
     LootEntry.item(ItemType.HEALING_WAND),

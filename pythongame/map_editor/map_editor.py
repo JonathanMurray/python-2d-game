@@ -90,6 +90,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.consumable(ConsumableType.WARP_STONE),
     MapEditorWorldEntity.consumable(ConsumableType.POWER),
 
+    MapEditorWorldEntity.item(ItemType.FIRE_WAND),
     MapEditorWorldEntity.item(ItemType.SORCERESS_ROBE),
     MapEditorWorldEntity.item(ItemType.BLESSED_CHALICE),
     MapEditorWorldEntity.item(ItemType.NECKLACE_OF_SUFFERING),

@@ -420,6 +420,13 @@
         200,
         350
       ]
+    },
+    {
+      "item_type": "FIRE_WAND",
+      "position": [
+        200,
+        400
+      ]
     }
   ],
   "money_piles_on_ground": [],
