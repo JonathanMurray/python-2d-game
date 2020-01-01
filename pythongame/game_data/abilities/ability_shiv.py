@@ -16,6 +16,11 @@ from pythongame.core.visual_effects import VisualRect, VisualCross
 MIN_DMG = 3
 MAX_DMG = 4
 
+SHIV_STEALTH_DAMAGE_MULTIPLIER = 3.5
+SHIV_UPGRADED_STEALTH_DAMAGE_MULTIPLIER = 4
+
+SHIV_TALENT_FULL_HEALTH_DAMAGE_MULTIPLIER = 1.5
+
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
     player_entity = game_state.player_entity
@@ -39,14 +44,14 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
         if is_stealthed:
             # Talent: increase the damage bonus that Shiv gets from being used while stealthing
             has_damage_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.ABILITY_SHIV_SNEAK_BONUS_DAMAGE)
-            damage *= 4 if has_damage_upgrade else 3.5
+            damage *= SHIV_UPGRADED_STEALTH_DAMAGE_MULTIPLIER if has_damage_upgrade else SHIV_STEALTH_DAMAGE_MULTIPLIER
             game_state.camera_shake = CameraShake(Millis(50), Millis(150), 4)
         else:
             # Talent: if attacking an enemy that's at 100% health while not stealthing, deal bonus damage
             has_damage_upgrade = game_state.player_state.has_upgrade(
                 HeroUpgradeId.ABILITY_SHIV_FULL_HEALTH_BONUS_DAMAGE)
             if has_damage_upgrade and enemy.health_resource.is_at_max():
-                damage *= 1.5
+                damage *= SHIV_TALENT_FULL_HEALTH_DAMAGE_MULTIPLIER
 
         deal_player_damage_to_enemy(game_state, enemy, damage, DamageType.PHYSICAL, visual_emphasis=is_stealthed)
         break

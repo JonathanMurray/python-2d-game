@@ -12,6 +12,11 @@ from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacte
 from pythongame.core.hero_upgrades import register_hero_upgrade_effect
 from pythongame.core.visual_effects import VisualCircle
 
+STEALTH_MANA_COST = 25
+STEALTH_UPGRADED_MANA_COST = 20
+
+STEALTH_COOLDOWN = Millis(6000)
+
 ABILITY_TYPE = AbilityType.STEALTH
 BUFF_STEALTH = BuffType.STEALTHING
 BUFF_POST_STEALTH = BuffType.AFTER_STEALTHING
@@ -70,11 +75,7 @@ class AfterStealthing(AbstractBuffEffect):
 
 
 def _upgrade_mana_cost(_game_state: GameState):
-    ABILITIES[ABILITY_TYPE].mana_cost = 20
-
-
-def _upgrade_movement_speed(_game_state: GameState):
-    ABILITIES[ABILITY_TYPE].mana_cost = 20
+    ABILITIES[ABILITY_TYPE].mana_cost = STEALTH_UPGRADED_MANA_COST
 
 
 def register_stealth_ability():
@@ -84,9 +85,8 @@ def register_stealth_ability():
     description = "Become invisible to enemies. After effect ends, gain +" + \
                   "{:.0f}".format(DODGE_CHANCE_BONUS * 100) + "% dodge chance for " + \
                   "{:.1f}".format(DURATION_POST_STEALTH / 1000) + "s"
-    mana_cost = 25
-    cooldown = Millis(6000)
-    ability_data = AbilityData("Stealth", ui_icon_sprite, mana_cost, cooldown, description, SoundId.ABILITY_STEALTH)
+    ability_data = AbilityData("Stealth", ui_icon_sprite, STEALTH_MANA_COST, STEALTH_COOLDOWN, description,
+                               SoundId.ABILITY_STEALTH)
     register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/sneak_icon.png")
     register_buff_effect(BUFF_STEALTH, Stealthing)
@@ -94,4 +94,3 @@ def register_stealth_ability():
     register_buff_effect(BUFF_POST_STEALTH, AfterStealthing)
     register_buff_text(BUFF_POST_STEALTH, "Element of surprise")
     register_hero_upgrade_effect(HeroUpgradeId.ABILITY_STEALTH_MANA_COST, _upgrade_mana_cost)
-    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_STEALTH_MANA_COST, _upgrade_movement_speed)
