@@ -19,9 +19,11 @@ ARCANE_FIRE_COOLDOWN = Millis(30_000)
 ARCANE_FIRE_UPGRADED_COOLDOWN = Millis(10_000)
 
 CHANNEL_DURATION = Millis(1000)
+CHANNEL_PROJECTILE_INTERVAL = Millis(70)
 PROJECTILE_SIZE = (30, 30)
 PROJECTILE_SPEED = 0.7
 DAMAGE = 1
+MAX_TOTAL_DAMAGE = int(round(CHANNEL_DURATION / CHANNEL_PROJECTILE_INTERVAL))
 
 
 def _apply_channel_attack(game_state: GameState) -> AbilityResult:
@@ -31,7 +33,7 @@ def _apply_channel_attack(game_state: GameState) -> AbilityResult:
 
 class Channeling(AbstractBuffEffect):
     def __init__(self):
-        self.timer = PeriodicTimer(Millis(70))
+        self.timer = PeriodicTimer(CHANNEL_PROJECTILE_INTERVAL)
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.add_one()
@@ -78,7 +80,8 @@ def _upgrade_arcane_fire_cooldown_and_mana_cost(_game_state: GameState):
 def register_arcane_fire_ability():
     register_ability_effect(AbilityType.ARCANE_FIRE, _apply_channel_attack)
     description = "Channel for " + "{:.1f}".format(CHANNEL_DURATION / 1000) + \
-                  "s, firing piercing missiles in front of you dealing magic damage to enemies."
+                  "s, firing piercing missiles in front of you dealing up to " + str(MAX_TOTAL_DAMAGE) + \
+                  " magic damage to enemies."
     ability_data = AbilityData("Arcane Fire", UiIconSprite.ABILITY_ARCANE_FIRE, ARCANE_FIRE_MANA_COST,
                                ARCANE_FIRE_COOLDOWN, description, SoundId.ABILITY_ARCANE_FIRE)
     register_ability_data(AbilityType.ARCANE_FIRE, ability_data)

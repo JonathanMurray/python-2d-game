@@ -19,6 +19,10 @@ PROJECTILE_SPRITE = Sprite.PROJECTILE_PLAYER_WHIRLWIND
 PROJECTILE_TYPE = ProjectileType.PLAYER_WHIRLWIND
 PROJECTILE_SIZE = (140, 110)
 
+PROJECTILE_DURATION = Millis(3000)
+PROJECTILE_DAMAGE_INTERVAL = Millis(350)
+PROJECTILE_MAX_TOTAL_DAMAGE = int(round(PROJECTILE_DURATION / PROJECTILE_DAMAGE_INTERVAL))
+
 WHIRLWIND_TALENT_STUN_DURATION = Millis(500)
 
 
@@ -38,8 +42,8 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
 
 class ProjectileController(AbstractProjectileController):
     def __init__(self):
-        super().__init__(3000)
-        self.damage_timer = PeriodicTimer(Millis(350))
+        super().__init__(PROJECTILE_DURATION)
+        self.damage_timer = PeriodicTimer(PROJECTILE_DAMAGE_INTERVAL)
         self.direction_change_timer = PeriodicTimer(Millis(250))
         self._relative_direction = 0
         self._rotation_motion = random.choice([-1, 1])
@@ -106,7 +110,8 @@ def register_whirlwind_ability():
     cooldown = Millis(750)
 
     register_ability_effect(ability_type, _apply_ability)
-    description = "Summon a whirlwind that deals magic damage to enemies in its path."
+    description = "Summon a whirlwind that deals up to " + str(PROJECTILE_MAX_TOTAL_DAMAGE) + \
+                  " magic damage to enemies in its path."
     ability_data = AbilityData("Whirlwind", ui_icon_sprite, mana_cost, cooldown, description, SoundId.ABILITY_WHIRLWIND)
     register_ability_data(ability_type, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/whirlwind.png")
