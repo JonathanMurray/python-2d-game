@@ -11,9 +11,10 @@ from pythongame.game_data.items.register_items_util import register_custom_effec
 ITEM_TYPE = ItemType.CLEAVER
 PROC_CHANCE = 0.2
 BUFF_TYPE = BuffType.BLEEDING_FROM_CLEAVER_WEAPON
-BUFF_DURATION = Millis(5000)
-DAMAGE_INTERVAL = Millis(1000)
+BUFF_DURATION = Millis(10_000)
+DAMAGE_INTERVAL = Millis(750)
 DAMAGE = 1
+TOTAL_DAMAGE = int(float(BUFF_DURATION / DAMAGE_INTERVAL))
 DAMAGE_SOURCE = "cleaver_bleed"
 
 
@@ -29,8 +30,8 @@ class ItemEffect(StatModifyingItemEffect):
 
     def get_description(self):
         effect_description = str(
-            int(PROC_CHANCE * 100)) + "% on hit: cause enemy to bleed, taking physical damage over " + \
-                             "{:.0f}".format(BUFF_DURATION / 1000) + "s"
+            int(PROC_CHANCE * 100)) + "% on hit: cause enemy to bleed, taking " + str(TOTAL_DAMAGE) + \
+                             " physical damage over " + "{:.0f}".format(BUFF_DURATION / 1000) + "s"
         return super().get_description() + [effect_description]
 
 
