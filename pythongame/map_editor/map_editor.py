@@ -90,6 +90,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.consumable(ConsumableType.WARP_STONE),
     MapEditorWorldEntity.consumable(ConsumableType.POWER),
 
+    MapEditorWorldEntity.item(ItemType.SORCERESS_ROBE),
     MapEditorWorldEntity.item(ItemType.MESSENGERS_HAT),
     MapEditorWorldEntity.item(ItemType.SKULL_STAFF),
     MapEditorWorldEntity.item(ItemType.ROD_OF_LIGHTNING),
@@ -141,6 +142,7 @@ MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.item(ItemType.CLEAVER),
     MapEditorWorldEntity.item(ItemType.DESERT_BLADE),
     MapEditorWorldEntity.item(ItemType.NOVICE_WAND),
+
 
     MapEditorWorldEntity.money(1),
 

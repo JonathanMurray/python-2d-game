@@ -53,6 +53,7 @@ LOOT_ITEMS_3 = [
     LootEntry.item(ItemType.ELVEN_ARMOR),
     LootEntry.item(ItemType.WHIP),
     LootEntry.item(ItemType.SERPENT_SWORD),
+    LootEntry.item(ItemType.SORCERESS_ROBE)
 ]
 
 LOOT_ITEMS_4 = [

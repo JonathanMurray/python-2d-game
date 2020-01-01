@@ -399,6 +399,13 @@
         200,
         200
       ]
+    },
+    {
+      "item_type": "SORCERESS_ROBE",
+      "position": [
+        200,
+        250
+      ]
     }
   ],
   "money_piles_on_ground": [],
