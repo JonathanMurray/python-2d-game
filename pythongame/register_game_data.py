@@ -74,6 +74,7 @@ from pythongame.game_data.items.item_leather_cowl import register_leather_cowl_i
 from pythongame.game_data.items.item_lich_armor import register_lich_armor_item
 from pythongame.game_data.items.item_messengers_hat import register_messengers_hat_item
 from pythongame.game_data.items.item_molten_axe import register_molten_axe_item
+from pythongame.game_data.items.item_necklace_of_suffering import register_necklace_of_suffering_item
 from pythongame.game_data.items.item_noble_defender import register_noble_defender
 from pythongame.game_data.items.item_novice_wand import register_novice_wand_item
 from pythongame.game_data.items.item_orb_of_life import register_orb_of_life_item
@@ -224,6 +225,7 @@ def register_all_game_data():
     register_novice_wand_item()
     register_sorceress_robe_item()
     register_blessed_chalice_item()
+    register_necklace_of_suffering_item()
 
     # Register items before NPCs as vendors may rely on item data
 

@@ -413,6 +413,13 @@
         200,
         300
       ]
+    },
+    {
+      "item_type": "NECKLACE_OF_SUFFERING",
+      "position": [
+        200,
+        350
+      ]
     }
   ],
   "money_piles_on_ground": [],

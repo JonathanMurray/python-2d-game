@@ -70,6 +70,7 @@ LOOT_ITEMS_4 = [
     LootEntry.item(ItemType.MOLTEN_AXE),
     LootEntry.item(ItemType.CLEAVER),
     LootEntry.item(ItemType.DESERT_BLADE),
+    LootEntry.item(ItemType.NECKLACE_OF_SUFFERING)
 ]
 
 LOOT_POTIONS_1 = [
