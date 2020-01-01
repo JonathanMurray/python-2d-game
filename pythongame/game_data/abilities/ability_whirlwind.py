@@ -19,6 +19,8 @@ PROJECTILE_SPRITE = Sprite.PROJECTILE_PLAYER_WHIRLWIND
 PROJECTILE_TYPE = ProjectileType.PLAYER_WHIRLWIND
 PROJECTILE_SIZE = (140, 110)
 
+WHIRLWIND_TALENT_STUN_DURATION = Millis(500)
+
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
     player_entity = game_state.player_entity
@@ -40,7 +42,6 @@ class ProjectileController(AbstractProjectileController):
         self.damage_timer = PeriodicTimer(Millis(350))
         self.direction_change_timer = PeriodicTimer(Millis(250))
         self._relative_direction = 0
-        self._stun_duration = 500
         self._rotation_motion = random.choice([-1, 1])
 
     def notify_time_passed(self, game_state: GameState, projectile: Projectile, time_passed: Millis):
@@ -53,8 +54,8 @@ class ProjectileController(AbstractProjectileController):
                 damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, damage_amount, DamageType.MAGIC)
                 if damage_was_dealt:
                     has_stun_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.ABILITY_WHIRLWIND_STUN)
-                    if has_stun_upgrade and random.random() < 0.25:
-                        enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(self._stun_duration))
+                    if has_stun_upgrade and random.random() < 0.2:
+                        enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE), WHIRLWIND_TALENT_STUN_DURATION)
 
         if self.direction_change_timer.update_and_check_if_ready(time_passed):
             should_rotate = True

@@ -14,6 +14,9 @@ from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualCircle, VisualSprite, create_visual_stun_text
 
+ENTANGLING_ROOTS_COOLDOWN = Millis(12_000)
+ENTANGLING_ROOTS_UPGRADED_COOLDOWN = Millis(8_000)
+
 BUFF_TYPE = BuffType.ROOTED_BY_ENTANGLING_ROOTS
 
 PROJECTILE_SPRITE = Sprite.PROJECTILE_PLAYER_ENTANGLING_ROOTS
@@ -23,6 +26,8 @@ ABILITY_TYPE = AbilityType.ENTANGLING_ROOTS
 PROJECTILE_SIZE = (55, 55)
 ENTANGLING_ROOTS_SIZE = (50, 50)
 DEBUFF_DURATION = Millis(5000)
+DEBUFF_DAMAGE_INTERVAL = Millis(500)
+DEBUFF_TOTAL_DAMAGE = int(round(DEBUFF_DURATION / DEBUFF_DAMAGE_INTERVAL))
 
 
 class ProjectileController(AbstractProjectileController):
@@ -64,7 +69,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
 class Rooted(AbstractBuffEffect):
 
     def __init__(self):
-        self.timer = PeriodicTimer(Millis(500))
+        self.timer = PeriodicTimer(DEBUFF_DAMAGE_INTERVAL)
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         buffed_npc.stun_status.add_one()
@@ -85,14 +90,15 @@ class Rooted(AbstractBuffEffect):
 
 
 def _upgrade_entangling_roots_cooldown(_game_state: GameState):
-    ABILITIES[AbilityType.ENTANGLING_ROOTS].cooldown -= 4000
+    ABILITIES[AbilityType.ENTANGLING_ROOTS].cooldown = ENTANGLING_ROOTS_UPGRADED_COOLDOWN
 
 
 def register_entangling_roots_ability():
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    description = "Stun an enemy for " + "{:.0f}".format(DEBUFF_DURATION / 1000) + "s and deal periodic magic damage."
+    description = "Stun an enemy and deal " + str(DEBUFF_TOTAL_DAMAGE) + " magic damage over " + \
+                  "{:.0f}".format(DEBUFF_DURATION / 1000) + "s."
     mana_cost = 22
-    ability_data = AbilityData("Entangling roots", ICON_SPRITE, mana_cost, Millis(12000), description,
+    ability_data = AbilityData("Entangling roots", ICON_SPRITE, mana_cost, ENTANGLING_ROOTS_COOLDOWN, description,
                                SoundId.ABILITY_ENTANGLING_ROOTS)
     register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ICON_SPRITE, "resources/graphics/ability_icon_entangling_roots.png")

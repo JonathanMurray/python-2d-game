@@ -13,6 +13,11 @@ from pythongame.core.projectile_controllers import AbstractProjectileController,
 from pythongame.core.view.image_loading import SpriteInitializer
 from pythongame.core.visual_effects import VisualCircle, VisualRect
 
+ARCANE_FIRE_MANA_COST = 40
+ARCANE_FIRE_UPGRADED_MANA_COST = 60
+ARCANE_FIRE_COOLDOWN = Millis(30_000)
+ARCANE_FIRE_UPGRADED_COOLDOWN = Millis(10_000)
+
 CHANNEL_DURATION = Millis(1000)
 PROJECTILE_SIZE = (30, 30)
 PROJECTILE_SPEED = 0.7
@@ -66,18 +71,16 @@ class ProjectileController(AbstractProjectileController):
 
 
 def _upgrade_arcane_fire_cooldown_and_mana_cost(_game_state: GameState):
-    ABILITIES[AbilityType.ARCANE_FIRE].cooldown = 10_000
-    ABILITIES[AbilityType.ARCANE_FIRE].mana_cost = 60
+    ABILITIES[AbilityType.ARCANE_FIRE].cooldown = ARCANE_FIRE_UPGRADED_COOLDOWN
+    ABILITIES[AbilityType.ARCANE_FIRE].mana_cost = ARCANE_FIRE_UPGRADED_MANA_COST
 
 
 def register_arcane_fire_ability():
     register_ability_effect(AbilityType.ARCANE_FIRE, _apply_channel_attack)
     description = "Channel for " + "{:.1f}".format(CHANNEL_DURATION / 1000) + \
                   "s, firing piercing missiles in front of you dealing magic damage to enemies."
-    mana_cost = 40
-    cooldown = Millis(30_000)
-    ability_data = AbilityData("Arcane Fire", UiIconSprite.ABILITY_ARCANE_FIRE, mana_cost, cooldown, description,
-                               SoundId.ABILITY_ARCANE_FIRE)
+    ability_data = AbilityData("Arcane Fire", UiIconSprite.ABILITY_ARCANE_FIRE, ARCANE_FIRE_MANA_COST,
+                               ARCANE_FIRE_COOLDOWN, description, SoundId.ABILITY_ARCANE_FIRE)
     register_ability_data(AbilityType.ARCANE_FIRE, ability_data)
 
     register_ui_icon_sprite_path(UiIconSprite.ABILITY_ARCANE_FIRE, "resources/graphics/magic_missile.png")

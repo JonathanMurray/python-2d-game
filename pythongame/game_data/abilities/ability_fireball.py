@@ -17,9 +17,15 @@ from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualCircle, VisualParticleSystem
 
 # Note: Projectile size must be smaller than hero entity size (otherwise you get a collision when shooting next to wall)
+FIREBALL_MANA_COST = 4
+FIREBALL_UPGRADED_MANA_COST = 3
 PROJECTILE_SIZE = (28, 28)
 MIN_DMG = 3
 MAX_DMG = 4
+
+FIREBALL_TALENT_BURN_DURATION = Millis(2500)
+FIREBALL_TALENT_BURN_INTERVAL = Millis(500)
+FIREBALL_TALENT_BURN_TOTAL_DAMAGE = int(round(FIREBALL_TALENT_BURN_DURATION / FIREBALL_TALENT_BURN_INTERVAL))
 
 BUFF_TYPE = BuffType.BURNT_BY_FIREBALL
 
@@ -49,7 +55,7 @@ class ProjectileController(AbstractProjectileController):
         _create_visual_splash(npc.world_entity.get_center_position(), game_state)
         has_burn_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.ABILITY_FIREBALL_BURN)
         if has_burn_upgrade:
-            npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(2500))
+            npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), FIREBALL_TALENT_BURN_DURATION)
         play_sound(SoundId.ABILITY_FIREBALL_HIT)
         projectile.has_collided_and_should_be_removed = True
 
@@ -61,7 +67,7 @@ class ProjectileController(AbstractProjectileController):
 
 class BurntByFireball(AbstractBuffEffect):
     def __init__(self):
-        self.timer = PeriodicTimer(Millis(500))
+        self.timer = PeriodicTimer(FIREBALL_TALENT_BURN_INTERVAL)
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
@@ -97,16 +103,16 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
 
 
 def _upgrade_fireball_mana_cost(_game_state: GameState):
-    ABILITIES[AbilityType.FIREBALL].mana_cost -= 1
+    ABILITIES[AbilityType.FIREBALL].mana_cost = FIREBALL_UPGRADED_MANA_COST
 
 
 def register_fireball_ability():
     register_ability_effect(AbilityType.FIREBALL, _apply_ability)
     description = "Shoot a fireball, dealing " + str(MIN_DMG) + "-" + str(MAX_DMG) + \
                   " magic damage to the first enemy that it hits."
-    register_ability_data(
-        AbilityType.FIREBALL,
-        AbilityData("Fireball", UiIconSprite.ABILITY_FIREBALL, 4, Millis(500), description, SoundId.ABILITY_FIREBALL))
+    ability_data = AbilityData("Fireball", UiIconSprite.ABILITY_FIREBALL, FIREBALL_MANA_COST, Millis(500), description,
+                               SoundId.ABILITY_FIREBALL)
+    register_ability_data(AbilityType.FIREBALL, ability_data)
     register_ui_icon_sprite_path(UiIconSprite.ABILITY_FIREBALL, "resources/graphics/icon_fireball.png")
     register_projectile_controller(ProjectileType.PLAYER_FIREBALL, ProjectileController)
 
