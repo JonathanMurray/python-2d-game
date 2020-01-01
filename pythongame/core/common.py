@@ -41,7 +41,7 @@ def get_all_directions():
     return [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT]
 
 
-class HeroUpgrade(Enum):
+class HeroUpgradeId(Enum):
     ARMOR = 1
     DAMAGE = 2
     MAX_HEALTH = 3
@@ -52,15 +52,20 @@ class HeroUpgrade(Enum):
     ABILITY_FIREBALL_BURN = 11
     ABILITY_ENTANGLING_ROOTS_COOLDOWN = 12
     ABILITY_FIREBALL_MANA_COST = 13
+    ABILITY_ARCANE_FIRE_COOLDOWN = 14
     ABILITY_STEALTH_MANA_COST = 20
     ABILITY_SHIV_SNEAK_BONUS_DAMAGE = 21
     ABILITY_DASH_KILL_RESET = 22
     ABILITY_SHIV_FULL_HEALTH_BONUS_DAMAGE = 23
+    ABILITY_STEALTH_MOVEMENT_SPEED = 24
+    ABILITY_DASH_MOVEMENT_SPEED = 25
     ABILITY_CHARGE_MELEE = 30
     ABILITY_SLASH_AOE_BONUS_DAMAGE = 31
     ABILITY_BLOODLUST_DURATION = 32
     ABILITY_SLASH_CD = 33
-    HAS_WON_GAME = 100  # TODO This should probably not be modelled as a "hero upgrade"
+    ABILITY_CHARGE_RESET_STOMP_COOLDOWN = 34
+    MAGE_LIGHT_FOOTED = 50
+    WARRIOR_RETRIBUTION = 51
 
 
 class ConsumableType(Enum):
@@ -242,6 +247,10 @@ class Sprite(Enum):
     ITEM_DESERT_BLADE = 350
     ITEM_PRACTICE_SWORD = 351
     ITEM_NOVICE_WAND = 352
+    ITEM_SORCERESS_ROBE = 353
+    ITEM_BLESSED_CHALICE = 354
+    ITEM_NECKLACE_OF_SUFFERING = 355
+    ITEM_FIRE_WAND = 356
     COINS_1 = 400
     COINS_2 = 401
     COINS_5 = 402
@@ -324,6 +333,9 @@ class BuffType(Enum):
     BUFFED_BY_HEALING_WAND = 39
     ENEMY_GOBLIN_SPEARMAN_SPRINT = 40
     BLEEDING_FROM_CLEAVER_WEAPON = 41
+    SPEED_BUFF_FROM_DASH = 42
+    BUFFED_FROM_RETRIBUTION_TALENT = 43
+    INCREASED_DAMAGE_FROM_NECKLACE_OF_SUFFERING = 44
 
 
 class ItemType(Enum):
@@ -393,6 +405,10 @@ class ItemType(Enum):
     DESERT_BLADE = 107
     PRACTICE_SWORD = 108
     NOVICE_WAND = 109
+    SORCERESS_ROBE = 110
+    BLESSED_CHALICE = 111
+    NECKLACE_OF_SUFFERING = 112
+    FIRE_WAND = 113
 
 
 class ProjectileType(Enum):
@@ -415,12 +431,14 @@ class SoundId(Enum):
     ABILITY_INFUSE_DAGGER = 8
     ABILITY_DASH = 9
     ABILITY_SLASH = 10
-    ABILITY_STOMP = 11
+    ABILITY_STOMP_HIT = 11
     ABILITY_BLOODLUST = 12
     ABILITY_ARCANE_FIRE = 13
     ABILITY_SHIV_STEALTHED = 14
     ABILITY_FIREBALL_HIT = 15
     ABILITY_ENTANGLING_ROOTS_HIT = 16
+    ABILITY_CHARGE_HIT = 17
+    ABILITY_STOMP = 18
     WARP = 40
     CONSUMABLE_POTION = 50
     CONSUMABLE_BUFF = 51
@@ -555,9 +573,13 @@ class UiIconSprite(Enum):
     ITEM_SERPENT_SWORD = 247
     ITEM_WHIP = 248
     ITEM_CLEAVER = 249
-    DESERT_BLADE = 250
+    ITEM_DESERT_BLADE = 250
     ITEM_PRACTICE_SWORD = 251
     ITEM_NOVICE_WAND = 252
+    ITEM_SORCERESS_ROBE = 253
+    ITEM_BLESSED_CHALICE = 254
+    ITEM_NECKLACE_OF_SUFFERING = 255
+    ITEM_FIRE_WAND = 256
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
     INVENTORY_TEMPLATE_HELMET = 400
@@ -566,6 +588,7 @@ class UiIconSprite(Enum):
     INVENTORY_TEMPLATE_OFFHAND = 403
     INVENTORY_TEMPLATE_NECK = 404
     INVENTORY_TEMPLATE_RING = 405
+    TALENT_LIGHT_FOOTED = 500
 
 
 # Portraits that are shown in UI (player portrait and dialog portraits)
@@ -596,6 +619,7 @@ class HeroStat(Enum):
     DAMAGE = 10
     PHYSICAL_DAMAGE = 11
     MAGIC_DAMAGE = 12
+    BLOCK_CHANCE = 13
 
 
 # Use to handle timing-related boilerplate for buffs, items, enemy behaviours, etc
@@ -650,3 +674,24 @@ class AbstractScene:
 
     def render(self):
         pass
+
+
+# These are sent as messages to player. They let buffs and items react to events. One buff might have its
+# duration prolonged if an enemy dies for example, and an item might give mana on enemy kills.
+class Event:
+    pass
+
+
+class HeroUpgrade:
+
+    def __init__(self, hero_upgrade_id: HeroUpgradeId):
+        self._hero_upgrade_id = hero_upgrade_id
+
+    # Override this method for upgrades that need to actively handle events
+    def handle_event(self, event: Event, game_state: Any):
+        pass
+
+    def get_upgrade_id(self):
+        if self._hero_upgrade_id is None:
+            raise Exception("hero_upgrade_id is not initialized: " + str(HeroUpgrade))
+        return self._hero_upgrade_id

@@ -50,6 +50,7 @@ from pythongame.game_data.heroes.hero_mage import register_hero_mage
 from pythongame.game_data.heroes.hero_rogue import register_hero_rogue
 from pythongame.game_data.heroes.hero_warrior import register_hero_warrior
 from pythongame.game_data.items.item_amulet_of_mana import register_amulet_of_mana_item
+from pythongame.game_data.items.item_blessed_chalice import register_blessed_chalice_item
 from pythongame.game_data.items.item_blessed_shield import register_blessed_shield_item
 from pythongame.game_data.items.item_blood_amulet import register_blood_amulet
 from pythongame.game_data.items.item_blue_robe import register_blue_robe_item
@@ -59,6 +60,7 @@ from pythongame.game_data.items.item_druids_ring import register_druids_ring_ite
 from pythongame.game_data.items.item_elite_armor import register_elite_armor
 from pythongame.game_data.items.item_elite_helmet import register_elite_helmet_item
 from pythongame.game_data.items.item_elven_armor import register_elven_armor
+from pythongame.game_data.items.item_fire_wand import register_fire_wand_item
 from pythongame.game_data.items.item_freezing_gauntlet import register_freezing_gauntlet_item
 from pythongame.game_data.items.item_frog import register_frog_item
 from pythongame.game_data.items.item_gladiator_armor import register_gladiator_armor
@@ -73,6 +75,7 @@ from pythongame.game_data.items.item_leather_cowl import register_leather_cowl_i
 from pythongame.game_data.items.item_lich_armor import register_lich_armor_item
 from pythongame.game_data.items.item_messengers_hat import register_messengers_hat_item
 from pythongame.game_data.items.item_molten_axe import register_molten_axe_item
+from pythongame.game_data.items.item_necklace_of_suffering import register_necklace_of_suffering_item
 from pythongame.game_data.items.item_noble_defender import register_noble_defender
 from pythongame.game_data.items.item_novice_wand import register_novice_wand_item
 from pythongame.game_data.items.item_orb_of_life import register_orb_of_life_item
@@ -88,6 +91,7 @@ from pythongame.game_data.items.item_serpent_sword import register_serpent_sword
 from pythongame.game_data.items.item_skull_shield import register_skull_shield_item
 from pythongame.game_data.items.item_skull_staff import register_skull_staff_item
 from pythongame.game_data.items.item_soldiers_helmet import register_soldiers_helmet_item
+from pythongame.game_data.items.item_sorceress_robe import register_sorceress_robe_item
 from pythongame.game_data.items.item_staff_of_fire import register_staff_of_fire_item
 from pythongame.game_data.items.item_stone_amulet import register_stone_amulet_item
 from pythongame.game_data.items.item_thiefs_mask import register_thiefs_mask_item
@@ -220,6 +224,10 @@ def register_all_game_data():
     register_cleaver_item()
     register_desert_blade_item()
     register_novice_wand_item()
+    register_sorceress_robe_item()
+    register_blessed_chalice_item()
+    register_necklace_of_suffering_item()
+    register_fire_wand_item()
 
     # Register items before NPCs as vendors may rely on item data
 

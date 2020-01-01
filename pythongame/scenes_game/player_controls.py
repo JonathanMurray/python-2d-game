@@ -27,7 +27,7 @@ class PlayerControls:
         ability_data = ABILITIES[ability_type]
         mana_cost = ability_data.mana_cost
 
-        if player_state.ability_cooldowns_remaining[ability_type] > 0:
+        if player_state.is_ability_on_cooldown(ability_type):
             return
 
         if player_state.mana_resource.value < mana_cost:

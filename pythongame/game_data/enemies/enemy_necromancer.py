@@ -134,7 +134,8 @@ class ProjectileController(AbstractProjectileController):
         super().__init__(2000)
         self._color = (50, 180, 50)
         self._timer = PeriodicTimer(Millis(100))
-        self._damage_on_hit = 8
+        self._min_damage = 8
+        self._max_damage = 12
 
     def notify_time_passed(self, game_state: GameState, projectile: Projectile, time_passed: Millis):
         super().notify_time_passed(game_state, projectile, time_passed)
@@ -146,13 +147,15 @@ class ProjectileController(AbstractProjectileController):
             game_state.visual_effects += [head, tail]
 
     def apply_player_collision(self, game_state: GameState, projectile: Projectile):
-        deal_damage_to_player(game_state, self._damage_on_hit, DamageType.MAGIC, None)
+        damage = random.randint(self._min_damage, self._max_damage)
+        deal_damage_to_player(game_state, damage, DamageType.MAGIC, None)
         game_state.visual_effects.append(VisualCircle(self._color, game_state.player_entity.get_center_position(),
                                                       25, 50, Millis(100), 0))
         projectile.has_collided_and_should_be_removed = True
 
     def apply_player_summon_collision(self, npc: NonPlayerCharacter, game_state: GameState, projectile: Projectile):
-        deal_npc_damage_to_npc(game_state, npc, self._damage_on_hit)
+        damage = random.randint(self._min_damage, self._max_damage)
+        deal_npc_damage_to_npc(game_state, npc, damage)
         game_state.visual_effects.append(
             VisualCircle(self._color, npc.world_entity.get_center_position(), 25, 50, Millis(100), 0))
         projectile.has_collided_and_should_be_removed = True

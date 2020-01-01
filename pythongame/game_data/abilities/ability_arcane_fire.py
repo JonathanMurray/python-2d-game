@@ -1,21 +1,29 @@
 from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, ProjectileType, UiIconSprite, PeriodicTimer, \
-    SoundId
+    SoundId, HeroUpgradeId
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
-    register_entity_sprite_initializer, register_buff_as_channeling
+    register_entity_sprite_initializer, register_buff_as_channeling, ABILITIES
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile, CameraShake
+from pythongame.core.hero_upgrades import register_hero_upgrade_effect
 from pythongame.core.math import get_position_from_center_position
 from pythongame.core.projectile_controllers import AbstractProjectileController, register_projectile_controller, \
     create_projectile_controller
 from pythongame.core.view.image_loading import SpriteInitializer
 from pythongame.core.visual_effects import VisualCircle, VisualRect
 
+ARCANE_FIRE_MANA_COST = 40
+ARCANE_FIRE_UPGRADED_MANA_COST = 60
+ARCANE_FIRE_COOLDOWN = Millis(30_000)
+ARCANE_FIRE_UPGRADED_COOLDOWN = Millis(10_000)
+
 CHANNEL_DURATION = Millis(1000)
+CHANNEL_PROJECTILE_INTERVAL = Millis(70)
 PROJECTILE_SIZE = (30, 30)
 PROJECTILE_SPEED = 0.7
 DAMAGE = 1
+MAX_TOTAL_DAMAGE = int(round(CHANNEL_DURATION / CHANNEL_PROJECTILE_INTERVAL))
 
 
 def _apply_channel_attack(game_state: GameState) -> AbilityResult:
@@ -25,7 +33,7 @@ def _apply_channel_attack(game_state: GameState) -> AbilityResult:
 
 class Channeling(AbstractBuffEffect):
     def __init__(self):
-        self.timer = PeriodicTimer(Millis(70))
+        self.timer = PeriodicTimer(CHANNEL_PROJECTILE_INTERVAL)
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.add_one()
@@ -64,14 +72,18 @@ class ProjectileController(AbstractProjectileController):
         # Projectile pierces enemies (so we don't mark projectile as destroyed)
 
 
+def _upgrade_arcane_fire_cooldown_and_mana_cost(_game_state: GameState):
+    ABILITIES[AbilityType.ARCANE_FIRE].cooldown = ARCANE_FIRE_UPGRADED_COOLDOWN
+    ABILITIES[AbilityType.ARCANE_FIRE].mana_cost = ARCANE_FIRE_UPGRADED_MANA_COST
+
+
 def register_arcane_fire_ability():
     register_ability_effect(AbilityType.ARCANE_FIRE, _apply_channel_attack)
     description = "Channel for " + "{:.1f}".format(CHANNEL_DURATION / 1000) + \
-                  "s, firing piercing missiles in front of you dealing magic damage to enemies."
-    mana_cost = 40
-    cooldown = Millis(30000)
-    ability_data = AbilityData("Arcane Fire", UiIconSprite.ABILITY_ARCANE_FIRE, mana_cost, cooldown, description,
-                               SoundId.ABILITY_ARCANE_FIRE)
+                  "s, firing piercing missiles in front of you dealing up to " + str(MAX_TOTAL_DAMAGE) + \
+                  " magic damage to enemies."
+    ability_data = AbilityData("Arcane Fire", UiIconSprite.ABILITY_ARCANE_FIRE, ARCANE_FIRE_MANA_COST,
+                               ARCANE_FIRE_COOLDOWN, description, SoundId.ABILITY_ARCANE_FIRE)
     register_ability_data(AbilityType.ARCANE_FIRE, ability_data)
 
     register_ui_icon_sprite_path(UiIconSprite.ABILITY_ARCANE_FIRE, "resources/graphics/magic_missile.png")
@@ -81,3 +93,5 @@ def register_arcane_fire_ability():
         SpriteInitializer("resources/graphics/magic_missile.png", PROJECTILE_SIZE))
     register_projectile_controller(ProjectileType.PLAYER_ARCANE_FIRE, ProjectileController)
     register_buff_as_channeling(BuffType.CHANNELING_ARCANE_FIRE)
+    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_ARCANE_FIRE_COOLDOWN,
+                                 _upgrade_arcane_fire_cooldown_and_mana_cost)

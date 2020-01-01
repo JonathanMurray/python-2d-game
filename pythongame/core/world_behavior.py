@@ -4,7 +4,7 @@ from pythongame.core.buff_effects import get_buff_effect
 from pythongame.core.common import ConsumableType, AbstractScene
 from pythongame.core.common import ItemType
 from pythongame.core.common import Millis, BuffType, get_random_hint, \
-    SoundId, HeroUpgrade, SceneTransition
+    SoundId, SceneTransition
 from pythongame.core.game_data import ITEMS, HEROES
 from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
@@ -49,9 +49,8 @@ class StoryBehavior(AbstractWorldBehavior):
         item_effect = get_item_effect(item_type)
         try_add_item_to_inventory(self.game_state, item_effect, data.item_equipment_category)
 
-
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:
-        if self.game_state.player_state.has_upgrade(HeroUpgrade.HAS_WON_GAME):
+        if self.game_state.player_state.has_finished_main_quest:
             return SceneTransition(self.victory_screen_scene())
 
     def handle_event(self, event: EngineEvent) -> Optional[SceneTransition]:

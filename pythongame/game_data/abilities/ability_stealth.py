@@ -3,7 +3,7 @@ from typing import Optional
 from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect, \
     StatModifyingBuffEffect
-from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PeriodicTimer, HeroUpgrade, \
+from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PeriodicTimer, HeroUpgradeId, \
     HeroStat
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text, ABILITIES
@@ -12,26 +12,33 @@ from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacte
 from pythongame.core.hero_upgrades import register_hero_upgrade_effect
 from pythongame.core.visual_effects import VisualCircle
 
+STEALTH_MANA_COST = 25
+STEALTH_UPGRADED_MANA_COST = 20
+
+STEALTH_COOLDOWN = Millis(6000)
+
 ABILITY_TYPE = AbilityType.STEALTH
 BUFF_STEALTH = BuffType.STEALTHING
 BUFF_POST_STEALTH = BuffType.AFTER_STEALTHING
 DURATION_STEALTH = Millis(15000)
 DURATION_POST_STEALTH = Millis(2500)
-SPEED_DECREASE = 0.3
+MOVEMENT_SPEED_DECREASE = 0.3
 DODGE_CHANCE_BONUS = 0.05
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
     game_state.player_state.force_cancel_all_buffs()
-    game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_STEALTH), DURATION_STEALTH)
+    has_speed_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.ABILITY_STEALTH_MOVEMENT_SPEED)
+    speed_decrease = MOVEMENT_SPEED_DECREASE if not has_speed_upgrade else 0
+    game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_STEALTH, speed_decrease), DURATION_STEALTH)
     return AbilityWasUsedSuccessfully()
 
 
 class Stealthing(StatModifyingBuffEffect):
 
-    def __init__(self):
+    def __init__(self, movement_speed_decrease: float):
         super().__init__(BUFF_STEALTH,
-                         {HeroStat.MOVEMENT_SPEED: -SPEED_DECREASE, HeroStat.DODGE_CHANCE: DODGE_CHANCE_BONUS})
+                         {HeroStat.MOVEMENT_SPEED: -movement_speed_decrease, HeroStat.DODGE_CHANCE: DODGE_CHANCE_BONUS})
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         super().apply_start_effect(game_state, buffed_entity, buffed_npc)
@@ -68,7 +75,7 @@ class AfterStealthing(AbstractBuffEffect):
 
 
 def _upgrade_mana_cost(_game_state: GameState):
-    ABILITIES[ABILITY_TYPE].mana_cost = 20
+    ABILITIES[ABILITY_TYPE].mana_cost = STEALTH_UPGRADED_MANA_COST
 
 
 def register_stealth_ability():
@@ -78,13 +85,12 @@ def register_stealth_ability():
     description = "Become invisible to enemies. After effect ends, gain +" + \
                   "{:.0f}".format(DODGE_CHANCE_BONUS * 100) + "% dodge chance for " + \
                   "{:.1f}".format(DURATION_POST_STEALTH / 1000) + "s"
-    mana_cost = 25
-    cooldown = Millis(6000)
-    ability_data = AbilityData("Stealth", ui_icon_sprite, mana_cost, cooldown, description, SoundId.ABILITY_STEALTH)
+    ability_data = AbilityData("Stealth", ui_icon_sprite, STEALTH_MANA_COST, STEALTH_COOLDOWN, description,
+                               SoundId.ABILITY_STEALTH)
     register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/sneak_icon.png")
     register_buff_effect(BUFF_STEALTH, Stealthing)
     register_buff_text(BUFF_STEALTH, "Stealthed")
     register_buff_effect(BUFF_POST_STEALTH, AfterStealthing)
     register_buff_text(BUFF_POST_STEALTH, "Element of surprise")
-    register_hero_upgrade_effect(HeroUpgrade.ABILITY_STEALTH_MANA_COST, _upgrade_mana_cost)
+    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_STEALTH_MANA_COST, _upgrade_mana_cost)

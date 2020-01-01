@@ -1,17 +1,25 @@
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
-from pythongame.core.common import HeroUpgrade, UiIconSprite
+from pythongame.core.common import UiIconSprite, HeroUpgradeId, HeroUpgrade
 
 
 # The "config" classes are immutable and are determined from the hero you're playing
 # The hierarchy is: talents --> talent tiers --> options with a tier
 
 class TalentTierOptionConfig:
-    def __init__(self, name: str, description: str, upgrade: HeroUpgrade, ui_icon_sprite: UiIconSprite):
+    def __init__(self, name: str, description: str, upgrade: Union[HeroUpgrade, HeroUpgradeId],
+                 ui_icon_sprite: UiIconSprite):
         self.name = name
         self.description = description
-        self.upgrade = upgrade
+        self.upgrade: HeroUpgrade = None
+        if isinstance(upgrade, HeroUpgrade):
+            self.upgrade = upgrade
+        elif isinstance(upgrade, HeroUpgradeId):
+            self.upgrade = HeroUpgrade(upgrade)
+        else:
+            raise Exception("Invalid upgrade argument: " + str(upgrade))
+
         self.ui_icon_sprite = ui_icon_sprite
 
 

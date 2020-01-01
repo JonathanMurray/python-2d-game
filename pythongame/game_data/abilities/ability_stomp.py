@@ -59,7 +59,7 @@ class ChannelingStomp(AbstractBuffEffect):
             deal_player_damage_to_enemy(game_state, enemy, damage, DamageType.PHYSICAL)
             enemy.gain_buff_effect(get_buff_effect(STUNNED_BY_STOMP), STUN_DURATION)
         game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(300))
-        play_sound(SoundId.ABILITY_STOMP)
+        play_sound(SoundId.ABILITY_STOMP_HIT)
         game_state.camera_shake = CameraShake(Millis(50), Millis(200), 12)
 
     def get_buff_type(self):
@@ -88,7 +88,7 @@ def register_stomp_ability():
     description = "Stun and deal " + str(MIN_DMG) + "-" + str(MAX_DMG) + " physical damage to all enemies around you."
     register_ability_data(
         ability_type,
-        AbilityData("War Stomp", ui_icon_sprite, 13, Millis(10000), description, None))
+        AbilityData("War Stomp", ui_icon_sprite, 13, Millis(10000), description, SoundId.ABILITY_STOMP))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/warstomp_icon.png")
     register_buff_effect(CHANNELING_STOMP, ChannelingStomp)
     register_buff_as_channeling(CHANNELING_STOMP)

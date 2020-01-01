@@ -4,7 +4,7 @@ from pygame.rect import Rect
 
 from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import get_buff_effect
-from pythongame.core.common import AbilityType, Millis, BuffType, HeroId, UiIconSprite, SoundId, HeroUpgrade
+from pythongame.core.common import AbilityType, Millis, BuffType, HeroId, UiIconSprite, SoundId, HeroUpgradeId
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     HEROES, ABILITIES
@@ -14,8 +14,8 @@ from pythongame.core.math import translate_in_direction
 from pythongame.core.visual_effects import VisualRect
 
 ABILITY_TYPE = AbilityType.SWORD_SLASH
-COOLDOWN = Millis(700)
-UPGRADED_COOLDOWN = Millis(600)
+ABILITY_SLASH_COOLDOWN = Millis(700)
+ABILITY_SLASH_UPGRADED_COOLDOWN = Millis(600)
 
 MIN_DMG = 2
 MAX_DMG = 5
@@ -33,7 +33,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
 
     slash_rect = Rect(int(slash_pos[0] - rect_w / 2), int(slash_pos[1] - rect_w / 2), rect_w, rect_w)
     affected_enemies = game_state.get_enemy_intersecting_rect(slash_rect)
-    has_aoe_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_SLASH_AOE_BONUS_DAMAGE)
+    has_aoe_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.ABILITY_SLASH_AOE_BONUS_DAMAGE)
     hit_multiple_enemies = len(affected_enemies) > 1
     for enemy in affected_enemies:
         if has_aoe_upgrade and hit_multiple_enemies:
@@ -49,7 +49,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
 
 
 def _apply_upgrade(_game_state: GameState):
-    ABILITIES[ABILITY_TYPE].cooldown = UPGRADED_COOLDOWN
+    ABILITIES[ABILITY_TYPE].cooldown = ABILITY_SLASH_UPGRADED_COOLDOWN
 
 
 def register_sword_slash_ability():
@@ -59,6 +59,6 @@ def register_sword_slash_ability():
     description = "Deal " + str(MIN_DMG) + "-" + str(MAX_DMG) + " physical damage to enemies in front of you."
     register_ability_data(
         ABILITY_TYPE,
-        AbilityData("Slash", ui_icon_sprite, 1, COOLDOWN, description, SoundId.ABILITY_SLASH))
+        AbilityData("Slash", ui_icon_sprite, 1, ABILITY_SLASH_COOLDOWN, description, SoundId.ABILITY_SLASH))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_slash.png")
-    register_hero_upgrade_effect(HeroUpgrade.ABILITY_SLASH_CD, _apply_upgrade)
+    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_SLASH_CD, _apply_upgrade)

@@ -399,6 +399,34 @@
         200,
         200
       ]
+    },
+    {
+      "item_type": "SORCERESS_ROBE",
+      "position": [
+        200,
+        250
+      ]
+    },
+    {
+      "item_type": "BLESSED_CHALICE",
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "item_type": "NECKLACE_OF_SUFFERING",
+      "position": [
+        200,
+        350
+      ]
+    },
+    {
+      "item_type": "FIRE_WAND",
+      "position": [
+        200,
+        400
+      ]
     }
   ],
   "money_piles_on_ground": [],

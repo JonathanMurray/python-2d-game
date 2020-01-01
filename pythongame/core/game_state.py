@@ -297,12 +297,6 @@ class BuffWithDuration:
         return self._total_duration > 1000
 
 
-# These are sent as messages to player. They let buffs and items react to events. One buff might have its
-# duration prolonged if an enemy dies for example, and an item might give mana on enemy kills.
-class Event:
-    pass
-
-
 class EnemyDiedEvent(Event):
     pass
 
@@ -378,12 +372,12 @@ class PlayerState:
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
                  item_inventory: ItemInventory, new_level_abilities: Dict[int, AbilityType], hero_id: HeroId,
                  armor: int, base_dodge_chance: float, level_bonus: PlayerLevelBonus, talents_config: TalentsConfig,
-                 block_chance: float):
+                 base_block_chance: float):
         self.health_resource: HealthOrManaResource = health_resource
         self.mana_resource: HealthOrManaResource = mana_resource
         self.consumable_inventory = consumable_inventory
         self.abilities: List[AbilityType] = abilities
-        self.ability_cooldowns_remaining: Dict[AbilityType, int] = {ability_type: 0 for ability_type in abilities}
+        self._ability_cooldowns_remaining: Dict[AbilityType, int] = {ability_type: 0 for ability_type in abilities}
         self.active_buffs: List[BuffWithDuration] = []
         self.is_invisible = False
         self.stun_status = StunStatus()
@@ -406,8 +400,9 @@ class PlayerState:
         self.dodge_chance_bonus: float = 0  # affected by items/buffs. [Change it additively]
         self.level_bonus = level_bonus
         self._talents_state: TalentsState = TalentsState(talents_config)
-        self._upgrades: List[HeroUpgrade] = []
-        self.block_chance: float = block_chance
+        self._upgrades: List[Any] = []
+        self.base_block_chance: float = base_block_chance  # depends on which hero is being used
+        self.block_chance_bonus: float = 0  # affected by items/buffs. [Change it additively]
         self.block_damage_reduction: int = 0
         self.talents_were_updated = Observable()
         self.stats_were_updated = Observable()
@@ -416,6 +411,7 @@ class PlayerState:
         self.abilities_were_updated = Observable()
         self.cooldowns_were_updated = Observable()
         self.buffs_were_updated = Observable()
+        self.has_finished_main_quest = False
 
     def modify_money(self, delta: int):
         self.money += delta
@@ -430,8 +426,11 @@ class PlayerState:
     def get_effective_magic_damage_modifier(self) -> float:
         return self.base_magic_damage_modifier + self.magic_damage_modifier_bonus
 
-    def get_effective_dodge_change(self) -> float:
+    def get_effective_dodge_chance(self) -> float:
         return self.base_dodge_chance + self.dodge_chance_bonus
+
+    def get_effective_block_chance(self) -> float:
+        return self.base_block_chance + self.block_chance_bonus
 
     def modify_stat(self, hero_stat: HeroStat, stat_delta: Union[int, float]):
         if hero_stat == HeroStat.MAX_HEALTH:
@@ -463,6 +462,8 @@ class PlayerState:
             self.block_damage_reduction += stat_delta
         elif hero_stat == HeroStat.DODGE_CHANCE:
             self.dodge_chance_bonus += stat_delta
+        elif hero_stat == HeroStat.BLOCK_CHANCE:
+            self.block_chance_bonus += stat_delta
         else:
             raise Exception("Unhandled stat: " + str(hero_stat))
         self.notify_stats_observers()
@@ -512,22 +513,29 @@ class PlayerState:
 
     def recharge_ability_cooldowns(self, time_passed: Millis):
         did_update = False
-        for ability_type in self.ability_cooldowns_remaining:
-            if self.ability_cooldowns_remaining[ability_type] > 0:
-                self.ability_cooldowns_remaining[ability_type] -= time_passed
+        for ability_type in self._ability_cooldowns_remaining:
+            if self._ability_cooldowns_remaining[ability_type] > 0:
+                self._ability_cooldowns_remaining[ability_type] -= time_passed
                 did_update = True
         if did_update:
             self.notify_cooldown_observers()
 
+    def is_ability_on_cooldown(self, ability_type: AbilityType):
+        return self._ability_cooldowns_remaining[ability_type] > 0
+
     def add_to_ability_cooldown(self, ability_type: AbilityType, amount: Millis):
-        self.ability_cooldowns_remaining[ability_type] += amount
+        self._ability_cooldowns_remaining[ability_type] += amount
+        self.notify_cooldown_observers()
+
+    def set_ability_cooldown_to_zero(self, ability_type: AbilityType):
+        self._ability_cooldowns_remaining[ability_type] = 0
         self.notify_cooldown_observers()
 
     def notify_ability_observers(self):
         self.abilities_were_updated.notify(self.abilities)
 
     def notify_cooldown_observers(self):
-        self.cooldowns_were_updated.notify(self.ability_cooldowns_remaining)
+        self.cooldowns_were_updated.notify(self._ability_cooldowns_remaining)
 
     def gain_exp(self, amount: int) -> List[GainExpEvent]:
         events = []
@@ -576,7 +584,7 @@ class PlayerState:
         self.notify_stats_observers()
 
     def gain_ability(self, ability_type: AbilityType):
-        self.ability_cooldowns_remaining[ability_type] = 0
+        self._ability_cooldowns_remaining[ability_type] = 0
         self.abilities.append(ability_type)
         self.notify_ability_observers()
         self.notify_cooldown_observers()
@@ -592,12 +600,14 @@ class PlayerState:
                 self.notify_buff_observers()
         for item_effect in self.item_inventory.get_all_active_item_effects():
             item_effect.item_handle_event(event, game_state)
+        for upgrade in self._upgrades:
+            upgrade.handle_event(event, game_state)
 
-    def choose_talent(self, tier_index: int, option_index: int) -> Tuple[str, HeroUpgrade]:
+    def choose_talent(self, tier_index: int, option_index: int) -> Tuple[str, HeroUpgradeId]:
         option = self._talents_state.pick(tier_index, option_index)
         self._upgrades.append(option.upgrade)
         self.notify_talent_observers()
-        return option.name, option.upgrade
+        return option.name, option.upgrade.get_upgrade_id()
 
     def notify_talent_observers(self):
         self.talents_were_updated.notify(self._talents_state)
@@ -608,11 +618,8 @@ class PlayerState:
     def get_serilized_talent_tier_choices(self):
         return [tier.picked_index for tier in self._talents_state.tiers]
 
-    def gain_upgrade(self, upgrade: HeroUpgrade):
-        self._upgrades.append(upgrade)
-
-    def has_upgrade(self, upgrade: HeroUpgrade) -> bool:
-        return upgrade in self._upgrades
+    def has_upgrade(self, upgrade_id: HeroUpgradeId) -> bool:
+        return upgrade_id in [u.get_upgrade_id() for u in self._upgrades]
 
 
 # TODO Is there a way to handle this better in the view module? This class shouldn't need to masquerade as a WorldEntity

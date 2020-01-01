@@ -2,7 +2,7 @@ import random
 from typing import Optional
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
-    PeriodicTimer, get_random_hint, HeroUpgrade, ItemType, UiIconSprite, SoundId
+    PeriodicTimer, get_random_hint, ItemType, UiIconSprite, SoundId
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
@@ -52,7 +52,7 @@ class WinAction(AbstractNpcAction):
     def act(self, game_state: GameState):
         if game_state.player_state.item_inventory.has_item_in_inventory(ItemType.KEY):
             play_sound(SoundId.EVENT_COMPLETED_QUEST)
-            game_state.player_state.gain_upgrade(HeroUpgrade.HAS_WON_GAME)
+            game_state.player_state.has_finished_main_quest = True
         else:
             play_sound(SoundId.WARNING)
             return "You don't have that!"

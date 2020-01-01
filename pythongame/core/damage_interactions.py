@@ -51,12 +51,13 @@ def deal_damage_to_player(game_state: GameState, base_amount: float, damage_type
     damage_reduction = 0
     # Armor only reduces physical damage
     if damage_type == DamageType.PHYSICAL:
-        dodge_chance = player_state.get_effective_dodge_change()
+        dodge_chance = player_state.get_effective_dodge_chance()
+        block_chance = player_state.get_effective_block_chance()
         if random.random() < dodge_chance:
             game_state.visual_effects.append(create_visual_dodge_text(game_state.player_entity))
             play_sound(SoundId.ENEMY_ATTACK_WAS_DODGED)
             return
-        elif random.random() < player_state.block_chance:
+        elif random.random() < block_chance:
             if player_state.block_damage_reduction > 0:
                 game_state.visual_effects.append(create_visual_block_text(game_state.player_entity))
             damage_reduction += player_state.block_damage_reduction

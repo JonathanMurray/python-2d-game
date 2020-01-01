@@ -5,12 +5,13 @@ from pygame.rect import Rect
 from pythongame.core.ability_effects import register_ability_effect, AbilityResult, AbilityWasUsedSuccessfully
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, AbilityType, SoundId, HeroId, UiIconSprite, PeriodicTimer, \
-    HeroUpgrade, HeroStat
+    HeroUpgradeId, HeroStat
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     HEROES, register_buff_as_channeling
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, CameraShake
 from pythongame.core.math import translate_in_direction, get_middle_point
+from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import VisualRect, VisualCircle
 
 CHARGE_DURATION = Millis(500)
@@ -62,7 +63,7 @@ class Charging(AbstractBuffEffect):
             visual_impact_pos = get_middle_point(charger_center_pos, enemy.world_entity.get_center_position())
             damage = MIN_DMG
             # Talent: Apply damage bonus even if using charge in melee range
-            has_melee_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_CHARGE_MELEE)
+            has_melee_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.ABILITY_CHARGE_MELEE)
             damage_increased = self.time_since_start > float(CHARGE_DURATION) * 0.3 or has_melee_upgrade
             if damage_increased:
                 # TODO Stun target as a bonus here
@@ -76,6 +77,11 @@ class Charging(AbstractBuffEffect):
             game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_TYPE_STUNNED), IMPACT_STUN_DURATION)
             enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE_STUNNED), IMPACT_STUN_DURATION)
             game_state.camera_shake = CameraShake(Millis(50), Millis(150), 12)
+            play_sound(SoundId.ABILITY_CHARGE_HIT)
+            has_stomp_cooldown_upgrade = game_state.player_state.has_upgrade(
+                HeroUpgradeId.ABILITY_CHARGE_RESET_STOMP_COOLDOWN)
+            if has_stomp_cooldown_upgrade:
+                game_state.player_state.set_ability_cooldown_to_zero(AbilityType.STOMP)
             # The buff should end upon impact
             return True
         return False

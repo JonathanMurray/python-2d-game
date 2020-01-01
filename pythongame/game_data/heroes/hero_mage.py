@@ -1,10 +1,16 @@
-from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgrade, UiIconSprite, ItemType
+from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgradeId, UiIconSprite, ItemType
 from pythongame.core.game_data import Sprite, Direction, AbilityType, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, register_hero_data, HeroData, \
-    InitialPlayerStateData
+    InitialPlayerStateData, register_ui_icon_sprite_path
 from pythongame.core.game_state import PlayerLevelBonus
 from pythongame.core.talents import TalentsConfig, TalentTierConfig, TalentTierOptionConfig
 from pythongame.core.view.image_loading import SpriteSheet
+from pythongame.game_data.abilities.ability_arcane_fire import ARCANE_FIRE_UPGRADED_COOLDOWN, \
+    ARCANE_FIRE_UPGRADED_MANA_COST
+from pythongame.game_data.abilities.ability_entangling_roots import ENTANGLING_ROOTS_UPGRADED_COOLDOWN
+from pythongame.game_data.abilities.ability_fireball import FIREBALL_TALENT_BURN_TOTAL_DAMAGE, \
+    FIREBALL_TALENT_BURN_DURATION, FIREBALL_UPGRADED_MANA_COST
+from pythongame.game_data.abilities.ability_whirlwind import WHIRLWIND_TALENT_STUN_DURATION
 from pythongame.game_data.heroes.generic_talents import TALENT_CHOICE_ARMOR_DAMAGE, TALENT_CHOICE_HEALTH_MANA, \
     TALENT_CHOICE_HEALTH_MANA_REGEN
 
@@ -33,6 +39,7 @@ def register_hero_mage():
     hero_data = HeroData(sprite, portrait_icon_sprite, _get_initial_player_state_mage(), entity_speed,
                          PLAYER_ENTITY_SIZE, description)
     register_hero_data(HERO_ID, hero_data)
+    register_ui_icon_sprite_path(UiIconSprite.TALENT_LIGHT_FOOTED, "resources/graphics/boots_of_haste.png")
 
 
 def _get_initial_player_state_mage() -> InitialPlayerStateData:
@@ -63,18 +70,33 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
         {
             3: TALENT_CHOICE_ARMOR_DAMAGE,
             4: TalentTierConfig(
-                TalentTierOptionConfig("Raging fire", "Enemies hit by your fireballs take additional damage over time",
-                                       HeroUpgrade.ABILITY_FIREBALL_BURN, UiIconSprite.ABILITY_FIREBALL),
-                TalentTierOptionConfig("Hurricane", "Whirlwind periodically stuns enemies it hits for a short moment",
-                                       HeroUpgrade.ABILITY_WHIRLWIND_STUN, UiIconSprite.ABILITY_WHIRLWIND)),
+                TalentTierOptionConfig("Raging fire", "Enemies hit by your fireballs take additional " +
+                                       str(FIREBALL_TALENT_BURN_TOTAL_DAMAGE) + " damage over " +
+                                       "{:.1f}".format(FIREBALL_TALENT_BURN_DURATION / 1000) + "s",
+                                       HeroUpgradeId.ABILITY_FIREBALL_BURN, UiIconSprite.ABILITY_FIREBALL),
+                TalentTierOptionConfig("Hurricane", "Whirlwind has a chance to stun affected enemies for " +
+                                       "{:.1f}".format(WHIRLWIND_TALENT_STUN_DURATION / 1000) + "s",
+                                       HeroUpgradeId.ABILITY_WHIRLWIND_STUN, UiIconSprite.ABILITY_WHIRLWIND)),
             5: TALENT_CHOICE_HEALTH_MANA,
             6: TalentTierConfig(
-                TalentTierOptionConfig("Swift justice", "Reduces the cooldown of your root ability",
-                                       HeroUpgrade.ABILITY_ENTANGLING_ROOTS_COOLDOWN,
+                TalentTierOptionConfig("Swift justice", "Reduces the cooldown of your Entangling Roots ability to " +
+                                       "{:.1f}".format(ENTANGLING_ROOTS_UPGRADED_COOLDOWN / 1000) + "s",
+                                       HeroUpgradeId.ABILITY_ENTANGLING_ROOTS_COOLDOWN,
                                        UiIconSprite.ABILITY_ENTANGLING_ROOTS),
-                TalentTierOptionConfig("Flamethrower", "Reduces the mana-cost of your fireball ability",
-                                       HeroUpgrade.ABILITY_FIREBALL_MANA_COST, UiIconSprite.ABILITY_FIREBALL)),
-            7: TALENT_CHOICE_HEALTH_MANA_REGEN
+                TalentTierOptionConfig("Flamethrower", "Reduces the mana-cost of your Fireball ability to " +
+                                       str(FIREBALL_UPGRADED_MANA_COST),
+                                       HeroUpgradeId.ABILITY_FIREBALL_MANA_COST, UiIconSprite.ABILITY_FIREBALL)),
+            7: TALENT_CHOICE_HEALTH_MANA_REGEN,
+            8: TalentTierConfig(
+                TalentTierOptionConfig("Power hungry",
+                                       "Reduces the cooldown of your Arcane Fire ability to " +
+                                       "{:.1f}".format(ARCANE_FIRE_UPGRADED_COOLDOWN / 1000) +
+                                       "s, but increases its mana-cost to " + str(ARCANE_FIRE_UPGRADED_MANA_COST),
+                                       HeroUpgradeId.ABILITY_ARCANE_FIRE_COOLDOWN,
+                                       UiIconSprite.ABILITY_ARCANE_FIRE),
+                TalentTierOptionConfig("Light-footed", "Lets you keep moving while casting Fireball and Whirlwind",
+                                       HeroUpgradeId.MAGE_LIGHT_FOOTED, UiIconSprite.TALENT_LIGHT_FOOTED)),
+
         })
     block_chance = 0.1
     return InitialPlayerStateData(

@@ -9,7 +9,7 @@ from pythongame.game_data.loot_tables import LOOT_ITEMS_4
 
 class NpcMind(MeleeEnemyNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
-        super().__init__(global_path_finder, Millis(2000), 17, 0, Millis(600))
+        super().__init__(global_path_finder, Millis(2000), 20, 0, Millis(600))
 
 
 def register_warrior_king_enemy():

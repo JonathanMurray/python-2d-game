@@ -3,7 +3,7 @@ import random
 from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect, register_buff_effect
 from pythongame.core.common import AbilityType, Sprite, \
-    ProjectileType, Millis, Direction, BuffType, SoundId, PeriodicTimer, HeroUpgrade
+    ProjectileType, Millis, Direction, BuffType, SoundId, PeriodicTimer, HeroUpgradeId
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, register_entity_sprite_map
@@ -19,6 +19,12 @@ PROJECTILE_SPRITE = Sprite.PROJECTILE_PLAYER_WHIRLWIND
 PROJECTILE_TYPE = ProjectileType.PLAYER_WHIRLWIND
 PROJECTILE_SIZE = (140, 110)
 
+PROJECTILE_DURATION = Millis(3000)
+PROJECTILE_DAMAGE_INTERVAL = Millis(350)
+PROJECTILE_MAX_TOTAL_DAMAGE = int(round(PROJECTILE_DURATION / PROJECTILE_DAMAGE_INTERVAL))
+
+WHIRLWIND_TALENT_STUN_DURATION = Millis(500)
+
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
     player_entity = game_state.player_entity
@@ -28,17 +34,18 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
     entity = WorldEntity(aoe_pos, PROJECTILE_SIZE, PROJECTILE_SPRITE, player_entity.direction, projectile_speed)
     projectile = Projectile(entity, create_projectile_controller(PROJECTILE_TYPE))
     game_state.projectile_entities.append(projectile)
-    game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(300))
+    has_lightfooted_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.MAGE_LIGHT_FOOTED)
+    if not has_lightfooted_upgrade:
+        game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(300))
     return AbilityWasUsedSuccessfully()
 
 
 class ProjectileController(AbstractProjectileController):
     def __init__(self):
-        super().__init__(3000)
-        self.damage_timer = PeriodicTimer(Millis(350))
+        super().__init__(PROJECTILE_DURATION)
+        self.damage_timer = PeriodicTimer(PROJECTILE_DAMAGE_INTERVAL)
         self.direction_change_timer = PeriodicTimer(Millis(250))
         self._relative_direction = 0
-        self._stun_duration = 500
         self._rotation_motion = random.choice([-1, 1])
 
     def notify_time_passed(self, game_state: GameState, projectile: Projectile, time_passed: Millis):
@@ -50,9 +57,9 @@ class ProjectileController(AbstractProjectileController):
                 damage_amount = 1
                 damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, damage_amount, DamageType.MAGIC)
                 if damage_was_dealt:
-                    has_stun_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_WHIRLWIND_STUN)
-                    if has_stun_upgrade and random.random() < 0.25:
-                        enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(self._stun_duration))
+                    has_stun_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.ABILITY_WHIRLWIND_STUN)
+                    if has_stun_upgrade and random.random() < 0.2:
+                        enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE), WHIRLWIND_TALENT_STUN_DURATION)
 
         if self.direction_change_timer.update_and_check_if_ready(time_passed):
             should_rotate = True
@@ -103,7 +110,8 @@ def register_whirlwind_ability():
     cooldown = Millis(750)
 
     register_ability_effect(ability_type, _apply_ability)
-    description = "Summon a whirlwind that deals magic damage to enemies in its path."
+    description = "Summon a whirlwind that deals up to " + str(PROJECTILE_MAX_TOTAL_DAMAGE) + \
+                  " magic damage to enemies in its path."
     ability_data = AbilityData("Whirlwind", ui_icon_sprite, mana_cost, cooldown, description, SoundId.ABILITY_WHIRLWIND)
     register_ability_data(ability_type, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/whirlwind.png")
