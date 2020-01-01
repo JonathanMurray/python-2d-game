@@ -1,4 +1,4 @@
-from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgrade, UiIconSprite, ItemType
+from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgradeId, UiIconSprite, ItemType
 from pythongame.core.game_data import Sprite, Direction, AbilityType, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData, register_ui_icon_sprite_path
@@ -65,24 +65,24 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
             3: TALENT_CHOICE_ARMOR_DAMAGE,
             4: TalentTierConfig(
                 TalentTierOptionConfig("Raging fire", "Enemies hit by your fireballs take additional damage over time",
-                                       HeroUpgrade.ABILITY_FIREBALL_BURN, UiIconSprite.ABILITY_FIREBALL),
+                                       HeroUpgradeId.ABILITY_FIREBALL_BURN, UiIconSprite.ABILITY_FIREBALL),
                 TalentTierOptionConfig("Hurricane", "Whirlwind periodically stuns enemies it hits for a short moment",
-                                       HeroUpgrade.ABILITY_WHIRLWIND_STUN, UiIconSprite.ABILITY_WHIRLWIND)),
+                                       HeroUpgradeId.ABILITY_WHIRLWIND_STUN, UiIconSprite.ABILITY_WHIRLWIND)),
             5: TALENT_CHOICE_HEALTH_MANA,
             6: TalentTierConfig(
                 TalentTierOptionConfig("Swift justice", "Reduces the cooldown of your Entangling Roots ability",
-                                       HeroUpgrade.ABILITY_ENTANGLING_ROOTS_COOLDOWN,
+                                       HeroUpgradeId.ABILITY_ENTANGLING_ROOTS_COOLDOWN,
                                        UiIconSprite.ABILITY_ENTANGLING_ROOTS),
                 TalentTierOptionConfig("Flamethrower", "Reduces the mana-cost of your Fireball ability",
-                                       HeroUpgrade.ABILITY_FIREBALL_MANA_COST, UiIconSprite.ABILITY_FIREBALL)),
+                                       HeroUpgradeId.ABILITY_FIREBALL_MANA_COST, UiIconSprite.ABILITY_FIREBALL)),
             7: TALENT_CHOICE_HEALTH_MANA_REGEN,
             8: TalentTierConfig(
                 TalentTierOptionConfig("Power hungry",
                                        "Massively reduces the cooldown of your Arcane Fire ability, but increases its mana-cost",
-                                       HeroUpgrade.ABILITY_ARCANE_FIRE_COOLDOWN,
+                                       HeroUpgradeId.ABILITY_ARCANE_FIRE_COOLDOWN,
                                        UiIconSprite.ABILITY_ARCANE_FIRE),
                 TalentTierOptionConfig("Light-footed", "Lets you keep moving while casting Fireball and Whirlwind",
-                                       HeroUpgrade.MAGE_LIGHT_FOOTED, UiIconSprite.TALENT_LIGHT_FOOTED)),
+                                       HeroUpgradeId.MAGE_LIGHT_FOOTED, UiIconSprite.TALENT_LIGHT_FOOTED)),
 
         })
     block_chance = 0.1

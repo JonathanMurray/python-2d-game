@@ -3,7 +3,7 @@ from typing import Optional
 from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect, \
     StatModifyingBuffEffect
-from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PeriodicTimer, HeroUpgrade, \
+from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, PeriodicTimer, HeroUpgradeId, \
     HeroStat
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text, ABILITIES
@@ -23,7 +23,7 @@ DODGE_CHANCE_BONUS = 0.05
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
     game_state.player_state.force_cancel_all_buffs()
-    has_speed_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_STEALTH_MOVEMENT_SPEED)
+    has_speed_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.ABILITY_STEALTH_MOVEMENT_SPEED)
     speed_decrease = MOVEMENT_SPEED_DECREASE if not has_speed_upgrade else 0
     game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_STEALTH, speed_decrease), DURATION_STEALTH)
     return AbilityWasUsedSuccessfully()
@@ -93,5 +93,5 @@ def register_stealth_ability():
     register_buff_text(BUFF_STEALTH, "Stealthed")
     register_buff_effect(BUFF_POST_STEALTH, AfterStealthing)
     register_buff_text(BUFF_POST_STEALTH, "Element of surprise")
-    register_hero_upgrade_effect(HeroUpgrade.ABILITY_STEALTH_MANA_COST, _upgrade_mana_cost)
-    register_hero_upgrade_effect(HeroUpgrade.ABILITY_STEALTH_MANA_COST, _upgrade_movement_speed)
+    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_STEALTH_MANA_COST, _upgrade_mana_cost)
+    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_STEALTH_MANA_COST, _upgrade_movement_speed)

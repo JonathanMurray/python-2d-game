@@ -41,7 +41,7 @@ def get_all_directions():
     return [Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT]
 
 
-class HeroUpgrade(Enum):
+class HeroUpgradeId(Enum):
     ARMOR = 1
     DAMAGE = 2
     MAX_HEALTH = 3
@@ -329,6 +329,7 @@ class BuffType(Enum):
     ENEMY_GOBLIN_SPEARMAN_SPRINT = 40
     BLEEDING_FROM_CLEAVER_WEAPON = 41
     SPEED_BUFF_FROM_DASH = 42
+    BUFFED_FROM_RETRIBUTION_TALENT = 43
 
 
 class ItemType(Enum):
@@ -659,3 +660,24 @@ class AbstractScene:
 
     def render(self):
         pass
+
+
+# These are sent as messages to player. They let buffs and items react to events. One buff might have its
+# duration prolonged if an enemy dies for example, and an item might give mana on enemy kills.
+class Event:
+    pass
+
+
+class HeroUpgrade:
+
+    def __init__(self, hero_upgrade_id: HeroUpgradeId):
+        self._hero_upgrade_id = hero_upgrade_id
+
+    # Override this method for upgrades that need to actively handle events
+    def handle_event(self, event: Event, game_state: Any):
+        pass
+
+    def get_upgrade_id(self):
+        if self._hero_upgrade_id is None:
+            raise Exception("hero_upgrade_id is not initialized: " + str(HeroUpgrade))
+        return self._hero_upgrade_id

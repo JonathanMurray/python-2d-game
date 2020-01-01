@@ -1,7 +1,7 @@
 from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, ProjectileType, UiIconSprite, PeriodicTimer, \
-    SoundId, HeroUpgrade
+    SoundId, HeroUpgradeId
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_entity_sprite_initializer, register_buff_as_channeling, ABILITIES
@@ -87,4 +87,5 @@ def register_arcane_fire_ability():
         SpriteInitializer("resources/graphics/magic_missile.png", PROJECTILE_SIZE))
     register_projectile_controller(ProjectileType.PLAYER_ARCANE_FIRE, ProjectileController)
     register_buff_as_channeling(BuffType.CHANNELING_ARCANE_FIRE)
-    register_hero_upgrade_effect(HeroUpgrade.ABILITY_ARCANE_FIRE_COOLDOWN, _upgrade_arcane_fire_cooldown_and_mana_cost)
+    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_ARCANE_FIRE_COOLDOWN,
+                                 _upgrade_arcane_fire_cooldown_and_mana_cost)

@@ -3,7 +3,7 @@ from typing import Optional
 from pythongame.core.ability_effects import register_ability_effect, AbilityResult, AbilityWasUsedSuccessfully
 from pythongame.core.buff_effects import register_buff_effect, get_buff_effect, \
     StatModifyingBuffEffect
-from pythongame.core.common import BuffType, Millis, AbilityType, UiIconSprite, SoundId, PeriodicTimer, HeroUpgrade, \
+from pythongame.core.common import BuffType, Millis, AbilityType, UiIconSprite, SoundId, PeriodicTimer, HeroUpgradeId, \
     HeroStat
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text, ABILITIES
@@ -83,4 +83,4 @@ def register_bloodlust_ability():
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_bloodlust.png")
     register_buff_effect(BUFF_TYPE, BloodLust)
     register_buff_text(BUFF_TYPE, "Bloodlust")
-    register_hero_upgrade_effect(HeroUpgrade.ABILITY_BLOODLUST_DURATION, _apply_upgrade)
+    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_BLOODLUST_DURATION, _apply_upgrade)

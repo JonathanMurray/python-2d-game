@@ -6,7 +6,7 @@ from pythongame.core.ability_effects import register_ability_effect, AbilityResu
     AbilityFailedToExecute
 from pythongame.core.buff_effects import register_buff_effect, get_buff_effect, \
     StatModifyingBuffEffect
-from pythongame.core.common import AbilityType, Millis, UiIconSprite, SoundId, BuffType, HeroUpgrade, HeroStat, \
+from pythongame.core.common import AbilityType, Millis, UiIconSprite, SoundId, BuffType, HeroUpgradeId, HeroStat, \
     PeriodicTimer
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
@@ -43,7 +43,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
                 deal_player_damage_to_enemy(game_state, enemy_hit, DAMAGE, DamageType.MAGIC)
                 game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_AFTER_ENEMY_JUMP),
                                                          BUFF_AFTER_ENEMY_JUMP_DURATION)
-                has_reset_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_DASH_KILL_RESET)
+                has_reset_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.ABILITY_DASH_KILL_RESET)
                 enemy_died = enemy_hit.health_resource.is_at_or_below_zero()
                 if has_reset_upgrade and enemy_died:
                     should_regain_mana_and_cd = True
@@ -56,7 +56,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
             game_state.visual_effects.append(VisualRect(color, previous_position, 37, 46, Millis(150), 1))
             game_state.visual_effects.append(
                 VisualCircle(color, new_center_position, 25, 40, Millis(300), 1, player_entity))
-            has_speed_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_DASH_MOVEMENT_SPEED)
+            has_speed_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.ABILITY_DASH_MOVEMENT_SPEED)
             if has_speed_upgrade:
                 game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_SPEED), BUFF_SPEED_DURATION)
             return AbilityWasUsedSuccessfully(should_regain_mana_and_cd=should_regain_mana_and_cd)

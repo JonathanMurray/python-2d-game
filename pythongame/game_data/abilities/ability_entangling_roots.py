@@ -1,7 +1,7 @@
 from pythongame.core.ability_effects import register_ability_effect, AbilityResult, AbilityWasUsedSuccessfully
 from pythongame.core.buff_effects import register_buff_effect, AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import Sprite, ProjectileType, AbilityType, Millis, \
-    Direction, BuffType, SoundId, UiIconSprite, PeriodicTimer, HeroUpgrade
+    Direction, BuffType, SoundId, UiIconSprite, PeriodicTimer, HeroUpgradeId
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_entity_sprite_map, ABILITIES
@@ -107,7 +107,7 @@ def register_entangling_roots_ability():
                                (0, 0))
     register_buff_effect(BUFF_TYPE, Rooted)
     _register_engangling_roots_effect_decoration()
-    register_hero_upgrade_effect(HeroUpgrade.ABILITY_ENTANGLING_ROOTS_COOLDOWN, _upgrade_entangling_roots_cooldown)
+    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_ENTANGLING_ROOTS_COOLDOWN, _upgrade_entangling_roots_cooldown)
 
 
 def _register_engangling_roots_effect_decoration():

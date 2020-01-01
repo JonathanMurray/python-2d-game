@@ -2,7 +2,7 @@ import random
 from typing import Optional
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
-    PeriodicTimer, get_random_hint, HeroUpgrade, ItemType, UiIconSprite, SoundId
+    PeriodicTimer, get_random_hint, ItemType, UiIconSprite, SoundId
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity

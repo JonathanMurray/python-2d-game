@@ -3,7 +3,7 @@ import random
 from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
 from pythongame.core.common import Sprite, ProjectileType, AbilityType, Millis, \
-    Direction, SoundId, BuffType, PeriodicTimer, HeroUpgrade
+    Direction, SoundId, BuffType, PeriodicTimer, HeroUpgradeId
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, register_entity_sprite_map, ABILITIES
@@ -47,7 +47,7 @@ class ProjectileController(AbstractProjectileController):
         damage_amount: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
         deal_player_damage_to_enemy(game_state, npc, damage_amount, DamageType.MAGIC)
         _create_visual_splash(npc.world_entity.get_center_position(), game_state)
-        has_burn_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.ABILITY_FIREBALL_BURN)
+        has_burn_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.ABILITY_FIREBALL_BURN)
         if has_burn_upgrade:
             npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(2500))
         play_sound(SoundId.ABILITY_FIREBALL_HIT)
@@ -90,7 +90,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
     effect_position = (projectile_pos[0] + PROJECTILE_SIZE[0] // 2,
                        projectile_pos[1] + PROJECTILE_SIZE[1] // 2)
     game_state.visual_effects.append(VisualCircle((250, 150, 50), effect_position, 15, 5, Millis(300), 0))
-    has_lightfooted_upgrade = game_state.player_state.has_upgrade(HeroUpgrade.MAGE_LIGHT_FOOTED)
+    has_lightfooted_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.MAGE_LIGHT_FOOTED)
     if not has_lightfooted_upgrade:
         game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(300))
     return AbilityWasUsedSuccessfully()
@@ -122,4 +122,4 @@ def register_fireball_ability():
     register_entity_sprite_map(Sprite.PROJECTILE_PLAYER_FIREBALL, sprite_sheet, original_sprite_size,
                                scaled_sprite_size, indices_by_dir, (-9, -9))
     register_buff_effect(BUFF_TYPE, BurntByFireball)
-    register_hero_upgrade_effect(HeroUpgrade.ABILITY_FIREBALL_MANA_COST, _upgrade_fireball_mana_cost)
+    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_FIREBALL_MANA_COST, _upgrade_fireball_mana_cost)

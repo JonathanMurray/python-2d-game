@@ -297,12 +297,6 @@ class BuffWithDuration:
         return self._total_duration > 1000
 
 
-# These are sent as messages to player. They let buffs and items react to events. One buff might have its
-# duration prolonged if an enemy dies for example, and an item might give mana on enemy kills.
-class Event:
-    pass
-
-
 class EnemyDiedEvent(Event):
     pass
 
@@ -406,7 +400,7 @@ class PlayerState:
         self.dodge_chance_bonus: float = 0  # affected by items/buffs. [Change it additively]
         self.level_bonus = level_bonus
         self._talents_state: TalentsState = TalentsState(talents_config)
-        self._upgrades: List[HeroUpgrade] = []
+        self._upgrades: List[Any] = []
         self.base_block_chance: float = base_block_chance  # depends on which hero is being used
         self.block_chance_bonus: float = 0  # affected by items/buffs. [Change it additively]
         self.block_damage_reduction: int = 0
@@ -599,12 +593,14 @@ class PlayerState:
                 self.notify_buff_observers()
         for item_effect in self.item_inventory.get_all_active_item_effects():
             item_effect.item_handle_event(event, game_state)
+        for upgrade in self._upgrades:
+            upgrade.handle_event(event, game_state)
 
-    def choose_talent(self, tier_index: int, option_index: int) -> Tuple[str, HeroUpgrade]:
+    def choose_talent(self, tier_index: int, option_index: int) -> Tuple[str, HeroUpgradeId]:
         option = self._talents_state.pick(tier_index, option_index)
         self._upgrades.append(option.upgrade)
         self.notify_talent_observers()
-        return option.name, option.upgrade
+        return option.name, option.upgrade.get_upgrade_id()
 
     def notify_talent_observers(self):
         self.talents_were_updated.notify(self._talents_state)
@@ -615,8 +611,8 @@ class PlayerState:
     def get_serilized_talent_tier_choices(self):
         return [tier.picked_index for tier in self._talents_state.tiers]
 
-    def has_upgrade(self, upgrade: HeroUpgrade) -> bool:
-        return upgrade in self._upgrades
+    def has_upgrade(self, upgrade_id: HeroUpgradeId) -> bool:
+        return upgrade_id in [u.get_upgrade_id() for u in self._upgrades]
 
 
 # TODO Is there a way to handle this better in the view module? This class shouldn't need to masquerade as a WorldEntity
