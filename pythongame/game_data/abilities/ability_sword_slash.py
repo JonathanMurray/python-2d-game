@@ -14,8 +14,8 @@ from pythongame.core.math import translate_in_direction
 from pythongame.core.visual_effects import VisualRect
 
 ABILITY_TYPE = AbilityType.SWORD_SLASH
-COOLDOWN = Millis(700)
-UPGRADED_COOLDOWN = Millis(600)
+ABILITY_SLASH_COOLDOWN = Millis(700)
+ABILITY_SLASH_UPGRADED_COOLDOWN = Millis(600)
 
 MIN_DMG = 2
 MAX_DMG = 5
@@ -49,7 +49,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
 
 
 def _apply_upgrade(_game_state: GameState):
-    ABILITIES[ABILITY_TYPE].cooldown = UPGRADED_COOLDOWN
+    ABILITIES[ABILITY_TYPE].cooldown = ABILITY_SLASH_UPGRADED_COOLDOWN
 
 
 def register_sword_slash_ability():
@@ -59,6 +59,6 @@ def register_sword_slash_ability():
     description = "Deal " + str(MIN_DMG) + "-" + str(MAX_DMG) + " physical damage to enemies in front of you."
     register_ability_data(
         ABILITY_TYPE,
-        AbilityData("Slash", ui_icon_sprite, 1, COOLDOWN, description, SoundId.ABILITY_SLASH))
+        AbilityData("Slash", ui_icon_sprite, 1, ABILITY_SLASH_COOLDOWN, description, SoundId.ABILITY_SLASH))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_slash.png")
     register_hero_upgrade_effect(HeroUpgradeId.ABILITY_SLASH_CD, _apply_upgrade)

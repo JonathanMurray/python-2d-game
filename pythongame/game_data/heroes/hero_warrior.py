@@ -9,6 +9,8 @@ from pythongame.core.game_state import PlayerLevelBonus, GameState, Event, Playe
 from pythongame.core.hero_upgrades import register_hero_upgrade_effect, HeroUpgrade
 from pythongame.core.talents import TalentsConfig, TalentTierConfig, TalentTierOptionConfig
 from pythongame.core.view.image_loading import SpriteSheet
+from pythongame.game_data.abilities.ability_bloodlust import BLOODLUST_UPGRADED_INCREASED_DURATION_FROM_KILL
+from pythongame.game_data.abilities.ability_sword_slash import ABILITY_SLASH_UPGRADED_COOLDOWN
 from pythongame.game_data.heroes.generic_talents import TALENT_CHOICE_ARMOR_DAMAGE, TALENT_CHOICE_HEALTH_MANA, \
     TALENT_CHOICE_HEALTH_MANA_REGEN
 
@@ -96,17 +98,20 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
                                    HeroUpgradeId.ABILITY_CHARGE_MELEE,
                                    UiIconSprite.ABILITY_CHARGE),
             TalentTierOptionConfig("Brawl",
-                                   "The damage of your Slash ability is increased if at least 2 enemies are hit",
+                                   "Your Slash ability deals max damage if at least 2 enemies are hit",
                                    HeroUpgradeId.ABILITY_SLASH_AOE_BONUS_DAMAGE,
                                    UiIconSprite.ABILITY_SWORD_SLASH)),
         5: TALENT_CHOICE_HEALTH_MANA,
         6: TalentTierConfig(
             TalentTierOptionConfig("Bloodthirst",
-                                   "The duration of your Bloodlust ability is increased additionally on kills",
+                                   "The duration of your Bloodlust ability is now increased by " +
+                                   "{:.1f}".format(
+                                       BLOODLUST_UPGRADED_INCREASED_DURATION_FROM_KILL / 1000) + "s on kills",
                                    HeroUpgradeId.ABILITY_BLOODLUST_DURATION,
                                    UiIconSprite.ABILITY_BLOODLUST),
             TalentTierOptionConfig("Berserker",
-                                   "Reduces the cooldown of your Slash ability",
+                                   "Reduces the cooldown of your Slash ability to " +
+                                   "{:.1f}".format(ABILITY_SLASH_UPGRADED_COOLDOWN / 1000) + "s",
                                    HeroUpgradeId.ABILITY_SLASH_CD,
                                    UiIconSprite.ABILITY_SWORD_SLASH)),
         7: TALENT_CHOICE_HEALTH_MANA_REGEN,
