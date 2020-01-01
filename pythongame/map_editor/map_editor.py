@@ -5,7 +5,8 @@ from typing import Tuple, Optional, List, Dict
 import pygame
 from pygame.rect import Rect
 
-from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, ItemType, PortalId, HeroId
+from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, ItemType, PortalId, HeroId, PeriodicTimer, \
+    Millis
 from pythongame.core.entity_creation import create_portal, create_hero_world_entity, create_npc, create_wall, \
     create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground, \
     create_player_state, create_chest
@@ -232,7 +233,7 @@ def main(map_file_name: Optional[str]):
     grid_cell_size_index = 0
     grid_cell_size = possible_grid_cell_sizes[grid_cell_size_index]
 
-    camera_move_distance = 100
+    camera_move_distance = 80
     snapped_mouse_screen_position = (0, 0)
     snapped_mouse_world_position = (0, 0)
     exact_mouse_screen_position = (0, 0)
@@ -242,6 +243,10 @@ def main(map_file_name: Optional[str]):
     game_state.center_camera_on_player()
     game_state.camera_world_area.topleft = ((game_state.camera_world_area.x // grid_cell_size) * grid_cell_size,
                                             (game_state.camera_world_area.y // grid_cell_size) * grid_cell_size)
+
+    held_down_arrow_keys = set([])
+    clock = pygame.time.Clock()
+    camera_pan_timer = PeriodicTimer(Millis(50))
 
     while True:
 
@@ -277,14 +282,8 @@ def main(map_file_name: Optional[str]):
                     save_file = map_file_path
                     save_game_state_to_json_file(game_state, save_file)
                     print("Saved state to " + save_file)
-                elif event.key == pygame.K_RIGHT:
-                    game_state.translate_camera_position((camera_move_distance, 0))
-                elif event.key == pygame.K_DOWN:
-                    game_state.translate_camera_position((0, camera_move_distance))
-                elif event.key == pygame.K_LEFT:
-                    game_state.translate_camera_position((-camera_move_distance, 0))
-                elif event.key == pygame.K_UP:
-                    game_state.translate_camera_position((0, -camera_move_distance))
+                elif event.key in [pygame.K_RIGHT, pygame.K_DOWN, pygame.K_LEFT, pygame.K_UP]:
+                    held_down_arrow_keys.add(event.key)
                 elif event.key == pygame.K_q:
                     user_state = UserState.deleting_entities()
                 elif event.key == pygame.K_z:
@@ -292,6 +291,10 @@ def main(map_file_name: Optional[str]):
                 elif event.key == pygame.K_PLUS:
                     grid_cell_size_index = (grid_cell_size_index + 1) % len(possible_grid_cell_sizes)
                     grid_cell_size = possible_grid_cell_sizes[grid_cell_size_index]
+
+            if event.type == pygame.KEYUP:
+                if event.key in held_down_arrow_keys:
+                    held_down_arrow_keys.remove(event.key)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 is_mouse_button_down = True
@@ -327,6 +330,19 @@ def main(map_file_name: Optional[str]):
 
             if event.type == pygame.MOUSEBUTTONUP:
                 is_mouse_button_down = False
+
+        clock.tick()
+        time_passed = clock.get_time()
+
+        if camera_pan_timer.update_and_check_if_ready(time_passed):
+            if pygame.K_RIGHT in held_down_arrow_keys:
+                game_state.translate_camera_position((camera_move_distance, 0))
+            if pygame.K_LEFT in held_down_arrow_keys:
+                game_state.translate_camera_position((-camera_move_distance, 0))
+            if pygame.K_DOWN in held_down_arrow_keys:
+                game_state.translate_camera_position((0, camera_move_distance))
+            if pygame.K_UP in held_down_arrow_keys:
+                game_state.translate_camera_position((0, -camera_move_distance))
 
         entities_to_render = game_state.get_all_entities_to_render()
         decorations_to_render = game_state.get_decorations_to_render()
