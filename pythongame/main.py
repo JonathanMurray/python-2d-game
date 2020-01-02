@@ -33,8 +33,6 @@ CAMERA_SIZE = (800, 430)
 
 register_all_game_data()
 
-# TODO let user toggle this
-FULLSCREEN = False
 
 class Main:
     def __init__(self, map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start_level: Optional[int],
@@ -46,10 +44,8 @@ class Main:
 
         print("Available display modes: " + str(pygame.display.list_modes()))
 
-        flags = pygame.DOUBLEBUF
-        if FULLSCREEN:
-            flags = flags | pygame.FULLSCREEN | pygame.HWSURFACE
-        self.pygame_screen = pygame.display.set_mode(SCREEN_SIZE, flags)
+        self.fullscreen = True
+        self.pygame_screen = self.setup_screen()
         images_by_sprite = load_images_by_sprite(ENTITY_SPRITE_INITIALIZERS)
         images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, UI_ICON_SIZE)
         big_images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, UI_ICON_BIG_SIZE)
@@ -76,8 +72,9 @@ class Main:
             for event in input_events:
                 if event.type == pygame.QUIT:
                     self.quit_game()
-                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and FULLSCREEN:
-                    self.quit_game()
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and self.fullscreen:
+                    self.toggle_fullscreen()
+                    self.ui_view.on_fullscreen_changed(self.fullscreen)
 
             transition: Optional[SceneTransition] = self.scene.handle_user_input(input_events)
             if transition:
@@ -91,6 +88,16 @@ class Main:
 
             self.scene.render()
             pygame.display.update()
+
+    def toggle_fullscreen(self):
+        self.fullscreen = not self.fullscreen
+        self.pygame_screen = self.setup_screen()
+
+    def setup_screen(self):
+        flags = pygame.DOUBLEBUF
+        if self.fullscreen:
+            flags = flags | pygame.FULLSCREEN | pygame.HWSURFACE
+        return pygame.display.set_mode(SCREEN_SIZE, flags)
 
     def quit_game(self):
         pygame.quit()
@@ -119,7 +126,7 @@ class Main:
             total_time_played_on_character: Millis):
         return PlayingScene(
             self.world_view, game_state, game_engine, world_behavior, ui_state, ui_view, new_hero_was_created,
-            character_file, self.save_file_handler, total_time_played_on_character)
+            character_file, self.save_file_handler, total_time_played_on_character, self.toggle_fullscreen)
 
     def challenge_complete_scene(self, total_time_played: Millis):
         return ChallengeCompleteScreenScene(self.pygame_screen, total_time_played)

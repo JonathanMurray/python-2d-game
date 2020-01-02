@@ -19,7 +19,7 @@ from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, It
     DialogOption, Dialog, Checkbox, Button, Message, PausedSplashScreen, TalentTierData, TalentOptionData, TalentIcon
 from pythongame.scenes_game.ui_events import TrySwitchItemInInventory, EventTriggeredFromUi, \
     DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
-    PickTalent, StartDraggingItemOrConsumable, SaveGame, ToggleSound
+    PickTalent, StartDraggingItemOrConsumable, SaveGame, ToggleSound, ToggleFullscreen
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -94,7 +94,7 @@ class GameUiView:
         self.inventory_icons_rect: Rect = Rect(0, 0, 0, 0)
         self.inventory_icons: List[ItemIcon] = []
         self.exp_bar = ExpBar(self.ui_render, Rect(135, 8, 300, 2), self.font_level)
-        self.minimap = Minimap(self.ui_render, Rect(440, 52, 80, 80))
+        self.minimap = Minimap(self.ui_render, Rect(475, 52, 80, 80))
         self.buffs = Buffs(self.ui_render, self.font_buff_texts, (10, -35))
         self.money_text = Text(self.ui_render, self.font_ui_money, (24, 150), "NO MONEY")
         self.talents_window: TalentsWindow = None
@@ -193,8 +193,8 @@ class GameUiView:
                                show_numbers=True, font=self.font_ui_stat_bar_numbers)
 
     def _setup_toggle_buttons(self):
-        x = 540
-        y_0 = 30
+        x = 600
+        y_0 = 15
         w = 150
         h = 20
         font = self.font_buttons
@@ -207,6 +207,7 @@ class GameUiView:
         self.toggle_buttons = [self.stats_toggle, self.talents_toggle, self.controls_toggle]
         self.sound_checkbox = Checkbox(self.ui_render, Rect(x, y_0 + 90, 70, h), "SOUND", True)
         self.save_button = Button(self.ui_render, Rect(x + 80, y_0 + 90, 70, h), "SAVE [S]")
+        self.fullscreen_checkbox = Checkbox(self.ui_render, Rect(x, y_0 + 120, w, h), "FULLSCREEN", True)
 
     def _setup_stats_window(self):
 
@@ -244,8 +245,8 @@ class GameUiView:
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_pos)
 
-        simple_components = [self.healthbar, self.manabar, self.sound_checkbox, self.save_button] + \
-                            self.ability_icons + self.toggle_buttons
+        simple_components = [self.healthbar, self.manabar, self.sound_checkbox, self.save_button,
+                             self.fullscreen_checkbox] + self.ability_icons + self.toggle_buttons
 
         for component in simple_components:
             if component.contains(mouse_ui_position):
@@ -286,6 +287,9 @@ class GameUiView:
             return [ToggleSound()]
         elif self.hovered_component == self.save_button:
             return [SaveGame()]
+        elif self.hovered_component == self.fullscreen_checkbox:
+            self.fullscreen_checkbox.on_click()
+            return [ToggleFullscreen()]
         elif self.hovered_component in self.inventory_icons and self.hovered_component.item_type:
             self.item_slot_being_dragged = self.hovered_component
             return [StartDraggingItemOrConsumable()]
@@ -481,6 +485,9 @@ class GameUiView:
             icon.slot_equipment_category = slot_equipment_category
             icon.item_type = item_type
 
+    def on_fullscreen_changed(self, fullscreen: bool):
+        self.fullscreen_checkbox.checked = fullscreen
+
     # --------------------------------------------------------------------------------------------------------
     #                              HANDLE DIALOG USER INTERACTIONS
     # --------------------------------------------------------------------------------------------------------
@@ -603,8 +610,8 @@ class GameUiView:
         self.minimap.render(ui_state.player_minimap_relative_position, ui_state.minimap_highlight_relative_position)
 
         simple_components = [self.exp_bar, self.portrait, self.healthbar, self.manabar, self.money_text, self.dialog,
-                             self.buffs, self.sound_checkbox, self.save_button, self.stats_window, self.talents_window,
-                             self.controls_window] + self.toggle_buttons
+                             self.buffs, self.sound_checkbox, self.save_button, self.fullscreen_checkbox,
+                             self.stats_window, self.talents_window, self.controls_window] + self.toggle_buttons
 
         for component in simple_components:
             component.render()

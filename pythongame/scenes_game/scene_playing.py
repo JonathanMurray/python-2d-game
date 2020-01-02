@@ -1,4 +1,4 @@
-from typing import Optional, Any, List, Tuple
+from typing import Optional, Any, List, Tuple, Callable
 
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
@@ -28,6 +28,7 @@ from pythongame.scenes_game.game_ui_view import DragItemBetweenInventorySlots, D
 from pythongame.scenes_game.game_ui_view import GameUiView
 from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
 from pythongame.scenes_game.scene_paused import PausedScene
+from pythongame.scenes_game.ui_events import ToggleFullscreen
 
 
 class PlayingScene(AbstractScene):
@@ -41,7 +42,8 @@ class PlayingScene(AbstractScene):
                  new_hero_was_created: bool,
                  character_file: Optional[str],
                  save_file_handler: SaveFileHandler,
-                 total_time_played_on_character: Millis):
+                 total_time_played_on_character: Millis,
+                 toggle_fullscreen_callback: Callable[[], Any]):
 
         self.player_interactions_state = PlayerInteractionsState()
         self.world_view = world_view
@@ -57,6 +59,7 @@ class PlayingScene(AbstractScene):
         self.character_file = character_file
         self.save_file_handler = save_file_handler
         self.total_time_played_on_character = total_time_played_on_character
+        self.toggle_fullscreen_callback = toggle_fullscreen_callback
 
     def on_enter(self):
         self.ui_view.set_paused(False)
@@ -194,6 +197,8 @@ class PlayingScene(AbstractScene):
                 toggle_muted()
             elif isinstance(event, SaveGame):
                 self._save_game()
+            elif isinstance(event, ToggleFullscreen):
+                self.toggle_fullscreen_callback()
             else:
                 raise Exception("Unhandled event: " + str(event))
 

@@ -43,6 +43,10 @@ class SaveGame(EventTriggeredFromUi):
     pass
 
 
+class ToggleFullscreen(EventTriggeredFromUi):
+    pass
+
+
 class StartDraggingItemOrConsumable(EventTriggeredFromUi):
     pass
 
