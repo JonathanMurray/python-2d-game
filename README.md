@@ -20,17 +20,29 @@ _Choose your hero:_
 
 _Master different abilities:_
 
-<img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/ability.png" height="300" />
+<img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/abilities.png" height="300" />
+<br/>
+
+<img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/abilities_2.png" height="300" />
 <br/>
 
 _Equip powerful items:_
 
-<img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/item.png" height="300" />
+<img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/items.png" height="300" />
+<br/>
+
+<img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/items_2.png" height="300" />
 <br/>
 
 _Customize your character with talents:_
 
 <img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/talents.png" height="300" />
+<br/>
+
+<img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/talents_2.png" height="300" />
+<br/>
+
+<img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/talents_3.png" height="300" />
 <br/>
 
 
