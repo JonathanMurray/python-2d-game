@@ -38,7 +38,7 @@ def register_ninja_npc():
         buy_consumable_option(ConsumableType.BREW, 2),
         buy_consumable_option(ConsumableType.HEALTH_LESSER, 3),
         buy_consumable_option(ConsumableType.MANA_LESSER, 3),
-        buy_consumable_option(ConsumableType.SPEED, 5),
+        buy_consumable_option(ConsumableType.SPEED, 4),
         buy_consumable_option(ConsumableType.POWER, 10),
         DialogOptionData("\"Good bye\"", "cancel", None)]
     dialog_text_body = "Ah.. You're new here, aren't you? Interested in my stock of potions? " \

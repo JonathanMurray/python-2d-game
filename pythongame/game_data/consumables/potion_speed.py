@@ -13,7 +13,7 @@ from pythongame.core.visual_effects import VisualCircle
 BUFF_TYPE = BuffType.INCREASED_MOVE_SPEED
 
 DURATION = Millis(15000)
-SPEED_INCREASE = 0.5
+SPEED_INCREASE = 0.4
 
 
 def _apply_speed(game_state: GameState):

@@ -10,8 +10,8 @@ from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacte
 from pythongame.core.view.image_loading import SpriteInitializer
 from pythongame.core.visual_effects import VisualRect
 
-DURATION = Millis(10000)
-DAMAGE_MODIFIER_INCREASE = 0.5
+DURATION = Millis(30_000)
+DAMAGE_MODIFIER_INCREASE = 0.3
 BUFF_TYPE = BuffType.ELIXIR_OF_POWER
 
 
