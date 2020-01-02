@@ -8,7 +8,7 @@ from pythongame.core.game_data import register_ui_icon_sprite_path, register_ent
 from pythongame.core.game_state import GameState
 from pythongame.core.view.image_loading import SpriteInitializer
 
-MANA_AMOUNT = 50
+MANA_AMOUNT = 40
 
 
 def _apply_mana(game_state: GameState):

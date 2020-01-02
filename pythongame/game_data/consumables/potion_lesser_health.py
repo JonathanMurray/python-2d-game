@@ -8,7 +8,7 @@ from pythongame.core.game_data import register_entity_sprite_initializer, regist
 from pythongame.core.game_state import GameState
 from pythongame.core.view.image_loading import SpriteInitializer
 
-HEALING_AMOUNT = 50
+HEALING_AMOUNT = 40
 
 
 def _apply_health(game_state: GameState):
