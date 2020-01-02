@@ -59,7 +59,8 @@ class MapEditorView:
             EntityTab.MISC: RadioButton(self.ui_render, Rect(540, 10, w_tab_button, 20), "MISC. (M)"),
         }
         self.shown_tab: EntityTab = EntityTab.ITEMS
-        self.checkbox_show_entity_outlines = Checkbox(self.ui_render, Rect(20, 100, 90, 20), "outlines", True)
+        self.checkbox_show_entity_outlines = Checkbox(self.ui_render, Rect(15, 100, 120, 20), "outlines", True)
+        self.checkboxes = [self.checkbox_show_entity_outlines]
         self.mouse_screen_position = (0, 0)
         self.hovered_component = None
 
@@ -68,8 +69,9 @@ class MapEditorView:
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_pos)
 
-        if self.checkbox_show_entity_outlines.contains(mouse_ui_position):
-            self._on_hover_component(self.checkbox_show_entity_outlines)
+        for checkbox in self.checkboxes:
+            if checkbox.contains(mouse_ui_position):
+                self._on_hover_component(checkbox)
 
     def _on_hover_component(self, component):
         self._set_currently_hovered_component_not_hovered()
@@ -82,8 +84,8 @@ class MapEditorView:
             self.hovered_component = None
 
     def handle_mouse_click(self):
-        if self.hovered_component == self.checkbox_show_entity_outlines:
-            self.checkbox_show_entity_outlines.on_click()
+        if self.hovered_component in self.checkboxes:
+            self.hovered_component.on_click()
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
@@ -164,7 +166,8 @@ class MapEditorView:
         for button in self.tab_buttons.values():
             button.render()
 
-        self.checkbox_show_entity_outlines.render()
+        for checkbox in self.checkboxes:
+            checkbox.render()
 
         return hovered_by_mouse
 
