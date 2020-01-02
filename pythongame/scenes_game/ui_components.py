@@ -402,11 +402,11 @@ class ToggleButton(UiComponent):
 
 
 class Checkbox(UiComponent):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, font, label: str, checked: bool):
+    def __init__(self, ui_render: DrawableArea, rect: Rect, label: str, checked: bool):
         super().__init__()
         self.ui_render = ui_render
         self.rect = rect
-        self.font = font
+        self.font = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.label = label
         self.checked = checked
         self.tooltip = None

@@ -123,6 +123,7 @@ def main(map_file_name: Optional[str]):
 
             if event.type == pygame.MOUSEMOTION:
                 exact_mouse_screen_position: Tuple[int, int] = event.pos
+                ui_view.handle_mouse_movement(exact_mouse_screen_position)
                 snapped_mouse_screen_position = ((exact_mouse_screen_position[0] // grid_cell_size) * grid_cell_size,
                                                  (exact_mouse_screen_position[1] // grid_cell_size) * grid_cell_size)
                 snapped_mouse_world_position = sum_of_vectors(
@@ -169,6 +170,7 @@ def main(map_file_name: Optional[str]):
                     held_down_arrow_keys.remove(event.key)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
+                ui_view.handle_mouse_click()
                 is_mouse_button_down = True
                 if user_state.placing_entity:
                     entity_being_placed = user_state.placing_entity
@@ -227,7 +229,7 @@ def main(map_file_name: Optional[str]):
             camera_world_area=game_state.camera_world_area,
             non_player_characters=game_state.non_player_characters,
             visual_effects=game_state.visual_effects,
-            render_hit_and_collision_boxes=True,
+            render_hit_and_collision_boxes=ui_view.checkbox_show_entity_outlines.checked,
             player_health=game_state.player_state.health_resource.value,
             player_max_health=game_state.player_state.health_resource.max_value,
             entire_world_area=game_state.entire_world_area,

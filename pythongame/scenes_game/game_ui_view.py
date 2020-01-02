@@ -205,7 +205,7 @@ class GameUiView:
         self.controls_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 60, w, h), font, "HELP     [H]",
                                             ToggleButtonId.HELP, False, self.controls_window)
         self.toggle_buttons = [self.stats_toggle, self.talents_toggle, self.controls_toggle]
-        self.sound_checkbox = Checkbox(self.ui_render, Rect(x, y_0 + 90, 70, h), font, "SOUND", True)
+        self.sound_checkbox = Checkbox(self.ui_render, Rect(x, y_0 + 90, 70, h), "SOUND", True)
         self.save_button = Button(self.ui_render, Rect(x + 80, y_0 + 90, 70, h), "SAVE [S]")
 
     def _setup_stats_window(self):

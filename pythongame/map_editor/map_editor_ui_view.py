@@ -11,7 +11,7 @@ from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.view.image_loading import ImageWithRelativePosition
 from pythongame.core.view.render_util import DrawableArea
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
-from pythongame.scenes_game.ui_components import RadioButton
+from pythongame.scenes_game.ui_components import RadioButton, Checkbox
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -59,6 +59,31 @@ class MapEditorView:
             EntityTab.MISC: RadioButton(self.ui_render, Rect(540, 10, w_tab_button, 20), "MISC. (M)"),
         }
         self.shown_tab: EntityTab = EntityTab.ITEMS
+        self.checkbox_show_entity_outlines = Checkbox(self.ui_render, Rect(20, 100, 90, 20), "outlines", True)
+        self.mouse_screen_position = (0, 0)
+        self.hovered_component = None
+
+    def handle_mouse_movement(self, mouse_screen_pos: Tuple[int, int]):
+        self.mouse_screen_position = mouse_screen_pos
+
+        mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_pos)
+
+        if self.checkbox_show_entity_outlines.contains(mouse_ui_position):
+            self._on_hover_component(self.checkbox_show_entity_outlines)
+
+    def _on_hover_component(self, component):
+        self._set_currently_hovered_component_not_hovered()
+        self.hovered_component = component
+        self.hovered_component.hovered = True
+
+    def _set_currently_hovered_component_not_hovered(self):
+        if self.hovered_component is not None:
+            self.hovered_component.hovered = False
+            self.hovered_component = None
+
+    def handle_mouse_click(self):
+        if self.hovered_component == self.checkbox_show_entity_outlines:
+            self.checkbox_show_entity_outlines.on_click()
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
@@ -138,6 +163,8 @@ class MapEditorView:
 
         for button in self.tab_buttons.values():
             button.render()
+
+        self.checkbox_show_entity_outlines.render()
 
         return hovered_by_mouse
 
