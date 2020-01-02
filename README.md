@@ -51,7 +51,6 @@ _Interact with NPCs:_
 <img src="https://github.com/JonathanMurray/python-2d-game/blob/master/screenshots/dialog.png" height="300" />
 <br/>
 
-Look [here](todo.md) for future changes!
 
 ## Installation
 
