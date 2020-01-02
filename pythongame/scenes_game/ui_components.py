@@ -427,13 +427,13 @@ class Checkbox(UiComponent):
 
 
 class Button(UiComponent):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, font, text: str):
+    def __init__(self, ui_render: DrawableArea, rect: Rect, text: str):
         super().__init__()
         self.ui_render = ui_render
         self.rect = rect
-        self.font = font
         self.text = text
         self.tooltip = None
+        self.font = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
 
     def contains(self, point: Tuple[int, int]) -> bool:
         return self.rect.collidepoint(point[0], point[1])
@@ -445,6 +445,27 @@ class Button(UiComponent):
         if self.hovered:
             self.ui_render.rect(COLOR_HOVERED, self.rect, 1)
 
+class RadioButton(UiComponent):
+    def __init__(self, ui_render: DrawableArea, rect: Rect, text: str):
+        super().__init__()
+        self.ui_render = ui_render
+        self.rect = rect
+        self.text = text
+        self.tooltip = None
+        self.font = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
+        self.enabled = False
+
+    def contains(self, point: Tuple[int, int]) -> bool:
+        return self.rect.collidepoint(point[0], point[1])
+
+    def render(self):
+        self.ui_render.rect(COLOR_BUTTON_OUTLINE, self.rect, 1)
+        text_color = COLOR_WHITE if self.hovered else COLOR_LIGHT_GRAY
+        self.ui_render.text(self.font, self.text, (self.rect.x + 7, self.rect.y + 2), text_color)
+        if self.hovered:
+            self.ui_render.rect(COLOR_HOVERED, self.rect, 1)
+        if self.enabled:
+            self.ui_render.rect(COLOR_ICON_HIGHLIGHTED, self.rect, 1)
 
 class ControlsWindow(UiWindow):
     def __init__(self, ui_render: DrawableArea, font_header, font_details):

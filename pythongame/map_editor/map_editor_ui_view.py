@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Any
 from typing import Dict, List, Tuple, Optional
 
@@ -10,6 +11,7 @@ from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.view.image_loading import ImageWithRelativePosition
 from pythongame.core.view.render_util import DrawableArea
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
+from pythongame.scenes_game.ui_components import RadioButton
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -21,6 +23,13 @@ RENDER_WORLD_COORDINATES = False
 DIR_FONTS = './resources/fonts/'
 
 MAP_EDITOR_UI_ICON_SIZE = (32, 32)
+
+
+class EntityTab(Enum):
+    ITEMS = 0
+    NPCS = 1
+    WALLS = 2
+    MISC = 3
 
 
 class MapEditorView:
@@ -40,9 +49,16 @@ class MapEditorView:
         self.screen_render = DrawableArea(pygame_screen)
         self.ui_render = DrawableArea(pygame_screen, self._translate_ui_position_to_screen)
 
-        self.font_ui_headers = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 18)
         self.font_debug_info = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 12)
         self.font_ui_icon_keys = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 12)
+        w_tab_button = 75
+        self.tab_buttons = {
+            EntityTab.ITEMS: RadioButton(self.ui_render, Rect(300, 10, w_tab_button, 20), "ITEMS (V)"),
+            EntityTab.NPCS: RadioButton(self.ui_render, Rect(380, 10, w_tab_button, 20), "NPCS (B)"),
+            EntityTab.WALLS: RadioButton(self.ui_render, Rect(460, 10, w_tab_button, 20), "WALLS (N)"),
+            EntityTab.MISC: RadioButton(self.ui_render, Rect(540, 10, w_tab_button, 20), "MISC. (M)"),
+        }
+        self.shown_tab: EntityTab = EntityTab.ITEMS
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
@@ -62,11 +78,17 @@ class MapEditorView:
         animation_frame_index = int(len(images_for_this_direction) * animation_progress)
         return images_for_this_direction[animation_frame_index]
 
+    def set_shown_tab(self, shown_tab: EntityTab):
+        self.tab_buttons[self.shown_tab].enabled = False
+        self.shown_tab = shown_tab
+        self.tab_buttons[shown_tab].enabled = True
+
     def render(
-            self, chars_by_entities: Dict[MapEditorWorldEntity, str], entities: List[MapEditorWorldEntity],
+            self, entities: List[MapEditorWorldEntity],
             placing_entity: Optional[MapEditorWorldEntity], deleting_entities: bool, deleting_decorations: bool,
             num_enemies: int, num_walls: int, num_decorations: int, grid_cell_size: int,
-            mouse_screen_position: Tuple[int, int], camera_world_area_percentage: Rect
+            mouse_screen_position: Tuple[int, int], camera_rect_ratio: Tuple[float, float, float, float],
+            npc_positions_ratio: List[Tuple[float, float]], wall_positions_ratio: List[Tuple[float, float]]
     ) -> Optional[MapEditorWorldEntity]:
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
@@ -79,31 +101,30 @@ class MapEditorView:
 
         icon_space = 5
 
-        y_1 = 17
-        y_2 = y_1 + 22
+        y_1 = 10
+        y_2 = y_1 + 30
 
         x_0 = 20
+
+        # TODO Handle all these icons as state, similarly to how the game UI is done, and the tab radio buttons
+
         self._map_editor_icon_in_ui(x_0, y_2, MAP_EDITOR_UI_ICON_SIZE, deleting_entities, 'Q', None,
                                     UiIconSprite.MAP_EDITOR_TRASHCAN)
         self._map_editor_icon_in_ui(x_0 + MAP_EDITOR_UI_ICON_SIZE[0] + icon_space, y_2, MAP_EDITOR_UI_ICON_SIZE,
                                     deleting_decorations, 'Z', None, UiIconSprite.MAP_EDITOR_RECYCLING)
 
         x_1 = 155
-        self.ui_render.text(self.font_ui_headers, "ENTITIES", (x_1, y_1))
         num_icons_per_row = 23
+
         for i, entity in enumerate(entities):
-            if entity in chars_by_entities:
-                char = chars_by_entities[entity]
-            else:
-                char = ''
             is_this_entity_being_placed = entity is placing_entity
             x = x_1 + (i % num_icons_per_row) * (MAP_EDITOR_UI_ICON_SIZE[0] + icon_space)
             row_index = (i // num_icons_per_row)
-            y = y_2 + row_index * (MAP_EDITOR_UI_ICON_SIZE[1] + 25)
+            y = y_2 + row_index * (MAP_EDITOR_UI_ICON_SIZE[1] + icon_space)
             if is_point_in_rect(mouse_ui_position, Rect(x, y, MAP_EDITOR_UI_ICON_SIZE[0], MAP_EDITOR_UI_ICON_SIZE[1])):
                 hovered_by_mouse = entity
             self._map_editor_icon_in_ui(
-                x, y, MAP_EDITOR_UI_ICON_SIZE, is_this_entity_being_placed, char, entity.sprite, None)
+                x, y, MAP_EDITOR_UI_ICON_SIZE, is_this_entity_being_placed, '', entity.sprite, None)
 
         self.screen_render.rect(COLOR_WHITE, self.ui_screen_area, 1)
 
@@ -113,17 +134,45 @@ class MapEditorView:
         self.screen_render.text(self.font_debug_info, "# decorations: " + str(num_decorations), (5, 37))
         self.screen_render.text(self.font_debug_info, "Cell size: " + str(grid_cell_size), (5, 54))
 
-        rect_minimap = Rect(self.screen_size[0] - 180, self.screen_size[1] - 180, 160, 160)
-        self.screen_render.rect(COLOR_WHITE, rect_minimap, 2)
-        self.screen_render.rect(
-            (100, 250, 100),
-            Rect(rect_minimap.x + camera_world_area_percentage.x * rect_minimap.w / 100,
-                 rect_minimap.y + camera_world_area_percentage.y * rect_minimap.h / 100,
-                 camera_world_area_percentage.w * rect_minimap.w / 100,
-                 camera_world_area_percentage.h * rect_minimap.h / 100),
-            1)
+        self._render_minimap(camera_rect_ratio, npc_positions_ratio, wall_positions_ratio)
+
+        for button in self.tab_buttons.values():
+            button.render()
 
         return hovered_by_mouse
+
+    def _render_minimap(self, camera_rect_ratio, npc_positions_ratio, wall_positions_ratio):
+        rect = Rect(self.screen_size[0] - 180, self.screen_size[1] - 180, 160, 160)
+        border_width = 1
+        self.screen_render.rect(
+            COLOR_WHITE,
+            Rect(rect.x - border_width, rect.y - border_width, rect.w + border_width * 2, rect.h + border_width * 2),
+            border_width)
+
+        for npc_pos in npc_positions_ratio:
+            self.screen_render.rect(
+                (200, 200, 200),
+                Rect(rect.x + npc_pos[0] * rect.w,
+                     rect.y + npc_pos[1] * rect.h,
+                     1,
+                     1),
+                1)
+        for wall_pos in wall_positions_ratio:
+            self.screen_render.rect(
+                (100, 100, 150),
+                Rect(rect.x + wall_pos[0] * rect.w,
+                     rect.y + wall_pos[1] * rect.h,
+                     1,
+                     1),
+                1)
+
+        self.screen_render.rect(
+            (150, 250, 150),
+            Rect(rect.x + camera_rect_ratio[0] * rect.w,
+                 rect.y + camera_rect_ratio[1] * rect.h,
+                 camera_rect_ratio[2] * rect.w,
+                 camera_rect_ratio[3] * rect.h),
+            1)
 
     def render_map_editor_mouse_rect(self, color: Tuple[int, int, int], map_editor_mouse_rect: Rect):
         self.screen_render.rect(color, map_editor_mouse_rect, 3)
@@ -150,7 +199,7 @@ class MapEditorView:
         icon_scaled_image = pygame.transform.scale(image, size)
         self.ui_render.image(icon_scaled_image, (x, y))
 
-        self.ui_render.rect(COLOR_WHITE, Rect(x, y, w, h), 2)
+        self.ui_render.rect(COLOR_WHITE, Rect(x, y, w, h), 1)
         if highlighted:
             self.ui_render.rect(COLOR_HIGHLIGHTED_ICON, Rect(x - 1, y - 1, w + 2, h + 2), 3)
         self.ui_render.text(self.font_ui_icon_keys, user_input_key, (x + 12, y + h + 4))

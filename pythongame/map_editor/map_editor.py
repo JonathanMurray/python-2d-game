@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from typing import Tuple, Optional, List, Dict
+from typing import Tuple, Optional, List
 
 import pygame
 from pygame.rect import Rect
@@ -16,7 +16,8 @@ from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.core.view.image_loading import load_images_by_sprite, load_images_by_ui_sprite, \
     load_images_by_portrait_sprite
-from pythongame.map_editor.map_editor_ui_view import MapEditorView, PORTRAIT_ICON_SIZE, MAP_EDITOR_UI_ICON_SIZE
+from pythongame.map_editor.map_editor_ui_view import MapEditorView, PORTRAIT_ICON_SIZE, MAP_EDITOR_UI_ICON_SIZE, \
+    EntityTab
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
 from pythongame.map_file import save_game_state_to_json_file, create_game_state_from_json_file
 from pythongame.register_game_data import register_all_game_data
@@ -25,162 +26,26 @@ MAP_DIR = "resources/maps/"
 
 register_all_game_data()
 
-MAP_EDITOR_ENTITIES: List[MapEditorWorldEntity] = [
+WALL_ENTITIES = [MapEditorWorldEntity.wall(wall_type) for wall_type in WallType]
+NPC_ENTITIES = [MapEditorWorldEntity.npc(npc_type) for npc_type in NpcType]
+PORTAL_ENTITIES = [MapEditorWorldEntity.portal(portal_id) for portal_id in PortalId]
+CONSUMABLE_ENTITIES = [MapEditorWorldEntity.consumable(consumable_type) for consumable_type in ConsumableType]
+ITEM_ENTITIES = [MapEditorWorldEntity.item(item_type) for item_type in ItemType]
+
+MISC_ENTITIES: List[MapEditorWorldEntity] = [
     MapEditorWorldEntity.player(),
-
-    MapEditorWorldEntity.wall(WallType.WALL),
-    MapEditorWorldEntity.wall(WallType.STATUE),
-    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_N),
-    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_NE),
-    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_E),
-    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_SE),
-    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_S),
-    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_SW),
-    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_W),
-    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_NW),
-    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_NE),
-    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_SE),
-    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_SW),
-    MapEditorWorldEntity.wall(WallType.WALL_DIRECTIONAL_POINTY_NW),
-    MapEditorWorldEntity.wall(WallType.WALL_CHAIR),
-    MapEditorWorldEntity.wall(WallType.ALTAR),
-
-    MapEditorWorldEntity.npc(NpcType.GOBLIN_WORKER),
-    MapEditorWorldEntity.npc(NpcType.GOBLIN_SPEARMAN),
-    MapEditorWorldEntity.npc(NpcType.GOBLIN_SPEARMAN_ELITE),
-    MapEditorWorldEntity.npc(NpcType.GOBLIN_WARRIOR),
-    MapEditorWorldEntity.npc(NpcType.DARK_REAPER),
-    MapEditorWorldEntity.npc(NpcType.RAT_1),
-    MapEditorWorldEntity.npc(NpcType.RAT_2),
-    MapEditorWorldEntity.npc(NpcType.GOBLIN_WARLOCK),
-    MapEditorWorldEntity.npc(NpcType.ZOMBIE),
-    MapEditorWorldEntity.npc(NpcType.MUMMY),
-    MapEditorWorldEntity.npc(NpcType.NECROMANCER),
-    MapEditorWorldEntity.npc(NpcType.WARRIOR),
-    MapEditorWorldEntity.npc(NpcType.VETERAN),
-    MapEditorWorldEntity.npc(NpcType.ICE_WITCH),
-    MapEditorWorldEntity.npc(NpcType.WARRIOR_KING),
-
-    MapEditorWorldEntity.portal(PortalId.A_BASE),
-    MapEditorWorldEntity.portal(PortalId.B_BASE),
-    MapEditorWorldEntity.portal(PortalId.C_BASE),
-    MapEditorWorldEntity.portal(PortalId.D_BASE),
-    MapEditorWorldEntity.portal(PortalId.A_REMOTE),
-    MapEditorWorldEntity.portal(PortalId.B_REMOTE),
-    MapEditorWorldEntity.portal(PortalId.C_REMOTE),
-    MapEditorWorldEntity.portal(PortalId.D_REMOTE),
-
     MapEditorWorldEntity.chest(),
-
-    MapEditorWorldEntity.npc(NpcType.NEUTRAL_DWARF),
-    MapEditorWorldEntity.npc(NpcType.NEUTRAL_NOMAD),
-    MapEditorWorldEntity.npc(NpcType.NEUTRAL_NINJA),
-    MapEditorWorldEntity.npc(NpcType.NEUTRAL_SORCERER),
-    MapEditorWorldEntity.npc(NpcType.NEUTRAL_YOUNG_SORCERESS),
-    MapEditorWorldEntity.npc(NpcType.NEUTRAL_WARPSTONE_MERCHANT),
-    MapEditorWorldEntity.npc(NpcType.NEUTRAL_CHALLENGE_STARTER),
-
-    MapEditorWorldEntity.consumable(ConsumableType.HEALTH_LESSER),
-    MapEditorWorldEntity.consumable(ConsumableType.HEALTH),
-    MapEditorWorldEntity.consumable(ConsumableType.MANA_LESSER),
-    MapEditorWorldEntity.consumable(ConsumableType.MANA),
-    MapEditorWorldEntity.consumable(ConsumableType.SCROLL_SUMMON_DRAGON),
-    MapEditorWorldEntity.consumable(ConsumableType.INVISIBILITY),
-    MapEditorWorldEntity.consumable(ConsumableType.SPEED),
-    MapEditorWorldEntity.consumable(ConsumableType.BREW),
-    MapEditorWorldEntity.consumable(ConsumableType.WARP_STONE),
-    MapEditorWorldEntity.consumable(ConsumableType.POWER),
-
-    MapEditorWorldEntity.item(ItemType.FIRE_WAND),
-    MapEditorWorldEntity.item(ItemType.SORCERESS_ROBE),
-    MapEditorWorldEntity.item(ItemType.BLESSED_CHALICE),
-    MapEditorWorldEntity.item(ItemType.NECKLACE_OF_SUFFERING),
-    MapEditorWorldEntity.item(ItemType.MESSENGERS_HAT),
-    MapEditorWorldEntity.item(ItemType.SKULL_STAFF),
-    MapEditorWorldEntity.item(ItemType.ROD_OF_LIGHTNING),
-    MapEditorWorldEntity.item(ItemType.AMULET_OF_MANA_1),
-    MapEditorWorldEntity.item(ItemType.SOLDIERS_HELMET_1),
-    MapEditorWorldEntity.item(ItemType.BLESSED_SHIELD_1),
-    MapEditorWorldEntity.item(ItemType.STAFF_OF_FIRE),
-    MapEditorWorldEntity.item(ItemType.BLUE_ROBE_1),
-    MapEditorWorldEntity.item(ItemType.ORB_OF_THE_MAGI_1),
-    MapEditorWorldEntity.item(ItemType.ORB_OF_WISDOM_1),
-    MapEditorWorldEntity.item(ItemType.ORB_OF_LIFE_1),
-    MapEditorWorldEntity.item(ItemType.WIZARDS_COWL),
-    MapEditorWorldEntity.item(ItemType.ZULS_AEGIS),
-    MapEditorWorldEntity.item(ItemType.KNIGHTS_ARMOR),
-    MapEditorWorldEntity.item(ItemType.GOATS_RING),
-    MapEditorWorldEntity.item(ItemType.WOODEN_SHIELD),
-    MapEditorWorldEntity.item(ItemType.ELVEN_ARMOR),
-    MapEditorWorldEntity.item(ItemType.GOLD_NUGGET),
-    MapEditorWorldEntity.item(ItemType.SAPHIRE),
-    MapEditorWorldEntity.item(ItemType.BLOOD_AMULET),
-    MapEditorWorldEntity.item(ItemType.LEATHER_COWL),
-    MapEditorWorldEntity.item(ItemType.WINGED_HELMET),
-    MapEditorWorldEntity.item(ItemType.ELITE_ARMOR),
-    MapEditorWorldEntity.item(ItemType.RING_OF_POWER),
-    MapEditorWorldEntity.item(ItemType.LEATHER_ARMOR),
-    MapEditorWorldEntity.item(ItemType.FREEZING_GAUNTLET),
-    MapEditorWorldEntity.item(ItemType.ROYAL_DAGGER),
-    MapEditorWorldEntity.item(ItemType.ROYAL_SWORD),
-    MapEditorWorldEntity.item(ItemType.MOLTEN_AXE),
-    MapEditorWorldEntity.item(ItemType.WAND),
-    MapEditorWorldEntity.item(ItemType.GLADIATOR_ARMOR),
-    MapEditorWorldEntity.item(ItemType.NOBLE_DEFENDER),
-    MapEditorWorldEntity.item(ItemType.HATCHET),
-    MapEditorWorldEntity.item(ItemType.ELITE_HELMET),
-    MapEditorWorldEntity.item(ItemType.STONE_AMULET),
-    MapEditorWorldEntity.item(ItemType.TORN_DOCUMENT),
-    MapEditorWorldEntity.item(ItemType.KEY),
-    MapEditorWorldEntity.item(ItemType.PRACTICE_SWORD),
-    MapEditorWorldEntity.item(ItemType.WOODEN_SWORD),
-    MapEditorWorldEntity.item(ItemType.DRUIDS_RING),
-    MapEditorWorldEntity.item(ItemType.WARLOCKS_COWL),
-    MapEditorWorldEntity.item(ItemType.LICH_ARMOR),
-    MapEditorWorldEntity.item(ItemType.WARLORDS_ARMOR),
-    MapEditorWorldEntity.item(ItemType.HEALING_WAND),
-    MapEditorWorldEntity.item(ItemType.SKULL_SHIELD),
-    MapEditorWorldEntity.item(ItemType.THIEFS_MASK),
-    MapEditorWorldEntity.item(ItemType.SERPENT_SWORD),
-    MapEditorWorldEntity.item(ItemType.WHIP),
-    MapEditorWorldEntity.item(ItemType.CLEAVER),
-    MapEditorWorldEntity.item(ItemType.DESERT_BLADE),
-    MapEditorWorldEntity.item(ItemType.NOVICE_WAND),
-
     MapEditorWorldEntity.money(1),
-
     MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE),
     MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE_GRAY),
     MapEditorWorldEntity.decoration(Sprite.DECORATION_PLANT),
-    MapEditorWorldEntity.wall(WallType.SHELF_EMPTY),
-    MapEditorWorldEntity.wall(WallType.SHELF_HELMETS),
-    MapEditorWorldEntity.wall(WallType.SHELF_ARMORS),
-    MapEditorWorldEntity.wall(WallType.BARREL_1),
-    MapEditorWorldEntity.wall(WallType.BARREL_2),
-    MapEditorWorldEntity.wall(WallType.BARREL_3),
-    MapEditorWorldEntity.wall(WallType.BARREL_4),
-    MapEditorWorldEntity.wall(WallType.BARREL_5),
-    MapEditorWorldEntity.wall(WallType.BARREL_6),
 ]
-
-MAP_EDITOR_INPUT_CHARS: List[str] = [
-    '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'A', 'D', 'F',
-    'G', 'H', 'J', 'K', 'L', 'C', 'V', 'B', 'N', 'M'
-]
-
-ENTITIES_BY_CHAR: Dict[str, MapEditorWorldEntity] = dict(zip(MAP_EDITOR_INPUT_CHARS, MAP_EDITOR_ENTITIES))
-
-CHARS_BY_ENTITY: Dict[MapEditorWorldEntity, str] = {v: k for k, v in ENTITIES_BY_CHAR.items()}
 
 SCREEN_SIZE = (1200, 750)
-CAMERA_SIZE = (1200, 500)
+CAMERA_SIZE = (1200, 550)
 
 # The choice of hero shouldn't matter in the map editor, as we only store its position in the map file
 HERO_ID = HeroId.MAGE
-
-if 'S' in ENTITIES_BY_CHAR:
-    raise Exception("'S' key should be reserved for saving, but it's claimed by entity: "
-                    + str(ENTITIES_BY_CHAR['S']))
 
 
 class UserState:
@@ -209,7 +74,6 @@ def main(map_file_name: Optional[str]):
     if Path(map_file_path).exists():
         game_state = create_game_state_from_json_file(CAMERA_SIZE, map_file_path, HERO_ID)
     else:
-
         player_entity = create_hero_world_entity(HERO_ID, (0, 0))
         player_state = create_player_state(HERO_ID)
         game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, Rect(-250, -250, 500, 500),
@@ -233,7 +97,7 @@ def main(map_file_name: Optional[str]):
     grid_cell_size_index = 0
     grid_cell_size = possible_grid_cell_sizes[grid_cell_size_index]
 
-    camera_move_distance = 80
+    camera_move_distance = 75  # must be a multiple of the grid size
     snapped_mouse_screen_position = (0, 0)
     snapped_mouse_world_position = (0, 0)
     exact_mouse_screen_position = (0, 0)
@@ -247,6 +111,8 @@ def main(map_file_name: Optional[str]):
     held_down_arrow_keys = set([])
     clock = pygame.time.Clock()
     camera_pan_timer = PeriodicTimer(Millis(50))
+
+    shown_tab = EntityTab.ITEMS
 
     while True:
 
@@ -276,9 +142,7 @@ def main(map_file_name: Optional[str]):
                         _delete_map_decorations_from_position(game_state, snapped_mouse_world_position)
 
             if event.type == pygame.KEYDOWN:
-                if event.unicode.upper() in ENTITIES_BY_CHAR:
-                    user_state = UserState.placing_entity(ENTITIES_BY_CHAR[event.unicode.upper()])
-                elif event.key == pygame.K_s:
+                if event.key == pygame.K_s:
                     save_file = map_file_path
                     save_game_state_to_json_file(game_state, save_file)
                     print("Saved state to " + save_file)
@@ -291,6 +155,14 @@ def main(map_file_name: Optional[str]):
                 elif event.key == pygame.K_PLUS:
                     grid_cell_size_index = (grid_cell_size_index + 1) % len(possible_grid_cell_sizes)
                     grid_cell_size = possible_grid_cell_sizes[grid_cell_size_index]
+                elif event.key == pygame.K_v:
+                    shown_tab = EntityTab.ITEMS
+                elif event.key == pygame.K_b:
+                    shown_tab = EntityTab.NPCS
+                elif event.key == pygame.K_n:
+                    shown_tab = EntityTab.WALLS
+                elif event.key == pygame.K_m:
+                    shown_tab = EntityTab.MISC
 
             if event.type == pygame.KEYUP:
                 if event.key in held_down_arrow_keys:
@@ -363,13 +235,33 @@ def main(map_file_name: Optional[str]):
 
         camera_world_area = game_state.camera_world_area
         world_area = game_state.entire_world_area
-        camera_world_area_percentage = Rect((camera_world_area.x - world_area.x) / world_area.w * 100,
-                                            (camera_world_area.y - world_area.y) / world_area.h * 100,
-                                            camera_world_area.w / world_area.w * 100,
-                                            camera_world_area.h / world_area.h * 100)
+        camera_rect_ratio = ((camera_world_area.x - world_area.x) / world_area.w,
+                             (camera_world_area.y - world_area.y) / world_area.h,
+                             camera_world_area.w / world_area.w,
+                             camera_world_area.h / world_area.h)
+
+        npc_positions_ratio = [((npc.world_entity.x - world_area.x) / world_area.w,
+                                (npc.world_entity.y - world_area.y) / world_area.h)
+                               for npc in game_state.non_player_characters]
+        wall_positions_ratio = [((wall.world_entity.x - world_area.x) / world_area.w,
+                                 (wall.world_entity.y - world_area.y) / world_area.h)
+                                for wall in game_state.walls_state.walls]
+
+        if shown_tab == EntityTab.ITEMS:
+            shown_entities = ITEM_ENTITIES
+        elif shown_tab == EntityTab.NPCS:
+            shown_entities = NPC_ENTITIES
+        elif shown_tab == EntityTab.WALLS:
+            shown_entities = WALL_ENTITIES
+        elif shown_tab == EntityTab.MISC:
+            shown_entities = MISC_ENTITIES
+        else:
+            raise Exception("Unknown entity tab: " + str(shown_tab))
+
+        ui_view.set_shown_tab(shown_tab)
+
         entity_icon_hovered_by_mouse = ui_view.render(
-            chars_by_entities=CHARS_BY_ENTITY,
-            entities=MAP_EDITOR_ENTITIES,
+            entities=shown_entities,
             placing_entity=user_state.placing_entity,
             deleting_entities=user_state.deleting_entities,
             deleting_decorations=user_state.deleting_decorations,
@@ -378,7 +270,9 @@ def main(map_file_name: Optional[str]):
             num_decorations=len(game_state.decorations_state.decoration_entities),
             grid_cell_size=grid_cell_size,
             mouse_screen_position=exact_mouse_screen_position,
-            camera_world_area_percentage=camera_world_area_percentage)
+            camera_rect_ratio=camera_rect_ratio,
+            npc_positions_ratio=npc_positions_ratio,
+            wall_positions_ratio=wall_positions_ratio)
 
         if is_mouse_button_down and entity_icon_hovered_by_mouse:
             user_state = UserState.placing_entity(entity_icon_hovered_by_mouse)
