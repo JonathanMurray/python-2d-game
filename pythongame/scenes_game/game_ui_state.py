@@ -34,6 +34,13 @@ class GameUiState:
         self._enqueued_messages = []
         self.highlighted_consumable_action: Optional[int] = None
         self.highlighted_ability_action: Optional[AbilityType] = None
+        self.minimap_highlight_relative_position: Optional[Tuple[float, float]] = None
+
+    def set_minimap_highlight(self, position_ratio: Tuple[float, float]):
+        self.minimap_highlight_relative_position = position_ratio
+
+    def remove_minimap_highlight(self):
+        self.minimap_highlight_relative_position = None
 
     def notify_ability_was_clicked(self, ability_type: AbilityType):
         self.highlighted_ability_action = ability_type

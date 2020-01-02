@@ -4,7 +4,7 @@ import pygame
 from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite, \
-    SoundId
+    SoundId, NpcType
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, ITEMS, HEROES
 from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES
@@ -485,17 +485,21 @@ class GameUiView:
     #                              HANDLE DIALOG USER INTERACTIONS
     # --------------------------------------------------------------------------------------------------------
 
-    def start_dialog_with_npc(self, npc: NonPlayerCharacter, dialog_data: DialogData):
+    def start_dialog_with_npc(self, npc: NonPlayerCharacter, dialog_data: DialogData) -> int:
         self.dialog_state.active = True
         self.dialog_state.npc = npc
         self.dialog_state.data = dialog_data
         if self.dialog_state.option_index >= len(dialog_data.options):
             self.dialog_state.option_index = 0
         self._update_dialog_graphics()
+        return self.dialog_state.option_index
 
-    def change_dialog_option(self, delta: int):
+    def change_dialog_option(self, delta: int) -> Tuple[NpcType, int, int]:
+        previous_option_index = self.dialog_state.option_index
         self.dialog_state.option_index = (self.dialog_state.option_index + delta) % len(self.dialog_state.data.options)
         self._update_dialog_graphics()
+        new_option_index = self.dialog_state.option_index
+        return self.dialog_state.npc.npc_type, previous_option_index, new_option_index
 
     def _update_dialog_graphics(self):
         if self.dialog_state.active:
@@ -596,7 +600,7 @@ class GameUiView:
             icon.render(highlighted)
 
         # MINIMAP
-        self.minimap.render(ui_state.player_minimap_relative_position)
+        self.minimap.render(ui_state.player_minimap_relative_position, ui_state.minimap_highlight_relative_position)
 
         simple_components = [self.exp_bar, self.portrait, self.healthbar, self.manabar, self.money_text, self.dialog,
                              self.buffs, self.sound_checkbox, self.save_button, self.stats_window, self.talents_window,

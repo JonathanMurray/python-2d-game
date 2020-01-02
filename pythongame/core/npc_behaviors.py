@@ -10,6 +10,7 @@ from pythongame.core.math import is_x_and_y_within_distance, get_perpendicular_d
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.sound_player import play_sound
+from pythongame.scenes_game.game_ui_state import GameUiState
 
 
 class AbstractNpcMind:
@@ -99,7 +100,15 @@ def _move_in_dir(enemy_entity, direction):
 class AbstractNpcAction:
 
     # perform action, and optionally return a message to be displayed
-    def act(self, game_state: GameState) -> Optional[str]:
+    def on_select(self, game_state: GameState) -> Optional[str]:
+        pass
+
+    # is called when the option is selected/hovered in the dialog
+    def on_hover(self, game_state: GameState, ui_state: GameUiState):
+        pass
+
+    # is called when the option stops being selected/hovered in the dialog
+    def on_blur(self, game_state: GameState, ui_state: GameUiState):
         pass
 
 
@@ -109,7 +118,7 @@ class SellConsumableNpcAction(AbstractNpcAction):
         self.consumable_type = consumable_type
         self.name = name
 
-    def act(self, game_state: GameState):
+    def on_select(self, game_state: GameState):
         player_state = game_state.player_state
         can_afford = player_state.money >= self.cost
         has_space = player_state.consumable_inventory.has_space_for_more()
@@ -133,7 +142,7 @@ class SellItemNpcAction(AbstractNpcAction):
         self.item_effect = get_item_effect(self.item_type)
         self.item_equipment_category = ITEMS[self.item_type].item_equipment_category
 
-    def act(self, game_state: GameState):
+    def on_select(self, game_state: GameState):
         player_state = game_state.player_state
         can_afford = player_state.money >= self.cost
         if not can_afford:
@@ -157,7 +166,7 @@ class BuyItemNpcAction(AbstractNpcAction):
         self.price = price
         self.name = name
 
-    def act(self, game_state: GameState) -> Optional[str]:
+    def on_select(self, game_state: GameState) -> Optional[str]:
         player_has_it = game_state.player_state.item_inventory.has_item_in_inventory(self.item_type)
         if player_has_it:
             game_state.player_state.item_inventory.lose_item_from_inventory(self.item_type)
@@ -206,12 +215,26 @@ def register_npc_dialog_data(npc_type: NpcType, data: DialogData):
     _npc_dialog_data[npc_type] = data
 
 
-def invoke_npc_action(npc_type: NpcType, option_index: int, game_state: GameState) -> Optional[str]:
+def select_npc_action(npc_type: NpcType, option_index: int, game_state: GameState) -> Optional[str]:
     action = _npc_dialog_data[npc_type].options[option_index].action
     if not action:
         return None
-    optional_message = action.act(game_state)
+    optional_message = action.on_select(game_state)
     return optional_message
+
+
+def hover_npc_action(npc_type: NpcType, option_index: int, game_state: GameState,
+                     ui_state: GameUiState):
+    action = _npc_dialog_data[npc_type].options[option_index].action
+    if action:
+        action.on_hover(game_state, ui_state)
+
+
+def blur_npc_action(npc_type: NpcType, option_index: int, game_state: GameState,
+                    ui_state: GameUiState):
+    action = _npc_dialog_data[npc_type].options[option_index].action
+    if action:
+        action.on_blur(game_state, ui_state)
 
 
 def has_npc_dialog(npc_type: NpcType) -> bool:

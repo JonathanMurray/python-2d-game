@@ -445,6 +445,7 @@ class Button(UiComponent):
         if self.hovered:
             self.ui_render.rect(COLOR_HOVERED, self.rect, 1)
 
+
 class RadioButton(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, text: str):
         super().__init__()
@@ -466,6 +467,7 @@ class RadioButton(UiComponent):
             self.ui_render.rect(COLOR_HOVERED, self.rect, 1)
         if self.enabled:
             self.ui_render.rect(COLOR_ICON_HIGHLIGHTED, self.rect, 1)
+
 
 class ControlsWindow(UiWindow):
     def __init__(self, ui_render: DrawableArea, font_header, font_details):
@@ -832,16 +834,23 @@ class Minimap:
     def __init__(self, ui_render: DrawableArea, rect: Rect):
         self.ui_render = ui_render
         self.rect = rect
-        self.padding_rect = Rect(rect.x - 2, rect.y - 2, rect.w + 4, rect.h + 4)
+        self.rect_margin = Rect(rect.x - 2, rect.y - 2, rect.w + 4, rect.h + 4)
+        self.rect_inner = Rect(rect.x + 2, rect.y + 2, rect.w - 4, rect.h - 4)
 
-    def render(self, player_relative_position: Tuple[float, float]):
-        self.ui_render.rect_filled((60, 60, 80), self.padding_rect)
+    def render(self, player_relative_position: Tuple[float, float],
+               minimap_highlight_relative_position: Optional[Tuple[float, float]]):
+        self.ui_render.rect_filled((60, 60, 80), self.rect_margin)
         self.ui_render.rect_filled((40, 40, 50), self.rect)
         self.ui_render.rect((150, 150, 190), self.rect, 1)
-        dot_x = self.rect[0] + player_relative_position[0] * self.rect.w
-        dot_y = self.rect[1] + player_relative_position[1] * self.rect.h
+        dot_x = self.rect_inner[0] + player_relative_position[0] * self.rect_inner.w
+        dot_y = self.rect_inner[1] + player_relative_position[1] * self.rect_inner.h
         dot_w = 4
         self.ui_render.rect_filled((100, 160, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
+        if minimap_highlight_relative_position:
+            dot_x = self.rect_inner[0] + minimap_highlight_relative_position[0] * self.rect_inner.w
+            dot_y = self.rect_inner[1] + minimap_highlight_relative_position[1] * self.rect_inner.h
+            dot_w = 4
+            self.ui_render.rect_filled((200, 100, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
 
 class Buffs:

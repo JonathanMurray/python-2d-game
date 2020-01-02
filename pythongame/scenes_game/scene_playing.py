@@ -9,7 +9,8 @@ from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOn
     ConsumableOnGround, ItemOnGround, Chest
 from pythongame.core.hero_upgrades import pick_talent
 from pythongame.core.math import get_directions_to_position
-from pythongame.core.npc_behaviors import invoke_npc_action, get_dialog_data
+from pythongame.core.npc_behaviors import select_npc_action, get_dialog_data, blur_npc_action, \
+    hover_npc_action
 from pythongame.core.sound_player import play_sound, toggle_muted
 from pythongame.core.user_input import ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
@@ -77,13 +78,17 @@ class PlayingScene(AbstractScene):
             user_actions = get_dialog_actions(events)
             for action in user_actions:
                 if isinstance(action, ActionChangeDialogOption):
-                    self.ui_view.change_dialog_option(action.index_delta)
                     play_sound(SoundId.DIALOG)
+                    npc_type, previous_index, new_index = self.ui_view.change_dialog_option(action.index_delta)
+                    blur_npc_action(npc_type, previous_index, self.game_state, self.ui_state)
+                    hover_npc_action(npc_type, new_index, self.game_state, self.ui_state)
                 if isinstance(action, ActionPressSpaceKey):
                     result = self.ui_view.handle_space_click()
                     if result:
                         npc_in_dialog, option_index = result
-                        message = invoke_npc_action(npc_in_dialog.npc_type, option_index, self.game_state)
+                        npc_type = npc_in_dialog.npc_type
+                        blur_npc_action(npc_type, option_index, self.game_state, self.ui_state)
+                        message = select_npc_action(npc_type, option_index, self.game_state)
                         if message:
                             self.ui_state.set_message(message)
                         npc_in_dialog.stun_status.remove_one()
@@ -125,8 +130,11 @@ class PlayingScene(AbstractScene):
                                 ready_entity.world_entity, self.game_state.player_entity.get_center_position())[0]
                             ready_entity.world_entity.set_not_moving()
                             ready_entity.stun_status.add_one()
-                            self.ui_view.start_dialog_with_npc(ready_entity, get_dialog_data(ready_entity.npc_type))
+                            npc_type = ready_entity.npc_type
+                            dialog_data = get_dialog_data(npc_type)
+                            option_index = self.ui_view.start_dialog_with_npc(ready_entity, dialog_data)
                             play_sound(SoundId.DIALOG)
+                            hover_npc_action(npc_type, option_index, self.game_state, self.ui_state)
                         elif isinstance(ready_entity, LootableOnGround):
                             self.game_engine.try_pick_up_loot_from_ground(ready_entity)
                         elif isinstance(ready_entity, Portal):

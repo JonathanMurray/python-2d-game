@@ -12,6 +12,7 @@ from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import create_visual_healing_text
+from pythongame.scenes_game.game_ui_state import GameUiState
 
 
 class NpcMind(AbstractNpcMind):
@@ -31,7 +32,7 @@ class NpcMind(AbstractNpcMind):
 
 class HealAction(AbstractNpcAction):
 
-    def act(self, game_state: GameState) -> Optional[str]:
+    def on_select(self, game_state: GameState) -> Optional[str]:
         if not game_state.player_state.health_resource.is_at_max():
             health_gained = game_state.player_state.health_resource.gain_to_max()
             game_state.visual_effects.append(create_visual_healing_text(game_state.player_entity, health_gained))
@@ -43,19 +44,31 @@ class HealAction(AbstractNpcAction):
 
 class HintAction(AbstractNpcAction):
 
-    def act(self, game_state: GameState) -> Optional[str]:
+    def on_select(self, game_state: GameState) -> Optional[str]:
         return get_random_hint()
 
 
-class WinAction(AbstractNpcAction):
+class AcceptKey(AbstractNpcAction):
 
-    def act(self, game_state: GameState):
+    def on_select(self, game_state: GameState):
         if game_state.player_state.item_inventory.has_item_in_inventory(ItemType.KEY):
             play_sound(SoundId.EVENT_COMPLETED_QUEST)
             game_state.player_state.has_finished_main_quest = True
         else:
             play_sound(SoundId.WARNING)
             return "You don't have that!"
+
+    def on_hover(self, game_state: GameState, ui_state: GameUiState):
+        bosses = [npc for npc in game_state.non_player_characters if npc.npc_type == NpcType.WARRIOR_KING]
+        if bosses:
+            position = bosses[0].world_entity.get_position()
+            world_area = game_state.entire_world_area
+            position_ratio = ((position[0] - world_area.x) / world_area.w,
+                              (position[1] - world_area.y) / world_area.h)
+            ui_state.set_minimap_highlight(position_ratio)
+
+    def on_blur(self, game_state: GameState, ui_state: GameUiState):
+        ui_state.remove_minimap_highlight()
 
 
 def register_nomad_npc():
@@ -69,7 +82,7 @@ def register_nomad_npc():
     dialog_options = [
         DialogOptionData("Receive blessing", "gain full health", HealAction()),
         DialogOptionData("Ask for advice", "see random hint", HintAction()),
-        DialogOptionData("\"The red baron\"", "give", WinAction(), UiIconSprite.ITEM_KEY,
+        DialogOptionData("\"The red baron\"", "give", AcceptKey(), UiIconSprite.ITEM_KEY,
                          "Key", "The red baron... Yes, he has caused us much trouble. He stole from me a key that may"
                                 " lead us out of here. You must bring it back to me!"),
         DialogOptionData("\"Good bye\"", "cancel", None)]
