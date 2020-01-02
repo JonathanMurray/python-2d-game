@@ -11,5 +11,5 @@ def register_sorceress_robe_item():
         image_file_path="resources/graphics/item_sorceress_robe.png",
         item_equipment_category=ItemEquipmentCategory.CHEST,
         name="Sorceress' Robe",
-        stat_modifiers={HeroStat.ARMOR: 1, HeroStat.MAX_MANA: 20, HeroStat.MAGIC_DAMAGE: 0.15}
+        stat_modifiers={HeroStat.ARMOR: 1, HeroStat.MAX_MANA: 10, HeroStat.MAGIC_DAMAGE: 0.15}
     )
