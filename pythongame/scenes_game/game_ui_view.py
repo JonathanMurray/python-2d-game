@@ -93,7 +93,7 @@ class GameUiView:
         self.consumable_icons: List[ConsumableIcon] = []
         self.inventory_icons_rect: Rect = Rect(0, 0, 0, 0)
         self.inventory_icons: List[ItemIcon] = []
-        self.exp_bar = ExpBar(self.ui_render, Rect(140, 23, 300, 2), self.font_level)
+        self.exp_bar = ExpBar(self.ui_render, Rect(135, 8, 300, 2), self.font_level)
         self.minimap = Minimap(self.ui_render, Rect(440, 52, 80, 80))
         self.buffs = Buffs(self.ui_render, self.font_buff_texts, (10, -35))
         self.money_text = Text(self.ui_render, self.font_ui_money, (24, 150), "NO MONEY")
@@ -167,11 +167,11 @@ class GameUiView:
 
     def _setup_inventory_icons(self):
         x_0 = 325
-        y_0 = 52
+        y_0 = 24
         icon_space = 2
         icon_rect_padding = 2
         items_rect_pos = (x_0 - icon_rect_padding, y_0 - icon_rect_padding)
-        num_item_slot_rows = 3
+        num_item_slot_rows = 4
         num_slots_per_row = 3
         self.inventory_icons_rect = Rect(
             items_rect_pos[0], items_rect_pos[1],

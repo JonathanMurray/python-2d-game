@@ -810,9 +810,9 @@ class ExpBar:
         self.filled_ratio = 0
 
     def render(self):
-        self.ui_render.text(self.font, "LEVEL: " + str(self.level), (self.rect.x, self.rect.y - 18))
         self.ui_render.stat_bar(self.rect.x, self.rect.y, self.rect.w, self.rect.h, self.filled_ratio, (200, 200, 200),
                                 (160, 160, 180))
+        self.ui_render.text(self.font, "LEVEL: " + str(self.level), (self.rect.x, self.rect.y + 10))
 
     def update(self, level: int, filled_ratio: float):
         self.level = level

@@ -93,6 +93,9 @@ def create_player_state(hero_id: HeroId) -> PlayerState:
         ItemInventorySlot(None, ItemEquipmentCategory.OFF_HAND),
         ItemInventorySlot(None, None),
         ItemInventorySlot(None, None),
+        ItemInventorySlot(None, None),
+        ItemInventorySlot(None, None),
+        ItemInventorySlot(None, None),
         ItemInventorySlot(None, None)
     ]
     item_inventory = ItemInventory(item_slots)
