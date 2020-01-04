@@ -107,6 +107,7 @@ def main(map_file_name: Optional[str]):
     is_snapped_mouse_over_ui = False
 
     game_state.center_camera_on_player()
+    game_state.snap_camera_to_grid(grid_cell_size)
     game_state.camera_world_area.topleft = ((game_state.camera_world_area.x // grid_cell_size) * grid_cell_size,
                                             (game_state.camera_world_area.y // grid_cell_size) * grid_cell_size)
 
@@ -178,8 +179,10 @@ def main(map_file_name: Optional[str]):
                         map_json = generate_random_map_as_json()
                         game_state = create_game_state_from_map_data(CAMERA_SIZE, map_json, HERO_ID)
                         game_state.center_camera_on_player()
+                        game_state.snap_camera_to_grid(grid_cell_size)
                     elif isinstance(event_from_ui, SetCameraPosition):
                         game_state.set_camera_position_to_ratio_of_world(event_from_ui.position_ratio)
+                        game_state.snap_camera_to_grid(grid_cell_size)
                     else:
                         raise Exception("Unhandled event: " + str(event_from_ui))
 
