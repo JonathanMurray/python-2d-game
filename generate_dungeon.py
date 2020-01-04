@@ -224,9 +224,10 @@ def generate_random_map_as_json():
     for y in range(MAP_SIZE[1]):
         for x in range(MAP_SIZE[0]):
             position = (x * CELL_SIZE[0], y * CELL_SIZE[1])
-            if grid.is_walkable((x, y)):
+            is_even_cell = x % 2 == 0 and y % 2 == 0  # ground sprite covers 4 cells, so we only need them on even cells
+            if is_even_cell and any([grid.is_walkable(c) for c in [(x, y), (x + 1, y), (x, y + 1), (x + 1, y + 1)]]):
                 decorations.append(create_decoration_entity(position, Sprite.DECORATION_GROUND_STONE))
-            elif grid.is_wall((x, y)):
+            if grid.is_wall((x, y)):
                 wall_type = determine_wall_type(grid, (x, y))
                 walls.append(create_wall(wall_type, position))
 
