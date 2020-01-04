@@ -69,7 +69,7 @@ class MapEditorView:
         }
         self.minimap = Minimap(self.ui_render, Rect(self.screen_size[0] - 180, 20, 160, 160))
         self.shown_tab: EntityTab = EntityTab.ITEMS
-        self.checkbox_show_entity_outlines = Checkbox(self.ui_render, Rect(15, 100, 120, 20), "outlines", True)
+        self.checkbox_show_entity_outlines = Checkbox(self.ui_render, Rect(15, 100, 120, 20), "outlines", False)
         self.checkboxes = [self.checkbox_show_entity_outlines]
         self.button_generate_random_map: Button = Button(self.ui_render, Rect(15, 125, 120, 20), "generate random")
         self.mouse_screen_position = (0, 0)
