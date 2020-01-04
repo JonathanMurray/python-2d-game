@@ -72,6 +72,10 @@ class MapEditorView:
         for checkbox in self.checkboxes:
             if checkbox.contains(mouse_ui_position):
                 self._on_hover_component(checkbox)
+                return
+
+        # If something was hovered, we would have returned from the method
+        self._set_currently_hovered_component_not_hovered()
 
     def _on_hover_component(self, component):
         self._set_currently_hovered_component_not_hovered()
