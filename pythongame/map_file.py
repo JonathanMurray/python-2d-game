@@ -15,15 +15,18 @@ from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file_path: str, hero_id: HeroId) -> GameState:
     with open(map_file_path) as map_file:
         json_data = json.loads(map_file.read())
+        return create_game_state_from_map_data(camera_size, json_data, hero_id)
 
-        path_finder = GlobalPathFinder()
-        set_global_path_finder(path_finder)
 
-        player_state = create_player_state(hero_id)
-        game_state = MapJson.deserialize(json_data, player_state, camera_size)
+def create_game_state_from_map_data(camera_size: Tuple[int, int], json_data, hero_id: HeroId) -> GameState:
+    path_finder = GlobalPathFinder()
+    set_global_path_finder(path_finder)
 
-        path_finder.set_grid(game_state.pathfinder_wall_grid)
-        return game_state
+    player_state = create_player_state(hero_id)
+    game_state = MapJson.deserialize(json_data, player_state, camera_size)
+
+    path_finder.set_grid(game_state.pathfinder_wall_grid)
+    return game_state
 
 
 def save_game_state_to_json_file(game_state: GameState, map_file: str):
@@ -55,7 +58,7 @@ class MapJson:
     @staticmethod
     def serialize_from_data(walls: List[Wall], decorations: List[DecorationEntity],
                             items_on_ground: List[ItemOnGround], entire_world_area: Rect,
-                            player_position: Tuple[int, int], npcs:List[NonPlayerCharacter]):
+                            player_position: Tuple[int, int], npcs: List[NonPlayerCharacter]):
         return {
             "player": PlayerJson.serialize_from_position(player_position),
             "consumables_on_ground": [],

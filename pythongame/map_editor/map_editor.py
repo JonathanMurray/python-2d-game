@@ -5,6 +5,7 @@ from typing import Tuple, Optional, List
 import pygame
 from pygame.rect import Rect
 
+from generate_dungeon import generate_random_map_as_json
 from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, ItemType, PortalId, HeroId, PeriodicTimer, \
     Millis
 from pythongame.core.entity_creation import create_portal, create_hero_world_entity, create_npc, create_wall, \
@@ -17,9 +18,10 @@ from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.core.view.image_loading import load_images_by_sprite, load_images_by_ui_sprite, \
     load_images_by_portrait_sprite
 from pythongame.map_editor.map_editor_ui_view import MapEditorView, PORTRAIT_ICON_SIZE, MAP_EDITOR_UI_ICON_SIZE, \
-    EntityTab
+    EntityTab, GenerateRandomMap
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
-from pythongame.map_file import save_game_state_to_json_file, create_game_state_from_json_file
+from pythongame.map_file import save_game_state_to_json_file, create_game_state_from_json_file, \
+    create_game_state_from_map_data
 from pythongame.register_game_data import register_all_game_data
 
 MAP_DIR = "resources/maps/"
@@ -170,7 +172,12 @@ def main(map_file_name: Optional[str]):
                     held_down_arrow_keys.remove(event.key)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                ui_view.handle_mouse_click()
+                event_from_ui = ui_view.handle_mouse_click()
+                if event_from_ui and isinstance(event_from_ui, GenerateRandomMap):
+                    map_json = generate_random_map_as_json()
+                    game_state = create_game_state_from_map_data(CAMERA_SIZE, map_json, HERO_ID)
+                    game_state.center_camera_on_player()
+
                 is_mouse_button_down = True
                 if user_state.placing_entity:
                     entity_being_placed = user_state.placing_entity

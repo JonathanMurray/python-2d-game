@@ -14,7 +14,7 @@ from pythongame.register_game_data import register_all_game_data
 
 register_all_game_data()
 
-MAP_SIZE = (100, 100)
+MAP_SIZE = (150, 150)
 MAX_ROOM_ATTEMPTS = 100
 MAX_NUM_ROOMS = 15
 ROOM_ALLOWED_WIDTH = (8, 25)
@@ -210,7 +210,7 @@ def determine_wall_type(grid: Grid, cell: Tuple[int, int]) -> WallType:
     return WallType.WALL
 
 
-def main():
+def generate_random_map_as_json():
     rooms, corridors = generate_rooms_and_corridors()
     print("Rooms: ")
     print(rooms)
@@ -244,6 +244,11 @@ def main():
         npcs.append(npc)
 
     json = MapJson.serialize_from_data(walls, decorations, [], world_area, player_position, npcs)
+    return json
+
+
+def main():
+    json = generate_random_map_as_json()
     save_map_data_to_file(json, "resources/maps/dudmap.json")
 
 

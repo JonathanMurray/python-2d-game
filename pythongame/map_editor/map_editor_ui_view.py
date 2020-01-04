@@ -11,7 +11,7 @@ from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.view.image_loading import ImageWithRelativePosition
 from pythongame.core.view.render_util import DrawableArea
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
-from pythongame.scenes_game.ui_components import RadioButton, Checkbox
+from pythongame.scenes_game.ui_components import RadioButton, Checkbox, Button
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -30,6 +30,10 @@ class EntityTab(Enum):
     NPCS = 1
     WALLS = 2
     MISC = 3
+
+
+class GenerateRandomMap:
+    pass
 
 
 class MapEditorView:
@@ -61,6 +65,7 @@ class MapEditorView:
         self.shown_tab: EntityTab = EntityTab.ITEMS
         self.checkbox_show_entity_outlines = Checkbox(self.ui_render, Rect(15, 100, 120, 20), "outlines", True)
         self.checkboxes = [self.checkbox_show_entity_outlines]
+        self.button_generate_random_map: Button = Button(self.ui_render, Rect(15, 125, 120, 20), "generate random")
         self.mouse_screen_position = (0, 0)
         self.hovered_component = None
 
@@ -69,9 +74,9 @@ class MapEditorView:
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_pos)
 
-        for checkbox in self.checkboxes:
-            if checkbox.contains(mouse_ui_position):
-                self._on_hover_component(checkbox)
+        for component in self.checkboxes + [self.button_generate_random_map]:
+            if component.contains(mouse_ui_position):
+                self._on_hover_component(component)
                 return
 
         # If something was hovered, we would have returned from the method
@@ -87,9 +92,12 @@ class MapEditorView:
             self.hovered_component.hovered = False
             self.hovered_component = None
 
-    def handle_mouse_click(self):
+    def handle_mouse_click(self) -> Optional[Any]:
         if self.hovered_component in self.checkboxes:
             self.hovered_component.on_click()
+            return None
+        if self.hovered_component == self.button_generate_random_map:
+            return GenerateRandomMap()
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
@@ -172,6 +180,8 @@ class MapEditorView:
 
         for checkbox in self.checkboxes:
             checkbox.render()
+
+        self.button_generate_random_map.render()
 
         return hovered_by_mouse
 
