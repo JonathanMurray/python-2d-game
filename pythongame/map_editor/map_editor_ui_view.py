@@ -36,6 +36,11 @@ class GenerateRandomMap:
     pass
 
 
+class SetCameraPosition:
+    def __init__(self, position_ratio: Tuple[float, float]):
+        self.position_ratio = position_ratio
+
+
 class MapEditorView:
 
     def __init__(self, pygame_screen, camera_size: Tuple[int, int], screen_size: Tuple[int, int],
@@ -75,7 +80,7 @@ class MapEditorView:
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_pos)
 
-        for component in self.checkboxes + [self.button_generate_random_map]:
+        for component in self.checkboxes + [self.button_generate_random_map, self.minimap]:
             if component.contains(mouse_ui_position):
                 self._on_hover_component(component)
                 return
@@ -99,6 +104,10 @@ class MapEditorView:
             return None
         if self.hovered_component == self.button_generate_random_map:
             return GenerateRandomMap()
+        if self.hovered_component == self.minimap:
+            mouse_ui_position = self._translate_screen_position_to_ui(self.mouse_screen_position)
+            position_ratio = self.minimap.get_position_ratio(mouse_ui_position)
+            return SetCameraPosition(position_ratio)
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y

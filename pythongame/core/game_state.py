@@ -787,6 +787,12 @@ class GameState:
         new_camera_pos_within_world = self.get_within_world(new_camera_pos, (self.camera_size[0], self.camera_size[1]))
         self.camera_world_area.topleft = new_camera_pos_within_world
 
+    def set_camera_position_to_ratio_of_world(self, ratio: Tuple[float, float]):
+        new_camera_pos = (self.entire_world_area.x + ratio[0] * self.entire_world_area.w - self.camera_size[0] // 2,
+                          self.entire_world_area.y + ratio[1] * self.entire_world_area.h - self.camera_size[1] // 2)
+        new_camera_pos_within_world = self.get_within_world(new_camera_pos, (self.camera_size[0], self.camera_size[1]))
+        self.camera_world_area.topleft = new_camera_pos_within_world
+
     def get_projectiles_intersecting_with(self, entity: WorldEntity) -> List[Projectile]:
         return [p for p in self.projectile_entities if boxes_intersect(entity.rect(), p.world_entity.rect())]
 

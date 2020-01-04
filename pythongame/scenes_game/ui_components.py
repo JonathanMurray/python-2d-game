@@ -830,12 +830,19 @@ class Portrait:
         self.ui_render.rect((160, 160, 180), self.rect, 2)
 
 
-class Minimap:
+class Minimap(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect):
+        super().__init__()
         self.ui_render = ui_render
         self.rect = rect
         self.rect_margin = Rect(rect.x - 2, rect.y - 2, rect.w + 4, rect.h + 4)
         self.rect_inner = Rect(rect.x + 2, rect.y + 2, rect.w - 4, rect.h - 4)
+
+    def contains(self, point: Tuple[int, int]) -> bool:
+        return self.rect.collidepoint(point[0], point[1])
+
+    def get_position_ratio(self, point: Tuple[int, int]) -> Tuple[float, float]:
+        return (point[0] - self.rect.x) / self.rect.w, (point[1] - self.rect.y) / self.rect.h
 
     def render(self,
                player_relative_position: Tuple[float, float],
