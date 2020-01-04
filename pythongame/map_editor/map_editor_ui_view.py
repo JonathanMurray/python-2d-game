@@ -11,7 +11,7 @@ from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.view.image_loading import ImageWithRelativePosition
 from pythongame.core.view.render_util import DrawableArea
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
-from pythongame.scenes_game.ui_components import RadioButton, Checkbox, Button
+from pythongame.scenes_game.ui_components import RadioButton, Checkbox, Button, Minimap
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -62,6 +62,7 @@ class MapEditorView:
             EntityTab.WALLS: RadioButton(self.ui_render, Rect(460, 10, w_tab_button, 20), "WALLS (N)"),
             EntityTab.MISC: RadioButton(self.ui_render, Rect(540, 10, w_tab_button, 20), "MISC. (M)"),
         }
+        self.minimap = Minimap(self.ui_render, Rect(self.screen_size[0] - 180, 20, 160, 160))
         self.shown_tab: EntityTab = EntityTab.ITEMS
         self.checkbox_show_entity_outlines = Checkbox(self.ui_render, Rect(15, 100, 120, 20), "outlines", True)
         self.checkboxes = [self.checkbox_show_entity_outlines]
@@ -173,7 +174,8 @@ class MapEditorView:
         self.screen_render.text(self.font_debug_info, "# decorations: " + str(num_decorations), (5, 37))
         self.screen_render.text(self.font_debug_info, "Cell size: " + str(grid_cell_size), (5, 54))
 
-        self._render_minimap(camera_rect_ratio, npc_positions_ratio, wall_positions_ratio)
+        # TODO Render player position
+        self.minimap.render((0, 0), None, camera_rect_ratio, npc_positions_ratio, wall_positions_ratio)
 
         for button in self.tab_buttons.values():
             button.render()
@@ -184,39 +186,6 @@ class MapEditorView:
         self.button_generate_random_map.render()
 
         return hovered_by_mouse
-
-    def _render_minimap(self, camera_rect_ratio, npc_positions_ratio, wall_positions_ratio):
-        rect = Rect(self.screen_size[0] - 180, self.screen_size[1] - 180, 160, 160)
-        border_width = 1
-        self.screen_render.rect(
-            COLOR_WHITE,
-            Rect(rect.x - border_width, rect.y - border_width, rect.w + border_width * 2, rect.h + border_width * 2),
-            border_width)
-
-        for npc_pos in npc_positions_ratio:
-            self.screen_render.rect(
-                (200, 200, 200),
-                Rect(rect.x + npc_pos[0] * rect.w,
-                     rect.y + npc_pos[1] * rect.h,
-                     1,
-                     1),
-                1)
-        for wall_pos in wall_positions_ratio:
-            self.screen_render.rect(
-                (100, 100, 150),
-                Rect(rect.x + wall_pos[0] * rect.w,
-                     rect.y + wall_pos[1] * rect.h,
-                     1,
-                     1),
-                1)
-
-        self.screen_render.rect(
-            (150, 250, 150),
-            Rect(rect.x + camera_rect_ratio[0] * rect.w,
-                 rect.y + camera_rect_ratio[1] * rect.h,
-                 camera_rect_ratio[2] * rect.w,
-                 camera_rect_ratio[3] * rect.h),
-            1)
 
     def render_map_editor_mouse_rect(self, color: Tuple[int, int, int], map_editor_mouse_rect: Rect):
         self.screen_render.rect(color, map_editor_mouse_rect, 3)

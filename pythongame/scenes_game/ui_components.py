@@ -837,20 +837,51 @@ class Minimap:
         self.rect_margin = Rect(rect.x - 2, rect.y - 2, rect.w + 4, rect.h + 4)
         self.rect_inner = Rect(rect.x + 2, rect.y + 2, rect.w - 4, rect.h - 4)
 
-    def render(self, player_relative_position: Tuple[float, float],
-               minimap_highlight_relative_position: Optional[Tuple[float, float]]):
+    def render(self,
+               player_relative_position: Tuple[float, float],
+               minimap_highlight_relative_position: Optional[Tuple[float, float]],
+               camera_rect_ratio: Optional[Tuple[float, float, float, float]],
+               npc_positions_ratio: List[Tuple[float, float]],
+               wall_positions_ratio: List[Tuple[float, float]]):
         self.ui_render.rect_filled((60, 60, 80), self.rect_margin)
         self.ui_render.rect_filled((40, 40, 50), self.rect)
         self.ui_render.rect((150, 150, 190), self.rect, 1)
-        dot_x = self.rect_inner[0] + player_relative_position[0] * self.rect_inner.w
-        dot_y = self.rect_inner[1] + player_relative_position[1] * self.rect_inner.h
+        rect = self.rect_inner
+        dot_x = rect[0] + player_relative_position[0] * rect.w
+        dot_y = rect[1] + player_relative_position[1] * rect.h
         dot_w = 4
         self.ui_render.rect_filled((100, 160, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
         if minimap_highlight_relative_position:
-            dot_x = self.rect_inner[0] + minimap_highlight_relative_position[0] * self.rect_inner.w
-            dot_y = self.rect_inner[1] + minimap_highlight_relative_position[1] * self.rect_inner.h
+            dot_x = rect[0] + minimap_highlight_relative_position[0] * rect.w
+            dot_y = rect[1] + minimap_highlight_relative_position[1] * rect.h
             dot_w = 4
             self.ui_render.rect_filled((200, 100, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
+
+        for npc_pos in npc_positions_ratio:
+            self.ui_render.rect(
+                (200, 200, 200),
+                Rect(rect.x + npc_pos[0] * rect.w,
+                     rect.y + npc_pos[1] * rect.h,
+                     1,
+                     1),
+                1)
+        for wall_pos in wall_positions_ratio:
+            self.ui_render.rect(
+                (100, 100, 150),
+                Rect(rect.x + wall_pos[0] * rect.w,
+                     rect.y + wall_pos[1] * rect.h,
+                     1,
+                     1),
+                1)
+
+        if camera_rect_ratio:
+            self.ui_render.rect(
+                (150, 250, 150),
+                Rect(rect.x + camera_rect_ratio[0] * rect.w,
+                     rect.y + camera_rect_ratio[1] * rect.h,
+                     camera_rect_ratio[2] * rect.w,
+                     camera_rect_ratio[3] * rect.h),
+                1)
 
 
 class Buffs:
