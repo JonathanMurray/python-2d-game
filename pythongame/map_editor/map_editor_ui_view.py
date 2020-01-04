@@ -137,7 +137,8 @@ class MapEditorView:
             placing_entity: Optional[MapEditorWorldEntity], deleting_entities: bool, deleting_decorations: bool,
             num_enemies: int, num_walls: int, num_decorations: int, grid_cell_size: int,
             mouse_screen_position: Tuple[int, int], camera_rect_ratio: Tuple[float, float, float, float],
-            npc_positions_ratio: List[Tuple[float, float]], wall_positions_ratio: List[Tuple[float, float]]
+            npc_positions_ratio: List[Tuple[float, float]], wall_positions_ratio: List[Tuple[float, float]],
+            relative_player_position: Tuple[float, float]
     ) -> Optional[MapEditorWorldEntity]:
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
@@ -183,8 +184,8 @@ class MapEditorView:
         self.screen_render.text(self.font_debug_info, "# decorations: " + str(num_decorations), (5, 37))
         self.screen_render.text(self.font_debug_info, "Cell size: " + str(grid_cell_size), (5, 54))
 
-        # TODO Render player position
-        self.minimap.render((0, 0), None, camera_rect_ratio, npc_positions_ratio, wall_positions_ratio)
+        self.minimap.render(relative_player_position, None, camera_rect_ratio, npc_positions_ratio,
+                            wall_positions_ratio)
 
         for button in self.tab_buttons.values():
             button.render()

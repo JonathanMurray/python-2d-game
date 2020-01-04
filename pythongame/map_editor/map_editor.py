@@ -13,7 +13,7 @@ from pythongame.core.entity_creation import create_portal, create_hero_world_ent
     create_player_state, create_chest
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, PORTRAIT_ICON_SPRITE_PATHS
 from pythongame.core.game_state import GameState
-from pythongame.core.math import sum_of_vectors
+from pythongame.core.math import sum_of_vectors, get_relative_pos_within_rect
 from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.core.view.image_loading import load_images_by_sprite, load_images_by_ui_sprite, \
     load_images_by_portrait_sprite
@@ -274,6 +274,8 @@ def main(map_file_name: Optional[str]):
 
         ui_view.set_shown_tab(shown_tab)
 
+        relative_player_pos = get_relative_pos_within_rect(
+            game_state.player_entity.get_position(), game_state.entire_world_area)
         entity_icon_hovered_by_mouse = ui_view.render(
             entities=shown_entities,
             placing_entity=user_state.placing_entity,
@@ -286,7 +288,8 @@ def main(map_file_name: Optional[str]):
             mouse_screen_position=exact_mouse_screen_position,
             camera_rect_ratio=camera_rect_ratio,
             npc_positions_ratio=npc_positions_ratio,
-            wall_positions_ratio=wall_positions_ratio)
+            wall_positions_ratio=wall_positions_ratio,
+            relative_player_position=relative_player_pos)
 
         if is_mouse_button_down and entity_icon_hovered_by_mouse:
             user_state = UserState.placing_entity(entity_icon_hovered_by_mouse)
