@@ -21,7 +21,7 @@ ROOM_ALLOWED_WIDTH = (8, 25)
 ROOM_ALLOWED_HEIGHT = (8, 25)
 CORRIDOR_ALLOWED_WIDTH = (2, 6)
 
-CELL_SIZE = (25, 25)
+CELL_SIZE = 25
 
 
 class CellType(Enum):
@@ -159,7 +159,7 @@ def are_rooms_too_close(room1: Rect, room2: Rect):
 
 
 def get_room_center(room: Rect):
-    return (room.x + room.w // 2) * CELL_SIZE[0], (room.y + room.h // 2) * CELL_SIZE[1]
+    return (room.x + room.w // 2) * CELL_SIZE, (room.y + room.h // 2) * CELL_SIZE
 
 
 def determine_wall_type(grid: Grid, cell: Tuple[int, int]) -> WallType:
@@ -219,11 +219,10 @@ def generate_random_map_as_json():
 
     walls = []
     decorations = []
-    npcs = []
 
     for y in range(MAP_SIZE[1]):
         for x in range(MAP_SIZE[0]):
-            position = (x * CELL_SIZE[0], y * CELL_SIZE[1])
+            position = (x * CELL_SIZE, y * CELL_SIZE)
             is_even_cell = x % 2 == 0 and y % 2 == 0  # ground sprite covers 4 cells, so we only need them on even cells
             if is_even_cell and any([grid.is_walkable(c) for c in [(x, y), (x + 1, y), (x, y + 1), (x + 1, y + 1)]]):
                 decorations.append(create_decoration_entity(position, Sprite.DECORATION_GROUND_STONE))
@@ -231,21 +230,34 @@ def generate_random_map_as_json():
                 wall_type = determine_wall_type(grid, (x, y))
                 walls.append(create_wall(wall_type, position))
 
-    world_area = Rect(0, 0, MAP_SIZE[0] * CELL_SIZE[0], MAP_SIZE[1] * CELL_SIZE[1])
+    world_area = Rect(0, 0, MAP_SIZE[0] * CELL_SIZE, MAP_SIZE[1] * CELL_SIZE)
 
     start_room = random.choice(rooms)
     player_position = get_room_center(start_room)
 
-    for room in [r for r in rooms if r != start_room]:
-        npc_types = list(NpcType.__members__.values())
-        enemy_types = [npc_type for npc_type in npc_types
-                       if NON_PLAYER_CHARACTERS[npc_type].npc_category == NpcCategory.ENEMY]
-        npc_type = random.choice(enemy_types)
-        npc = create_npc(npc_type, get_room_center(room))
-        npcs.append(npc)
+    npcs = generate_npcs(rooms, start_room)
 
     json = MapJson.serialize_from_data(walls, decorations, [], world_area, player_position, npcs)
     return json
+
+
+def generate_npcs(rooms: List[Rect], start_room: Rect):
+    # TODO Check collisions, use more rules to spawn sensible enemy groups
+    npcs = []
+    npc_types = list(NpcType.__members__.values())
+    valid_enemy_types = [npc_type for npc_type in npc_types
+                   if NON_PLAYER_CHARACTERS[npc_type].npc_category == NpcCategory.ENEMY
+                   and npc_type != NpcType.DARK_REAPER]
+    for room in [r for r in rooms if r != start_room]:
+        xmid, ymid = get_room_center(room)
+        distance = CELL_SIZE * 2
+        for x in range(xmid - distance, xmid + distance * 2, distance):
+            for y in range(ymid - distance, ymid + distance * 2, distance):
+                if random.random() < 0.2:
+                    npc_type = random.choice(valid_enemy_types)
+                    npc = create_npc(npc_type, (x, y))
+                    npcs.append(npc)
+    return npcs
 
 
 def main():
