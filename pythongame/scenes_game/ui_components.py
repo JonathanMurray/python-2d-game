@@ -854,10 +854,7 @@ class Minimap(UiComponent):
         self.ui_render.rect_filled((40, 40, 50), self.rect)
         self.ui_render.rect((150, 150, 190), self.rect, 1)
         rect = self.rect_inner
-        dot_x = rect[0] + player_relative_position[0] * rect.w
-        dot_y = rect[1] + player_relative_position[1] * rect.h
-        dot_w = 4
-        self.ui_render.rect_filled((100, 160, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
+
         if minimap_highlight_relative_position:
             dot_x = rect[0] + minimap_highlight_relative_position[0] * rect.w
             dot_y = rect[1] + minimap_highlight_relative_position[1] * rect.h
@@ -880,6 +877,11 @@ class Minimap(UiComponent):
                      1,
                      1),
                 1)
+
+        dot_x = rect[0] + player_relative_position[0] * rect.w
+        dot_y = rect[1] + player_relative_position[1] * rect.h
+        dot_w = 4
+        self.ui_render.rect_filled((100, 160, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
         if camera_rect_ratio:
             self.ui_render.rect(
