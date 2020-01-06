@@ -192,7 +192,7 @@ class MapEditorView:
         self.screen_render.text(self.font_debug_info, "Cell size: " + str(grid_cell_size), (5, 54))
 
         self.minimap.set_walls(wall_positions)
-        self.minimap.render(None, camera_rect_ratio, npc_positions_ratio)
+        self.minimap.render(camera_rect_ratio, npc_positions_ratio)
 
         for button in self.tab_buttons.values():
             button.render()

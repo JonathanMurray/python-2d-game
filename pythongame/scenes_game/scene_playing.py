@@ -83,14 +83,14 @@ class PlayingScene(AbstractScene):
                 if isinstance(action, ActionChangeDialogOption):
                     play_sound(SoundId.DIALOG)
                     npc_type, previous_index, new_index = self.ui_view.change_dialog_option(action.index_delta)
-                    blur_npc_action(npc_type, previous_index, self.game_state, self.ui_state)
-                    hover_npc_action(npc_type, new_index, self.game_state, self.ui_state)
+                    blur_npc_action(npc_type, previous_index, self.game_state, self.ui_view)
+                    hover_npc_action(npc_type, new_index, self.game_state, self.ui_view)
                 if isinstance(action, ActionPressSpaceKey):
                     result = self.ui_view.handle_space_click()
                     if result:
                         npc_in_dialog, option_index = result
                         npc_type = npc_in_dialog.npc_type
-                        blur_npc_action(npc_type, option_index, self.game_state, self.ui_state)
+                        blur_npc_action(npc_type, option_index, self.game_state, self.ui_view)
                         message = select_npc_action(npc_type, option_index, self.game_state)
                         if message:
                             self.ui_state.set_message(message)
@@ -137,7 +137,7 @@ class PlayingScene(AbstractScene):
                             dialog_data = get_dialog_data(npc_type)
                             option_index = self.ui_view.start_dialog_with_npc(ready_entity, dialog_data)
                             play_sound(SoundId.DIALOG)
-                            hover_npc_action(npc_type, option_index, self.game_state, self.ui_state)
+                            hover_npc_action(npc_type, option_index, self.game_state, self.ui_view)
                         elif isinstance(ready_entity, LootableOnGround):
                             self.game_engine.try_pick_up_loot_from_ground(ready_entity)
                         elif isinstance(ready_entity, Portal):

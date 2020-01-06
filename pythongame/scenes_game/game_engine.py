@@ -180,9 +180,6 @@ class GameEngine:
                 npc.npc_mind.control_npc(self.game_state, npc, self.game_state.player_entity,
                                          self.game_state.player_state.is_invisible, time_passed)
 
-        self.ui_state.notify_player_entity_center_position(self.game_state.player_entity.get_center_position(),
-                                                           self.game_state.entire_world_area)
-
         self.ui_state.notify_time_passed(time_passed)
 
         for projectile in self.game_state.projectile_entities:

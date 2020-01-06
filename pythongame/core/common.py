@@ -695,3 +695,22 @@ class HeroUpgrade:
         if self._hero_upgrade_id is None:
             raise Exception("hero_upgrade_id is not initialized: " + str(HeroUpgrade))
         return self._hero_upgrade_id
+
+
+class DialogOptionData:
+    def __init__(self, summary: str, action_text: str, action: Optional[Any],
+                 ui_icon_sprite: Optional[UiIconSprite] = None, detail_header: Optional[str] = None,
+                 detail_body: Optional[str] = None):
+        self.summary = summary
+        self.action_text = action_text
+        self.action = action
+        self.ui_icon_sprite = ui_icon_sprite
+        self.detail_header = detail_header
+        self.detail_body = detail_body
+
+
+class DialogData:
+    def __init__(self, portrait_icon_sprite: PortraitIconSprite, text_body: str, options: List[DialogOptionData]):
+        self.portrait_icon_sprite = portrait_icon_sprite
+        self.text_body = text_body
+        self.options = options

@@ -1,7 +1,5 @@
 from enum import Enum
-from typing import Tuple, Optional
-
-from pygame.rect import Rect
+from typing import Optional
 
 from pythongame.core.common import AbilityType, Millis
 
@@ -21,8 +19,6 @@ class ToggleButtonId(Enum):
 # and it lets view.py be stateless.
 class GameUiState:
     def __init__(self):
-        self._entire_world_area = Rect(0, 0, 1, 1)
-        self._player_entity_center_position = (0, 0)
         self._ticks_since_message_updated = 0
         self._ticks_since_last_consumable_action = 0
         self._ticks_since_last_ability_action = 0
@@ -31,13 +27,6 @@ class GameUiState:
         self._enqueued_messages = []
         self.highlighted_consumable_action: Optional[int] = None
         self.highlighted_ability_action: Optional[AbilityType] = None
-        self.minimap_highlight_relative_position: Optional[Tuple[float, float]] = None
-
-    def set_minimap_highlight(self, position_ratio: Tuple[float, float]):
-        self.minimap_highlight_relative_position = position_ratio
-
-    def remove_minimap_highlight(self):
-        self.minimap_highlight_relative_position = None
 
     def notify_ability_was_clicked(self, ability_type: AbilityType):
         self.highlighted_ability_action = ability_type
@@ -46,11 +35,6 @@ class GameUiState:
     def notify_consumable_was_clicked(self, slot_number: int):
         self.highlighted_consumable_action = slot_number
         self._ticks_since_last_consumable_action = 0
-
-    def notify_player_entity_center_position(self, player_entity_center_position: Tuple[int, int],
-                                             entire_world_area: Rect):
-        self._player_entity_center_position = player_entity_center_position
-        self._entire_world_area = entire_world_area
 
     def set_message(self, message: str):
         self.message = message

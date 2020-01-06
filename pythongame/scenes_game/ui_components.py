@@ -844,6 +844,7 @@ class Minimap(UiComponent):
         self._seen_wall_positions: Set[Tuple[int, int]] = set()
         self._wall_pixel_positions: Tuple[int, int] = []
         self._timer = PeriodicTimer(Millis(2_000))
+        self._highlight_pos_ratio = None
         self.update_world_area(world_area)
 
     def update_world_area(self, world_area: Rect):
@@ -887,7 +888,6 @@ class Minimap(UiComponent):
             self._update_wall_pixel_positions()
 
     def render(self,
-               minimap_highlight_relative_position: Optional[Tuple[float, float]],
                camera_rect_ratio: Optional[Tuple[float, float, float, float]],
                npc_positions_ratio: List[Tuple[float, float]]):
         self._ui_render.rect_filled((60, 60, 80), self._rect_margin)
@@ -897,9 +897,9 @@ class Minimap(UiComponent):
 
         rect = self._rect_inner
 
-        if minimap_highlight_relative_position:
-            dot_x = rect[0] + minimap_highlight_relative_position[0] * rect.w
-            dot_y = rect[1] + minimap_highlight_relative_position[1] * rect.h
+        if self._highlight_pos_ratio:
+            dot_x = rect[0] + self._highlight_pos_ratio[0] * rect.w
+            dot_y = rect[1] + self._highlight_pos_ratio[1] * rect.h
             dot_w = 4
             self._ui_render.rect_filled((200, 100, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
@@ -929,6 +929,12 @@ class Minimap(UiComponent):
                      camera_rect_ratio[2] * rect.w,
                      camera_rect_ratio[3] * rect.h),
                 1)
+
+    def set_highlight(self, position_ratio: Tuple[float, float]):
+        self._highlight_pos_ratio = position_ratio
+
+    def remove_highlight(self):
+        self._highlight_pos_ratio = None
 
 
 class Buffs:

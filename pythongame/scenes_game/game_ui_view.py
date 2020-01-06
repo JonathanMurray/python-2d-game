@@ -4,12 +4,11 @@ import pygame
 from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite, \
-    SoundId, NpcType, Millis
+    SoundId, NpcType, Millis, DialogData
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, ITEMS, HEROES
 from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import is_point_in_rect
-from pythongame.core.npc_behaviors import DialogData
 from pythongame.core.sound_player import play_sound
 from pythongame.core.talents import TalentsState, TalentsConfig
 from pythongame.core.view.render_util import DrawableArea
@@ -559,6 +558,12 @@ class GameUiView:
     def remove_highlight_from_talent_toggle(self):
         self.talents_toggle.highlighted = False
 
+    def set_minimap_highlight(self, position_ratio: Tuple[float, float]):
+        self.minimap.set_highlight(position_ratio)
+
+    def remove_minimap_highlight(self):
+        self.minimap.remove_highlight()
+
     # --------------------------------------------------------------------------------------------------------
     #                                          RENDERING
     # --------------------------------------------------------------------------------------------------------
@@ -621,7 +626,6 @@ class GameUiView:
         # MINIMAP
         # TODO Don't pass these values into the render method. Handle as state
         self.minimap.render(
-            minimap_highlight_relative_position=ui_state.minimap_highlight_relative_position,
             camera_rect_ratio=None,
             npc_positions_ratio=[])
 
