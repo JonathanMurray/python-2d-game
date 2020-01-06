@@ -155,6 +155,7 @@ class GameUiView:
         self._ticks_since_last_ability_action = 0
         self.highlighted_consumable_action: Optional[int] = None
         self.highlighted_ability_action: Optional[AbilityType] = None
+        self.manually_highlighted_inventory_item: Optional[ItemType] = None  # used for dialog
 
         self.info_message = InfoMessage()
 
@@ -617,6 +618,14 @@ class GameUiView:
     def remove_minimap_highlight(self):
         self.minimap.remove_highlight()
 
+    def set_inventory_highlight(self, item_type: ItemType):
+        for icon in self.inventory_icons:
+            if icon.item_type == item_type:
+                self.manually_highlighted_inventory_item = item_type
+
+    def remove_inventory_highlight(self):
+        self.manually_highlighted_inventory_item = None
+
     # --------------------------------------------------------------------------------------------------------
     #                                          RENDERING
     # --------------------------------------------------------------------------------------------------------
@@ -674,6 +683,8 @@ class GameUiView:
                           and ITEMS[self.item_slot_being_dragged.item_type].item_equipment_category \
                           and icon.slot_equipment_category == ITEMS[
                               self.item_slot_being_dragged.item_type].item_equipment_category
+            if self.manually_highlighted_inventory_item and self.manually_highlighted_inventory_item == icon.item_type:
+                highlighted = True
             icon.render(highlighted)
 
         # MINIMAP

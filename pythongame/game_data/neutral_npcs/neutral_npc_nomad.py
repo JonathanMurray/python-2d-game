@@ -14,6 +14,8 @@ from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import create_visual_healing_text
 from pythongame.scenes_game.game_ui_view import GameUiView
 
+ITEM_TYPE_KEY = ItemType.KEY
+
 
 class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
@@ -51,7 +53,7 @@ class HintAction(AbstractNpcAction):
 class AcceptKey(AbstractNpcAction):
 
     def on_select(self, game_state: GameState):
-        if game_state.player_state.item_inventory.has_item_in_inventory(ItemType.KEY):
+        if game_state.player_state.item_inventory.has_item_in_inventory(ITEM_TYPE_KEY):
             play_sound(SoundId.EVENT_COMPLETED_QUEST)
             game_state.player_state.has_finished_main_quest = True
         else:
@@ -66,9 +68,11 @@ class AcceptKey(AbstractNpcAction):
             position_ratio = ((position[0] - world_area.x) / world_area.w,
                               (position[1] - world_area.y) / world_area.h)
             ui_view.set_minimap_highlight(position_ratio)
+        ui_view.set_inventory_highlight(ITEM_TYPE_KEY)
 
     def on_blur(self, game_state: GameState, ui_view: GameUiView):
         ui_view.remove_minimap_highlight()
+        ui_view.remove_inventory_highlight()
 
 
 def register_nomad_npc():
@@ -82,7 +86,7 @@ def register_nomad_npc():
     dialog_options = [
         DialogOptionData("Receive blessing", "gain full health", HealAction()),
         DialogOptionData("Ask for advice", "see random hint", HintAction()),
-        DialogOptionData("\"The red baron\"", "give", AcceptKey(), UiIconSprite.ITEM_KEY,
+        DialogOptionData("QUEST: \"The red baron\"", "give", AcceptKey(), UiIconSprite.ITEM_KEY,
                          "Key", "The red baron... Yes, he has caused us much trouble. He stole from me a key that may"
                                 " lead us out of here. You must bring it back to me!"),
         DialogOptionData("\"Good bye\"", "cancel", None)]

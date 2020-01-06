@@ -53,3 +53,18 @@ def register_passive_item(
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
     register_item_data(item_type, item_data)
+
+
+def register_quest_item(
+        item_type: ItemType,
+        ui_icon_sprite: UiIconSprite,
+        sprite: Sprite,
+        image_file_path: str,
+        name: str,
+        description_lines: List[str]):
+    item_effect = EmptyItemEffect(item_type)
+    item_data = ItemData(ui_icon_sprite, sprite, name, description_lines, ItemEquipmentCategory.QUEST)
+    register_item_effect(item_type, item_effect)
+    register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
+    register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
+    register_item_data(item_type, item_data)

@@ -11,6 +11,7 @@ class ItemEquipmentCategory(Enum):
     HEAD = 4
     NECK = 5
     RING = 6
+    QUEST = 10
 
 
 ITEM_EQUIPMENT_CATEGORY_NAMES = {
@@ -20,6 +21,7 @@ ITEM_EQUIPMENT_CATEGORY_NAMES = {
     ItemEquipmentCategory.HEAD: "Head",
     ItemEquipmentCategory.NECK: "Neck",
     ItemEquipmentCategory.RING: "Ring",
+    ItemEquipmentCategory.QUEST: "Quest"
 }
 
 

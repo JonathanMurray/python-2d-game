@@ -73,9 +73,11 @@ class AcceptFrog(AbstractNpcAction):
             position_ratio = ((position[0] - world_area.x) / world_area.w,
                               (position[1] - world_area.y) / world_area.h)
             ui_view.set_minimap_highlight(position_ratio)
+        ui_view.set_inventory_highlight(ITEM_TYPE_FROG)
 
     def on_blur(self, game_state: GameState, ui_view: GameUiView):
         ui_view.remove_minimap_highlight()
+        ui_view.remove_inventory_highlight()
 
 
 def register_young_sorceress_npc():
@@ -88,11 +90,11 @@ def register_young_sorceress_npc():
     register_npc_behavior(npc_type, NpcMind)
     introduction = "Hey you! Have you seen my pet frog? I bet it was that old green mean goblin king that took it!"
 
-    prompt = "> "
+    prompt = "QUEST: "
     frog_data = ITEMS[ItemType.FROG]
     dialog_options = [
-        DialogOptionData(prompt + frog_data.name, "give", AcceptFrog(), UiIconSprite.ITEM_FROG, frog_data.name,
-                         "If you help me get it back, I'll give you something in return!"),
+        DialogOptionData(prompt + "\"Lost pet\"", "give", AcceptFrog(), UiIconSprite.ITEM_FROG, frog_data.name,
+                         "Please help me get my frog back! I'll give you something in return. Promise!"),
         DialogOptionData("\"Good bye\"", "cancel", None)]
     dialog_data = DialogData(ui_icon_sprite, introduction, dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)

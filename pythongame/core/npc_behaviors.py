@@ -177,6 +177,12 @@ class BuyItemNpcAction(AbstractNpcAction):
             play_sound(SoundId.WARNING)
             return "You don't have that!"
 
+    def on_hover(self, game_state: GameState, ui_view: GameUiView):
+        ui_view.set_inventory_highlight(self.item_type)
+
+    def on_blur(self, game_state: GameState, ui_view: GameUiView):
+        ui_view.remove_inventory_highlight()
+
 
 _npc_mind_constructors: Dict[NpcType, Type[AbstractNpcMind]] = {}
 
