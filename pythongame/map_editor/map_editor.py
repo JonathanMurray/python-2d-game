@@ -110,7 +110,6 @@ def main(map_file_name: Optional[str]):
     camera_move_distance = 75  # must be a multiple of the grid size
     snapped_mouse_screen_position = (0, 0)
     snapped_mouse_world_position = (0, 0)
-    exact_mouse_screen_position = (0, 0)
     is_snapped_mouse_within_world = True
     is_snapped_mouse_over_ui = False
 
@@ -123,6 +122,8 @@ def main(map_file_name: Optional[str]):
     clock = pygame.time.Clock()
     camera_pan_timer = PeriodicTimer(Millis(50))
 
+    entity_icon_hovered_by_mouse = None
+
     while True:
 
         for event in pygame.event.get():
@@ -132,7 +133,7 @@ def main(map_file_name: Optional[str]):
 
             if event.type == pygame.MOUSEMOTION:
                 exact_mouse_screen_position: Tuple[int, int] = event.pos
-                ui_view.handle_mouse_movement(exact_mouse_screen_position)
+                entity_icon_hovered_by_mouse = ui_view.handle_mouse_movement(exact_mouse_screen_position)
                 snapped_mouse_screen_position = ((exact_mouse_screen_position[0] // grid_cell_size) * grid_cell_size,
                                                  (exact_mouse_screen_position[1] // grid_cell_size) * grid_cell_size)
                 snapped_mouse_world_position = sum_of_vectors(
@@ -260,7 +261,7 @@ def main(map_file_name: Optional[str]):
 
         wall_positions = [w.world_entity.get_position() for w in game_state.walls_state.walls]
         npc_positions = [npc.world_entity.get_position() for npc in game_state.non_player_characters]
-        entity_icon_hovered_by_mouse = ui_view.render(
+        ui_view.render(
             placing_entity=user_state.placing_entity,
             deleting_entities=user_state.deleting_entities,
             deleting_decorations=user_state.deleting_decorations,
@@ -268,7 +269,6 @@ def main(map_file_name: Optional[str]):
             num_walls=len(game_state.walls_state.walls),
             num_decorations=len(game_state.decorations_state.decoration_entities),
             grid_cell_size=grid_cell_size,
-            mouse_screen_position=exact_mouse_screen_position,
             camera_world_area=game_state.camera_world_area,
             npc_positions=npc_positions,
             wall_positions=wall_positions,

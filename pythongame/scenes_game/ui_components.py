@@ -335,6 +335,33 @@ class ItemIcon(UiComponent):
             self._ui_render.rect(COLOR_HOVERED, self.rect, 1)
 
 
+class MapEditorIcon(UiComponent):
+    def __init__(self, ui_render: DrawableArea, rect: Rect, image, font, user_input_key: str,
+                 map_editor_entity_id: int):
+        super().__init__()
+        self._ui_render = ui_render
+        self._rect = rect
+        self._rect_highlighted = Rect(self._rect.x - 1, self._rect.y - 1, self._rect.w + 1, self._rect.h + 1)
+        self._image = image
+        self._font = font
+        self._user_input_key = user_input_key
+        self.map_editor_entity_id = map_editor_entity_id
+
+    def contains(self, point: Tuple[int, int]) -> bool:
+        return self._rect.collidepoint(point[0], point[1])
+
+    def render(self, highlighted: bool):
+        self._ui_render.rect_filled((40, 40, 40), self._rect)
+
+        icon_scaled_image = pygame.transform.scale(self._image, self._rect.size)
+        self._ui_render.image(icon_scaled_image, self._rect.topleft)
+
+        self._ui_render.rect(COLOR_WHITE, self._rect, 1)
+        if highlighted:
+            self._ui_render.rect(COLOR_ICON_HIGHLIGHTED, self._rect_highlighted, 3)
+        self._ui_render.text(self._font, self._user_input_key, (self._rect.x + 12, self._rect.bottom + 4))
+
+
 class StatBar:
     def __init__(self, ui_render: DrawableArea, rect: Rect, color: Tuple[int, int, int], tooltip: TooltipGraphics,
                  value: int, max_value: int, show_numbers: bool, font):

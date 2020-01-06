@@ -7,6 +7,8 @@ from pythongame.core.entity_creation import create_portal, create_hero_world_ent
 
 
 class MapEditorWorldEntity:
+    next_id = 1
+
     def __init__(self, sprite: Sprite, entity_size: Tuple[int, int]):
         self.sprite = sprite
         self.entity_size = entity_size
@@ -19,6 +21,8 @@ class MapEditorWorldEntity:
         self.money_amount: Optional[int] = None
         self.portal_id: Optional[PortalId] = None
         self.is_chest: bool = False
+        self.map_editor_entity_id = MapEditorWorldEntity.next_id
+        MapEditorWorldEntity.next_id += 1
 
     def __str__(self):
         return str(self.__dict__)

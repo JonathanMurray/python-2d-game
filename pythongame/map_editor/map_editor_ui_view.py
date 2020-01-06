@@ -7,11 +7,11 @@ from pygame.rect import Rect
 
 from pythongame.core.common import Direction, Sprite, UiIconSprite
 from pythongame.core.common import PortraitIconSprite
-from pythongame.core.math import is_point_in_rect, sum_of_vectors
+from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.image_loading import ImageWithRelativePosition
 from pythongame.core.view.render_util import DrawableArea
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
-from pythongame.scenes_game.ui_components import RadioButton, Checkbox, Button, Minimap
+from pythongame.scenes_game.ui_components import RadioButton, Checkbox, Button, Minimap, MapEditorIcon
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -89,16 +89,47 @@ class MapEditorView:
         self.button_generate_random_map: Button = Button(self.ui_render, Rect(15, 125, 120, 20), "generate random")
         self.mouse_screen_position = (0, 0)
         self.hovered_component = None
+        self._setup_ui_components()
 
-    def handle_mouse_movement(self, mouse_screen_pos: Tuple[int, int]):
+    def _setup_ui_components(self):
+        icon_space = 5
+        x_1 = 155
+        y_2 = 40
+        self.button_delete_entities = self._map_editor_icon_in_ui(
+            Rect(20, y_2, MAP_EDITOR_UI_ICON_SIZE[0], MAP_EDITOR_UI_ICON_SIZE[1]),
+            'Q', None, UiIconSprite.MAP_EDITOR_TRASHCAN, 0)
+        self.button_delete_decorations = self._map_editor_icon_in_ui(
+            Rect(20 + MAP_EDITOR_UI_ICON_SIZE[0] + icon_space, y_2, MAP_EDITOR_UI_ICON_SIZE[0],
+                 MAP_EDITOR_UI_ICON_SIZE[1]), 'Z', None, UiIconSprite.MAP_EDITOR_RECYCLING, 0)
+        self.entity_icons_by_type = {}
+        num_icons_per_row = 23
+        for entity_type in EntityTab:
+            self.entity_icons_by_type[entity_type] = []
+            for i, entity in enumerate(self.entities_by_type[entity_type]):
+                x = x_1 + (i % num_icons_per_row) * (MAP_EDITOR_UI_ICON_SIZE[0] + icon_space)
+                row_index = (i // num_icons_per_row)
+                y = y_2 + row_index * (MAP_EDITOR_UI_ICON_SIZE[1] + icon_space)
+                icon = self._map_editor_icon_in_ui(
+                    Rect(x, y, MAP_EDITOR_UI_ICON_SIZE[0], MAP_EDITOR_UI_ICON_SIZE[1]), '', entity.sprite, None,
+                    entity.map_editor_entity_id)
+                self.entity_icons_by_type[entity_type].append(icon)
+
+    def handle_mouse_movement(self, mouse_screen_pos: Tuple[int, int]) -> Optional[MapEditorWorldEntity]:
         self.mouse_screen_position = mouse_screen_pos
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_pos)
 
+        for icon in self.entity_icons_by_type[self.shown_tab]:
+            if icon.contains(mouse_ui_position):
+                self._on_hover_component(icon)
+                entity = [e for e in self.entities_by_type[self.shown_tab]
+                          if e.map_editor_entity_id == icon.map_editor_entity_id][0]
+                return entity
+
         for component in self.checkboxes + [self.button_generate_random_map, self.minimap] + self.tab_buttons:
             if component.contains(mouse_ui_position):
                 self._on_hover_component(component)
-                return
+                return None
 
         # If something was hovered, we would have returned from the method
         self._set_currently_hovered_component_not_hovered()
@@ -161,48 +192,22 @@ class MapEditorView:
             num_walls: int,
             num_decorations: int,
             grid_cell_size: int,
-            mouse_screen_position: Tuple[int, int],
             camera_world_area: Rect,
             npc_positions: List[Tuple[int, int]],
             wall_positions: List[Tuple[int, int]],
             player_position: Tuple[int, int],
-            world_area: Rect
-    ) -> Optional[MapEditorWorldEntity]:
-
-        mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
-
-        hovered_by_mouse: MapEditorWorldEntity = None
+            world_area: Rect):
 
         self.screen_render.rect(COLOR_BLACK, Rect(0, 0, self.camera_size[0], self.camera_size[1]), 3)
         self.screen_render.rect_filled(COLOR_BLACK, Rect(0, self.camera_size[1], self.screen_size[0],
                                                          self.screen_size[1] - self.camera_size[1]))
 
-        icon_space = 5
+        self.button_delete_entities.render(deleting_entities)
+        self.button_delete_decorations.render(deleting_decorations)
 
-        y_1 = 10
-        y_2 = y_1 + 30
-
-        x_0 = 20
-
-        # TODO Handle all these icons as state, similarly to how the game UI is done, and the tab radio buttons
-
-        self._map_editor_icon_in_ui(x_0, y_2, MAP_EDITOR_UI_ICON_SIZE, deleting_entities, 'Q', None,
-                                    UiIconSprite.MAP_EDITOR_TRASHCAN)
-        self._map_editor_icon_in_ui(x_0 + MAP_EDITOR_UI_ICON_SIZE[0] + icon_space, y_2, MAP_EDITOR_UI_ICON_SIZE,
-                                    deleting_decorations, 'Z', None, UiIconSprite.MAP_EDITOR_RECYCLING)
-
-        x_1 = 155
-        num_icons_per_row = 23
-
-        for i, entity in enumerate(self.entities_by_type[self.shown_tab]):
-            is_this_entity_being_placed = entity is placing_entity
-            x = x_1 + (i % num_icons_per_row) * (MAP_EDITOR_UI_ICON_SIZE[0] + icon_space)
-            row_index = (i // num_icons_per_row)
-            y = y_2 + row_index * (MAP_EDITOR_UI_ICON_SIZE[1] + icon_space)
-            if is_point_in_rect(mouse_ui_position, Rect(x, y, MAP_EDITOR_UI_ICON_SIZE[0], MAP_EDITOR_UI_ICON_SIZE[1])):
-                hovered_by_mouse = entity
-            self._map_editor_icon_in_ui(
-                x, y, MAP_EDITOR_UI_ICON_SIZE, is_this_entity_being_placed, '', entity.sprite, None)
+        for icon in self.entity_icons_by_type[self.shown_tab]:
+            highlighted = placing_entity and placing_entity.map_editor_entity_id == icon.map_editor_entity_id
+            icon.render(highlighted)
 
         self.screen_render.rect(COLOR_WHITE, self.ui_screen_area, 1)
 
@@ -224,8 +229,6 @@ class MapEditorView:
 
         self.button_generate_random_map.render()
 
-        return hovered_by_mouse
-
     def render_map_editor_mouse_rect(self, color: Tuple[int, int, int], map_editor_mouse_rect: Rect):
         self.screen_render.rect(color, map_editor_mouse_rect, 3)
 
@@ -236,11 +239,9 @@ class MapEditorView:
         self.screen_render.image(image_with_relative_position.image, sprite_position)
         self.screen_render.rect((50, 250, 0), Rect(position[0], position[1], entity_size[0], entity_size[1]), 3)
 
-    def _map_editor_icon_in_ui(self, x, y, size: Tuple[int, int], highlighted: bool, user_input_key: str,
-                               sprite: Optional[Sprite], ui_icon_sprite: Optional[UiIconSprite]):
-        w = size[0]
-        h = size[1]
-        self.ui_render.rect_filled((40, 40, 40), Rect(x, y, w, h))
+    def _map_editor_icon_in_ui(self, rect: Rect, user_input_key: str,
+                               sprite: Optional[Sprite], ui_icon_sprite: Optional[UiIconSprite],
+                               map_editor_entity_id: int) -> MapEditorIcon:
         if sprite:
             image = self.images_by_sprite[sprite][Direction.DOWN][0].image
         elif ui_icon_sprite:
@@ -248,13 +249,7 @@ class MapEditorView:
         else:
             raise Exception("Nothing to render!")
 
-        icon_scaled_image = pygame.transform.scale(image, size)
-        self.ui_render.image(icon_scaled_image, (x, y))
-
-        self.ui_render.rect(COLOR_WHITE, Rect(x, y, w, h), 1)
-        if highlighted:
-            self.ui_render.rect(COLOR_HIGHLIGHTED_ICON, Rect(x - 1, y - 1, w + 2, h + 2), 3)
-        self.ui_render.text(self.font_ui_icon_keys, user_input_key, (x + 12, y + h + 4))
+        return MapEditorIcon(self.ui_render, rect, image, self.font_ui_icon_keys, user_input_key, map_editor_entity_id)
 
     def is_screen_position_within_ui(self, screen_position: Tuple[int, int]):
         ui_position = self._translate_screen_position_to_ui(screen_position)
