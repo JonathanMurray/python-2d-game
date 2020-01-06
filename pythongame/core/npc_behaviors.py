@@ -104,11 +104,11 @@ class AbstractNpcAction:
         pass
 
     # is called when the option is selected/hovered in the dialog
-    def on_hover(self, game_state: GameState, ui_state: GameUiView):
+    def on_hover(self, game_state: GameState, ui_view: GameUiView):
         pass
 
     # is called when the option stops being selected/hovered in the dialog
-    def on_blur(self, game_state: GameState, ui_state: GameUiView):
+    def on_blur(self, game_state: GameState, ui_view: GameUiView):
         pass
 
 

@@ -11,7 +11,7 @@ from pythongame.core.item_effects import get_item_effect, try_add_item_to_invent
 from pythongame.core.sound_player import play_sound
 from pythongame.scenes_game.game_engine import EngineEvent
 from pythongame.scenes_game.game_engine import GameEngine
-from pythongame.scenes_game.game_ui_state import GameUiState
+from pythongame.scenes_game.game_ui_view import InfoMessage
 
 
 class AbstractWorldBehavior:
@@ -28,14 +28,15 @@ class AbstractWorldBehavior:
 
 class StoryBehavior(AbstractWorldBehavior):
 
-    def __init__(self, victory_screen_scene: Callable[[], AbstractScene], game_state: GameState, ui_state: GameUiState):
+    def __init__(self, victory_screen_scene: Callable[[], AbstractScene], game_state: GameState,
+                 info_message: InfoMessage):
         self.victory_screen_scene = victory_screen_scene
         self.game_state = game_state
-        self.ui_state = ui_state
+        self.info_message = info_message
 
     def on_startup(self, new_hero_was_created: bool):
         self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
-        self.ui_state.set_message("Hint: " + get_random_hint())
+        self.info_message.set_message("Hint: " + get_random_hint())
         if new_hero_was_created:
             self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.HEALTH_LESSER)
             self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.HEALTH_LESSER)
@@ -59,7 +60,7 @@ class StoryBehavior(AbstractWorldBehavior):
             self.game_state.player_state.health_resource.set_to_partial_of_max(0.5)
             self.game_state.player_state.lose_exp_from_death()
             self.game_state.player_state.force_cancel_all_buffs()
-            self.ui_state.set_message("Lost exp from dying")
+            self.info_message.set_message("Lost exp from dying")
             play_sound(SoundId.EVENT_PLAYER_DIED)
             self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
         return None
@@ -70,20 +71,20 @@ class ChallengeBehavior(AbstractWorldBehavior):
     def __init__(self, picking_hero_scene: Callable[[Any], AbstractScene],
                  challenge_complete_scene: Callable[[Millis], AbstractScene],
                  game_state: GameState,
-                 ui_state: GameUiState,
+                 info_message: InfoMessage,
                  game_engine: GameEngine,
                  init_flags):
         self.picking_hero_scene = picking_hero_scene
         self.challenge_complete_scene = challenge_complete_scene
         self.game_state = game_state
-        self.ui_state = ui_state
+        self.info_message = info_message
         self.game_engine = game_engine
         self.total_time_played: Millis = 0
         self.init_flags = init_flags
 
     def on_startup(self, new_hero_was_created: bool):
         self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
-        self.ui_state.set_message("Challenge starting...")
+        self.info_message.set_message("Challenge starting...")
         if new_hero_was_created:
             self.game_state.player_state.modify_money(100)
             self.game_engine.gain_levels(4)
@@ -116,5 +117,5 @@ class ChallengeBehavior(AbstractWorldBehavior):
             num_enemies = len([npc for npc in self.game_state.non_player_characters if npc.is_enemy])
             if num_enemies == 0:
                 return SceneTransition(self.challenge_complete_scene(self.total_time_played))
-            self.ui_state.set_message(str(num_enemies) + " enemies remaining")
+            self.info_message.set_message(str(num_enemies) + " enemies remaining")
         return None

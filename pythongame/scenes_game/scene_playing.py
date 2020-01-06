@@ -21,7 +21,6 @@ from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
 from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.player_file import SaveFileHandler
 from pythongame.scenes_game.game_engine import GameEngine
-from pythongame.scenes_game.game_ui_state import GameUiState
 from pythongame.scenes_game.game_ui_view import DragItemBetweenInventorySlots, DropItemOnGround, \
     DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
     PickTalent, StartDraggingItemOrConsumable, TrySwitchItemInInventory, ToggleSound, SaveGame, EventTriggeredFromUi
@@ -38,7 +37,6 @@ class PlayingScene(AbstractScene):
                  game_state: GameState,
                  game_engine: GameEngine,
                  world_behavior: AbstractWorldBehavior,
-                 ui_state: GameUiState,
                  ui_view: GameUiView,
                  new_hero_was_created: bool,
                  character_file: Optional[str],
@@ -53,7 +51,6 @@ class PlayingScene(AbstractScene):
         self.game_state: GameState = game_state
         self.game_engine: GameEngine = game_engine
         self.world_behavior: AbstractWorldBehavior = world_behavior
-        self.ui_state: GameUiState = ui_state
         self.ui_view: GameUiView = ui_view
         self.user_input_handler = PlayingUserInputHandler()
         self.world_behavior.on_startup(new_hero_was_created)
@@ -94,7 +91,7 @@ class PlayingScene(AbstractScene):
                         blur_npc_action(npc_type, option_index, self.game_state, self.ui_view)
                         message = select_npc_action(npc_type, option_index, self.game_state)
                         if message:
-                            self.ui_state.set_message(message)
+                            self.ui_view.info_message.set_message(message)
                         npc_in_dialog.stun_status.remove_one()
 
                         # User may have been holding down a key when starting dialog, and then releasing it while in
@@ -186,7 +183,7 @@ class PlayingScene(AbstractScene):
                 name_of_picked = pick_talent(self.game_state, event.tier_index, event.option_index)
                 if not self.game_state.player_state.has_unpicked_talents():
                     self.ui_view.close_talent_window()
-                self.ui_state.set_message("Talent picked: " + name_of_picked)
+                self.ui_view.info_message.set_message("Talent picked: " + name_of_picked)
                 play_sound(SoundId.EVENT_PICKED_TALENT)
             elif isinstance(event, TrySwitchItemInInventory):
                 did_switch_succeed = self.game_engine.try_switch_item_at_slot(event.slot)
@@ -204,7 +201,7 @@ class PlayingScene(AbstractScene):
                 raise Exception("Unhandled event: " + str(event))
 
         if transition_to_pause:
-            return SceneTransition(PausedScene(self, self.world_view, self.ui_view, self.game_state, self.ui_state))
+            return SceneTransition(PausedScene(self, self.world_view, self.ui_view, self.game_state))
 
     def run_one_frame(self, time_passed: Millis) -> Optional[SceneTransition]:
 
@@ -254,7 +251,7 @@ class PlayingScene(AbstractScene):
             entire_world_area=self.game_state.entire_world_area,
             entity_action_text=entity_action_text)
 
-        self.ui_view.render(self.ui_state)
+        self.ui_view.render()
 
     def _save_game(self):
         play_sound(SoundId.EVENT_SAVED_GAME)
@@ -264,7 +261,7 @@ class PlayingScene(AbstractScene):
             # This is relevant when saving a character for the first time. If we didn't update the field, we would
             # be creating a new file everytime we saved.
             self.character_file = filename
-        self.ui_state.set_message("Game was saved.")
+        self.ui_view.info_message.set_message("Game was saved.")
 
 
 def _get_entity_action_text(ready_entity: Any, is_shift_key_held_down: bool) -> EntityActionText:

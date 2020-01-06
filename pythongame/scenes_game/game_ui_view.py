@@ -12,7 +12,6 @@ from pythongame.core.math import is_point_in_rect
 from pythongame.core.sound_player import play_sound
 from pythongame.core.talents import TalentsState, TalentsConfig
 from pythongame.core.view.render_util import DrawableArea
-from pythongame.scenes_game.game_ui_state import GameUiState
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
     ToggleButton, ControlsWindow, StatsWindow, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text, \
     DialogOption, Dialog, Checkbox, Button, Message, PausedSplashScreen, TalentTierData, TalentOptionData, TalentIcon, \
@@ -44,6 +43,34 @@ class DialogState:
         self.data: DialogData = None
         self.npc: NonPlayerCharacter = None
         self.active = False
+
+
+class InfoMessage:
+    def __init__(self):
+        self._ticks_since_message_updated = 0
+
+        self.message = ""
+        self._enqueued_messages = []
+
+    def set_message(self, message: str):
+        self.message = message
+        self._ticks_since_message_updated = 0
+
+    def enqueue_message(self, message: str):
+        self._enqueued_messages.append(message)
+
+    def clear_messages(self):
+        self.message = None
+        self._enqueued_messages.clear()
+
+    def notify_time_passed(self, time_passed: Millis):
+        self._ticks_since_message_updated += time_passed
+        if self.message != "" and self._ticks_since_message_updated > 3500:
+            if self._enqueued_messages:
+                new_message = self._enqueued_messages.pop(0)
+                self.set_message(new_message)
+            else:
+                self.message = ""
 
 
 class GameUiView:
@@ -132,6 +159,8 @@ class GameUiView:
         self._ticks_since_last_ability_action = 0
         self.highlighted_consumable_action: Optional[int] = None
         self.highlighted_ability_action: Optional[AbilityType] = None
+
+        self.info_message = InfoMessage()
 
     def _setup_ability_icons(self):
         x_0 = 140
@@ -568,6 +597,8 @@ class GameUiView:
         if self._ticks_since_last_ability_action > HIGHLIGHT_ABILITY_ACTION_DURATION:
             self.highlighted_ability_action = None
 
+        self.info_message.notify_time_passed(time_passed)
+
     def update_hero(self, hero_id: HeroId):
         sprite = HEROES[hero_id].portrait_icon_sprite
         image = self.images_by_portrait_sprite[sprite]
@@ -616,7 +647,7 @@ class GameUiView:
                     mouse_screen_position[1] - relative_mouse_pos[1] - (UI_ICON_BIG_SIZE[1] - UI_ICON_SIZE[1]) // 2)
         self.screen_render.image(big_image, position)
 
-    def render(self, ui_state: GameUiState):
+    def render(self):
 
         self.screen_render.rect(COLOR_BORDER, Rect(0, 0, self.camera_size[0], self.camera_size[1]), 1)
         self.screen_render.rect_filled((20, 10, 0), Rect(0, self.camera_size[1], self.screen_size[0],
@@ -663,7 +694,7 @@ class GameUiView:
         self.screen_render.rect_transparent(Rect(0, 0, 70, 20), 100, COLOR_BLACK)
         self.screen_render.text(self.font_debug_info, "fps: " + self.fps_string, (5, 3))
 
-        self.message.render(ui_state.message)
+        self.message.render(self.info_message.message)
 
         if self.hovered_component and self.hovered_component.tooltip and not self.item_slot_being_dragged \
                 and not self.consumable_slot_being_dragged:

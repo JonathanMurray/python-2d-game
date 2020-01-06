@@ -23,7 +23,6 @@ from pythongame.scene_picking_hero.view_picking_hero import PickingHeroView
 from pythongame.scene_starting_program.scene_starting_program import CommandlineFlags, StartingProgramScene
 from pythongame.scene_victory_screen.scene_victory_screen import VictoryScreenScene
 from pythongame.scenes_game.game_engine import GameEngine
-from pythongame.scenes_game.game_ui_state import GameUiState
 from pythongame.scenes_game.game_ui_view import GameUiView, UI_ICON_SIZE, PORTRAIT_ICON_SIZE, UI_ICON_BIG_SIZE
 from pythongame.scenes_game.scene_playing import PlayingScene
 
@@ -122,10 +121,10 @@ class Main:
 
     def playing_scene(
             self, game_state: GameState, game_engine: GameEngine, world_behavior: AbstractWorldBehavior,
-            ui_state: GameUiState, ui_view: GameUiView, new_hero_was_created: bool, character_file: Optional[str],
+            ui_view: GameUiView, new_hero_was_created: bool, character_file: Optional[str],
             total_time_played_on_character: Millis):
         return PlayingScene(
-            self.world_view, game_state, game_engine, world_behavior, ui_state, ui_view, new_hero_was_created,
+            self.world_view, game_state, game_engine, world_behavior, ui_view, new_hero_was_created,
             character_file, self.save_file_handler, total_time_played_on_character, self.toggle_fullscreen)
 
     def challenge_complete_scene(self, total_time_played: Millis):

@@ -17,7 +17,7 @@ from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vector
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import create_visual_exp_text, create_teleport_effects, VisualRect, VisualCircle
 from pythongame.game_data.portals import PORTAL_DELAY
-from pythongame.scenes_game.game_ui_state import GameUiState
+from pythongame.scenes_game.game_ui_view import InfoMessage
 from pythongame.scenes_game.player_controls import PlayerControls
 
 
@@ -28,19 +28,19 @@ class EngineEvent(Enum):
 
 class GameEngine:
 
-    def __init__(self, game_state: GameState, ui_state: GameUiState):
+    def __init__(self, game_state: GameState, info_message: InfoMessage):
         self.game_state = game_state
-        self.ui_state = ui_state
+        self.info_message = info_message
         self.talent_was_unlocked = Observable()
         self.ability_was_clicked = Observable()
         self.consumable_was_clicked = Observable()
 
     def try_use_ability(self, ability_type: AbilityType):
-        PlayerControls.try_use_ability(ability_type, self.game_state, self.ui_state)
+        PlayerControls.try_use_ability(ability_type, self.game_state, self.info_message)
         self.ability_was_clicked.notify(ability_type)
 
     def try_use_consumable(self, slot_number: int):
-        PlayerControls.try_use_consumable(slot_number, self.game_state, self.ui_state)
+        PlayerControls.try_use_consumable(slot_number, self.game_state, self.info_message)
         self.consumable_was_clicked.notify(slot_number)
 
     def move_in_direction(self, direction: Direction):
@@ -103,9 +103,9 @@ class GameEngine:
         if did_add_item:
             play_sound(SoundId.EVENT_PICKED_UP)
             self.game_state.items_on_ground.remove(item)
-            self.ui_state.set_message("You picked up " + item_data.name)
+            self.info_message.set_message("You picked up " + item_data.name)
         else:
-            self.ui_state.set_message("No space for " + item_data.name)
+            self.info_message.set_message("No space for " + item_data.name)
 
     def set_item_inventory(self, items: List[ItemType]):
         for slot_number, item_type in enumerate(items):
@@ -124,11 +124,11 @@ class GameEngine:
         consumable_name = CONSUMABLES[consumable_type].name
         if has_space:
             self.game_state.player_state.consumable_inventory.add_consumable(consumable_type)
-            self.ui_state.set_message("You picked up " + consumable_name)
+            self.info_message.set_message("You picked up " + consumable_name)
             play_sound(SoundId.EVENT_PICKED_UP)
             self.game_state.consumables_on_ground.remove(consumable)
         else:
-            self.ui_state.set_message("No space for " + consumable_name)
+            self.info_message.set_message("No space for " + consumable_name)
 
     def interact_with_portal(self, portal: Portal):
         if portal.is_enabled:
@@ -139,7 +139,7 @@ class GameEngine:
             delay = PORTALS[portal.portal_id].teleport_delay
             self.game_state.player_state.gain_buff_effect(teleport_buff_effect, delay)
         else:
-            self.ui_state.set_message("Hmm... Looks suspicious!")
+            self.info_message.set_message("Hmm... Looks suspicious!")
 
     def handle_being_close_to_portal(self, portal: Portal):
         # When finding a new portal out on the map, it's enough to walk close to it, to activate its sibling
@@ -147,7 +147,7 @@ class GameEngine:
             destination_portal = [p for p in self.game_state.portals if p.portal_id == portal.leads_to][0]
             if not destination_portal.is_enabled:
                 play_sound(SoundId.EVENT_PORTAL_ACTIVATED)
-                self.ui_state.set_message("Portal was activated")
+                self.info_message.set_message("Portal was activated")
                 destination_portal.activate(portal.world_entity.sprite)
                 self.game_state.visual_effects += create_teleport_effects(portal.world_entity.get_center_position())
 
@@ -183,8 +183,6 @@ class GameEngine:
             if self._is_npc_close_to_camera(npc) and not npc.stun_status.is_stunned():
                 npc.npc_mind.control_npc(self.game_state, npc, self.game_state.player_entity,
                                          self.game_state.player_state.is_invisible, time_passed)
-
-        self.ui_state.notify_time_passed(time_passed)
 
         for projectile in self.game_state.projectile_entities:
             projectile.projectile_controller.notify_time_passed(self.game_state, projectile, time_passed)
@@ -334,16 +332,16 @@ class GameEngine:
             self.game_state.visual_effects.append(
                 VisualCircle((150, 150, 250), self.game_state.player_entity.get_center_position(), 9, 35,
                              Millis(150), 2))
-            self.ui_state.set_message("You reached level " + str(self.game_state.player_state.level))
+            self.info_message.set_message("You reached level " + str(self.game_state.player_state.level))
         if new_abilities:
             allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
         if len(new_abilities) == 1:
-            self.ui_state.enqueue_message("New ability: " + new_abilities[0])
+            self.info_message.enqueue_message("New ability: " + new_abilities[0])
         elif len(new_abilities) > 1:
-            self.ui_state.enqueue_message("Gained several new abilities")
+            self.info_message.enqueue_message("Gained several new abilities")
         if did_unlock_new_talent:
             self.talent_was_unlocked.notify(None)
-            self.ui_state.enqueue_message("You can pick a talent!")
+            self.info_message.enqueue_message("You can pick a talent!")
 
     def _is_npc_close_to_camera(self, npc: NonPlayerCharacter):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(
