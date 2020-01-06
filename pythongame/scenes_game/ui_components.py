@@ -7,7 +7,7 @@ from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, ItemType, AbilityType, PortraitIconSprite, HeroId, Millis, \
     PeriodicTimer
-from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData
+from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData, ItemData
 from pythongame.core.game_state import PlayerState
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.math import get_relative_pos_within_rect
@@ -26,6 +26,7 @@ COLOR_HOVERED = (200, 200, 250)
 COLOR_ICON_HIGHLIGHTED = (250, 250, 150)
 COLOR_TOGGLE_HIGHLIGHTED = (150, 250, 200)
 COLOR_TOGGLE_OPENED = (50, 50, 120)
+COLOR_ITEM_TOOLTIP_HEADER = (250, 250, 150)
 DIR_FONTS = './resources/fonts/'
 
 TALENT_ICON_SIZE = (32, 32)
@@ -196,6 +197,15 @@ class TooltipGraphics:
         for i, line in enumerate(self._detail_lines):
             self._ui_render.text(self._font_details, line, (self._rect.x + 20, self._rect.y + 47 + i * 18), COLOR_WHITE)
 
+    @staticmethod
+    def create_for_item(ui_render: DrawableArea, data: ItemData, category_name: str, bottom_left: Tuple[int, int]):
+        tooltip_details = []
+        if category_name:
+            tooltip_details.append("[" + category_name + "]")
+        tooltip_details += data.description_lines
+        return TooltipGraphics(ui_render, COLOR_ITEM_TOOLTIP_HEADER, data.name, tooltip_details,
+                               bottom_left=bottom_left)
+
 
 class AbilityIcon(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, label: str, font, tooltip: TooltipGraphics,
@@ -337,7 +347,7 @@ class ItemIcon(UiComponent):
 
 class MapEditorIcon(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, font, user_input_key: str,
-                 map_editor_entity_id: int):
+                 map_editor_entity_id: int, tooltip: TooltipGraphics):
         super().__init__()
         self._ui_render = ui_render
         self._rect = rect
@@ -346,6 +356,7 @@ class MapEditorIcon(UiComponent):
         self._font = font
         self._user_input_key = user_input_key
         self.map_editor_entity_id = map_editor_entity_id
+        self.tooltip = tooltip
 
     def contains(self, point: Tuple[int, int]) -> bool:
         return self._rect.collidepoint(point[0], point[1])
@@ -883,6 +894,7 @@ class Minimap(UiComponent):
         self.camera_rect_ratio = None
         self.npc_positions_ratio = []
         self.update_world_area(world_area)
+        self.tooltip = None
 
     def update_world_area(self, world_area: Rect):
         self._world_area = world_area

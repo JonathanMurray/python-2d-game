@@ -22,11 +22,7 @@ from pythongame.scenes_game.ui_events import TrySwitchItemInInventory, EventTrig
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
-COLOR_HIGHLIGHTED_ICON = (250, 250, 150)
-COLOR_HOVERED_ICON_HIGHLIGHT = (200, 200, 250)
-COLOR_HIGHLIGHT_HAS_UNSEEN = (150, 250, 200)
 COLOR_BORDER = COLOR_WHITE
-COLOR_ITEM_TOOLTIP_HEADER = (250, 250, 150)
 UI_ICON_SIZE = (32, 32)
 UI_ICON_BIG_SIZE = (36, 36)
 PORTRAIT_ICON_SIZE = (100, 70)
@@ -512,15 +508,12 @@ class GameUiView:
             image = None
             tooltip = None
             if item_type:
-                item = ITEMS[item_type]
-                image = self.images_by_ui_sprite[item.icon_sprite]
-                tooltip_details = []
-                if item.item_equipment_category:
-                    category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[item.item_equipment_category]
-                    tooltip_details.append("[" + category_name + "]")
-                tooltip_details += item.description_lines
-                tooltip = TooltipGraphics(self.ui_render, COLOR_ITEM_TOOLTIP_HEADER, item.name, tooltip_details,
-                                          bottom_left=icon.rect.topleft)
+                data = ITEMS[item_type]
+                image = self.images_by_ui_sprite[data.icon_sprite]
+                category_name = None
+                if data.item_equipment_category:
+                    category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[data.item_equipment_category]
+                tooltip = TooltipGraphics.create_for_item(self.ui_render, data, category_name, icon.rect.topleft)
             elif slot_equipment_category:
                 image = self.images_by_item_category[slot_equipment_category]
                 category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[slot_equipment_category]

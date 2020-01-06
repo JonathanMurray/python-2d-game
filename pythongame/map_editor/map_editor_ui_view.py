@@ -7,11 +7,13 @@ from pygame.rect import Rect
 
 from pythongame.core.common import Direction, Sprite, UiIconSprite
 from pythongame.core.common import PortraitIconSprite
+from pythongame.core.game_data import ITEMS
+from pythongame.core.item_inventory import ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.image_loading import ImageWithRelativePosition
 from pythongame.core.view.render_util import DrawableArea
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
-from pythongame.scenes_game.ui_components import RadioButton, Checkbox, Button, Minimap, MapEditorIcon
+from pythongame.scenes_game.ui_components import RadioButton, Checkbox, Button, Minimap, MapEditorIcon, TooltipGraphics
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -97,10 +99,10 @@ class MapEditorView:
         y_2 = 40
         self.button_delete_entities = self._map_editor_icon_in_ui(
             Rect(20, y_2, MAP_EDITOR_UI_ICON_SIZE[0], MAP_EDITOR_UI_ICON_SIZE[1]),
-            'Q', None, UiIconSprite.MAP_EDITOR_TRASHCAN, 0)
+            'Q', None, UiIconSprite.MAP_EDITOR_TRASHCAN, 0, None)
         self.button_delete_decorations = self._map_editor_icon_in_ui(
             Rect(20 + MAP_EDITOR_UI_ICON_SIZE[0] + icon_space, y_2, MAP_EDITOR_UI_ICON_SIZE[0],
-                 MAP_EDITOR_UI_ICON_SIZE[1]), 'Z', None, UiIconSprite.MAP_EDITOR_RECYCLING, 0)
+                 MAP_EDITOR_UI_ICON_SIZE[1]), 'Z', None, UiIconSprite.MAP_EDITOR_RECYCLING, 0, None)
         self.entity_icons_by_type = {}
         num_icons_per_row = 23
         for entity_type in EntityTab:
@@ -109,9 +111,16 @@ class MapEditorView:
                 x = x_1 + (i % num_icons_per_row) * (MAP_EDITOR_UI_ICON_SIZE[0] + icon_space)
                 row_index = (i // num_icons_per_row)
                 y = y_2 + row_index * (MAP_EDITOR_UI_ICON_SIZE[1] + icon_space)
+                tooltip = None
+                if entity.item_type is not None:
+                    data = ITEMS[entity.item_type]
+                    category_name = None
+                    if data.item_equipment_category:
+                        category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[data.item_equipment_category]
+                    tooltip = TooltipGraphics.create_for_item(self.ui_render, data, category_name, (x, y))
                 icon = self._map_editor_icon_in_ui(
                     Rect(x, y, MAP_EDITOR_UI_ICON_SIZE[0], MAP_EDITOR_UI_ICON_SIZE[1]), '', entity.sprite, None,
-                    entity.map_editor_entity_id)
+                    entity.map_editor_entity_id, tooltip)
                 self.entity_icons_by_type[entity_type].append(icon)
 
     def handle_mouse_movement(self, mouse_screen_pos: Tuple[int, int]) -> Optional[MapEditorWorldEntity]:
@@ -229,6 +238,10 @@ class MapEditorView:
 
         self.button_generate_random_map.render()
 
+        if self.hovered_component and self.hovered_component.tooltip:
+            tooltip: TooltipGraphics = self.hovered_component.tooltip
+            tooltip.render()
+
     def render_map_editor_mouse_rect(self, color: Tuple[int, int, int], map_editor_mouse_rect: Rect):
         self.screen_render.rect(color, map_editor_mouse_rect, 3)
 
@@ -241,7 +254,7 @@ class MapEditorView:
 
     def _map_editor_icon_in_ui(self, rect: Rect, user_input_key: str,
                                sprite: Optional[Sprite], ui_icon_sprite: Optional[UiIconSprite],
-                               map_editor_entity_id: int) -> MapEditorIcon:
+                               map_editor_entity_id: int, tooltip: TooltipGraphics) -> MapEditorIcon:
         if sprite:
             image = self.images_by_sprite[sprite][Direction.DOWN][0].image
         elif ui_icon_sprite:
@@ -249,7 +262,8 @@ class MapEditorView:
         else:
             raise Exception("Nothing to render!")
 
-        return MapEditorIcon(self.ui_render, rect, image, self.font_ui_icon_keys, user_input_key, map_editor_entity_id)
+        return MapEditorIcon(self.ui_render, rect, image, self.font_ui_icon_keys, user_input_key, map_editor_entity_id,
+                             tooltip)
 
     def is_screen_position_within_ui(self, screen_position: Tuple[int, int]):
         ui_position = self._translate_screen_position_to_ui(screen_position)
