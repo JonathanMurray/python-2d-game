@@ -239,7 +239,7 @@ class NonPlayerCharacter:
     def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health_resource: HealthOrManaResource,
                  npc_mind, npc_category: NpcCategory,
                  enemy_loot_table: Optional[LootTable], death_sound_id: Optional[SoundId],
-                 max_distance_allowed_from_start_position: Optional[int]):
+                 max_distance_allowed_from_start_position: Optional[int], is_boss: bool = False):
         self.npc_type = npc_type
         self.world_entity = world_entity
         self.health_resource = health_resource
@@ -254,6 +254,7 @@ class NonPlayerCharacter:
         self.death_sound_id = death_sound_id
         self.start_position = world_entity.get_position()  # Should never be updated
         self.max_distance_allowed_from_start_position = max_distance_allowed_from_start_position
+        self.is_boss: bool = is_boss
 
     # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):

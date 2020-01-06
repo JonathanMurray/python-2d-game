@@ -50,7 +50,8 @@ class NpcCategory(Enum):
 class NpcData:
     def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
                  exp_reward: int, npc_category: NpcCategory, enemy_loot_table: Optional[LootTable],
-                 death_sound_id: Optional[SoundId], max_distance_allowed_from_start_position: Optional[int]):
+                 death_sound_id: Optional[SoundId], max_distance_allowed_from_start_position: Optional[int],
+                 is_boss=False):
         self.sprite = sprite
         self.size = size
         self.max_health = max_health
@@ -61,12 +62,14 @@ class NpcData:
         self.enemy_loot_table: LootTable = enemy_loot_table
         self.death_sound_id: Optional[SoundId] = death_sound_id
         self.max_distance_allowed_from_start_position = max_distance_allowed_from_start_position
+        self.is_boss = is_boss
 
     @staticmethod
     def enemy(sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
-              exp_reward: int, enemy_loot_table: Optional[LootTable], death_sound_id: Optional[SoundId] = None):
+              exp_reward: int, enemy_loot_table: Optional[LootTable], death_sound_id: Optional[SoundId] = None,
+              is_boss: bool = False):
         return NpcData(sprite, size, max_health, health_regen, speed, exp_reward, NpcCategory.ENEMY, enemy_loot_table,
-                       death_sound_id, None)
+                       death_sound_id, None, is_boss=is_boss)
 
     @staticmethod
     def player_summon(sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float):

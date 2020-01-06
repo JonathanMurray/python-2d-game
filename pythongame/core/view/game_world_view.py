@@ -202,9 +202,9 @@ class GameWorldView:
         for particle in visual_particle_system.particles():
             self.world_render.rect_transparent(particle.rect, particle.alpha, particle.color)
 
-    def _stat_bar_for_world_entity(self, world_entity, h, relative_y, ratio, color):
+    def _stat_bar_for_world_entity(self, world_entity, h, relative_y, ratio, color, border_color=None):
         self.world_render.stat_bar(world_entity.x + 1, world_entity.y + relative_y,
-                                   world_entity.pygame_collision_rect.w - 2, h, ratio, color)
+                                   world_entity.pygame_collision_rect.w - 2, h, ratio, color, border_color=border_color)
 
     def _entity_action_text(self, entity_action_text: EntityActionText):
         entity_center_pos = entity_action_text.entity.get_center_position()
@@ -259,16 +259,25 @@ class GameWorldView:
 
         if render_hit_and_collision_boxes:
             for entity in all_entities_to_render:
-                # hit box
                 self.world_render.rect((250, 250, 250), entity.rect(), 1)
 
         for npc in non_player_characters:
-            healthbar_color = COLOR_RED if npc.is_enemy else (250, 250, 0)
+            if npc.is_enemy:
+                if npc.is_boss:
+                    healthbar_color = (255, 215, 0)
+                    border_color = COLOR_RED
+                else:
+                    healthbar_color = COLOR_RED
+                    border_color = None
+            else:
+                healthbar_color = (250, 250, 0)
+                border_color = None
+
             npc_sprite_y_relative_to_entity = \
                 ENTITY_SPRITE_INITIALIZERS[npc.world_entity.sprite][Direction.DOWN].position_relative_to_entity[1]
             if not npc.is_neutral:
                 self._stat_bar_for_world_entity(npc.world_entity, 3, npc_sprite_y_relative_to_entity - 5,
-                                                npc.health_resource.get_partial(), healthbar_color)
+                                                npc.health_resource.get_partial(), healthbar_color, border_color)
             if npc.active_buffs:
                 buff = npc.active_buffs[0]
                 if buff.should_duration_be_visualized_on_enemies():

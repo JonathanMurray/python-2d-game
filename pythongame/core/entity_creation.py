@@ -28,7 +28,7 @@ def create_npc(npc_type: NpcType, pos: Tuple[int, int]) -> NonPlayerCharacter:
     health_resource = HealthOrManaResource(data.max_health, data.health_regen)
     return NonPlayerCharacter(npc_type, entity, health_resource, npc_mind,
                               data.npc_category, data.enemy_loot_table, data.death_sound_id,
-                              data.max_distance_allowed_from_start_position)
+                              data.max_distance_allowed_from_start_position, is_boss=data.is_boss)
 
 
 def create_money_pile_on_ground(amount: int, pos: Tuple[int, int]) -> MoneyPileOnGround:

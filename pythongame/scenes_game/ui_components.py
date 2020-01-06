@@ -353,7 +353,8 @@ class StatBar:
 
     def render(self):
         self.ui_render.stat_bar(
-            self.rect.x, self.rect.y, self.rect.w, self.rect.h, self.ratio_filled, self.color, (160, 160, 180))
+            self.rect.x, self.rect.y, self.rect.w, self.rect.h, self.ratio_filled, self.color,
+            border_color=(160, 160, 180))
         if self.show_numbers:
             text = str(self._value) + "/" + str(self._max_value)
             self.ui_render.text(self.font, text, (self.rect.x + 20, self.rect.y - 1))
@@ -818,7 +819,7 @@ class ExpBar:
 
     def render(self):
         self.ui_render.stat_bar(self.rect.x, self.rect.y, self.rect.w, self.rect.h, self.filled_ratio, (200, 200, 200),
-                                (160, 160, 180))
+                                border_color=(160, 160, 180))
         self.ui_render.text(self.font, "LEVEL: " + str(self.level), (self.rect.x, self.rect.y + 10))
 
     def update(self, level: int, filled_ratio: float):
