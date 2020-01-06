@@ -43,6 +43,13 @@ MISC_ENTITIES: List[MapEditorWorldEntity] = \
     [MapEditorWorldEntity.consumable(consumable_type) for consumable_type in ConsumableType] + \
     [MapEditorWorldEntity.portal(portal_id) for portal_id in PortalId]
 
+ENTITIES_BY_TYPE = {
+    EntityTab.ITEMS: ITEM_ENTITIES,
+    EntityTab.NPCS: NPC_ENTITIES,
+    EntityTab.WALLS: WALL_ENTITIES,
+    EntityTab.MISC: MISC_ENTITIES
+}
+
 SCREEN_SIZE = (1200, 750)
 CAMERA_SIZE = (1200, 550)
 
@@ -90,7 +97,7 @@ def main(map_file_name: Optional[str]):
     world_view = GameWorldView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite)
     ui_view = MapEditorView(
         pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite, images_by_ui_sprite, images_by_portrait_sprite,
-        game_state.entire_world_area, game_state.player_entity.get_center_position())
+        game_state.entire_world_area, game_state.player_entity.get_center_position(), ENTITIES_BY_TYPE)
 
     user_state = UserState.deleting_entities()
 
@@ -115,8 +122,6 @@ def main(map_file_name: Optional[str]):
     held_down_arrow_keys = set([])
     clock = pygame.time.Clock()
     camera_pan_timer = PeriodicTimer(Millis(50))
-
-    shown_tab = EntityTab.ITEMS
 
     while True:
 
@@ -161,13 +166,13 @@ def main(map_file_name: Optional[str]):
                     grid_cell_size_index = (grid_cell_size_index + 1) % len(possible_grid_cell_sizes)
                     grid_cell_size = possible_grid_cell_sizes[grid_cell_size_index]
                 elif event.key == pygame.K_v:
-                    shown_tab = EntityTab.ITEMS
+                    ui_view.set_shown_tab(EntityTab.ITEMS)
                 elif event.key == pygame.K_b:
-                    shown_tab = EntityTab.NPCS
+                    ui_view.set_shown_tab(EntityTab.NPCS)
                 elif event.key == pygame.K_n:
-                    shown_tab = EntityTab.WALLS
+                    ui_view.set_shown_tab(EntityTab.WALLS)
                 elif event.key == pygame.K_m:
-                    shown_tab = EntityTab.MISC
+                    ui_view.set_shown_tab(EntityTab.MISC)
 
             if event.type == pygame.KEYUP:
                 if event.key in held_down_arrow_keys:
@@ -185,7 +190,7 @@ def main(map_file_name: Optional[str]):
                         game_state.set_camera_position_to_ratio_of_world(event_from_ui.position_ratio)
                         game_state.snap_camera_to_grid(grid_cell_size)
                     elif isinstance(event_from_ui, EnableEntityTab):
-                        shown_tab = event_from_ui.entity_tab
+                        pass  # TODO
                     else:
                         raise Exception("Unhandled event: " + str(event_from_ui))
 
@@ -253,23 +258,9 @@ def main(map_file_name: Optional[str]):
             entire_world_area=game_state.entire_world_area,
             entity_action_text=None)
 
-        if shown_tab == EntityTab.ITEMS:
-            shown_entities = ITEM_ENTITIES
-        elif shown_tab == EntityTab.NPCS:
-            shown_entities = NPC_ENTITIES
-        elif shown_tab == EntityTab.WALLS:
-            shown_entities = WALL_ENTITIES
-        elif shown_tab == EntityTab.MISC:
-            shown_entities = MISC_ENTITIES
-        else:
-            raise Exception("Unknown entity tab: " + str(shown_tab))
-
-        ui_view.set_shown_tab(shown_tab)
-
         wall_positions = [w.world_entity.get_position() for w in game_state.walls_state.walls]
         npc_positions = [npc.world_entity.get_position() for npc in game_state.non_player_characters]
         entity_icon_hovered_by_mouse = ui_view.render(
-            entities=shown_entities,
             placing_entity=user_state.placing_entity,
             deleting_entities=user_state.deleting_entities,
             deleting_decorations=user_state.deleting_decorations,

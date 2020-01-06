@@ -48,11 +48,16 @@ class EnableEntityTab:
 
 class MapEditorView:
 
-    def __init__(self, pygame_screen, camera_size: Tuple[int, int], screen_size: Tuple[int, int],
+    def __init__(self,
+                 pygame_screen,
+                 camera_size: Tuple[int, int],
+                 screen_size: Tuple[int, int],
                  images_by_sprite: Dict[Sprite, Dict[Direction, List[ImageWithRelativePosition]]],
                  images_by_ui_sprite: Dict[UiIconSprite, Any],
                  images_by_portrait_sprite: Dict[PortraitIconSprite, Any],
-                 world_area: Rect, player_position: Tuple[int, int]):
+                 world_area: Rect,
+                 player_position: Tuple[int, int],
+                 entities_by_type: Dict[EntityTab, List[MapEditorWorldEntity]]):
         self.camera_size = camera_size
         self.screen_size = screen_size
         self.screen_render = DrawableArea(pygame_screen)
@@ -73,10 +78,12 @@ class MapEditorView:
             EntityTab.WALLS: RadioButton(self.ui_render, Rect(460, 10, w_tab_button, 20), "WALLS (N)"),
             EntityTab.MISC: RadioButton(self.ui_render, Rect(540, 10, w_tab_button, 20), "MISC. (M)"),
         }
+        self.entities_by_type = entities_by_type
         self.tab_buttons = list(self.tab_buttons_by_entity_type.values())
         self.minimap = Minimap(self.ui_render, Rect(self.screen_size[0] - 180, 20, 160, 160), world_area,
                                player_position)
-        self.shown_tab: EntityTab = EntityTab.ITEMS
+        self.shown_tab: EntityTab = None
+        self.set_shown_tab(EntityTab.ITEMS)
         self.checkbox_show_entity_outlines = Checkbox(self.ui_render, Rect(15, 100, 120, 20), "outlines", False)
         self.checkboxes = [self.checkbox_show_entity_outlines]
         self.button_generate_random_map: Button = Button(self.ui_render, Rect(15, 125, 120, 20), "generate random")
@@ -140,12 +147,13 @@ class MapEditorView:
         return images_for_this_direction[animation_frame_index]
 
     def set_shown_tab(self, shown_tab: EntityTab):
-        self.tab_buttons_by_entity_type[self.shown_tab].enabled = False
+        if self.shown_tab:
+            self.tab_buttons_by_entity_type[self.shown_tab].enabled = False
         self.shown_tab = shown_tab
         self.tab_buttons_by_entity_type[shown_tab].enabled = True
 
     def render(
-            self, entities: List[MapEditorWorldEntity],
+            self,
             placing_entity: Optional[MapEditorWorldEntity],
             deleting_entities: bool,
             deleting_decorations: bool,
@@ -186,7 +194,7 @@ class MapEditorView:
         x_1 = 155
         num_icons_per_row = 23
 
-        for i, entity in enumerate(entities):
+        for i, entity in enumerate(self.entities_by_type[self.shown_tab]):
             is_this_entity_being_placed = entity is placing_entity
             x = x_1 + (i % num_icons_per_row) * (MAP_EDITOR_UI_ICON_SIZE[0] + icon_space)
             row_index = (i // num_icons_per_row)
