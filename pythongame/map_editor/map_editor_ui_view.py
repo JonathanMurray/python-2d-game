@@ -41,6 +41,11 @@ class SetCameraPosition:
         self.position_ratio = position_ratio
 
 
+class EnableEntityTab:
+    def __init__(self, entity_tab: EntityTab):
+        self.entity_tab = entity_tab
+
+
 class MapEditorView:
 
     def __init__(self, pygame_screen, camera_size: Tuple[int, int], screen_size: Tuple[int, int],
@@ -62,12 +67,13 @@ class MapEditorView:
         self.font_debug_info = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 12)
         self.font_ui_icon_keys = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 12)
         w_tab_button = 75
-        self.tab_buttons = {
+        self.tab_buttons_by_entity_type = {
             EntityTab.ITEMS: RadioButton(self.ui_render, Rect(300, 10, w_tab_button, 20), "ITEMS (V)"),
             EntityTab.NPCS: RadioButton(self.ui_render, Rect(380, 10, w_tab_button, 20), "NPCS (B)"),
             EntityTab.WALLS: RadioButton(self.ui_render, Rect(460, 10, w_tab_button, 20), "WALLS (N)"),
             EntityTab.MISC: RadioButton(self.ui_render, Rect(540, 10, w_tab_button, 20), "MISC. (M)"),
         }
+        self.tab_buttons = list(self.tab_buttons_by_entity_type.values())
         self.minimap = Minimap(self.ui_render, Rect(self.screen_size[0] - 180, 20, 160, 160), world_area,
                                player_position)
         self.shown_tab: EntityTab = EntityTab.ITEMS
@@ -82,7 +88,7 @@ class MapEditorView:
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_pos)
 
-        for component in self.checkboxes + [self.button_generate_random_map, self.minimap]:
+        for component in self.checkboxes + [self.button_generate_random_map, self.minimap] + self.tab_buttons:
             if component.contains(mouse_ui_position):
                 self._on_hover_component(component)
                 return
@@ -110,6 +116,10 @@ class MapEditorView:
             mouse_ui_position = self._translate_screen_position_to_ui(self.mouse_screen_position)
             position_ratio = self.minimap.get_position_ratio(mouse_ui_position)
             return SetCameraPosition(position_ratio)
+        for entity_type in self.tab_buttons_by_entity_type:
+            if self.hovered_component == self.tab_buttons_by_entity_type[entity_type]:
+                self.set_shown_tab(entity_type)
+                return EnableEntityTab(entity_type)
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
@@ -130,9 +140,9 @@ class MapEditorView:
         return images_for_this_direction[animation_frame_index]
 
     def set_shown_tab(self, shown_tab: EntityTab):
-        self.tab_buttons[self.shown_tab].enabled = False
+        self.tab_buttons_by_entity_type[self.shown_tab].enabled = False
         self.shown_tab = shown_tab
-        self.tab_buttons[shown_tab].enabled = True
+        self.tab_buttons_by_entity_type[shown_tab].enabled = True
 
     def render(
             self, entities: List[MapEditorWorldEntity],
@@ -147,8 +157,8 @@ class MapEditorView:
             camera_world_area: Rect,
             npc_positions: List[Tuple[int, int]],
             wall_positions: List[Tuple[int, int]],
-            player_position:Tuple[int,int],
-            world_area:Rect
+            player_position: Tuple[int, int],
+            world_area: Rect
     ) -> Optional[MapEditorWorldEntity]:
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
@@ -201,10 +211,7 @@ class MapEditorView:
         self.minimap.update_world_area(world_area)
         self.minimap.render()
 
-        for button in self.tab_buttons.values():
-            button.render()
-
-        for checkbox in self.checkboxes:
+        for checkbox in self.checkboxes + self.tab_buttons:
             checkbox.render()
 
         self.button_generate_random_map.render()

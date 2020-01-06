@@ -18,7 +18,7 @@ from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.core.view.image_loading import load_images_by_sprite, load_images_by_ui_sprite, \
     load_images_by_portrait_sprite
 from pythongame.map_editor.map_editor_ui_view import MapEditorView, PORTRAIT_ICON_SIZE, MAP_EDITOR_UI_ICON_SIZE, \
-    EntityTab, GenerateRandomMap, SetCameraPosition
+    EntityTab, GenerateRandomMap, SetCameraPosition, EnableEntityTab
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
 from pythongame.map_file import save_game_state_to_json_file, create_game_state_from_json_file, \
     create_game_state_from_map_data
@@ -184,6 +184,8 @@ def main(map_file_name: Optional[str]):
                     elif isinstance(event_from_ui, SetCameraPosition):
                         game_state.set_camera_position_to_ratio_of_world(event_from_ui.position_ratio)
                         game_state.snap_camera_to_grid(grid_cell_size)
+                    elif isinstance(event_from_ui, EnableEntityTab):
+                        shown_tab = event_from_ui.entity_tab
                     else:
                         raise Exception("Unhandled event: " + str(event_from_ui))
 
