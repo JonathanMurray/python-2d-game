@@ -357,6 +357,8 @@ class MapEditorIcon(UiComponent):
         self._ui_render.image(icon_scaled_image, self._rect.topleft)
 
         self._ui_render.rect(COLOR_WHITE, self._rect, 1)
+        if self.hovered:
+            self._ui_render.rect(COLOR_HOVERED, self._rect, 1)
         if highlighted:
             self._ui_render.rect(COLOR_ICON_HIGHLIGHTED, self._rect_highlighted, 3)
         self._ui_render.text(self._font, self._user_input_key, (self._rect.x + 12, self._rect.bottom + 4))
