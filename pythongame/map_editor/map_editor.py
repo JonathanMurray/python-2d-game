@@ -260,12 +260,12 @@ def main(map_file_name: Optional[str]):
                              camera_world_area.w / world_area.w,
                              camera_world_area.h / world_area.h)
 
-        npc_positions_ratio = [((npc.world_entity.x - world_area.x) / world_area.w,
-                                (npc.world_entity.y - world_area.y) / world_area.h)
-                               for npc in game_state.non_player_characters]
-        wall_positions_ratio = [((wall.world_entity.x - world_area.x) / world_area.w,
-                                 (wall.world_entity.y - world_area.y) / world_area.h)
-                                for wall in game_state.walls_state.walls]
+        npc_positions_ratio = [
+            get_relative_pos_within_rect(npc.world_entity.get_position(), game_state.entire_world_area)
+            for npc in game_state.non_player_characters]
+        wall_positions_ratio = [
+            get_relative_pos_within_rect(wall.world_entity.get_position(), game_state.entire_world_area)
+            for wall in game_state.walls_state.walls]
 
         if shown_tab == EntityTab.ITEMS:
             shown_entities = ITEM_ENTITIES
