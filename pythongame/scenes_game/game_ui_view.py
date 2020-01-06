@@ -607,7 +607,13 @@ class GameUiView:
             icon.render(highlighted)
 
         # MINIMAP
-        self.minimap.render(ui_state.player_minimap_relative_position, ui_state.minimap_highlight_relative_position)
+        # TODO render more things (walls, NPCs, camera rect)?
+        self.minimap.render(
+            player_relative_position=ui_state.player_minimap_relative_position,
+            minimap_highlight_relative_position=ui_state.minimap_highlight_relative_position,
+            camera_rect_ratio=None,
+            npc_positions_ratio=[],
+            wall_positions_ratio=[])
 
         simple_components = [self.exp_bar, self.portrait, self.healthbar, self.manabar, self.money_text, self.dialog,
                              self.buffs, self.sound_checkbox, self.save_button, self.fullscreen_checkbox,

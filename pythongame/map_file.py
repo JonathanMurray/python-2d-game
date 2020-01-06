@@ -15,19 +15,26 @@ from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file_path: str, hero_id: HeroId) -> GameState:
     with open(map_file_path) as map_file:
         json_data = json.loads(map_file.read())
+        return create_game_state_from_map_data(camera_size, json_data, hero_id)
 
-        path_finder = GlobalPathFinder()
-        set_global_path_finder(path_finder)
 
-        player_state = create_player_state(hero_id)
-        game_state = MapJson.deserialize(json_data, player_state, camera_size)
+def create_game_state_from_map_data(camera_size: Tuple[int, int], json_data, hero_id: HeroId) -> GameState:
+    path_finder = GlobalPathFinder()
+    set_global_path_finder(path_finder)
 
-        path_finder.set_grid(game_state.pathfinder_wall_grid)
-        return game_state
+    player_state = create_player_state(hero_id)
+    game_state = MapJson.deserialize(json_data, player_state, camera_size)
+
+    path_finder.set_grid(game_state.pathfinder_wall_grid)
+    return game_state
 
 
 def save_game_state_to_json_file(game_state: GameState, map_file: str):
     json_data = MapJson.serialize(game_state)
+    save_map_data_to_file(json_data, map_file)
+
+
+def save_map_data_to_file(json_data, map_file: str):
     with open(map_file, 'w') as map_file:
         map_file.write(json.dumps(json_data, indent=2))
 
@@ -46,6 +53,23 @@ class MapJson:
             "decorations": [DecorationJson.serialize(d) for d in game_state.decorations_state.decoration_entities],
             "portals": [PortalJson.serialize(p) for p in game_state.portals],
             "chests": [ChestJson.serialize(c) for c in game_state.chests]
+        }
+
+    @staticmethod
+    def serialize_from_data(walls: List[Wall], decorations: List[DecorationEntity],
+                            items_on_ground: List[ItemOnGround], entire_world_area: Rect,
+                            player_position: Tuple[int, int], npcs: List[NonPlayerCharacter]):
+        return {
+            "player": PlayerJson.serialize_from_position(player_position),
+            "consumables_on_ground": [],
+            "items_on_ground": [ItemJson.serialize(i) for i in items_on_ground],
+            "money_piles_on_ground": [],
+            "non_player_characters": [NpcJson.serialize(npc) for npc in npcs],
+            "walls": [WallJson.serialize(wall) for wall in walls],
+            "entire_world_area": WorldAreaJson.serialize(entire_world_area),
+            "decorations": [DecorationJson.serialize(decoration_entity) for decoration_entity in decorations],
+            "portals": [],
+            "chests": []
         }
 
     @staticmethod
@@ -69,7 +93,11 @@ class MapJson:
 class PlayerJson:
     @staticmethod
     def serialize(entity: WorldEntity):
-        return {"position": entity.get_position()}
+        return PlayerJson.serialize_from_position(entity.get_position())
+
+    @staticmethod
+    def serialize_from_position(position: Tuple[int, int]):
+        return {"position": position}
 
     @staticmethod
     def deserialize(hero_id: HeroId, data) -> WorldEntity:
@@ -139,7 +167,11 @@ class MoneyJson:
 class ItemJson:
     @staticmethod
     def serialize(item: ItemOnGround):
-        return {"item_type": item.item_type.name, "position": item.world_entity.get_position()}
+        return ItemJson.serialize_from_data(item.item_type, item.world_entity.get_position())
+
+    @staticmethod
+    def serialize_from_data(item_type: ItemType, position: Tuple[int, int]):
+        return {"item_type": item_type.name, "position": position}
 
     @staticmethod
     def deserialize(data) -> ItemOnGround:

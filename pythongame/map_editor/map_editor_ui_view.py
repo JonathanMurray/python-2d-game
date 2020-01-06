@@ -11,7 +11,7 @@ from pythongame.core.math import is_point_in_rect, sum_of_vectors
 from pythongame.core.view.image_loading import ImageWithRelativePosition
 from pythongame.core.view.render_util import DrawableArea
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
-from pythongame.scenes_game.ui_components import RadioButton, Checkbox
+from pythongame.scenes_game.ui_components import RadioButton, Checkbox, Button, Minimap
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -30,6 +30,15 @@ class EntityTab(Enum):
     NPCS = 1
     WALLS = 2
     MISC = 3
+
+
+class GenerateRandomMap:
+    pass
+
+
+class SetCameraPosition:
+    def __init__(self, position_ratio: Tuple[float, float]):
+        self.position_ratio = position_ratio
 
 
 class MapEditorView:
@@ -58,9 +67,11 @@ class MapEditorView:
             EntityTab.WALLS: RadioButton(self.ui_render, Rect(460, 10, w_tab_button, 20), "WALLS (N)"),
             EntityTab.MISC: RadioButton(self.ui_render, Rect(540, 10, w_tab_button, 20), "MISC. (M)"),
         }
+        self.minimap = Minimap(self.ui_render, Rect(self.screen_size[0] - 180, 20, 160, 160))
         self.shown_tab: EntityTab = EntityTab.ITEMS
-        self.checkbox_show_entity_outlines = Checkbox(self.ui_render, Rect(15, 100, 120, 20), "outlines", True)
+        self.checkbox_show_entity_outlines = Checkbox(self.ui_render, Rect(15, 100, 120, 20), "outlines", False)
         self.checkboxes = [self.checkbox_show_entity_outlines]
+        self.button_generate_random_map: Button = Button(self.ui_render, Rect(15, 125, 120, 20), "generate random")
         self.mouse_screen_position = (0, 0)
         self.hovered_component = None
 
@@ -69,9 +80,13 @@ class MapEditorView:
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_pos)
 
-        for checkbox in self.checkboxes:
-            if checkbox.contains(mouse_ui_position):
-                self._on_hover_component(checkbox)
+        for component in self.checkboxes + [self.button_generate_random_map, self.minimap]:
+            if component.contains(mouse_ui_position):
+                self._on_hover_component(component)
+                return
+
+        # If something was hovered, we would have returned from the method
+        self._set_currently_hovered_component_not_hovered()
 
     def _on_hover_component(self, component):
         self._set_currently_hovered_component_not_hovered()
@@ -83,9 +98,16 @@ class MapEditorView:
             self.hovered_component.hovered = False
             self.hovered_component = None
 
-    def handle_mouse_click(self):
+    def handle_mouse_click(self) -> Optional[Any]:
         if self.hovered_component in self.checkboxes:
             self.hovered_component.on_click()
+            return None
+        if self.hovered_component == self.button_generate_random_map:
+            return GenerateRandomMap()
+        if self.hovered_component == self.minimap:
+            mouse_ui_position = self._translate_screen_position_to_ui(self.mouse_screen_position)
+            position_ratio = self.minimap.get_position_ratio(mouse_ui_position)
+            return SetCameraPosition(position_ratio)
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self.ui_screen_area.x, position[1] + self.ui_screen_area.y
@@ -115,7 +137,8 @@ class MapEditorView:
             placing_entity: Optional[MapEditorWorldEntity], deleting_entities: bool, deleting_decorations: bool,
             num_enemies: int, num_walls: int, num_decorations: int, grid_cell_size: int,
             mouse_screen_position: Tuple[int, int], camera_rect_ratio: Tuple[float, float, float, float],
-            npc_positions_ratio: List[Tuple[float, float]], wall_positions_ratio: List[Tuple[float, float]]
+            npc_positions_ratio: List[Tuple[float, float]], wall_positions_ratio: List[Tuple[float, float]],
+            relative_player_position: Tuple[float, float]
     ) -> Optional[MapEditorWorldEntity]:
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
@@ -161,7 +184,8 @@ class MapEditorView:
         self.screen_render.text(self.font_debug_info, "# decorations: " + str(num_decorations), (5, 37))
         self.screen_render.text(self.font_debug_info, "Cell size: " + str(grid_cell_size), (5, 54))
 
-        self._render_minimap(camera_rect_ratio, npc_positions_ratio, wall_positions_ratio)
+        self.minimap.render(relative_player_position, None, camera_rect_ratio, npc_positions_ratio,
+                            wall_positions_ratio)
 
         for button in self.tab_buttons.values():
             button.render()
@@ -169,40 +193,9 @@ class MapEditorView:
         for checkbox in self.checkboxes:
             checkbox.render()
 
+        self.button_generate_random_map.render()
+
         return hovered_by_mouse
-
-    def _render_minimap(self, camera_rect_ratio, npc_positions_ratio, wall_positions_ratio):
-        rect = Rect(self.screen_size[0] - 180, self.screen_size[1] - 180, 160, 160)
-        border_width = 1
-        self.screen_render.rect(
-            COLOR_WHITE,
-            Rect(rect.x - border_width, rect.y - border_width, rect.w + border_width * 2, rect.h + border_width * 2),
-            border_width)
-
-        for npc_pos in npc_positions_ratio:
-            self.screen_render.rect(
-                (200, 200, 200),
-                Rect(rect.x + npc_pos[0] * rect.w,
-                     rect.y + npc_pos[1] * rect.h,
-                     1,
-                     1),
-                1)
-        for wall_pos in wall_positions_ratio:
-            self.screen_render.rect(
-                (100, 100, 150),
-                Rect(rect.x + wall_pos[0] * rect.w,
-                     rect.y + wall_pos[1] * rect.h,
-                     1,
-                     1),
-                1)
-
-        self.screen_render.rect(
-            (150, 250, 150),
-            Rect(rect.x + camera_rect_ratio[0] * rect.w,
-                 rect.y + camera_rect_ratio[1] * rect.h,
-                 camera_rect_ratio[2] * rect.w,
-                 camera_rect_ratio[3] * rect.h),
-            1)
 
     def render_map_editor_mouse_rect(self, color: Tuple[int, int, int], map_editor_mouse_rect: Rect):
         self.screen_render.rect(color, map_editor_mouse_rect, 3)

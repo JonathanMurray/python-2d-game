@@ -4,6 +4,7 @@ from typing import Tuple, Optional
 from pygame.rect import Rect
 
 from pythongame.core.common import AbilityType, Millis
+from pythongame.core.math import get_relative_pos_within_rect
 
 MINIMAP_UPDATE_INTERVAL = 1000
 MESSAGE_DURATION = 3500
@@ -70,12 +71,8 @@ class GameUiState:
         self._ticks_since_minimap_updated += time_passed
         if self._ticks_since_minimap_updated > MINIMAP_UPDATE_INTERVAL:
             self._ticks_since_minimap_updated = 0
-            # TODO extract world area arithmetic
-            relative_x = (self._player_entity_center_position[0]
-                          - self._entire_world_area.x) / self._entire_world_area.w
-            relative_y = (self._player_entity_center_position[1]
-                          - self._entire_world_area.y) / self._entire_world_area.h
-            self.player_minimap_relative_position = (relative_x, relative_y)
+            self.player_minimap_relative_position = get_relative_pos_within_rect(
+                self._player_entity_center_position, self._entire_world_area)
 
         self._ticks_since_message_updated += time_passed
         if self.message != "" and self._ticks_since_message_updated > MESSAGE_DURATION:

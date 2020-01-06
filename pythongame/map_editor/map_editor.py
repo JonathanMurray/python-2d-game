@@ -5,6 +5,7 @@ from typing import Tuple, Optional, List
 import pygame
 from pygame.rect import Rect
 
+from generate_dungeon import generate_random_map_as_json
 from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, ItemType, PortalId, HeroId, PeriodicTimer, \
     Millis
 from pythongame.core.entity_creation import create_portal, create_hero_world_entity, create_npc, create_wall, \
@@ -12,14 +13,15 @@ from pythongame.core.entity_creation import create_portal, create_hero_world_ent
     create_player_state, create_chest
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, PORTRAIT_ICON_SPRITE_PATHS
 from pythongame.core.game_state import GameState
-from pythongame.core.math import sum_of_vectors
+from pythongame.core.math import sum_of_vectors, get_relative_pos_within_rect
 from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.core.view.image_loading import load_images_by_sprite, load_images_by_ui_sprite, \
     load_images_by_portrait_sprite
 from pythongame.map_editor.map_editor_ui_view import MapEditorView, PORTRAIT_ICON_SIZE, MAP_EDITOR_UI_ICON_SIZE, \
-    EntityTab
+    EntityTab, GenerateRandomMap, SetCameraPosition
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
-from pythongame.map_file import save_game_state_to_json_file, create_game_state_from_json_file
+from pythongame.map_file import save_game_state_to_json_file, create_game_state_from_json_file, \
+    create_game_state_from_map_data
 from pythongame.register_game_data import register_all_game_data
 
 MAP_DIR = "resources/maps/"
@@ -105,6 +107,7 @@ def main(map_file_name: Optional[str]):
     is_snapped_mouse_over_ui = False
 
     game_state.center_camera_on_player()
+    game_state.snap_camera_to_grid(grid_cell_size)
     game_state.camera_world_area.topleft = ((game_state.camera_world_area.x // grid_cell_size) * grid_cell_size,
                                             (game_state.camera_world_area.y // grid_cell_size) * grid_cell_size)
 
@@ -170,7 +173,19 @@ def main(map_file_name: Optional[str]):
                     held_down_arrow_keys.remove(event.key)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                ui_view.handle_mouse_click()
+                event_from_ui = ui_view.handle_mouse_click()
+                if event_from_ui:
+                    if isinstance(event_from_ui, GenerateRandomMap):
+                        map_json = generate_random_map_as_json()
+                        game_state = create_game_state_from_map_data(CAMERA_SIZE, map_json, HERO_ID)
+                        game_state.center_camera_on_player()
+                        game_state.snap_camera_to_grid(grid_cell_size)
+                    elif isinstance(event_from_ui, SetCameraPosition):
+                        game_state.set_camera_position_to_ratio_of_world(event_from_ui.position_ratio)
+                        game_state.snap_camera_to_grid(grid_cell_size)
+                    else:
+                        raise Exception("Unhandled event: " + str(event_from_ui))
+
                 is_mouse_button_down = True
                 if user_state.placing_entity:
                     entity_being_placed = user_state.placing_entity
@@ -262,6 +277,8 @@ def main(map_file_name: Optional[str]):
 
         ui_view.set_shown_tab(shown_tab)
 
+        relative_player_pos = get_relative_pos_within_rect(
+            game_state.player_entity.get_position(), game_state.entire_world_area)
         entity_icon_hovered_by_mouse = ui_view.render(
             entities=shown_entities,
             placing_entity=user_state.placing_entity,
@@ -274,7 +291,8 @@ def main(map_file_name: Optional[str]):
             mouse_screen_position=exact_mouse_screen_position,
             camera_rect_ratio=camera_rect_ratio,
             npc_positions_ratio=npc_positions_ratio,
-            wall_positions_ratio=wall_positions_ratio)
+            wall_positions_ratio=wall_positions_ratio,
+            relative_player_position=relative_player_pos)
 
         if is_mouse_button_down and entity_icon_hovered_by_mouse:
             user_state = UserState.placing_entity(entity_icon_hovered_by_mouse)
