@@ -13,7 +13,7 @@ from pythongame.core.entity_creation import create_portal, create_hero_world_ent
     create_player_state, create_chest
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, PORTRAIT_ICON_SPRITE_PATHS
 from pythongame.core.game_state import GameState
-from pythongame.core.math import sum_of_vectors, get_relative_pos_within_rect
+from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.core.view.image_loading import load_images_by_sprite, load_images_by_ui_sprite, \
     load_images_by_portrait_sprite
@@ -88,8 +88,9 @@ def main(map_file_name: Optional[str]):
     images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, MAP_EDITOR_UI_ICON_SIZE)
     images_by_portrait_sprite = load_images_by_portrait_sprite(PORTRAIT_ICON_SPRITE_PATHS, PORTRAIT_ICON_SIZE)
     world_view = GameWorldView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite)
-    ui_view = MapEditorView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite, images_by_ui_sprite,
-                            images_by_portrait_sprite)
+    ui_view = MapEditorView(
+        pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite, images_by_ui_sprite, images_by_portrait_sprite,
+        game_state.entire_world_area, game_state.player_entity.get_center_position())
 
     user_state = UserState.deleting_entities()
 
@@ -250,20 +251,6 @@ def main(map_file_name: Optional[str]):
             entire_world_area=game_state.entire_world_area,
             entity_action_text=None)
 
-        camera_world_area = game_state.camera_world_area
-        world_area = game_state.entire_world_area
-        camera_rect_ratio = ((camera_world_area.x - world_area.x) / world_area.w,
-                             (camera_world_area.y - world_area.y) / world_area.h,
-                             camera_world_area.w / world_area.w,
-                             camera_world_area.h / world_area.h)
-
-        npc_positions_ratio = [((npc.world_entity.x - world_area.x) / world_area.w,
-                                (npc.world_entity.y - world_area.y) / world_area.h)
-                               for npc in game_state.non_player_characters]
-        wall_positions_ratio = [((wall.world_entity.x - world_area.x) / world_area.w,
-                                 (wall.world_entity.y - world_area.y) / world_area.h)
-                                for wall in game_state.walls_state.walls]
-
         if shown_tab == EntityTab.ITEMS:
             shown_entities = ITEM_ENTITIES
         elif shown_tab == EntityTab.NPCS:
@@ -277,8 +264,8 @@ def main(map_file_name: Optional[str]):
 
         ui_view.set_shown_tab(shown_tab)
 
-        relative_player_pos = get_relative_pos_within_rect(
-            game_state.player_entity.get_position(), game_state.entire_world_area)
+        wall_positions = [w.world_entity.get_position() for w in game_state.walls_state.walls]
+        npc_positions = [npc.world_entity.get_position() for npc in game_state.non_player_characters]
         entity_icon_hovered_by_mouse = ui_view.render(
             entities=shown_entities,
             placing_entity=user_state.placing_entity,
@@ -289,10 +276,11 @@ def main(map_file_name: Optional[str]):
             num_decorations=len(game_state.decorations_state.decoration_entities),
             grid_cell_size=grid_cell_size,
             mouse_screen_position=exact_mouse_screen_position,
-            camera_rect_ratio=camera_rect_ratio,
-            npc_positions_ratio=npc_positions_ratio,
-            wall_positions_ratio=wall_positions_ratio,
-            relative_player_position=relative_player_pos)
+            camera_world_area=game_state.camera_world_area,
+            npc_positions=npc_positions,
+            wall_positions=wall_positions,
+            player_position=game_state.player_entity.get_center_position(),
+            world_area=game_state.entire_world_area)
 
         if is_mouse_button_down and entity_icon_hovered_by_mouse:
             user_state = UserState.placing_entity(entity_icon_hovered_by_mouse)

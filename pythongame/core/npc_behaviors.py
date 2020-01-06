@@ -10,7 +10,7 @@ from pythongame.core.math import is_x_and_y_within_distance, get_perpendicular_d
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.sound_player import play_sound
-from pythongame.scenes_game.game_ui_state import GameUiState
+from pythongame.scenes_game.game_ui_view import GameUiView
 
 
 class AbstractNpcMind:
@@ -104,11 +104,11 @@ class AbstractNpcAction:
         pass
 
     # is called when the option is selected/hovered in the dialog
-    def on_hover(self, game_state: GameState, ui_state: GameUiState):
+    def on_hover(self, game_state: GameState, ui_view: GameUiView):
         pass
 
     # is called when the option stops being selected/hovered in the dialog
-    def on_blur(self, game_state: GameState, ui_state: GameUiState):
+    def on_blur(self, game_state: GameState, ui_view: GameUiView):
         pass
 
 
@@ -178,25 +178,6 @@ class BuyItemNpcAction(AbstractNpcAction):
             return "You don't have that!"
 
 
-class DialogOptionData:
-    def __init__(self, summary: str, action_text: str, action: Optional[AbstractNpcAction],
-                 ui_icon_sprite: Optional[UiIconSprite] = None, detail_header: Optional[str] = None,
-                 detail_body: Optional[str] = None):
-        self.summary = summary
-        self.action_text = action_text
-        self.action = action
-        self.ui_icon_sprite = ui_icon_sprite
-        self.detail_header = detail_header
-        self.detail_body = detail_body
-
-
-class DialogData:
-    def __init__(self, portrait_icon_sprite: PortraitIconSprite, text_body: str, options: List[DialogOptionData]):
-        self.portrait_icon_sprite = portrait_icon_sprite
-        self.text_body = text_body
-        self.options = options
-
-
 _npc_mind_constructors: Dict[NpcType, Type[AbstractNpcMind]] = {}
 
 _npc_dialog_data: Dict[NpcType, DialogData] = {}
@@ -223,18 +204,16 @@ def select_npc_action(npc_type: NpcType, option_index: int, game_state: GameStat
     return optional_message
 
 
-def hover_npc_action(npc_type: NpcType, option_index: int, game_state: GameState,
-                     ui_state: GameUiState):
+def hover_npc_action(npc_type: NpcType, option_index: int, game_state: GameState, ui_view: GameUiView):
     action = _npc_dialog_data[npc_type].options[option_index].action
     if action:
-        action.on_hover(game_state, ui_state)
+        action.on_hover(game_state, ui_view)
 
 
-def blur_npc_action(npc_type: NpcType, option_index: int, game_state: GameState,
-                    ui_state: GameUiState):
+def blur_npc_action(npc_type: NpcType, option_index: int, game_state: GameState, ui_view: GameUiView):
     action = _npc_dialog_data[npc_type].options[option_index].action
     if action:
-        action.on_blur(game_state, ui_state)
+        action.on_blur(game_state, ui_view)
 
 
 def has_npc_dialog(npc_type: NpcType) -> bool:

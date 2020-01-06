@@ -5,7 +5,6 @@ import pygame
 from pythongame.core.common import AbstractScene, SceneTransition
 from pythongame.core.game_state import GameState
 from pythongame.core.view.game_world_view import GameWorldView
-from pythongame.scenes_game.game_ui_state import GameUiState
 from pythongame.scenes_game.game_ui_view import GameUiView
 
 
@@ -15,13 +14,11 @@ class PausedScene(AbstractScene):
             playing_scene: AbstractScene,
             world_view: GameWorldView,
             ui_view: GameUiView,
-            game_state: GameState,
-            ui_state: GameUiState):
+            game_state: GameState):
         self.playing_scene = playing_scene
         self.world_view = world_view
         self.ui_view = ui_view
         self.game_state = game_state
-        self.ui_state = ui_state
 
     def on_enter(self):
         self.ui_view.set_paused(True)
@@ -48,4 +45,4 @@ class PausedScene(AbstractScene):
             entire_world_area=self.game_state.entire_world_area,
             entity_action_text=None)
 
-        self.ui_view.render(ui_state=self.ui_state)
+        self.ui_view.render()

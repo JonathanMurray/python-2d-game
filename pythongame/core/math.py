@@ -133,5 +133,5 @@ def get_middle_point(pos_1: Tuple[int, int], pos_2: Tuple[int, int]) -> Tuple[in
     return int((pos_1[0] + pos_2[0]) / 2), int((pos_1[1] + pos_2[1]) / 2)
 
 
-def get_relative_pos_within_rect(point: Tuple[int, int], rect: Rect):
+def get_relative_pos_within_rect(point: Tuple[int, int], rect: Rect) -> Tuple[float, float]:
     return (point[0] - rect.x) / rect.w, (point[1] - rect.y) / rect.h

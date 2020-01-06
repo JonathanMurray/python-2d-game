@@ -4,19 +4,18 @@ import pygame
 from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite, \
-    SoundId, NpcType
+    SoundId, NpcType, Millis, DialogData
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, ITEMS, HEROES
 from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import is_point_in_rect
-from pythongame.core.npc_behaviors import DialogData
 from pythongame.core.sound_player import play_sound
 from pythongame.core.talents import TalentsState, TalentsConfig
 from pythongame.core.view.render_util import DrawableArea
-from pythongame.scenes_game.game_ui_state import GameUiState, ToggleButtonId
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
     ToggleButton, ControlsWindow, StatsWindow, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text, \
-    DialogOption, Dialog, Checkbox, Button, Message, PausedSplashScreen, TalentTierData, TalentOptionData, TalentIcon
+    DialogOption, Dialog, Checkbox, Button, Message, PausedSplashScreen, TalentTierData, TalentOptionData, TalentIcon, \
+    ToggleButtonId
 from pythongame.scenes_game.ui_events import TrySwitchItemInInventory, EventTriggeredFromUi, \
     DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
     PickTalent, StartDraggingItemOrConsumable, SaveGame, ToggleSound, ToggleFullscreen
@@ -34,6 +33,9 @@ PORTRAIT_ICON_SIZE = (100, 70)
 
 DIR_FONTS = './resources/fonts/'
 
+HIGHLIGHT_CONSUMABLE_ACTION_DURATION = 120
+HIGHLIGHT_ABILITY_ACTION_DURATION = 120
+
 
 class DialogState:
     def __init__(self):
@@ -41,6 +43,34 @@ class DialogState:
         self.data: DialogData = None
         self.npc: NonPlayerCharacter = None
         self.active = False
+
+
+class InfoMessage:
+    def __init__(self):
+        self._ticks_since_message_updated = 0
+
+        self.message = ""
+        self._enqueued_messages = []
+
+    def set_message(self, message: str):
+        self.message = message
+        self._ticks_since_message_updated = 0
+
+    def enqueue_message(self, message: str):
+        self._enqueued_messages.append(message)
+
+    def clear_messages(self):
+        self.message = None
+        self._enqueued_messages.clear()
+
+    def notify_time_passed(self, time_passed: Millis):
+        self._ticks_since_message_updated += time_passed
+        if self.message != "" and self._ticks_since_message_updated > 3500:
+            if self._enqueued_messages:
+                new_message = self._enqueued_messages.pop(0)
+                self.set_message(new_message)
+            else:
+                self.message = ""
 
 
 class GameUiView:
@@ -94,7 +124,7 @@ class GameUiView:
         self.inventory_icons_rect: Rect = Rect(0, 0, 0, 0)
         self.inventory_icons: List[ItemIcon] = []
         self.exp_bar = ExpBar(self.ui_render, Rect(135, 8, 300, 2), self.font_level)
-        self.minimap = Minimap(self.ui_render, Rect(475, 52, 80, 80))
+        self.minimap = Minimap(self.ui_render, Rect(475, 52, 80, 80), Rect(0, 0, 1, 1), (0, 0))
         self.buffs = Buffs(self.ui_render, self.font_buff_texts, (10, -35))
         self.money_text = Text(self.ui_render, self.font_ui_money, (24, 150), "NO MONEY")
         self.talents_window: TalentsWindow = None
@@ -124,6 +154,13 @@ class GameUiView:
         self.is_mouse_hovering_ui = False
         self.mouse_screen_position = (0, 0)
         self.dialog_state = DialogState()
+
+        self._ticks_since_last_consumable_action = 0
+        self._ticks_since_last_ability_action = 0
+        self.highlighted_consumable_action: Optional[int] = None
+        self.highlighted_ability_action: Optional[AbilityType] = None
+
+        self.info_message = InfoMessage()
 
     def _setup_ability_icons(self):
         x_0 = 140
@@ -377,6 +414,14 @@ class GameUiView:
         if self.enabled_toggle != self.talents_toggle:
             self.talents_toggle.highlighted = True
 
+    def on_ability_was_clicked(self, ability_type: AbilityType):
+        self.highlighted_ability_action = ability_type
+        self._ticks_since_last_ability_action = 0
+
+    def on_consumable_was_clicked(self, slot_number: int):
+        self.highlighted_consumable_action = slot_number
+        self._ticks_since_last_consumable_action = 0
+
     def on_player_movement_speed_updated(self, speed_multiplier: float):
         self.stats_window.player_speed_multiplier = speed_multiplier
 
@@ -488,6 +533,15 @@ class GameUiView:
     def on_fullscreen_changed(self, fullscreen: bool):
         self.fullscreen_checkbox.checked = fullscreen
 
+    def on_world_area_updated(self, world_area: Rect):
+        self.minimap.update_world_area(world_area)
+
+    def on_walls_seen(self, seen_wall_positions: List[Tuple[int, int]]):
+        self.minimap.add_walls(seen_wall_positions)
+
+    def on_player_position_updated(self, center_position: Tuple[int, int]):
+        self.minimap.update_player_position(center_position)
+
     # --------------------------------------------------------------------------------------------------------
     #                              HANDLE DIALOG USER INTERACTIONS
     # --------------------------------------------------------------------------------------------------------
@@ -532,6 +586,19 @@ class GameUiView:
     #                                     UPDATE MISC. STATE
     # --------------------------------------------------------------------------------------------------------
 
+    def update(self, time_passed: Millis):
+        self.minimap.update(time_passed)
+
+        self._ticks_since_last_consumable_action += time_passed
+        if self._ticks_since_last_consumable_action > HIGHLIGHT_CONSUMABLE_ACTION_DURATION:
+            self.highlighted_consumable_action = None
+
+        self._ticks_since_last_ability_action += time_passed
+        if self._ticks_since_last_ability_action > HIGHLIGHT_ABILITY_ACTION_DURATION:
+            self.highlighted_ability_action = None
+
+        self.info_message.notify_time_passed(time_passed)
+
     def update_hero(self, hero_id: HeroId):
         sprite = HEROES[hero_id].portrait_icon_sprite
         image = self.images_by_portrait_sprite[sprite]
@@ -546,6 +613,12 @@ class GameUiView:
 
     def remove_highlight_from_talent_toggle(self):
         self.talents_toggle.highlighted = False
+
+    def set_minimap_highlight(self, position_ratio: Tuple[float, float]):
+        self.minimap.set_highlight(position_ratio)
+
+    def remove_minimap_highlight(self):
+        self.minimap.remove_highlight()
 
     # --------------------------------------------------------------------------------------------------------
     #                                          RENDERING
@@ -574,7 +647,7 @@ class GameUiView:
                     mouse_screen_position[1] - relative_mouse_pos[1] - (UI_ICON_BIG_SIZE[1] - UI_ICON_SIZE[1]) // 2)
         self.screen_render.image(big_image, position)
 
-    def render(self, ui_state: GameUiState):
+    def render(self):
 
         self.screen_render.rect(COLOR_BORDER, Rect(0, 0, self.camera_size[0], self.camera_size[1]), 1)
         self.screen_render.rect_filled((20, 10, 0), Rect(0, self.camera_size[1], self.screen_size[0],
@@ -584,7 +657,7 @@ class GameUiView:
         self.ui_render.rect_filled((60, 60, 80), self.consumable_icons_row)
         for icon in self.consumable_icons:
             # TODO treat this as state and update it elsewhere
-            recently_clicked = icon.slot_number == ui_state.highlighted_consumable_action
+            recently_clicked = icon.slot_number == self.highlighted_consumable_action
             icon.render(recently_clicked)
 
         # ABILITIES
@@ -593,7 +666,7 @@ class GameUiView:
             ability_type = icon.ability_type
             # TODO treat this as state and update it elsewhere
             if ability_type:
-                recently_clicked = ability_type == ui_state.highlighted_ability_action
+                recently_clicked = ability_type == self.highlighted_ability_action
                 icon.render(recently_clicked)
 
         # ITEMS
@@ -607,13 +680,7 @@ class GameUiView:
             icon.render(highlighted)
 
         # MINIMAP
-        # TODO render more things (walls, NPCs, camera rect)?
-        self.minimap.render(
-            player_relative_position=ui_state.player_minimap_relative_position,
-            minimap_highlight_relative_position=ui_state.minimap_highlight_relative_position,
-            camera_rect_ratio=None,
-            npc_positions_ratio=[],
-            wall_positions_ratio=[])
+        self.minimap.render()
 
         simple_components = [self.exp_bar, self.portrait, self.healthbar, self.manabar, self.money_text, self.dialog,
                              self.buffs, self.sound_checkbox, self.save_button, self.fullscreen_checkbox,
@@ -627,7 +694,7 @@ class GameUiView:
         self.screen_render.rect_transparent(Rect(0, 0, 70, 20), 100, COLOR_BLACK)
         self.screen_render.text(self.font_debug_info, "fps: " + self.fps_string, (5, 3))
 
-        self.message.render(ui_state.message)
+        self.message.render(self.info_message.message)
 
         if self.hovered_component and self.hovered_component.tooltip and not self.item_slot_being_dragged \
                 and not self.consumable_slot_being_dragged:

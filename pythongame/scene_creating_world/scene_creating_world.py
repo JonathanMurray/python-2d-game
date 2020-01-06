@@ -13,7 +13,6 @@ from pythongame.core.world_behavior import ChallengeBehavior, StoryBehavior, Abs
 from pythongame.map_file import create_game_state_from_json_file
 from pythongame.player_file import SavedPlayerState
 from pythongame.scenes_game.game_engine import GameEngine
-from pythongame.scenes_game.game_ui_state import GameUiState
 from pythongame.scenes_game.game_ui_view import GameUiView
 
 
@@ -41,7 +40,7 @@ class CreatingWorldScene(AbstractScene):
     def __init__(
             self,
             playing_scene: Callable[
-                [GameState, GameEngine, AbstractWorldBehavior, GameUiState, GameUiView, bool, Optional[str], Millis],
+                [GameState, GameEngine, AbstractWorldBehavior, GameUiView, bool, Optional[str], Millis],
                 AbstractScene],
             picking_hero_scene: Callable[[InitFlags], AbstractScene],
             challenge_complete_scene: Callable[[Millis], AbstractScene],
@@ -76,10 +75,9 @@ class CreatingWorldScene(AbstractScene):
 
         total_time_played_on_character = saved_player_state.total_time_played_on_character if saved_player_state else 0
 
-        ui_state = GameUiState()
         game_state = create_game_state_from_json_file(
             self.camera_size, map_file_path, picked_hero)
-        game_engine = GameEngine(game_state, ui_state)
+        game_engine = GameEngine(game_state, self.ui_view.info_message)
         game_state.player_state.exp_was_updated.register_observer(self.ui_view.on_player_exp_updated)
         game_state.player_state.talents_were_updated.register_observer(self.ui_view.on_talents_updated)
         game_state.player_state.notify_talent_observers()  # Must notify the initial state
@@ -88,6 +86,8 @@ class CreatingWorldScene(AbstractScene):
         game_state.player_state.stats_were_updated.register_observer(self.ui_view.on_player_stats_updated)
         game_state.player_state.notify_stats_observers()  # Must notify the initial state
         game_engine.talent_was_unlocked.register_observer(self.ui_view.on_talent_was_unlocked)
+        game_engine.ability_was_clicked.register_observer(self.ui_view.on_ability_was_clicked)
+        game_engine.consumable_was_clicked.register_observer(self.ui_view.on_consumable_was_clicked)
         game_state.player_state.money_was_updated.register_observer(self.ui_view.on_money_updated)
         game_state.player_state.notify_money_observers()  # Must notify the initial state
         game_state.player_state.abilities_were_updated.register_observer(self.ui_view.on_abilities_updated)
@@ -98,12 +98,21 @@ class CreatingWorldScene(AbstractScene):
         game_state.player_state.buffs_were_updated.register_observer(self.ui_view.on_buffs_updated)
         game_state.player_entity.movement_changed = Observable()
         game_state.player_entity.movement_changed.register_observer(play_or_stop_footstep_sounds)
+        game_state.player_entity.position_changed = Observable()
+        game_state.player_entity.position_changed.register_observer(self.ui_view.on_player_position_updated)
+        game_state.player_entity.position_changed.register_observer(
+            lambda _: self.ui_view.on_walls_seen([w.get_position() for w in game_state.get_walls_in_sight_of_player()]))
+        self.ui_view.on_world_area_updated(game_state.entire_world_area)
+        # Must center camera before notifying player position as it affects which walls are shown on the minimap
+        game_state.center_camera_on_player()
+        game_state.player_entity.notify_position_observers()  # Must notify the initial state
 
         if map_file_path == 'resources/maps/challenge.json':
             world_behavior = ChallengeBehavior(
-                self.picking_hero_scene, self.challenge_complete_scene, game_state, ui_state, game_engine, self.flags)
+                self.picking_hero_scene, self.challenge_complete_scene, game_state, self.ui_view.info_message,
+                game_engine, self.flags)
         else:
-            world_behavior = StoryBehavior(self.victory_screen_scene, game_state, ui_state)
+            world_behavior = StoryBehavior(self.victory_screen_scene, game_state, self.ui_view.info_message)
 
         if saved_player_state:
             game_engine.gain_levels(saved_player_state.level - 1)
@@ -135,7 +144,7 @@ class CreatingWorldScene(AbstractScene):
 
         # When loading from a savefile a bunch of messages are generated (levelup, learning talents, etc), but they
         # are irrelevant, since we're loading an exiting character
-        ui_state.clear_messages()
+        self.ui_view.info_message.clear_messages()
 
         # Talent toggle is highlighted when new talents are unlocked, but we don't want it to be highlighted on startup
         # when loading from a savefile
@@ -145,6 +154,6 @@ class CreatingWorldScene(AbstractScene):
 
         new_hero_was_created = saved_player_state is None
         playing_scene = self.playing_scene(
-            game_state, game_engine, world_behavior, ui_state, self.ui_view, new_hero_was_created, character_file,
+            game_state, game_engine, world_behavior, self.ui_view, new_hero_was_created, character_file,
             total_time_played_on_character)
         return SceneTransition(playing_scene)

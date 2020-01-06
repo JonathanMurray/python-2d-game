@@ -46,7 +46,8 @@ class MapEditorView:
     def __init__(self, pygame_screen, camera_size: Tuple[int, int], screen_size: Tuple[int, int],
                  images_by_sprite: Dict[Sprite, Dict[Direction, List[ImageWithRelativePosition]]],
                  images_by_ui_sprite: Dict[UiIconSprite, Any],
-                 images_by_portrait_sprite: Dict[PortraitIconSprite, Any]):
+                 images_by_portrait_sprite: Dict[PortraitIconSprite, Any],
+                 world_area: Rect, player_position: Tuple[int, int]):
         self.camera_size = camera_size
         self.screen_size = screen_size
         self.screen_render = DrawableArea(pygame_screen)
@@ -67,7 +68,8 @@ class MapEditorView:
             EntityTab.WALLS: RadioButton(self.ui_render, Rect(460, 10, w_tab_button, 20), "WALLS (N)"),
             EntityTab.MISC: RadioButton(self.ui_render, Rect(540, 10, w_tab_button, 20), "MISC. (M)"),
         }
-        self.minimap = Minimap(self.ui_render, Rect(self.screen_size[0] - 180, 20, 160, 160))
+        self.minimap = Minimap(self.ui_render, Rect(self.screen_size[0] - 180, 20, 160, 160), world_area,
+                               player_position)
         self.shown_tab: EntityTab = EntityTab.ITEMS
         self.checkbox_show_entity_outlines = Checkbox(self.ui_render, Rect(15, 100, 120, 20), "outlines", False)
         self.checkboxes = [self.checkbox_show_entity_outlines]
@@ -134,11 +136,19 @@ class MapEditorView:
 
     def render(
             self, entities: List[MapEditorWorldEntity],
-            placing_entity: Optional[MapEditorWorldEntity], deleting_entities: bool, deleting_decorations: bool,
-            num_enemies: int, num_walls: int, num_decorations: int, grid_cell_size: int,
-            mouse_screen_position: Tuple[int, int], camera_rect_ratio: Tuple[float, float, float, float],
-            npc_positions_ratio: List[Tuple[float, float]], wall_positions_ratio: List[Tuple[float, float]],
-            relative_player_position: Tuple[float, float]
+            placing_entity: Optional[MapEditorWorldEntity],
+            deleting_entities: bool,
+            deleting_decorations: bool,
+            num_enemies: int,
+            num_walls: int,
+            num_decorations: int,
+            grid_cell_size: int,
+            mouse_screen_position: Tuple[int, int],
+            camera_world_area: Rect,
+            npc_positions: List[Tuple[int, int]],
+            wall_positions: List[Tuple[int, int]],
+            player_position:Tuple[int,int],
+            world_area:Rect
     ) -> Optional[MapEditorWorldEntity]:
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
@@ -184,8 +194,12 @@ class MapEditorView:
         self.screen_render.text(self.font_debug_info, "# decorations: " + str(num_decorations), (5, 37))
         self.screen_render.text(self.font_debug_info, "Cell size: " + str(grid_cell_size), (5, 54))
 
-        self.minimap.render(relative_player_position, None, camera_rect_ratio, npc_positions_ratio,
-                            wall_positions_ratio)
+        self.minimap.set_walls(wall_positions)
+        self.minimap.update_camera_area(camera_world_area)
+        self.minimap.update_npc_positions(npc_positions)
+        self.minimap.update_player_position(player_position)
+        self.minimap.update_world_area(world_area)
+        self.minimap.render()
 
         for button in self.tab_buttons.values():
             button.render()

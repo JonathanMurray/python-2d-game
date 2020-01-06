@@ -14,9 +14,8 @@ from pythongame.register_game_data import register_all_game_data
 
 register_all_game_data()
 
-MAP_SIZE = (150, 150)
 MAX_ROOM_ATTEMPTS = 100
-MAX_NUM_ROOMS = 15
+MAX_NUM_ROOMS = 7
 ROOM_ALLOWED_WIDTH = (8, 25)
 ROOM_ALLOWED_HEIGHT = (8, 25)
 CORRIDOR_ALLOWED_WIDTH = (2, 6)
@@ -33,13 +32,14 @@ class CellType(Enum):
 
 
 class Grid:
-    def __init__(self, grid: List[List[CellType]]):
+    def __init__(self, grid: List[List[CellType]], size: Tuple[int, int]):
         self._grid = grid
+        self._size = size
 
     @staticmethod
     def create(map_size: Tuple[int, int], rooms: List[Rect], corridors: List[Rect]):
         _grid = []
-        grid = Grid(_grid)
+        grid = Grid(_grid, map_size)
         for y in range(map_size[0]):
             _grid.append([CellType.NONE] * map_size[1])
 
@@ -53,8 +53,8 @@ class Grid:
                 for x in range(corridor.x, corridor.x + corridor.w):
                     _grid[x][y] = CellType.CORRIDOR
 
-        for x in range(MAP_SIZE[0]):
-            for y in range(MAP_SIZE[1]):
+        for x in range(map_size[0]):
+            for y in range(map_size[1]):
                 is_empty = grid._is_cell((x, y), [CellType.NONE])
                 neighbours_room_or_corridor = \
                     grid.is_walkable((x, y - 1)) or \
@@ -73,8 +73,8 @@ class Grid:
         return grid
 
     def print(self):
-        for y in range(MAP_SIZE[1]):
-            for x in range(MAP_SIZE[0]):
+        for y in range(self._size[1]):
+            for x in range(self._size[0]):
                 cell = "* " if self._grid[x][y] == CellType.ROOM else "  "
                 print(cell, end='')
             print()
@@ -84,8 +84,8 @@ class Grid:
 
     def _is_cell(self, cell: Tuple[int, int], targets: List[CellType]):
         x, y = cell
-        if 0 <= x < MAP_SIZE[0]:
-            if 0 <= y < MAP_SIZE[1]:
+        if 0 <= x < self._size[0]:
+            if 0 <= y < self._size[1]:
                 return self._grid[x][y] in targets
         return False
 
@@ -96,8 +96,8 @@ class Grid:
         return self._is_cell(cell, [CellType.ROOM, CellType.CORRIDOR, CellType.REMOVED_WALL])
 
     def prune_bad_walls(self):
-        for y in range(MAP_SIZE[1]):
-            for x in range(MAP_SIZE[0]):
+        for y in range(self._size[1]):
+            for x in range(self._size[0]):
                 # Thin wall segments that are "inside" walkable areas, cannot be rendered in a good way given the
                 # sprites we are using, so we remove any such segments.
                 is_wall = self.is_wall((x, y))
@@ -111,11 +111,11 @@ class Grid:
                     self._grid[x][y] = CellType.REMOVED_WALL
 
 
-def generate_room() -> Rect:
+def generate_room(map_size: Tuple[int, int]) -> Rect:
     w = random.randint(ROOM_ALLOWED_WIDTH[0], ROOM_ALLOWED_HEIGHT[1] + 1)
     h = random.randint(ROOM_ALLOWED_HEIGHT[0], ROOM_ALLOWED_HEIGHT[1] + 1)
-    x = random.randint(1, MAP_SIZE[0] - w - 3)
-    y = random.randint(1, MAP_SIZE[1] - h - 3)
+    x = random.randint(1, map_size[0] - w - 3)
+    y = random.randint(1, map_size[1] - h - 3)
     return Rect(x, y, w, h)
 
 
@@ -131,11 +131,11 @@ def generate_corridor_between_rooms(room1: Rect, room2: Rect) -> List[Rect]:
     return [ver_rect, hor_rect]
 
 
-def generate_rooms_and_corridors() -> Tuple[List[Rect], List[Rect]]:
+def generate_rooms_and_corridors(map_size: Tuple[int, int]) -> Tuple[List[Rect], List[Rect]]:
     print("Generating rooms and corridors...")
     rooms = []
     for _ in range(MAX_ROOM_ATTEMPTS):
-        new_room = generate_room()
+        new_room = generate_room(map_size)
         collision = any(r for r in rooms if are_rooms_too_close(r, new_room))
         if collision:
             print("Skipping room, as it collides with existing room.")
@@ -211,17 +211,20 @@ def determine_wall_type(grid: Grid, cell: Tuple[int, int]) -> WallType:
 
 
 def generate_random_map_as_json():
-    rooms, corridors = generate_rooms_and_corridors()
+    # Prefer maps that are longer on the horizontal axis, due to the aspect ratio of the in-game camera
+    w = random.randint(100, 130)
+    map_size = (w, 200 - w)
+    rooms, corridors = generate_rooms_and_corridors(map_size)
     print("Rooms: ")
     print(rooms)
 
-    grid = Grid.create(MAP_SIZE, rooms, corridors)
+    grid = Grid.create(map_size, rooms, corridors)
 
     walls = []
     decorations = []
 
-    for y in range(MAP_SIZE[1]):
-        for x in range(MAP_SIZE[0]):
+    for y in range(map_size[1]):
+        for x in range(map_size[0]):
             position = (x * CELL_SIZE, y * CELL_SIZE)
             is_even_cell = x % 2 == 0 and y % 2 == 0  # ground sprite covers 4 cells, so we only need them on even cells
             if is_even_cell and any([grid.is_walkable(c) for c in [(x, y), (x + 1, y), (x, y + 1), (x + 1, y + 1)]]):
@@ -230,7 +233,7 @@ def generate_random_map_as_json():
                 wall_type = determine_wall_type(grid, (x, y))
                 walls.append(create_wall(wall_type, position))
 
-    world_area = Rect(0, 0, MAP_SIZE[0] * CELL_SIZE, MAP_SIZE[1] * CELL_SIZE)
+    world_area = Rect(0, 0, map_size[0] * CELL_SIZE, map_size[1] * CELL_SIZE)
 
     start_room = random.choice(rooms)
     player_position = get_room_center(start_room)
@@ -246,8 +249,8 @@ def generate_npcs(rooms: List[Rect], start_room: Rect):
     npcs = []
     npc_types = list(NpcType.__members__.values())
     valid_enemy_types = [npc_type for npc_type in npc_types
-                   if NON_PLAYER_CHARACTERS[npc_type].npc_category == NpcCategory.ENEMY
-                   and npc_type != NpcType.DARK_REAPER]
+                         if NON_PLAYER_CHARACTERS[npc_type].npc_category == NpcCategory.ENEMY
+                         and npc_type != NpcType.DARK_REAPER]
     for room in [r for r in rooms if r != start_room]:
         xmid, ymid = get_room_center(room)
         distance = CELL_SIZE * 2

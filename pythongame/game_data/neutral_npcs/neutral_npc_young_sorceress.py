@@ -13,7 +13,7 @@ from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
-from pythongame.scenes_game.game_ui_state import GameUiState
+from pythongame.scenes_game.game_ui_view import GameUiView
 
 ITEM_TYPE_FROG = ItemType.FROG
 
@@ -65,17 +65,17 @@ class AcceptFrog(AbstractNpcAction):
             play_sound(SoundId.WARNING)
             return "You don't have that!"
 
-    def on_hover(self, game_state: GameState, ui_state: GameUiState):
+    def on_hover(self, game_state: GameState, ui_view: GameUiView):
         bosses = [npc for npc in game_state.non_player_characters if npc.npc_type == NpcType.GOBLIN_WARRIOR]
         if bosses:
-            position = bosses[0].world_entity.get_position()
+            position = bosses[0].world_entity.get_center_position()
             world_area = game_state.entire_world_area
             position_ratio = ((position[0] - world_area.x) / world_area.w,
                               (position[1] - world_area.y) / world_area.h)
-            ui_state.set_minimap_highlight(position_ratio)
+            ui_view.set_minimap_highlight(position_ratio)
 
-    def on_blur(self, game_state: GameState, ui_state: GameUiState):
-        ui_state.remove_minimap_highlight()
+    def on_blur(self, game_state: GameState, ui_view: GameUiView):
+        ui_view.remove_minimap_highlight()
 
 
 def register_young_sorceress_npc():

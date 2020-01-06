@@ -1,17 +1,18 @@
 from enum import Enum
 from math import floor
-from typing import List, Tuple, Optional, Any, Iterable
+from typing import List, Tuple, Optional, Any, Iterable, Set
 
 import pygame
 from pygame.rect import Rect
 
-from pythongame.core.common import ConsumableType, ItemType, AbilityType, PortraitIconSprite, HeroId
+from pythongame.core.common import ConsumableType, ItemType, AbilityType, PortraitIconSprite, HeroId, Millis, \
+    PeriodicTimer
 from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData
 from pythongame.core.game_state import PlayerState
 from pythongame.core.item_inventory import ItemEquipmentCategory
+from pythongame.core.math import get_relative_pos_within_rect
 from pythongame.core.talents import TalentTierStatus
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
-from pythongame.scenes_game.game_ui_state import ToggleButtonId
 
 COLOR_BLACK = (0, 0, 0)
 COLOR_LIGHT_GRAY = (240, 240, 240)
@@ -28,6 +29,12 @@ COLOR_TOGGLE_OPENED = (50, 50, 120)
 DIR_FONTS = './resources/fonts/'
 
 TALENT_ICON_SIZE = (32, 32)
+
+
+class ToggleButtonId(Enum):
+    STATS = 1
+    TALENTS = 2
+    HELP = 3
 
 
 class UiComponent:
@@ -831,66 +838,117 @@ class Portrait:
 
 
 class Minimap(UiComponent):
-    def __init__(self, ui_render: DrawableArea, rect: Rect):
+    def __init__(self, ui_render: DrawableArea, rect: Rect, world_area: Rect, player_position: Tuple[int, int]):
         super().__init__()
-        self.ui_render = ui_render
-        self.rect = rect
-        self.rect_margin = Rect(rect.x - 2, rect.y - 2, rect.w + 4, rect.h + 4)
-        self.rect_inner = Rect(rect.x + 2, rect.y + 2, rect.w - 4, rect.h - 4)
+        self._ui_render = ui_render
+        self._rect = rect
+        self._rect_margin = Rect(rect.x - 2, rect.y - 2, rect.w + 4, rect.h + 4)
+        self._rect_inner = None
+        self._player_position = player_position
+        self._world_area = None
+        self._seen_wall_positions: Set[Tuple[int, int]] = set()
+        self._wall_pixel_positions: Tuple[int, int] = []
+        self._timer = PeriodicTimer(Millis(2_000))
+        self._highlight_pos_ratio = None
+        self.camera_rect_ratio = None
+        self.npc_positions_ratio = []
+        self.update_world_area(world_area)
+
+    def update_world_area(self, world_area: Rect):
+        self._world_area = world_area
+        self._rect_inner = Rect(self._rect.x + 2, self._rect.y + 2, self._rect.w - 4, self._rect.h - 4)
+        if world_area.w > world_area.h:
+            self._rect_inner.h /= world_area.w / world_area.h
+            self._rect_inner.y = self._rect.y + self._rect.h // 2 - self._rect_inner.h // 2
+        else:
+            self._rect_inner.w /= world_area.h / world_area.w
+            self._rect_inner.x = self._rect.x + self._rect.w // 2 - self._rect_inner.w // 2
+
+    def update_player_position(self, center_position: Tuple[int, int]):
+        self._player_position = center_position
+
+    def add_walls(self, wall_positions: List[Tuple[int, int]]):
+        for pos in wall_positions:
+            self._seen_wall_positions.add(pos)
+
+    # This method is expensive if there are lots of walls on the maps. Only use from map editor
+    def set_walls(self, wall_positions: List[Tuple[int, int]]):
+        self._seen_wall_positions = set(wall_positions)
+        self._update_wall_pixel_positions()
+
+    def _update_wall_pixel_positions(self):
+        wall_positions_ratio = [get_relative_pos_within_rect(pos, self._world_area)
+                                for pos in self._seen_wall_positions]
+
+        self._wall_pixel_positions = [(self._rect_inner.x + pos[0] * self._rect_inner.w,
+                                       self._rect_inner.y + pos[1] * self._rect_inner.h)
+                                      for pos in wall_positions_ratio]
 
     def contains(self, point: Tuple[int, int]) -> bool:
-        return self.rect.collidepoint(point[0], point[1])
+        return self._rect.collidepoint(point[0], point[1])
 
     def get_position_ratio(self, point: Tuple[int, int]) -> Tuple[float, float]:
-        return (point[0] - self.rect.x) / self.rect.w, (point[1] - self.rect.y) / self.rect.h
+        return (point[0] - self._rect.x) / self._rect.w, (point[1] - self._rect.y) / self._rect.h
 
-    def render(self,
-               player_relative_position: Tuple[float, float],
-               minimap_highlight_relative_position: Optional[Tuple[float, float]],
-               camera_rect_ratio: Optional[Tuple[float, float, float, float]],
-               npc_positions_ratio: List[Tuple[float, float]],
-               wall_positions_ratio: List[Tuple[float, float]]):
-        self.ui_render.rect_filled((60, 60, 80), self.rect_margin)
-        self.ui_render.rect_filled((40, 40, 50), self.rect)
-        self.ui_render.rect((150, 150, 190), self.rect, 1)
-        rect = self.rect_inner
+    def update(self, time_passed: Millis):
+        if self._timer.update_and_check_if_ready(time_passed):
+            self._update_wall_pixel_positions()
 
-        if minimap_highlight_relative_position:
-            dot_x = rect[0] + minimap_highlight_relative_position[0] * rect.w
-            dot_y = rect[1] + minimap_highlight_relative_position[1] * rect.h
+    def update_camera_area(self, camera_world_area: Rect):
+        self.camera_rect_ratio = ((camera_world_area.x - self._world_area.x) / self._world_area.w,
+                                  (camera_world_area.y - self._world_area.y) / self._world_area.h,
+                                  camera_world_area.w / self._world_area.w,
+                                  camera_world_area.h / self._world_area.h)
+
+    def update_npc_positions(self, npc_positions: List[Tuple[int, int]]):
+        self.npc_positions_ratio = [get_relative_pos_within_rect(pos, self._world_area) for pos in npc_positions]
+
+    def render(self):
+        self._ui_render.rect_filled((60, 60, 80), self._rect_margin)
+        self._ui_render.rect_filled((0, 0, 0), self._rect)
+        self._ui_render.rect_filled((40, 40, 50), self._rect_inner)
+        self._ui_render.rect((150, 150, 190), self._rect, 1)
+
+        rect = self._rect_inner
+
+        if self._highlight_pos_ratio:
+            dot_x = rect[0] + self._highlight_pos_ratio[0] * rect.w
+            dot_y = rect[1] + self._highlight_pos_ratio[1] * rect.h
             dot_w = 4
-            self.ui_render.rect_filled((200, 100, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
+            self._ui_render.rect_filled((200, 100, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
-        for npc_pos in npc_positions_ratio:
-            self.ui_render.rect(
+        for pos_ratio in self.npc_positions_ratio:
+            self._ui_render.rect(
                 (200, 200, 200),
-                Rect(rect.x + npc_pos[0] * rect.w,
-                     rect.y + npc_pos[1] * rect.h,
-                     1,
-                     1),
-                1)
-        for wall_pos in wall_positions_ratio:
-            self.ui_render.rect(
-                (100, 100, 150),
-                Rect(rect.x + wall_pos[0] * rect.w,
-                     rect.y + wall_pos[1] * rect.h,
+                Rect(rect.x + pos_ratio[0] * rect.w,
+                     rect.y + pos_ratio[1] * rect.h,
                      1,
                      1),
                 1)
 
+        for pos in self._wall_pixel_positions:
+            self._ui_render.rect((100, 100, 100), Rect(pos[0], pos[1], 1, 1), 1)
+
+        player_relative_position = get_relative_pos_within_rect(self._player_position, self._world_area)
         dot_x = rect[0] + player_relative_position[0] * rect.w
         dot_y = rect[1] + player_relative_position[1] * rect.h
         dot_w = 4
-        self.ui_render.rect_filled((100, 160, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
+        self._ui_render.rect_filled((100, 160, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
-        if camera_rect_ratio:
-            self.ui_render.rect(
+        if self.camera_rect_ratio:
+            self._ui_render.rect(
                 (150, 250, 150),
-                Rect(rect.x + camera_rect_ratio[0] * rect.w,
-                     rect.y + camera_rect_ratio[1] * rect.h,
-                     camera_rect_ratio[2] * rect.w,
-                     camera_rect_ratio[3] * rect.h),
+                Rect(rect.x + self.camera_rect_ratio[0] * rect.w,
+                     rect.y + self.camera_rect_ratio[1] * rect.h,
+                     self.camera_rect_ratio[2] * rect.w,
+                     self.camera_rect_ratio[3] * rect.h),
                 1)
+
+    def set_highlight(self, position_ratio: Tuple[float, float]):
+        self._highlight_pos_ratio = position_ratio
+
+    def remove_highlight(self):
+        self._highlight_pos_ratio = None
 
 
 class Buffs:
