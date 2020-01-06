@@ -279,8 +279,10 @@ class GameUiView:
     def handle_mouse_movement(self, mouse_screen_pos: Tuple[int, int]):
         self.mouse_screen_position = mouse_screen_pos
         self.is_mouse_hovering_ui = is_point_in_rect(mouse_screen_pos, self.ui_screen_area)
+        self._check_for_hovered_components()
 
-        mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_pos)
+    def _check_for_hovered_components(self):
+        mouse_ui_position = self._translate_screen_position_to_ui(self.mouse_screen_position)
 
         simple_components = [self.healthbar, self.manabar, self.sound_checkbox, self.save_button,
                              self.fullscreen_checkbox] + self.ability_icons + self.toggle_buttons
@@ -397,11 +399,13 @@ class GameUiView:
                 self.enabled_toggle.close()
             self.enabled_toggle = clicked_toggle
             self.enabled_toggle.open()
+        self._check_for_hovered_components()
 
     def close_talent_window(self):
         if self.enabled_toggle == self.talents_toggle:
             self.enabled_toggle.close()
             self.enabled_toggle = None
+            self._check_for_hovered_components()
 
     # --------------------------------------------------------------------------------------------------------
     #                              REACT TO OBSERVABLE EVENTS
