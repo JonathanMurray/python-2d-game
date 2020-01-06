@@ -98,6 +98,8 @@ class CreatingWorldScene(AbstractScene):
         game_state.player_state.buffs_were_updated.register_observer(self.ui_view.on_buffs_updated)
         game_state.player_entity.movement_changed = Observable()
         game_state.player_entity.movement_changed.register_observer(play_or_stop_footstep_sounds)
+        world_area_aspect_ratio = (game_state.entire_world_area.w, game_state.entire_world_area.h)
+        self.ui_view.on_world_area_aspect_ratio_updated(world_area_aspect_ratio)
 
         if map_file_path == 'resources/maps/challenge.json':
             world_behavior = ChallengeBehavior(

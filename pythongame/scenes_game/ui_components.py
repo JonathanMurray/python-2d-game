@@ -831,12 +831,22 @@ class Portrait:
 
 
 class Minimap(UiComponent):
-    def __init__(self, ui_render: DrawableArea, rect: Rect):
+    def __init__(self, ui_render: DrawableArea, rect: Rect, aspect_ratio: Tuple[float, float]):
         super().__init__()
         self.ui_render = ui_render
         self.rect = rect
         self.rect_margin = Rect(rect.x - 2, rect.y - 2, rect.w + 4, rect.h + 4)
-        self.rect_inner = Rect(rect.x + 2, rect.y + 2, rect.w - 4, rect.h - 4)
+        self.rect_inner = None
+        self.update_aspect_ratio(aspect_ratio)
+
+    def update_aspect_ratio(self, aspect_ratio: Tuple[float, float]):
+        self.rect_inner = Rect(self.rect.x + 2, self.rect.y + 2, self.rect.w - 4, self.rect.h - 4)
+        if aspect_ratio[0] > aspect_ratio[1]:
+            self.rect_inner.h /= aspect_ratio[0] / aspect_ratio[1]
+            self.rect_inner.y = self.rect.y + self.rect.h // 2 - self.rect_inner.h // 2
+        else:
+            self.rect_inner.w /= aspect_ratio[1] / aspect_ratio[0]
+            self.rect_inner.x = self.rect.x + self.rect.w // 2 - self.rect_inner.w // 2
 
     def contains(self, point: Tuple[int, int]) -> bool:
         return self.rect.collidepoint(point[0], point[1])
@@ -851,9 +861,11 @@ class Minimap(UiComponent):
                npc_positions_ratio: List[Tuple[float, float]],
                wall_positions_ratio: List[Tuple[float, float]]):
         self.ui_render.rect_filled((60, 60, 80), self.rect_margin)
-        self.ui_render.rect_filled((40, 40, 50), self.rect)
+        self.ui_render.rect_filled((0, 0, 0), self.rect)
+        self.ui_render.rect_filled((40, 40, 50), self.rect_inner)
         self.ui_render.rect((150, 150, 190), self.rect, 1)
-        rect = self.rect_inner
+
+        rect = self.rect_inner.copy()
 
         if minimap_highlight_relative_position:
             dot_x = rect[0] + minimap_highlight_relative_position[0] * rect.w

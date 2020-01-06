@@ -14,9 +14,9 @@ from pythongame.register_game_data import register_all_game_data
 
 register_all_game_data()
 
-MAP_SIZE = (150, 150)
+MAP_SIZE = (120, 80)
 MAX_ROOM_ATTEMPTS = 100
-MAX_NUM_ROOMS = 15
+MAX_NUM_ROOMS = 7
 ROOM_ALLOWED_WIDTH = (8, 25)
 ROOM_ALLOWED_HEIGHT = (8, 25)
 CORRIDOR_ALLOWED_WIDTH = (2, 6)
@@ -246,8 +246,8 @@ def generate_npcs(rooms: List[Rect], start_room: Rect):
     npcs = []
     npc_types = list(NpcType.__members__.values())
     valid_enemy_types = [npc_type for npc_type in npc_types
-                   if NON_PLAYER_CHARACTERS[npc_type].npc_category == NpcCategory.ENEMY
-                   and npc_type != NpcType.DARK_REAPER]
+                         if NON_PLAYER_CHARACTERS[npc_type].npc_category == NpcCategory.ENEMY
+                         and npc_type != NpcType.DARK_REAPER]
     for room in [r for r in rooms if r != start_room]:
         xmid, ymid = get_room_center(room)
         distance = CELL_SIZE * 2

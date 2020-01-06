@@ -88,8 +88,9 @@ def main(map_file_name: Optional[str]):
     images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, MAP_EDITOR_UI_ICON_SIZE)
     images_by_portrait_sprite = load_images_by_portrait_sprite(PORTRAIT_ICON_SPRITE_PATHS, PORTRAIT_ICON_SIZE)
     world_view = GameWorldView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite)
+    world_area_aspect_ratio = (game_state.entire_world_area.w, game_state.entire_world_area.h)
     ui_view = MapEditorView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite, images_by_ui_sprite,
-                            images_by_portrait_sprite)
+                            images_by_portrait_sprite, world_area_aspect_ratio)
 
     user_state = UserState.deleting_entities()
 
@@ -180,6 +181,8 @@ def main(map_file_name: Optional[str]):
                         game_state = create_game_state_from_map_data(CAMERA_SIZE, map_json, HERO_ID)
                         game_state.center_camera_on_player()
                         game_state.snap_camera_to_grid(grid_cell_size)
+                        aspect_ratio = (game_state.entire_world_area.w, game_state.entire_world_area.h)
+                        ui_view.on_world_area_aspect_ratio_updated(aspect_ratio)
                     elif isinstance(event_from_ui, SetCameraPosition):
                         game_state.set_camera_position_to_ratio_of_world(event_from_ui.position_ratio)
                         game_state.snap_camera_to_grid(grid_cell_size)

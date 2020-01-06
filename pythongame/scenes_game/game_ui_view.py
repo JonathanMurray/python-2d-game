@@ -46,6 +46,7 @@ class DialogState:
 class GameUiView:
 
     def __init__(self, pygame_screen, camera_size: Tuple[int, int], screen_size: Tuple[int, int],
+                 world_area_aspect_ratio: Tuple[float, float],
                  images_by_ui_sprite: Dict[UiIconSprite, Any], big_images_by_ui_sprite: Dict[UiIconSprite, Any],
                  images_by_portrait_sprite: Dict[PortraitIconSprite, Any], ability_key_labels: List[str]):
 
@@ -94,7 +95,7 @@ class GameUiView:
         self.inventory_icons_rect: Rect = Rect(0, 0, 0, 0)
         self.inventory_icons: List[ItemIcon] = []
         self.exp_bar = ExpBar(self.ui_render, Rect(135, 8, 300, 2), self.font_level)
-        self.minimap = Minimap(self.ui_render, Rect(475, 52, 80, 80))
+        self.minimap = Minimap(self.ui_render, Rect(475, 52, 80, 80), world_area_aspect_ratio)
         self.buffs = Buffs(self.ui_render, self.font_buff_texts, (10, -35))
         self.money_text = Text(self.ui_render, self.font_ui_money, (24, 150), "NO MONEY")
         self.talents_window: TalentsWindow = None
@@ -487,6 +488,9 @@ class GameUiView:
 
     def on_fullscreen_changed(self, fullscreen: bool):
         self.fullscreen_checkbox.checked = fullscreen
+
+    def on_world_area_aspect_ratio_updated(self, aspect_ratio: Tuple[float, float]):
+        self.minimap.update_aspect_ratio(aspect_ratio)
 
     # --------------------------------------------------------------------------------------------------------
     #                              HANDLE DIALOG USER INTERACTIONS

@@ -46,7 +46,8 @@ class MapEditorView:
     def __init__(self, pygame_screen, camera_size: Tuple[int, int], screen_size: Tuple[int, int],
                  images_by_sprite: Dict[Sprite, Dict[Direction, List[ImageWithRelativePosition]]],
                  images_by_ui_sprite: Dict[UiIconSprite, Any],
-                 images_by_portrait_sprite: Dict[PortraitIconSprite, Any]):
+                 images_by_portrait_sprite: Dict[PortraitIconSprite, Any],
+                 world_area_aspect_ratio: Tuple[float, float]):
         self.camera_size = camera_size
         self.screen_size = screen_size
         self.screen_render = DrawableArea(pygame_screen)
@@ -67,7 +68,7 @@ class MapEditorView:
             EntityTab.WALLS: RadioButton(self.ui_render, Rect(460, 10, w_tab_button, 20), "WALLS (N)"),
             EntityTab.MISC: RadioButton(self.ui_render, Rect(540, 10, w_tab_button, 20), "MISC. (M)"),
         }
-        self.minimap = Minimap(self.ui_render, Rect(self.screen_size[0] - 180, 20, 160, 160))
+        self.minimap = Minimap(self.ui_render, Rect(self.screen_size[0] - 180, 20, 160, 160), world_area_aspect_ratio)
         self.shown_tab: EntityTab = EntityTab.ITEMS
         self.checkbox_show_entity_outlines = Checkbox(self.ui_render, Rect(15, 100, 120, 20), "outlines", False)
         self.checkboxes = [self.checkbox_show_entity_outlines]
@@ -97,6 +98,9 @@ class MapEditorView:
         if self.hovered_component is not None:
             self.hovered_component.hovered = False
             self.hovered_component = None
+
+    def on_world_area_aspect_ratio_updated(self, aspect_ratio: Tuple[float, float]):
+        self.minimap.update_aspect_ratio(aspect_ratio)
 
     def handle_mouse_click(self) -> Optional[Any]:
         if self.hovered_component in self.checkboxes:
