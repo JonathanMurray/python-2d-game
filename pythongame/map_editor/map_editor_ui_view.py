@@ -7,7 +7,7 @@ from pygame.rect import Rect
 
 from pythongame.core.common import Direction, Sprite, UiIconSprite
 from pythongame.core.common import PortraitIconSprite
-from pythongame.core.game_data import ITEMS
+from pythongame.core.game_data import ITEMS, CONSUMABLES
 from pythongame.core.item_inventory import ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.image_loading import ImageWithRelativePosition
@@ -111,13 +111,17 @@ class MapEditorView:
                 x = x_1 + (i % num_icons_per_row) * (MAP_EDITOR_UI_ICON_SIZE[0] + icon_space)
                 row_index = (i // num_icons_per_row)
                 y = y_2 + row_index * (MAP_EDITOR_UI_ICON_SIZE[1] + icon_space)
-                tooltip = None
                 if entity.item_type is not None:
                     data = ITEMS[entity.item_type]
                     category_name = None
                     if data.item_equipment_category:
                         category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[data.item_equipment_category]
                     tooltip = TooltipGraphics.create_for_item(self.ui_render, data, category_name, (x, y))
+                elif entity.consumable_type is not None:
+                    data = CONSUMABLES[entity.consumable_type]
+                    tooltip = TooltipGraphics.create_for_consumable(self.ui_render, data, (x, y))
+                else:
+                    tooltip = None
                 icon = self._map_editor_icon_in_ui(
                     Rect(x, y, MAP_EDITOR_UI_ICON_SIZE[0], MAP_EDITOR_UI_ICON_SIZE[1]), '', entity.sprite, None,
                     entity.map_editor_entity_id, tooltip)

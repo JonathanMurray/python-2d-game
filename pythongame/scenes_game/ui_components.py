@@ -206,6 +206,10 @@ class TooltipGraphics:
         return TooltipGraphics(ui_render, COLOR_ITEM_TOOLTIP_HEADER, data.name, tooltip_details,
                                bottom_left=bottom_left)
 
+    @staticmethod
+    def create_for_consumable(ui_render: DrawableArea, data: ConsumableData, bottom_left: Tuple[int, int]):
+        return TooltipGraphics(ui_render, COLOR_WHITE, data.name, [data.description], bottom_left)
+
 
 class AbilityIcon(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, label: str, font, tooltip: TooltipGraphics,
@@ -305,8 +309,7 @@ class ConsumableIcon(UiComponent):
         self._image = image
         self.consumable_types = consumable_types
         if top_consumable:
-            self.tooltip = TooltipGraphics(self._ui_render, COLOR_WHITE, top_consumable.name,
-                                           [top_consumable.description], bottom_left=self._rect.topleft)
+            self.tooltip = TooltipGraphics.create_for_consumable(self._ui_render, top_consumable, self._rect.topleft)
         else:
             self.tooltip = None
 
