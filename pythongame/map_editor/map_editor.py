@@ -30,18 +30,18 @@ register_all_game_data()
 
 WALL_ENTITIES = [MapEditorWorldEntity.wall(wall_type) for wall_type in WallType]
 NPC_ENTITIES = [MapEditorWorldEntity.npc(npc_type) for npc_type in NpcType]
-PORTAL_ENTITIES = [MapEditorWorldEntity.portal(portal_id) for portal_id in PortalId]
-CONSUMABLE_ENTITIES = [MapEditorWorldEntity.consumable(consumable_type) for consumable_type in ConsumableType]
 ITEM_ENTITIES = [MapEditorWorldEntity.item(item_type) for item_type in ItemType]
-
-MISC_ENTITIES: List[MapEditorWorldEntity] = [
-    MapEditorWorldEntity.player(),
-    MapEditorWorldEntity.chest(),
-    MapEditorWorldEntity.money(1),
-    MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE),
-    MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE_GRAY),
-    MapEditorWorldEntity.decoration(Sprite.DECORATION_PLANT),
-]
+MISC_ENTITIES: List[MapEditorWorldEntity] = \
+    [
+        MapEditorWorldEntity.player(),
+        MapEditorWorldEntity.chest(),
+        MapEditorWorldEntity.money(1),
+        MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE),
+        MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE_GRAY),
+        MapEditorWorldEntity.decoration(Sprite.DECORATION_PLANT),
+    ] + \
+    [MapEditorWorldEntity.consumable(consumable_type) for consumable_type in ConsumableType] + \
+    [MapEditorWorldEntity.portal(portal_id) for portal_id in PortalId]
 
 SCREEN_SIZE = (1200, 750)
 CAMERA_SIZE = (1200, 550)
