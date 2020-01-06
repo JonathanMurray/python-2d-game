@@ -624,10 +624,7 @@ class GameUiView:
             icon.render(highlighted)
 
         # MINIMAP
-        # TODO Don't pass these values into the render method. Handle as state
-        self.minimap.render(
-            camera_rect_ratio=None,
-            npc_positions_ratio=[])
+        self.minimap.render()
 
         simple_components = [self.exp_bar, self.portrait, self.healthbar, self.manabar, self.money_text, self.dialog,
                              self.buffs, self.sound_checkbox, self.save_button, self.fullscreen_checkbox,

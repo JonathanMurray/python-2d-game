@@ -845,6 +845,8 @@ class Minimap(UiComponent):
         self._wall_pixel_positions: Tuple[int, int] = []
         self._timer = PeriodicTimer(Millis(2_000))
         self._highlight_pos_ratio = None
+        self.camera_rect_ratio = None
+        self.npc_positions_ratio = []
         self.update_world_area(world_area)
 
     def update_world_area(self, world_area: Rect):
@@ -887,9 +889,16 @@ class Minimap(UiComponent):
         if self._timer.update_and_check_if_ready(time_passed):
             self._update_wall_pixel_positions()
 
-    def render(self,
-               camera_rect_ratio: Optional[Tuple[float, float, float, float]],
-               npc_positions_ratio: List[Tuple[float, float]]):
+    def update_camera_area(self, camera_world_area: Rect):
+        self.camera_rect_ratio = ((camera_world_area.x - self._world_area.x) / self._world_area.w,
+                                  (camera_world_area.y - self._world_area.y) / self._world_area.h,
+                                  camera_world_area.w / self._world_area.w,
+                                  camera_world_area.h / self._world_area.h)
+
+    def update_npc_positions(self, npc_positions: List[Tuple[int, int]]):
+        self.npc_positions_ratio = [get_relative_pos_within_rect(pos, self._world_area) for pos in npc_positions]
+
+    def render(self):
         self._ui_render.rect_filled((60, 60, 80), self._rect_margin)
         self._ui_render.rect_filled((0, 0, 0), self._rect)
         self._ui_render.rect_filled((40, 40, 50), self._rect_inner)
@@ -903,11 +912,11 @@ class Minimap(UiComponent):
             dot_w = 4
             self._ui_render.rect_filled((200, 100, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
-        for npc_pos in npc_positions_ratio:
+        for pos_ratio in self.npc_positions_ratio:
             self._ui_render.rect(
                 (200, 200, 200),
-                Rect(rect.x + npc_pos[0] * rect.w,
-                     rect.y + npc_pos[1] * rect.h,
+                Rect(rect.x + pos_ratio[0] * rect.w,
+                     rect.y + pos_ratio[1] * rect.h,
                      1,
                      1),
                 1)
@@ -921,13 +930,13 @@ class Minimap(UiComponent):
         dot_w = 4
         self._ui_render.rect_filled((100, 160, 100), Rect(dot_x - dot_w / 2, dot_y - dot_w / 2, dot_w, dot_w))
 
-        if camera_rect_ratio:
+        if self.camera_rect_ratio:
             self._ui_render.rect(
                 (150, 250, 150),
-                Rect(rect.x + camera_rect_ratio[0] * rect.w,
-                     rect.y + camera_rect_ratio[1] * rect.h,
-                     camera_rect_ratio[2] * rect.w,
-                     camera_rect_ratio[3] * rect.h),
+                Rect(rect.x + self.camera_rect_ratio[0] * rect.w,
+                     rect.y + self.camera_rect_ratio[1] * rect.h,
+                     self.camera_rect_ratio[2] * rect.w,
+                     self.camera_rect_ratio[3] * rect.h),
                 1)
 
     def set_highlight(self, position_ratio: Tuple[float, float]):

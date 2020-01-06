@@ -100,12 +100,6 @@ class MapEditorView:
             self.hovered_component.hovered = False
             self.hovered_component = None
 
-    def on_world_area_updated(self, world_area: Rect):
-        self.minimap.update_world_area(world_area)
-
-    def on_player_position_updated(self, center_position: Tuple[int, int]):
-        self.minimap.update_player_position(center_position)
-
     def handle_mouse_click(self) -> Optional[Any]:
         if self.hovered_component in self.checkboxes:
             self.hovered_component.on_click()
@@ -142,10 +136,19 @@ class MapEditorView:
 
     def render(
             self, entities: List[MapEditorWorldEntity],
-            placing_entity: Optional[MapEditorWorldEntity], deleting_entities: bool, deleting_decorations: bool,
-            num_enemies: int, num_walls: int, num_decorations: int, grid_cell_size: int,
-            mouse_screen_position: Tuple[int, int], camera_rect_ratio: Tuple[float, float, float, float],
-            npc_positions_ratio: List[Tuple[float, float]], wall_positions: List[Tuple[int, int]]
+            placing_entity: Optional[MapEditorWorldEntity],
+            deleting_entities: bool,
+            deleting_decorations: bool,
+            num_enemies: int,
+            num_walls: int,
+            num_decorations: int,
+            grid_cell_size: int,
+            mouse_screen_position: Tuple[int, int],
+            camera_world_area: Rect,
+            npc_positions: List[Tuple[int, int]],
+            wall_positions: List[Tuple[int, int]],
+            player_position:Tuple[int,int],
+            world_area:Rect
     ) -> Optional[MapEditorWorldEntity]:
 
         mouse_ui_position = self._translate_screen_position_to_ui(mouse_screen_position)
@@ -192,7 +195,11 @@ class MapEditorView:
         self.screen_render.text(self.font_debug_info, "Cell size: " + str(grid_cell_size), (5, 54))
 
         self.minimap.set_walls(wall_positions)
-        self.minimap.render(camera_rect_ratio, npc_positions_ratio)
+        self.minimap.update_camera_area(camera_world_area)
+        self.minimap.update_npc_positions(npc_positions)
+        self.minimap.update_player_position(player_position)
+        self.minimap.update_world_area(world_area)
+        self.minimap.render()
 
         for button in self.tab_buttons.values():
             button.render()
