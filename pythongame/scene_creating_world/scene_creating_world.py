@@ -88,6 +88,8 @@ class CreatingWorldScene(AbstractScene):
         game_state.player_state.stats_were_updated.register_observer(self.ui_view.on_player_stats_updated)
         game_state.player_state.notify_stats_observers()  # Must notify the initial state
         game_engine.talent_was_unlocked.register_observer(self.ui_view.on_talent_was_unlocked)
+        game_engine.ability_was_clicked.register_observer(self.ui_view.on_ability_was_clicked)
+        game_engine.consumable_was_clicked.register_observer(self.ui_view.on_consumable_was_clicked)
         game_state.player_state.money_was_updated.register_observer(self.ui_view.on_money_updated)
         game_state.player_state.notify_money_observers()  # Must notify the initial state
         game_state.player_state.abilities_were_updated.register_observer(self.ui_view.on_abilities_updated)

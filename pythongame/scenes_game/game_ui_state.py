@@ -1,11 +1,8 @@
 from enum import Enum
-from typing import Optional
 
-from pythongame.core.common import AbilityType, Millis
+from pythongame.core.common import Millis
 
 MESSAGE_DURATION = 3500
-HIGHLIGHT_consumable_ACTION_DURATION = 120
-HIGHLIGHT_ABILITY_ACTION_DURATION = 120
 
 
 class ToggleButtonId(Enum):
@@ -20,21 +17,9 @@ class ToggleButtonId(Enum):
 class GameUiState:
     def __init__(self):
         self._ticks_since_message_updated = 0
-        self._ticks_since_last_consumable_action = 0
-        self._ticks_since_last_ability_action = 0
 
         self.message = ""
         self._enqueued_messages = []
-        self.highlighted_consumable_action: Optional[int] = None
-        self.highlighted_ability_action: Optional[AbilityType] = None
-
-    def notify_ability_was_clicked(self, ability_type: AbilityType):
-        self.highlighted_ability_action = ability_type
-        self._ticks_since_last_ability_action = 0
-
-    def notify_consumable_was_clicked(self, slot_number: int):
-        self.highlighted_consumable_action = slot_number
-        self._ticks_since_last_consumable_action = 0
 
     def set_message(self, message: str):
         self.message = message
@@ -55,11 +40,3 @@ class GameUiState:
                 self.set_message(new_message)
             else:
                 self.message = ""
-
-        self._ticks_since_last_consumable_action += time_passed
-        if self._ticks_since_last_consumable_action > HIGHLIGHT_consumable_ACTION_DURATION:
-            self.highlighted_consumable_action = None
-
-        self._ticks_since_last_ability_action += time_passed
-        if self._ticks_since_last_ability_action > HIGHLIGHT_ABILITY_ACTION_DURATION:
-            self.highlighted_ability_action = None

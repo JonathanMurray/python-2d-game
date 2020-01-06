@@ -32,12 +32,16 @@ class GameEngine:
         self.game_state = game_state
         self.ui_state = ui_state
         self.talent_was_unlocked = Observable()
+        self.ability_was_clicked = Observable()
+        self.consumable_was_clicked = Observable()
 
     def try_use_ability(self, ability_type: AbilityType):
         PlayerControls.try_use_ability(ability_type, self.game_state, self.ui_state)
+        self.ability_was_clicked.notify(ability_type)
 
     def try_use_consumable(self, slot_number: int):
         PlayerControls.try_use_consumable(slot_number, self.game_state, self.ui_state)
+        self.consumable_was_clicked.notify(slot_number)
 
     def move_in_direction(self, direction: Direction):
         if not self.game_state.player_state.stun_status.is_stunned():

@@ -33,6 +33,9 @@ PORTRAIT_ICON_SIZE = (100, 70)
 
 DIR_FONTS = './resources/fonts/'
 
+HIGHLIGHT_CONSUMABLE_ACTION_DURATION = 120
+HIGHLIGHT_ABILITY_ACTION_DURATION = 120
+
 
 class DialogState:
     def __init__(self):
@@ -123,6 +126,11 @@ class GameUiView:
         self.is_mouse_hovering_ui = False
         self.mouse_screen_position = (0, 0)
         self.dialog_state = DialogState()
+
+        self._ticks_since_last_consumable_action = 0
+        self._ticks_since_last_ability_action = 0
+        self.highlighted_consumable_action: Optional[int] = None
+        self.highlighted_ability_action: Optional[AbilityType] = None
 
     def _setup_ability_icons(self):
         x_0 = 140
@@ -376,6 +384,14 @@ class GameUiView:
         if self.enabled_toggle != self.talents_toggle:
             self.talents_toggle.highlighted = True
 
+    def on_ability_was_clicked(self, ability_type: AbilityType):
+        self.highlighted_ability_action = ability_type
+        self._ticks_since_last_ability_action = 0
+
+    def on_consumable_was_clicked(self, slot_number: int):
+        self.highlighted_consumable_action = slot_number
+        self._ticks_since_last_consumable_action = 0
+
     def on_player_movement_speed_updated(self, speed_multiplier: float):
         self.stats_window.player_speed_multiplier = speed_multiplier
 
@@ -543,6 +559,14 @@ class GameUiView:
     def update(self, time_passed: Millis):
         self.minimap.update(time_passed)
 
+        self._ticks_since_last_consumable_action += time_passed
+        if self._ticks_since_last_consumable_action > HIGHLIGHT_CONSUMABLE_ACTION_DURATION:
+            self.highlighted_consumable_action = None
+
+        self._ticks_since_last_ability_action += time_passed
+        if self._ticks_since_last_ability_action > HIGHLIGHT_ABILITY_ACTION_DURATION:
+            self.highlighted_ability_action = None
+
     def update_hero(self, hero_id: HeroId):
         sprite = HEROES[hero_id].portrait_icon_sprite
         image = self.images_by_portrait_sprite[sprite]
@@ -601,7 +625,7 @@ class GameUiView:
         self.ui_render.rect_filled((60, 60, 80), self.consumable_icons_row)
         for icon in self.consumable_icons:
             # TODO treat this as state and update it elsewhere
-            recently_clicked = icon.slot_number == ui_state.highlighted_consumable_action
+            recently_clicked = icon.slot_number == self.highlighted_consumable_action
             icon.render(recently_clicked)
 
         # ABILITIES
@@ -610,7 +634,7 @@ class GameUiView:
             ability_type = icon.ability_type
             # TODO treat this as state and update it elsewhere
             if ability_type:
-                recently_clicked = ability_type == ui_state.highlighted_ability_action
+                recently_clicked = ability_type == self.highlighted_ability_action
                 icon.render(recently_clicked)
 
         # ITEMS
