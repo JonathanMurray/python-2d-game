@@ -13,7 +13,6 @@ from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.math import get_relative_pos_within_rect
 from pythongame.core.talents import TalentTierStatus
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
-from pythongame.scenes_game.game_ui_state import ToggleButtonId
 
 COLOR_BLACK = (0, 0, 0)
 COLOR_LIGHT_GRAY = (240, 240, 240)
@@ -30,6 +29,12 @@ COLOR_TOGGLE_OPENED = (50, 50, 120)
 DIR_FONTS = './resources/fonts/'
 
 TALENT_ICON_SIZE = (32, 32)
+
+
+class ToggleButtonId(Enum):
+    STATS = 1
+    TALENTS = 2
+    HELP = 3
 
 
 class UiComponent:

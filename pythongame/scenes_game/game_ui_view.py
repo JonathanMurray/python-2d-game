@@ -12,10 +12,11 @@ from pythongame.core.math import is_point_in_rect
 from pythongame.core.sound_player import play_sound
 from pythongame.core.talents import TalentsState, TalentsConfig
 from pythongame.core.view.render_util import DrawableArea
-from pythongame.scenes_game.game_ui_state import GameUiState, ToggleButtonId
+from pythongame.scenes_game.game_ui_state import GameUiState
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
     ToggleButton, ControlsWindow, StatsWindow, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text, \
-    DialogOption, Dialog, Checkbox, Button, Message, PausedSplashScreen, TalentTierData, TalentOptionData, TalentIcon
+    DialogOption, Dialog, Checkbox, Button, Message, PausedSplashScreen, TalentTierData, TalentOptionData, TalentIcon, \
+    ToggleButtonId
 from pythongame.scenes_game.ui_events import TrySwitchItemInInventory, EventTriggeredFromUi, \
     DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
     PickTalent, StartDraggingItemOrConsumable, SaveGame, ToggleSound, ToggleFullscreen

@@ -1,14 +1,6 @@
-from enum import Enum
-
 from pythongame.core.common import Millis
 
 MESSAGE_DURATION = 3500
-
-
-class ToggleButtonId(Enum):
-    STATS = 1
-    TALENTS = 2
-    HELP = 3
 
 
 # This class maintains the UI state that's related to the game clock. For instance, when the player clicks a button in

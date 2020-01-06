@@ -21,13 +21,14 @@ from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
 from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.player_file import SaveFileHandler
 from pythongame.scenes_game.game_engine import GameEngine
-from pythongame.scenes_game.game_ui_state import GameUiState, ToggleButtonId
+from pythongame.scenes_game.game_ui_state import GameUiState
 from pythongame.scenes_game.game_ui_view import DragItemBetweenInventorySlots, DropItemOnGround, \
     DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
     PickTalent, StartDraggingItemOrConsumable, TrySwitchItemInInventory, ToggleSound, SaveGame, EventTriggeredFromUi
 from pythongame.scenes_game.game_ui_view import GameUiView
 from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
 from pythongame.scenes_game.scene_paused import PausedScene
+from pythongame.scenes_game.ui_components import ToggleButtonId
 from pythongame.scenes_game.ui_events import ToggleFullscreen
 
 
