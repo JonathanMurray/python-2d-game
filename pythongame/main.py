@@ -51,9 +51,8 @@ class Main:
         big_images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, UI_ICON_BIG_SIZE)
         self.images_by_portrait_sprite = load_images_by_portrait_sprite(PORTRAIT_ICON_SPRITE_PATHS, PORTRAIT_ICON_SIZE)
         self.world_view = GameWorldView(self.pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite)
-        world_area_aspect_ratio = (1, 1)  # Must be updated once a game state has been generated
         self.ui_view = GameUiView(
-            self.pygame_screen, CAMERA_SIZE, SCREEN_SIZE, world_area_aspect_ratio, images_by_ui_sprite,
+            self.pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_ui_sprite,
             big_images_by_ui_sprite, self.images_by_portrait_sprite, ABILITY_KEY_LABELS)
         self.save_file_handler = SaveFileHandler()
         init_sound_player()

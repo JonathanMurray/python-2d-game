@@ -30,6 +30,7 @@ class WorldEntity:
         self.visible = True  # Should only be used to control rendering
         self.view_z = 0  # increasing Z values = moving into the screen
         self.movement_changed: Observable = None  # space optimization: Only allocate when needed (i.e. for player entity)
+        self.position_changed: Observable = None  # space optimization: Only allocate when needed (i.e. for player entity)
 
     def set_moving_in_dir(self, direction: Direction):
         if direction is None:
@@ -47,6 +48,10 @@ class WorldEntity:
     def notify_movement_observers(self, is_moving: bool):
         if self.movement_changed is not None:
             self.movement_changed.notify(is_moving)
+
+    def notify_position_observers(self):
+        if self.position_changed is not None:
+            self.position_changed.notify(self.get_center_position())
 
     def get_new_position_according_to_dir_and_speed(self, time_passed: Millis) -> Optional[Tuple[int, int]]:
         distance = self._effective_speed * time_passed
@@ -88,6 +93,7 @@ class WorldEntity:
         self.y = new_position[1]
         self.pygame_collision_rect.x = self.x
         self.pygame_collision_rect.y = self.y
+        self.notify_position_observers()
 
     def rotate_right(self):
         dirs = {
@@ -761,7 +767,6 @@ class GameState:
                                       if npc.npc_category != NpcCategory.PLAYER_SUMMON]
 
     def get_all_entities_to_render(self) -> List[WorldEntity]:
-        walls_that_are_visible = self.walls_state.get_walls_in_camera(self.camera_world_area)
         other_entities = [self.player_entity] + \
                          [p.world_entity for p in self.consumables_on_ground] + \
                          [i.world_entity for i in self.items_on_ground] + \
@@ -771,7 +776,10 @@ class GameState:
                          [p.world_entity for p in self.portals] + \
                          [w.world_entity for w in self.warp_points] + \
                          [c.world_entity for c in self.chests]
-        return walls_that_are_visible + other_entities
+        return self.get_walls_in_sight_of_player() + other_entities
+
+    def get_walls_in_sight_of_player(self) -> List[WorldEntity]:
+        return self.walls_state.get_walls_in_camera(self.camera_world_area)
 
     def get_decorations_to_render(self) -> List[DecorationEntity]:
         return self.decorations_state.get_decorations_in_camera(self.camera_world_area)

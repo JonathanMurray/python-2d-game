@@ -98,8 +98,14 @@ class CreatingWorldScene(AbstractScene):
         game_state.player_state.buffs_were_updated.register_observer(self.ui_view.on_buffs_updated)
         game_state.player_entity.movement_changed = Observable()
         game_state.player_entity.movement_changed.register_observer(play_or_stop_footstep_sounds)
-        world_area_aspect_ratio = (game_state.entire_world_area.w, game_state.entire_world_area.h)
-        self.ui_view.on_world_area_aspect_ratio_updated(world_area_aspect_ratio)
+        game_state.player_entity.position_changed = Observable()
+        game_state.player_entity.position_changed.register_observer(self.ui_view.on_player_position_updated)
+        game_state.player_entity.position_changed.register_observer(
+            lambda _: self.ui_view.on_walls_seen([w.get_position() for w in game_state.get_walls_in_sight_of_player()]))
+        self.ui_view.on_world_area_updated(game_state.entire_world_area)
+        # Must center camera before notifying player position as it affects which walls are shown on the minimap
+        game_state.center_camera_on_player()
+        game_state.player_entity.notify_position_observers()  # Must notify the initial state
 
         if map_file_path == 'resources/maps/challenge.json':
             world_behavior = ChallengeBehavior(

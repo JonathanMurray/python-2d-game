@@ -4,7 +4,7 @@ import pygame
 from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite, \
-    SoundId, NpcType
+    SoundId, NpcType, Millis
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, ITEMS, HEROES
 from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES
@@ -46,7 +46,6 @@ class DialogState:
 class GameUiView:
 
     def __init__(self, pygame_screen, camera_size: Tuple[int, int], screen_size: Tuple[int, int],
-                 world_area_aspect_ratio: Tuple[float, float],
                  images_by_ui_sprite: Dict[UiIconSprite, Any], big_images_by_ui_sprite: Dict[UiIconSprite, Any],
                  images_by_portrait_sprite: Dict[PortraitIconSprite, Any], ability_key_labels: List[str]):
 
@@ -95,7 +94,7 @@ class GameUiView:
         self.inventory_icons_rect: Rect = Rect(0, 0, 0, 0)
         self.inventory_icons: List[ItemIcon] = []
         self.exp_bar = ExpBar(self.ui_render, Rect(135, 8, 300, 2), self.font_level)
-        self.minimap = Minimap(self.ui_render, Rect(475, 52, 80, 80), world_area_aspect_ratio)
+        self.minimap = Minimap(self.ui_render, Rect(475, 52, 80, 80), Rect(0, 0, 1, 1), (0, 0))
         self.buffs = Buffs(self.ui_render, self.font_buff_texts, (10, -35))
         self.money_text = Text(self.ui_render, self.font_ui_money, (24, 150), "NO MONEY")
         self.talents_window: TalentsWindow = None
@@ -489,8 +488,14 @@ class GameUiView:
     def on_fullscreen_changed(self, fullscreen: bool):
         self.fullscreen_checkbox.checked = fullscreen
 
-    def on_world_area_aspect_ratio_updated(self, aspect_ratio: Tuple[float, float]):
-        self.minimap.update_aspect_ratio(aspect_ratio)
+    def on_world_area_updated(self, world_area: Rect):
+        self.minimap.update_world_area(world_area)
+
+    def on_walls_seen(self, seen_wall_positions: List[Tuple[int, int]]):
+        self.minimap.add_walls(seen_wall_positions)
+
+    def on_player_position_updated(self, center_position: Tuple[int, int]):
+        self.minimap.update_player_position(center_position)
 
     # --------------------------------------------------------------------------------------------------------
     #                              HANDLE DIALOG USER INTERACTIONS
@@ -535,6 +540,9 @@ class GameUiView:
     # --------------------------------------------------------------------------------------------------------
     #                                     UPDATE MISC. STATE
     # --------------------------------------------------------------------------------------------------------
+
+    def update(self, time_passed: Millis):
+        self.minimap.update(time_passed)
 
     def update_hero(self, hero_id: HeroId):
         sprite = HEROES[hero_id].portrait_icon_sprite
@@ -611,13 +619,11 @@ class GameUiView:
             icon.render(highlighted)
 
         # MINIMAP
-        # TODO render more things (walls, NPCs, camera rect)?
+        # TODO Don't pass these values into the render method. Handle as state
         self.minimap.render(
-            player_relative_position=ui_state.player_minimap_relative_position,
             minimap_highlight_relative_position=ui_state.minimap_highlight_relative_position,
             camera_rect_ratio=None,
-            npc_positions_ratio=[],
-            wall_positions_ratio=[])
+            npc_positions_ratio=[])
 
         simple_components = [self.exp_bar, self.portrait, self.healthbar, self.manabar, self.money_text, self.dialog,
                              self.buffs, self.sound_checkbox, self.save_button, self.fullscreen_checkbox,

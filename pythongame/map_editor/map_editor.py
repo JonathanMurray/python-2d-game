@@ -88,9 +88,9 @@ def main(map_file_name: Optional[str]):
     images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, MAP_EDITOR_UI_ICON_SIZE)
     images_by_portrait_sprite = load_images_by_portrait_sprite(PORTRAIT_ICON_SPRITE_PATHS, PORTRAIT_ICON_SIZE)
     world_view = GameWorldView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite)
-    world_area_aspect_ratio = (game_state.entire_world_area.w, game_state.entire_world_area.h)
-    ui_view = MapEditorView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite, images_by_ui_sprite,
-                            images_by_portrait_sprite, world_area_aspect_ratio)
+    ui_view = MapEditorView(
+        pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite, images_by_ui_sprite, images_by_portrait_sprite,
+        game_state.entire_world_area, game_state.player_entity.get_center_position())
 
     user_state = UserState.deleting_entities()
 
@@ -181,8 +181,8 @@ def main(map_file_name: Optional[str]):
                         game_state = create_game_state_from_map_data(CAMERA_SIZE, map_json, HERO_ID)
                         game_state.center_camera_on_player()
                         game_state.snap_camera_to_grid(grid_cell_size)
-                        aspect_ratio = (game_state.entire_world_area.w, game_state.entire_world_area.h)
-                        ui_view.on_world_area_aspect_ratio_updated(aspect_ratio)
+                        ui_view.on_world_area_updated(game_state.entire_world_area)
+                        ui_view.on_player_position_updated(game_state.player_entity.get_center_position())
                     elif isinstance(event_from_ui, SetCameraPosition):
                         game_state.set_camera_position_to_ratio_of_world(event_from_ui.position_ratio)
                         game_state.snap_camera_to_grid(grid_cell_size)
@@ -195,6 +195,7 @@ def main(map_file_name: Optional[str]):
                     if is_snapped_mouse_within_world and not is_snapped_mouse_over_ui:
                         if entity_being_placed.is_player:
                             game_state.player_entity.set_position(snapped_mouse_world_position)
+                            ui_view.on_player_position_updated(game_state.player_entity.get_center_position())
                         elif entity_being_placed.npc_type:
                             _add_npc(entity_being_placed.npc_type, game_state, snapped_mouse_world_position)
                         elif entity_being_placed.wall_type:
@@ -255,17 +256,17 @@ def main(map_file_name: Optional[str]):
 
         camera_world_area = game_state.camera_world_area
         world_area = game_state.entire_world_area
+
+        # TODO Handle this the same as wall positions
         camera_rect_ratio = ((camera_world_area.x - world_area.x) / world_area.w,
                              (camera_world_area.y - world_area.y) / world_area.h,
                              camera_world_area.w / world_area.w,
                              camera_world_area.h / world_area.h)
 
+        # TODO Handle these the same as wall positions
         npc_positions_ratio = [
             get_relative_pos_within_rect(npc.world_entity.get_position(), game_state.entire_world_area)
             for npc in game_state.non_player_characters]
-        wall_positions_ratio = [
-            get_relative_pos_within_rect(wall.world_entity.get_position(), game_state.entire_world_area)
-            for wall in game_state.walls_state.walls]
 
         if shown_tab == EntityTab.ITEMS:
             shown_entities = ITEM_ENTITIES
@@ -280,8 +281,7 @@ def main(map_file_name: Optional[str]):
 
         ui_view.set_shown_tab(shown_tab)
 
-        relative_player_pos = get_relative_pos_within_rect(
-            game_state.player_entity.get_position(), game_state.entire_world_area)
+        wall_positions = [w.world_entity.get_position() for w in game_state.walls_state.walls]
         entity_icon_hovered_by_mouse = ui_view.render(
             entities=shown_entities,
             placing_entity=user_state.placing_entity,
@@ -294,8 +294,7 @@ def main(map_file_name: Optional[str]):
             mouse_screen_position=exact_mouse_screen_position,
             camera_rect_ratio=camera_rect_ratio,
             npc_positions_ratio=npc_positions_ratio,
-            wall_positions_ratio=wall_positions_ratio,
-            relative_player_position=relative_player_pos)
+            wall_positions=wall_positions)
 
         if is_mouse_button_down and entity_icon_hovered_by_mouse:
             user_state = UserState.placing_entity(entity_icon_hovered_by_mouse)

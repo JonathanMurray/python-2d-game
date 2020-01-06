@@ -4,9 +4,7 @@ from typing import Tuple, Optional
 from pygame.rect import Rect
 
 from pythongame.core.common import AbilityType, Millis
-from pythongame.core.math import get_relative_pos_within_rect
 
-MINIMAP_UPDATE_INTERVAL = 1000
 MESSAGE_DURATION = 3500
 HIGHLIGHT_consumable_ACTION_DURATION = 120
 HIGHLIGHT_ABILITY_ACTION_DURATION = 120
@@ -25,12 +23,10 @@ class GameUiState:
     def __init__(self):
         self._entire_world_area = Rect(0, 0, 1, 1)
         self._player_entity_center_position = (0, 0)
-        self._ticks_since_minimap_updated = MINIMAP_UPDATE_INTERVAL
         self._ticks_since_message_updated = 0
         self._ticks_since_last_consumable_action = 0
         self._ticks_since_last_ability_action = 0
 
-        self.player_minimap_relative_position: Tuple[float, float] = (0, 0)
         self.message = ""
         self._enqueued_messages = []
         self.highlighted_consumable_action: Optional[int] = None
@@ -68,12 +64,6 @@ class GameUiState:
         self._enqueued_messages.clear()
 
     def notify_time_passed(self, time_passed: Millis):
-        self._ticks_since_minimap_updated += time_passed
-        if self._ticks_since_minimap_updated > MINIMAP_UPDATE_INTERVAL:
-            self._ticks_since_minimap_updated = 0
-            self.player_minimap_relative_position = get_relative_pos_within_rect(
-                self._player_entity_center_position, self._entire_world_area)
-
         self._ticks_since_message_updated += time_passed
         if self.message != "" and self._ticks_since_message_updated > MESSAGE_DURATION:
             if self._enqueued_messages:

@@ -220,6 +220,7 @@ class PlayingScene(AbstractScene):
 
         scene_transition = self.world_behavior.control(time_passed)
         engine_events = self.game_engine.run_one_frame(time_passed)
+        self.ui_view.update(time_passed)
         for event in engine_events:
             scene_transition = self.world_behavior.handle_event(event)
 
