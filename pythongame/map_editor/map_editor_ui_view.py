@@ -105,11 +105,13 @@ class MapEditorView:
                  world_area: Rect,
                  player_position: Tuple[int, int],
                  entities_by_type: Dict[EntityTab, List[MapEditorWorldEntity]],
-                 grid_cell_size: int):
+                 grid_cell_size: int,
+                 map_file_path: str):
         camera_size = camera_world_area.size
         self._camera_size = camera_size
         self._screen_size = screen_size
         self._screen_render = DrawableArea(pygame_screen)
+        self._map_file_path = map_file_path
 
         self._images_by_sprite = images_by_sprite
         self._images_by_ui_sprite = images_by_ui_sprite
@@ -348,11 +350,17 @@ class MapEditorView:
 
         self._screen_render.rect(COLOR_WHITE, self._ui_screen_area, 1)
 
-        self._screen_render.rect_transparent(Rect(0, 0, 150, 80), 100, COLOR_BLACK)
-        self._screen_render.text(self._font_debug_info, "# enemies: " + str(num_enemies), (5, 3))
-        self._screen_render.text(self._font_debug_info, "# walls: " + str(num_walls), (5, 20))
-        self._screen_render.text(self._font_debug_info, "# decorations: " + str(num_decorations), (5, 37))
-        self._screen_render.text(self._font_debug_info, "Cell size: " + str(self.grid_cell_size), (5, 54))
+        debug_entries = [
+            self._map_file_path,
+            "--------------------------------",
+            "# enemies: " + str(num_enemies),
+            "# walls: " + str(num_walls),
+            "# decorations: " + str(num_decorations),
+            "Cell size: " + str(self.grid_cell_size),
+        ]
+        self._screen_render.rect_transparent(Rect(0, 0, 240, 5 + len(debug_entries) * 22), 100, COLOR_BLACK)
+        for i, entry in enumerate(debug_entries):
+            self._screen_render.text(self._font_debug_info, entry, (10, 12 + i * 20))
 
         self._minimap.set_walls(wall_positions)
         self._minimap.update_camera_area(self.camera_world_area)

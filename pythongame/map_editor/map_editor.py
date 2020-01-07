@@ -88,7 +88,7 @@ class MapEditor:
             pygame_screen, self.game_state.camera_world_area, SCREEN_SIZE, images_by_sprite, images_by_ui_sprite,
             images_by_portrait_sprite, self.game_state.entire_world_area,
             self.game_state.player_entity.get_center_position(),
-            ENTITIES_BY_TYPE, grid_cell_size)
+            ENTITIES_BY_TYPE, grid_cell_size, self.map_file_path)
 
         camera_move_distance = 75  # must be a multiple of the grid size
 
