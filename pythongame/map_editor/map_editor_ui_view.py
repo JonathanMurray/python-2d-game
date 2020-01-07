@@ -64,6 +64,10 @@ class GenerateRandomMap(MapEditorAction):
     pass
 
 
+class SaveMap(MapEditorAction):
+    pass
+
+
 class SetCameraPosition(MapEditorAction):
     def __init__(self, position_ratio: Tuple[float, float]):
         self.position_ratio = position_ratio
@@ -132,6 +136,8 @@ class MapEditorView:
         self._checkbox_show_entity_outlines = Checkbox(self._ui_render, Rect(15, 100, 120, 20), "outlines", False)
         self._checkboxes = [self._checkbox_show_entity_outlines]
         self._button_generate_random_map: Button = Button(self._ui_render, Rect(15, 125, 120, 20), "generate random")
+        self._button_save: Button = Button(self._ui_render, Rect(15, 155, 120, 20), "save")
+        self._buttons = [self._button_generate_random_map, self._button_save]
 
         # USER INPUT STATE
         self._is_mouse_button_down = False
@@ -209,7 +215,7 @@ class MapEditorView:
                 self._entity_icon_hovered_by_mouse = entity
                 return
 
-        simple_components: List[UiComponent] = self._checkboxes + [self._button_generate_random_map, self._minimap] \
+        simple_components: List[UiComponent] = self._checkboxes + self._buttons + [self._minimap] \
                                                + self._tab_buttons
         for component in simple_components:
             if component.contains(mouse_ui_pos):
@@ -251,6 +257,8 @@ class MapEditorView:
             return None
         if self._hovered_component == self._button_generate_random_map:
             return GenerateRandomMap()
+        if self._hovered_component == self._button_save:
+            return SaveMap()
         if self._hovered_component == self._minimap:
             mouse_ui_position = self._translate_screen_position_to_ui(self._mouse_screen_pos)
             position_ratio = self._minimap.get_position_ratio(mouse_ui_position)
@@ -345,12 +353,9 @@ class MapEditorView:
         self._minimap.update_npc_positions(npc_positions)
         self._minimap.update_player_position(player_position)
         self._minimap.update_world_area(self.world_area)
-        self._minimap.render()
 
-        for checkbox in self._checkboxes + self._tab_buttons:
-            checkbox.render()
-
-        self._button_generate_random_map.render()
+        for component in self._checkboxes + self._tab_buttons + self._buttons + [self._minimap]:
+            component.render()
 
         if self._hovered_component and self._hovered_component.tooltip:
             tooltip: TooltipGraphics = self._hovered_component.tooltip
