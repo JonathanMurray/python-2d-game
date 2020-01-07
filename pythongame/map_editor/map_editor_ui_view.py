@@ -194,6 +194,9 @@ class MapEditorView:
     # HANDLE USER INPUT
 
     def handle_mouse_movement(self, mouse_screen_pos: Tuple[int, int]) -> Optional[MapEditorAction]:
+
+        self._set_currently_hovered_component_not_hovered()
+
         self._mouse_screen_pos = mouse_screen_pos
         self._entity_icon_hovered_by_mouse = None
 
@@ -215,12 +218,19 @@ class MapEditorView:
                 self._entity_icon_hovered_by_mouse = entity
                 return
 
-        simple_components: List[UiComponent] = self._checkboxes + self._buttons + [self._minimap] \
+        simple_components: List[UiComponent] = self._checkboxes + self._buttons \
                                                + self._tab_buttons
         for component in simple_components:
             if component.contains(mouse_ui_pos):
                 self._on_hover_component(component)
                 return
+
+        if self._minimap.contains(mouse_ui_pos):
+            self._on_hover_component(self._minimap)
+            if self._is_mouse_button_down:
+                position_ratio = self._minimap.get_position_ratio(mouse_ui_pos)
+                return SetCameraPosition(position_ratio)
+            return
 
         if self._is_mouse_button_down and self._is_snapped_mouse_within_world and not self._is_snapped_mouse_over_ui:
             if self._user_state.placing_entity:
@@ -233,18 +243,14 @@ class MapEditorView:
             else:
                 raise Exception("Unhandled user state: " + str(self._user_state))
 
-        # If something was hovered, we would have returned from the method
-        self._set_currently_hovered_component_not_hovered()
-
-    def _on_hover_component(self, component):
-        self._set_currently_hovered_component_not_hovered()
-        self._hovered_component = component
-        self._hovered_component.hovered = True
-
     def _set_currently_hovered_component_not_hovered(self):
         if self._hovered_component is not None:
             self._hovered_component.hovered = False
             self._hovered_component = None
+
+    def _on_hover_component(self, component):
+        self._hovered_component = component
+        self._hovered_component.hovered = True
 
     def handle_mouse_click(self) -> Optional[MapEditorAction]:
 
