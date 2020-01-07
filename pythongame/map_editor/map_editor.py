@@ -133,23 +133,32 @@ def main(map_file_name: Optional[str]):
 
             if event.type == pygame.MOUSEMOTION:
                 exact_mouse_screen_position: Tuple[int, int] = event.pos
+                # TODO let view take care of (hover entity + click = placing entity)
                 entity_icon_hovered_by_mouse = ui_view.handle_mouse_movement(exact_mouse_screen_position)
+
+                # TODO let view take care of (mouse outside of world = red box)
                 snapped_mouse_screen_position = ((exact_mouse_screen_position[0] // grid_cell_size) * grid_cell_size,
                                                  (exact_mouse_screen_position[1] // grid_cell_size) * grid_cell_size)
                 snapped_mouse_world_position = sum_of_vectors(
                     snapped_mouse_screen_position, game_state.camera_world_area.topleft)
                 is_snapped_mouse_within_world = game_state.is_position_within_game_world(snapped_mouse_world_position)
                 is_snapped_mouse_over_ui = ui_view.is_screen_position_within_ui(snapped_mouse_screen_position)
+
+                # TODO let view keep track of this mouse state
                 if is_mouse_button_down and is_snapped_mouse_within_world and not is_snapped_mouse_over_ui:
                     if user_state.placing_entity:
                         if user_state.placing_entity.wall_type:
+                            # TODO let view emit "add wall" events
                             _add_wall(game_state, snapped_mouse_world_position, user_state.placing_entity.wall_type)
                         elif user_state.placing_entity.decoration_sprite:
+                            # TODO let view emit "add decoration" events
                             _add_decoration(user_state.placing_entity.decoration_sprite, game_state,
                                             snapped_mouse_world_position)
                     elif user_state.deleting_entities:
+                        # TODO let view emit "delete entities" events
                         _delete_map_entities_from_position(game_state, snapped_mouse_world_position)
                     else:
+                        # TODO let view emit "delete decorations" events
                         _delete_map_decorations_from_position(game_state, snapped_mouse_world_position)
 
             if event.type == pygame.KEYDOWN:
@@ -157,8 +166,11 @@ def main(map_file_name: Optional[str]):
                     save_file = map_file_path
                     save_game_state_to_json_file(game_state, save_file)
                     print("Saved state to " + save_file)
+
                 elif event.key in [pygame.K_RIGHT, pygame.K_DOWN, pygame.K_LEFT, pygame.K_UP]:
                     held_down_arrow_keys.add(event.key)
+
+                # TODO let view maintain this "deleting" state
                 elif event.key == pygame.K_q:
                     user_state = UserState.deleting_entities()
                 elif event.key == pygame.K_z:
@@ -166,6 +178,8 @@ def main(map_file_name: Optional[str]):
                 elif event.key == pygame.K_PLUS:
                     grid_cell_size_index = (grid_cell_size_index + 1) % len(possible_grid_cell_sizes)
                     grid_cell_size = possible_grid_cell_sizes[grid_cell_size_index]
+
+                # TODO let view take care of these tabs
                 elif event.key == pygame.K_v:
                     ui_view.set_shown_tab(EntityTab.ITEMS)
                 elif event.key == pygame.K_b:
@@ -199,6 +213,8 @@ def main(map_file_name: Optional[str]):
                 if user_state.placing_entity:
                     entity_being_placed = user_state.placing_entity
                     if is_snapped_mouse_within_world and not is_snapped_mouse_over_ui:
+
+                        # TODO let view output these as events
                         if entity_being_placed.is_player:
                             game_state.player_entity.set_position(snapped_mouse_world_position)
                         elif entity_being_placed.npc_type:
@@ -222,10 +238,13 @@ def main(map_file_name: Optional[str]):
                         else:
                             raise Exception("Unknown entity: " + str(entity_being_placed))
                 elif user_state.deleting_entities:
+                    # TODO let view output this as an event
                     _delete_map_entities_from_position(game_state, snapped_mouse_world_position)
                 else:
+                    # TODO let view output this as an event
                     _delete_map_decorations_from_position(game_state, snapped_mouse_world_position)
 
+            # TODO let view maintain this state
             if event.type == pygame.MOUSEBUTTONUP:
                 is_mouse_button_down = False
 
@@ -275,6 +294,7 @@ def main(map_file_name: Optional[str]):
             player_position=game_state.player_entity.get_center_position(),
             world_area=game_state.entire_world_area)
 
+        # TODO let view take care of (hover entity + click = placing entity)
         if is_mouse_button_down and entity_icon_hovered_by_mouse:
             user_state = UserState.placing_entity(entity_icon_hovered_by_mouse)
 
@@ -282,18 +302,22 @@ def main(map_file_name: Optional[str]):
             pass
             # render nothing over UI
         elif not is_snapped_mouse_within_world:
+            # TODO let view take care of (mouse outside of world = red box)
             snapped_mouse_rect = Rect(snapped_mouse_screen_position[0], snapped_mouse_screen_position[1],
                                       grid_cell_size, grid_cell_size)
             ui_view.render_map_editor_mouse_rect((250, 50, 0), snapped_mouse_rect)
         elif user_state.placing_entity:
+            # TODO let view take care of rendering these
             entity_being_placed = user_state.placing_entity
             ui_view.render_map_editor_world_entity_at_position(
                 entity_being_placed.sprite, entity_being_placed.entity_size, snapped_mouse_screen_position)
         elif user_state.deleting_entities:
+            # TODO let view take care of rendering these
             snapped_mouse_rect = Rect(snapped_mouse_screen_position[0], snapped_mouse_screen_position[1],
                                       grid_cell_size, grid_cell_size)
             ui_view.render_map_editor_mouse_rect((250, 250, 0), snapped_mouse_rect)
         elif user_state.deleting_decorations:
+            # TODO let view take care of rendering these
             snapped_mouse_rect = Rect(snapped_mouse_screen_position[0], snapped_mouse_screen_position[1],
                                       grid_cell_size, grid_cell_size)
             ui_view.render_map_editor_mouse_rect((0, 250, 250), snapped_mouse_rect)
