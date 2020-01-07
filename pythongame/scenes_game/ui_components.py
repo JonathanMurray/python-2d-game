@@ -39,8 +39,17 @@ class ToggleButtonId(Enum):
 
 
 class UiComponent:
-    def __init__(self):
+    def __init__(self, rect: Rect):
         self.hovered = False
+        self.rect = rect
+
+    def contains(self, point: Tuple[int, int]) -> bool:
+        return self.rect.collidepoint(point[0], point[1])
+
+    def get_collision_offset(self, point: Tuple[int, int]) -> Optional[Tuple[int, int]]:
+        if self.rect.collidepoint(point[0], point[1]):
+            return point[0] - self.rect.x, point[1] - self.rect.y
+        return None
 
 
 class DialogOption:
@@ -214,7 +223,7 @@ class TooltipGraphics:
 class AbilityIcon(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, label: str, font, tooltip: TooltipGraphics,
                  ability_type: AbilityType, cooldown_remaining_ratio: float):
-        super().__init__()
+        super().__init__(rect)
         self._ui_render = ui_render
         self._font = font
         self.rect = rect
@@ -223,9 +232,6 @@ class AbilityIcon(UiComponent):
         self.tooltip = tooltip
         self.ability_type = ability_type
         self.cooldown_remaining_ratio = cooldown_remaining_ratio
-
-    def contains(self, point: Tuple[int, int]) -> bool:
-        return self.rect.collidepoint(point[0], point[1])
 
     def render(self, recently_clicked: bool):
         self._ui_render.rect_filled((40, 40, 50), self.rect)
@@ -263,9 +269,8 @@ class AbilityIcon(UiComponent):
 class ConsumableIcon(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, label: str, font, tooltip: TooltipGraphics,
                  consumable_types: List[ConsumableType], slot_number: int):
-        super().__init__()
+        super().__init__(rect)
         self._ui_render = ui_render
-        self._rect = rect
         self._image = image
         self._label = label
         self._font = font
@@ -273,16 +278,11 @@ class ConsumableIcon(UiComponent):
         self.tooltip = tooltip
         self.slot_number = slot_number
 
-    def get_collision_offset(self, point: Tuple[int, int]) -> Optional[Tuple[int, int]]:
-        if self._rect.collidepoint(point[0], point[1]):
-            return point[0] - self._rect.x, point[1] - self._rect.y
-        return None
-
     def render(self, recently_clicked: bool):
-        self._ui_render.rect_filled((40, 40, 50), self._rect)
+        self._ui_render.rect_filled((40, 40, 50), self.rect)
         if self._image:
-            self._ui_render.image(self._image, self._rect.topleft)
-        self._ui_render.rect(COLOR_ICON_OUTLINE, self._rect, 1)
+            self._ui_render.image(self._image, self.rect.topleft)
+        self._ui_render.rect(COLOR_ICON_OUTLINE, self.rect, 1)
 
         sub_rect_h = 3
         for i in range(len(self.consumable_types)):
@@ -296,20 +296,20 @@ class ConsumableIcon(UiComponent):
                 sub_rect_color = (170, 170, 170)
             self._ui_render.rect_filled(
                 sub_rect_color,
-                Rect(self._rect.x, self._rect.y - 2 - (sub_rect_h + 1) * (i + 1), self._rect.w, sub_rect_h))
+                Rect(self.rect.x, self.rect.y - 2 - (sub_rect_h + 1) * (i + 1), self.rect.w, sub_rect_h))
 
         if recently_clicked:
             self._ui_render.rect(COLOR_ICON_HIGHLIGHTED,
-                                 Rect(self._rect.x - 1, self._rect.y - 1, self._rect.w + 2, self._rect.h + 2), 3)
+                                 Rect(self.rect.x - 1, self.rect.y - 1, self.rect.w + 2, self.rect.h + 2), 3)
         elif self.hovered:
-            self._ui_render.rect(COLOR_HOVERED, self._rect, 1)
-        self._ui_render.text(self._font, self._label, (self._rect.x + 12, self._rect.y + self._rect.h + 4))
+            self._ui_render.rect(COLOR_HOVERED, self.rect, 1)
+        self._ui_render.text(self._font, self._label, (self.rect.x + 12, self.rect.y + self.rect.h + 4))
 
     def update(self, image, top_consumable: ConsumableData, consumable_types: List[ConsumableType]):
         self._image = image
         self.consumable_types = consumable_types
         if top_consumable:
-            self.tooltip = TooltipGraphics.create_for_consumable(self._ui_render, top_consumable, self._rect.topleft)
+            self.tooltip = TooltipGraphics.create_for_consumable(self._ui_render, top_consumable, self.rect.topleft)
         else:
             self.tooltip = None
 
@@ -317,20 +317,14 @@ class ConsumableIcon(UiComponent):
 class ItemIcon(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, tooltip: TooltipGraphics,
                  slot_equipment_category: ItemEquipmentCategory, item_type: ItemType, inventory_slot_index: int):
-        super().__init__()
+        super().__init__(rect)
         self._ui_render = ui_render
-        self.rect = rect
         self._rect_highlighted = Rect(self.rect.x - 1, self.rect.y - 1, self.rect.w + 1, self.rect.h + 1)
         self.image = image
         self.slot_equipment_category = slot_equipment_category
         self.tooltip = tooltip
         self.item_type = item_type
         self.inventory_slot_index = inventory_slot_index
-
-    def get_collision_offset(self, point: Tuple[int, int]) -> Optional[Tuple[int, int]]:
-        if self.rect.collidepoint(point[0], point[1]):
-            return point[0] - self.rect.x, point[1] - self.rect.y
-        return None
 
     def render(self, highlighted: bool):
         has_equipped_item = self.slot_equipment_category and self.item_type
@@ -351,38 +345,34 @@ class ItemIcon(UiComponent):
 class MapEditorIcon(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, font, user_input_key: str,
                  map_editor_entity_id: int, tooltip: TooltipGraphics):
-        super().__init__()
+        super().__init__(rect)
         self._ui_render = ui_render
-        self._rect = rect
-        self._rect_highlighted = Rect(self._rect.x - 1, self._rect.y - 1, self._rect.w + 1, self._rect.h + 1)
+        self._rect_highlighted = Rect(self.rect.x - 1, self.rect.y - 1, self.rect.w + 1, self.rect.h + 1)
         self._image = image
         self._font = font
         self._user_input_key = user_input_key
         self.map_editor_entity_id = map_editor_entity_id
         self.tooltip = tooltip
 
-    def contains(self, point: Tuple[int, int]) -> bool:
-        return self._rect.collidepoint(point[0], point[1])
-
     def render(self, highlighted: bool):
-        self._ui_render.rect_filled((40, 40, 40), self._rect)
+        self._ui_render.rect_filled((40, 40, 40), self.rect)
 
-        icon_scaled_image = pygame.transform.scale(self._image, self._rect.size)
-        self._ui_render.image(icon_scaled_image, self._rect.topleft)
+        icon_scaled_image = pygame.transform.scale(self._image, self.rect.size)
+        self._ui_render.image(icon_scaled_image, self.rect.topleft)
 
-        self._ui_render.rect(COLOR_WHITE, self._rect, 1)
+        self._ui_render.rect(COLOR_WHITE, self.rect, 1)
         if self.hovered:
-            self._ui_render.rect(COLOR_HOVERED, self._rect, 1)
+            self._ui_render.rect(COLOR_HOVERED, self.rect, 1)
         if highlighted:
             self._ui_render.rect(COLOR_ICON_HIGHLIGHTED, self._rect_highlighted, 3)
-        self._ui_render.text(self._font, self._user_input_key, (self._rect.x + 12, self._rect.bottom + 4))
+        self._ui_render.text(self._font, self._user_input_key, (self.rect.x + 12, self.rect.bottom + 4))
 
 
-class StatBar:
+class StatBar(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, color: Tuple[int, int, int], tooltip: TooltipGraphics,
                  value: int, max_value: int, show_numbers: bool, font):
+        super().__init__(rect)
         self.ui_render = ui_render
-        self.rect = rect
         self.color = color
         self.tooltip = tooltip
         self.show_numbers = show_numbers
@@ -390,9 +380,6 @@ class StatBar:
         self._value = value
         self._max_value = max_value
         self.ratio_filled = self._value / self._max_value
-
-    def contains(self, point: Tuple[int, int]) -> bool:
-        return self.rect.collidepoint(point[0], point[1])
 
     def render(self):
         self.ui_render.stat_bar(
@@ -417,7 +404,7 @@ class ToggleButton(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, font, text: str, toggle_id: ToggleButtonId,
                  highlighted: bool,
                  linked_window: UiWindow):
-        super().__init__()
+        super().__init__(rect)
         self.ui_render = ui_render
         self.rect = rect
         self.font = font
@@ -427,9 +414,6 @@ class ToggleButton(UiComponent):
         self.tooltip = None
         self.is_open = False
         self.linked_window = linked_window
-
-    def contains(self, point: Tuple[int, int]) -> bool:
-        return self.rect.collidepoint(point[0], point[1])
 
     def render(self):
         if self.is_open:
@@ -454,16 +438,13 @@ class ToggleButton(UiComponent):
 
 class Checkbox(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, label: str, checked: bool):
-        super().__init__()
+        super().__init__(rect)
         self.ui_render = ui_render
         self.rect = rect
         self.font = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.label = label
         self.checked = checked
         self.tooltip = None
-
-    def contains(self, point: Tuple[int, int]) -> bool:
-        return self.rect.collidepoint(point[0], point[1])
 
     def render(self):
         self.ui_render.rect(COLOR_BUTTON_OUTLINE, self.rect, 1)
@@ -479,15 +460,12 @@ class Checkbox(UiComponent):
 
 class Button(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, text: str):
-        super().__init__()
+        super().__init__(rect)
         self.ui_render = ui_render
         self.rect = rect
         self.text = text
         self.tooltip = None
         self.font = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
-
-    def contains(self, point: Tuple[int, int]) -> bool:
-        return self.rect.collidepoint(point[0], point[1])
 
     def render(self):
         self.ui_render.rect(COLOR_BUTTON_OUTLINE, self.rect, 1)
@@ -499,16 +477,13 @@ class Button(UiComponent):
 
 class RadioButton(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, text: str):
-        super().__init__()
+        super().__init__(rect)
         self.ui_render = ui_render
         self.rect = rect
         self.text = text
         self.tooltip = None
         self.font = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.enabled = False
-
-    def contains(self, point: Tuple[int, int]) -> bool:
-        return self.rect.collidepoint(point[0], point[1])
 
     def render(self):
         self.ui_render.rect(COLOR_BUTTON_OUTLINE, self.rect, 1)
@@ -705,9 +680,8 @@ class TalentTierData:
 class TalentIcon(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, tooltip: TooltipGraphics, chosen: bool,
                  talent_name: str, font, tier_index: int, option_index: int, status: TalentIconStatus):
-        super().__init__()
+        super().__init__(rect)
         self._ui_render = ui_render
-        self._rect = rect
         self._image = image
         self._chosen = chosen
         self._font = font
@@ -718,21 +692,18 @@ class TalentIcon(UiComponent):
         self.tier_index = tier_index
         self.option_index = option_index
 
-    def contains(self, point: Tuple[int, int]) -> bool:
-        return self._rect.collidepoint(point[0], point[1])
-
     def render(self):
-        self._ui_render.rect_filled(COLOR_BLACK, self._rect)
-        self._ui_render.image(self._image, self._rect.topleft)
+        self._ui_render.rect_filled(COLOR_BLACK, self.rect)
+        self._ui_render.image(self._image, self.rect.topleft)
 
         if self._status == TalentIconStatus.FADED:
-            self._ui_render.rect_transparent(self._rect, 150, (50, 0, 0))
+            self._ui_render.rect_transparent(self.rect, 150, (50, 0, 0))
         elif self._status == TalentIconStatus.PICKED:
-            self._ui_render.rect((250, 250, 150), self._rect, 2)
+            self._ui_render.rect((250, 250, 150), self.rect, 2)
         elif self._status == TalentIconStatus.PENDING:
-            self._ui_render.rect((150, 150, 150), self._rect, 1)
+            self._ui_render.rect((150, 150, 150), self.rect, 1)
         if self.hovered:
-            self._ui_render.rect(COLOR_HOVERED, self._rect, 1)
+            self._ui_render.rect(COLOR_HOVERED, self.rect, 1)
 
 
 class TalentTier:
@@ -883,15 +854,14 @@ class Portrait:
 
 class Minimap(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, world_area: Rect, player_position: Tuple[int, int]):
-        super().__init__()
+        super().__init__(rect)
         self._ui_render = ui_render
-        self._rect = rect
         self._rect_margin = Rect(rect.x - 2, rect.y - 2, rect.w + 4, rect.h + 4)
         self._rect_inner = None
         self._player_position = player_position
         self._world_area = None
         self._seen_wall_positions: Set[Tuple[int, int]] = set()
-        self._wall_pixel_positions: Tuple[int, int] = []
+        self._wall_pixel_positions: List[Tuple[int, int]] = []
         self._timer = PeriodicTimer(Millis(2_000))
         self._highlight_pos_ratio = None
         self.camera_rect_ratio = None
@@ -901,13 +871,13 @@ class Minimap(UiComponent):
 
     def update_world_area(self, world_area: Rect):
         self._world_area = world_area
-        self._rect_inner = Rect(self._rect.x + 2, self._rect.y + 2, self._rect.w - 4, self._rect.h - 4)
+        self._rect_inner = Rect(self.rect.x + 2, self.rect.y + 2, self.rect.w - 4, self.rect.h - 4)
         if world_area.w > world_area.h:
             self._rect_inner.h /= world_area.w / world_area.h
-            self._rect_inner.y = self._rect.y + self._rect.h // 2 - self._rect_inner.h // 2
+            self._rect_inner.y = self.rect.y + self.rect.h // 2 - self._rect_inner.h // 2
         else:
             self._rect_inner.w /= world_area.h / world_area.w
-            self._rect_inner.x = self._rect.x + self._rect.w // 2 - self._rect_inner.w // 2
+            self._rect_inner.x = self.rect.x + self.rect.w // 2 - self._rect_inner.w // 2
 
     def update_player_position(self, center_position: Tuple[int, int]):
         self._player_position = center_position
@@ -929,11 +899,8 @@ class Minimap(UiComponent):
                                        self._rect_inner.y + pos[1] * self._rect_inner.h)
                                       for pos in wall_positions_ratio]
 
-    def contains(self, point: Tuple[int, int]) -> bool:
-        return self._rect.collidepoint(point[0], point[1])
-
     def get_position_ratio(self, point: Tuple[int, int]) -> Tuple[float, float]:
-        return (point[0] - self._rect.x) / self._rect.w, (point[1] - self._rect.y) / self._rect.h
+        return (point[0] - self.rect.x) / self.rect.w, (point[1] - self.rect.y) / self.rect.h
 
     def update(self, time_passed: Millis):
         if self._timer.update_and_check_if_ready(time_passed):
@@ -950,9 +917,9 @@ class Minimap(UiComponent):
 
     def render(self):
         self._ui_render.rect_filled((60, 60, 80), self._rect_margin)
-        self._ui_render.rect_filled((0, 0, 0), self._rect)
+        self._ui_render.rect_filled((0, 0, 0), self.rect)
         self._ui_render.rect_filled((40, 40, 50), self._rect_inner)
-        self._ui_render.rect((150, 150, 190), self._rect, 1)
+        self._ui_render.rect((150, 150, 190), self.rect, 1)
 
         rect = self._rect_inner
 
