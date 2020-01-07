@@ -379,20 +379,17 @@ class MapEditorView:
             snapped_mouse_rect = Rect(self._snapped_mouse_screen_pos[0], self._snapped_mouse_screen_pos[1],
                                       self.grid_cell_size, self.grid_cell_size)
             if not self._is_snapped_mouse_within_world:
-                self._render_map_editor_mouse_rect((250, 50, 0), snapped_mouse_rect)
+                self._screen_render.rect((250, 50, 0), snapped_mouse_rect, 3)
             elif placing_entity:
                 entity_being_placed = placing_entity
                 self._render_map_editor_world_entity_at_position(
                     entity_being_placed.sprite, entity_being_placed.entity_size, self._snapped_mouse_screen_pos)
             elif self._user_state.deleting_entities:
-                self._render_map_editor_mouse_rect((250, 250, 0), snapped_mouse_rect)
+                self._screen_render.rect((250, 250, 0), snapped_mouse_rect, 3)
             elif self._user_state.deleting_decorations:
-                self._render_map_editor_mouse_rect((0, 250, 250), snapped_mouse_rect)
+                self._screen_render.rect((0, 250, 250), snapped_mouse_rect, 3)
             else:
                 raise Exception("Unhandled user_state: " + str(self._user_state))
-
-    def _render_map_editor_mouse_rect(self, color: Tuple[int, int, int], map_editor_mouse_rect: Rect):
-        self._screen_render.rect(color, map_editor_mouse_rect, 3)
 
     def _render_map_editor_world_entity_at_position(self, sprite: Sprite, entity_size: Tuple[int, int],
                                                     position: Tuple[int, int]):
