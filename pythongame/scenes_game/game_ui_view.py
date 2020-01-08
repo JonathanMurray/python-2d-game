@@ -239,9 +239,10 @@ class GameUiView:
         self.controls_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 60, w, h), font, "HELP     [H]",
                                             ToggleButtonId.HELP, False, self.controls_window)
         self.toggle_buttons = [self.stats_toggle, self.talents_toggle, self.controls_toggle]
-        self.sound_checkbox = Checkbox(self.ui_render, Rect(x, y_0 + 90, 70, h), "SOUND", True)
-        self.save_button = Button(self.ui_render, Rect(x + 80, y_0 + 90, 70, h), "SAVE [S]")
-        self.fullscreen_checkbox = Checkbox(self.ui_render, Rect(x, y_0 + 120, w, h), "FULLSCREEN", True)
+        self.sound_checkbox = Checkbox(self.ui_render, Rect(x, y_0 + 90, 70, h), "SOUND", True, lambda _: ToggleSound())
+        self.save_button = Button(self.ui_render, Rect(x + 80, y_0 + 90, 70, h), "SAVE [S]", lambda: SaveGame())
+        self.fullscreen_checkbox = Checkbox(self.ui_render, Rect(x, y_0 + 120, w, h), "FULLSCREEN",
+                                            True, lambda _: ToggleFullscreen())
 
     def _setup_stats_window(self):
 
@@ -318,14 +319,8 @@ class GameUiView:
     def handle_mouse_click(self) -> List[EventTriggeredFromUi]:
         if self.hovered_component in self.toggle_buttons:
             self._on_click_toggle(self.hovered_component)
-        elif self.hovered_component == self.sound_checkbox:
-            self.sound_checkbox.on_click()
-            return [ToggleSound()]
-        elif self.hovered_component == self.save_button:
-            return [SaveGame()]
-        elif self.hovered_component == self.fullscreen_checkbox:
-            self.fullscreen_checkbox.on_click()
-            return [ToggleFullscreen()]
+        elif self.hovered_component in [self.save_button, self.fullscreen_checkbox, self.sound_checkbox]:
+            return [self.hovered_component.on_click()]
         elif self.hovered_component in self.inventory_icons and self.hovered_component.item_type:
             self.item_slot_being_dragged = self.hovered_component
             return [StartDraggingItemOrConsumable()]

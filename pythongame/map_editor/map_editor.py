@@ -18,7 +18,7 @@ from pythongame.core.view.image_loading import load_images_by_sprite, load_image
     load_images_by_portrait_sprite
 from pythongame.map_editor.map_editor_ui_view import MapEditorView, PORTRAIT_ICON_SIZE, MAP_EDITOR_UI_ICON_SIZE, \
     EntityTab, GenerateRandomMap, SetCameraPosition, AddEntity, DeleteEntities, DeleteDecorations, MapEditorAction, \
-    SaveMap
+    SaveMap, ToggleOutlines
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
 from pythongame.map_file import save_game_state_to_json_file, create_game_state_from_json_file, \
     create_game_state_from_map_data
@@ -83,6 +83,7 @@ class MapEditor:
 
         self.game_state.center_camera_on_player()
         self.game_state.snap_camera_to_grid(grid_cell_size)
+        self.render_outlines = False
 
         ui_view = MapEditorView(
             pygame_screen, self.game_state.camera_world_area, SCREEN_SIZE, images_by_sprite, images_by_ui_sprite,
@@ -163,7 +164,7 @@ class MapEditor:
                 camera_world_area=self.game_state.camera_world_area,
                 non_player_characters=self.game_state.non_player_characters,
                 visual_effects=self.game_state.visual_effects,
-                render_hit_and_collision_boxes=ui_view._checkbox_show_entity_outlines.checked,
+                render_hit_and_collision_boxes=self.render_outlines,
                 player_health=self.game_state.player_state.health_resource.value,
                 player_max_health=self.game_state.player_state.health_resource.max_value,
                 entire_world_area=self.game_state.entire_world_area,
@@ -225,6 +226,8 @@ class MapEditor:
             _delete_map_entities_from_position(self.game_state, action.world_position)
         elif isinstance(action, DeleteDecorations):
             _delete_map_decorations_from_position(self.game_state, action.world_position)
+        elif isinstance(action, ToggleOutlines):
+            self.render_outlines = action.outlines
         else:
             raise Exception("Unhandled event: " + str(action))
 

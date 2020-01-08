@@ -1,6 +1,6 @@
 from enum import Enum
 from math import floor
-from typing import List, Tuple, Optional, Any, Iterable, Set
+from typing import List, Tuple, Optional, Any, Iterable, Set, Callable
 
 import pygame
 from pygame.rect import Rect
@@ -39,9 +39,10 @@ class ToggleButtonId(Enum):
 
 
 class UiComponent:
-    def __init__(self, rect: Rect):
+    def __init__(self, rect: Rect, on_click: Optional[Callable[[], Any]] = None):
         self.hovered = False
         self.rect = rect
+        self._on_click_callback: Callable[[], Any] = on_click
 
     def contains(self, point: Tuple[int, int]) -> bool:
         return self.rect.collidepoint(point[0], point[1])
@@ -50,6 +51,13 @@ class UiComponent:
         if self.rect.collidepoint(point[0], point[1]):
             return point[0] - self.rect.x, point[1] - self.rect.y
         return None
+
+    def register_on_click(self, callback: Callable[[], Any]):
+        self._on_click_callback = callback
+
+    def on_click(self):
+        if self._on_click_callback:
+            return self._on_click_callback()
 
 
 class DialogOption:
@@ -226,7 +234,6 @@ class AbilityIcon(UiComponent):
         super().__init__(rect)
         self._ui_render = ui_render
         self._font = font
-        self.rect = rect
         self.image = image
         self.label = label
         self.tooltip = tooltip
@@ -406,7 +413,6 @@ class ToggleButton(UiComponent):
                  linked_window: UiWindow):
         super().__init__(rect)
         self.ui_render = ui_render
-        self.rect = rect
         self.font = font
         self.text = text
         self.toggle_id = toggle_id
@@ -437,14 +443,14 @@ class ToggleButton(UiComponent):
 
 
 class Checkbox(UiComponent):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, label: str, checked: bool):
+    def __init__(self, ui_render: DrawableArea, rect: Rect, label: str, checked: bool, on_click:Callable[[bool], Any]):
         super().__init__(rect)
         self.ui_render = ui_render
-        self.rect = rect
         self.font = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self.label = label
         self.checked = checked
         self.tooltip = None
+        self._on_click_callback = on_click
 
     def render(self):
         self.ui_render.rect(COLOR_BUTTON_OUTLINE, self.rect, 1)
@@ -456,30 +462,29 @@ class Checkbox(UiComponent):
 
     def on_click(self):
         self.checked = not self.checked
+        return self._on_click_callback(self.checked)
 
 
 class Button(UiComponent):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, text: str):
-        super().__init__(rect)
-        self.ui_render = ui_render
-        self.rect = rect
-        self.text = text
+    def __init__(self, ui_render: DrawableArea, rect: Rect, text: str, on_click: Callable[[], Any]):
+        super().__init__(rect, on_click)
+        self._ui_render = ui_render
+        self._text = text
         self.tooltip = None
-        self.font = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
+        self._font = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
 
     def render(self):
-        self.ui_render.rect(COLOR_BUTTON_OUTLINE, self.rect, 1)
+        self._ui_render.rect(COLOR_BUTTON_OUTLINE, self.rect, 1)
         text_color = COLOR_WHITE if self.hovered else COLOR_LIGHT_GRAY
-        self.ui_render.text(self.font, self.text, (self.rect.x + 7, self.rect.y + 2), text_color)
+        self._ui_render.text(self._font, self._text, (self.rect.x + 7, self.rect.y + 2), text_color)
         if self.hovered:
-            self.ui_render.rect(COLOR_HOVERED, self.rect, 1)
+            self._ui_render.rect(COLOR_HOVERED, self.rect, 1)
 
 
 class RadioButton(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, text: str):
         super().__init__(rect)
         self.ui_render = ui_render
-        self.rect = rect
         self.text = text
         self.tooltip = None
         self.font = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)

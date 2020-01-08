@@ -13,8 +13,7 @@ from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.image_loading import ImageWithRelativePosition
 from pythongame.core.view.render_util import DrawableArea
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
-from pythongame.scenes_game.ui_components import RadioButton, Checkbox, Button, Minimap, MapEditorIcon, TooltipGraphics, \
-    UiComponent
+from pythongame.scenes_game.ui_components import RadioButton, Checkbox, Button, Minimap, MapEditorIcon, TooltipGraphics
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -66,6 +65,11 @@ class GenerateRandomMap(MapEditorAction):
 
 class SaveMap(MapEditorAction):
     pass
+
+
+class ToggleOutlines(MapEditorAction):
+    def __init__(self, outlines: bool):
+        self.outlines = outlines
 
 
 class SetCameraPosition(MapEditorAction):
@@ -135,11 +139,14 @@ class MapEditorView:
                                 player_position)
         self._shown_tab: EntityTab = None
         self._set_shown_tab(EntityTab.ITEMS)
-        self._checkbox_show_entity_outlines = Checkbox(self._ui_render, Rect(15, 100, 120, 20), "outlines", False)
-        self._checkboxes = [self._checkbox_show_entity_outlines]
-        self._button_generate_random_map: Button = Button(self._ui_render, Rect(15, 125, 120, 20), "generate random")
-        self._button_save: Button = Button(self._ui_render, Rect(15, 155, 120, 20), "save")
-        self._buttons = [self._button_generate_random_map, self._button_save]
+        self._checkboxes = [
+            Checkbox(self._ui_render, Rect(15, 100, 120, 20), "outlines", False,
+                     lambda checked: ToggleOutlines(checked))
+        ]
+        self._buttons = [
+            Button(self._ui_render, Rect(15, 125, 120, 20), "generate random", lambda: GenerateRandomMap()),
+            Button(self._ui_render, Rect(15, 150, 120, 20), "save", lambda: SaveMap())
+        ]
 
         # USER INPUT STATE
         self._is_mouse_button_down = False
@@ -220,9 +227,7 @@ class MapEditorView:
                 self._entity_icon_hovered_by_mouse = entity
                 return
 
-        simple_components: List[UiComponent] = self._checkboxes + self._buttons \
-                                               + self._tab_buttons
-        for component in simple_components:
+        for component in self._checkboxes + self._buttons + self._tab_buttons:
             if component.contains(mouse_ui_pos):
                 self._on_hover_component(component)
                 return
@@ -260,13 +265,8 @@ class MapEditorView:
             self._user_state = UserState.placing_entity(self._entity_icon_hovered_by_mouse)
 
         self._is_mouse_button_down = True
-        if self._hovered_component in self._checkboxes:
-            self._hovered_component.on_click()
-            return None
-        if self._hovered_component == self._button_generate_random_map:
-            return GenerateRandomMap()
-        if self._hovered_component == self._button_save:
-            return SaveMap()
+        if self._hovered_component in self._checkboxes + self._buttons:
+            return self._hovered_component.on_click()
         if self._hovered_component == self._minimap:
             mouse_ui_position = self._translate_screen_position_to_ui(self._mouse_screen_pos)
             position_ratio = self._minimap.get_position_ratio(mouse_ui_position)
