@@ -5,7 +5,7 @@ from typing import Tuple, Optional, List
 import pygame
 from pygame.rect import Rect
 
-from generate_dungeon import generate_random_map_as_json
+from generate_dungeon import generate_random_map_as_json_from_grid, Grid, generate_random_grid, determine_wall_type
 from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, ItemType, PortalId, HeroId, PeriodicTimer, \
     Millis
 from pythongame.core.entity_creation import create_portal, create_hero_world_entity, create_npc, create_wall, \
@@ -13,21 +13,30 @@ from pythongame.core.entity_creation import create_portal, create_hero_world_ent
     create_player_state, create_chest
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, PORTRAIT_ICON_SPRITE_PATHS
 from pythongame.core.game_state import GameState
+from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.core.view.image_loading import load_images_by_sprite, load_images_by_ui_sprite, \
     load_images_by_portrait_sprite
 from pythongame.map_editor.map_editor_ui_view import MapEditorView, PORTRAIT_ICON_SIZE, MAP_EDITOR_UI_ICON_SIZE, \
     EntityTab, GenerateRandomMap, SetCameraPosition, AddEntity, DeleteEntities, DeleteDecorations, MapEditorAction, \
-    SaveMap, ToggleOutlines
+    SaveMap, ToggleOutlines, AddSmartFloorTiles, DeleteSmartFloorTiles
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
-from pythongame.map_file import save_game_state_to_json_file, create_game_state_from_json_file, \
-    create_game_state_from_map_data
+from pythongame.map_file import save_map_to_json_file, load_map_from_json_file, create_map_from_json, MapData, \
+    MapEditorConfig
 from pythongame.register_game_data import register_all_game_data
 
 MAP_DIR = "resources/maps/"
 
 register_all_game_data()
 
+GRID_CELL_SIZE = 25
+
+ADVANCED_ENTITIES = [
+    MapEditorWorldEntity.smart_floor_tile(Sprite.MAP_EDITOR_SMART_FLOOR_1, 25),
+    MapEditorWorldEntity.smart_floor_tile(Sprite.MAP_EDITOR_SMART_FLOOR_2, 50),
+    MapEditorWorldEntity.smart_floor_tile(Sprite.MAP_EDITOR_SMART_FLOOR_3, 75),
+    MapEditorWorldEntity.smart_floor_tile(Sprite.MAP_EDITOR_SMART_FLOOR_4, 100)
+]
 WALL_ENTITIES = [MapEditorWorldEntity.wall(wall_type) for wall_type in WallType]
 NPC_ENTITIES = [MapEditorWorldEntity.npc(npc_type) for npc_type in NpcType]
 ITEM_ENTITIES = [MapEditorWorldEntity.item(item_type) for item_type in ItemType]
@@ -44,6 +53,7 @@ MISC_ENTITIES: List[MapEditorWorldEntity] = \
     [MapEditorWorldEntity.portal(portal_id) for portal_id in PortalId]
 
 ENTITIES_BY_TYPE = {
+    EntityTab.ADVANCED: ADVANCED_ENTITIES,
     EntityTab.ITEMS: ITEM_ENTITIES,
     EntityTab.NPCS: NPC_ENTITIES,
     EntityTab.WALLS: WALL_ENTITIES,
@@ -61,13 +71,39 @@ class MapEditor:
     def __init__(self, map_file_name: Optional[str]):
         self.map_file_path = MAP_DIR + (map_file_name or "map1.json")
 
+        possible_grid_cell_sizes = [GRID_CELL_SIZE, GRID_CELL_SIZE * 2]
+        grid_cell_size_index = 0
+
+        self.grid_cell_size = possible_grid_cell_sizes[grid_cell_size_index]
+        self.grid: Grid = None
+        self.game_state: GameState = None
+
         if Path(self.map_file_path).exists():
-            self.game_state = create_game_state_from_json_file(CAMERA_SIZE, self.map_file_path, HERO_ID)
+            print("Loading map '%s' from file." % self.map_file_path)
+            map_data = load_map_from_json_file(CAMERA_SIZE, self.map_file_path, HERO_ID)
+            game_state = map_data.game_state
+            self._set_game_state(game_state)
+            self.config = map_data.map_editor_config
+            if map_data.grid_string:
+                print("Initializing grid from existing map data.")
+                self.grid = Grid.deserialize(map_data.grid_string)
+            else:
+                if not self.config.disable_smart_grid:
+                    print("Grid missing from existing map data. Generating one from world state ...")
+                    self.build_grid_from_game_state()
+                else:
+                    print("Grid disabled for this map. Using smart floor tiles will not work.")
         else:
+            print("Map file '%s' not found! New map is created." % self.map_file_path)
             player_entity = create_hero_world_entity(HERO_ID, (0, 0))
             player_state = create_player_state(HERO_ID)
-            self.game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, Rect(-250, -250, 500, 500),
-                                        player_state, [], [], [])
+            game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, Rect(-250, -250, 500, 500),
+                                   player_state, [], [], [])
+            self._set_game_state(game_state)
+            self.config = MapEditorConfig(disable_smart_grid=False)
+            grid_size = (game_state.entire_world_area.w // GRID_CELL_SIZE,
+                         game_state.entire_world_area.h // GRID_CELL_SIZE)
+            self.grid = Grid.create_from_rects(grid_size, [])
 
         pygame.init()
 
@@ -77,19 +113,13 @@ class MapEditor:
         images_by_portrait_sprite = load_images_by_portrait_sprite(PORTRAIT_ICON_SPRITE_PATHS, PORTRAIT_ICON_SIZE)
         world_view = GameWorldView(pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_sprite)
 
-        possible_grid_cell_sizes = [25, 50]
-        grid_cell_size_index = 0
-        grid_cell_size = possible_grid_cell_sizes[grid_cell_size_index]
-
-        self.game_state.center_camera_on_player()
-        self.game_state.snap_camera_to_grid(grid_cell_size)
         self.render_outlines = False
 
         ui_view = MapEditorView(
             pygame_screen, self.game_state.camera_world_area, SCREEN_SIZE, images_by_sprite, images_by_ui_sprite,
             images_by_portrait_sprite, self.game_state.entire_world_area,
             self.game_state.player_entity.get_center_position(),
-            ENTITIES_BY_TYPE, grid_cell_size, self.map_file_path)
+            ENTITIES_BY_TYPE, self.grid_cell_size, self.map_file_path)
 
         camera_move_distance = 75  # must be a multiple of the grid size
 
@@ -109,7 +139,7 @@ class MapEditor:
                 if event.type == pygame.MOUSEMOTION:
                     action = ui_view.handle_mouse_movement(event.pos)
                     if action:
-                        self._handle_action(action, grid_cell_size)
+                        self._handle_action(action, self.grid_cell_size)
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_s:
@@ -130,10 +160,12 @@ class MapEditor:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     action = ui_view.handle_mouse_click()
                     if action:
-                        self._handle_action(action, grid_cell_size)
+                        self._handle_action(action, self.grid_cell_size)
 
                 elif event.type == pygame.MOUSEBUTTONUP:
-                    ui_view.handle_mouse_release()
+                    action = ui_view.handle_mouse_release()
+                    if action:
+                        self._handle_action(action, self.grid_cell_size)
 
             # HANDLE TIME
 
@@ -179,20 +211,20 @@ class MapEditor:
                 num_decorations=len(self.game_state.decorations_state.decoration_entities),
                 npc_positions=npc_positions,
                 wall_positions=wall_positions,
-                player_position=self.game_state.player_entity.get_center_position())
+                player_position=self.game_state.player_entity.get_center_position(),
+                grid=self.grid)
 
             pygame.display.flip()
 
     def save(self):
-        save_game_state_to_json_file(self.game_state, self.map_file_path)
+        grid_string = self.grid.serialize()
+        map_data = MapData(self.game_state, self.config, grid_string)
+        save_map_to_json_file(map_data, self.map_file_path)
         print("Saved state to " + self.map_file_path)
 
     def _handle_action(self, action: MapEditorAction, grid_cell_size: int):
         if isinstance(action, GenerateRandomMap):
-            map_json = generate_random_map_as_json()
-            self.game_state = create_game_state_from_map_data(CAMERA_SIZE, map_json, HERO_ID)
-            self.game_state.center_camera_on_player()
-            self.game_state.snap_camera_to_grid(grid_cell_size)
+            self._generate_random_map()
         elif isinstance(action, SaveMap):
             self.save()
         elif isinstance(action, SetCameraPosition):
@@ -205,7 +237,7 @@ class MapEditor:
             elif entity_being_placed.npc_type:
                 _add_npc(entity_being_placed.npc_type, self.game_state, action.world_position)
             elif entity_being_placed.wall_type:
-                _add_wall(self.game_state, action.world_position, entity_being_placed.wall_type)
+                _set_wall(self.game_state, action.world_position, entity_being_placed.wall_type)
             elif entity_being_placed.consumable_type:
                 _add_consumable(entity_being_placed.consumable_type, self.game_state,
                                 action.world_position)
@@ -228,8 +260,93 @@ class MapEditor:
             _delete_map_decorations_from_position(self.game_state, action.world_position)
         elif isinstance(action, ToggleOutlines):
             self.render_outlines = action.outlines
+        elif isinstance(action, AddSmartFloorTiles):
+            self._add_smart_floor_tiles(action.tiles)
+        elif isinstance(action, DeleteSmartFloorTiles):
+            self._remove_smart_floor_tiles(action.tiles)
         else:
             raise Exception("Unhandled event: " + str(action))
+
+    def _set_game_state(self, game_state: GameState):
+        self.game_state = game_state
+        self.game_state.center_camera_on_player()
+        self.game_state.snap_camera_to_grid(self.grid_cell_size)
+
+    def build_grid_from_game_state(self):
+        print("Creating smart floor tiles ...")
+        floor_cells = []
+        world_area = self.game_state.entire_world_area
+        for decoration in self.game_state.decorations_state.decoration_entities:
+            for x in range(int(decoration.x), int(decoration.x) + GRID_CELL_SIZE * 2, GRID_CELL_SIZE):
+                for y in range(int(decoration.y), int(decoration.y) + GRID_CELL_SIZE * 2, GRID_CELL_SIZE):
+                    if len(self.game_state.walls_state.get_walls_at_position((x, y))) == 0:
+                        floor_cells.append(((x - world_area.x) // GRID_CELL_SIZE, (y - world_area.y) // GRID_CELL_SIZE))
+        print("Created %i smart floor tiles." % len(floor_cells))
+        grid_size = (world_area.w // GRID_CELL_SIZE, world_area.h // GRID_CELL_SIZE)
+        self.grid = Grid.create_from_rects(grid_size, [])
+        self.grid.add_floor_cells(floor_cells)
+
+    def _generate_random_map(self):
+        print("Generating random mapp ...")
+        self.grid, rooms = generate_random_grid()
+        map_json = generate_random_map_as_json_from_grid(self.grid, rooms)
+        map_data = create_map_from_json(CAMERA_SIZE, map_json, HERO_ID)
+        print("Random map generated.")
+        self._set_game_state(map_data.game_state)
+
+    def _add_smart_floor_tiles(self, tiles: List[Tuple[int, int, int, int]]):
+        floor_cells = [((r[0] - self.game_state.entire_world_area.x) // GRID_CELL_SIZE,
+                        (r[1] - self.game_state.entire_world_area.y) // GRID_CELL_SIZE)
+                       for r in tiles]
+        self.grid.add_floor_cells(floor_cells)
+        xmin = min([cell[0] for cell in floor_cells]) - 1
+        xmax = max([cell[0] for cell in floor_cells]) + 2
+        ymin = min([cell[1] for cell in floor_cells]) - 1
+        ymax = max([cell[1] for cell in floor_cells]) + 2
+
+        for y in range(ymin, ymax):
+            for x in range(xmin, xmax):
+                pos = sum_of_vectors(self.game_state.entire_world_area.topleft,
+                                     (x * GRID_CELL_SIZE, y * GRID_CELL_SIZE))
+                is_even_cell = x % 2 == 0 and y % 2 == 0  # ground sprite covers 4 cells, so we only need them on even cells
+                if is_even_cell and any(
+                        [self.grid.is_floor(c) for c in [(x, y), (x + 1, y), (x, y + 1), (x + 1, y + 1)]]):
+                    _add_decoration(Sprite.DECORATION_GROUND_STONE, self.game_state, pos)
+                if self.grid.is_wall((x, y)):
+                    wall_type = determine_wall_type(self.grid, (x, y))
+                    _set_wall(self.game_state, pos, wall_type)
+                if self.grid.is_floor((x, y)):
+                    # print("deleting wall from cell (%i,%i)" % (pos))
+                    self._delete_wall(pos)
+
+    def _remove_smart_floor_tiles(self, tiles: List[Tuple[int, int, int, int]]):
+        floor_cells = [((r[0] - self.game_state.entire_world_area.x) // GRID_CELL_SIZE,
+                        (r[1] - self.game_state.entire_world_area.y) // GRID_CELL_SIZE)
+                       for r in tiles]
+        self.grid.remove_floor_cells(floor_cells)
+        xmin = min([cell[0] for cell in floor_cells])
+        xmax = max([cell[0] for cell in floor_cells])
+        ymin = min([cell[1] for cell in floor_cells])
+        ymax = max([cell[1] for cell in floor_cells])
+
+        for y in range(ymin - 1, ymax + 2):
+            for x in range(xmin - 1, xmax + 2):
+                pos = sum_of_vectors(self.game_state.entire_world_area.topleft,
+                                     (x * GRID_CELL_SIZE, y * GRID_CELL_SIZE))
+                is_even_cell = x % 2 == 0 and y % 2 == 0  # ground sprite covers 4 cells, so we only need them on even cells
+                if is_even_cell:
+                    if any([self.grid.is_floor(c) for c in [(x, y), (x + 1, y), (x, y + 1), (x + 1, y + 1)]]):
+                        _add_decoration(Sprite.DECORATION_GROUND_STONE, self.game_state, pos)
+                    else:
+                        _delete_map_decorations_from_position(self.game_state, pos)
+                if self.grid.is_wall((x, y)):
+                    wall_type = determine_wall_type(self.grid, (x, y))
+                    _set_wall(self.game_state, pos, wall_type)
+                else:
+                    self._delete_wall(pos)
+
+    def _delete_wall(self, world_position: Tuple[int, int]):
+        self.game_state.walls_state.remove_all_from_position(world_position)
 
 
 def main(map_file_name: Optional[str]):
@@ -292,15 +409,19 @@ def _add_decoration(decoration_sprite: Sprite, game_state: GameState, snapped_mo
         game_state.decorations_state.add_decoration(decoration_entity)
 
 
-def _add_wall(game_state, snapped_mouse_world_position: Tuple[int, int], wall_type: WallType):
-    if len(game_state.walls_state.get_walls_at_position(snapped_mouse_world_position)) == 0:
-        wall = create_wall(wall_type, snapped_mouse_world_position)
-        game_state.walls_state.add_wall(wall)
+def _set_wall(game_state: GameState, world_pos: Tuple[int, int], wall_type: WallType):
+    existing_walls = game_state.walls_state.get_walls_at_position(world_pos)
+    if len(existing_walls) > 0:
+        if existing_walls[0].wall_type == wall_type:
+            return
+        for w in existing_walls:
+            game_state.walls_state.remove_wall(w)
+    wall = create_wall(wall_type, world_pos)
+    game_state.walls_state.add_wall(wall)
 
 
 def _delete_map_entities_from_position(game_state: GameState, snapped_mouse_world_position: Tuple[int, int]):
-    for wall in game_state.walls_state.get_walls_at_position(snapped_mouse_world_position):
-        game_state.walls_state.remove_wall(wall)
+    game_state.walls_state.remove_all_from_position(snapped_mouse_world_position)
     for enemy in [e for e in game_state.non_player_characters if
                   e.world_entity.get_position() == snapped_mouse_world_position]:
         game_state.non_player_characters.remove(enemy)
@@ -318,6 +439,6 @@ def _delete_map_entities_from_position(game_state: GameState, snapped_mouse_worl
         game_state.portals.remove(portal)
 
 
-def _delete_map_decorations_from_position(game_state: GameState, snapped_mouse_world_position: Tuple[int, int]):
-    for d in game_state.decorations_state.get_decorations_at_position(snapped_mouse_world_position):
+def _delete_map_decorations_from_position(game_state: GameState, world_pos: Tuple[int, int]):
+    for d in game_state.decorations_state.get_decorations_at_position(world_pos):
         game_state.decorations_state.remove_decoration(d)

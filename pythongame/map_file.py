@@ -4,45 +4,56 @@ from typing import Tuple
 from pygame.rect import Rect
 
 from pythongame.core.common import *
-from pythongame.core.entity_creation import create_npc, set_global_path_finder, create_money_pile_on_ground, \
+from pythongame.core.entity_creation import create_npc, create_money_pile_on_ground, \
     create_consumable_on_ground, create_portal, create_wall, create_hero_world_entity, \
     create_decoration_entity, create_item_on_ground, create_player_state, create_chest
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Wall, Portal, DecorationEntity, \
     MoneyPileOnGround, ItemOnGround, ConsumableOnGround, PlayerState, Chest
-from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 
 
-def create_game_state_from_json_file(camera_size: Tuple[int, int], map_file_path: str, hero_id: HeroId) -> GameState:
+class MapEditorConfig:
+    def __init__(self, disable_smart_grid: bool):
+        self.disable_smart_grid = disable_smart_grid
+
+
+class MapData:
+    def __init__(self, game_state: GameState, map_editor_config: MapEditorConfig, grid_string: str):
+        self.game_state = game_state
+        self.map_editor_config = map_editor_config
+        self.grid_string = grid_string
+
+
+def load_map_from_json_file(camera_size: Tuple[int, int], map_file_path: str, hero_id: HeroId) -> MapData:
     with open(map_file_path) as map_file:
         json_data = json.loads(map_file.read())
-        return create_game_state_from_map_data(camera_size, json_data, hero_id)
+        return create_map_from_json(camera_size, json_data, hero_id)
 
 
-def create_game_state_from_map_data(camera_size: Tuple[int, int], json_data, hero_id: HeroId) -> GameState:
-    path_finder = GlobalPathFinder()
-    set_global_path_finder(path_finder)
-
+def create_map_from_json(camera_size: Tuple[int, int], json_data, hero_id: HeroId) -> MapData:
     player_state = create_player_state(hero_id)
-    game_state = MapJson.deserialize(json_data, player_state, camera_size)
-
-    path_finder.set_grid(game_state.pathfinder_wall_grid)
-    return game_state
+    return MapJson.deserialize(json_data, player_state, camera_size)
 
 
-def save_game_state_to_json_file(game_state: GameState, map_file: str):
-    json_data = MapJson.serialize(game_state)
-    save_map_data_to_file(json_data, map_file)
+def save_map_to_json_file(map_data: MapData, map_file: str):
+    json_data = MapJson.serialize(map_data)
+    write_json_to_file(json_data, map_file)
 
 
-def save_map_data_to_file(json_data, map_file: str):
+def write_json_to_file(json_data, map_file: str):
     with open(map_file, 'w') as map_file:
         map_file.write(json.dumps(json_data, indent=2))
 
 
 class MapJson:
+
     @staticmethod
-    def serialize(game_state: GameState):
+    def serialize(map_data: MapData):
+        game_state = map_data.game_state
+        config = map_data.map_editor_config
+        grid = map_data.grid_string
         return {
+            "grid": grid,
+            "disable_smart_grid": config.disable_smart_grid,
             "player": PlayerJson.serialize(game_state.player_entity),
             "consumables_on_ground": [ConsumableJson.serialize(p) for p in game_state.consumables_on_ground],
             "items_on_ground": [ItemJson.serialize(i) for i in game_state.items_on_ground],
@@ -73,21 +84,26 @@ class MapJson:
         }
 
     @staticmethod
-    def deserialize(data, player_state: PlayerState, camera_size: Tuple[int, int]) -> GameState:
-        return GameState(
-            player_entity=PlayerJson.deserialize(player_state.hero_id, data["player"]),
-            consumables_on_ground=[ConsumableJson.deserialize(p) for p in data.get("consumables_on_ground", [])],
-            items_on_ground=[ItemJson.deserialize(i) for i in data.get("items_on_ground", [])],
-            money_piles_on_ground=[MoneyJson.deserialize(p) for p in data.get("money_piles_on_ground", [])],
-            non_player_characters=[NpcJson.deserialize(e) for e in data.get("non_player_characters", [])],
-            walls=[WallJson.deserialize(w) for w in data.get("walls", [])],
-            camera_size=camera_size,
-            entire_world_area=WorldAreaJson.deserialize(data["entire_world_area"]),
-            player_state=player_state,
-            decoration_entities=[DecorationJson.deserialize(d) for d in data.get("decorations", [])],
-            portals=[PortalJson.deserialize(p) for p in data.get("portals", [])],
-            chests=[ChestJson.deserialize(c) for c in data.get("chests", [])]
-        )
+    def deserialize(data, player_state: PlayerState, camera_size: Tuple[int, int]) -> MapData:
+        game_state = GameState(player_entity=PlayerJson.deserialize(player_state.hero_id, data["player"]),
+                               consumables_on_ground=[ConsumableJson.deserialize(p) for p in
+                                                      data.get("consumables_on_ground", [])],
+                               items_on_ground=[ItemJson.deserialize(i) for i in data.get("items_on_ground", [])],
+                               money_piles_on_ground=[MoneyJson.deserialize(p) for p in
+                                                      data.get("money_piles_on_ground", [])],
+                               non_player_characters=[NpcJson.deserialize(e) for e in
+                                                      data.get("non_player_characters", [])],
+                               walls=[WallJson.deserialize(w) for w in data.get("walls", [])], camera_size=camera_size,
+                               entire_world_area=WorldAreaJson.deserialize(data["entire_world_area"]),
+                               player_state=player_state,
+                               decoration_entities=[DecorationJson.deserialize(d) for d in data.get("decorations", [])],
+                               portals=[PortalJson.deserialize(p) for p in data.get("portals", [])],
+                               chests=[ChestJson.deserialize(c) for c in data.get("chests", [])])
+
+        map_editor_config = MapEditorConfig(disable_smart_grid=data.get("disable_smart_grid", False))
+        grid_string = data.get("grid", None)
+
+        return MapData(game_state, map_editor_config, grid_string)
 
 
 class PlayerJson:
