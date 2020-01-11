@@ -9,13 +9,14 @@ from pygame.rect import Rect
 from pythongame.core.common import WallType, Sprite, NpcType
 from pythongame.core.entity_creation import create_wall, create_decoration_entity, create_npc
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, NpcCategory
+from pythongame.core.game_state import DecorationEntity, Wall
 from pythongame.map_file import MapJson, save_map_data_to_file
 from pythongame.register_game_data import register_all_game_data
 
 register_all_game_data()
 
 MAX_ROOM_ATTEMPTS = 100
-MAX_NUM_ROOMS = 7
+MAX_NUM_ROOMS = 15
 ROOM_ALLOWED_WIDTH = (8, 25)
 ROOM_ALLOWED_HEIGHT = (8, 25)
 CORRIDOR_ALLOWED_WIDTH = (2, 6)
@@ -25,90 +26,140 @@ CELL_SIZE = 25
 
 class CellType(Enum):
     NONE = 0
-    ROOM = 1
-    CORRIDOR = 2
+    FLOOR = 1
     WALL = 3
-    REMOVED_WALL = 4
 
 
 class Grid:
     def __init__(self, grid: List[List[CellType]], size: Tuple[int, int]):
         self._grid = grid
-        self._size = size
+        self.size = size
+        self._floor_cells = set()
 
     @staticmethod
-    def create(map_size: Tuple[int, int], rooms: List[Rect], corridors: List[Rect]):
+    def create_from_rects(map_size: Tuple[int, int], walkable_areas: List[Rect]):
+
+        print("Creating grid (%i, %i) from %i rects ..." % (map_size[0], map_size[1], len(walkable_areas)))
         _grid = []
         grid = Grid(_grid, map_size)
         for y in range(map_size[0]):
             _grid.append([CellType.NONE] * map_size[1])
 
-        for room in rooms:
-            for y in range(room.y, room.y + room.h):
-                for x in range(room.x, room.x + room.w):
-                    _grid[x][y] = CellType.ROOM
+        for rect in walkable_areas:
+            for y in range(rect.y, rect.y + rect.h):
+                for x in range(rect.x, rect.x + rect.w):
+                    _grid[x][y] = CellType.FLOOR
+                    grid._floor_cells.add((x, y))
 
-        for corridor in corridors:
-            for y in range(corridor.y, corridor.y + corridor.h):
-                for x in range(corridor.x, corridor.x + corridor.w):
-                    _grid[x][y] = CellType.CORRIDOR
+        grid._update_wall_cells(range(0, grid.size[0]), range(0, grid.size[1]))
+        grid._prune_bad_walls(range(0, grid.size[0]), range(0, grid.size[1]))
 
-        for x in range(map_size[0]):
-            for y in range(map_size[1]):
-                is_empty = grid._is_cell((x, y), [CellType.NONE])
-                neighbours_room_or_corridor = \
-                    grid.is_walkable((x, y - 1)) or \
-                    grid.is_walkable((x + 1, y - 1)) or \
-                    grid.is_walkable((x + 1, y)) or \
-                    grid.is_walkable((x + 1, y + 1)) or \
-                    grid.is_walkable((x, y + 1)) or \
-                    grid.is_walkable((x - 1, y + 1)) or \
-                    grid.is_walkable((x - 1, y)) or \
-                    grid.is_walkable((x - 1, y - 1))
-                if is_empty and neighbours_room_or_corridor:
-                    _grid[x][y] = CellType.WALL
-
-        grid.prune_bad_walls()
+        print("Grid created")
 
         return grid
 
+    def add_floor_cells(self, cells: List[Tuple[int, int]]):
+        if not cells:
+            return
+
+        xmin = min([cell[0] for cell in cells]) - 1
+        xmax = max([cell[0] for cell in cells]) + 2
+        ymin = min([cell[1] for cell in cells]) - 1
+        ymax = max([cell[1] for cell in cells]) + 2
+
+        for cell in cells:
+            self._grid[cell[0]][cell[1]] = CellType.FLOOR
+            self._floor_cells.add(cell)
+        self._update_wall_cells(range(xmin, xmax), range(ymin, ymax))
+        self._prune_bad_walls(range(xmin, xmax), range(ymin, ymax))
+
+    def remove_floor_cells(self, cells: List[Tuple[int, int]]):
+        xmin = min([cell[0] for cell in cells]) - 1
+        xmax = max([cell[0] for cell in cells]) + 2
+        ymin = min([cell[1] for cell in cells]) - 1
+        ymax = max([cell[1] for cell in cells]) + 2
+
+        for cell in cells:
+            self._grid[cell[0]][cell[1]] = CellType.NONE
+            if cell in self._floor_cells:
+                self._floor_cells.remove(cell)
+        self._update_wall_cells(range(xmin, xmax), range(ymin, ymax))
+        self._prune_bad_walls(range(xmin, xmax), range(ymin, ymax))
+
     def print(self):
-        for y in range(self._size[1]):
-            for x in range(self._size[0]):
-                cell = "* " if self._grid[x][y] == CellType.ROOM else "  "
+        for y in range(self.size[1]):
+            for x in range(self.size[0]):
+                cell = "* " if self._grid[x][y] == CellType.FLOOR else \
+                    ("x " if self._grid[x][y] == CellType.WALL else "  ")
                 print(cell, end='')
             print()
 
     def cell(self, x: int, y: int):
         return self._grid[x][y]
 
-    def _is_cell(self, cell: Tuple[int, int], targets: List[CellType]):
+    # TODO optimization: don't check bounds here. Let caller keep track of it!
+    def _is_cell(self, cell: Tuple[int, int], target: CellType):
         x, y = cell
-        if 0 <= x < self._size[0]:
-            if 0 <= y < self._size[1]:
-                return self._grid[x][y] in targets
+        if 0 <= x < self.size[0]:
+            if 0 <= y < self.size[1]:
+                return self._grid[x][y] == target
         return False
 
+    def _is_within_grid(self, cell: Tuple[int, int]):
+        return 0 <= cell[0] < self.size[0] and 0 <= cell[1] < self.size[1]
+
     def is_wall(self, cell: Tuple[int, int]):
-        return self._is_cell(cell, [CellType.WALL])
+        return self._is_cell(cell, CellType.WALL)
 
-    def is_walkable(self, cell: Tuple[int, int]):
-        return self._is_cell(cell, [CellType.ROOM, CellType.CORRIDOR, CellType.REMOVED_WALL])
+    def is_floor(self, cell: Tuple[int, int]):
+        return self._is_cell(cell, CellType.FLOOR)
 
-    def prune_bad_walls(self):
-        for y in range(self._size[1]):
-            for x in range(self._size[0]):
+    def _update_wall_cells(self, xrange, yrange):
+        # print("Updating wall cells...")
+
+        cells_that_have_floor_neighbours = set()
+
+        for (x, y) in self._floor_cells:
+            cells_that_have_floor_neighbours.add((x, y - 1))
+            cells_that_have_floor_neighbours.add((x + 1, y - 1))
+            cells_that_have_floor_neighbours.add((x + 1, y))
+            cells_that_have_floor_neighbours.add((x + 1, y + 1))
+            cells_that_have_floor_neighbours.add((x, y + 1))
+            cells_that_have_floor_neighbours.add((x - 1, y + 1))
+            cells_that_have_floor_neighbours.add((x - 1, y))
+            cells_that_have_floor_neighbours.add((x - 1, y - 1))
+
+        xmin = min(xrange)
+        xmax = max(xrange)
+        ymin = min(yrange)
+        ymax = max(yrange)
+
+        for x in range(max(0, xmin), min(xmax + 1, self.size[0])):
+            for y in range(max(0, ymin), min(ymax + 1, self.size[1])):
+                cell = self._grid[x][y]
+                if cell == CellType.FLOOR:
+                    continue
+                has_floor_neighbour = (x, y) in cells_that_have_floor_neighbours
+                if has_floor_neighbour and cell == CellType.NONE:
+                    self._grid[x][y] = CellType.WALL
+                elif not has_floor_neighbour and cell == CellType.WALL:
+                    self._grid[x][y] = CellType.NONE
+        # print("done.")
+
+    def _prune_bad_walls(self, xrange, yrange):
+        # print("Pruning wall cells...")
+        for x in xrange:
+            for y in yrange:
                 # Thin wall segments that are "inside" walkable areas, cannot be rendered in a good way given the
                 # sprites we are using, so we remove any such segments.
                 is_wall = self.is_wall((x, y))
-                is_thin_vertical_wall = is_wall and self.is_walkable((x - 1, y)) and self.is_walkable((x + 1, y))
-                is_thin_horizontal_wall = is_wall and self.is_walkable((x, y - 1)) and self.is_walkable((x, y + 1))
-                if is_thin_vertical_wall:
-                    print("Pruning cell (%i, %i) (part of vertical line)" % (x, y))
-                    self._grid[x][y] = CellType.REMOVED_WALL
-                if is_thin_horizontal_wall:
-                    print("Pruning cell (%i, %i) (part of horizontal line)" % (x, y))
-                    self._grid[x][y] = CellType.REMOVED_WALL
+                if is_wall and (
+                        (self.is_floor((x - 1, y)) and self.is_floor((x + 1, y)))
+                        or
+                        (self.is_floor((x, y - 1)) and self.is_floor((x, y + 1)))
+                ):
+                    self._grid[x][y] = CellType.FLOOR
+        # print("done.")
 
 
 def generate_room(map_size: Tuple[int, int]) -> Rect:
@@ -132,25 +183,21 @@ def generate_corridor_between_rooms(room1: Rect, room2: Rect) -> List[Rect]:
 
 
 def generate_rooms_and_corridors(map_size: Tuple[int, int]) -> Tuple[List[Rect], List[Rect]]:
-    print("Generating rooms and corridors...")
     rooms = []
     for _ in range(MAX_ROOM_ATTEMPTS):
         new_room = generate_room(map_size)
         collision = any(r for r in rooms if are_rooms_too_close(r, new_room))
         if collision:
-            print("Skipping room, as it collides with existing room.")
+            pass
         else:
-            print("Room generated.")
             rooms.append(new_room)
         if len(rooms) == MAX_NUM_ROOMS:
             break
-    print("Generated %i rooms." % len(rooms))
     corridors = []
     for i in range(len(rooms) - 1):
         corridor = generate_corridor_between_rooms(rooms[i], rooms[i + 1])
         corridors += corridor
     corridors += generate_corridor_between_rooms(rooms[-1], rooms[0])
-    print("Generated %i corridors." % len(corridors))
     return rooms, corridors
 
 
@@ -174,67 +221,55 @@ def determine_wall_type(grid: Grid, cell: Tuple[int, int]) -> WallType:
     nw = (x - 1, y - 1)
 
     # straights:
-    if grid.is_wall(w) and grid.is_wall(e) and grid.is_walkable(s):
+    if grid.is_wall(w) and grid.is_wall(e) and grid.is_floor(s):
         return WallType.WALL_DIRECTIONAL_N
-    if grid.is_wall(w) and grid.is_wall(e) and grid.is_walkable(n):
+    if grid.is_wall(w) and grid.is_wall(e) and grid.is_floor(n):
         return WallType.WALL_DIRECTIONAL_S
-    if grid.is_wall(n) and grid.is_wall(s) and grid.is_walkable(e):
+    if grid.is_wall(n) and grid.is_wall(s) and grid.is_floor(e):
         return WallType.WALL_DIRECTIONAL_W
-    if grid.is_wall(n) and grid.is_wall(s) and grid.is_walkable(w):
+    if grid.is_wall(n) and grid.is_wall(s) and grid.is_floor(w):
         return WallType.WALL_DIRECTIONAL_E
 
     # diagonals:
     if grid.is_wall(w) and grid.is_wall(n):
-        if grid.is_walkable(se) and grid.is_walkable(s) and grid.is_walkable(e):
+        if grid.is_floor(se) and grid.is_floor(s) and grid.is_floor(e):
             return WallType.WALL_DIRECTIONAL_POINTY_NW
-        elif grid.is_walkable(nw):
+        elif grid.is_floor(nw):
             return WallType.WALL_DIRECTIONAL_SE
     if grid.is_wall(w) and grid.is_wall(s):
-        if grid.is_walkable(ne) and grid.is_walkable(n) and grid.is_walkable(e):
+        if grid.is_floor(ne) and grid.is_floor(n) and grid.is_floor(e):
             return WallType.WALL_DIRECTIONAL_POINTY_SW
-        elif grid.is_walkable(sw):
+        elif grid.is_floor(sw):
             return WallType.WALL_DIRECTIONAL_NE
     if grid.is_wall(e) and grid.is_wall(n):
-        if grid.is_walkable(sw) and grid.is_walkable(s) and grid.is_walkable(w):
+        if grid.is_floor(sw) and grid.is_floor(s) and grid.is_floor(w):
             return WallType.WALL_DIRECTIONAL_POINTY_NE
-        elif grid.is_walkable(ne):
+        elif grid.is_floor(ne):
             return WallType.WALL_DIRECTIONAL_SW
     if grid.is_wall(e) and grid.is_wall(s):
-        if grid.is_walkable(nw) and grid.is_walkable(n) and grid.is_walkable(w):
+        if grid.is_floor(nw) and grid.is_floor(n) and grid.is_floor(w):
             return WallType.WALL_DIRECTIONAL_POINTY_SE
-        elif grid.is_walkable(se):
+        elif grid.is_floor(se):
             return WallType.WALL_DIRECTIONAL_NW
 
-    # default (couldn't find a fitting wall type)
-    print("ERROR: Couldn't find fitting wall type for cell: " + str(cell))
+    print("WARNING: Couldn't find fitting wall type for cell: " + str(cell))
     return WallType.WALL
 
 
-def generate_random_map_as_json():
+def generate_random_grid() -> Tuple[Grid, List[Rect]]:
     # Prefer maps that are longer on the horizontal axis, due to the aspect ratio of the in-game camera
     w = random.randint(100, 130)
     map_size = (w, 200 - w)
     rooms, corridors = generate_rooms_and_corridors(map_size)
-    print("Rooms: ")
-    print(rooms)
 
-    grid = Grid.create(map_size, rooms, corridors)
+    grid = Grid.create_from_rects(map_size, rooms + corridors)
+    return grid, rooms
 
-    walls = []
-    decorations = []
 
-    for y in range(map_size[1]):
-        for x in range(map_size[0]):
-            position = (x * CELL_SIZE, y * CELL_SIZE)
-            is_even_cell = x % 2 == 0 and y % 2 == 0  # ground sprite covers 4 cells, so we only need them on even cells
-            if is_even_cell and any([grid.is_walkable(c) for c in [(x, y), (x + 1, y), (x, y + 1), (x + 1, y + 1)]]):
-                decorations.append(create_decoration_entity(position, Sprite.DECORATION_GROUND_STONE))
-            if grid.is_wall((x, y)):
-                wall_type = determine_wall_type(grid, (x, y))
-                walls.append(create_wall(wall_type, position))
+def generate_random_map_as_json_from_grid(grid: Grid, rooms: List[Rect]):
+    decorations, walls = create_floor_tiles_and_walls_from_grid(grid, (0, grid.size[0]), (0, grid.size[1]))
 
-    world_area = Rect(0, 0, map_size[0] * CELL_SIZE, map_size[1] * CELL_SIZE)
-
+    world_area = Rect(0, 0, grid.size[0] * CELL_SIZE, grid.size[1] * CELL_SIZE)
     start_room = random.choice(rooms)
     player_position = get_room_center(start_room)
 
@@ -242,6 +277,23 @@ def generate_random_map_as_json():
 
     json = MapJson.serialize_from_data(walls, decorations, [], world_area, player_position, npcs)
     return json
+
+
+def create_floor_tiles_and_walls_from_grid(grid: Grid, xrange: Tuple[int, int], yrange: Tuple[int, int]) -> Tuple[
+    List[DecorationEntity], List[Wall]]:
+    decorations: List[DecorationEntity] = []
+    walls: List[Wall] = []
+
+    for y in range(yrange[0], yrange[1]):
+        for x in range(xrange[0], xrange[1]):
+            position = (x * CELL_SIZE, y * CELL_SIZE)
+            is_even_cell = x % 2 == 0 and y % 2 == 0  # ground sprite covers 4 cells, so we only need them on even cells
+            if is_even_cell and any([grid.is_floor(c) for c in [(x, y), (x + 1, y), (x, y + 1), (x + 1, y + 1)]]):
+                decorations.append(create_decoration_entity(position, Sprite.DECORATION_GROUND_STONE))
+            if grid.is_wall((x, y)):
+                wall_type = determine_wall_type(grid, (x, y))
+                walls.append(create_wall(wall_type, position))
+    return decorations, walls
 
 
 def generate_npcs(rooms: List[Rect], start_room: Rect):
@@ -264,7 +316,8 @@ def generate_npcs(rooms: List[Rect], start_room: Rect):
 
 
 def main():
-    json = generate_random_map_as_json()
+    grid, rooms = generate_random_grid()
+    json = generate_random_map_as_json_from_grid(grid, rooms)
     save_map_data_to_file(json, "resources/maps/dudmap.json")
 
 

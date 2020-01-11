@@ -5,6 +5,7 @@ from typing import Dict, List, Tuple, Optional
 import pygame
 from pygame.rect import Rect
 
+from generate_dungeon import Grid
 from pythongame.core.common import Direction, Sprite, UiIconSprite
 from pythongame.core.common import PortraitIconSprite
 from pythongame.core.game_data import ITEMS, CONSUMABLES
@@ -13,7 +14,7 @@ from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.image_loading import ImageWithRelativePosition
 from pythongame.core.view.render_util import DrawableArea
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
-from pythongame.scenes_game.ui_components import RadioButton, Checkbox, Button, Minimap, MapEditorIcon, TooltipGraphics
+from pythongame.scenes_game.ui_components import RadioButton, Checkbox, Minimap, MapEditorIcon, TooltipGraphics, Button
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -26,12 +27,15 @@ DIR_FONTS = './resources/fonts/'
 
 MAP_EDITOR_UI_ICON_SIZE = (32, 32)
 
+GRID_CELL_SIZE = 25
+
 
 class EntityTab(Enum):
     ITEMS = 0
     NPCS = 1
     WALLS = 2
     MISC = 3
+    ADVANCED = 4
 
 
 class MapEditorAction:
@@ -42,6 +46,16 @@ class AddEntity(MapEditorAction):
     def __init__(self, world_position: Tuple[int, int], entity: MapEditorWorldEntity):
         self.world_position = world_position
         self.entity = entity
+
+
+class DeleteSmartFloorTiles(MapEditorAction):
+    def __init__(self, tiles: List[Tuple[int, int, int, int]]):
+        self.tiles = tiles
+
+
+class AddSmartFloorTiles(MapEditorAction):
+    def __init__(self, tiles: List[Tuple[int, int, int, int]]):
+        self.tiles = tiles
 
 
 class DeleteEntities(MapEditorAction):
@@ -78,23 +92,31 @@ class SetCameraPosition(MapEditorAction):
 
 
 class UserState:
-    def __init__(self, placing_entity: Optional[MapEditorWorldEntity], deleting_entities: bool,
-                 deleting_decorations: bool):
+    def __init__(self,
+                 placing_entity: Optional[MapEditorWorldEntity] = None,
+                 deleting_entities: bool = False,
+                 deleting_decorations: bool = False,
+                 deleting_smart_floor_tiles: bool = False):
         self.placing_entity = placing_entity
         self.deleting_entities = deleting_entities
         self.deleting_decorations = deleting_decorations
+        self.deleting_smart_floor_tiles = deleting_smart_floor_tiles
 
     @staticmethod
     def placing_entity(entity: MapEditorWorldEntity):
-        return UserState(entity, False, False)
+        return UserState(placing_entity=entity)
 
     @staticmethod
     def deleting_entities():
-        return UserState(None, True, False)
+        return UserState(deleting_entities=True)
 
     @staticmethod
     def deleting_decorations():
-        return UserState(None, False, True)
+        return UserState(deleting_decorations=True)
+
+    @staticmethod
+    def deleting_smart_floor_tiles():
+        return UserState(deleting_smart_floor_tiles=True)
 
 
 class MapEditorView:
@@ -126,38 +148,51 @@ class MapEditorView:
 
         self._font_debug_info = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 12)
         self._font_ui_icon_keys = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 12)
-        w_tab_button = 75
+        w_tab_button = 110
         self._tab_buttons_by_entity_type = {
-            EntityTab.ITEMS: RadioButton(self._ui_render, Rect(300, 10, w_tab_button, 20), "ITEMS (V)"),
-            EntityTab.NPCS: RadioButton(self._ui_render, Rect(380, 10, w_tab_button, 20), "NPCS (B)"),
-            EntityTab.WALLS: RadioButton(self._ui_render, Rect(460, 10, w_tab_button, 20), "WALLS (N)"),
-            EntityTab.MISC: RadioButton(self._ui_render, Rect(540, 10, w_tab_button, 20), "MISC. (M)"),
+            EntityTab.ADVANCED: RadioButton(self._ui_render, Rect(220, 10, w_tab_button, 20), "ADVANCED (C)"),
+            EntityTab.ITEMS: RadioButton(self._ui_render, Rect(340, 10, w_tab_button, 20), "ITEMS (V)"),
+            EntityTab.NPCS: RadioButton(self._ui_render, Rect(460, 10, w_tab_button, 20), "NPCS (B)"),
+            EntityTab.WALLS: RadioButton(self._ui_render, Rect(580, 10, w_tab_button, 20), "WALLS (N)"),
+            EntityTab.MISC: RadioButton(self._ui_render, Rect(700, 10, w_tab_button, 20), "MISC. (M)"),
         }
+        self._tabs_by_pygame_key = {
+            pygame.K_c: EntityTab.ADVANCED,
+            pygame.K_v: EntityTab.ITEMS,
+            pygame.K_b: EntityTab.NPCS,
+            pygame.K_n: EntityTab.WALLS,
+            pygame.K_m: EntityTab.MISC,
+        }
+
         self._entities_by_type = entities_by_type
         self._tab_buttons = list(self._tab_buttons_by_entity_type.values())
         self._minimap = Minimap(self._ui_render, Rect(self._screen_size[0] - 180, 20, 160, 160), world_area,
                                 player_position)
         self._shown_tab: EntityTab = None
-        self._set_shown_tab(EntityTab.ITEMS)
+        self._set_shown_tab(EntityTab.ADVANCED)
         self._checkboxes = [
-            Checkbox(self._ui_render, Rect(15, 100, 120, 20), "outlines", False,
+            Checkbox(self._ui_render, Rect(15, 100, 140, 20), "outlines", False,
                      lambda checked: ToggleOutlines(checked))
         ]
         self._buttons = [
-            Button(self._ui_render, Rect(15, 125, 120, 20), "generate random", lambda: GenerateRandomMap()),
-            Button(self._ui_render, Rect(15, 150, 120, 20), "save", lambda: SaveMap())
+            Button(self._ui_render, Rect(15, 125, 140, 20), "Generate random", lambda: GenerateRandomMap()),
+            Button(self._ui_render, Rect(15, 150, 140, 20), "Save", lambda: SaveMap()),
+            Button(self._ui_render, Rect(15, 175, 140, 20), "Delete smart floor",
+                   lambda: self._on_click_deleting_smart_floor_tiles()),
         ]
 
         # USER INPUT STATE
         self._is_mouse_button_down = False
         self._mouse_screen_pos = (0, 0)
         self._hovered_component = None
-        self._user_state = UserState.deleting_entities()
+        self._user_state: UserState = UserState.deleting_entities()
         self._snapped_mouse_screen_pos = (0, 0)
         self._snapped_mouse_world_pos = (0, 0)
         self._is_snapped_mouse_within_world = True
         self._is_snapped_mouse_over_ui = False
         self._entity_icon_hovered_by_mouse = None
+        self._smart_floor_tiles_to_add: List[Tuple[int, int, int, int]] = []
+        self._smart_floor_tiles_to_delete: List[Tuple[int, int, int, int]] = []
 
         # MUTABLE WORLD-RELATED STATE
         self.camera_world_area: Rect = camera_world_area
@@ -166,9 +201,12 @@ class MapEditorView:
 
         self._setup_ui_components()
 
+    def _on_click_deleting_smart_floor_tiles(self):
+        self._user_state = UserState.deleting_smart_floor_tiles()
+
     def _setup_ui_components(self):
         icon_space = 5
-        x_1 = 155
+        x_1 = 165
         y_2 = 40
         self.button_delete_entities = self._create_map_editor_icon(
             Rect(20, y_2, MAP_EDITOR_UI_ICON_SIZE[0], MAP_EDITOR_UI_ICON_SIZE[1]),
@@ -243,12 +281,30 @@ class MapEditorView:
             if self._user_state.placing_entity:
                 if self._user_state.placing_entity.wall_type or self._user_state.placing_entity.decoration_sprite:
                     return AddEntity(self._snapped_mouse_world_pos, self._user_state.placing_entity)
+                elif self._user_state.placing_entity.is_smart_floor_tile:
+                    return self._add_smart_floor_tiles()
             elif self._user_state.deleting_entities:
                 return DeleteEntities(self._snapped_mouse_world_pos)
             elif self._user_state.deleting_decorations:
                 return DeleteDecorations(self._snapped_mouse_world_pos)
+            elif self._user_state.deleting_smart_floor_tiles:
+                return self._delete_smart_floor_tiles()
             else:
                 raise Exception("Unhandled user state: " + str(self._user_state))
+
+    def _add_smart_floor_tiles(self):
+        pos = self._snapped_mouse_world_pos
+        tile_size = self._user_state.placing_entity.entity_size[0]
+        for x in range(pos[0], pos[0] + tile_size, GRID_CELL_SIZE):
+            for y in range(pos[1], pos[1] + tile_size, GRID_CELL_SIZE):
+                self._smart_floor_tiles_to_add.append((x, y, GRID_CELL_SIZE, GRID_CELL_SIZE))
+
+    def _delete_smart_floor_tiles(self):
+        pos = self._snapped_mouse_world_pos
+        tile_size = GRID_CELL_SIZE
+        for x in range(pos[0], pos[0] + tile_size, GRID_CELL_SIZE):
+            for y in range(pos[1], pos[1] + tile_size, GRID_CELL_SIZE):
+                self._smart_floor_tiles_to_delete.append((x, y, GRID_CELL_SIZE, GRID_CELL_SIZE))
 
     def _set_currently_hovered_component_not_hovered(self):
         if self._hovered_component is not None:
@@ -278,29 +334,40 @@ class MapEditorView:
         if self._user_state.placing_entity:
             entity_being_placed = self._user_state.placing_entity
             if self._is_snapped_mouse_within_world and not self._is_snapped_mouse_over_ui:
-                return AddEntity(self._snapped_mouse_world_pos, entity_being_placed)
+                if entity_being_placed.is_smart_floor_tile:
+                    return self._add_smart_floor_tiles()
+                else:
+                    return AddEntity(self._snapped_mouse_world_pos, entity_being_placed)
 
         elif self._user_state.deleting_entities:
             return DeleteEntities(self._snapped_mouse_world_pos)
-        else:
+        elif self._user_state.deleting_decorations:
             return DeleteDecorations(self._snapped_mouse_world_pos)
+        elif self._user_state.deleting_smart_floor_tiles:
+            if self._is_snapped_mouse_within_world and not self._is_snapped_mouse_over_ui:
+                return self._delete_smart_floor_tiles()
+        else:
+            raise Exception("Unhandled user state: %s" % self._user_state)
 
     def handle_mouse_release(self):
         self._is_mouse_button_down = False
+        if self._is_snapped_mouse_within_world and not self._is_snapped_mouse_over_ui:
+            if self._user_state.placing_entity and self._user_state.placing_entity.is_smart_floor_tile:
+                tiles = list(self._smart_floor_tiles_to_add)
+                self._smart_floor_tiles_to_add.clear()
+                return AddSmartFloorTiles(tiles)
+            elif self._user_state.deleting_smart_floor_tiles:
+                tiles = list(self._smart_floor_tiles_to_delete)
+                self._smart_floor_tiles_to_delete.clear()
+                return DeleteSmartFloorTiles(tiles)
 
     def handle_key_down(self, key):
         if key == pygame.K_q:
             self._user_state = UserState.deleting_entities()
         elif key == pygame.K_z:
             self._user_state = UserState.deleting_decorations()
-        elif key == pygame.K_v:
-            self._set_shown_tab(EntityTab.ITEMS)
-        elif key == pygame.K_b:
-            self._set_shown_tab(EntityTab.NPCS)
-        elif key == pygame.K_n:
-            self._set_shown_tab(EntityTab.WALLS)
-        elif key == pygame.K_m:
-            self._set_shown_tab(EntityTab.MISC)
+        elif key in self._tabs_by_pygame_key:
+            self._set_shown_tab(self._tabs_by_pygame_key[key])
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self._ui_screen_area.x, position[1] + self._ui_screen_area.y
@@ -333,7 +400,26 @@ class MapEditorView:
             num_decorations: int,
             npc_positions: List[Tuple[int, int]],
             wall_positions: List[Tuple[int, int]],
-            player_position: Tuple[int, int]):
+            player_position: Tuple[int, int],
+            grid: Grid):
+
+        x_camera = self.camera_world_area.x
+        y_camera = self.camera_world_area.y
+
+        if self._user_state.placing_entity and self._user_state.placing_entity.is_smart_floor_tile or self._user_state.deleting_smart_floor_tiles:
+
+            xmin = (x_camera - self.world_area.x) // GRID_CELL_SIZE
+            xmax = xmin + self.camera_world_area.w // GRID_CELL_SIZE
+            ymin = (y_camera - self.world_area.y) // GRID_CELL_SIZE
+            ymax = ymin + self.camera_world_area.h // GRID_CELL_SIZE
+            for x in range(xmin, xmax):
+                for y in range(ymin, ymax):
+                    if grid.is_floor((x, y)):
+                        rect = Rect(x * GRID_CELL_SIZE + self.world_area.x - x_camera,
+                                    y * GRID_CELL_SIZE + self.world_area.y - y_camera,
+                                    GRID_CELL_SIZE,
+                                    GRID_CELL_SIZE)
+                        self._screen_render.rect((100, 180, 250), rect, 2)
 
         self._screen_render.rect(COLOR_BLACK, Rect(0, 0, self._camera_size[0], self._camera_size[1]), 3)
         self._screen_render.rect_filled(COLOR_BLACK, Rect(0, self._camera_size[1], self._screen_size[0],
@@ -357,6 +443,7 @@ class MapEditorView:
             "# walls: " + str(num_walls),
             "# decorations: " + str(num_decorations),
             "Cell size: " + str(self.grid_cell_size),
+            "Mouse world pos: " + str(self._snapped_mouse_world_pos)
         ]
         self._screen_render.rect_transparent(Rect(0, 0, 240, 5 + len(debug_entries) * 22), 100, COLOR_BLACK)
         for i, entry in enumerate(debug_entries):
@@ -388,8 +475,17 @@ class MapEditorView:
                 self._screen_render.rect((250, 250, 0), snapped_mouse_rect, 3)
             elif self._user_state.deleting_decorations:
                 self._screen_render.rect((0, 250, 250), snapped_mouse_rect, 3)
+            elif self._user_state.deleting_smart_floor_tiles:
+                self._screen_render.rect((250, 180, 100), snapped_mouse_rect, 2)
             else:
                 raise Exception("Unhandled user_state: " + str(self._user_state))
+
+        for tile in self._smart_floor_tiles_to_add:
+            rect = Rect(tile[0] - x_camera, tile[1] - y_camera, tile[2], tile[3])
+            self._screen_render.rect((180, 180, 250), rect, 2)
+        for tile in self._smart_floor_tiles_to_delete:
+            rect = Rect(tile[0] - x_camera, tile[1] - y_camera, tile[2], tile[3])
+            self._screen_render.rect((250, 180, 180), rect, 2)
 
     def _render_map_editor_world_entity_at_position(self, sprite: Sprite, entity_size: Tuple[int, int],
                                                     position: Tuple[int, int]):

@@ -21,6 +21,7 @@ class MapEditorWorldEntity:
         self.money_amount: Optional[int] = None
         self.portal_id: Optional[PortalId] = None
         self.is_chest: bool = False
+        self.is_smart_floor_tile: bool = False
         self.map_editor_entity_id = MapEditorWorldEntity.next_id
         MapEditorWorldEntity.next_id += 1
 
@@ -96,4 +97,10 @@ class MapEditorWorldEntity:
         entity = create_chest((0, 0)).world_entity
         e = MapEditorWorldEntity(entity.sprite, (entity.pygame_collision_rect.w, entity.pygame_collision_rect.h))
         e.is_chest = True
+        return e
+
+    @staticmethod
+    def smart_floor_tile(sprite: Sprite, width: int):
+        e = MapEditorWorldEntity(sprite, (width, width))
+        e.is_smart_floor_tile = True
         return e

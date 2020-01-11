@@ -105,7 +105,7 @@ from pythongame.game_data.items.item_wizards_cowl import register_wizards_cowl
 from pythongame.game_data.items.item_wooden_shield import register_wooden_shield
 from pythongame.game_data.items.item_wooden_sword import register_wooden_sword_item
 from pythongame.game_data.items.item_zuls_aegis import register_zuls_aegis
-from pythongame.game_data.map_editor_icons import register_map_editor_icons
+from pythongame.game_data.map_editor_icons import register_map_editor_icons, register_map_smart_floor_tile_sprites
 from pythongame.game_data.neutral_npcs.neutral_npc_challenge_starter import register_challenge_starter_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_dwarf import register_dwarf_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_ninja import register_ninja_npc
@@ -241,6 +241,7 @@ def register_all_game_data():
 
     register_decorations()
     register_map_editor_icons()
+    register_map_smart_floor_tile_sprites()
     register_ui_icons()
     register_walls()
 

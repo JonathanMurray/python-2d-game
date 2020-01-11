@@ -905,6 +905,7 @@ class WallsState:
     def __init__(self, walls: List[Wall], entire_world_area: Rect):
         self.walls: List[Wall] = walls
         self._buckets = Buckets([w.world_entity for w in walls], entire_world_area)
+        self._entire_world_area = entire_world_area
 
     def add_wall(self, wall: Wall):
         self.walls.append(wall)
@@ -913,6 +914,14 @@ class WallsState:
     def remove_wall(self, wall: Wall):
         self.walls.remove(wall)
         self._buckets.remove_entity(wall.world_entity)
+
+    def remove_all_from_position(self, position: Tuple[int, int]):
+        for wall in self.get_walls_at_position(position):
+            self.remove_wall(wall)
+
+    def clear(self):
+        self.walls.clear()
+        self._buckets = Buckets([], self._entire_world_area)
 
     # TODO Use _entities_collide?
     def does_entity_intersect_with_wall(self, entity: WorldEntity):
@@ -938,6 +947,11 @@ class DecorationsState:
     def __init__(self, decoration_entities: List[DecorationEntity], entire_world_area: Rect):
         self.decoration_entities: List[DecorationEntity] = decoration_entities
         self._buckets = Buckets(decoration_entities, entire_world_area)
+        self._entire_world_area = entire_world_area
+
+    def clear(self):
+        self.decoration_entities.clear()
+        self._buckets = Buckets([], self._entire_world_area)
 
     def add_decoration(self, decoration: DecorationEntity):
         self.decoration_entities.append(decoration)
