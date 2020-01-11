@@ -17,9 +17,10 @@ class MapEditorConfig:
 
 
 class MapData:
-    def __init__(self, game_state: GameState, map_editor_config: MapEditorConfig):
+    def __init__(self, game_state: GameState, map_editor_config: MapEditorConfig, grid_string: str):
         self.game_state = game_state
         self.map_editor_config = map_editor_config
+        self.grid_string = grid_string
 
 
 def load_map_from_json_file(camera_size: Tuple[int, int], map_file_path: str, hero_id: HeroId) -> MapData:
@@ -49,7 +50,9 @@ class MapJson:
     def serialize(map_data: MapData):
         game_state = map_data.game_state
         config = map_data.map_editor_config
+        grid = map_data.grid_string
         return {
+            "grid": grid,
             "disable_smart_grid": config.disable_smart_grid,
             "player": PlayerJson.serialize(game_state.player_entity),
             "consumables_on_ground": [ConsumableJson.serialize(p) for p in game_state.consumables_on_ground],
@@ -98,8 +101,9 @@ class MapJson:
                                chests=[ChestJson.deserialize(c) for c in data.get("chests", [])])
 
         map_editor_config = MapEditorConfig(disable_smart_grid=data.get("disable_smart_grid", False))
+        grid_string = data.get("grid", None)
 
-        return MapData(game_state, map_editor_config)
+        return MapData(game_state, map_editor_config, grid_string)
 
 
 class PlayerJson:

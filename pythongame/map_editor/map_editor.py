@@ -79,20 +79,31 @@ class MapEditor:
         self.game_state: GameState = None
 
         if Path(self.map_file_path).exists():
+            print("Loading map '%s' from file." % self.map_file_path)
             map_data = load_map_from_json_file(CAMERA_SIZE, self.map_file_path, HERO_ID)
             game_state = map_data.game_state
+            self._set_game_state(game_state)
             self.config = map_data.map_editor_config
+            if map_data.grid_string:
+                print("Initializing grid from existing map data.")
+                self.grid = Grid.deserialize(map_data.grid_string)
+            else:
+                if not self.config.disable_smart_grid:
+                    print("Grid missing from existing map data. Generating one from world state ...")
+                    self.build_grid_from_game_state()
+                else:
+                    print("Grid disabled for this map. Using smart floor tiles will not work.")
         else:
+            print("Map file '%s' not found! New map is created." % self.map_file_path)
             player_entity = create_hero_world_entity(HERO_ID, (0, 0))
             player_state = create_player_state(HERO_ID)
             game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, Rect(-250, -250, 500, 500),
                                    player_state, [], [], [])
+            self._set_game_state(game_state)
             self.config = MapEditorConfig(disable_smart_grid=False)
-
-        self._set_game_state(game_state)
-
-        if not self.config.disable_smart_grid:
-            self.setup_grid_from_game_state()
+            grid_size = (game_state.entire_world_area.w // GRID_CELL_SIZE,
+                         game_state.entire_world_area.h // GRID_CELL_SIZE)
+            self.grid = Grid.create_from_rects(grid_size, [])
 
         pygame.init()
 
@@ -206,7 +217,8 @@ class MapEditor:
             pygame.display.flip()
 
     def save(self):
-        map_data = MapData(self.game_state, self.config)
+        grid_string = self.grid.serialize()
+        map_data = MapData(self.game_state, self.config, grid_string)
         save_map_to_json_file(map_data, self.map_file_path)
         print("Saved state to " + self.map_file_path)
 
@@ -260,7 +272,7 @@ class MapEditor:
         self.game_state.center_camera_on_player()
         self.game_state.snap_camera_to_grid(self.grid_cell_size)
 
-    def setup_grid_from_game_state(self):
+    def build_grid_from_game_state(self):
         print("Creating smart floor tiles ...")
         floor_cells = []
         world_area = self.game_state.entire_world_area

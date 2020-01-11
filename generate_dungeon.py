@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import random
+from ast import literal_eval
 from enum import Enum
 from typing import List, Tuple
 
@@ -160,6 +161,16 @@ class Grid:
                 ):
                     self._grid[x][y] = CellType.FLOOR
         # print("done.")
+
+    def serialize(self) -> str:
+        return str([[cell.value for cell in row] for row in self._grid])
+
+    @staticmethod
+    def deserialize(string: str):
+        grid = [[CellType(cell) for cell in row] for row in literal_eval(string)]
+        h = len(grid)
+        w = len(grid[0])
+        return Grid(grid, (w, h))
 
 
 def generate_room(map_size: Tuple[int, int]) -> Rect:
