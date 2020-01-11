@@ -78,7 +78,6 @@ class CreatingWorldScene(AbstractScene):
         total_time_played_on_character = saved_player_state.total_time_played_on_character if saved_player_state else 0
 
         # NPC's share a "global path finder" that needs to be initialized before we start creating NPCs.
-        # At the same
         # TODO This is very messy
         path_finder = GlobalPathFinder()
         set_global_path_finder(path_finder)
