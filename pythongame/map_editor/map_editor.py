@@ -21,8 +21,8 @@ from pythongame.map_editor.map_editor_ui_view import MapEditorView, PORTRAIT_ICO
     EntityTab, GenerateRandomMap, SetCameraPosition, AddEntity, DeleteEntities, DeleteDecorations, MapEditorAction, \
     SaveMap, ToggleOutlines, AddSmartFloorTiles, DeleteSmartFloorTiles
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
-from pythongame.map_file import save_game_state_to_json_file, create_game_state_from_json_file, \
-    create_game_state_from_map_data
+from pythongame.map_file import save_map_to_json_file, load_map_from_json_file, create_map_from_json, MapData, \
+    MapEditorConfig
 from pythongame.register_game_data import register_all_game_data
 
 MAP_DIR = "resources/maps/"
@@ -76,17 +76,23 @@ class MapEditor:
 
         self.grid_cell_size = possible_grid_cell_sizes[grid_cell_size_index]
         self.grid: Grid = None
-        self.game_state = None
+        self.game_state: GameState = None
 
         if Path(self.map_file_path).exists():
-            game_state = create_game_state_from_json_file(CAMERA_SIZE, self.map_file_path, HERO_ID)
+            map_data = load_map_from_json_file(CAMERA_SIZE, self.map_file_path, HERO_ID)
+            game_state = map_data.game_state
+            self.config = map_data.map_editor_config
         else:
             player_entity = create_hero_world_entity(HERO_ID, (0, 0))
             player_state = create_player_state(HERO_ID)
             game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, Rect(-250, -250, 500, 500),
                                    player_state, [], [], [])
+            self.config = MapEditorConfig(disable_smart_grid=False)
+
         self._set_game_state(game_state)
-        self.setup_grid_from_game_state()
+
+        if not self.config.disable_smart_grid:
+            self.setup_grid_from_game_state()
 
         pygame.init()
 
@@ -200,7 +206,8 @@ class MapEditor:
             pygame.display.flip()
 
     def save(self):
-        save_game_state_to_json_file(self.game_state, self.map_file_path)
+        map_data = MapData(self.game_state, self.config)
+        save_map_to_json_file(map_data, self.map_file_path)
         print("Saved state to " + self.map_file_path)
 
     def _handle_action(self, action: MapEditorAction, grid_cell_size: int):
@@ -266,15 +273,14 @@ class MapEditor:
         grid_size = (world_area.w // GRID_CELL_SIZE, world_area.h // GRID_CELL_SIZE)
         self.grid = Grid.create_from_rects(grid_size, [])
         self.grid.add_floor_cells(floor_cells)
-        self.grid.print()
 
     def _generate_random_map(self):
         print("Generating random mapp ...")
         self.grid, rooms = generate_random_grid()
         map_json = generate_random_map_as_json_from_grid(self.grid, rooms)
-        game_state = create_game_state_from_map_data(CAMERA_SIZE, map_json, HERO_ID)
+        map_data = create_map_from_json(CAMERA_SIZE, map_json, HERO_ID)
         print("Random map generated.")
-        self._set_game_state(game_state)
+        self._set_game_state(map_data.game_state)
 
     def _add_smart_floor_tiles(self, tiles: List[Tuple[int, int, int, int]]):
         floor_cells = [((r[0] - self.game_state.entire_world_area.x) // GRID_CELL_SIZE,

@@ -10,7 +10,7 @@ from pythongame.core.common import WallType, Sprite, NpcType
 from pythongame.core.entity_creation import create_wall, create_decoration_entity, create_npc
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, NpcCategory
 from pythongame.core.game_state import DecorationEntity, Wall
-from pythongame.map_file import MapJson, save_map_data_to_file
+from pythongame.map_file import MapJson, write_json_to_file
 from pythongame.register_game_data import register_all_game_data
 
 register_all_game_data()
@@ -318,7 +318,7 @@ def generate_npcs(rooms: List[Rect], start_room: Rect):
 def main():
     grid, rooms = generate_random_grid()
     json = generate_random_map_as_json_from_grid(grid, rooms)
-    save_map_data_to_file(json, "resources/maps/dudmap.json")
+    write_json_to_file(json, "resources/maps/dudmap.json")
 
 
 if __name__ == "__main__":

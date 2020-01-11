@@ -5,12 +5,14 @@ from pythongame.core.common import ItemType, \
     ConsumableType, Sprite, Observable
 from pythongame.core.common import Millis, HeroId, AbstractScene, SceneTransition
 from pythongame.core.consumable_inventory import ConsumableInventory
+from pythongame.core.entity_creation import set_global_path_finder
 from pythongame.core.footsteps import play_or_stop_footstep_sounds
 from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_state import GameState
 from pythongame.core.hero_upgrades import pick_talent
+from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.world_behavior import ChallengeBehavior, StoryBehavior, AbstractWorldBehavior
-from pythongame.map_file import create_game_state_from_json_file
+from pythongame.map_file import load_map_from_json_file
 from pythongame.player_file import SavedPlayerState
 from pythongame.scenes_game.game_engine import GameEngine
 from pythongame.scenes_game.game_ui_view import GameUiView
@@ -75,8 +77,17 @@ class CreatingWorldScene(AbstractScene):
 
         total_time_played_on_character = saved_player_state.total_time_played_on_character if saved_player_state else 0
 
-        game_state = create_game_state_from_json_file(
-            self.camera_size, map_file_path, picked_hero)
+        # NPC's share a "global path finder" that needs to be initialized before we start creating NPCs.
+        # At the same
+        # TODO This is very messy
+        path_finder = GlobalPathFinder()
+        set_global_path_finder(path_finder)
+
+        map_data = load_map_from_json_file(self.camera_size, map_file_path, picked_hero)
+
+        path_finder.set_grid(map_data.game_state.pathfinder_wall_grid)
+
+        game_state = map_data.game_state
         game_engine = GameEngine(game_state, self.ui_view.info_message)
         game_state.player_state.exp_was_updated.register_observer(self.ui_view.on_player_exp_updated)
         game_state.player_state.talents_were_updated.register_observer(self.ui_view.on_talents_updated)
