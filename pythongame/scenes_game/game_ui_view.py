@@ -685,7 +685,7 @@ class GameUiView:
         # MINIMAP
         self.minimap.render()
 
-        simple_components = [self.exp_bar, self.portrait, self.healthbar, self.manabar, self.money_text, self.dialog,
+        simple_components = [self.exp_bar, self.portrait, self.healthbar, self.manabar, self.money_text,
                              self.buffs, self.sound_checkbox, self.save_button, self.fullscreen_checkbox,
                              self.stats_window, self.talents_window, self.controls_window] + self.toggle_buttons
 
@@ -712,5 +712,7 @@ class GameUiView:
             self._render_consumable_being_dragged(self.consumable_slot_being_dragged.consumable_types[0],
                                                   self.mouse_screen_position,
                                                   (UI_ICON_SIZE[0] // 2, (UI_ICON_SIZE[1] // 2)))
+
+        self.dialog.render()
 
         self.paused_splash_screen.render()

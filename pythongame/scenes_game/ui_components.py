@@ -100,12 +100,15 @@ class Dialog:
         options_margin = 10
         option_padding = 4
         h_option_line = 20
+        base_height = 260
         if tall_detail_section:
-            h_dialog_container = 310 + len(self.options) * (h_option_line + 2 * option_padding)
+            h_dialog_container = base_height + len(self.options) * (h_option_line + 2 * option_padding)
         else:
-            h_dialog_container = 310 + len(self.options) * (h_option_line + 2 * option_padding) \
+            h_dialog_container = base_height + len(self.options) * (h_option_line + 2 * option_padding) \
                                  - h_detail_section_expansion
-        rect_dialog_container = Rect(100, 35, 500, h_dialog_container)
+        w_screen = 800
+        w_dialog = 600
+        rect_dialog_container = Rect(w_screen // 2 - w_dialog // 2, 35, w_dialog, h_dialog_container)
 
         x_left = rect_dialog_container[0]
         x_right = rect_dialog_container[0] + rect_dialog_container[2]
@@ -121,15 +124,16 @@ class Dialog:
         self.screen_render.rect((160, 160, 180), rect_portrait, 2)
 
         dialog_pos = (x_left + 120, rect_dialog_container[1] + 15)
-        dialog_lines = split_text_into_lines(self.text_body, 35)
+        dialog_lines = split_text_into_lines(self.text_body, 50)
         for i, dialog_text_line in enumerate(dialog_lines):
             if i == 6:
                 print("WARN: too long dialog for NPC!")
                 break
-            self.screen_render.text(self.font_dialog, dialog_text_line, (dialog_pos[0] + 5, dialog_pos[1] + 32 * i),
-                                    COLOR_WHITE)
+            line_space = 23
+            line_pos = (dialog_pos[0] + 5, dialog_pos[1] + line_space * i)
+            self.screen_render.text(self.font_dialog, dialog_text_line, line_pos, COLOR_WHITE)
 
-        y_above_options = dialog_pos[1] + 150
+        y_above_options = dialog_pos[1] + 100
         self.screen_render.line(color_separator, (x_left, y_above_options), (x_right, y_above_options), 2)
 
         for i, option in enumerate(self.options):
@@ -171,7 +175,7 @@ class Dialog:
                                         (x_left + 14 + self.option_image_size[0] + 4,
                                          y_action_text - h_detail_section_expansion))
             if active_option.detail_body is not None:
-                detail_body_lines = split_text_into_lines(active_option.detail_body, 70)
+                detail_body_lines = split_text_into_lines(active_option.detail_body, 80)
                 for i, line in enumerate(detail_body_lines):
                     line_pos = (x_left + 10, y_action_text - h_detail_section_expansion + 35 + 20 * i)
                     self.screen_render.text(self.font_dialog_option_detail_body, line, line_pos)
@@ -443,7 +447,7 @@ class ToggleButton(UiComponent):
 
 
 class Checkbox(UiComponent):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, label: str, checked: bool, on_click:Callable[[bool], Any]):
+    def __init__(self, ui_render: DrawableArea, rect: Rect, label: str, checked: bool, on_click: Callable[[bool], Any]):
         super().__init__(rect)
         self.ui_render = ui_render
         self.font = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
