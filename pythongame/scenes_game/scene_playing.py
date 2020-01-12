@@ -3,7 +3,7 @@ from typing import Optional, Any, List, Tuple, Callable
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis, SoundId, AbstractScene, SceneTransition
+from pythongame.core.common import Millis, SoundId, AbstractScene, SceneTransition, NpcType
 from pythongame.core.game_data import CONSUMABLES, ITEMS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     ConsumableOnGround, ItemOnGround, Chest
@@ -79,10 +79,8 @@ class PlayingScene(AbstractScene):
             user_actions = get_dialog_actions(events)
             for action in user_actions:
                 if isinstance(action, ActionChangeDialogOption):
-                    play_sound(SoundId.DIALOG)
                     npc_type, previous_index, new_index = self.ui_view.change_dialog_option(action.index_delta)
-                    blur_npc_action(npc_type, previous_index, self.game_state, self.ui_view)
-                    hover_npc_action(npc_type, new_index, self.game_state, self.ui_view)
+                    self._handle_dialog_change_option(npc_type, previous_index, new_index)
                 if isinstance(action, ActionPressSpaceKey):
                     result = self.ui_view.handle_space_click()
                     if result:
@@ -97,6 +95,14 @@ class PlayingScene(AbstractScene):
                         # User may have been holding down a key when starting dialog, and then releasing it while in
                         # dialog. It's safer then to treat all keys as released when we exit the dialog.
                         self.user_input_handler.forget_held_down_keys()
+                if isinstance(action, ActionMouseMovement):
+                    self.ui_view.handle_mouse_movement_in_dialog(action.mouse_screen_position)
+                if isinstance(action, ActionMouseClicked):
+                    result = self.ui_view.handle_mouse_click_in_dialog()
+                    if result:
+                        npc_type, previous_index, new_index = result
+                        self._handle_dialog_change_option(npc_type, previous_index, new_index)
+
         else:
             user_actions = self.user_input_handler.get_actions(events)
             for action in user_actions:
@@ -202,6 +208,11 @@ class PlayingScene(AbstractScene):
 
         if transition_to_pause:
             return SceneTransition(PausedScene(self, self.world_view, self.ui_view, self.game_state))
+
+    def _handle_dialog_change_option(self, npc_type: NpcType, previous_index: int, new_index: int):
+        play_sound(SoundId.DIALOG)
+        blur_npc_action(npc_type, previous_index, self.game_state, self.ui_view)
+        hover_npc_action(npc_type, new_index, self.game_state, self.ui_view)
 
     def run_one_frame(self, time_passed: Millis) -> Optional[SceneTransition]:
 

@@ -279,6 +279,19 @@ class GameUiView:
         self.is_mouse_hovering_ui = is_point_in_rect(mouse_screen_pos, self.ui_screen_area)
         self._check_for_hovered_components()
 
+    def handle_mouse_movement_in_dialog(self, mouse_screen_pos: Tuple[int, int]):
+        self.mouse_screen_position = mouse_screen_pos
+        self.is_mouse_hovering_ui = is_point_in_rect(mouse_screen_pos, self.ui_screen_area)
+        self.dialog.handle_mouse_movement(mouse_screen_pos)
+
+    def handle_mouse_click_in_dialog(self) -> Optional[Tuple[NpcType, int, int]]:
+        clicked_option_index = self.dialog.get_hovered_option_index()
+        if clicked_option_index is not None:
+            previous_index = self.dialog_state.option_index
+            self.dialog_state.option_index = clicked_option_index
+            self._update_dialog_graphics()
+            return self.dialog_state.npc.npc_type, previous_index, clicked_option_index
+
     def _check_for_hovered_components(self):
         mouse_ui_position = self._translate_screen_position_to_ui(self.mouse_screen_position)
 
@@ -564,13 +577,13 @@ class GameUiView:
                 option.detail_header, option.detail_body)
 
             data = self.dialog_state.data
-            self.dialog.portrait_image = self.images_by_portrait_sprite[data.portrait_icon_sprite]
-            self.dialog.text_body = data.text_body
-            self.dialog.options = [build_dialog_option(option) for option in data.options]
-            self.dialog.active_option_index = self.dialog_state.option_index
-            self.dialog.shown = True
+            image = self.images_by_portrait_sprite[data.portrait_icon_sprite]
+            text_body = data.text_body
+            options = [build_dialog_option(option) for option in data.options]
+            active_option_index = self.dialog_state.option_index
+            self.dialog.show_with_data(image, text_body, options, active_option_index)
         else:
-            self.dialog.shown = False
+            self.dialog.hide()
 
     def has_open_dialog(self) -> bool:
         return self.dialog_state.active

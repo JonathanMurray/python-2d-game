@@ -109,6 +109,10 @@ def get_dialog_actions(events) -> List[Any]:
                 actions.append(ActionPressSpaceKey())
             elif event.key == pygame.K_s:
                 actions.append(ActionSaveGameState())
+        elif event.type == pygame.MOUSEMOTION:
+            actions.append(ActionMouseMovement(event.pos))
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == PYGAME_MOUSE_LEFT_BUTTON:
+            actions.append(ActionMouseClicked())
     return actions
 
 
