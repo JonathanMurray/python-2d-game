@@ -168,8 +168,8 @@ class Grid:
     @staticmethod
     def deserialize(string: str):
         grid = [[CellType(cell) for cell in row] for row in literal_eval(string)]
-        h = len(grid)
-        w = len(grid[0])
+        w = len(grid)
+        h = len(grid[0])
         return Grid(grid, (w, h))
 
 
