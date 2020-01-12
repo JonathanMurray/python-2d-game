@@ -190,7 +190,7 @@ class MapEditorView:
         self._snapped_mouse_world_pos = (0, 0)
         self._is_snapped_mouse_within_world = True
         self._is_snapped_mouse_over_ui = False
-        self._entity_icon_hovered_by_mouse = None
+        self._entity_icon_hovered_by_mouse: MapEditorWorldEntity = None
         self._smart_floor_tiles_to_add: List[Tuple[int, int, int, int]] = []
         self._smart_floor_tiles_to_delete: List[Tuple[int, int, int, int]] = []
 
@@ -260,8 +260,7 @@ class MapEditorView:
         for icon in self.entity_icons_by_type[self._shown_tab]:
             if icon.contains(mouse_ui_pos):
                 self._on_hover_component(icon)
-                entity = [e for e in self._entities_by_type[self._shown_tab]
-                          if e.map_editor_entity_id == icon.map_editor_entity_id][0]
+                entity = self._get_map_editor_entity_by_id(icon.map_editor_entity_id)
                 self._entity_icon_hovered_by_mouse = entity
                 return
 
@@ -291,6 +290,11 @@ class MapEditorView:
                 return self._delete_smart_floor_tiles()
             else:
                 raise Exception("Unhandled user state: " + str(self._user_state))
+
+    def _get_map_editor_entity_by_id(self, map_editor_entity_id: int):
+        entity = [e for e in self._entities_by_type[self._shown_tab]
+                  if e.map_editor_entity_id == map_editor_entity_id][0]
+        return entity
 
     def _add_smart_floor_tiles(self):
         pos = self._snapped_mouse_world_pos
@@ -362,12 +366,21 @@ class MapEditorView:
                 return DeleteSmartFloorTiles(tiles)
 
     def handle_key_down(self, key):
+        number_keys = [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8,
+                       pygame.K_9, pygame.K_0]
         if key == pygame.K_q:
             self._user_state = UserState.deleting_entities()
         elif key == pygame.K_z:
             self._user_state = UserState.deleting_decorations()
         elif key in self._tabs_by_pygame_key:
             self._set_shown_tab(self._tabs_by_pygame_key[key])
+        elif key in number_keys:
+            index = number_keys.index(key)
+            shown_entity_icons = self.entity_icons_by_type[self._shown_tab]
+            if index < len(shown_entity_icons):
+                targeted_icon = shown_entity_icons[index]
+                entity = self._get_map_editor_entity_by_id(targeted_icon.map_editor_entity_id)
+                self._user_state = UserState.placing_entity(entity)
 
     def _translate_ui_position_to_screen(self, position):
         return position[0] + self._ui_screen_area.x, position[1] + self._ui_screen_area.y
