@@ -146,7 +146,7 @@ class Dialog:
         x_left = self._rect[0]
         x_right = self._rect[0] + self._rect[2]
         self._screen_render.rect((210, 180, 60), self._rect, 5)
-        self._screen_render.rect_transparent(self._rect, 200, COLOR_BLACK)
+        self._screen_render.rect_transparent(self._rect, 220, COLOR_BLACK)
         color_separator = (170, 140, 20)
         dialog_container_portrait_padding = 10
         rect_portrait_pos = (x_left + dialog_container_portrait_padding,
