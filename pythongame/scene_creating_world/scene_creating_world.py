@@ -8,8 +8,9 @@ from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.entity_creation import set_global_path_finder
 from pythongame.core.footsteps import play_or_stop_footstep_sounds
 from pythongame.core.game_data import allocate_input_keys_for_abilities
-from pythongame.core.game_state import GameState
+from pythongame.core.game_state import GameState, QuestId
 from pythongame.core.hero_upgrades import pick_talent
+from pythongame.core.npc_behaviors import get_quest
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.world_behavior import ChallengeBehavior, StoryBehavior, AbstractWorldBehavior
 from pythongame.map_file import load_map_from_json_file
@@ -141,6 +142,13 @@ class CreatingWorldScene(AbstractScene):
             for tier_index, option_index in enumerate(saved_player_state.talent_tier_choices):
                 if option_index is not None:
                     pick_talent(game_state, tier_index, option_index)
+            for completed_quest in saved_player_state.completed_quests:
+                quest = get_quest(QuestId[completed_quest])
+                game_state.player_state.start_quest(quest)
+                game_state.player_state.complete_quest(QuestId[completed_quest])
+            for active_quest in saved_player_state.active_quests:
+                quest = get_quest(QuestId[active_quest])
+                game_state.player_state.start_quest(quest)
         else:
             if hero_start_level > 1:
                 game_engine.gain_levels(hero_start_level - 1)

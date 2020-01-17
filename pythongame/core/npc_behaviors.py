@@ -4,7 +4,7 @@ from pythongame.core.common import *
 from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import CONSUMABLES, ITEMS
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest
 from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
 from pythongame.core.math import is_x_and_y_within_distance, get_perpendicular_directions
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
@@ -187,6 +187,16 @@ class BuyItemNpcAction(AbstractNpcAction):
 _npc_mind_constructors: Dict[NpcType, Type[AbstractNpcMind]] = {}
 
 _npc_dialog_data: Dict[NpcType, Callable[[GameState], DialogData]] = {}
+
+_quests: Dict[QuestId, Quest] = {}
+
+
+def register_quest(quest_id: QuestId, quest: Quest):
+    _quests[quest_id] = quest
+
+
+def get_quest(quest_id: QuestId):
+    return _quests[quest_id]
 
 
 def register_npc_behavior(npc_type: NpcType, mind_constructor: Type[AbstractNpcMind]):

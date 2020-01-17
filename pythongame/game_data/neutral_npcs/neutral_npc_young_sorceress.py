@@ -9,12 +9,14 @@ from pythongame.core.game_data import register_npc_data, NpcData, register_entit
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest
 from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
-    DialogData, DialogOptionData, register_conditional_npc_dialog_data
+    DialogData, DialogOptionData, register_conditional_npc_dialog_data, register_quest
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.scenes_game.game_ui_view import GameUiView
 
+QUEST_ID = QuestId.RETRIEVE_FROG
+QUEST = Quest(QUEST_ID, "Lost pet", "Retrieve pet frog from goblin king")
 ITEM_TYPE_FROG = ItemType.FROG
 NPC_TYPE = NpcType.NEUTRAL_YOUNG_SORCERESS
 UI_ICON_SPRITE = PortraitIconSprite.YOUNG_SORCERESS
@@ -38,9 +40,8 @@ class NpcMind(AbstractNpcMind):
 class GiveQuest(AbstractNpcAction):
 
     def on_select(self, game_state: GameState) -> Optional[str]:
-        quest = Quest(QuestId.RETRIEVE_FROG, "Lost pet", "Retrieve pet frog from goblin king")
-        game_state.player_state.start_quest(quest)
-        return "Quest accepted: " + quest.name
+        game_state.player_state.start_quest(QUEST)
+        return "Quest accepted: " + QUEST.name
 
     def on_hover(self, game_state: GameState, ui_view: GameUiView):
         _highlight_boss_location(game_state, ui_view)
@@ -65,7 +66,7 @@ class AcceptFrog(AbstractNpcAction):
                 game_state.items_on_ground.append(
                     create_item_on_ground(reward_item_type, game_state.player_entity.get_position()))
             play_sound(SoundId.EVENT_COMPLETED_QUEST)
-            game_state.player_state.complete_quest(QuestId.RETRIEVE_FROG)
+            game_state.player_state.complete_quest(QUEST_ID)
             return "Reward gained: " + reward_data.name
         else:
             play_sound(SoundId.WARNING)
@@ -106,6 +107,7 @@ def _clear_highlight(ui_view):
 
 
 def register_young_sorceress_npc():
+    register_quest(QUEST_ID, QUEST)
     size = (30, 30)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.NEUTRAL_NPC_YOUNG_SORCERESS
     movement_speed = 0.03
@@ -151,9 +153,9 @@ def _register_dialog():
     dialog_3 = DialogData(UI_ICON_SPRITE, "Thank you for helping me!", [bye_option])
 
     def get_dialog_data(game_state: GameState):
-        if game_state.player_state.has_completed_quest(QuestId.RETRIEVE_FROG):
+        if game_state.player_state.has_completed_quest(QUEST_ID):
             return dialog_3
-        elif game_state.player_state.has_quest(QuestId.RETRIEVE_FROG):
+        elif game_state.player_state.has_quest(QUEST_ID):
             return dialog_2
         else:
             return dialog_1

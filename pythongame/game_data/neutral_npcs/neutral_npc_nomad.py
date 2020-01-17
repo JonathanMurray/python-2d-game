@@ -7,7 +7,7 @@ from pythongame.core.game_data import register_npc_data, NpcData, register_entit
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
-    DialogData, DialogOptionData, register_conditional_npc_dialog_data
+    DialogData, DialogOptionData, register_conditional_npc_dialog_data, register_quest
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
@@ -15,6 +15,7 @@ from pythongame.core.visual_effects import create_visual_healing_text
 from pythongame.scenes_game.game_ui_view import GameUiView
 
 QUEST_ID = QuestId.MAIN_RETRIEVE_KEY
+QUEST = Quest(QUEST_ID, "The red baron", "Defeat the red baron and retrieve the key")
 
 ITEM_TYPE_KEY = ItemType.KEY
 NPC_TYPE = NpcType.NEUTRAL_NOMAD
@@ -57,9 +58,8 @@ class HintAction(AbstractNpcAction):
 class AcceptQuest(AbstractNpcAction):
 
     def on_select(self, game_state: GameState):
-        quest = Quest(QUEST_ID, "The red baron", "Defeat the red baron and retrieve the key")
-        game_state.player_state.start_quest(quest)
-        return "Quest accepted: " + quest.name
+        game_state.player_state.start_quest(QUEST)
+        return "Quest accepted: " + QUEST.name
 
     def on_hover(self, game_state: GameState, ui_view: GameUiView):
         highlight_boss_position(game_state, ui_view)
@@ -102,6 +102,7 @@ def clear_highlight(ui_view):
 
 
 def register_nomad_npc():
+    register_quest(QUEST_ID, QUEST)
     size = (30, 30)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.NEUTRAL_NPC_NOMAD
     movement_speed = 0.03
