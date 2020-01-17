@@ -18,7 +18,7 @@ from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, It
     ToggleButtonId, QuestsWindow
 from pythongame.scenes_game.ui_events import TrySwitchItemInInventory, EventTriggeredFromUi, \
     DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
-    PickTalent, StartDraggingItemOrConsumable, SaveGame, ToggleSound, ToggleFullscreen
+    PickTalent, StartDraggingItemOrConsumable, SaveGame, ToggleSound, ToggleFullscreen, ToggleWindow
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)
@@ -239,7 +239,7 @@ class GameUiView:
         self.talents_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 25, w, h), font, "TALENTS  [N]",
                                            ToggleButtonId.TALENTS, False, self.talents_window)
         # TODO Add hotkey, and handle that user input in this module
-        self.quests_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 50, w, h), font, "QUESTS",
+        self.quests_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 50, w, h), font, "QUESTS   [B]",
                                           ToggleButtonId.QUESTS, False, self.quests_window)
 
         self.controls_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 75, w, h), font, "HELP     [H]",
@@ -394,11 +394,28 @@ class GameUiView:
             return self.dialog_state.npc, self.dialog_state.option_index
         return None
 
+    def handle_key_press(self, key) -> List[EventTriggeredFromUi]:
+        if key == pygame.K_s:
+            return [SaveGame()]
+        elif key == pygame.K_n:
+            self._click_toggle_button(ToggleButtonId.TALENTS)
+            return [ToggleWindow()]
+        elif key == pygame.K_a:
+            self._click_toggle_button(ToggleButtonId.STATS)
+            return [ToggleWindow()]
+        elif key == pygame.K_h:
+            self._click_toggle_button(ToggleButtonId.HELP)
+            return [ToggleWindow()]
+        elif key == pygame.K_b:
+            self._click_toggle_button(ToggleButtonId.QUESTS)
+            return [ToggleWindow()]
+        return []
+
     # --------------------------------------------------------------------------------------------------------
     #                              HANDLE TOGGLE BUTTON USER INTERACTIONS
     # --------------------------------------------------------------------------------------------------------
 
-    def click_toggle_button(self, ui_toggle: ToggleButtonId):
+    def _click_toggle_button(self, ui_toggle: ToggleButtonId):
         toggle = [tb for tb in self.toggle_buttons if tb.toggle_id == ui_toggle][0]
         self._on_click_toggle(toggle)
 

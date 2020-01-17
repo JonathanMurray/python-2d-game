@@ -51,6 +51,10 @@ class StartDraggingItemOrConsumable(EventTriggeredFromUi):
     pass
 
 
+class ToggleWindow(EventTriggeredFromUi):
+    pass
+
+
 class TrySwitchItemInInventory(EventTriggeredFromUi):
     def __init__(self, slot: int):
         self.slot = slot

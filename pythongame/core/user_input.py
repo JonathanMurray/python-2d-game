@@ -39,24 +39,13 @@ class ActionPressSpaceKey:
     pass
 
 
-class ActionSaveGameState:
-    pass
-
-
 class ActionToggleRenderDebugging:
     pass
 
 
-class ActionToggleUiTalents:
-    pass
-
-
-class ActionToggleUiStats:
-    pass
-
-
-class ActionToggleUiHelp:
-    pass
+class ActionPressKey:
+    def __init__(self, key):
+        self.key = key
 
 
 # Used for determining when user hovers over something in UI.
@@ -107,8 +96,6 @@ def get_dialog_actions(events) -> List[Any]:
                 actions.append(ActionChangeDialogOption(1))
             elif event.key == pygame.K_SPACE:
                 actions.append(ActionPressSpaceKey())
-            elif event.key == pygame.K_s:
-                actions.append(ActionSaveGameState())
         elif event.type == pygame.MOUSEMOTION:
             actions.append(ActionMouseMovement(event.pos))
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == PYGAME_MOUSE_LEFT_BUTTON:
@@ -150,20 +137,13 @@ class PlayingUserInputHandler:
                     actions.append(ActionPressSpaceKey())
                 elif event.key == pygame.K_LSHIFT:
                     self._is_shift_held_down = True
-                elif event.key == pygame.K_s:
-                    actions.append(ActionSaveGameState())
-                elif event.key == pygame.K_n:
-                    actions.append(ActionToggleUiTalents())
-                elif event.key == pygame.K_a:
-                    actions.append(ActionToggleUiStats())
-                elif event.key == pygame.K_h:
-                    actions.append(ActionToggleUiHelp())
                 else:
                     for ability_type in KEYS_BY_ABILITY_TYPE:
                         if event.key == KEYS_BY_ABILITY_TYPE[ability_type].pygame_key:
                             if ability_type in self._ability_keys_down:
                                 self._ability_keys_down.remove(ability_type)
                             self._ability_keys_down.append(ability_type)
+                    actions.append(ActionPressKey(event.key))
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LSHIFT:
