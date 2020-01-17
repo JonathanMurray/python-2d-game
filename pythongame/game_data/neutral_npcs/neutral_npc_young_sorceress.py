@@ -6,7 +6,7 @@ from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_d
 from pythongame.core.entity_creation import create_item_on_ground
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, ITEMS
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId
+from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest
 from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
     DialogData, DialogOptionData, register_conditional_npc_dialog_data
@@ -35,15 +35,18 @@ class NpcMind(AbstractNpcMind):
                 npc.world_entity.set_moving_in_dir(direction)
 
 
-def get_reward_for_hero(hero_id: HeroId):
-    if hero_id == HeroId.MAGE:
-        return ItemType.STAFF_OF_FIRE
-    elif hero_id == HeroId.ROGUE:
-        return ItemType.THIEFS_MASK
-    elif hero_id == HeroId.WARRIOR:
-        return ItemType.CLEAVER
-    else:
-        return ItemType.LEATHER_ARMOR
+class GiveQuest(AbstractNpcAction):
+
+    def on_select(self, game_state: GameState) -> Optional[str]:
+        quest = Quest(QuestId.RETRIEVE_FROG, "FROG!!")
+        game_state.player_state.start_quest(quest)
+        return "Quest accepted: " + quest.name
+
+    def on_hover(self, game_state: GameState, ui_view: GameUiView):
+        _highlight_boss_location(game_state, ui_view)
+
+    def on_blur(self, game_state: GameState, ui_view: GameUiView):
+        _clear_highlight(ui_view)
 
 
 class AcceptFrog(AbstractNpcAction):
@@ -53,7 +56,7 @@ class AcceptFrog(AbstractNpcAction):
         if player_has_it:
             game_state.player_state.item_inventory.lose_item_from_inventory(ITEM_TYPE_FROG)
 
-            reward_item_type = get_reward_for_hero(game_state.player_state.hero_id)
+            reward_item_type = _get_reward_for_hero(game_state.player_state.hero_id)
             reward_effect = get_item_effect(reward_item_type)
             reward_data = ITEMS[reward_item_type]
             reward_equipment_category = reward_data.item_equipment_category
@@ -69,18 +72,37 @@ class AcceptFrog(AbstractNpcAction):
             return "You don't have that!"
 
     def on_hover(self, game_state: GameState, ui_view: GameUiView):
-        bosses = [npc for npc in game_state.non_player_characters if npc.npc_type == NpcType.GOBLIN_WARRIOR]
-        if bosses:
-            position = bosses[0].world_entity.get_center_position()
-            world_area = game_state.entire_world_area
-            position_ratio = ((position[0] - world_area.x) / world_area.w,
-                              (position[1] - world_area.y) / world_area.h)
-            ui_view.set_minimap_highlight(position_ratio)
-        ui_view.set_inventory_highlight(ITEM_TYPE_FROG)
+        _highlight_boss_location(game_state, ui_view)
 
     def on_blur(self, game_state: GameState, ui_view: GameUiView):
-        ui_view.remove_minimap_highlight()
-        ui_view.remove_inventory_highlight()
+        _clear_highlight(ui_view)
+
+
+def _get_reward_for_hero(hero_id: HeroId):
+    if hero_id == HeroId.MAGE:
+        return ItemType.STAFF_OF_FIRE
+    elif hero_id == HeroId.ROGUE:
+        return ItemType.THIEFS_MASK
+    elif hero_id == HeroId.WARRIOR:
+        return ItemType.CLEAVER
+    else:
+        return ItemType.LEATHER_ARMOR
+
+
+def _highlight_boss_location(game_state, ui_view):
+    bosses = [npc for npc in game_state.non_player_characters if npc.npc_type == NpcType.GOBLIN_WARRIOR]
+    if bosses:
+        position = bosses[0].world_entity.get_center_position()
+        world_area = game_state.entire_world_area
+        position_ratio = ((position[0] - world_area.x) / world_area.w,
+                          (position[1] - world_area.y) / world_area.h)
+        ui_view.set_minimap_highlight(position_ratio)
+    ui_view.set_inventory_highlight(ITEM_TYPE_FROG)
+
+
+def _clear_highlight(ui_view):
+    ui_view.remove_minimap_highlight()
+    ui_view.remove_inventory_highlight()
 
 
 def register_young_sorceress_npc():
@@ -106,22 +128,35 @@ def register_young_sorceress_npc():
 
 
 def _register_dialog():
-    introduction = "Hey you! Have you seen my pet frog? I bet it was that old green mean goblin king that took it!"
     prompt = "QUEST: "
     frog_data = ITEMS[ItemType.FROG]
     bye_option = DialogOptionData("\"Good bye\"", "cancel", None)
-    dialog_options = [
-        DialogOptionData(prompt + "\"Lost pet\"", "give", AcceptFrog(), UiIconSprite.ITEM_FROG, frog_data.name,
-                         "Please help me get my frog back! I'll give you something in return. Promise!"),
-        bye_option]
-    default_dialog = DialogData(UI_ICON_SPRITE, introduction, dialog_options)
-    finished_quest_dialog = DialogData(UI_ICON_SPRITE, "Thank you for helping me!", [bye_option])
+    dialog_1 = DialogData(
+        UI_ICON_SPRITE,
+        "Hey you! Have you seen my pet frog? I bet it was that old green mean goblin king that took it!",
+        [
+            DialogOptionData(prompt + "\"Lost pet \"", "accept quest", GiveQuest(), UiIconSprite.ITEM_FROG,
+                             frog_data.name,
+                             "Will you help me? I'll give you something in return. Promise!"),
+            bye_option
+        ])
+    dialog_2 = DialogData(
+        UI_ICON_SPRITE,
+        "Hi friend! Any luck?",
+        [
+            DialogOptionData(prompt + "\"Lost pet\"", "give", AcceptFrog(), UiIconSprite.ITEM_FROG, frog_data.name,
+                             "..."),
+            bye_option
+        ])
+    dialog_3 = DialogData(UI_ICON_SPRITE, "Thank you for helping me!", [bye_option])
 
-    def get_dialog_data(_game_state: GameState):
-        if _game_state.player_state.has_completed_quest(QuestId.RETRIEVE_FROG):
-            return finished_quest_dialog
+    def get_dialog_data(game_state: GameState):
+        if game_state.player_state.has_completed_quest(QuestId.RETRIEVE_FROG):
+            return dialog_3
+        elif game_state.player_state.has_quest(QuestId.RETRIEVE_FROG):
+            return dialog_2
         else:
-            return default_dialog
+            return dialog_1
 
     register_conditional_npc_dialog_data(NPC_TYPE, get_dialog_data)
     register_portrait_icon_sprite_path(UI_ICON_SPRITE, 'resources/graphics/portrait_young_sorceress_npc.png')

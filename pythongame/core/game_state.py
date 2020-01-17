@@ -379,6 +379,12 @@ class QuestId(Enum):
     RETRIEVE_FROG = 2
 
 
+class Quest:
+    def __init__(self, quest_id: QuestId, name: str):
+        self.quest_id = quest_id
+        self.name = name
+
+
 class PlayerState:
     def __init__(self, health_resource: HealthOrManaResource, mana_resource: HealthOrManaResource,
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
@@ -423,9 +429,17 @@ class PlayerState:
         self.cooldowns_were_updated = Observable()
         self.buffs_were_updated = Observable()
         self._completed_quests: List[QuestId] = []
+        self._active_quests: List[Quest] = []
+
+    def start_quest(self, quest: Quest):
+        self._active_quests.append(quest)
 
     def complete_quest(self, quest_id: QuestId):
         self._completed_quests.append(quest_id)
+        self._active_quests = [q for q in self._active_quests if q.quest_id != quest_id]
+
+    def has_quest(self, quest_id: QuestId):
+        return len([q for q in self._active_quests if q.quest_id == quest_id]) > 0
 
     def has_completed_quest(self, quest_id: QuestId):
         return quest_id in self._completed_quests
