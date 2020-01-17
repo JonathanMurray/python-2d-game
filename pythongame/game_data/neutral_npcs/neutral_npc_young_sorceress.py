@@ -38,7 +38,7 @@ class NpcMind(AbstractNpcMind):
 class GiveQuest(AbstractNpcAction):
 
     def on_select(self, game_state: GameState) -> Optional[str]:
-        quest = Quest(QuestId.RETRIEVE_FROG, "FROG!!")
+        quest = Quest(QuestId.RETRIEVE_FROG, "Lost pet", "Retrieve pet frog from goblin king")
         game_state.player_state.start_quest(quest)
         return "Quest accepted: " + quest.name
 

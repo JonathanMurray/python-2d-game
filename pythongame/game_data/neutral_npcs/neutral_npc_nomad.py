@@ -82,6 +82,7 @@ def register_nomad_npc():
     movement_speed = 0.03
     register_npc_data(npc_type, NpcData.neutral(sprite, size, movement_speed))
     register_npc_behavior(npc_type, NpcMind)
+    # TODO Handle states (no quest, accepted quest)
     text_body = "Greetings. I am here only to serve. Seek me out when you are wounded or need guidance!"
     dialog_options = [
         DialogOptionData("Receive blessing", "gain full health", HealAction()),

@@ -6,7 +6,7 @@ from pygame.rect import Rect
 from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite, \
     SoundId, NpcType, Millis, DialogData
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, ITEMS, HEROES
-from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState
+from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState, Quest, QuestId
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import is_point_in_rect
 from pythongame.core.sound_player import play_sound
@@ -15,7 +15,7 @@ from pythongame.core.view.render_util import DrawableArea
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
     ToggleButton, ControlsWindow, StatsWindow, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text, \
     DialogOption, Dialog, Checkbox, Button, Message, PausedSplashScreen, TalentTierData, TalentOptionData, TalentIcon, \
-    ToggleButtonId
+    ToggleButtonId, QuestsWindow
 from pythongame.scenes_game.ui_events import TrySwitchItemInInventory, EventTriggeredFromUi, \
     DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
     PickTalent, StartDraggingItemOrConsumable, SaveGame, ToggleSound, ToggleFullscreen
@@ -124,6 +124,7 @@ class GameUiView:
         self.buffs = Buffs(self.ui_render, self.font_buff_texts, (10, -35))
         self.money_text = Text(self.ui_render, self.font_ui_money, (24, 150), "NO MONEY")
         self.talents_window: TalentsWindow = None
+        self.quests_window: QuestsWindow = None
         self.message = Message(self.screen_render, self.font_message, self.ui_screen_area.w // 2,
                                self.ui_screen_area.y - 30)
         self.paused_splash_screen = PausedSplashScreen(self.screen_render, self.font_splash_screen,
@@ -137,6 +138,7 @@ class GameUiView:
         self._setup_health_and_mana_bars()
         self._setup_stats_window()
         self._setup_talents_window(TalentsState(TalentsConfig({})))
+        self._setup_quests_window()
         self._setup_toggle_buttons()
         self._setup_portrait()
         self._setup_dialog()
@@ -228,26 +230,32 @@ class GameUiView:
 
     def _setup_toggle_buttons(self):
         x = 600
-        y_0 = 15
+        y_0 = 12
         w = 150
         h = 20
         font = self.font_buttons
         self.stats_toggle = ToggleButton(self.ui_render, Rect(x, y_0, w, h), font, "STATS    [A]", ToggleButtonId.STATS,
                                          False, self.stats_window)
-        self.talents_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 30, w, h), font, "TALENTS  [N]",
+        self.talents_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 25, w, h), font, "TALENTS  [N]",
                                            ToggleButtonId.TALENTS, False, self.talents_window)
-        self.controls_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 60, w, h), font, "HELP     [H]",
+        # TODO Add hotkey, and handle that user input in this module
+        self.quests_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 50, w, h), font, "QUESTS",
+                                          ToggleButtonId.QUESTS, False, self.quests_window)
+
+        self.controls_toggle = ToggleButton(self.ui_render, Rect(x, y_0 + 75, w, h), font, "HELP     [H]",
                                             ToggleButtonId.HELP, False, self.controls_window)
-        self.toggle_buttons = [self.stats_toggle, self.talents_toggle, self.controls_toggle]
-        self.sound_checkbox = Checkbox(self.ui_render, Rect(x, y_0 + 90, 70, h), "SOUND", True, lambda _: ToggleSound())
-        self.save_button = Button(self.ui_render, Rect(x + 80, y_0 + 90, 70, h), "SAVE [S]", lambda: SaveGame())
-        self.fullscreen_checkbox = Checkbox(self.ui_render, Rect(x, y_0 + 120, w, h), "FULLSCREEN",
+        self.toggle_buttons = [self.stats_toggle, self.talents_toggle, self.quests_toggle, self.controls_toggle]
+        self.sound_checkbox = Checkbox(self.ui_render, Rect(x, y_0 + 100, 70, h), "SOUND", True,
+                                       lambda _: ToggleSound())
+        self.save_button = Button(self.ui_render, Rect(x + 80, y_0 + 100, 70, h), "SAVE [S]", lambda: SaveGame())
+        self.fullscreen_checkbox = Checkbox(self.ui_render, Rect(x, y_0 + 125, w, h), "FULLSCREEN",
                                             True, lambda _: ToggleFullscreen())
 
     def _setup_stats_window(self):
+        self.stats_window = StatsWindow(self.ui_render, self.font_tooltip_details, self.font_stats, None, 0, None, 1)
 
-        self.stats_window = StatsWindow(self.ui_render, self.font_tooltip_details, self.font_stats, None, 0, None,
-                                        1)
+    def _setup_quests_window(self):
+        self.quests_window = QuestsWindow(self.ui_render, self.font_tooltip_details, self.font_stats)
 
     def _setup_talents_window(self, talents: TalentsState):
         talent_tiers: List[TalentTierData] = []
@@ -438,6 +446,11 @@ class GameUiView:
         level, ratio_exp_until_next_level = event
         self.exp_bar.update(level, ratio_exp_until_next_level)
         self.stats_window.level = level
+
+    def on_player_quests_updated(self, event: Tuple[List[Quest], List[QuestId]]):
+        active_quests, completed_quests = event
+        self.quests_window.active_quests = list(active_quests)
+        self.quests_window.completed_quests = list(completed_quests)
 
     def on_money_updated(self, money: int):
         self.money_text.text = "Money: " + str(money)
@@ -700,7 +713,8 @@ class GameUiView:
 
         simple_components = [self.exp_bar, self.portrait, self.healthbar, self.manabar, self.money_text,
                              self.buffs, self.sound_checkbox, self.save_button, self.fullscreen_checkbox,
-                             self.stats_window, self.talents_window, self.controls_window] + self.toggle_buttons
+                             self.stats_window, self.talents_window, self.quests_window,
+                             self.controls_window] + self.toggle_buttons
 
         for component in simple_components:
             component.render()

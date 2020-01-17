@@ -380,9 +380,10 @@ class QuestId(Enum):
 
 
 class Quest:
-    def __init__(self, quest_id: QuestId, name: str):
+    def __init__(self, quest_id: QuestId, name: str, description: str):
         self.quest_id = quest_id
         self.name = name
+        self.description = description
 
 
 class PlayerState:
@@ -428,15 +429,21 @@ class PlayerState:
         self.abilities_were_updated = Observable()
         self.cooldowns_were_updated = Observable()
         self.buffs_were_updated = Observable()
+        self.quests_were_updated = Observable()
         self._completed_quests: List[QuestId] = []
         self._active_quests: List[Quest] = []
 
     def start_quest(self, quest: Quest):
         self._active_quests.append(quest)
+        self.notify_quest_observers()
 
     def complete_quest(self, quest_id: QuestId):
         self._completed_quests.append(quest_id)
         self._active_quests = [q for q in self._active_quests if q.quest_id != quest_id]
+        self.notify_quest_observers()
+
+    def notify_quest_observers(self):
+        self.quests_were_updated.notify((self._active_quests, self._completed_quests))
 
     def has_quest(self, quest_id: QuestId):
         return len([q for q in self._active_quests if q.quest_id == quest_id]) > 0

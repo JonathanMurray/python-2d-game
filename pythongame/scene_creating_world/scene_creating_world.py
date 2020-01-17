@@ -106,6 +106,7 @@ class CreatingWorldScene(AbstractScene):
         game_state.player_state.health_resource.value_was_updated.register_observer(self.ui_view.on_health_updated)
         game_state.player_state.mana_resource.value_was_updated.register_observer(self.ui_view.on_mana_updated)
         game_state.player_state.buffs_were_updated.register_observer(self.ui_view.on_buffs_updated)
+        game_state.player_state.quests_were_updated.register_observer(self.ui_view.on_player_quests_updated)
         game_state.player_entity.movement_changed = Observable()
         game_state.player_entity.movement_changed.register_observer(play_or_stop_footstep_sounds)
         game_state.player_entity.position_changed = Observable()

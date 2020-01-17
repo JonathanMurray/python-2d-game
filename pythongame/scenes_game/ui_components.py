@@ -8,7 +8,7 @@ from pygame.rect import Rect
 from pythongame.core.common import ConsumableType, ItemType, AbilityType, PortraitIconSprite, HeroId, Millis, \
     PeriodicTimer
 from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData, ItemData
-from pythongame.core.game_state import PlayerState
+from pythongame.core.game_state import PlayerState, Quest, QuestId
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.math import get_relative_pos_within_rect
 from pythongame.core.talents import TalentTierStatus
@@ -36,6 +36,7 @@ class ToggleButtonId(Enum):
     STATS = 1
     TALENTS = 2
     HELP = 3
+    QUESTS = 4
 
 
 class UiComponent:
@@ -861,6 +862,49 @@ class TalentsWindow(UiWindow):
             tier = TalentTier(self._ui_render, rect_tier, self._font_details, icons,
                               tier_data.status, tier_data.picked_index, tier_data.level_required)
             self._talent_tiers.append(tier)
+
+
+class QuestsWindow(UiWindow):
+    def __init__(self, ui_render: DrawableArea, font_header, font_details):
+        super().__init__()
+        self._ui_render = ui_render
+        self._rect = Rect(475, -420, 210, 370)
+        self._font_header = font_header
+        self._font_details = font_details
+        self.active_quests: List[Quest] = []
+        self.completed_quests: List[QuestId] = []
+
+    def render(self):
+        if self.shown:
+            self._render()
+
+    def _render(self):
+        self._ui_render.rect_filled((50, 50, 50), self._rect)
+        self._ui_render.rect((80, 50, 50), self._rect, 2)
+
+        x_header = self._rect[0] + 35
+        x_left = self._rect[0] + 15
+        y_0 = self._rect[1] + 15
+
+        self._render_header((x_header, y_0), "QUESTS")
+
+        y = y_0
+        for quest in self.active_quests:
+            y += 40
+            self._ui_render.text(self._font_header, quest.name, (x_left, y), (220, 220, 250))
+
+            lines = split_text_into_lines(quest.description, 30)
+            for i, line in enumerate(lines):
+                line_space = 15
+                self._ui_render.text(self._font_details, line, (x_left, y + 20 + i * line_space))
+
+    def _render_header(self, pos: Tuple[int, int], text: str):
+        w = 135
+        h = 20
+        rect = Rect(pos[0], pos[1] - 3, w, h)
+        self._ui_render.rect_filled((40, 40, 40), rect)
+        text_pos = (pos[0] + w // 2 - 2 - len(text) * 3, pos[1])
+        self._ui_render.text(self._font_header, text, text_pos)
 
 
 class ExpBar:
