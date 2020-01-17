@@ -888,15 +888,15 @@ class QuestsWindow(UiWindow):
 
         self._render_header((x_header, y_0), "QUESTS")
 
-        y = y_0
+        y = y_0 + 40
         for quest in self.active_quests:
-            y += 40
             self._ui_render.text(self._font_header, quest.name, (x_left, y), (220, 220, 250))
 
             lines = split_text_into_lines(quest.description, 30)
             for i, line in enumerate(lines):
                 line_space = 15
                 self._ui_render.text(self._font_details, line, (x_left, y + 20 + i * line_space))
+            y += 70
 
     def _render_header(self, pos: Tuple[int, int], text: str):
         w = 135
