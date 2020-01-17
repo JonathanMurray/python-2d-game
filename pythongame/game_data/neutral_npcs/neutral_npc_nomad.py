@@ -5,7 +5,7 @@ from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_d
     PeriodicTimer, get_random_hint, ItemType, UiIconSprite, SoundId
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
     register_npc_dialog_data, DialogData, DialogOptionData
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
@@ -55,7 +55,7 @@ class AcceptKey(AbstractNpcAction):
     def on_select(self, game_state: GameState):
         if game_state.player_state.item_inventory.has_item_in_inventory(ITEM_TYPE_KEY):
             play_sound(SoundId.EVENT_COMPLETED_QUEST)
-            game_state.player_state.has_finished_main_quest = True
+            game_state.player_state.complete_quest(QuestId.MAIN_RETRIEVE_KEY)
         else:
             play_sound(SoundId.WARNING)
             return "You don't have that!"

@@ -374,6 +374,11 @@ class AgentBuffsUpdate:
         self.buffs_that_ended = buffs_that_ended
 
 
+class QuestId(Enum):
+    MAIN_RETRIEVE_KEY = 1
+    RETRIEVE_FROG = 2
+
+
 class PlayerState:
     def __init__(self, health_resource: HealthOrManaResource, mana_resource: HealthOrManaResource,
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
@@ -417,7 +422,13 @@ class PlayerState:
         self.abilities_were_updated = Observable()
         self.cooldowns_were_updated = Observable()
         self.buffs_were_updated = Observable()
-        self.has_finished_main_quest = False
+        self._completed_quests: List[QuestId] = []
+
+    def complete_quest(self, quest_id: QuestId):
+        self._completed_quests.append(quest_id)
+
+    def has_completed_quest(self, quest_id: QuestId):
+        return quest_id in self._completed_quests
 
     def modify_money(self, delta: int):
         self.money += delta

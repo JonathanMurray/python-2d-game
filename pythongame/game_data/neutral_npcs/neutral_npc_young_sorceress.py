@@ -6,7 +6,7 @@ from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_d
 from pythongame.core.entity_creation import create_item_on_ground
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, ITEMS
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId
 from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
     DialogData, DialogOptionData, register_conditional_npc_dialog_data
@@ -18,8 +18,6 @@ from pythongame.scenes_game.game_ui_view import GameUiView
 ITEM_TYPE_FROG = ItemType.FROG
 NPC_TYPE = NpcType.NEUTRAL_YOUNG_SORCERESS
 UI_ICON_SPRITE = PortraitIconSprite.YOUNG_SORCERESS
-
-has_finished_quest = False  # TODO store this in "quests" in gamestate instead
 
 
 class NpcMind(AbstractNpcMind):
@@ -51,7 +49,6 @@ def get_reward_for_hero(hero_id: HeroId):
 class AcceptFrog(AbstractNpcAction):
 
     def on_select(self, game_state: GameState) -> Optional[str]:
-        global has_finished_quest
         player_has_it = game_state.player_state.item_inventory.has_item_in_inventory(ITEM_TYPE_FROG)
         if player_has_it:
             game_state.player_state.item_inventory.lose_item_from_inventory(ITEM_TYPE_FROG)
@@ -65,7 +62,7 @@ class AcceptFrog(AbstractNpcAction):
                 game_state.items_on_ground.append(
                     create_item_on_ground(reward_item_type, game_state.player_entity.get_position()))
             play_sound(SoundId.EVENT_COMPLETED_QUEST)
-            has_finished_quest = True
+            game_state.player_state.complete_quest(QuestId.RETRIEVE_FROG)
             return "Reward gained: " + reward_data.name
         else:
             play_sound(SoundId.WARNING)
@@ -121,7 +118,7 @@ def _register_dialog():
     finished_quest_dialog = DialogData(UI_ICON_SPRITE, "Thank you for helping me!", [bye_option])
 
     def get_dialog_data(_game_state: GameState):
-        if has_finished_quest:
+        if _game_state.player_state.has_completed_quest(QuestId.RETRIEVE_FROG):
             return finished_quest_dialog
         else:
             return default_dialog
