@@ -5,10 +5,13 @@ from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_d
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
-from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, register_npc_dialog_data, DialogData, \
-    DialogOptionData, buy_consumable_option
+from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, DialogData, \
+    DialogOptionData, buy_consumable_option, register_conditional_npc_dialog_data
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.view.image_loading import SpriteSheet
+
+NPC_TYPE = NpcType.NEUTRAL_SORCERER
+PORTRAIT_ICON_SPRITE = PortraitIconSprite.SORCERER
 
 
 class NpcMind(AbstractNpcMind):
@@ -29,21 +32,10 @@ class NpcMind(AbstractNpcMind):
 def register_sorcerer_npc():
     size = (30, 30)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.NEUTRAL_NPC_SORCERER
-    portrait_icon_sprite = PortraitIconSprite.SORCERER
-    npc_type = NpcType.NEUTRAL_SORCERER
     movement_speed = 0.03
-    register_npc_data(npc_type, NpcData.neutral(sprite, size, movement_speed))
-    register_npc_behavior(npc_type, NpcMind)
-    dialog_options = [
-        buy_consumable_option(ConsumableType.HEALTH, 5),
-        buy_consumable_option(ConsumableType.MANA, 5),
-        buy_consumable_option(ConsumableType.SPEED, 5),
-        buy_consumable_option(ConsumableType.POWER, 10),
-        DialogOptionData("\"Good bye\"", "cancel", None)]
-    dialog_text_body = "Greetings. I am glad to see that you have made it this far! However, great danger lies ahead... " \
-                       "Here, see if any of these potions are of interest to you."
-    dialog_data = DialogData(portrait_icon_sprite, dialog_text_body, dialog_options)
-    register_npc_dialog_data(npc_type, dialog_data)
+    register_npc_data(NPC_TYPE, NpcData.neutral(sprite, size, movement_speed))
+    register_npc_behavior(NPC_TYPE, NpcMind)
+    _register_dialog()
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")
     original_sprite_size = (32, 32)
     scaled_sprite_size = (48, 48)
@@ -56,4 +48,28 @@ def register_sorcerer_npc():
     }
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir,
                                (-8, -16))
-    register_portrait_icon_sprite_path(portrait_icon_sprite, 'resources/graphics/portrait_sorcerer_npc.png')
+    register_portrait_icon_sprite_path(PORTRAIT_ICON_SPRITE, 'resources/graphics/portrait_sorcerer_npc.png')
+
+
+def _register_dialog():
+    dialog_options = [
+        buy_consumable_option(ConsumableType.HEALTH, 5),
+        buy_consumable_option(ConsumableType.MANA, 5),
+        buy_consumable_option(ConsumableType.SPEED, 5),
+        buy_consumable_option(ConsumableType.POWER, 10),
+        DialogOptionData("\"Good bye\"", "cancel", None)]
+    text_low_level = "Huh?! Well, aren't you the brave one, making it all the way out here! I would think " \
+                     "twice before heading down that way! Well since you are here, see if any of these " \
+                     "potions are of interest."
+    text_high_level = "You are on the doorsteps of the Red Baron's domain! Please be careful. " \
+                      "Here, see if any of these potions can be of use."
+    dialog_low_level = DialogData(PORTRAIT_ICON_SPRITE, text_low_level, dialog_options)
+    dialog_high_level = DialogData(PORTRAIT_ICON_SPRITE, text_high_level, dialog_options)
+
+    def get_dialog_data(game_state: GameState) -> DialogData:
+        if game_state.player_state.level < 5:
+            return dialog_low_level
+        else:
+            return dialog_high_level
+
+    register_conditional_npc_dialog_data(NPC_TYPE, get_dialog_data)

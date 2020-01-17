@@ -138,7 +138,7 @@ class PlayingScene(AbstractScene):
                             ready_entity.world_entity.set_not_moving()
                             ready_entity.stun_status.add_one()
                             npc_type = ready_entity.npc_type
-                            dialog_data = get_dialog_data(npc_type)
+                            dialog_data = get_dialog_data(npc_type, self.game_state)
                             option_index = self.ui_view.start_dialog_with_npc(ready_entity, dialog_data)
                             play_sound(SoundId.DIALOG)
                             hover_npc_action(npc_type, option_index, self.game_state, self.ui_view)

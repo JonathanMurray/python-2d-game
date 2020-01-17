@@ -186,7 +186,7 @@ class BuyItemNpcAction(AbstractNpcAction):
 
 _npc_mind_constructors: Dict[NpcType, Type[AbstractNpcMind]] = {}
 
-_npc_dialog_data: Dict[NpcType, DialogData] = {}
+_npc_dialog_data: Dict[NpcType, Callable[[GameState], DialogData]] = {}
 
 
 def register_npc_behavior(npc_type: NpcType, mind_constructor: Type[AbstractNpcMind]):
@@ -199,11 +199,16 @@ def create_npc_mind(npc_type: NpcType, global_path_finder: GlobalPathFinder):
 
 
 def register_npc_dialog_data(npc_type: NpcType, data: DialogData):
-    _npc_dialog_data[npc_type] = data
+    _npc_dialog_data[npc_type] = (lambda _: data)
+
+
+def register_conditional_npc_dialog_data(npc_type: NpcType, get_data: Callable[[GameState], DialogData]):
+    _npc_dialog_data[npc_type] = get_data
 
 
 def select_npc_action(npc_type: NpcType, option_index: int, game_state: GameState) -> Optional[str]:
-    action = _npc_dialog_data[npc_type].options[option_index].action
+    data = _npc_dialog_data[npc_type](game_state)
+    action = data.options[option_index].action
     if not action:
         return None
     optional_message = action.on_select(game_state)
@@ -211,13 +216,15 @@ def select_npc_action(npc_type: NpcType, option_index: int, game_state: GameStat
 
 
 def hover_npc_action(npc_type: NpcType, option_index: int, game_state: GameState, ui_view: GameUiView):
-    action = _npc_dialog_data[npc_type].options[option_index].action
+    data = _npc_dialog_data[npc_type](game_state)
+    action = data.options[option_index].action
     if action:
         action.on_hover(game_state, ui_view)
 
 
 def blur_npc_action(npc_type: NpcType, option_index: int, game_state: GameState, ui_view: GameUiView):
-    action = _npc_dialog_data[npc_type].options[option_index].action
+    data = _npc_dialog_data[npc_type](game_state)
+    action = data.options[option_index].action
     if action:
         action.on_blur(game_state, ui_view)
 
@@ -226,8 +233,8 @@ def has_npc_dialog(npc_type: NpcType) -> bool:
     return npc_type in _npc_dialog_data
 
 
-def get_dialog_data(npc_type: NpcType) -> DialogData:
-    return _npc_dialog_data[npc_type]
+def get_dialog_data(npc_type: NpcType, game_state: GameState) -> DialogData:
+    return _npc_dialog_data[npc_type](game_state)
 
 
 def buy_consumable_option(consumable_type: ConsumableType, cost: int):

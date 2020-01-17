@@ -9,13 +9,17 @@ from pythongame.core.game_data import register_npc_data, NpcData, register_entit
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
-    register_npc_dialog_data, DialogData, DialogOptionData
+    DialogData, DialogOptionData, register_conditional_npc_dialog_data
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.scenes_game.game_ui_view import GameUiView
 
 ITEM_TYPE_FROG = ItemType.FROG
+NPC_TYPE = NpcType.NEUTRAL_YOUNG_SORCERESS
+UI_ICON_SPRITE = PortraitIconSprite.YOUNG_SORCERESS
+
+has_finished_quest = False  # TODO store this in "quests" in gamestate instead
 
 
 class NpcMind(AbstractNpcMind):
@@ -47,6 +51,7 @@ def get_reward_for_hero(hero_id: HeroId):
 class AcceptFrog(AbstractNpcAction):
 
     def on_select(self, game_state: GameState) -> Optional[str]:
+        global has_finished_quest
         player_has_it = game_state.player_state.item_inventory.has_item_in_inventory(ITEM_TYPE_FROG)
         if player_has_it:
             game_state.player_state.item_inventory.lose_item_from_inventory(ITEM_TYPE_FROG)
@@ -60,6 +65,7 @@ class AcceptFrog(AbstractNpcAction):
                 game_state.items_on_ground.append(
                     create_item_on_ground(reward_item_type, game_state.player_entity.get_position()))
             play_sound(SoundId.EVENT_COMPLETED_QUEST)
+            has_finished_quest = True
             return "Reward gained: " + reward_data.name
         else:
             play_sound(SoundId.WARNING)
@@ -83,21 +89,9 @@ class AcceptFrog(AbstractNpcAction):
 def register_young_sorceress_npc():
     size = (30, 30)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.NEUTRAL_NPC_YOUNG_SORCERESS
-    npc_type = NpcType.NEUTRAL_YOUNG_SORCERESS
-    ui_icon_sprite = PortraitIconSprite.YOUNG_SORCERESS
     movement_speed = 0.03
-    register_npc_data(npc_type, NpcData.neutral(sprite, size, movement_speed))
-    register_npc_behavior(npc_type, NpcMind)
-    introduction = "Hey you! Have you seen my pet frog? I bet it was that old green mean goblin king that took it!"
-
-    prompt = "QUEST: "
-    frog_data = ITEMS[ItemType.FROG]
-    dialog_options = [
-        DialogOptionData(prompt + "\"Lost pet\"", "give", AcceptFrog(), UiIconSprite.ITEM_FROG, frog_data.name,
-                         "Please help me get my frog back! I'll give you something in return. Promise!"),
-        DialogOptionData("\"Good bye\"", "cancel", None)]
-    dialog_data = DialogData(ui_icon_sprite, introduction, dialog_options)
-    register_npc_dialog_data(npc_type, dialog_data)
+    register_npc_data(NPC_TYPE, NpcData.neutral(sprite, size, movement_speed))
+    register_npc_behavior(NPC_TYPE, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/manga_spritesheet.png")
     original_sprite_size = (32, 32)
     scaled_sprite_size = (48, 48)
@@ -110,4 +104,27 @@ def register_young_sorceress_npc():
     }
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir,
                                (-8, -16))
-    register_portrait_icon_sprite_path(ui_icon_sprite, 'resources/graphics/portrait_young_sorceress_npc.png')
+
+    _register_dialog()
+
+
+def _register_dialog():
+    introduction = "Hey you! Have you seen my pet frog? I bet it was that old green mean goblin king that took it!"
+    prompt = "QUEST: "
+    frog_data = ITEMS[ItemType.FROG]
+    bye_option = DialogOptionData("\"Good bye\"", "cancel", None)
+    dialog_options = [
+        DialogOptionData(prompt + "\"Lost pet\"", "give", AcceptFrog(), UiIconSprite.ITEM_FROG, frog_data.name,
+                         "Please help me get my frog back! I'll give you something in return. Promise!"),
+        bye_option]
+    default_dialog = DialogData(UI_ICON_SPRITE, introduction, dialog_options)
+    finished_quest_dialog = DialogData(UI_ICON_SPRITE, "Thank you for helping me!", [bye_option])
+
+    def get_dialog_data(_game_state: GameState):
+        if has_finished_quest:
+            return finished_quest_dialog
+        else:
+            return default_dialog
+
+    register_conditional_npc_dialog_data(NPC_TYPE, get_dialog_data)
+    register_portrait_icon_sprite_path(UI_ICON_SPRITE, 'resources/graphics/portrait_young_sorceress_npc.png')
