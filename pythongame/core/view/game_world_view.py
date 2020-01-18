@@ -5,7 +5,8 @@ from pygame.rect import Rect
 
 from pythongame.core.common import Direction, Sprite
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, CHANNELING_BUFFS
-from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration
+from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration, \
+    QuestGiverState
 from pythongame.core.view.image_loading import ImageWithRelativePosition
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite, VisualCross, \
@@ -44,6 +45,7 @@ class GameWorldView:
         self.font_visual_text_small = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 12)
         self.font_visual_text = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 14)
         self.font_visual_text_large = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 16)
+        self.font_quest_giver_mark = pygame.font.Font(DIR_FONTS + 'Courier New Bold.ttf', 28)
 
         self.images_by_sprite: Dict[Sprite, Dict[Direction, List[ImageWithRelativePosition]]] = images_by_sprite
 
@@ -224,6 +226,20 @@ class GameWorldView:
         for i, detail_line in enumerate(detail_lines):
             self.world_render.text(self.font_npc_action, detail_line, (rect_pos[0] + 4, rect_pos[1] + (i + 1) * 16))
 
+    def _quest_giver_mark(self, npc: NonPlayerCharacter):
+        entity_pos = npc.world_entity.get_center_position()
+        if npc.quest_giver_state == QuestGiverState.CAN_GIVE_NEW_QUEST:
+            color = (255, 215, 0)
+            mark = "!"
+        elif npc.quest_giver_state == QuestGiverState.WAITING_FOR_PLAYER:
+            color = (192, 192, 192)
+            mark = "?"
+        else:
+            color = (255, 215, 0)
+            mark = "?"
+        self.world_render.text(self.font_quest_giver_mark, mark, (entity_pos[0] - 8, entity_pos[1] - 64), (0, 0, 0))
+        self.world_render.text(self.font_quest_giver_mark, mark, (entity_pos[0] - 9, entity_pos[1] - 65), color)
+
     def render_world(self, all_entities_to_render: List[WorldEntity], decorations_to_render: List[DecorationEntity],
                      camera_world_area, non_player_characters: List[NonPlayerCharacter], is_player_invisible: bool,
                      player_active_buffs: List[BuffWithDuration],
@@ -272,6 +288,8 @@ class GameWorldView:
             else:
                 healthbar_color = (250, 250, 0)
                 border_color = None
+                if npc.quest_giver_state is not None:
+                    self._quest_giver_mark(npc)
 
             npc_sprite_y_relative_to_entity = \
                 ENTITY_SPRITE_INITIALIZERS[npc.world_entity.sprite][Direction.DOWN].position_relative_to_entity[1]

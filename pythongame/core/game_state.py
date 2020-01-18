@@ -235,6 +235,12 @@ class StunStatus:
         return self._number_of_active_stuns > 0
 
 
+class QuestGiverState(Enum):
+    CAN_GIVE_NEW_QUEST = 1
+    WAITING_FOR_PLAYER = 2
+    CAN_COMPLETE_QUEST = 3
+
+
 class NonPlayerCharacter:
     def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health_resource: HealthOrManaResource,
                  npc_mind, npc_category: NpcCategory,
@@ -252,9 +258,10 @@ class NonPlayerCharacter:
         self.is_neutral = npc_category == NpcCategory.NEUTRAL
         self.enemy_loot_table = enemy_loot_table
         self.death_sound_id = death_sound_id
-        self.start_position = world_entity.get_position()  # Should never be updated
-        self.max_distance_allowed_from_start_position = max_distance_allowed_from_start_position
+        self.start_position = world_entity.get_position()  # Only for neutral NPC
+        self.max_distance_allowed_from_start_position = max_distance_allowed_from_start_position  # Only for neutral NPC
         self.is_boss: bool = is_boss
+        self.quest_giver_state: Optional[QuestGiverState] = None  # Only for neutral NPC
 
     # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):
