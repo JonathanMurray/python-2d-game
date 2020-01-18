@@ -40,8 +40,10 @@ class NpcMind(AbstractNpcMind):
                     npc.quest_giver_state = QuestGiverState.WAITING_FOR_PLAYER
             elif player_state.has_completed_quest(QUEST_ID):
                 npc.quest_giver_state = None
-            else:
+            elif _is_player_eligible_for_quest(game_state):
                 npc.quest_giver_state = QuestGiverState.CAN_GIVE_NEW_QUEST
+            else:
+                npc.quest_giver_state = None
 
         if self.timer.update_and_check_if_ready(time_passed):
             if random.random() < 0.8:
@@ -49,6 +51,11 @@ class NpcMind(AbstractNpcMind):
             else:
                 direction = random.choice(get_all_directions())
                 npc.world_entity.set_moving_in_dir(direction)
+
+
+def _is_player_eligible_for_quest(game_state: GameState):
+    eligible = game_state.player_state.level >= 3
+    return eligible
 
 
 class HealAction(AbstractNpcAction):
@@ -156,25 +163,23 @@ def _register_dialog():
         "Key",
         "...")
     option_bye = DialogOptionData("\"Good bye\"", "cancel", None)
-    dialog_1 = DialogData(
-        PORTRAIT_ICON_SPRITE,
-        "Greetings. I am here only to serve. Seek me out when you are wounded or need guidance!",
-        [option_blessing, option_advice, option_accept_quest, option_bye])
-    dialog_2 = DialogData(
-        PORTRAIT_ICON_SPRITE,
-        "Greetings. I am here only to serve. Seek me out when you are wounded or need guidance!",
-        [option_blessing, option_advice, option_complete_quest, option_bye])
-    dialog_3 = DialogData(
-        PORTRAIT_ICON_SPRITE,
-        "Oh you're back...",
-        [option_blessing, option_advice, option_bye])
+    dialog_text = "Greetings. I am here only to serve. Seek me out when you are wounded or need guidance!"
+    dialog_before_quest = DialogData(PORTRAIT_ICON_SPRITE, dialog_text, [option_blessing, option_advice, option_bye])
+    dialog_can_give_quest = DialogData(PORTRAIT_ICON_SPRITE, dialog_text,
+                                       [option_blessing, option_advice, option_accept_quest, option_bye])
+    dialog_during_quest = DialogData(PORTRAIT_ICON_SPRITE, dialog_text,
+                                     [option_blessing, option_advice, option_complete_quest, option_bye])
+    dialog_after_quest = DialogData(PORTRAIT_ICON_SPRITE, "Oh you're back...",
+                                    [option_blessing, option_advice, option_bye])
 
     def get_dialog_data(game_state: GameState) -> DialogData:
         if game_state.player_state.has_completed_quest(QUEST_ID):
-            return dialog_3
+            return dialog_after_quest
         elif game_state.player_state.has_quest(QUEST_ID):
-            return dialog_2
+            return dialog_during_quest
+        elif _is_player_eligible_for_quest(game_state):
+            return dialog_can_give_quest
         else:
-            return dialog_1
+            return dialog_before_quest
 
     register_conditional_npc_dialog_data(NPC_TYPE, get_dialog_data)
