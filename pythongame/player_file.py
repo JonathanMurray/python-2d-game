@@ -8,8 +8,8 @@ from pythongame.core.game_state import GameState
 
 class SavedPlayerState:
     def __init__(self, hero_id: str, level: int, exp: int, consumables_in_slots: Dict[str, List[str]],
-                 items: List[str], money: int, enabled_portals: Dict[str, str],
-                 talent_tier_choices: List[int], total_time_played_on_character: Millis):
+                 items: List[str], money: int, enabled_portals: Dict[str, str], talent_tier_choices: List[int],
+                 total_time_played_on_character: Millis, active_quests: List[str], completed_quests: List[str]):
         self.hero_id = hero_id
         self.level = level
         self.exp = exp
@@ -19,6 +19,8 @@ class SavedPlayerState:
         self.enabled_portals = enabled_portals
         self.talent_tier_choices = talent_tier_choices
         self.total_time_played_on_character = total_time_played_on_character
+        self.active_quests = active_quests
+        self.completed_quests = completed_quests
 
 
 class PlayerStateJson:
@@ -33,7 +35,9 @@ class PlayerStateJson:
             "money": player_state.money,
             "enabled_portals": player_state.enabled_portals,
             "talents": player_state.talent_tier_choices,
-            "total_time_played": player_state.total_time_played_on_character
+            "total_time_played": player_state.total_time_played_on_character,
+            "active_quests": player_state.active_quests,
+            "completed_quests": player_state.completed_quests
         }
 
     @staticmethod
@@ -47,7 +51,9 @@ class PlayerStateJson:
             data["money"],
             data["enabled_portals"],
             data.get("talents", []),
-            data.get("total_time_played", 0)
+            data.get("total_time_played", 0),
+            data.get("active_quests", []),
+            data.get("completed_quests", []),
         )
 
 
@@ -87,7 +93,9 @@ class SaveFileHandler:
             money=player_state.money,
             enabled_portals={p.portal_id.name: p.world_entity.sprite.name for p in game_state.portals if p.is_enabled},
             talent_tier_choices=player_state.get_serilized_talent_tier_choices(),
-            total_time_played_on_character=total_time_played_on_character
+            total_time_played_on_character=total_time_played_on_character,
+            active_quests=[q.quest_id.name for q in player_state.active_quests],
+            completed_quests=[q.quest_id.name for q in player_state.completed_quests]
         )
         self._save_player_state_to_json_file(saved_player_state, filename)
         print("Saved to file: " + filename)

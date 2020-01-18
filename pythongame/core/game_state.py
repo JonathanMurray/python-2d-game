@@ -235,6 +235,12 @@ class StunStatus:
         return self._number_of_active_stuns > 0
 
 
+class QuestGiverState(Enum):
+    CAN_GIVE_NEW_QUEST = 1
+    WAITING_FOR_PLAYER = 2
+    CAN_COMPLETE_QUEST = 3
+
+
 class NonPlayerCharacter:
     def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health_resource: HealthOrManaResource,
                  npc_mind, npc_category: NpcCategory,
@@ -252,9 +258,10 @@ class NonPlayerCharacter:
         self.is_neutral = npc_category == NpcCategory.NEUTRAL
         self.enemy_loot_table = enemy_loot_table
         self.death_sound_id = death_sound_id
-        self.start_position = world_entity.get_position()  # Should never be updated
-        self.max_distance_allowed_from_start_position = max_distance_allowed_from_start_position
+        self.start_position = world_entity.get_position()  # Only for neutral NPC
+        self.max_distance_allowed_from_start_position = max_distance_allowed_from_start_position  # Only for neutral NPC
         self.is_boss: bool = is_boss
+        self.quest_giver_state: Optional[QuestGiverState] = None  # Only for neutral NPC
 
     # TODO There is a cyclic dependancy here between game_state and buff_effects
     def gain_buff_effect(self, buff: Any, duration: Millis):
@@ -374,6 +381,18 @@ class AgentBuffsUpdate:
         self.buffs_that_ended = buffs_that_ended
 
 
+class QuestId(Enum):
+    MAIN_RETRIEVE_KEY = 1
+    RETRIEVE_FROG = 2
+
+
+class Quest:
+    def __init__(self, quest_id: QuestId, name: str, description: str):
+        self.quest_id = quest_id
+        self.name = name
+        self.description = description
+
+
 class PlayerState:
     def __init__(self, health_resource: HealthOrManaResource, mana_resource: HealthOrManaResource,
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
@@ -417,7 +436,27 @@ class PlayerState:
         self.abilities_were_updated = Observable()
         self.cooldowns_were_updated = Observable()
         self.buffs_were_updated = Observable()
-        self.has_finished_main_quest = False
+        self.quests_were_updated = Observable()
+        self.completed_quests: List[Quest] = []
+        self.active_quests: List[Quest] = []
+
+    def start_quest(self, quest: Quest):
+        self.active_quests.append(quest)
+        self.notify_quest_observers()
+
+    def complete_quest(self, quest: Quest):
+        self.completed_quests.append(quest)
+        self.active_quests.remove(quest)
+        self.notify_quest_observers()
+
+    def notify_quest_observers(self):
+        self.quests_were_updated.notify((self.active_quests, self.completed_quests))
+
+    def has_quest(self, quest_id: QuestId):
+        return len([q for q in self.active_quests if q.quest_id == quest_id]) > 0
+
+    def has_completed_quest(self, quest_id: QuestId):
+        return len([q for q in self.completed_quests if q.quest_id == quest_id]) > 0
 
     def modify_money(self, delta: int):
         self.money += delta

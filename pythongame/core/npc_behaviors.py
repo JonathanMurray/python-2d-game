@@ -4,7 +4,7 @@ from pythongame.core.common import *
 from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import CONSUMABLES, ITEMS
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest
 from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
 from pythongame.core.math import is_x_and_y_within_distance, get_perpendicular_directions
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
@@ -186,7 +186,17 @@ class BuyItemNpcAction(AbstractNpcAction):
 
 _npc_mind_constructors: Dict[NpcType, Type[AbstractNpcMind]] = {}
 
-_npc_dialog_data: Dict[NpcType, DialogData] = {}
+_npc_dialog_data: Dict[NpcType, Callable[[GameState], DialogData]] = {}
+
+_quests: Dict[QuestId, Quest] = {}
+
+
+def register_quest(quest_id: QuestId, quest: Quest):
+    _quests[quest_id] = quest
+
+
+def get_quest(quest_id: QuestId):
+    return _quests[quest_id]
 
 
 def register_npc_behavior(npc_type: NpcType, mind_constructor: Type[AbstractNpcMind]):
@@ -199,11 +209,16 @@ def create_npc_mind(npc_type: NpcType, global_path_finder: GlobalPathFinder):
 
 
 def register_npc_dialog_data(npc_type: NpcType, data: DialogData):
-    _npc_dialog_data[npc_type] = data
+    _npc_dialog_data[npc_type] = (lambda _: data)
+
+
+def register_conditional_npc_dialog_data(npc_type: NpcType, get_data: Callable[[GameState], DialogData]):
+    _npc_dialog_data[npc_type] = get_data
 
 
 def select_npc_action(npc_type: NpcType, option_index: int, game_state: GameState) -> Optional[str]:
-    action = _npc_dialog_data[npc_type].options[option_index].action
+    data = _npc_dialog_data[npc_type](game_state)
+    action = data.options[option_index].action
     if not action:
         return None
     optional_message = action.on_select(game_state)
@@ -211,13 +226,15 @@ def select_npc_action(npc_type: NpcType, option_index: int, game_state: GameStat
 
 
 def hover_npc_action(npc_type: NpcType, option_index: int, game_state: GameState, ui_view: GameUiView):
-    action = _npc_dialog_data[npc_type].options[option_index].action
+    data = _npc_dialog_data[npc_type](game_state)
+    action = data.options[option_index].action
     if action:
         action.on_hover(game_state, ui_view)
 
 
 def blur_npc_action(npc_type: NpcType, option_index: int, game_state: GameState, ui_view: GameUiView):
-    action = _npc_dialog_data[npc_type].options[option_index].action
+    data = _npc_dialog_data[npc_type](game_state)
+    action = data.options[option_index].action
     if action:
         action.on_blur(game_state, ui_view)
 
@@ -226,8 +243,8 @@ def has_npc_dialog(npc_type: NpcType) -> bool:
     return npc_type in _npc_dialog_data
 
 
-def get_dialog_data(npc_type: NpcType) -> DialogData:
-    return _npc_dialog_data[npc_type]
+def get_dialog_data(npc_type: NpcType, game_state: GameState) -> DialogData:
+    return _npc_dialog_data[npc_type](game_state)
 
 
 def buy_consumable_option(consumable_type: ConsumableType, cost: int):

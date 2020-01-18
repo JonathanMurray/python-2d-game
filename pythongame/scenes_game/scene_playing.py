@@ -15,8 +15,7 @@ from pythongame.core.sound_player import play_sound, toggle_muted
 from pythongame.core.user_input import ActionTryUseAbility, ActionTryUsePotion, \
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_dialog_actions, \
-    ActionChangeDialogOption, ActionSaveGameState, PlayingUserInputHandler, ActionToggleUiTalents, ActionToggleUiStats, \
-    ActionToggleUiHelp, ActionRightMouseClicked
+    ActionChangeDialogOption, PlayingUserInputHandler, ActionRightMouseClicked, ActionPressKey
 from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
 from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.player_file import SaveFileHandler
@@ -27,8 +26,7 @@ from pythongame.scenes_game.game_ui_view import DragItemBetweenInventorySlots, D
 from pythongame.scenes_game.game_ui_view import GameUiView
 from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
 from pythongame.scenes_game.scene_paused import PausedScene
-from pythongame.scenes_game.ui_components import ToggleButtonId
-from pythongame.scenes_game.ui_events import ToggleFullscreen
+from pythongame.scenes_game.ui_events import ToggleFullscreen, ToggleWindow
 
 
 class PlayingScene(AbstractScene):
@@ -111,7 +109,7 @@ class PlayingScene(AbstractScene):
                     # TODO: Handle this better than accessing a global variable from here
                     pythongame.core.pathfinding.npc_pathfinding.DEBUG_RENDER_PATHFINDING = \
                         not pythongame.core.pathfinding.npc_pathfinding.DEBUG_RENDER_PATHFINDING
-                if isinstance(action, ActionTryUseAbility):
+                elif isinstance(action, ActionTryUseAbility):
                     self.game_engine.try_use_ability(action.ability_type)
                 elif isinstance(action, ActionTryUsePotion):
                     self.game_engine.try_use_consumable(action.slot_number)
@@ -119,17 +117,17 @@ class PlayingScene(AbstractScene):
                     self.game_engine.move_in_direction(action.direction)
                 elif isinstance(action, ActionStopMoving):
                     self.game_engine.stop_moving()
-                if isinstance(action, ActionPauseGame):
+                elif isinstance(action, ActionPauseGame):
                     transition_to_pause = True
-                if isinstance(action, ActionMouseMovement):
+                elif isinstance(action, ActionMouseMovement):
                     self.ui_view.handle_mouse_movement(action.mouse_screen_position)
-                if isinstance(action, ActionMouseClicked):
+                elif isinstance(action, ActionMouseClicked):
                     events_triggered_from_ui += self.ui_view.handle_mouse_click()
-                if isinstance(action, ActionMouseReleased):
+                elif isinstance(action, ActionMouseReleased):
                     events_triggered_from_ui += self.ui_view.handle_mouse_release()
-                if isinstance(action, ActionRightMouseClicked):
+                elif isinstance(action, ActionRightMouseClicked):
                     events_triggered_from_ui += self.ui_view.handle_mouse_right_click()
-                if isinstance(action, ActionPressSpaceKey):
+                elif isinstance(action, ActionPressSpaceKey):
                     ready_entity = self.player_interactions_state.get_entity_to_interact_with()
                     if ready_entity is not None:
                         if isinstance(ready_entity, NonPlayerCharacter):
@@ -138,7 +136,7 @@ class PlayingScene(AbstractScene):
                             ready_entity.world_entity.set_not_moving()
                             ready_entity.stun_status.add_one()
                             npc_type = ready_entity.npc_type
-                            dialog_data = get_dialog_data(npc_type)
+                            dialog_data = get_dialog_data(npc_type, self.game_state)
                             option_index = self.ui_view.start_dialog_with_npc(ready_entity, dialog_data)
                             play_sound(SoundId.DIALOG)
                             hover_npc_action(npc_type, option_index, self.game_state, self.ui_view)
@@ -152,17 +150,8 @@ class PlayingScene(AbstractScene):
                             self.game_engine.open_chest(ready_entity)
                         else:
                             raise Exception("Unhandled entity: " + str(ready_entity))
-                if isinstance(action, ActionSaveGameState):
-                    self._save_game()
-                if isinstance(action, ActionToggleUiTalents):
-                    self.ui_view.click_toggle_button(ToggleButtonId.TALENTS)
-                    play_sound(SoundId.UI_TOGGLE)
-                if isinstance(action, ActionToggleUiStats):
-                    self.ui_view.click_toggle_button(ToggleButtonId.STATS)
-                    play_sound(SoundId.UI_TOGGLE)
-                if isinstance(action, ActionToggleUiHelp):
-                    self.ui_view.click_toggle_button(ToggleButtonId.HELP)
-                    play_sound(SoundId.UI_TOGGLE)
+                elif isinstance(action, ActionPressKey):
+                    events_triggered_from_ui += self.ui_view.handle_key_press(action.key)
 
         # TODO Much noise below around playing sounds. Perhaps game_engine should play the sounds in these cases?
         for event in events_triggered_from_ui:
@@ -203,6 +192,8 @@ class PlayingScene(AbstractScene):
                 self._save_game()
             elif isinstance(event, ToggleFullscreen):
                 self.toggle_fullscreen_callback()
+            elif isinstance(event, ToggleWindow):
+                play_sound(SoundId.UI_TOGGLE)
             else:
                 raise Exception("Unhandled event: " + str(event))
 

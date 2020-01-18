@@ -5,10 +5,13 @@ from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_d
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
-from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, register_npc_dialog_data, DialogData, \
-    DialogOptionData, buy_consumable_option
+from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, DialogData, \
+    DialogOptionData, buy_consumable_option, register_conditional_npc_dialog_data
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.view.image_loading import SpriteSheet
+
+NPC_TYPE = NpcType.NEUTRAL_WARPSTONE_MERCHANT
+UI_ICON_SPRITE = PortraitIconSprite.WARPSTONE_MERCHANT
 
 
 class NpcMind(AbstractNpcMind):
@@ -29,18 +32,10 @@ class NpcMind(AbstractNpcMind):
 def register_warpstone_merchant_npc():
     size = (30, 30)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.NEUTRAL_WARPSTONE_MERCHANT
-    npc_type = NpcType.NEUTRAL_WARPSTONE_MERCHANT
-    ui_icon_sprite = PortraitIconSprite.WARPSTONE_MERCHANT
     movement_speed = 0.03
-    register_npc_data(npc_type, NpcData.neutral(sprite, size, movement_speed))
-    register_npc_behavior(npc_type, NpcMind)
-    introduction = "Hah! I managed to infuse the statues' teleporting powers into these stones. " \
-                   "You can carry them with you and use them any time you want to return to this place!"
-    dialog_options = [
-        buy_consumable_option(ConsumableType.WARP_STONE, 2),
-        DialogOptionData("\"Good bye\"", "cancel", None)]
-    dialog_data = DialogData(ui_icon_sprite, introduction, dialog_options)
-    register_npc_dialog_data(npc_type, dialog_data)
+    register_npc_data(NPC_TYPE, NpcData.neutral(sprite, size, movement_speed))
+    register_npc_behavior(NPC_TYPE, NpcMind)
+    _register_dialog()
     sprite_sheet = SpriteSheet("resources/graphics/manga_spritesheet.png")
     original_sprite_size = (32, 32)
     scaled_sprite_size = (48, 48)
@@ -54,4 +49,29 @@ def register_warpstone_merchant_npc():
     }
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir,
                                (-8, -16))
-    register_portrait_icon_sprite_path(ui_icon_sprite, 'resources/graphics/portrait_warpstone_merchant_npc.png')
+    register_portrait_icon_sprite_path(UI_ICON_SPRITE, 'resources/graphics/portrait_warpstone_merchant_npc.png')
+
+
+def _register_dialog():
+    bye_option = DialogOptionData("\"Good bye\"", "cancel", None)
+    low_level_dialog = DialogData(
+        portrait_icon_sprite=UI_ICON_SPRITE,
+        text_body="These aren't any regular old statues! They are magical gateways to distant places! "
+                  "I'm extracting their powers into something more ... mobile! "
+                  "Just give me a while, and come back later!",
+        options=[bye_option])
+
+    high_level_dialog = DialogData(
+        portrait_icon_sprite=UI_ICON_SPRITE,
+        text_body="Hah! I managed to infuse the statues' teleporting powers into these stones. " \
+                  "You can carry them with you and use them any time you want to return to this place! "
+                  "Isn't that neat?",
+        options=[buy_consumable_option(ConsumableType.WARP_STONE, 2), bye_option])
+
+    def get_dialog_data(game_state: GameState) -> DialogData:
+        if game_state.player_state.level < 2:
+            return low_level_dialog
+        else:
+            return high_level_dialog
+
+    register_conditional_npc_dialog_data(NPC_TYPE, get_dialog_data)
