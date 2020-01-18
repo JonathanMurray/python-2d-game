@@ -8,7 +8,7 @@ from pygame.rect import Rect
 from pythongame.core.common import ConsumableType, ItemType, AbilityType, PortraitIconSprite, HeroId, Millis, \
     PeriodicTimer
 from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData, ItemData
-from pythongame.core.game_state import PlayerState, Quest, QuestId
+from pythongame.core.game_state import PlayerState, Quest
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.math import get_relative_pos_within_rect
 from pythongame.core.talents import TalentTierStatus
@@ -872,7 +872,7 @@ class QuestsWindow(UiWindow):
         self._font_header = font_header
         self._font_details = font_details
         self.active_quests: List[Quest] = []
-        self.completed_quests: List[QuestId] = []
+        self.completed_quests: List[Quest] = []
 
     def render(self):
         if self.shown:
@@ -890,12 +890,16 @@ class QuestsWindow(UiWindow):
 
         y = y_0 + 40
         for quest in self.active_quests:
-            self._ui_render.text(self._font_header, quest.name, (x_left, y), (220, 220, 250))
+            self._ui_render.text(self._font_header, "\"%s\"" % quest.name, (x_left, y), (220, 220, 250))
 
             lines = split_text_into_lines(quest.description, 30)
             for i, line in enumerate(lines):
                 line_space = 15
                 self._ui_render.text(self._font_details, line, (x_left, y + 20 + i * line_space))
+            y += 70
+        for quest in self.completed_quests:
+            self._ui_render.text(self._font_header, "\"%s\"" % quest.name, (x_left, y), (220, 220, 250))
+            self._ui_render.text(self._font_details, "[Completed]", (x_left, y + 20))
             y += 70
 
     def _render_header(self, pos: Tuple[int, int], text: str):

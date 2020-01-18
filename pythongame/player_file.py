@@ -95,7 +95,7 @@ class SaveFileHandler:
             talent_tier_choices=player_state.get_serilized_talent_tier_choices(),
             total_time_played_on_character=total_time_played_on_character,
             active_quests=[q.quest_id.name for q in player_state.active_quests],
-            completed_quests=[quest_id.name for quest_id in player_state.completed_quests]
+            completed_quests=[q.quest_id.name for q in player_state.completed_quests]
         )
         self._save_player_state_to_json_file(saved_player_state, filename)
         print("Saved to file: " + filename)

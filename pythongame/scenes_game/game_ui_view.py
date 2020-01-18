@@ -6,7 +6,7 @@ from pygame.rect import Rect
 from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite, \
     SoundId, NpcType, Millis, DialogData
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, ITEMS, HEROES
-from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState, Quest, QuestId
+from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState, Quest
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import is_point_in_rect
 from pythongame.core.sound_player import play_sound
@@ -464,7 +464,7 @@ class GameUiView:
         self.exp_bar.update(level, ratio_exp_until_next_level)
         self.stats_window.level = level
 
-    def on_player_quests_updated(self, event: Tuple[List[Quest], List[QuestId]]):
+    def on_player_quests_updated(self, event: Tuple[List[Quest], List[Quest]]):
         active_quests, completed_quests = event
         self.quests_window.active_quests = list(active_quests)
         self.quests_window.completed_quests = list(completed_quests)

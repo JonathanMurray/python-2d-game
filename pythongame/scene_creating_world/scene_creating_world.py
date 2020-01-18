@@ -145,7 +145,7 @@ class CreatingWorldScene(AbstractScene):
             for completed_quest in saved_player_state.completed_quests:
                 quest = get_quest(QuestId[completed_quest])
                 game_state.player_state.start_quest(quest)
-                game_state.player_state.complete_quest(QuestId[completed_quest])
+                game_state.player_state.complete_quest(quest)
             for active_quest in saved_player_state.active_quests:
                 quest = get_quest(QuestId[active_quest])
                 game_state.player_state.start_quest(quest)

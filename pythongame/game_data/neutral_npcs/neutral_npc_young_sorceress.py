@@ -80,7 +80,7 @@ class AcceptFrog(AbstractNpcAction):
                 game_state.items_on_ground.append(
                     create_item_on_ground(reward_item_type, game_state.player_entity.get_position()))
             play_sound(SoundId.EVENT_COMPLETED_QUEST)
-            game_state.player_state.complete_quest(QUEST_ID)
+            game_state.player_state.complete_quest(QUEST)
             return "Reward gained: " + reward_data.name
         else:
             play_sound(SoundId.WARNING)

@@ -437,16 +437,16 @@ class PlayerState:
         self.cooldowns_were_updated = Observable()
         self.buffs_were_updated = Observable()
         self.quests_were_updated = Observable()
-        self.completed_quests: List[QuestId] = []
+        self.completed_quests: List[Quest] = []
         self.active_quests: List[Quest] = []
 
     def start_quest(self, quest: Quest):
         self.active_quests.append(quest)
         self.notify_quest_observers()
 
-    def complete_quest(self, quest_id: QuestId):
-        self.completed_quests.append(quest_id)
-        self.active_quests = [q for q in self.active_quests if q.quest_id != quest_id]
+    def complete_quest(self, quest: Quest):
+        self.completed_quests.append(quest)
+        self.active_quests.remove(quest)
         self.notify_quest_observers()
 
     def notify_quest_observers(self):
@@ -456,7 +456,7 @@ class PlayerState:
         return len([q for q in self.active_quests if q.quest_id == quest_id]) > 0
 
     def has_completed_quest(self, quest_id: QuestId):
-        return quest_id in self.completed_quests
+        return len([q for q in self.completed_quests if q.quest_id == quest_id]) > 0
 
     def modify_money(self, delta: int):
         self.money += delta

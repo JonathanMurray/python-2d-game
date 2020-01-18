@@ -87,7 +87,7 @@ class CompleteQuest(AbstractNpcAction):
     def on_select(self, game_state: GameState):
         if game_state.player_state.item_inventory.has_item_in_inventory(ITEM_TYPE_KEY):
             play_sound(SoundId.EVENT_COMPLETED_QUEST)
-            game_state.player_state.complete_quest(QUEST_ID)
+            game_state.player_state.complete_quest(QUEST)
         else:
             play_sound(SoundId.WARNING)
             return "You don't have that!"
