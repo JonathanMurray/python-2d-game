@@ -80,6 +80,7 @@ class AcceptQuest(AbstractNpcAction):
 
     def on_select(self, game_state: GameState):
         game_state.player_state.start_quest(QUEST)
+        play_sound(SoundId.EVENT_ACCEPTED_QUEST)
         return "Quest accepted: " + QUEST.name
 
     def on_hover(self, game_state: GameState, ui_view: GameUiView):
