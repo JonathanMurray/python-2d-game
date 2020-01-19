@@ -75,7 +75,6 @@ def register_portal():
         scaled_sprite_size,
         indices_by_dir,
         sprite_position_relative_to_entity)
-
     register_entity_sprite_map(
         Sprite.PORTAL_GREEN,
         SpriteSheet("resources/graphics/statue_green.png"),
@@ -84,17 +83,27 @@ def register_portal():
         indices_by_dir,
         sprite_position_relative_to_entity)
 
-    register_portal_data(PortalId.A_BASE, _data(False, PortalId.A_REMOTE, Sprite.PORTAL_DISABLED))
-    register_portal_data(PortalId.A_REMOTE, _data(True, PortalId.A_BASE, Sprite.PORTAL_BLUE))
-    register_portal_data(PortalId.B_BASE, _data(False, PortalId.B_REMOTE, Sprite.PORTAL_DISABLED))
-    register_portal_data(PortalId.B_REMOTE, _data(True, PortalId.B_BASE, Sprite.PORTAL_RED))
-    register_portal_data(PortalId.C_BASE, _data(False, PortalId.C_REMOTE, Sprite.PORTAL_DISABLED))
-    register_portal_data(PortalId.C_REMOTE, _data(True, PortalId.C_BASE, Sprite.PORTAL_DARK))
-    register_portal_data(PortalId.D_BASE, _data(False, PortalId.D_REMOTE, Sprite.PORTAL_DISABLED))
-    register_portal_data(PortalId.D_REMOTE, _data(True, PortalId.D_BASE, Sprite.PORTAL_GREEN))
+    warp_home = "Home"
+    register_portal_data(PortalId.GOBLIN_HIDEOUT_BASE,
+                         _data(False, PortalId.GOBLIN_HIDEOUT_REMOTE, Sprite.PORTAL_DISABLED, "Goblin Hideout"))
+    register_portal_data(PortalId.GOBLIN_HIDEOUT_REMOTE,
+                         _data(True, PortalId.GOBLIN_HIDEOUT_BASE, Sprite.PORTAL_BLUE, warp_home))
+    register_portal_data(PortalId.DWARF_CAMP_BASE,
+                         _data(False, PortalId.DWARF_CAMP_REMOTE, Sprite.PORTAL_DISABLED, "Dwarf Camp"))
+    register_portal_data(PortalId.DWARF_CAMP_REMOTE,
+                         _data(True, PortalId.DWARF_CAMP_BASE, Sprite.PORTAL_RED, warp_home))
+    register_portal_data(PortalId.GOBLIN_FORTRESS_BASE,
+                         _data(False, PortalId.GOBLIN_FORTRESS_REMOTE, Sprite.PORTAL_DISABLED, "Goblin Fortress"))
+    register_portal_data(PortalId.GOBLIN_FORTRESS_REMOTE,
+                         _data(True, PortalId.GOBLIN_FORTRESS_BASE, Sprite.PORTAL_DARK, warp_home))
+    register_portal_data(PortalId.RED_BARON_FORTRESS_BASE,
+                         _data(False, PortalId.RED_BARON_FORTRESS_REMOTE, Sprite.PORTAL_DISABLED,
+                               "Red Baron's Fortress"))
+    register_portal_data(PortalId.RED_BARON_FORTRESS_REMOTE,
+                         _data(True, PortalId.RED_BARON_FORTRESS_BASE, Sprite.PORTAL_GREEN, warp_home))
 
     register_buff_effect(BUFF_TYPE, BeingTeleported)
 
 
-def _data(starts_enabled: bool, leads_to: PortalId, sprite: Sprite):
-    return PortalData(starts_enabled, leads_to, sprite, PORTAL_SIZE, PORTAL_DELAY)
+def _data(starts_enabled: bool, leads_to: PortalId, sprite: Sprite, destination_name: str):
+    return PortalData(starts_enabled, leads_to, sprite, PORTAL_SIZE, PORTAL_DELAY, destination_name)

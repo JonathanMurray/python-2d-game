@@ -6322,14 +6322,14 @@
   ],
   "portals": [
     {
-      "portal_id": "A_REMOTE",
+      "portal_id": "GOBLIN_HIDEOUT_REMOTE",
       "position": [
         325,
         150
       ]
     },
     {
-      "portal_id": "A_BASE",
+      "portal_id": "GOBLIN_HIDEOUT_BASE",
       "position": [
         1500,
         375

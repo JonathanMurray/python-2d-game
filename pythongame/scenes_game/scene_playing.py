@@ -4,7 +4,7 @@ import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 from pythongame.core.common import Millis, SoundId, AbstractScene, SceneTransition, NpcType
-from pythongame.core.game_data import CONSUMABLES, ITEMS
+from pythongame.core.game_data import CONSUMABLES, ITEMS, PORTALS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     ConsumableOnGround, ItemOnGround, Chest
 from pythongame.core.hero_upgrades import pick_talent
@@ -278,7 +278,8 @@ def _get_entity_action_text(ready_entity: Any, is_shift_key_held_down: bool) -> 
         return EntityActionText(ready_entity.world_entity, "[Space] " + loot_name, loot_details)
     elif isinstance(ready_entity, Portal):
         if ready_entity.is_enabled:
-            return EntityActionText(ready_entity.world_entity, "[Space] Warp", [])
+            data = PORTALS[ready_entity.portal_id]
+            return EntityActionText(ready_entity.world_entity, "[Space] " + data.destination_name, [])
         else:
             return EntityActionText(ready_entity.world_entity, "[Space] ???", [])
     elif isinstance(ready_entity, WarpPoint):

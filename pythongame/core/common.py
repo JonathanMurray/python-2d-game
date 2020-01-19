@@ -485,14 +485,14 @@ class SoundId(Enum):
 
 
 class PortalId(Enum):
-    A_BASE = 1
-    A_REMOTE = 2
-    B_BASE = 3
-    B_REMOTE = 4
-    C_BASE = 5
-    C_REMOTE = 6
-    D_BASE = 7
-    D_REMOTE = 8
+    GOBLIN_HIDEOUT_BASE = 1
+    GOBLIN_HIDEOUT_REMOTE = 2
+    DWARF_CAMP_BASE = 3
+    DWARF_CAMP_REMOTE = 4
+    GOBLIN_FORTRESS_BASE = 5
+    GOBLIN_FORTRESS_REMOTE = 6
+    RED_BARON_FORTRESS_BASE = 7
+    RED_BARON_FORTRESS_REMOTE = 8
 
 
 class HeroId(Enum):

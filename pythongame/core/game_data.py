@@ -118,13 +118,14 @@ class WallData:
 
 class PortalData:
     def __init__(self, starts_enabled: bool, leads_to: Optional[PortalId], sprite: Sprite,
-                 entity_size: Tuple[int, int], teleport_delay: Millis):
+                 entity_size: Tuple[int, int], teleport_delay: Millis, destination_name:str):
         self.starts_enabled = starts_enabled
         self.leads_to = leads_to
         self.sprite = sprite
         self.entity_size = entity_size
         # TODO remove teleport_delay (constant value is always used)
         self.teleport_delay = teleport_delay
+        self.destination_name = destination_name
 
 
 class PlayerLevelBonus:
