@@ -77,9 +77,9 @@ class Dialog:
     OPTION_LINE_HEIGHT = 20
     OPTIONS_MARGIN = 10
 
-    def __init__(self, screen_render: DrawableArea, portrait_image: PortraitIconSprite, text_body: str,
-                 options: List[DialogOption], active_option_index: int, portrait_image_size: Tuple[int, int],
-                 option_image_size: Tuple[int, int]):
+    def __init__(self, screen_render: DrawableArea, portrait_image: Optional[PortraitIconSprite],
+                 text_body: Optional[str], options: List[DialogOption], active_option_index: int,
+                 portrait_image_size: Tuple[int, int], option_image_size: Tuple[int, int]):
         self._screen_render = screen_render
         self._portrait_image = portrait_image
         self._text_body = text_body
@@ -130,7 +130,7 @@ class Dialog:
 
     def handle_mouse_movement(self, point: Tuple[int, int]):
         for i, rect in enumerate(self._option_rects):
-            if rect.collidepoint(point):
+            if rect.collidepoint(point[0], point[1]):
                 self._hovered_option_index = i
                 return
         self._hovered_option_index = None
@@ -265,8 +265,9 @@ class TooltipGraphics:
 
 
 class AbilityIcon(UiComponent):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, image, label: str, font, tooltip: TooltipGraphics,
-                 ability_type: AbilityType, cooldown_remaining_ratio: float):
+    def __init__(self, ui_render: DrawableArea, rect: Rect, image, label: Optional[str], font,
+                 tooltip: Optional[TooltipGraphics], ability_type: Optional[AbilityType],
+                 cooldown_remaining_ratio: float):
         super().__init__(rect)
         self._ui_render = ui_render
         self._font = font
@@ -310,7 +311,7 @@ class AbilityIcon(UiComponent):
 
 
 class ConsumableIcon(UiComponent):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, image, label: str, font, tooltip: TooltipGraphics,
+    def __init__(self, ui_render: DrawableArea, rect: Rect, image, label: str, font, tooltip: Optional[TooltipGraphics],
                  consumable_types: List[ConsumableType], slot_number: int):
         super().__init__(rect)
         self._ui_render = ui_render
@@ -358,8 +359,9 @@ class ConsumableIcon(UiComponent):
 
 
 class ItemIcon(UiComponent):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, image, tooltip: TooltipGraphics,
-                 slot_equipment_category: ItemEquipmentCategory, item_type: ItemType, inventory_slot_index: int):
+    def __init__(self, ui_render: DrawableArea, rect: Rect, image, tooltip: Optional[TooltipGraphics],
+                 slot_equipment_category: Optional[ItemEquipmentCategory], item_type: Optional[ItemType],
+                 inventory_slot_index: int):
         super().__init__(rect)
         self._ui_render = ui_render
         self._rect_highlighted = Rect(self.rect.x - 1, self.rect.y - 1, self.rect.w + 1, self.rect.h + 1)
@@ -387,7 +389,7 @@ class ItemIcon(UiComponent):
 
 class MapEditorIcon(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, font, user_input_key: str,
-                 map_editor_entity_id: int, tooltip: TooltipGraphics):
+                 map_editor_entity_id: int, tooltip: Optional[TooltipGraphics]):
         super().__init__(rect)
         self._ui_render = ui_render
         self._rect_highlighted = Rect(self.rect.x - 1, self.rect.y - 1, self.rect.w + 1, self.rect.h + 1)
@@ -412,8 +414,8 @@ class MapEditorIcon(UiComponent):
 
 
 class StatBar(UiComponent):
-    def __init__(self, ui_render: DrawableArea, rect: Rect, color: Tuple[int, int, int], tooltip: TooltipGraphics,
-                 value: int, max_value: int, show_numbers: bool, font):
+    def __init__(self, ui_render: DrawableArea, rect: Rect, color: Tuple[int, int, int],
+                 tooltip: Optional[TooltipGraphics], value: int, max_value: int, show_numbers: bool, font):
         super().__init__(rect)
         self.ui_render = ui_render
         self.color = color
@@ -591,8 +593,8 @@ class ControlsWindow(UiWindow):
 
 
 class StatsWindow(UiWindow):
-    def __init__(self, ui_render: DrawableArea, font_header, font_details, player_state: PlayerState,
-                 player_speed_multiplier: float, hero_id: HeroId, level: int):
+    def __init__(self, ui_render: DrawableArea, font_header, font_details, player_state: Optional[PlayerState],
+                 player_speed_multiplier: float, hero_id: Optional[HeroId], level: int):
         super().__init__()
         self.ui_render = ui_render
         self.rect = Rect(365, -380, 320, 330)

@@ -264,6 +264,7 @@ class MapEditorView:
                 self._entity_icon_hovered_by_mouse = entity
                 return
 
+        # noinspection PyTypeChecker
         for component in self._checkboxes + self._buttons + self._tab_buttons:
             if component.contains(mouse_ui_pos):
                 self._on_hover_component(component)
@@ -325,6 +326,7 @@ class MapEditorView:
             self._user_state = UserState.placing_entity(self._entity_icon_hovered_by_mouse)
 
         self._is_mouse_button_down = True
+        # noinspection PyTypeChecker
         if self._hovered_component in self._checkboxes + self._buttons:
             return self._hovered_component.on_click()
         if self._hovered_component == self._minimap:
@@ -468,6 +470,7 @@ class MapEditorView:
         self._minimap.update_player_position(player_position)
         self._minimap.update_world_area(self.world_area)
 
+        # noinspection PyTypeChecker
         for component in self._checkboxes + self._tab_buttons + self._buttons + [self._minimap]:
             component.render()
 

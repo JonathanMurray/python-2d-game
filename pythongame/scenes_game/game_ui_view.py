@@ -303,6 +303,7 @@ class GameUiView:
     def _check_for_hovered_components(self):
         mouse_ui_position = self._translate_screen_position_to_ui(self.mouse_screen_position)
 
+        # noinspection PyTypeChecker
         simple_components = [self.healthbar, self.manabar, self.sound_checkbox, self.save_button,
                              self.fullscreen_checkbox] + self.ability_icons + self.toggle_buttons
 
@@ -311,6 +312,7 @@ class GameUiView:
                 self._on_hover_component(component)
                 return
         # TODO Unify hover handling for consumables/items
+        # noinspection PyTypeChecker
         for icon in self.consumable_icons + self.inventory_icons:
             collision_offset = icon.get_collision_offset(mouse_ui_position)
             if collision_offset:

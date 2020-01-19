@@ -98,7 +98,8 @@ class Main:
             flags = flags | pygame.FULLSCREEN | pygame.HWSURFACE
         return pygame.display.set_mode(SCREEN_SIZE, flags)
 
-    def quit_game(self):
+    @staticmethod
+    def quit_game():
         pygame.quit()
         sys.exit()
 
