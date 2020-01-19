@@ -8,7 +8,7 @@ from pygame.rect import Rect
 from generate_dungeon import Grid
 from pythongame.core.common import Direction, Sprite, UiIconSprite
 from pythongame.core.common import PortraitIconSprite
-from pythongame.core.game_data import ITEMS, CONSUMABLES
+from pythongame.core.game_data import ITEMS, CONSUMABLES, NON_PLAYER_CHARACTERS
 from pythongame.core.item_inventory import ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.image_loading import ImageWithRelativePosition
@@ -231,6 +231,9 @@ class MapEditorView:
                 elif entity.consumable_type is not None:
                     data = CONSUMABLES[entity.consumable_type]
                     tooltip = TooltipGraphics.create_for_consumable(self._ui_render, data, (x, y))
+                elif entity.npc_type is not None:
+                    data = NON_PLAYER_CHARACTERS[entity.npc_type]
+                    tooltip = TooltipGraphics.create_for_npc(self._ui_render, entity.npc_type, data, (x, y))
                 else:
                     tooltip = None
                 icon = self._create_map_editor_icon(

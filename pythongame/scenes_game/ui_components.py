@@ -6,8 +6,9 @@ import pygame
 from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, ItemType, AbilityType, PortraitIconSprite, HeroId, Millis, \
-    PeriodicTimer
-from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData, ItemData
+    PeriodicTimer, NpcType
+from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData, ItemData, NpcData, \
+    NpcCategory
 from pythongame.core.game_state import PlayerState, Quest
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.math import get_relative_pos_within_rect
@@ -261,7 +262,17 @@ class TooltipGraphics:
 
     @staticmethod
     def create_for_consumable(ui_render: DrawableArea, data: ConsumableData, bottom_left: Tuple[int, int]):
-        return TooltipGraphics(ui_render, COLOR_WHITE, data.name, [data.description], bottom_left)
+        return TooltipGraphics(ui_render, COLOR_WHITE, data.name, [data.description], bottom_left=bottom_left)
+
+    @staticmethod
+    def create_for_npc(ui_render: DrawableArea, npc_type: NpcType, data: NpcData, bottom_left: Tuple[int, int]):
+        if data.npc_category == NpcCategory.ENEMY:
+            first_line = "(Boss)" if data.is_boss else "(Enemy)"
+            details = [first_line, str(data.max_health) + " Health", str(data.exp_reward) + " Exp"]
+            return TooltipGraphics(ui_render, COLOR_WHITE, npc_type.name, details, bottom_left=bottom_left)
+        elif data.npc_category == NpcCategory.NEUTRAL:
+            details = ["(Neutral NPC)"]
+            return TooltipGraphics(ui_render, COLOR_WHITE, npc_type.name, details, bottom_left=bottom_left)
 
 
 class AbilityIcon(UiComponent):
