@@ -902,6 +902,9 @@ class QuestsWindow(UiWindow):
             self._ui_render.text(self._font_details, "[Completed]", (x_left, y + 20))
             y += 70
 
+        if not self.active_quests and not self.completed_quests:
+            self._ui_render.text(self._font_header, "[Talk to NPCs for quests]", (x_left, y), (220, 220, 250))
+
     def _render_header(self, pos: Tuple[int, int], text: str):
         w = 135
         h = 20
