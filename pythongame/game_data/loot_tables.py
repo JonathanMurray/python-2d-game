@@ -88,9 +88,9 @@ LOOT_POTIONS_2 = [
 ]
 
 LOOT_TABLE_1 = LootTable([
-    LootGroup(1, [LootEntry.money(1), LootEntry.money(2)], 0.1),
-    LootGroup(1, LOOT_POTIONS_1, 0.05),
-    LootGroup(1, LOOT_ITEMS_1, 0.05),
+    LootGroup(1, [LootEntry.money(1), LootEntry.money(2), LootEntry.money(3)], 0.1),
+    LootGroup(1, LOOT_POTIONS_1, 0.03),
+    LootGroup(1, LOOT_ITEMS_1, 0.1),
 ])
 
 LOOT_TABLE_2 = LootTable([

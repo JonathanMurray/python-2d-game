@@ -51,7 +51,7 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
     armor_per_level = 0.3
     level_bonus = PlayerLevelBonus(health_per_level, mana_per_level, armor_per_level)
     armor = 1
-    dodge_chance = 0
+    dodge_chance = 0.05
     consumable_slots = {
         1: [],
         2: [],
