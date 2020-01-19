@@ -1010,9 +1010,9 @@ class Minimap(UiComponent):
         wall_positions_ratio = [get_relative_pos_within_rect(pos, self._world_area)
                                 for pos in self._seen_wall_positions]
 
-        self._wall_pixel_positions = [(self._rect_inner.x + pos[0] * self._rect_inner.w,
-                                       self._rect_inner.y + pos[1] * self._rect_inner.h)
-                                      for pos in wall_positions_ratio]
+        self._wall_pixel_positions = set([(int(self._rect_inner.x + pos[0] * self._rect_inner.w),
+                                           int(self._rect_inner.y + pos[1] * self._rect_inner.h))
+                                          for pos in wall_positions_ratio])
 
     def get_position_ratio(self, point: Tuple[int, int]) -> Tuple[float, float]:
         return (point[0] - self.rect.x) / self.rect.w, (point[1] - self.rect.y) / self.rect.h

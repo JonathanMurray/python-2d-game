@@ -427,7 +427,6 @@ class MapEditorView:
             num_walls: int,
             num_decorations: int,
             npc_positions: List[Tuple[int, int]],
-            wall_positions: List[Tuple[int, int]],
             player_position: Tuple[int, int],
             grid: Grid,
             named_world_positions: Dict[Tuple[int, int], str],
@@ -483,7 +482,6 @@ class MapEditorView:
         for i, entry in enumerate(debug_entries):
             self._screen_render.text(self._font_debug_info, entry, (10, 12 + i * 20))
 
-        self._minimap.set_walls(wall_positions)
         self._minimap.update_camera_area(self.camera_world_area)
         self._minimap.update_npc_positions(npc_positions)
         self._minimap.update_player_position(player_position)
@@ -520,6 +518,9 @@ class MapEditorView:
         for tile in self._smart_floor_tiles_to_delete:
             rect = Rect(tile[0] - x_camera, tile[1] - y_camera, tile[2], tile[3])
             self._screen_render.rect((250, 180, 180), rect, 2)
+
+    def update_wall_positions(self, wall_positions):
+        self._minimap.set_walls(wall_positions)
 
     def _render_map_editor_world_entity_at_position(self, sprite: Sprite, position: Tuple[int, int]):
         image_with_relative_position = self._get_image_for_sprite(sprite, Direction.DOWN, 0)

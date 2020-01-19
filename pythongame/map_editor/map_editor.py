@@ -79,6 +79,7 @@ class MapEditor:
 
         self.grid_cell_size = possible_grid_cell_sizes[grid_cell_size_index]
         self.grid: Grid = None
+        self.ui_view: MapEditorView = None
         self.game_state: GameState = None
 
         if Path(self.map_file_path).exists():
@@ -118,11 +119,12 @@ class MapEditor:
 
         self.render_outlines = False
 
-        ui_view = MapEditorView(
+        self.ui_view = MapEditorView(
             pygame_screen, self.game_state.camera_world_area, SCREEN_SIZE, images_by_sprite, images_by_ui_sprite,
             images_by_portrait_sprite, self.game_state.entire_world_area,
             self.game_state.player_entity.get_center_position(),
             ENTITIES_BY_TYPE, self.grid_cell_size, self.map_file_path)
+        self._notify_ui_of_new_wall_positions()
 
         camera_move_distance = 75  # must be a multiple of the grid size
 
@@ -140,7 +142,7 @@ class MapEditor:
                     sys.exit()
 
                 if event.type == pygame.MOUSEMOTION:
-                    action = ui_view.handle_mouse_movement(event.pos)
+                    action = self.ui_view.handle_mouse_movement(event.pos)
                     if action:
                         self._handle_action(action, self.grid_cell_size)
 
@@ -152,9 +154,9 @@ class MapEditor:
                     elif event.key == pygame.K_PLUS:
                         grid_cell_size_index = (grid_cell_size_index + 1) % len(possible_grid_cell_sizes)
                         grid_cell_size = possible_grid_cell_sizes[grid_cell_size_index]
-                        ui_view.grid_cell_size = grid_cell_size
+                        self.ui_view.grid_cell_size = grid_cell_size
                     else:
-                        ui_view.handle_key_down(event.key)
+                        self.ui_view.handle_key_down(event.key)
 
                 if event.type == pygame.KEYUP:
                     if event.key in held_down_arrow_keys:
@@ -162,9 +164,9 @@ class MapEditor:
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == PYGAME_MOUSE_LEFT_BUTTON:
-                        action = ui_view.handle_mouse_left_click()
+                        action = self.ui_view.handle_mouse_left_click()
                     elif event.button == PYGAME_MOUSE_RIGHT_BUTTON:
-                        action = ui_view.handle_mouse_right_click()
+                        action = self.ui_view.handle_mouse_right_click()
                     else:
                         action = None
                     if action:
@@ -172,9 +174,9 @@ class MapEditor:
 
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == PYGAME_MOUSE_LEFT_BUTTON:
-                        action = ui_view.handle_mouse_left_release()
+                        action = self.ui_view.handle_mouse_left_release()
                     elif event.button == PYGAME_MOUSE_RIGHT_BUTTON:
-                        action = ui_view.handle_mouse_right_release()
+                        action = self.ui_view.handle_mouse_right_release()
                     else:
                         action = None
                     if action:
@@ -195,8 +197,8 @@ class MapEditor:
                 if pygame.K_UP in held_down_arrow_keys:
                     self.game_state.translate_camera_position((0, -camera_move_distance))
 
-            ui_view.camera_world_area = self.game_state.camera_world_area
-            ui_view.world_area = self.game_state.entire_world_area
+            self.ui_view.camera_world_area = self.game_state.camera_world_area
+            self.ui_view.world_area = self.game_state.entire_world_area
 
             # RENDER
 
@@ -215,7 +217,6 @@ class MapEditor:
                 entire_world_area=self.game_state.entire_world_area,
                 entity_action_text=None)
 
-            wall_positions = [w.world_entity.get_position() for w in self.game_state.walls_state.walls]
             npc_positions = [npc.world_entity.get_position() for npc in self.game_state.non_player_characters]
 
             named_portal_positions = {p.world_entity.get_position(): p.portal_id.name for p in game_state.portals}
@@ -224,18 +225,21 @@ class MapEditor:
             named_world_positions = {**named_portal_positions, **named_npc_positions}
 
             fps_string = str(int(clock.get_fps()))
-            ui_view.render(
+            self.ui_view.render(
                 num_enemies=len(self.game_state.non_player_characters),
                 num_walls=len(self.game_state.walls_state.walls),
                 num_decorations=len(self.game_state.decorations_state.decoration_entities),
                 npc_positions=npc_positions,
-                wall_positions=wall_positions,
                 player_position=self.game_state.player_entity.get_center_position(),
                 grid=self.grid,
                 named_world_positions=named_world_positions,
                 fps_string=fps_string)
 
             pygame.display.flip()
+
+    def _notify_ui_of_new_wall_positions(self):
+        wall_positions = [w.world_entity.get_position() for w in self.game_state.walls_state.walls]
+        self.ui_view.update_wall_positions(wall_positions)
 
     def save(self):
         grid_string = self.grid.serialize()
@@ -258,7 +262,7 @@ class MapEditor:
             elif entity_being_placed.npc_type:
                 _add_npc(entity_being_placed.npc_type, self.game_state, action.world_position)
             elif entity_being_placed.wall_type:
-                _set_wall(self.game_state, action.world_position, entity_being_placed.wall_type)
+                self._set_wall(action.world_position, entity_being_placed.wall_type)
             elif entity_being_placed.consumable_type:
                 _add_consumable(entity_being_placed.consumable_type, self.game_state,
                                 action.world_position)
@@ -276,7 +280,7 @@ class MapEditor:
             else:
                 raise Exception("Unknown entity: " + str(entity_being_placed))
         elif isinstance(action, DeleteEntities):
-            _delete_map_entities_from_position(self.game_state, action.world_position)
+            self._delete_map_entities_from_position(action.world_position)
         elif isinstance(action, DeleteDecorations):
             _delete_map_decorations_from_position(self.game_state, action.world_position)
         elif isinstance(action, ToggleOutlines):
@@ -292,6 +296,8 @@ class MapEditor:
         self.game_state = game_state
         self.game_state.center_camera_on_player()
         self.game_state.snap_camera_to_grid(self.grid_cell_size)
+        if self.ui_view:  # UI view may not have been created yet at this time
+            self._notify_ui_of_new_wall_positions()
 
     def build_grid_from_game_state(self):
         print("Creating smart floor tiles ...")
@@ -335,7 +341,7 @@ class MapEditor:
                     _add_decoration(Sprite.DECORATION_GROUND_STONE, self.game_state, pos)
                 if self.grid.is_wall((x, y)):
                     wall_type = determine_wall_type(self.grid, (x, y))
-                    _set_wall(self.game_state, pos, wall_type)
+                    self._set_wall(pos, wall_type)
                 if self.grid.is_floor((x, y)):
                     # print("deleting wall from cell (%i,%i)" % (pos))
                     self._delete_wall(pos)
@@ -362,12 +368,44 @@ class MapEditor:
                         _delete_map_decorations_from_position(self.game_state, pos)
                 if self.grid.is_wall((x, y)):
                     wall_type = determine_wall_type(self.grid, (x, y))
-                    _set_wall(self.game_state, pos, wall_type)
+                    self._set_wall(pos, wall_type)
                 else:
                     self._delete_wall(pos)
 
     def _delete_wall(self, world_position: Tuple[int, int]):
         self.game_state.walls_state.remove_all_from_position(world_position)
+        self._notify_ui_of_new_wall_positions()
+
+    def _set_wall(self, world_pos: Tuple[int, int], wall_type: WallType):
+        existing_walls = self.game_state.walls_state.get_walls_at_position(world_pos)
+        if len(existing_walls) > 0:
+            if existing_walls[0].wall_type == wall_type:
+                return
+            for w in existing_walls:
+                self.game_state.walls_state.remove_wall(w)
+        wall = create_wall(wall_type, world_pos)
+        self.game_state.walls_state.add_wall(wall)
+        self._notify_ui_of_new_wall_positions()
+
+    def _delete_map_entities_from_position(self, snapped_mouse_world_position: Tuple[int, int]):
+        self.game_state.walls_state.remove_all_from_position(snapped_mouse_world_position)
+        for enemy in [e for e in self.game_state.non_player_characters if
+                      e.world_entity.get_position() == snapped_mouse_world_position]:
+            self.game_state.non_player_characters.remove(enemy)
+        for consumable in [p for p in self.game_state.consumables_on_ground
+                           if p.world_entity.get_position() == snapped_mouse_world_position]:
+            self.game_state.consumables_on_ground.remove(consumable)
+        for item in [i for i in self.game_state.items_on_ground
+                     if i.world_entity.get_position() == snapped_mouse_world_position]:
+            self.game_state.items_on_ground.remove(item)
+        for money_pile in [m for m in self.game_state.money_piles_on_ground
+                           if m.world_entity.get_position() == snapped_mouse_world_position]:
+            self.game_state.money_piles_on_ground.remove(money_pile)
+        for portal in [p for p in self.game_state.portals
+                       if p.world_entity.get_position() == snapped_mouse_world_position]:
+            self.game_state.portals.remove(portal)
+
+        self._notify_ui_of_new_wall_positions()
 
 
 def main(map_file_name: Optional[str]):
@@ -428,36 +466,6 @@ def _add_decoration(decoration_sprite: Sprite, game_state: GameState, snapped_mo
     if len(game_state.decorations_state.get_decorations_at_position(snapped_mouse_world_position)) == 0:
         decoration_entity = create_decoration_entity(snapped_mouse_world_position, decoration_sprite)
         game_state.decorations_state.add_decoration(decoration_entity)
-
-
-def _set_wall(game_state: GameState, world_pos: Tuple[int, int], wall_type: WallType):
-    existing_walls = game_state.walls_state.get_walls_at_position(world_pos)
-    if len(existing_walls) > 0:
-        if existing_walls[0].wall_type == wall_type:
-            return
-        for w in existing_walls:
-            game_state.walls_state.remove_wall(w)
-    wall = create_wall(wall_type, world_pos)
-    game_state.walls_state.add_wall(wall)
-
-
-def _delete_map_entities_from_position(game_state: GameState, snapped_mouse_world_position: Tuple[int, int]):
-    game_state.walls_state.remove_all_from_position(snapped_mouse_world_position)
-    for enemy in [e for e in game_state.non_player_characters if
-                  e.world_entity.get_position() == snapped_mouse_world_position]:
-        game_state.non_player_characters.remove(enemy)
-    for consumable in [p for p in game_state.consumables_on_ground
-                       if p.world_entity.get_position() == snapped_mouse_world_position]:
-        game_state.consumables_on_ground.remove(consumable)
-    for item in [i for i in game_state.items_on_ground
-                 if i.world_entity.get_position() == snapped_mouse_world_position]:
-        game_state.items_on_ground.remove(item)
-    for money_pile in [m for m in game_state.money_piles_on_ground
-                       if m.world_entity.get_position() == snapped_mouse_world_position]:
-        game_state.money_piles_on_ground.remove(money_pile)
-    for portal in [p for p in game_state.portals
-                   if p.world_entity.get_position() == snapped_mouse_world_position]:
-        game_state.portals.remove(portal)
 
 
 def _delete_map_decorations_from_position(game_state: GameState, world_pos: Tuple[int, int]):
