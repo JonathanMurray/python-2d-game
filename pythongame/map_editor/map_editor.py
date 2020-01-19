@@ -218,6 +218,12 @@ class MapEditor:
             wall_positions = [w.world_entity.get_position() for w in self.game_state.walls_state.walls]
             npc_positions = [npc.world_entity.get_position() for npc in self.game_state.non_player_characters]
 
+            named_portal_positions = {p.world_entity.get_position(): p.portal_id.name for p in game_state.portals}
+            named_npc_positions = {npc.world_entity.get_position(): npc.npc_type.name for npc in
+                                   game_state.non_player_characters}
+            named_world_positions = {**named_portal_positions, **named_npc_positions}
+
+            fps_string = str(int(clock.get_fps()))
             ui_view.render(
                 num_enemies=len(self.game_state.non_player_characters),
                 num_walls=len(self.game_state.walls_state.walls),
@@ -225,7 +231,9 @@ class MapEditor:
                 npc_positions=npc_positions,
                 wall_positions=wall_positions,
                 player_position=self.game_state.player_entity.get_center_position(),
-                grid=self.grid)
+                grid=self.grid,
+                named_world_positions=named_world_positions,
+                fps_string=fps_string)
 
             pygame.display.flip()
 

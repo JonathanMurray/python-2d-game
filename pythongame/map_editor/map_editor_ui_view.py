@@ -429,7 +429,9 @@ class MapEditorView:
             npc_positions: List[Tuple[int, int]],
             wall_positions: List[Tuple[int, int]],
             player_position: Tuple[int, int],
-            grid: Grid):
+            grid: Grid,
+            named_world_positions: Dict[Tuple[int, int], str],
+            fps_string: str):
 
         x_camera = self.camera_world_area.x
         y_camera = self.camera_world_area.y
@@ -451,6 +453,8 @@ class MapEditorView:
                                     GRID_CELL_SIZE)
                         self._screen_render.rect((100, 180, 250), rect, 2)
 
+        moused_over_names = [s for (p, s) in named_world_positions.items() if p == self._snapped_mouse_world_pos]
+
         self._screen_render.rect(COLOR_BLACK, Rect(0, 0, self._camera_size[0], self._camera_size[1]), 3)
         self._screen_render.rect_filled(COLOR_BLACK, Rect(0, self._camera_size[1], self._screen_size[0],
                                                           self._screen_size[1] - self._camera_size[1]))
@@ -467,13 +471,15 @@ class MapEditorView:
         debug_entries = [
             self._map_file_path,
             "--------------------------------",
+            fps_string + " fps",
             "# enemies: " + str(num_enemies),
             "# walls: " + str(num_walls),
             "# decorations: " + str(num_decorations),
             "Cell size: " + str(self.grid_cell_size),
-            "Mouse world pos: " + str(self._snapped_mouse_world_pos)
+            "Mouse world pos: " + str(self._snapped_mouse_world_pos),
+            "Mouse over: " + (moused_over_names[0] if moused_over_names else "...")
         ]
-        self._screen_render.rect_transparent(Rect(0, 0, 240, 5 + len(debug_entries) * 22), 100, COLOR_BLACK)
+        self._screen_render.rect_transparent(Rect(0, 0, 280, 5 + len(debug_entries) * 22), 150, COLOR_BLACK)
         for i, entry in enumerate(debug_entries):
             self._screen_render.text(self._font_debug_info, entry, (10, 12 + i * 20))
 
