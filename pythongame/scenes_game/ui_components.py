@@ -278,6 +278,11 @@ class TooltipGraphics:
     def create_for_portal(ui_render: DrawableArea, portal_id: PortalId, bottom_left: Tuple[int, int]):
         return TooltipGraphics(ui_render, COLOR_WHITE, portal_id.name, [], bottom_left=bottom_left)
 
+    @staticmethod
+    def create_for_smart_floor_tile(ui_render: DrawableArea, size: Tuple[int, int], bottom_left: Tuple[int, int]):
+        details = ["Size = " + str(size), "Create rooms and corridors. Floor tiles and walls are placed automatically!"]
+        return TooltipGraphics(ui_render, COLOR_WHITE, "\"Smart floor\"", details, bottom_left=bottom_left)
+
 
 class AbilityIcon(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, label: Optional[str], font,

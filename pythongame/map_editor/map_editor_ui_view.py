@@ -236,6 +236,8 @@ class MapEditorView:
                     tooltip = TooltipGraphics.create_for_npc(self._ui_render, entity.npc_type, data, (x, y))
                 elif entity.portal_id is not None:
                     tooltip = TooltipGraphics.create_for_portal(self._ui_render, entity.portal_id, (x,y))
+                elif entity.is_smart_floor_tile:
+                    tooltip = TooltipGraphics.create_for_smart_floor_tile(self._ui_render, entity.entity_size, (x,y))
                 else:
                     tooltip = None
                 icon = self._create_map_editor_icon(
