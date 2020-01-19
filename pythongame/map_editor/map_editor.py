@@ -31,6 +31,9 @@ register_all_game_data()
 
 GRID_CELL_SIZE = 25
 
+PYGAME_MOUSE_LEFT_BUTTON = 1
+PYGAME_MOUSE_RIGHT_BUTTON = 3
+
 ADVANCED_ENTITIES = [
     MapEditorWorldEntity.smart_floor_tile(Sprite.MAP_EDITOR_SMART_FLOOR_1, 25),
     MapEditorWorldEntity.smart_floor_tile(Sprite.MAP_EDITOR_SMART_FLOOR_2, 50),
@@ -158,12 +161,22 @@ class MapEditor:
                         held_down_arrow_keys.remove(event.key)
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    action = ui_view.handle_mouse_click()
+                    if event.button == PYGAME_MOUSE_LEFT_BUTTON:
+                        action = ui_view.handle_mouse_left_click()
+                    elif event.button == PYGAME_MOUSE_RIGHT_BUTTON:
+                        action = ui_view.handle_mouse_right_click()
+                    else:
+                        action = None
                     if action:
                         self._handle_action(action, self.grid_cell_size)
 
                 elif event.type == pygame.MOUSEBUTTONUP:
-                    action = ui_view.handle_mouse_release()
+                    if event.button == PYGAME_MOUSE_LEFT_BUTTON:
+                        action = ui_view.handle_mouse_left_release()
+                    elif event.button == PYGAME_MOUSE_RIGHT_BUTTON:
+                        action = ui_view.handle_mouse_right_release()
+                    else:
+                        action = None
                     if action:
                         self._handle_action(action, self.grid_cell_size)
 

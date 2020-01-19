@@ -95,12 +95,10 @@ class UserState:
     def __init__(self,
                  placing_entity: Optional[MapEditorWorldEntity] = None,
                  deleting_entities: bool = False,
-                 deleting_decorations: bool = False,
-                 deleting_smart_floor_tiles: bool = False):
+                 deleting_decorations: bool = False):
         self.placing_entity = placing_entity
         self.deleting_entities = deleting_entities
         self.deleting_decorations = deleting_decorations
-        self.deleting_smart_floor_tiles = deleting_smart_floor_tiles
 
     @staticmethod
     def placing_entity(entity: MapEditorWorldEntity):
@@ -113,10 +111,6 @@ class UserState:
     @staticmethod
     def deleting_decorations():
         return UserState(deleting_decorations=True)
-
-    @staticmethod
-    def deleting_smart_floor_tiles():
-        return UserState(deleting_smart_floor_tiles=True)
 
 
 class MapEditorView:
@@ -176,13 +170,12 @@ class MapEditorView:
         ]
         self._buttons = [
             Button(self._ui_render, Rect(15, 125, 140, 20), "Generate random", lambda: GenerateRandomMap()),
-            Button(self._ui_render, Rect(15, 150, 140, 20), "Save", lambda: SaveMap()),
-            Button(self._ui_render, Rect(15, 175, 140, 20), "Delete smart floor",
-                   lambda: self._on_click_deleting_smart_floor_tiles()),
+            Button(self._ui_render, Rect(15, 150, 140, 20), "Save", lambda: SaveMap())
         ]
 
         # USER INPUT STATE
-        self._is_mouse_button_down = False
+        self._is_left_mouse_button_down = False
+        self._is_right_mouse_button_down = False
         self._mouse_screen_pos = (0, 0)
         self._hovered_component = None
         self._user_state: UserState = UserState.deleting_entities()
@@ -200,9 +193,6 @@ class MapEditorView:
         self.grid_cell_size = grid_cell_size
 
         self._setup_ui_components()
-
-    def _on_click_deleting_smart_floor_tiles(self):
-        self._user_state = UserState.deleting_smart_floor_tiles()
 
     def _setup_ui_components(self):
         icon_space = 5
@@ -235,9 +225,9 @@ class MapEditorView:
                     data = NON_PLAYER_CHARACTERS[entity.npc_type]
                     tooltip = TooltipGraphics.create_for_npc(self._ui_render, entity.npc_type, data, (x, y))
                 elif entity.portal_id is not None:
-                    tooltip = TooltipGraphics.create_for_portal(self._ui_render, entity.portal_id, (x,y))
+                    tooltip = TooltipGraphics.create_for_portal(self._ui_render, entity.portal_id, (x, y))
                 elif entity.is_smart_floor_tile:
-                    tooltip = TooltipGraphics.create_for_smart_floor_tile(self._ui_render, entity.entity_size, (x,y))
+                    tooltip = TooltipGraphics.create_for_smart_floor_tile(self._ui_render, entity.entity_size, (x, y))
                 else:
                     tooltip = None
                 icon = self._create_map_editor_icon(
@@ -279,12 +269,12 @@ class MapEditorView:
 
         if self._minimap.contains(mouse_ui_pos):
             self._on_hover_component(self._minimap)
-            if self._is_mouse_button_down:
+            if self._is_left_mouse_button_down:
                 position_ratio = self._minimap.get_position_ratio(mouse_ui_pos)
                 return SetCameraPosition(position_ratio)
             return
 
-        if self._is_mouse_button_down and self._is_snapped_mouse_within_world and not self._is_snapped_mouse_over_ui:
+        if self._is_left_mouse_button_down and self._is_snapped_mouse_within_world and not self._is_snapped_mouse_over_ui:
             if self._user_state.placing_entity:
                 if self._user_state.placing_entity.wall_type or self._user_state.placing_entity.decoration_sprite:
                     return AddEntity(self._snapped_mouse_world_pos, self._user_state.placing_entity)
@@ -294,10 +284,13 @@ class MapEditorView:
                 return DeleteEntities(self._snapped_mouse_world_pos)
             elif self._user_state.deleting_decorations:
                 return DeleteDecorations(self._snapped_mouse_world_pos)
-            elif self._user_state.deleting_smart_floor_tiles:
-                return self._delete_smart_floor_tiles()
             else:
                 raise Exception("Unhandled user state: " + str(self._user_state))
+
+        if self._is_right_mouse_button_down and self._is_snapped_mouse_within_world and not self._is_snapped_mouse_over_ui:
+            if self._user_state.placing_entity:
+                if self._user_state.placing_entity.is_smart_floor_tile:
+                    return self._delete_smart_floor_tiles()
 
     def _get_map_editor_entity_by_id(self, map_editor_entity_id: int):
         entity = [e for e in self._entities_by_type[self._shown_tab]
@@ -313,7 +306,7 @@ class MapEditorView:
 
     def _delete_smart_floor_tiles(self):
         pos = self._snapped_mouse_world_pos
-        tile_size = GRID_CELL_SIZE
+        tile_size = self._user_state.placing_entity.entity_size[0]
         for x in range(pos[0], pos[0] + tile_size, GRID_CELL_SIZE):
             for y in range(pos[1], pos[1] + tile_size, GRID_CELL_SIZE):
                 self._smart_floor_tiles_to_delete.append((x, y, GRID_CELL_SIZE, GRID_CELL_SIZE))
@@ -327,12 +320,12 @@ class MapEditorView:
         self._hovered_component = component
         self._hovered_component.hovered = True
 
-    def handle_mouse_click(self) -> Optional[MapEditorAction]:
+    def handle_mouse_left_click(self) -> Optional[MapEditorAction]:
 
         if self._entity_icon_hovered_by_mouse:
             self._user_state = UserState.placing_entity(self._entity_icon_hovered_by_mouse)
 
-        self._is_mouse_button_down = True
+        self._is_left_mouse_button_down = True
         # noinspection PyTypeChecker
         if self._hovered_component in self._checkboxes + self._buttons:
             return self._hovered_component.on_click()
@@ -356,20 +349,33 @@ class MapEditorView:
             return DeleteEntities(self._snapped_mouse_world_pos)
         elif self._user_state.deleting_decorations:
             return DeleteDecorations(self._snapped_mouse_world_pos)
-        elif self._user_state.deleting_smart_floor_tiles:
-            if self._is_snapped_mouse_within_world and not self._is_snapped_mouse_over_ui:
-                return self._delete_smart_floor_tiles()
         else:
             raise Exception("Unhandled user state: %s" % self._user_state)
 
-    def handle_mouse_release(self):
-        self._is_mouse_button_down = False
+    def handle_mouse_right_click(self) -> Optional[MapEditorAction]:
+
+        self._is_right_mouse_button_down = True
+
+        if self._user_state.placing_entity:
+            entity_being_placed = self._user_state.placing_entity
+            if self._is_snapped_mouse_within_world and not self._is_snapped_mouse_over_ui:
+                if entity_being_placed.is_smart_floor_tile:
+                    return self._delete_smart_floor_tiles()
+
+    def handle_mouse_left_release(self):
+        self._is_left_mouse_button_down = False
         if self._is_snapped_mouse_within_world and not self._is_snapped_mouse_over_ui:
-            if self._user_state.placing_entity and self._user_state.placing_entity.is_smart_floor_tile:
+            entity = self._user_state.placing_entity
+            if entity and entity.is_smart_floor_tile:
                 tiles = list(self._smart_floor_tiles_to_add)
                 self._smart_floor_tiles_to_add.clear()
                 return AddSmartFloorTiles(tiles)
-            elif self._user_state.deleting_smart_floor_tiles:
+
+    def handle_mouse_right_release(self):
+        self._is_right_mouse_button_down = False
+        if self._is_snapped_mouse_within_world and not self._is_snapped_mouse_over_ui:
+            entity = self._user_state.placing_entity
+            if entity and entity.is_smart_floor_tile:
                 tiles = list(self._smart_floor_tiles_to_delete)
                 self._smart_floor_tiles_to_delete.clear()
                 return DeleteSmartFloorTiles(tiles)
@@ -428,7 +434,9 @@ class MapEditorView:
         x_camera = self.camera_world_area.x
         y_camera = self.camera_world_area.y
 
-        if self._user_state.placing_entity and self._user_state.placing_entity.is_smart_floor_tile or self._user_state.deleting_smart_floor_tiles:
+        placing_entity = self._user_state.placing_entity
+
+        if placing_entity and placing_entity.is_smart_floor_tile:
 
             xmin = (x_camera - self.world_area.x) // GRID_CELL_SIZE
             xmax = xmin + self.camera_world_area.w // GRID_CELL_SIZE
@@ -449,8 +457,6 @@ class MapEditorView:
 
         self.button_delete_entities.render(self._user_state.deleting_entities)
         self.button_delete_decorations.render(self._user_state.deleting_decorations)
-
-        placing_entity = self._user_state.placing_entity
 
         for icon in self.entity_icons_by_type[self._shown_tab]:
             highlighted = placing_entity and placing_entity.map_editor_entity_id == icon.map_editor_entity_id
@@ -491,15 +497,14 @@ class MapEditorView:
             if not self._is_snapped_mouse_within_world:
                 self._screen_render.rect((250, 50, 0), snapped_mouse_rect, 3)
             elif placing_entity:
-                entity_being_placed = placing_entity
-                self._render_map_editor_world_entity_at_position(
-                    entity_being_placed.sprite, entity_being_placed.entity_size, self._snapped_mouse_screen_pos)
+                if not placing_entity.is_smart_floor_tile:
+                    self._render_map_editor_world_entity_at_position(
+                        placing_entity.sprite, self._snapped_mouse_screen_pos)
+                self._render_placed_entity_outline(self._snapped_mouse_screen_pos, placing_entity.entity_size)
             elif self._user_state.deleting_entities:
                 self._screen_render.rect((250, 250, 0), snapped_mouse_rect, 3)
             elif self._user_state.deleting_decorations:
                 self._screen_render.rect((0, 250, 250), snapped_mouse_rect, 3)
-            elif self._user_state.deleting_smart_floor_tiles:
-                self._screen_render.rect((250, 180, 100), snapped_mouse_rect, 2)
             else:
                 raise Exception("Unhandled user_state: " + str(self._user_state))
 
@@ -510,11 +515,12 @@ class MapEditorView:
             rect = Rect(tile[0] - x_camera, tile[1] - y_camera, tile[2], tile[3])
             self._screen_render.rect((250, 180, 180), rect, 2)
 
-    def _render_map_editor_world_entity_at_position(self, sprite: Sprite, entity_size: Tuple[int, int],
-                                                    position: Tuple[int, int]):
+    def _render_map_editor_world_entity_at_position(self, sprite: Sprite, position: Tuple[int, int]):
         image_with_relative_position = self._get_image_for_sprite(sprite, Direction.DOWN, 0)
         sprite_position = sum_of_vectors(position, image_with_relative_position.position_relative_to_entity)
         self._screen_render.image(image_with_relative_position.image, sprite_position)
+
+    def _render_placed_entity_outline(self, position: Tuple[int, int], entity_size: Tuple[int, int]):
         self._screen_render.rect((50, 250, 0), Rect(position[0], position[1], entity_size[0], entity_size[1]), 3)
 
     def _create_map_editor_icon(self, rect: Rect, user_input_key: str,

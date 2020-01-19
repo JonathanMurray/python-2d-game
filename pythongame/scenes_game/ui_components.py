@@ -280,7 +280,9 @@ class TooltipGraphics:
 
     @staticmethod
     def create_for_smart_floor_tile(ui_render: DrawableArea, size: Tuple[int, int], bottom_left: Tuple[int, int]):
-        details = ["Size = " + str(size), "Create rooms and corridors. Floor tiles and walls are placed automatically!"]
+        details = ["Size = " + str(size),
+                   "Create rooms and corridors easily!",
+                   "Left-click to add and right-click to erase."]
         return TooltipGraphics(ui_render, COLOR_WHITE, "\"Smart floor\"", details, bottom_left=bottom_left)
 
 
