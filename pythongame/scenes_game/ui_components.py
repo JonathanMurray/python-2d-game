@@ -6,7 +6,7 @@ import pygame
 from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, ItemType, AbilityType, PortraitIconSprite, HeroId, Millis, \
-    PeriodicTimer, NpcType
+    PeriodicTimer, NpcType, PortalId
 from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData, ItemData, NpcData, \
     NpcCategory
 from pythongame.core.game_state import PlayerState, Quest
@@ -273,6 +273,10 @@ class TooltipGraphics:
         elif data.npc_category == NpcCategory.NEUTRAL:
             details = ["(Neutral NPC)"]
             return TooltipGraphics(ui_render, COLOR_WHITE, npc_type.name, details, bottom_left=bottom_left)
+
+    @staticmethod
+    def create_for_portal(ui_render: DrawableArea, portal_id: PortalId, bottom_left: Tuple[int, int]):
+        return TooltipGraphics(ui_render, COLOR_WHITE, portal_id.name, [], bottom_left=bottom_left)
 
 
 class AbilityIcon(UiComponent):

@@ -234,6 +234,8 @@ class MapEditorView:
                 elif entity.npc_type is not None:
                     data = NON_PLAYER_CHARACTERS[entity.npc_type]
                     tooltip = TooltipGraphics.create_for_npc(self._ui_render, entity.npc_type, data, (x, y))
+                elif entity.portal_id is not None:
+                    tooltip = TooltipGraphics.create_for_portal(self._ui_render, entity.portal_id, (x,y))
                 else:
                     tooltip = None
                 icon = self._create_map_editor_icon(
