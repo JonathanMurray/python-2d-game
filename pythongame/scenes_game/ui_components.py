@@ -674,11 +674,13 @@ class StatsWindow(UiWindow):
         self._render_sub_header((x_right, y_defense), "DEFENSE")
         self._render_stat((x_right, y_defense + 25), "armor", str(floor(player_state.base_armor)),
                           str(player_state.get_effective_armor()))
-        self._render_stat((x_right, y_defense + 45), "dodge %", perc(player_state.base_dodge_chance),
+        self._render_stat((x_right, y_defense + 45), "resist %", perc(player_state.base_magic_resist_chance),
+                          perc(player_state.get_effective_magic_resist_chance()))
+        self._render_stat((x_right, y_defense + 65), "dodge %", perc(player_state.base_dodge_chance),
                           perc(player_state.get_effective_dodge_chance()))
-        self._render_stat((x_right, y_defense + 65), "block %", perc(player_state.base_block_chance),
+        self._render_stat((x_right, y_defense + 85), "block %", perc(player_state.base_block_chance),
                           perc(player_state.get_effective_block_chance()))
-        self._render_stat((x_right, y_defense + 85), "amount", player_state.block_damage_reduction)
+        self._render_stat((x_right, y_defense + 105), "amount", player_state.block_damage_reduction)
 
         y_misc = y_0 + 220
         self._render_sub_header((x_left, y_misc), "MISC.")

@@ -513,6 +513,7 @@ class SoundId(Enum):
     ENEMY_ATTACK_NECRO = 405
     ENEMY_NECROMANCER_HEAL = 406
     ENEMY_ATTACK_WAS_DODGED = 407
+    MAGIC_DAMAGE_WAS_RESISTED = 409
     DEATH_RAT = 500
     DEATH_ZOMBIE = 501
     DEATH_BOSS = 502
@@ -669,6 +670,7 @@ class HeroStat(Enum):
     PHYSICAL_DAMAGE = 11
     MAGIC_DAMAGE = 12
     BLOCK_CHANCE = 13
+    MAGIC_RESIST_CHANCE = 14
 
 
 # Use to handle timing-related boilerplate for buffs, items, enemy behaviours, etc

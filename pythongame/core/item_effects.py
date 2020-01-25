@@ -57,6 +57,8 @@ def _get_description_of_stat_modifier(hero_stat: HeroStat, delta: Union[int, flo
         return str(delta) + " block"
     elif hero_stat == HeroStat.DODGE_CHANCE:
         return "+" + str(int(delta * 100)) + "% dodge"
+    elif hero_stat == HeroStat.MAGIC_RESIST_CHANCE:
+        return "+" + str(int(delta * 100)) + "% magic resist"
     else:
         raise Exception("Unhandled stat: " + str(hero_stat))
 

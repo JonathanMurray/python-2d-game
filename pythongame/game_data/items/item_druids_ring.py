@@ -11,5 +11,5 @@ def register_druids_ring_item():
         image_file_path="resources/graphics/item_druids_ring.png",
         item_equipment_category=ItemEquipmentCategory.RING,
         name="Druid's Ring",
-        stat_modifiers={HeroStat.MANA_REGEN: 0.5, HeroStat.HEALTH_REGEN: 0.5}
+        stat_modifiers={HeroStat.MANA_REGEN: 0.5, HeroStat.HEALTH_REGEN: 0.5, HeroStat.MAGIC_RESIST_CHANCE: 0.05}
     )

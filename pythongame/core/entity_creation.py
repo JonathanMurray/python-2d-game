@@ -104,7 +104,7 @@ def create_player_state(hero_id: HeroId) -> PlayerState:
     return PlayerState(
         health_resource, mana_resource, consumable_inventory, list(data.abilities), item_inventory,
         data.new_level_abilities, data.hero_id, data.armor, data.dodge_chance, data.level_bonus, data.talents_state,
-        data.block_chance)
+        data.block_chance, 0.05)
 
 
 def create_warp_point(center_pos: Tuple[int, int], size: Tuple[int, int]) -> WarpPoint:
