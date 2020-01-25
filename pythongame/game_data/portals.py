@@ -42,7 +42,7 @@ class BeingTeleported(AbstractBuffEffect):
         return BUFF_TYPE
 
 
-def register_portal():
+def register_portals():
     original_sprite_size = (28, 62)
     scaled_sprite_size = (46, 100)
     indices_by_dir = {Direction.DOWN: [(0, 0)]}

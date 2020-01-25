@@ -5,12 +5,13 @@ from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, ITEMS, CONSUMABLES, POTION_ENTITY_SIZE, \
     WALLS, PORTALS, HEROES, NpcData
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
-    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, HealthOrManaResource, WarpPoint, Chest
+    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, HealthOrManaResource, WarpPoint, Chest, Shrine
 from pythongame.core.item_inventory import ItemInventory, ItemInventorySlot, ItemEquipmentCategory
 from pythongame.core.math import get_position_from_center_position
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.game_data.chests import CHEST_ENTITY_SIZE, CHEST_LOOT
+from pythongame.game_data.shrines import SHRINE_ENTITY_SIZE
 
 # TODO handle this (global path finder) in a better way!
 global_path_finder: GlobalPathFinder = None
@@ -61,6 +62,10 @@ def create_portal(portal_id: PortalId, pos: Tuple[int, int]) -> Portal:
 def create_chest(pos: Tuple[int, int]) -> Chest:
     # TODO Allow for other loot in chests (Currently all chests are equal)
     return Chest(WorldEntity(pos, CHEST_ENTITY_SIZE, Sprite.CHEST), CHEST_LOOT)
+
+
+def create_shrine(pos: Tuple[int, int]) -> Shrine:
+    return Shrine(WorldEntity(pos, SHRINE_ENTITY_SIZE, Sprite.SHRINE), False)
 
 
 def create_wall(wall_type: WallType, pos: Tuple[int, int]) -> Wall:

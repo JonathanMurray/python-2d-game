@@ -85,9 +85,9 @@ def _register_statue():
 
 
 def _register_stone_crosses():
-    sprites = [Sprite.WALL_STONE_CROSS, Sprite.WALL_STONE_CROSS_FLOWERS]
-    wall_types = [WallType.STONE_CROSS, WallType.STONE_CROSS_FLOWERS]
-    indices = [(14, 3), (15, 3)]
+    sprites = [Sprite.WALL_STONE_CROSS_FLOWERS]
+    wall_types = [WallType.STONE_CROSS_FLOWERS]
+    indices = [(15, 3)]
     sprite_sheet = SpriteSheet("resources/graphics/human_tileset.png")
     original_sprite_size = (32, 64)
     scaled_sprite_size = (50, 100)

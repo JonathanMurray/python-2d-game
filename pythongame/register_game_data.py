@@ -114,7 +114,8 @@ from pythongame.game_data.neutral_npcs.neutral_npc_nomad import register_nomad_n
 from pythongame.game_data.neutral_npcs.neutral_npc_sorcerer import register_sorcerer_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_warpstone_merchant import register_warpstone_merchant_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_young_sorceress import register_young_sorceress_npc
-from pythongame.game_data.portals import register_portal
+from pythongame.game_data.portals import register_portals
+from pythongame.game_data.shrines import register_shrines
 from pythongame.game_data.ui_icons import register_ui_icons
 from pythongame.game_data.walls import register_walls
 from pythongame.game_data.warp_points import register_warp_point
@@ -249,7 +250,9 @@ def register_all_game_data():
 
     register_coin()
 
-    register_portal()
+    register_portals()
+
+    register_shrines()
 
     register_warp_point()
 

@@ -708,6 +708,12 @@ class Portal:
         self.world_entity.sprite = sprite
 
 
+class Shrine:
+    def __init__(self, world_entity: WorldEntity, has_been_used: bool):
+        self.world_entity = world_entity
+        self.has_been_used = has_been_used
+
+
 class Chest:
     def __init__(self, world_entity: WorldEntity, loot_table: LootTable):
         self.world_entity = world_entity
@@ -746,7 +752,8 @@ class GameState:
                  items_on_ground: List[ItemOnGround], money_piles_on_ground: List[MoneyPileOnGround],
                  non_player_characters: List[NonPlayerCharacter], walls: List[Wall], camera_size: Tuple[int, int],
                  entire_world_area: Rect, player_state: PlayerState,
-                 decoration_entities: List[DecorationEntity], portals: List[Portal], chests: List[Chest]):
+                 decoration_entities: List[DecorationEntity], portals: List[Portal], chests: List[Chest],
+                 shrines: List[Shrine]):
         self.camera_size = camera_size
         self.camera_world_area = Rect((0, 0), self.camera_size)
         self.camera_shake: CameraShake = None
@@ -766,6 +773,7 @@ class GameState:
             self.entire_world_area, [w.world_entity for w in walls])
         self.decorations_state = DecorationsState(decoration_entities, entire_world_area)
         self.portals: List[Portal] = portals
+        self.shrines: List[Shrine] = shrines
         self.player_spawn_position: Tuple[int, int] = player_entity.get_position()
         self.warp_points: List[WarpPoint] = []
         self.chests: List[Chest] = chests
@@ -823,6 +831,7 @@ class GameState:
                          [e.world_entity for e in self.non_player_characters] + \
                          [p.world_entity for p in self.projectile_entities] + \
                          [p.world_entity for p in self.portals] + \
+                         [s.world_entity for s in self.shrines] + \
                          [w.world_entity for w in self.warp_points] + \
                          [c.world_entity for c in self.chests]
         return self.get_walls_in_sight_of_player() + other_entities
@@ -902,6 +911,7 @@ class GameState:
         walls = self.walls_state.get_walls_close_to_position(entity.get_position())
         other_entities = [e.world_entity for e in self.non_player_characters] + \
                          [self.player_entity] + walls + [p.world_entity for p in self.portals] + \
+                         [s.world_entity for s in self.shrines] + \
                          [w.world_entity for w in self.warp_points] + [c.world_entity for c in self.chests]
         collision = any([other for other in other_entities if self._entities_collide(entity, other)
                          and entity is not other])

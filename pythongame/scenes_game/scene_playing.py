@@ -4,9 +4,8 @@ import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 from pythongame.core.common import Millis, SoundId, AbstractScene, SceneTransition, NpcType
-from pythongame.core.game_data import CONSUMABLES, ITEMS, PORTALS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
-    ConsumableOnGround, ItemOnGround, Chest
+    Chest, Shrine
 from pythongame.core.hero_upgrades import pick_talent
 from pythongame.core.math import get_directions_to_position
 from pythongame.core.npc_behaviors import select_npc_action, get_dialog_data, blur_npc_action, \
@@ -16,7 +15,7 @@ from pythongame.core.user_input import ActionTryUseAbility, ActionTryUsePotion, 
     ActionMoveInDirection, ActionStopMoving, ActionPauseGame, ActionToggleRenderDebugging, ActionMouseMovement, \
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_dialog_actions, \
     ActionChangeDialogOption, PlayingUserInputHandler, ActionRightMouseClicked, ActionPressKey
-from pythongame.core.view.game_world_view import GameWorldView, EntityActionText
+from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.player_file import SaveFileHandler
 from pythongame.scenes_game.game_engine import GameEngine
@@ -148,6 +147,8 @@ class PlayingScene(AbstractScene):
                             self.game_engine.use_warp_point(ready_entity)
                         elif isinstance(ready_entity, Chest):
                             self.game_engine.open_chest(ready_entity)
+                        elif isinstance(ready_entity, Shrine):
+                            self.game_engine.interact_with_shrine(ready_entity)
                         else:
                             raise Exception("Unhandled entity: " + str(ready_entity))
                 elif isinstance(action, ActionPressKey):
@@ -234,9 +235,8 @@ class PlayingScene(AbstractScene):
         entity_action_text = None
         # Don't display any actions on screen if player is stunned. It would look weird when using warp stones
         if not self.game_state.player_state.stun_status.is_stunned():
-            ready_entity = self.player_interactions_state.get_entity_to_interact_with()
-            if ready_entity is not None:
-                entity_action_text = _get_entity_action_text(ready_entity, self.user_input_handler.is_shift_held_down())
+            entity_action_text = self.player_interactions_state.get_entity_action_text(
+                self.user_input_handler.is_shift_held_down())
 
         self.world_view.render_world(
             all_entities_to_render=self.game_state.get_all_entities_to_render(),
@@ -264,44 +264,6 @@ class PlayingScene(AbstractScene):
             # be creating a new file everytime we saved.
             self.character_file = filename
         self.ui_view.info_message.set_message("Game was saved.")
-
-
-def _get_entity_action_text(ready_entity: Any, is_shift_key_held_down: bool) -> EntityActionText:
-    if isinstance(ready_entity, NonPlayerCharacter):
-        return EntityActionText(ready_entity.world_entity, "[Space] ...", [])
-    elif isinstance(ready_entity, LootableOnGround):
-        loot_name = _get_loot_name(ready_entity)
-        if is_shift_key_held_down:
-            loot_details = _get_loot_details(ready_entity)
-        else:
-            loot_details = []
-        return EntityActionText(ready_entity.world_entity, "[Space] " + loot_name, loot_details)
-    elif isinstance(ready_entity, Portal):
-        if ready_entity.is_enabled:
-            data = PORTALS[ready_entity.portal_id]
-            return EntityActionText(ready_entity.world_entity, "[Space] " + data.destination_name, [])
-        else:
-            return EntityActionText(ready_entity.world_entity, "[Space] ???", [])
-    elif isinstance(ready_entity, WarpPoint):
-        return EntityActionText(ready_entity.world_entity, "[Space] Warp", [])
-    elif isinstance(ready_entity, Chest):
-        return EntityActionText(ready_entity.world_entity, "[Space] Open", [])
-    else:
-        raise Exception("Unhandled entity: " + str(ready_entity))
-
-
-def _get_loot_name(lootable: LootableOnGround) -> str:
-    if isinstance(lootable, ConsumableOnGround):
-        return CONSUMABLES[lootable.consumable_type].name
-    if isinstance(lootable, ItemOnGround):
-        return ITEMS[lootable.item_type].name
-
-
-def _get_loot_details(lootable: LootableOnGround) -> List[str]:
-    if isinstance(lootable, ConsumableOnGround):
-        return [CONSUMABLES[lootable.consumable_type].description]
-    if isinstance(lootable, ItemOnGround):
-        return ITEMS[lootable.item_type].description_lines
 
 
 def _get_mouse_world_pos(game_state: GameState, mouse_screen_position: Tuple[int, int]):

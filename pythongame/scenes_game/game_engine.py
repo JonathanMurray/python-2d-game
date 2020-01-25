@@ -8,7 +8,7 @@ from pythongame.core.game_data import CONSUMABLES, ITEMS, NON_PLAYER_CHARACTERS,
     NpcCategory, PORTALS, ABILITIES
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
     EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest, \
-    PlayerUnlockedNewTalent, AgentBuffsUpdate
+    PlayerUnlockedNewTalent, AgentBuffsUpdate, Shrine
 from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
 from pythongame.core.loot import LootEntry
@@ -150,6 +150,12 @@ class GameEngine:
                 self.info_message.set_message("Portal was activated")
                 destination_portal.activate(portal.world_entity.sprite)
                 self.game_state.visual_effects += create_teleport_effects(portal.world_entity.get_center_position())
+
+    def interact_with_shrine(self, shrine: Shrine):
+        if not shrine.has_been_used:
+            shrine.has_been_used = True
+            # TODO Shrine should grant a random buff
+            self.info_message.set_message("Nothing happened...")
 
     def use_warp_point(self, warp_point: WarpPoint):
         destination_warp_point = [w for w in self.game_state.warp_points if w != warp_point][0]
