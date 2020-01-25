@@ -8,7 +8,7 @@ from pygame.rect import Rect
 from generate_dungeon import Grid
 from pythongame.core.common import Direction, Sprite, UiIconSprite
 from pythongame.core.common import PortraitIconSprite
-from pythongame.core.game_data import ITEMS, CONSUMABLES, NON_PLAYER_CHARACTERS
+from pythongame.core.game_data import CONSUMABLES, NON_PLAYER_CHARACTERS, get_item_data
 from pythongame.core.item_inventory import ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.image_loading import ImageWithRelativePosition
@@ -212,8 +212,8 @@ class MapEditorView:
                 x = x_1 + (i % num_icons_per_row) * (MAP_EDITOR_UI_ICON_SIZE[0] + icon_space)
                 row_index = (i // num_icons_per_row)
                 y = y_2 + row_index * (MAP_EDITOR_UI_ICON_SIZE[1] + icon_space)
-                if entity.item_type is not None:
-                    data = ITEMS[entity.item_type]
+                if entity.item_id is not None:
+                    data = get_item_data(entity.item_id)
                     category_name = None
                     if data.item_equipment_category:
                         category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[data.item_equipment_category]

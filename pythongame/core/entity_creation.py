@@ -1,9 +1,10 @@
 from typing import Tuple
 
-from pythongame.core.common import NpcType, Direction, Sprite, ItemType, ConsumableType, WallType, PortalId, HeroId
+from pythongame.core.common import NpcType, Direction, Sprite, ConsumableType, WallType, PortalId, HeroId, \
+    ItemId
 from pythongame.core.consumable_inventory import ConsumableInventory
-from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, ITEMS, CONSUMABLES, POTION_ENTITY_SIZE, \
-    WALLS, PORTALS, HEROES, NpcData
+from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, CONSUMABLES, POTION_ENTITY_SIZE, \
+    WALLS, PORTALS, HEROES, NpcData, get_item_data
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
     ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, HealthOrManaResource, WarpPoint, Chest, Shrine
 from pythongame.core.item_inventory import ItemInventory, ItemInventorySlot, ItemEquipmentCategory
@@ -42,10 +43,10 @@ def create_money_pile_on_ground(amount: int, pos: Tuple[int, int]) -> MoneyPileO
     return MoneyPileOnGround(WorldEntity(pos, ITEM_ENTITY_SIZE, sprite), amount)
 
 
-def create_item_on_ground(item_type: ItemType, pos: Tuple[int, int]) -> ItemOnGround:
-    entity = WorldEntity(pos, ITEM_ENTITY_SIZE, ITEMS[item_type].entity_sprite)
+def create_item_on_ground(item_id: ItemId, pos: Tuple[int, int]) -> ItemOnGround:
+    entity = WorldEntity(pos, ITEM_ENTITY_SIZE, get_item_data(item_id).entity_sprite)
     entity.view_z = 1  # It should be rendered below all other entities
-    return ItemOnGround(entity, item_type)
+    return ItemOnGround(entity, item_id)
 
 
 def create_consumable_on_ground(consumable_type: ConsumableType, pos: Tuple[int, int]) -> ConsumableOnGround:

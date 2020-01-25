@@ -5,7 +5,7 @@ from pythongame.core.common import ConsumableType, AbstractScene
 from pythongame.core.common import ItemType
 from pythongame.core.common import Millis, BuffType, get_random_hint, \
     SoundId, SceneTransition
-from pythongame.core.game_data import ITEMS, HEROES
+from pythongame.core.game_data import HEROES, get_item_data
 from pythongame.core.game_state import GameState, QuestId
 from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
 from pythongame.core.sound_player import play_sound
@@ -46,7 +46,7 @@ class StoryBehavior(AbstractWorldBehavior):
                 self.add_starting_item(item_type)
 
     def add_starting_item(self, item_type: ItemType):
-        data = ITEMS[item_type]
+        data = get_item_data(item_type)
         item_effect = get_item_effect(item_type)
         try_add_item_to_inventory(self.game_state, item_effect, data.item_equipment_category)
 
@@ -102,7 +102,7 @@ class ChallengeBehavior(AbstractWorldBehavior):
                 self._equip_item_on_startup(item_type)
 
     def _equip_item_on_startup(self, item_type):
-        data = ITEMS[item_type]
+        data = get_item_data(item_type)
         item_effect = get_item_effect(item_type)
         try_add_item_to_inventory(self.game_state, item_effect, data.item_equipment_category)
 

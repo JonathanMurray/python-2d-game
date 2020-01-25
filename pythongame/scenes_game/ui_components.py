@@ -5,8 +5,8 @@ from typing import List, Tuple, Optional, Any, Iterable, Set, Callable
 import pygame
 from pygame.rect import Rect
 
-from pythongame.core.common import ConsumableType, ItemType, AbilityType, PortraitIconSprite, HeroId, Millis, \
-    PeriodicTimer, NpcType, PortalId
+from pythongame.core.common import ConsumableType, AbilityType, PortraitIconSprite, HeroId, Millis, \
+    PeriodicTimer, NpcType, PortalId, ItemId
 from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData, ItemData, NpcData, \
     NpcCategory
 from pythongame.core.game_state import PlayerState, Quest
@@ -386,7 +386,7 @@ class ConsumableIcon(UiComponent):
 
 class ItemIcon(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, tooltip: Optional[TooltipGraphics],
-                 slot_equipment_category: Optional[ItemEquipmentCategory], item_type: Optional[ItemType],
+                 slot_equipment_category: Optional[ItemEquipmentCategory], item_id: Optional[ItemId],
                  inventory_slot_index: int):
         super().__init__(rect)
         self._ui_render = ui_render
@@ -394,11 +394,11 @@ class ItemIcon(UiComponent):
         self.image = image
         self.slot_equipment_category = slot_equipment_category
         self.tooltip = tooltip
-        self.item_type = item_type
+        self.item_id = item_id
         self.inventory_slot_index = inventory_slot_index
 
     def render(self, highlighted: bool):
-        has_equipped_item = self.slot_equipment_category and self.item_type
+        has_equipped_item = self.slot_equipment_category and self.item_id
         color_bg = (60, 60, 90) if has_equipped_item else (40, 40, 50)
         color_outline = (160, 160, 160) if has_equipped_item else (100, 100, 140)
 

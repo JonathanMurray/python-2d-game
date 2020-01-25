@@ -196,15 +196,16 @@ class MoneyJson:
 class ItemJson:
     @staticmethod
     def serialize(item: ItemOnGround):
-        return ItemJson.serialize_from_data(item.item_type, item.world_entity.get_position())
+        return ItemJson.serialize_from_data(item.item_id, item.world_entity.get_position())
 
     @staticmethod
-    def serialize_from_data(item_type: ItemType, position: Tuple[int, int]):
-        return {"item_type": item_type.name, "position": position}
+    def serialize_from_data(item_id: ItemId, position: Tuple[int, int]):
+        return {"item_id": item_id, "position": position}
 
     @staticmethod
     def deserialize(data) -> ItemOnGround:
-        return create_item_on_ground(ItemType[data["item_type"]], data["position"])
+        item_id = data["item_id"]
+        return create_item_on_ground(item_id, data["position"])
 
 
 class ConsumableJson:

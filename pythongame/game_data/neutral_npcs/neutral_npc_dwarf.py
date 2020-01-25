@@ -1,7 +1,7 @@
 import random
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
-    ItemType, PeriodicTimer
+    ItemType, PeriodicTimer, plain_item_id
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
@@ -9,8 +9,6 @@ from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
     DialogOptionData, sell_item_option
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.view.image_loading import SpriteSheet
-
-ITEM_TYPE_GOLD = ItemType.GOLD_NUGGET
 
 
 class NpcMind(AbstractNpcMind):
@@ -37,8 +35,9 @@ def register_dwarf_npc():
     register_npc_behavior(npc_type, NpcMind)
     introduction = "Hello there. I'm always looking for treasure. If you find any, we might be able to strike a deal!"
     dialog_options = [
-        sell_item_option(ItemType.GOLD_NUGGET, 20, "I'll give you good money for a nugget of pure gold!"),
-        sell_item_option(ItemType.SAPHIRE, 30, "If you find a saphire I can make you real rich!"),
+        sell_item_option(plain_item_id(ItemType.GOLD_NUGGET), 20,
+                         "I'll give you good money for a nugget of pure gold!"),
+        sell_item_option(plain_item_id(ItemType.SAPHIRE), 30, "If you find a saphire I can make you real rich!"),
         DialogOptionData("\"Good bye\"", "cancel", None)]
     dialog_data = DialogData("Gimli", PortraitIconSprite.VIKING, introduction, dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)

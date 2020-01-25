@@ -126,9 +126,9 @@ class ConsumableOnGround(LootableOnGround):
 
 
 class ItemOnGround(LootableOnGround):
-    def __init__(self, world_entity: WorldEntity, item_type: ItemType):
+    def __init__(self, world_entity: WorldEntity, item_id: ItemId):
         super().__init__(world_entity)
-        self.item_type = item_type
+        self.item_id = item_id
 
 
 class MoneyPileOnGround:

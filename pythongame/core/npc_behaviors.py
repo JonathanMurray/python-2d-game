@@ -3,7 +3,7 @@ from typing import Dict, Type
 from pythongame.core.common import *
 from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
-from pythongame.core.game_data import CONSUMABLES, ITEMS
+from pythongame.core.game_data import CONSUMABLES, get_item_data
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest
 from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
 from pythongame.core.math import is_x_and_y_within_distance, get_perpendicular_directions
@@ -135,12 +135,12 @@ class SellConsumableNpcAction(AbstractNpcAction):
 
 
 class SellItemNpcAction(AbstractNpcAction):
-    def __init__(self, cost: int, item_type: ItemType, name: str):
+    def __init__(self, cost: int, item_id: ItemId, name: str):
         self.cost = cost
-        self.item_type = item_type
+        self.item_id = item_id
         self.name = name
-        self.item_effect = get_item_effect(self.item_type)
-        self.item_equipment_category = ITEMS[self.item_type].item_equipment_category
+        self.item_effect = get_item_effect(self.item_id)
+        self.item_equipment_category = get_item_data(self.item_id).item_equipment_category
 
     def on_select(self, game_state: GameState):
         player_state = game_state.player_state
@@ -161,15 +161,15 @@ class SellItemNpcAction(AbstractNpcAction):
 
 class BuyItemNpcAction(AbstractNpcAction):
 
-    def __init__(self, item_type: ItemType, price: int, name: str):
-        self.item_type = item_type
+    def __init__(self, item_id: ItemId, price: int, name: str):
+        self.item_id = item_id
         self.price = price
         self.name = name
 
     def on_select(self, game_state: GameState) -> Optional[str]:
-        player_has_it = game_state.player_state.item_inventory.has_item_in_inventory(self.item_type)
+        player_has_it = game_state.player_state.item_inventory.has_item_in_inventory(self.item_id)
         if player_has_it:
-            game_state.player_state.item_inventory.lose_item_from_inventory(self.item_type)
+            game_state.player_state.item_inventory.lose_item_from_inventory(self.item_id)
             game_state.player_state.modify_money(self.price)
             play_sound(SoundId.EVENT_SOLD_SOMETHING)
             return "Sold " + self.name
@@ -178,7 +178,7 @@ class BuyItemNpcAction(AbstractNpcAction):
             return "You don't have that!"
 
     def on_hover(self, game_state: GameState, ui_view: GameUiView):
-        ui_view.set_inventory_highlight(self.item_type)
+        ui_view.set_inventory_highlight(self.item_id)
 
     def on_blur(self, game_state: GameState, ui_view: GameUiView):
         ui_view.remove_inventory_highlight()
@@ -260,24 +260,24 @@ def buy_consumable_option(consumable_type: ConsumableType, cost: int):
                             data.description)
 
 
-def buy_item_option(item_type: ItemType, cost: int):
-    data = ITEMS[item_type]
+def buy_item_option(item_id: ItemId, cost: int):
+    data = get_item_data(item_id)
     name_formatter = "{:<25}"
     buy_prompt = "> "
     cost_formatter = "[{} gold]"
     return DialogOptionData(buy_prompt + name_formatter.format(data.name) + cost_formatter.format(cost),
                             "buy",
-                            SellItemNpcAction(cost, item_type, data.name.lower()),
+                            SellItemNpcAction(cost, item_id, data.name.lower()),
                             data.icon_sprite,
                             data.name,
                             ", ".join(data.description_lines))
 
 
-def sell_item_option(item_type: ItemType, price: int, detail_body: str):
+def sell_item_option(item_id: ItemId, price: int, detail_body: str):
     name_formatter = "{:<13}"
     cost_formatter = "[{} gold]"
     sell_prompt = "> "
-    data = ITEMS[item_type]
+    data = get_item_data(item_id)
     return DialogOptionData(sell_prompt + name_formatter.format(data.name) + cost_formatter.format(price), "sell",
-                            BuyItemNpcAction(item_type, price, data.name.lower()),
+                            BuyItemNpcAction(item_id, price, data.name.lower()),
                             data.icon_sprite, data.name, detail_body)

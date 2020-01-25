@@ -1,14 +1,8 @@
 #!/usr/bin/env python3
-from typing import Optional
 
-from pythongame.core.game_data import ITEMS
+from pythongame.core.game_data import get_items_with_category
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.register_game_data import register_all_game_data
-
-
-def items_with_category(category: Optional[ItemEquipmentCategory]):
-    return [(item_type, ITEMS[item_type]) for item_type in ITEMS
-            if ITEMS[item_type].item_equipment_category == category]
 
 
 def print_items():
@@ -18,8 +12,8 @@ def print_items():
         else:
             print("PASSIVE:")
         print("- - - - -")
-        for item_type, item_data in items_with_category(category):
-            print("{:<25}".format(item_type.name) + str(item_data.description_lines))
+        for item_id, item_data in get_items_with_category(category):
+            print("{:<25}".format(item_id) + str(item_data.description_lines))
         print("")
 
 

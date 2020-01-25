@@ -1,4 +1,4 @@
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Set, Union
 
 # We should probably not load image files in here!
 import pygame
@@ -182,7 +182,9 @@ CONSUMABLES: Dict[ConsumableType, ConsumableData] = {}
 
 WALLS: Dict[WallType, WallData] = {}
 
-ITEMS: Dict[ItemType, ItemData] = {}
+item_data_by_id: Dict[ItemId, ItemData] = {}
+
+item_ids_grouped_by_type: Dict[ItemType, Set[ItemId]] = {}
 
 ABILITIES: Dict[AbilityType, AbilityData] = {}
 
@@ -264,8 +266,25 @@ def register_consumable_data(consumable_type: ConsumableType, data: ConsumableDa
     CONSUMABLES[consumable_type] = data
 
 
-def register_item_data(item_type: ItemType, item_data: ItemData):
-    ITEMS[item_type] = item_data
+def register_item_data(identifier: Union[ItemType, ItemId], item_data: ItemData):
+    item_id = identifier if isinstance(identifier, ItemId) else plain_item_id(identifier)
+    item_type = item_type_from_id(item_id)
+    item_data_by_id[item_id] = item_data
+    item_ids = item_ids_grouped_by_type.setdefault(item_type, set())
+    item_ids.add(item_id)
+
+
+def get_item_data(identifier: Union[ItemType, ItemId]):
+    item_id = identifier if isinstance(identifier, ItemId) else plain_item_id(identifier)
+    return item_data_by_id[item_id]
+
+
+def get_all_item_ids() -> List[ItemId]:
+    return list(item_data_by_id.keys())
+
+
+def get_random_item_id_for_item_type(item_type: ItemType) -> ItemId:
+    return random.choice(list(item_ids_grouped_by_type[item_type]))
 
 
 def register_portal_data(portal_id: PortalId, portal_data: PortalData):
@@ -274,3 +293,8 @@ def register_portal_data(portal_id: PortalId, portal_data: PortalData):
 
 def register_hero_data(hero_id: HeroId, hero_data: HeroData):
     HEROES[hero_id] = hero_data
+
+
+def get_items_with_category(category: Optional[ItemEquipmentCategory]) -> List[Tuple[ItemId, ItemData]]:
+    return [(item_id, item_data) for (item_id, item_data) in item_data_by_id.items()
+            if item_data.item_equipment_category == category]

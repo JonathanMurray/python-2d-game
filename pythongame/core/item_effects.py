@@ -7,8 +7,9 @@ from pythongame.core.item_inventory import ItemEquipmentCategory, ItemWasActivat
 
 class AbstractItemEffect:
 
-    def __init__(self, item_type: ItemType):
-        self.item_type = item_type
+    def __init__(self, identifier: Union[ItemId, ItemType]):
+        self.item_id = identifier if isinstance(identifier, ItemId) else plain_item_id(identifier)
+        self.item_type = ItemType[self.item_id.split(":")[0]]
 
     def apply_start_effect(self, game_state: GameState):
         pass
@@ -19,14 +20,14 @@ class AbstractItemEffect:
     def apply_end_effect(self, game_state: GameState):
         pass
 
-    def get_item_type(self):
-        return self.item_type
+    def get_item_id(self):
+        return self.item_id
 
     def item_handle_event(self, event: Event, game_state: GameState):
         pass
 
     def get_description(self) -> List[str]:
-        raise Exception("No description defined for item " + str(self.get_item_type()))
+        raise Exception("No description defined for item " + str(self.get_item_id()))
 
 
 def _get_description_of_stat_modifier(hero_stat: HeroStat, delta: Union[int, float]) -> str:
@@ -64,8 +65,8 @@ def _get_description_of_stat_modifier(hero_stat: HeroStat, delta: Union[int, flo
 
 
 class StatModifyingItemEffect(AbstractItemEffect):
-    def __init__(self, item_type: ItemType, stat_modifiers: Dict[HeroStat, Union[int, float]]):
-        super().__init__(item_type)
+    def __init__(self, identifier: Union[ItemType, ItemId], stat_modifiers: Dict[HeroStat, Union[int, float]]):
+        super().__init__(identifier)
         self.stat_modifiers = stat_modifiers
 
     def apply_start_effect(self, game_state: GameState):
@@ -81,21 +82,23 @@ class StatModifyingItemEffect(AbstractItemEffect):
 
 
 class EmptyItemEffect(AbstractItemEffect):
-    def __init__(self, item_type: ItemType):
-        super().__init__(item_type)
+    def __init__(self, identifier: Union[ItemType, ItemId]):
+        super().__init__(identifier)
 
 
-_item_effects: Dict[ItemType, AbstractItemEffect] = {}
+_item_effects: Dict[ItemId, AbstractItemEffect] = {}
 
 
-def register_item_effect(item_type: ItemType, effect: AbstractItemEffect):
-    _item_effects[item_type] = effect
+def register_item_effect(identifier: Union[ItemType, ItemId], effect: AbstractItemEffect):
+    item_id = identifier if isinstance(identifier, ItemId) else plain_item_id(identifier)
+    _item_effects[item_id] = effect
 
 
 # Note this is handled differently compared to buffs
 # There is only one effect instance per item type - having duplicate items with active effects may not be well supported
-def get_item_effect(item_type: ItemType) -> AbstractItemEffect:
-    return _item_effects[item_type]
+def get_item_effect(identifier: Union[ItemType, ItemId]) -> AbstractItemEffect:
+    item_id = identifier if isinstance(identifier, ItemId) else plain_item_id(identifier)
+    return _item_effects[item_id]
 
 
 def try_add_item_to_inventory(game_state: GameState, item_effect: AbstractItemEffect,

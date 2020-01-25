@@ -465,6 +465,25 @@ class ItemType(Enum):
     FIRE_WAND = 113
 
 
+# Must be of one of the following formats:
+# 1. "<ItemType>:<int>" represents one of several "random" variations of a given item type
+# 2. "<ItemType>:*" represents an item type that has no random variations
+ItemId = str
+
+
+def plain_item_id(item_type: ItemType) -> ItemId:
+    return ItemId(item_type.name + ":*")
+
+
+def randomized_item_id(item_type: ItemType, randomizer: int) -> ItemId:
+    return ItemId(item_type.name + ":" + str(randomizer))
+
+
+def item_type_from_id(item_id: ItemId) -> ItemType:
+    enum_name = item_id.split(":")[0]
+    return ItemType[enum_name]
+
+
 class ProjectileType(Enum):
     PLAYER_FIREBALL = 1
     PLAYER_ARCANE_FIRE = 2

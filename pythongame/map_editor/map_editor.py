@@ -6,12 +6,13 @@ import pygame
 from pygame.rect import Rect
 
 from generate_dungeon import generate_random_map_as_json_from_grid, Grid, generate_random_grid, determine_wall_type
-from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, ItemType, PortalId, HeroId, PeriodicTimer, \
-    Millis
+from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, PortalId, HeroId, PeriodicTimer, \
+    Millis, ItemId
 from pythongame.core.entity_creation import create_portal, create_hero_world_entity, create_npc, create_wall, \
     create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground, \
     create_player_state, create_chest, create_shrine
-from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, PORTRAIT_ICON_SPRITE_PATHS
+from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, PORTRAIT_ICON_SPRITE_PATHS, \
+    get_all_item_ids
 from pythongame.core.game_state import GameState
 from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.game_world_view import GameWorldView
@@ -42,7 +43,7 @@ ADVANCED_ENTITIES = [
 ]
 WALL_ENTITIES = [MapEditorWorldEntity.wall(wall_type) for wall_type in WallType]
 NPC_ENTITIES = [MapEditorWorldEntity.npc(npc_type) for npc_type in NpcType]
-ITEM_ENTITIES = [MapEditorWorldEntity.item(item_type) for item_type in ItemType]
+ITEM_ENTITIES = [MapEditorWorldEntity.item(item_id) for item_id in get_all_item_ids()]
 MISC_ENTITIES: List[MapEditorWorldEntity] = \
     [
         MapEditorWorldEntity.player(),
@@ -267,8 +268,8 @@ class MapEditor:
             elif entity_being_placed.consumable_type:
                 _add_consumable(entity_being_placed.consumable_type, self.game_state,
                                 action.world_position)
-            elif entity_being_placed.item_type:
-                _add_item(entity_being_placed.item_type, self.game_state, action.world_position)
+            elif entity_being_placed.item_id:
+                _add_item(entity_being_placed.item_id, self.game_state, action.world_position)
             elif entity_being_placed.decoration_sprite:
                 _add_decoration(entity_being_placed.decoration_sprite, self.game_state,
                                 action.world_position)
@@ -451,11 +452,11 @@ def _add_chest(game_state: GameState, snapped_mouse_world_position):
         game_state.chests.append(chest)
 
 
-def _add_item(item_type: ItemType, game_state, snapped_mouse_world_position):
+def _add_item(item_id: ItemId, game_state, snapped_mouse_world_position):
     already_has_item = any([x for x in game_state.items_on_ground
                             if x.world_entity.get_position() == snapped_mouse_world_position])
     if not already_has_item:
-        item_on_ground = create_item_on_ground(item_type, snapped_mouse_world_position)
+        item_on_ground = create_item_on_ground(item_id, snapped_mouse_world_position)
         game_state.items_on_ground.append(item_on_ground)
 
 

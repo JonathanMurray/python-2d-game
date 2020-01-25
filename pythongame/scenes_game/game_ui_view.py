@@ -3,9 +3,9 @@ from typing import List, Tuple, Optional, Dict, Any
 import pygame
 from pygame.rect import Rect
 
-from pythongame.core.common import ConsumableType, ItemType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite, \
-    SoundId, NpcType, Millis, DialogData
-from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, ITEMS, HEROES
+from pythongame.core.common import ConsumableType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite, \
+    SoundId, NpcType, Millis, DialogData, ItemId
+from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, HEROES, get_item_data
 from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState, Quest
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import is_point_in_rect
@@ -157,7 +157,7 @@ class GameUiView:
         self._ticks_since_last_ability_action = 0
         self.highlighted_consumable_action: Optional[int] = None
         self.highlighted_ability_action: Optional[AbilityType] = None
-        self.manually_highlighted_inventory_item: Optional[ItemType] = None  # used for dialog
+        self.manually_highlighted_inventory_item: Optional[ItemId] = None  # used for dialog
 
         self.info_message = InfoMessage()
 
@@ -344,7 +344,7 @@ class GameUiView:
             self._on_click_toggle(self.hovered_component)
         elif self.hovered_component in [self.save_button, self.fullscreen_checkbox, self.sound_checkbox]:
             return [self.hovered_component.on_click()]
-        elif self.hovered_component in self.inventory_icons and self.hovered_component.item_type:
+        elif self.hovered_component in self.inventory_icons and self.hovered_component.item_id:
             self.item_slot_being_dragged = self.hovered_component
             return [StartDraggingItemOrConsumable()]
         elif self.hovered_component in self.consumable_icons and self.hovered_component.consumable_types:
@@ -544,12 +544,12 @@ class GameUiView:
         for i in range(len(item_slots)):
             icon = self.inventory_icons[i]
             slot = item_slots[i]
-            item_type = slot.get_item_type() if not slot.is_empty() else None
+            item_id = slot.get_item_id() if not slot.is_empty() else None
             slot_equipment_category = slot.enforced_equipment_category
             image = None
             tooltip = None
-            if item_type:
-                data = ITEMS[item_type]
+            if item_id:
+                data = get_item_data(item_id)
                 image = self.images_by_ui_sprite[data.icon_sprite]
                 category_name = None
                 if data.item_equipment_category:
@@ -566,7 +566,7 @@ class GameUiView:
             icon.image = image
             icon.tooltip = tooltip
             icon.slot_equipment_category = slot_equipment_category
-            icon.item_type = item_type
+            icon.item_id = item_id
 
     def on_fullscreen_changed(self, fullscreen: bool):
         self.fullscreen_checkbox.checked = fullscreen
@@ -658,10 +658,10 @@ class GameUiView:
     def remove_minimap_highlight(self):
         self.minimap.remove_highlight()
 
-    def set_inventory_highlight(self, item_type: ItemType):
+    def set_inventory_highlight(self, item_id: ItemId):
         for icon in self.inventory_icons:
-            if icon.item_type == item_type:
-                self.manually_highlighted_inventory_item = item_type
+            if icon.item_id == item_id:
+                self.manually_highlighted_inventory_item = item_id
 
     def remove_inventory_highlight(self):
         self.manually_highlighted_inventory_item = None
@@ -676,9 +676,9 @@ class GameUiView:
     def _translate_screen_position_to_ui(self, position: Tuple[int, int]):
         return position[0] - self.ui_screen_area.x, position[1] - self.ui_screen_area.y
 
-    def _render_item_being_dragged(self, item_type: ItemType, mouse_screen_position: Tuple[int, int],
+    def _render_item_being_dragged(self, item_id: ItemId, mouse_screen_position: Tuple[int, int],
                                    relative_mouse_pos: Tuple[int, int]):
-        ui_icon_sprite = ITEMS[item_type].icon_sprite
+        ui_icon_sprite = get_item_data(item_id).icon_sprite
         big_image = self.big_images_by_ui_sprite[ui_icon_sprite]
         self._render_dragged(big_image, mouse_screen_position, relative_mouse_pos)
 
@@ -719,11 +719,11 @@ class GameUiView:
         self.ui_render.rect_filled((60, 60, 80), self.inventory_icons_rect)
         for icon in self.inventory_icons:
             # TODO treat this as state and update it elsewhere
-            highlighted = self.item_slot_being_dragged and self.item_slot_being_dragged.item_type \
-                          and ITEMS[self.item_slot_being_dragged.item_type].item_equipment_category \
-                          and icon.slot_equipment_category == ITEMS[
-                              self.item_slot_being_dragged.item_type].item_equipment_category
-            if self.manually_highlighted_inventory_item and self.manually_highlighted_inventory_item == icon.item_type:
+            highlighted = self.item_slot_being_dragged and self.item_slot_being_dragged.item_id \
+                          and get_item_data(self.item_slot_being_dragged.item_id).item_equipment_category \
+                          and icon.slot_equipment_category == \
+                          get_item_data(self.item_slot_being_dragged.item_id).item_equipment_category
+            if self.manually_highlighted_inventory_item and self.manually_highlighted_inventory_item == icon.item_id:
                 highlighted = True
             icon.render(highlighted)
 
@@ -752,7 +752,7 @@ class GameUiView:
 
         # TODO Bring back relative render position for dragged entities
         if self.item_slot_being_dragged:
-            self._render_item_being_dragged(self.item_slot_being_dragged.item_type, self.mouse_screen_position,
+            self._render_item_being_dragged(self.item_slot_being_dragged.item_id, self.mouse_screen_position,
                                             (UI_ICON_SIZE[0] // 2, (UI_ICON_SIZE[1] // 2)))
         elif self.consumable_slot_being_dragged:
             self._render_consumable_being_dragged(self.consumable_slot_being_dragged.consumable_types[0],
