@@ -146,6 +146,7 @@ class WallType(Enum):
     SIGN_LARGE_NOTES = 93
     WEAPON_RACK = 100
     PILLAR = 110
+    LIGHT_POLE = 120
 
 
 class AbilityType(Enum):
@@ -309,6 +310,7 @@ class Sprite(Enum):
     WALL_SIGN_LARGE_NOTES = 583
     WALL_WEAPON_RACK = 590
     WALL_PILLAR = 600
+    WALL_LIGHT_POLE = 610
     PORTAL_DISABLED = 1600
     PORTAL_BLUE = 1601
     PORTAL_GREEN = 1602
