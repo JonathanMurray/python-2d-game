@@ -11873,7 +11873,7 @@
       ]
     },
     {
-      "wall_type": "WALL_CHAIR",
+      "wall_type": "CHAIR_LEFT",
       "position": [
         1075,
         3100
