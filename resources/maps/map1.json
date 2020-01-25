@@ -1268,13 +1268,6 @@
     {
       "npc_type": "MUMMY",
       "position": [
-        -75,
-        3000
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
         -200,
         2975
       ]
@@ -2376,13 +2369,6 @@
     {
       "wall_type": "WALL_DIRECTIONAL_N",
       "position": [
-        1050,
-        500
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
         1075,
         500
       ]
@@ -3057,13 +3043,6 @@
       "position": [
         1125,
         725
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        1050,
-        750
       ]
     },
     {
@@ -13287,13 +13266,6 @@
       ]
     },
     {
-      "wall_type": "STATUE",
-      "position": [
-        1050,
-        550
-      ]
-    },
-    {
       "wall_type": "WALL_DIRECTIONAL_S",
       "position": [
         -500,
@@ -19590,13 +19562,6 @@
       "wall_type": "WALL_DIRECTIONAL_W",
       "position": [
         2100,
-        -1550
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        2100,
         -1575
       ]
     },
@@ -19661,13 +19626,6 @@
       "position": [
         2225,
         -1525
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_E",
-      "position": [
-        2225,
-        -1550
       ]
     },
     {
@@ -35031,13 +34989,6 @@
     {
       "wall_type": "SHELF_EMPTY",
       "position": [
-        7625,
-        3425
-      ]
-    },
-    {
-      "wall_type": "SHELF_EMPTY",
-      "position": [
         7000,
         3975
       ]
@@ -35988,13 +35939,6 @@
       ]
     },
     {
-      "wall_type": "STONE_CROSS_FLOWERS",
-      "position": [
-        9325,
-        2150
-      ]
-    },
-    {
       "wall_type": "STATUE",
       "position": [
         9425,
@@ -36076,6 +36020,27 @@
       "position": [
         9075,
         4000
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        1050,
+        500
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_E",
+      "position": [
+        2225,
+        -1550
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        2100,
+        -1550
       ]
     }
   ],
@@ -69154,6 +69119,38 @@
       "position": [
         50,
         1875
+      ]
+    }
+  ],
+  "shrines": [
+    {
+      "position": [
+        1025,
+        550
+      ]
+    },
+    {
+      "position": [
+        2150,
+        -1850
+      ]
+    },
+    {
+      "position": [
+        -50,
+        2975
+      ]
+    },
+    {
+      "position": [
+        7675,
+        3450
+      ]
+    },
+    {
+      "position": [
+        9325,
+        2150
       ]
     }
   ]
