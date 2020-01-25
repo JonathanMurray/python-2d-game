@@ -11,5 +11,5 @@ def register_warlocks_cowl_item():
         image_file_path="resources/graphics/item_warlocks_cowl.png",
         item_equipment_category=ItemEquipmentCategory.HEAD,
         name="Warlock's Cowl",
-        stat_modifiers={HeroStat.LIFE_STEAL: 0.1}
+        stat_modifiers={HeroStat.LIFE_STEAL: 0.1, HeroStat.MAGIC_RESIST_CHANCE: 0.05}
     )

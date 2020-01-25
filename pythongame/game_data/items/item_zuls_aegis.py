@@ -47,7 +47,7 @@ def register_zuls_aegis():
     register_buff_effect(BUFF_TYPE_STUNNED, StunnedFromAegis)
 
     item_type = ItemType.ZULS_AEGIS
-    effect = ItemEffect(item_type, {HeroStat.ARMOR: 3, HeroStat.BLOCK_AMOUNT: 8})
+    effect = ItemEffect(item_type, {HeroStat.ARMOR: 3, HeroStat.BLOCK_AMOUNT: 8, HeroStat.MAGIC_RESIST_CHANCE: 0.1})
     register_custom_effect_item(
         item_type=item_type,
         ui_icon_sprite=UiIconSprite.ITEM_ZULS_AEGIS,
