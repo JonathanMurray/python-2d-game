@@ -18,6 +18,7 @@ def register_walls():
     _register_weapon_rack()
     _register_pillar()
     _register_light_pole()
+    _register_well()
 
 
 def _register_wall():
@@ -190,3 +191,10 @@ def _register_light_pole():
                                        SpriteInitializer("resources/graphics/wall_lightpole.png", (35, 105)),
                                        (0, -80))
     register_wall_data(WallType.LIGHT_POLE, WallData(Sprite.WALL_LIGHT_POLE, (35, 25)))
+
+
+def _register_well():
+    register_entity_sprite_initializer(Sprite.WALL_WELL,
+                                       SpriteInitializer("resources/graphics/wall_well.png", (85, 75)),
+                                       (0, -10))
+    register_wall_data(WallType.WELL, WallData(Sprite.WALL_WELL, (75, 65)))
