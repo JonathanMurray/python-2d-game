@@ -300,15 +300,16 @@ class MapEditorView:
     def _add_smart_floor_tiles(self):
         pos = self._snapped_mouse_world_pos
         tile_size = self._user_state.placing_entity.entity_size[0]
-        for x in range(pos[0], pos[0] + tile_size, GRID_CELL_SIZE):
-            for y in range(pos[1], pos[1] + tile_size, GRID_CELL_SIZE):
+
+        for x in range(pos[0], min(pos[0] + tile_size, self.world_area.right), GRID_CELL_SIZE):
+            for y in range(pos[1], min(pos[1] + tile_size, self.world_area.bottom), GRID_CELL_SIZE):
                 self._smart_floor_tiles_to_add.append((x, y, GRID_CELL_SIZE, GRID_CELL_SIZE))
 
     def _delete_smart_floor_tiles(self):
         pos = self._snapped_mouse_world_pos
         tile_size = self._user_state.placing_entity.entity_size[0]
-        for x in range(pos[0], pos[0] + tile_size, GRID_CELL_SIZE):
-            for y in range(pos[1], pos[1] + tile_size, GRID_CELL_SIZE):
+        for x in range(pos[0], min(pos[0] + tile_size, self.world_area.right), GRID_CELL_SIZE):
+            for y in range(pos[1], min(pos[1] + tile_size, self.world_area.bottom), GRID_CELL_SIZE):
                 self._smart_floor_tiles_to_delete.append((x, y, GRID_CELL_SIZE, GRID_CELL_SIZE))
 
     def _set_currently_hovered_component_not_hovered(self):
