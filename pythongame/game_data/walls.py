@@ -12,6 +12,7 @@ def register_walls():
     _register_shelves()
     _register_barrels()
     _register_baskets()
+    _register_stone_crosses()
 
 
 def _register_wall():
@@ -73,6 +74,19 @@ def _register_statue():
     register_wall_data(WallType.STATUE, WallData(sprite, (42, 46)))
 
 
+def _register_stone_crosses():
+    sprites = [Sprite.WALL_STONE_CROSS, Sprite.WALL_STONE_CROSS_FLOWERS]
+    wall_types = [WallType.STONE_CROSS, WallType.STONE_CROSS_FLOWERS]
+    indices = [(14, 3), (15, 3)]
+    sprite_sheet = SpriteSheet("resources/graphics/human_tileset.png")
+    original_sprite_size = (32, 64)
+    scaled_sprite_size = (50, 100)
+    for i in range(len(sprites)):
+        register_entity_sprite_map(sprites[i], sprite_sheet, original_sprite_size, scaled_sprite_size,
+                                   {Direction.DOWN: [indices[i]]}, (-7, -54))
+        register_wall_data(wall_types[i], WallData(sprites[i], (42, 39)))
+
+
 def _register_altar():
     sprite = Sprite.WALL_ALTAR
     sprite_sheet = SpriteSheet("resources/graphics/wall_altar.png")
@@ -120,6 +134,7 @@ def _register_barrels():
         register_entity_sprite_map(sprites[i], sprite_sheet, original_sprite_size, scaled_sprite_size,
                                    {Direction.DOWN: [indices[i]]}, (0, -25))
         register_wall_data(wall_types[i], WallData(sprites[i], (50, 25)))
+
 
 def _register_baskets():
     sprites = [Sprite.WALL_BASKET_EMPTY, Sprite.WALL_BASKET_FRUIT]
