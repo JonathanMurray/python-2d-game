@@ -133,6 +133,8 @@ class WallType(Enum):
     BARREL_4 = 53
     BARREL_5 = 54
     BARREL_6 = 55
+    BASKET_EMPTY = 60
+    BASKET_FRUIT = 61
 
 
 class AbilityType(Enum):
@@ -283,6 +285,8 @@ class Sprite(Enum):
     WALL_BARREL_4 = 553
     WALL_BARREL_5 = 554
     WALL_BARREL_6 = 555
+    WALL_BASKET_EMPTY = 560
+    WALL_BASKET_FRUIT = 561
     PORTAL_DISABLED = 600
     PORTAL_BLUE = 601
     PORTAL_GREEN = 602

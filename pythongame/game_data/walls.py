@@ -11,6 +11,7 @@ def register_walls():
     _register_altar()
     _register_shelves()
     _register_barrels()
+    _register_baskets()
 
 
 def _register_wall():
@@ -115,7 +116,19 @@ def _register_barrels():
     sprite_sheet = SpriteSheet("resources/graphics/human_tileset.png")
     original_sprite_size = (32, 32)
     scaled_sprite_size = (50, 50)
-    for i in range(6):
+    for i in range(len(sprites)):
+        register_entity_sprite_map(sprites[i], sprite_sheet, original_sprite_size, scaled_sprite_size,
+                                   {Direction.DOWN: [indices[i]]}, (0, -25))
+        register_wall_data(wall_types[i], WallData(sprites[i], (50, 25)))
+
+def _register_baskets():
+    sprites = [Sprite.WALL_BASKET_EMPTY, Sprite.WALL_BASKET_FRUIT]
+    wall_types = [WallType.BASKET_EMPTY, WallType.BASKET_FRUIT]
+    sprite_sheet = SpriteSheet("resources/graphics/human_tileset.png")
+    indices = [(4, 15), (5, 15)]
+    original_sprite_size = (32, 32)
+    scaled_sprite_size = (50, 50)
+    for i in range(len(sprites)):
         register_entity_sprite_map(sprites[i], sprite_sheet, original_sprite_size, scaled_sprite_size,
                                    {Direction.DOWN: [indices[i]]}, (0, -25))
         register_wall_data(wall_types[i], WallData(sprites[i], (50, 25)))
