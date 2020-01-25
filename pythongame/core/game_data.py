@@ -118,7 +118,7 @@ class WallData:
 
 class PortalData:
     def __init__(self, starts_enabled: bool, leads_to: Optional[PortalId], sprite: Sprite,
-                 entity_size: Tuple[int, int], teleport_delay: Millis, destination_name:str):
+                 entity_size: Tuple[int, int], teleport_delay: Millis, destination_name: str):
         self.starts_enabled = starts_enabled
         self.leads_to = leads_to
         self.sprite = sprite
@@ -223,9 +223,9 @@ def register_portrait_icon_sprite_path(sprite: PortraitIconSprite, file_path: st
     PORTRAIT_ICON_SPRITE_PATHS[sprite] = file_path
 
 
-# Deprecated
-def register_entity_sprite_initializer(sprite: Sprite, initializer: SpriteInitializer):
-    ENTITY_SPRITE_INITIALIZERS[sprite] = {Direction.DOWN: Animation([initializer], None, (0, 0))}
+def register_entity_sprite_initializer(sprite: Sprite, initializer: SpriteInitializer,
+                                       position_relative_to_entity: Tuple[int, int] = (0, 0)):
+    ENTITY_SPRITE_INITIALIZERS[sprite] = {Direction.DOWN: Animation([initializer], None, position_relative_to_entity)}
     ENTITY_SPRITE_SIZES[sprite] = initializer.scaling_size
 
 

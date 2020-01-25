@@ -1,6 +1,7 @@
 from pythongame.core.common import WallType, Sprite, Direction
-from pythongame.core.game_data import register_wall_data, WallData, register_entity_sprite_map
-from pythongame.core.view.image_loading import SpriteSheet
+from pythongame.core.game_data import register_wall_data, WallData, register_entity_sprite_map, \
+    register_entity_sprite_initializer
+from pythongame.core.view.image_loading import SpriteSheet, SpriteInitializer
 
 
 def register_walls():
@@ -13,6 +14,8 @@ def register_walls():
     _register_barrels()
     _register_baskets()
     _register_stone_crosses()
+    _register_signs()
+    _register_weapon_rack()
 
 
 def _register_wall():
@@ -150,3 +153,24 @@ def _register_baskets():
         register_entity_sprite_map(sprites[i], sprite_sheet, original_sprite_size, scaled_sprite_size,
                                    {Direction.DOWN: [indices[i]]}, (0, -25))
         register_wall_data(wall_types[i], WallData(sprites[i], (50, 25)))
+
+
+def _register_signs():
+    sprites = [Sprite.WALL_SIGN_SMALL, Sprite.WALL_SIGN_MULTI, Sprite.WALL_SIGN_LARGE_EMPTY,
+               Sprite.WALL_SIGN_LARGE_NOTES]
+    wall_types = [WallType.SIGN_SMALL, WallType.SIGN_MULTI, WallType.SIGN_LARGE_EMPTY, WallType.SIGN_LARGE_NOTES]
+    sprite_sheet = SpriteSheet("resources/graphics/human_tileset.png")
+    indices = [(14, 2), (13, 2), (14, 1), (14, 2)]
+    original_sprite_size = (32, 32)
+    scaled_sprite_size = (50, 50)
+    for i in range(len(sprites)):
+        register_entity_sprite_map(sprites[i], sprite_sheet, original_sprite_size, scaled_sprite_size,
+                                   {Direction.DOWN: [indices[i]]}, (0, -25))
+        register_wall_data(wall_types[i], WallData(sprites[i], (50, 25)))
+
+
+def _register_weapon_rack():
+    register_entity_sprite_initializer(Sprite.WALL_WEAPON_RACK,
+                                       SpriteInitializer("resources/graphics/wall_weapon_rack.png", (50, 100)),
+                                       (0, -70))
+    register_wall_data(WallType.WEAPON_RACK, WallData(Sprite.WALL_WEAPON_RACK, (50, 30)))
