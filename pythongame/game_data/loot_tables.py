@@ -85,6 +85,7 @@ LOOT_POTIONS_2 = [
     LootEntry.consumable(ConsumableType.SPEED),
     LootEntry.consumable(ConsumableType.WARP_STONE),
     LootEntry.consumable(ConsumableType.POWER),
+    LootEntry.consumable(ConsumableType.MAGIC_RESIST),
 ]
 
 LOOT_TABLE_1 = LootTable([
@@ -106,7 +107,7 @@ LOOT_TABLE_3 = LootTable([
 ])
 
 LOOT_TABLE_4 = LootTable([
-    LootGroup(1, [LootEntry.money(2), LootEntry.money(3), LootEntry.money(4)], 0.3),
-    LootGroup(1, LOOT_POTIONS_1 + LOOT_POTIONS_2, 0.15),
+    LootGroup(1, [LootEntry.money(3), LootEntry.money(4), LootEntry.money(5)], 0.2),
+    LootGroup(1, LOOT_POTIONS_2, 0.1),
     LootGroup(1, LOOT_ITEMS_3 + LOOT_ITEMS_4, 0.15)
 ])
