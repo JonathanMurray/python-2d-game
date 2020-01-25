@@ -19,6 +19,7 @@ def register_walls():
     _register_pillar()
     _register_light_pole()
     _register_well()
+    _register_bench_mirror()
 
 
 def _register_wall():
@@ -198,3 +199,10 @@ def _register_well():
                                        SpriteInitializer("resources/graphics/wall_well.png", (85, 75)),
                                        (0, -10))
     register_wall_data(WallType.WELL, WallData(Sprite.WALL_WELL, (75, 65)))
+
+
+def _register_bench_mirror():
+    register_entity_sprite_initializer(Sprite.WALL_BENCH_MIRROR,
+                                       SpriteInitializer("resources/graphics/wall_bench_mirror.png", (35, 70)),
+                                       (0, -50))
+    register_wall_data(WallType.BENCH_MIRROR, WallData(Sprite.WALL_BENCH_MIRROR, (35, 20)))
