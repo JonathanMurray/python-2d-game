@@ -414,6 +414,9 @@ class MapEditor:
         for portal in [p for p in self.game_state.portals
                        if p.world_entity.get_position() == snapped_mouse_world_position]:
             self.game_state.portals.remove(portal)
+        for shrine in [s for s in self.game_state.shrines
+                       if s.world_entity.get_position() == snapped_mouse_world_position]:
+            self.game_state.shrines.remove(shrine)
 
         self._notify_ui_of_new_wall_positions()
 
