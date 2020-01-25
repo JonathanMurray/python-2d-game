@@ -66,8 +66,10 @@ def _register_dialog():
     ]
     bye_option = DialogOptionData("\"Good bye\"", "cancel", None)
 
-    dialog_low_level = DialogData(PORTRAIT_ICON_SPRITE, dialog_text_body, consumables_1 + [bye_option])
-    dialog_high_level = DialogData(PORTRAIT_ICON_SPRITE, dialog_text_body, consumables_1 + consumables_2 + [bye_option])
+    name = "Zak"
+    dialog_low_level = DialogData(name, PORTRAIT_ICON_SPRITE, dialog_text_body, consumables_1 + [bye_option])
+    dialog_high_level = DialogData(name, PORTRAIT_ICON_SPRITE, dialog_text_body,
+                                   consumables_1 + consumables_2 + [bye_option])
 
     def get_dialog_data(game_state: GameState) -> DialogData:
         if game_state.player_state.level < 3:

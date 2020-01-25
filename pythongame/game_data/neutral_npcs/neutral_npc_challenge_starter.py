@@ -42,7 +42,7 @@ def register_challenge_starter_npc():
         buy_item_option(ItemType.DRUIDS_RING, 20),
         DialogOptionData("\"Good bye\"", "cancel", None)]
     dialog_text_body = "Choose wisely."
-    dialog_data = DialogData(portrait_icon_sprite, dialog_text_body, dialog_options)
+    dialog_data = DialogData("Vendor", portrait_icon_sprite, dialog_text_body, dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")
     original_sprite_size = (32, 32)

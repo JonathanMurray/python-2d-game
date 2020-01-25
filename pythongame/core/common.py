@@ -715,7 +715,9 @@ class DialogOptionData:
 
 
 class DialogData:
-    def __init__(self, portrait_icon_sprite: PortraitIconSprite, text_body: str, options: List[DialogOptionData]):
+    def __init__(self, name: str, portrait_icon_sprite: PortraitIconSprite, text_body: str,
+                 options: List[DialogOptionData]):
+        self.name = name
         self.portrait_icon_sprite = portrait_icon_sprite
         self.text_body = text_body
         self.options = options

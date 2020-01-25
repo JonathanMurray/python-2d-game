@@ -148,7 +148,9 @@ def _register_dialog():
     prompt = "QUEST: "
     frog_data = ITEMS[ItemType.FROG]
     bye_option = DialogOptionData("\"Good bye\"", "cancel", None)
+    name = "Mida"
     dialog_1 = DialogData(
+        name,
         UI_ICON_SPRITE,
         "Hey you! Have you seen my pet frog? I bet it was that old green mean goblin king that took it!",
         [
@@ -158,6 +160,7 @@ def _register_dialog():
             bye_option
         ])
     dialog_2 = DialogData(
+        name,
         UI_ICON_SPRITE,
         "Hi friend! Any luck?",
         [
@@ -165,7 +168,7 @@ def _register_dialog():
                              "..."),
             bye_option
         ])
-    dialog_3 = DialogData(UI_ICON_SPRITE, "Thank you for helping me!", [bye_option])
+    dialog_3 = DialogData(name, UI_ICON_SPRITE, "Thank you for helping me!", [bye_option])
 
     def get_dialog_data(game_state: GameState):
         if game_state.player_state.has_completed_quest(QUEST_ID):

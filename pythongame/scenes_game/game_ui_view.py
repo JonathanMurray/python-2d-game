@@ -613,7 +613,7 @@ class GameUiView:
             text_body = data.text_body
             options = [build_dialog_option(option) for option in data.options]
             active_option_index = self.dialog_state.option_index
-            self.dialog.show_with_data(image, text_body, options, active_option_index)
+            self.dialog.show_with_data(data.name, image, text_body, options, active_option_index)
         else:
             self.dialog.hide()
 

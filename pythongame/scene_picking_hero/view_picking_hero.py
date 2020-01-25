@@ -22,7 +22,6 @@ class PickingHeroView:
         self.screen_render = DrawableArea(pygame_screen)
         self.font_large = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 32)
         self.font = pygame.font.Font(DIR_FONTS + 'Merchant Copy.ttf', 24)
-        self.font_width = 4.5
         self.images_by_portrait_sprite = images_by_portrait_sprite
 
     def render(self, heroes: List[HeroId], selected_index: int):
@@ -31,7 +30,7 @@ class PickingHeroView:
         y_0 = 200
         x_mid = self.screen_size[0] // 2
         x_base = x_mid - 175
-        self.screen_render.text_centered(self.font_large, "SELECT HERO", (x_mid, y_0 - 100), 5.5)
+        self.screen_render.text_centered(self.font_large, "SELECT HERO", (x_mid, y_0 - 100))
         for i, hero in enumerate(heroes):
             hero_data = HEROES[hero]
             sprite = hero_data.portrait_icon_sprite
@@ -44,8 +43,7 @@ class PickingHeroView:
             else:
                 self.screen_render.rect(COLOR_WHITE, Rect(x, y_0, PORTRAIT_ICON_SIZE[0], PORTRAIT_ICON_SIZE[1]), 1)
             self.screen_render.text_centered(
-                self.font, hero.name, (x + PORTRAIT_ICON_SIZE[0] // 2, y_0 + PORTRAIT_ICON_SIZE[1] + 10),
-                self.font_width)
+                self.font, hero.name, (x + PORTRAIT_ICON_SIZE[0] // 2, y_0 + PORTRAIT_ICON_SIZE[1] + 10))
         description = HEROES[heroes[selected_index]].description
         description_lines = split_text_into_lines(description, 40)
         y_1 = 350
@@ -53,6 +51,6 @@ class PickingHeroView:
             self.screen_render.text(self.font, description_line, (x_base - 8, y_1 + i * 20))
 
         y_2 = 500
-        self.screen_render.text_centered(self.font, "Choose with arrow-keys", (x_mid, y_2), self.font_width)
+        self.screen_render.text_centered(self.font, "Choose with arrow-keys", (x_mid, y_2))
         y_3 = 530
-        self.screen_render.text_centered(self.font, "Press Space/Enter to confirm", (x_mid, y_3), self.font_width)
+        self.screen_render.text_centered(self.font, "Press Space/Enter to confirm", (x_mid, y_3))

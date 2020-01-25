@@ -164,13 +164,15 @@ def _register_dialog():
         "Key",
         "...")
     option_bye = DialogOptionData("\"Good bye\"", "cancel", None)
+    name = "Nomad"
     dialog_text = "Greetings. I am here only to serve. Seek me out when you are wounded or need guidance!"
-    dialog_before_quest = DialogData(PORTRAIT_ICON_SPRITE, dialog_text, [option_blessing, option_advice, option_bye])
-    dialog_can_give_quest = DialogData(PORTRAIT_ICON_SPRITE, dialog_text,
+    dialog_before_quest = DialogData(name, PORTRAIT_ICON_SPRITE, dialog_text,
+                                     [option_blessing, option_advice, option_bye])
+    dialog_can_give_quest = DialogData(name, PORTRAIT_ICON_SPRITE, dialog_text,
                                        [option_blessing, option_advice, option_accept_quest, option_bye])
-    dialog_during_quest = DialogData(PORTRAIT_ICON_SPRITE, dialog_text,
+    dialog_during_quest = DialogData(name, PORTRAIT_ICON_SPRITE, dialog_text,
                                      [option_blessing, option_advice, option_complete_quest, option_bye])
-    dialog_after_quest = DialogData(PORTRAIT_ICON_SPRITE, "Oh you're back...",
+    dialog_after_quest = DialogData(name, PORTRAIT_ICON_SPRITE, "Oh you're back...",
                                     [option_blessing, option_advice, option_bye])
 
     def get_dialog_data(game_state: GameState) -> DialogData:

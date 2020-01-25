@@ -40,7 +40,7 @@ def register_dwarf_npc():
         sell_item_option(ItemType.GOLD_NUGGET, 20, "I'll give you good money for a nugget of pure gold!"),
         sell_item_option(ItemType.SAPHIRE, 30, "If you find a saphire I can make you real rich!"),
         DialogOptionData("\"Good bye\"", "cancel", None)]
-    dialog_data = DialogData(PortraitIconSprite.VIKING, introduction, dialog_options)
+    dialog_data = DialogData("Gimli", PortraitIconSprite.VIKING, introduction, dialog_options)
     register_npc_dialog_data(npc_type, dialog_data)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet.png")
     original_sprite_size = (32, 32)

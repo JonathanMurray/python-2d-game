@@ -54,7 +54,9 @@ def register_warpstone_merchant_npc():
 
 def _register_dialog():
     bye_option = DialogOptionData("\"Good bye\"", "cancel", None)
+    name = "Tink"
     low_level_dialog = DialogData(
+        name=name,
         portrait_icon_sprite=UI_ICON_SPRITE,
         text_body="These aren't any regular old statues! They are magical gateways to distant places! "
                   "I'm extracting their powers into something more ... mobile! "
@@ -62,6 +64,7 @@ def _register_dialog():
         options=[bye_option])
 
     high_level_dialog = DialogData(
+        name=name,
         portrait_icon_sprite=UI_ICON_SPRITE,
         text_body="Hah! I managed to infuse the statues' teleporting powers into these stones. " \
                   "You can carry them with you and use them any time you want to return to this place! "

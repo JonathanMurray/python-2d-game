@@ -82,6 +82,7 @@ class Dialog:
                  text_body: Optional[str], options: List[DialogOption], active_option_index: int,
                  portrait_image_size: Tuple[int, int], option_image_size: Tuple[int, int]):
         self._screen_render = screen_render
+        self._name = None
         self._portrait_image = portrait_image
         self._text_body = text_body
         self._options = options
@@ -118,7 +119,8 @@ class Dialog:
             rect_option = Rect(x, y, self._rect[2] - 16, Dialog.OPTION_LINE_HEIGHT + 2 * Dialog.OPTION_PADDING)
             self._option_rects.append(rect_option)
 
-    def show_with_data(self, image, text_body: str, options: List[DialogOption], active_option_index: int):
+    def show_with_data(self, name: str, image, text_body: str, options: List[DialogOption], active_option_index: int):
+        self._name = name
         self._portrait_image = image
         self._text_body = text_body
         self._options = options
@@ -157,6 +159,8 @@ class Dialog:
         rect_portrait = Rect(rect_portrait_pos[0], rect_portrait_pos[1], self._portrait_image_size[0],
                              self._portrait_image_size[1])
         self._screen_render.rect((160, 160, 180), rect_portrait, 2)
+        self._screen_render.text_centered(self._font_dialog, self._name,
+                                          (rect_portrait.centerx, rect_portrait.bottom + 9))
 
         dialog_pos = (x_left + 120, self._rect[1] + 15)
         dialog_lines = split_text_into_lines(self._text_body, 50)
