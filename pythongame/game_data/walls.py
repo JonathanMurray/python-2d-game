@@ -22,6 +22,7 @@ def register_walls():
     _register_bench_mirror()
     _register_beds()
     _register_pillows()
+    _register_decorated_table()
 
 
 def _register_wall():
@@ -232,3 +233,10 @@ def _register_pillows():
                                        SpriteInitializer("resources/graphics/wall_pillows_2.png", (40, 35)),
                                        (0, -5))
     register_wall_data(WallType.PILLOWS_2, WallData(Sprite.WALL_PILLOWS_2, (40, 30)))
+
+
+def _register_decorated_table():
+    register_entity_sprite_initializer(Sprite.WALL_DECORATED_TABLE,
+                                       SpriteInitializer("resources/graphics/wall_table_candles.png", (100, 75)),
+                                       (-5, -35))
+    register_wall_data(WallType.DECORATED_TABLE, WallData(Sprite.WALL_DECORATED_TABLE, (90, 40)))
