@@ -1091,13 +1091,6 @@
       ]
     },
     {
-      "npc_type": "NEUTRAL_DWARF",
-      "position": [
-        300,
-        75
-      ]
-    },
-    {
       "npc_type": "RAT_1",
       "position": [
         -550,
@@ -2166,6 +2159,13 @@
       "position": [
         9425,
         3200
+      ]
+    },
+    {
+      "npc_type": "NEUTRAL_DWARF",
+      "position": [
+        300,
+        125
       ]
     }
   ],
@@ -16255,13 +16255,6 @@
       ]
     },
     {
-      "wall_type": "WALL_DIRECTIONAL_NE",
-      "position": [
-        175,
-        400
-      ]
-    },
-    {
       "wall_type": "WALL_DIRECTIONAL_POINTY_NE",
       "position": [
         150,
@@ -36041,6 +36034,76 @@
       "position": [
         2100,
         -1550
+      ]
+    },
+    {
+      "wall_type": "WEAPON_RACK",
+      "position": [
+        275,
+        50
+      ]
+    },
+    {
+      "wall_type": "WEAPON_RACK",
+      "position": [
+        325,
+        50
+      ]
+    },
+    {
+      "wall_type": "SHELF_HELMETS",
+      "position": [
+        400,
+        125
+      ]
+    },
+    {
+      "wall_type": "WELL",
+      "position": [
+        400,
+        300
+      ]
+    },
+    {
+      "wall_type": "BARREL_5",
+      "position": [
+        325,
+        350
+      ]
+    },
+    {
+      "wall_type": "BARREL_5",
+      "position": [
+        275,
+        350
+      ]
+    },
+    {
+      "wall_type": "BARREL_1",
+      "position": [
+        300,
+        325
+      ]
+    },
+    {
+      "wall_type": "SIGN_LARGE_EMPTY",
+      "position": [
+        175,
+        125
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_NE",
+      "position": [
+        175,
+        400
+      ]
+    },
+    {
+      "wall_type": "LIGHT_POLE",
+      "position": [
+        800,
+        -475
       ]
     }
   ],
