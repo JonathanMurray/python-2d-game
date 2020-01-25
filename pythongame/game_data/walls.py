@@ -7,7 +7,7 @@ def register_walls():
     _register_wall()
     _register_statue()
     _register_directional_walls()
-    _register_chair()
+    _register_chairs()
     _register_altar()
     _register_shelves()
     _register_barrels()
@@ -97,15 +97,18 @@ def _register_altar():
     register_wall_data(WallType.ALTAR, WallData(sprite, (100, 25)))  # table is roughly 13px tall
 
 
-def _register_chair():
-    sprite = Sprite.WALL_CHAIR
+def _register_chairs():
+    sprites = [Sprite.WALL_CHAIR_DOWN, Sprite.WALL_CHAIR_UP, Sprite.WALL_CHAIR_RIGHT, Sprite.WALL_CHAIR_LEFT]
+    wall_types = [WallType.CHAIR_DOWN, WallType.CHAIR_UP, WallType.CHAIR_RIGHT, WallType.CHAIR_LEFT]
     sprite_sheet = SpriteSheet("resources/graphics/human_tileset.png")
     original_sprite_size = (32, 32)
     scaled_sprite_size = (50, 50)
-    indices_by_dir = {Direction.DOWN: [(7, 0)]}
-    register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size,
-                               indices_by_dir, (0, 0))
-    register_wall_data(WallType.WALL_CHAIR, WallData(sprite, (50, 50)))
+    indices = [(4, 0), (5, 0), (6, 0), (7, 0)]
+    for i in range(len(sprites)):
+        indices_by_dir = {Direction.DOWN: [indices[i]]}
+        register_entity_sprite_map(sprites[i], sprite_sheet, original_sprite_size, scaled_sprite_size,
+                                   indices_by_dir, (0, 0))
+        register_wall_data(wall_types[i], WallData(sprites[i], (50, 50)))
 
 
 def _register_shelves():
