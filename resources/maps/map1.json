@@ -2017,13 +2017,6 @@
     {
       "npc_type": "VETERAN",
       "position": [
-        9425,
-        3125
-      ]
-    },
-    {
-      "npc_type": "VETERAN",
-      "position": [
         9325,
         3200
       ]
@@ -2173,6 +2166,13 @@
       "position": [
         -300,
         2425
+      ]
+    },
+    {
+      "npc_type": "VETERAN",
+      "position": [
+        9425,
+        3200
       ]
     }
   ],
@@ -34910,20 +34910,6 @@
       ]
     },
     {
-      "wall_type": "STATUE",
-      "position": [
-        9200,
-        3600
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        9425,
-        3600
-      ]
-    },
-    {
       "wall_type": "BARREL_5",
       "position": [
         9200,
@@ -35005,34 +34991,6 @@
       "position": [
         9375,
         2575
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        9225,
-        3000
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        9400,
-        3000
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        9225,
-        2725
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        9400,
-        2725
       ]
     },
     {
@@ -35696,13 +35654,6 @@
     {
       "wall_type": "STATUE",
       "position": [
-        9400,
-        2175
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
         9225,
         2275
       ]
@@ -35711,20 +35662,6 @@
       "wall_type": "STATUE",
       "position": [
         9225,
-        2375
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        9400,
-        2275
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        9400,
         2375
       ]
     },
@@ -35957,6 +35894,188 @@
       "position": [
         1650,
         1850
+      ]
+    },
+    {
+      "wall_type": "WELL",
+      "position": [
+        2425,
+        2700
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        3200,
+        2550
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        3275,
+        2400
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        3350,
+        2550
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        3125,
+        2400
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        3050,
+        2550
+      ]
+    },
+    {
+      "wall_type": "LIGHT_POLE",
+      "position": [
+        5650,
+        2825
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        9225,
+        2725
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        9400,
+        2725
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        9225,
+        2950
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        9400,
+        2950
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        9225,
+        3125
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        9400,
+        3125
+      ]
+    },
+    {
+      "wall_type": "STONE_CROSS_FLOWERS",
+      "position": [
+        9325,
+        2150
+      ]
+    },
+    {
+      "wall_type": "STATUE",
+      "position": [
+        9425,
+        2175
+      ]
+    },
+    {
+      "wall_type": "STATUE",
+      "position": [
+        9425,
+        2275
+      ]
+    },
+    {
+      "wall_type": "STATUE",
+      "position": [
+        9425,
+        2375
+      ]
+    },
+    {
+      "wall_type": "LIGHT_POLE",
+      "position": [
+        7225,
+        2275
+      ]
+    },
+    {
+      "wall_type": "LIGHT_POLE",
+      "position": [
+        9225,
+        3600
+      ]
+    },
+    {
+      "wall_type": "LIGHT_POLE",
+      "position": [
+        9425,
+        3600
+      ]
+    },
+    {
+      "wall_type": "WELL",
+      "position": [
+        6600,
+        4225
+      ]
+    },
+    {
+      "wall_type": "WEAPON_RACK",
+      "position": [
+        8625,
+        4000
+      ]
+    },
+    {
+      "wall_type": "WEAPON_RACK",
+      "position": [
+        8700,
+        4000
+      ]
+    },
+    {
+      "wall_type": "WEAPON_RACK",
+      "position": [
+        8775,
+        4000
+      ]
+    },
+    {
+      "wall_type": "SIGN_LARGE_EMPTY",
+      "position": [
+        9000,
+        4000
+      ]
+    },
+    {
+      "wall_type": "SIGN_LARGE_EMPTY",
+      "position": [
+        9075,
+        4000
       ]
     }
   ],
