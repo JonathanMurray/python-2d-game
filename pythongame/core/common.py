@@ -149,6 +149,9 @@ class WallType(Enum):
     LIGHT_POLE = 120
     WELL = 130
     BENCH_MIRROR = 140
+    BED_1 = 150
+    BED_2 = 151
+    BED_3 = 152
 
 
 class AbilityType(Enum):
@@ -315,6 +318,9 @@ class Sprite(Enum):
     WALL_LIGHT_POLE = 610
     WALL_WELL = 620
     WALL_BENCH_MIRROR = 630
+    WALL_BED_1 = 640
+    WALL_BED_2 = 641
+    WALL_BED_3 = 642
     PORTAL_DISABLED = 1600
     PORTAL_BLUE = 1601
     PORTAL_GREEN = 1602

@@ -20,6 +20,7 @@ def register_walls():
     _register_light_pole()
     _register_well()
     _register_bench_mirror()
+    _register_beds()
 
 
 def _register_wall():
@@ -164,7 +165,7 @@ def _register_signs():
                Sprite.WALL_SIGN_LARGE_NOTES]
     wall_types = [WallType.SIGN_SMALL, WallType.SIGN_MULTI, WallType.SIGN_LARGE_EMPTY, WallType.SIGN_LARGE_NOTES]
     sprite_sheet = SpriteSheet("resources/graphics/human_tileset.png")
-    indices = [(14, 2), (13, 2), (14, 1), (14, 2)]
+    indices = [(14, 2), (13, 2), (13, 1), (14, 1)]
     original_sprite_size = (32, 32)
     scaled_sprite_size = (50, 50)
     for i in range(len(sprites)):
@@ -206,3 +207,16 @@ def _register_bench_mirror():
                                        SpriteInitializer("resources/graphics/wall_bench_mirror.png", (35, 70)),
                                        (0, -50))
     register_wall_data(WallType.BENCH_MIRROR, WallData(Sprite.WALL_BENCH_MIRROR, (35, 20)))
+
+
+def _register_beds():
+    sprites = [Sprite.WALL_BED_1, Sprite.WALL_BED_2, Sprite.WALL_BED_3]
+    wall_types = [WallType.BED_1, WallType.BED_2, WallType.BED_3]
+    sprite_sheet = SpriteSheet("resources/graphics/wall_beds.png")
+    indices = [(0, 0), (2, 0), (3, 0)]
+    original_sprite_size = (32, 80)
+    scaled_sprite_size = (36, 90)
+    for i in range(len(sprites)):
+        register_entity_sprite_map(sprites[i], sprite_sheet, original_sprite_size, scaled_sprite_size,
+                                   {Direction.DOWN: [indices[i]]}, (0, -20))
+        register_wall_data(wall_types[i], WallData(sprites[i], (36, 70)))
