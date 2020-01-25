@@ -57,6 +57,7 @@ def _register_dialog():
         buy_consumable_option(ConsumableType.MANA, 5),
         buy_consumable_option(ConsumableType.SPEED, 5),
         buy_consumable_option(ConsumableType.POWER, 10),
+        buy_consumable_option(ConsumableType.MAGIC_RESIST, 10),
         DialogOptionData("\"Good bye\"", "cancel", None)]
     text_low_level = "Huh?! Well, aren't you the brave one, making it all the way out here! I would think " \
                      "twice before heading down that way! Well since you are here, see if any of these " \

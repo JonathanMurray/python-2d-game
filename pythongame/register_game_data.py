@@ -18,6 +18,7 @@ from pythongame.game_data.buff_recovering_after_ability import register_recoveri
 from pythongame.game_data.chests import register_chest_entity
 from pythongame.game_data.coin import register_coin
 from pythongame.game_data.consumables.consumable_warpstone import register_warpstone_consumable
+from pythongame.game_data.consumables.elixir_magic_resistence import register_elixir_of_magic_resist
 from pythongame.game_data.consumables.elixir_power import register_elixir_of_power
 from pythongame.game_data.consumables.potion_brew import register_brew_potion
 from pythongame.game_data.consumables.potion_health import register_health_potion
@@ -149,6 +150,7 @@ def register_all_game_data():
     register_brew_potion()
     register_warpstone_consumable()
     register_elixir_of_power()
+    register_elixir_of_magic_resist()
 
     register_necromancer_enemy()
     register_rat_1_enemy()
