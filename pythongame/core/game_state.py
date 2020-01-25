@@ -547,6 +547,12 @@ class PlayerState:
             b.force_cancel()
         self.notify_buff_observers()
 
+    def force_cancel_buff(self, buff_type: BuffType):
+        for b in self.active_buffs:
+            if b.buff_effect.get_buff_type() == buff_type:
+                b.force_cancel()
+        self.notify_buff_observers()
+
     def handle_buffs(self, time_passed: Millis):
         # NOTE: duplication between NPC's and player's buff handling
         copied_buffs_list = list(self.active_buffs)

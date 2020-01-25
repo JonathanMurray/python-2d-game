@@ -17,6 +17,7 @@ from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vector
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import create_visual_exp_text, create_teleport_effects, VisualRect, VisualCircle
 from pythongame.game_data.portals import PORTAL_DELAY
+from pythongame.game_data.shrines import apply_shrine_buff_to_player
 from pythongame.scenes_game.game_ui_view import InfoMessage
 from pythongame.scenes_game.player_controls import PlayerControls
 
@@ -154,8 +155,8 @@ class GameEngine:
     def interact_with_shrine(self, shrine: Shrine):
         if not shrine.has_been_used:
             shrine.has_been_used = True
-            # TODO Shrine should grant a random buff
-            self.info_message.set_message("Nothing happened...")
+            message = apply_shrine_buff_to_player(self.game_state.player_state)
+            self.info_message.set_message(message)
 
     def use_warp_point(self, warp_point: WarpPoint):
         destination_warp_point = [w for w in self.game_state.warp_points if w != warp_point][0]
