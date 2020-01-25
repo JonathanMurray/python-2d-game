@@ -16,6 +16,7 @@ def register_walls():
     _register_stone_crosses()
     _register_signs()
     _register_weapon_rack()
+    _register_pillar()
 
 
 def _register_wall():
@@ -174,3 +175,10 @@ def _register_weapon_rack():
                                        SpriteInitializer("resources/graphics/wall_weapon_rack.png", (50, 100)),
                                        (0, -70))
     register_wall_data(WallType.WEAPON_RACK, WallData(Sprite.WALL_WEAPON_RACK, (50, 30)))
+
+
+def _register_pillar():
+    register_entity_sprite_initializer(Sprite.WALL_PILLAR,
+                                       SpriteInitializer("resources/graphics/wall_pillar.png", (55, 110)),
+                                       (0, -60))
+    register_wall_data(WallType.PILLAR, WallData(Sprite.WALL_PILLAR, (50, 50)))
