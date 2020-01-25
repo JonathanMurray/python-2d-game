@@ -21,6 +21,7 @@ def register_walls():
     _register_well()
     _register_bench_mirror()
     _register_beds()
+    _register_pillows()
 
 
 def _register_wall():
@@ -220,3 +221,14 @@ def _register_beds():
         register_entity_sprite_map(sprites[i], sprite_sheet, original_sprite_size, scaled_sprite_size,
                                    {Direction.DOWN: [indices[i]]}, (0, -20))
         register_wall_data(wall_types[i], WallData(sprites[i], (36, 70)))
+
+
+def _register_pillows():
+    register_entity_sprite_initializer(Sprite.WALL_PILLOW,
+                                       SpriteInitializer("resources/graphics/wall_pillow.png", (40, 30)),
+                                       (0, 0))
+    register_wall_data(WallType.PILLOW, WallData(Sprite.WALL_PILLOW, (40, 30)))
+    register_entity_sprite_initializer(Sprite.WALL_PILLOWS_2,
+                                       SpriteInitializer("resources/graphics/wall_pillows_2.png", (40, 35)),
+                                       (0, -5))
+    register_wall_data(WallType.PILLOWS_2, WallData(Sprite.WALL_PILLOWS_2, (40, 30)))

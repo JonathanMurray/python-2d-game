@@ -152,6 +152,8 @@ class WallType(Enum):
     BED_1 = 150
     BED_2 = 151
     BED_3 = 152
+    PILLOW = 160
+    PILLOWS_2 = 161
 
 
 class AbilityType(Enum):
@@ -321,6 +323,8 @@ class Sprite(Enum):
     WALL_BED_1 = 640
     WALL_BED_2 = 641
     WALL_BED_3 = 642
+    WALL_PILLOW = 650
+    WALL_PILLOWS_2 = 651
     PORTAL_DISABLED = 1600
     PORTAL_BLUE = 1601
     PORTAL_GREEN = 1602
