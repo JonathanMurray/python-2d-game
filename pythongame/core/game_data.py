@@ -279,8 +279,8 @@ def get_item_data(identifier: Union[ItemType, ItemId]):
     return item_data_by_id[item_id]
 
 
-def get_all_item_ids() -> List[ItemId]:
-    return list(item_data_by_id.keys())
+def get_one_item_id_for_every_item_type() -> List[ItemId]:
+    return [min(item_ids) for item_ids in item_ids_grouped_by_type.values()]
 
 
 def get_random_item_id_for_item_type(item_type: ItemType) -> ItemId:
@@ -296,5 +296,8 @@ def register_hero_data(hero_id: HeroId, hero_data: HeroData):
 
 
 def get_items_with_category(category: Optional[ItemEquipmentCategory]) -> List[Tuple[ItemId, ItemData]]:
-    return [(item_id, item_data) for (item_id, item_data) in item_data_by_id.items()
-            if item_data.item_equipment_category == category]
+    one_item_id_per_item_type = [min(item_ids) for item_ids in item_ids_grouped_by_type.values()]
+    return [(item_id, item_data)
+            for (item_id, item_data) in item_data_by_id.items()
+            if item_id in one_item_id_per_item_type
+            and item_data.item_equipment_category == category]

@@ -12,7 +12,7 @@ from pythongame.core.entity_creation import create_portal, create_hero_world_ent
     create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground, \
     create_player_state, create_chest, create_shrine
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, PORTRAIT_ICON_SPRITE_PATHS, \
-    get_all_item_ids
+    get_one_item_id_for_every_item_type
 from pythongame.core.game_state import GameState
 from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.game_world_view import GameWorldView
@@ -43,7 +43,7 @@ ADVANCED_ENTITIES = [
 ]
 WALL_ENTITIES = [MapEditorWorldEntity.wall(wall_type) for wall_type in WallType]
 NPC_ENTITIES = [MapEditorWorldEntity.npc(npc_type) for npc_type in NpcType]
-ITEM_ENTITIES = [MapEditorWorldEntity.item(item_id) for item_id in get_all_item_ids()]
+ITEM_ENTITIES = [MapEditorWorldEntity.item(item_id) for item_id in get_one_item_id_for_every_item_type()]
 MISC_ENTITIES: List[MapEditorWorldEntity] = \
     [
         MapEditorWorldEntity.player(),
