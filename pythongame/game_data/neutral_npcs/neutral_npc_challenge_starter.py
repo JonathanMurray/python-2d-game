@@ -38,7 +38,7 @@ def register_challenge_starter_npc():
         buy_item_option(randomized_item_id(ItemType.GLADIATOR_ARMOR, 0), 20),
         buy_item_option(plain_item_id(ItemType.HEALING_WAND), 20),
         buy_item_option(plain_item_id(ItemType.ZULS_AEGIS), 20),
-        buy_item_option(plain_item_id(ItemType.WARLOCKS_COWL), 20),
+        buy_item_option(randomized_item_id(ItemType.WARLOCKS_COWL, 0), 20),
         buy_item_option(randomized_item_id(ItemType.DRUIDS_RING, 0), 20),
         DialogOptionData("\"Good bye\"", "cancel", None)]
     dialog_text_body = "Choose wisely."
