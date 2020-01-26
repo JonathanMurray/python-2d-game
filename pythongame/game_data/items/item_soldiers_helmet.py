@@ -12,5 +12,5 @@ def register_soldiers_helmet_item():
         image_file_path="resources/graphics/item_soldiers_helmet.png",
         item_equipment_category=ItemEquipmentCategory.HEAD,
         name="Soldier's Helmet",
-        stat_modifier_intervals={HeroStat.ARMOR: [2], HeroStat.MAX_HEALTH: [10, 15, 20]}
+        stat_modifier_intervals={HeroStat.ARMOR: [2], HeroStat.MAX_HEALTH: [10, 11, 12, 13, 14, 15]}
     )

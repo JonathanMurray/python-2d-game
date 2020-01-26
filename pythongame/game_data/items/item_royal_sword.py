@@ -1,7 +1,6 @@
 from pythongame.core.common import ItemType, Sprite, UiIconSprite, HeroStat
 from pythongame.core.item_inventory import ItemEquipmentCategory
-from pythongame.game_data.items.register_items_util import register_stat_modifying_item, \
-    register_randomized_stat_modifying_item
+from pythongame.game_data.items.register_items_util import register_randomized_stat_modifying_item
 
 
 def register_royal_sword_item():
