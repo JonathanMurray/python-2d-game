@@ -9,12 +9,12 @@ LOOT_ITEMS_1 = [
 ]
 
 LOOT_ITEMS_2 = [
-    LootEntry.item(ItemType.AMULET_OF_MANA_1),
+    LootEntry.item(ItemType.AMULET_OF_MANA),
     LootEntry.item(ItemType.ORB_OF_THE_MAGI_1),
     LootEntry.item(ItemType.ORB_OF_WISDOM_1),
     LootEntry.item(ItemType.ORB_OF_LIFE_1),
     LootEntry.item(ItemType.BLUE_ROBE_1),
-    LootEntry.item(ItemType.BLESSED_SHIELD_1),
+    LootEntry.item(ItemType.BLESSED_SHIELD),
     LootEntry.item(ItemType.SOLDIERS_HELMET_1),
     LootEntry.item(ItemType.HATCHET),
     LootEntry.item(ItemType.WAND),
@@ -24,10 +24,6 @@ LOOT_ITEMS_3 = [
     LootEntry.item(ItemType.MESSENGERS_HAT),
     LootEntry.item(ItemType.SKULL_STAFF),
     LootEntry.item(ItemType.ROD_OF_LIGHTNING),
-    LootEntry.item(ItemType.AMULET_OF_MANA_2),
-    LootEntry.item(ItemType.AMULET_OF_MANA_3),
-    LootEntry.item(ItemType.BLESSED_SHIELD_2),
-    LootEntry.item(ItemType.BLESSED_SHIELD_3),
     LootEntry.item(ItemType.SOLDIERS_HELMET_2),
     LootEntry.item(ItemType.SOLDIERS_HELMET_3),
     LootEntry.item(ItemType.BLUE_ROBE_2),
