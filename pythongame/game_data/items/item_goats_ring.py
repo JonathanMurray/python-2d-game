@@ -1,7 +1,7 @@
 import random
 
 from pythongame.core.buff_effects import get_buff_effect, register_buff_effect, AbstractBuffEffect
-from pythongame.core.common import ItemType, Sprite, BuffType, Millis, PeriodicTimer
+from pythongame.core.common import ItemType, Sprite, BuffType, Millis, PeriodicTimer, randomized_item_id
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
     register_entity_sprite_initializer, ITEM_ENTITY_SIZE
@@ -15,17 +15,17 @@ from pythongame.core.visual_effects import VisualCircle
 ITEM_TYPE = ItemType.GOATS_RING
 BUFF_TYPE = BuffType.DEBUFFED_BY_GOATS_RING
 DAMAGE_SOURCE = "goats_ring"
-PROC_CHANCE = 0.2
 
 
 class ItemEffect(AbstractItemEffect):
 
-    def __init__(self, item_type: ItemType):
+    def __init__(self, item_type: ItemType, proc_chance: float):
         super().__init__(item_type)
+        self._proc_chance = proc_chance
 
     def item_handle_event(self, event: Event, game_state: GameState):
         if isinstance(event, PlayerDamagedEnemy):
-            if random.random() < PROC_CHANCE:
+            if random.random() < self._proc_chance:
                 # Compare "source" to prevent the debuff from renewing itself indefinitely
                 if event.damage_source != DAMAGE_SOURCE:
                     event.enemy_npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(6000))
@@ -58,10 +58,12 @@ def register_goats_ring():
     image_file_path = "resources/graphics/item_goats_ring.png"
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    register_item_effect(ITEM_TYPE, ItemEffect(ITEM_TYPE))
     name = "The Goat's Curse"
-    description = ["Whenever you damage an enemy, there is a  " + str(
-        int(PROC_CHANCE * 100)) + "% chance that it will be cursed and take additional magic damage over time"]
-    item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.RING)
-    register_item_data(ITEM_TYPE, item_data)
+    for i, proc_chance in enumerate([0.2, 0.21, 0.22, 0.23, 0.24, 0.25]):
+        item_id = randomized_item_id(ITEM_TYPE, i)
+        register_item_effect(item_id, ItemEffect(ITEM_TYPE, proc_chance))
+        description = ["Whenever you damage an enemy, there is a  " + str(
+            int(proc_chance * 100)) + "% chance that it will be cursed and take additional magic damage over time"]
+        item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.RING)
+        register_item_data(item_id, item_data)
     register_buff_effect(BUFF_TYPE, DebuffedByGoatsRing)
