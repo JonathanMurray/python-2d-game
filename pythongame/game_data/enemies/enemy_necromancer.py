@@ -170,7 +170,7 @@ def register_necromancer_enemy():
     size = (36, 36)
     health = 60
     exp_reward = 29
-    npc_data = NpcData.enemy(SPRITE, size, health, 0, 0.02, exp_reward, LootTableId.LEVEL_4, SoundId.DEATH_NECRO)
+    npc_data = NpcData.enemy(SPRITE, size, health, 0, 0.02, exp_reward, LootTableId.LEVEL_5, SoundId.DEATH_NECRO)
     register_npc_data(ENEMY_TYPE, npc_data)
     register_npc_behavior(ENEMY_TYPE, NpcMind)
 
