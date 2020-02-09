@@ -16,7 +16,7 @@ def register_warrior_king_enemy():
     npc_type = NpcType.WARRIOR_KING
     movement_speed = 0.13
     health = 240
-    exp_reward = 75
+    exp_reward = 90
 
     npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LootTableId.BOSS_WARRIOR_KING,
                              SoundId.DEATH_BOSS, is_boss=True)

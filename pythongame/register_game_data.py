@@ -41,6 +41,7 @@ from pythongame.game_data.enemies.enemy_mummy import register_mummy_enemy
 from pythongame.game_data.enemies.enemy_necromancer import register_necromancer_enemy
 from pythongame.game_data.enemies.enemy_rat_1 import register_rat_1_enemy
 from pythongame.game_data.enemies.enemy_rat_2 import register_rat_2_enemy
+from pythongame.game_data.enemies.enemy_skeleton_mage import register_skeleton_mage_enemy
 from pythongame.game_data.enemies.enemy_veteran import register_veteran_enemy
 from pythongame.game_data.enemies.enemy_warrior import register_warrior_enemy
 from pythongame.game_data.enemies.enemy_warrior_king import register_warrior_king_enemy
@@ -172,6 +173,7 @@ def register_all_game_data():
     register_goblin_spearman_elite_enemy()
     register_goblin_warrior_enemy()
     register_goblin_sprint_buff()
+    register_skeleton_mage_enemy()
 
     register_hero_mage()
     register_hero_warrior()

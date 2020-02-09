@@ -155,20 +155,6 @@
     {
       "npc_type": "RAT_1",
       "position": [
-        200,
-        1800
-      ]
-    },
-    {
-      "npc_type": "RAT_1",
-      "position": [
-        75,
-        1800
-      ]
-    },
-    {
-      "npc_type": "RAT_1",
-      "position": [
         275,
         1975
       ]
@@ -470,22 +456,8 @@
     {
       "npc_type": "RAT_1",
       "position": [
-        4125,
-        2975
-      ]
-    },
-    {
-      "npc_type": "RAT_1",
-      "position": [
         4250,
         2975
-      ]
-    },
-    {
-      "npc_type": "RAT_1",
-      "position": [
-        3925,
-        2925
       ]
     },
     {
@@ -506,20 +478,6 @@
       "npc_type": "GOBLIN_WARLOCK",
       "position": [
         3525,
-        2050
-      ]
-    },
-    {
-      "npc_type": "GOBLIN_WARLOCK",
-      "position": [
-        3575,
-        2025
-      ]
-    },
-    {
-      "npc_type": "GOBLIN_WARLOCK",
-      "position": [
-        3625,
         2050
       ]
     },
@@ -773,13 +731,6 @@
       "position": [
         1325,
         -1350
-      ]
-    },
-    {
-      "npc_type": "GOBLIN_SPEARMAN",
-      "position": [
-        2075,
-        -1900
       ]
     },
     {
@@ -1303,13 +1254,6 @@
     {
       "npc_type": "MUMMY",
       "position": [
-        -75,
-        2475
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
         -175,
         2525
       ]
@@ -1555,13 +1499,6 @@
     {
       "npc_type": "ZOMBIE",
       "position": [
-        4100,
-        2850
-      ]
-    },
-    {
-      "npc_type": "ZOMBIE",
-      "position": [
         3725,
         2875
       ]
@@ -1599,20 +1536,6 @@
       "position": [
         2325,
         2825
-      ]
-    },
-    {
-      "npc_type": "ZOMBIE",
-      "position": [
-        275,
-        1850
-      ]
-    },
-    {
-      "npc_type": "ZOMBIE",
-      "position": [
-        150,
-        1750
       ]
     },
     {
@@ -1718,13 +1641,6 @@
       "position": [
         3850,
         2950
-      ]
-    },
-    {
-      "npc_type": "ZOMBIE",
-      "position": [
-        4150,
-        2900
       ]
     },
     {
@@ -2143,13 +2059,6 @@
     {
       "npc_type": "ZOMBIE",
       "position": [
-        -175,
-        2425
-      ]
-    },
-    {
-      "npc_type": "ZOMBIE",
-      "position": [
         -300,
         2425
       ]
@@ -2166,6 +2075,153 @@
       "position": [
         300,
         125
+      ]
+    },
+    {
+      "npc_type": "SKELETON_MAGE",
+      "position": [
+        -175,
+        2425
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        225,
+        1825
+      ]
+    },
+    {
+      "npc_type": "MUMMY",
+      "position": [
+        100,
+        1775
+      ]
+    },
+    {
+      "npc_type": "SKELETON_MAGE",
+      "position": [
+        2075,
+        -1900
+      ]
+    },
+    {
+      "npc_type": "ZOMBIE",
+      "position": [
+        2025,
+        -1875
+      ]
+    },
+    {
+      "npc_type": "MUMMY",
+      "position": [
+        2300,
+        -1800
+      ]
+    },
+    {
+      "npc_type": "SKELETON_MAGE",
+      "position": [
+        2925,
+        2925
+      ]
+    },
+    {
+      "npc_type": "SKELETON_MAGE",
+      "position": [
+        2900,
+        1500
+      ]
+    },
+    {
+      "npc_type": "SKELETON_MAGE",
+      "position": [
+        4100,
+        2925
+      ]
+    },
+    {
+      "npc_type": "SKELETON_MAGE",
+      "position": [
+        7000,
+        4175
+      ]
+    },
+    {
+      "npc_type": "SKELETON_MAGE",
+      "position": [
+        7025,
+        4225
+      ]
+    },
+    {
+      "npc_type": "SKELETON_MAGE",
+      "position": [
+        7075,
+        4175
+      ]
+    },
+    {
+      "npc_type": "SKELETON_MAGE",
+      "position": [
+        -100,
+        2475
+      ]
+    },
+    {
+      "npc_type": "SKELETON_MAGE",
+      "position": [
+        3575,
+        2000
+      ]
+    },
+    {
+      "npc_type": "GOBLIN_WARLOCK",
+      "position": [
+        3650,
+        2050
+      ]
+    },
+    {
+      "npc_type": "SKELETON_MAGE",
+      "position": [
+        9300,
+        2225
+      ]
+    },
+    {
+      "npc_type": "SKELETON_MAGE",
+      "position": [
+        9350,
+        2225
+      ]
+    },
+    {
+      "npc_type": "SKELETON_MAGE",
+      "position": [
+        9300,
+        2275
+      ]
+    },
+    {
+      "npc_type": "SKELETON_MAGE",
+      "position": [
+        9350,
+        2275
+      ]
+    },
+    {
+      "npc_type": "SKELETON_MAGE",
+      "position": [
+        9300,
+        2325
+      ]
+    },
+    {
+      "npc_type": "SKELETON_MAGE",
+      "position": [
+        9350,
+        2325
       ]
     }
   ],
