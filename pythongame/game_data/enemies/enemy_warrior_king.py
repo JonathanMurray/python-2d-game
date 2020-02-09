@@ -1,10 +1,8 @@
-from pythongame.core.common import Millis, NpcType, Sprite, Direction, ConsumableType, ItemType, SoundId
+from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId, LootTableId
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map
-from pythongame.core.loot import LootTable, LootGroup, LootEntry
 from pythongame.core.npc_behaviors import register_npc_behavior, MeleeEnemyNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.view.image_loading import SpriteSheet
-from pythongame.game_data.loot_tables import LOOT_ITEMS_4
 
 
 class NpcMind(MeleeEnemyNpcMind):
@@ -17,17 +15,11 @@ def register_warrior_king_enemy():
     sprite = Sprite.ENEMY_WARRIOR_KING
     npc_type = NpcType.WARRIOR_KING
     movement_speed = 0.13
-    health = 210
+    health = 240
     exp_reward = 75
-    loot_table = LootTable(
-        [
-            LootGroup.single(LootEntry.consumable(ConsumableType.WARP_STONE), 1),
-            LootGroup(1, LOOT_ITEMS_4, 1),
-            LootGroup.single(LootEntry.item(ItemType.KEY), 1),
-        ]
-    )
-    npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, loot_table, SoundId.DEATH_BOSS,
-                             is_boss=True)
+
+    npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LootTableId.BOSS_WARRIOR_KING,
+                             SoundId.DEATH_BOSS, is_boss=True)
     register_npc_data(npc_type, npc_data)
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")

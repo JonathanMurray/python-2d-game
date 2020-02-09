@@ -2,10 +2,10 @@ import random
 from typing import Optional
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
-    UiIconSprite, ItemType, PeriodicTimer, HeroId, SoundId
+    UiIconSprite, ItemType, PeriodicTimer, HeroId, SoundId, ItemId, plain_item_id
 from pythongame.core.entity_creation import create_item_on_ground
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
-    register_portrait_icon_sprite_path, ITEMS
+    register_portrait_icon_sprite_path, get_item_data
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest, QuestGiverState
 from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
@@ -17,7 +17,7 @@ from pythongame.scenes_game.game_ui_view import GameUiView
 
 QUEST_ID = QuestId.RETRIEVE_FROG
 QUEST = Quest(QUEST_ID, "Lost pet", "Retrieve pet frog from goblin king")
-ITEM_TYPE_FROG = ItemType.FROG
+ITEM_ID_FROG = plain_item_id(ItemType.FROG)
 NPC_TYPE = NpcType.NEUTRAL_YOUNG_SORCERESS
 UI_ICON_SPRITE = PortraitIconSprite.YOUNG_SORCERESS
 
@@ -34,7 +34,7 @@ class NpcMind(AbstractNpcMind):
         if self.quest_timer.update_and_check_if_ready(time_passed):
             player_state = game_state.player_state
             if player_state.has_quest(QUEST_ID):
-                if player_state.item_inventory.has_item_in_inventory(ITEM_TYPE_FROG):
+                if player_state.item_inventory.has_item_in_inventory(ITEM_ID_FROG):
                     npc.quest_giver_state = QuestGiverState.CAN_COMPLETE_QUEST
                 else:
                     npc.quest_giver_state = QuestGiverState.WAITING_FOR_PLAYER
@@ -68,18 +68,18 @@ class GiveQuest(AbstractNpcAction):
 class AcceptFrog(AbstractNpcAction):
 
     def on_select(self, game_state: GameState) -> Optional[str]:
-        player_has_it = game_state.player_state.item_inventory.has_item_in_inventory(ITEM_TYPE_FROG)
+        player_has_it = game_state.player_state.item_inventory.has_item_in_inventory(ITEM_ID_FROG)
         if player_has_it:
-            game_state.player_state.item_inventory.lose_item_from_inventory(ITEM_TYPE_FROG)
+            game_state.player_state.item_inventory.lose_item_from_inventory(ITEM_ID_FROG)
 
-            reward_item_type = _get_reward_for_hero(game_state.player_state.hero_id)
-            reward_effect = get_item_effect(reward_item_type)
-            reward_data = ITEMS[reward_item_type]
+            reward_item_id = _get_reward_for_hero(game_state.player_state.hero_id)
+            reward_effect = get_item_effect(reward_item_id)
+            reward_data = get_item_data(reward_item_id)
             reward_equipment_category = reward_data.item_equipment_category
             did_add_item = try_add_item_to_inventory(game_state, reward_effect, reward_equipment_category)
             if not did_add_item:
                 game_state.items_on_ground.append(
-                    create_item_on_ground(reward_item_type, game_state.player_entity.get_position()))
+                    create_item_on_ground(reward_item_id, game_state.player_entity.get_position()))
             play_sound(SoundId.EVENT_COMPLETED_QUEST)
             game_state.player_state.complete_quest(QUEST)
             return "Reward gained: " + reward_data.name
@@ -94,15 +94,15 @@ class AcceptFrog(AbstractNpcAction):
         _clear_highlight(ui_view)
 
 
-def _get_reward_for_hero(hero_id: HeroId):
+def _get_reward_for_hero(hero_id: HeroId) -> ItemId:
     if hero_id == HeroId.MAGE:
-        return ItemType.STAFF_OF_FIRE
+        return plain_item_id(ItemType.STAFF_OF_FIRE)
     elif hero_id == HeroId.ROGUE:
-        return ItemType.THIEFS_MASK
+        return plain_item_id(ItemType.THIEFS_MASK)
     elif hero_id == HeroId.WARRIOR:
-        return ItemType.CLEAVER
+        return plain_item_id(ItemType.CLEAVER)
     else:
-        return ItemType.LEATHER_ARMOR
+        return plain_item_id(ItemType.LEATHER_ARMOR)
 
 
 def _highlight_boss_location(game_state, ui_view):
@@ -113,7 +113,7 @@ def _highlight_boss_location(game_state, ui_view):
         position_ratio = ((position[0] - world_area.x) / world_area.w,
                           (position[1] - world_area.y) / world_area.h)
         ui_view.set_minimap_highlight(position_ratio)
-    ui_view.set_inventory_highlight(ITEM_TYPE_FROG)
+    ui_view.set_inventory_highlight(ITEM_ID_FROG)
 
 
 def _clear_highlight(ui_view):
@@ -146,9 +146,11 @@ def register_young_sorceress_npc():
 
 def _register_dialog():
     prompt = "QUEST: "
-    frog_data = ITEMS[ItemType.FROG]
+    frog_data = get_item_data(ITEM_ID_FROG)
     bye_option = DialogOptionData("\"Good bye\"", "cancel", None)
+    name = "Mida"
     dialog_1 = DialogData(
+        name,
         UI_ICON_SPRITE,
         "Hey you! Have you seen my pet frog? I bet it was that old green mean goblin king that took it!",
         [
@@ -158,6 +160,7 @@ def _register_dialog():
             bye_option
         ])
     dialog_2 = DialogData(
+        name,
         UI_ICON_SPRITE,
         "Hi friend! Any luck?",
         [
@@ -165,7 +168,7 @@ def _register_dialog():
                              "..."),
             bye_option
         ])
-    dialog_3 = DialogData(UI_ICON_SPRITE, "Thank you for helping me!", [bye_option])
+    dialog_3 = DialogData(name, UI_ICON_SPRITE, "Thank you for helping me!", [bye_option])
 
     def get_dialog_data(game_state: GameState):
         if game_state.player_state.has_completed_quest(QUEST_ID):

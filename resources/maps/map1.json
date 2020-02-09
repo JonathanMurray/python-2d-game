@@ -10,14 +10,14 @@
   "consumables_on_ground": [],
   "items_on_ground": [
     {
-      "item_type": "GOLD_NUGGET",
+      "item_id": "GOLD_NUGGET:*",
       "position": [
         -25,
         2500
       ]
     },
     {
-      "item_type": "SAPHIRE",
+      "item_id": "SAPHIRE:*",
       "position": [
         3625,
         2000
@@ -1091,13 +1091,6 @@
       ]
     },
     {
-      "npc_type": "NEUTRAL_DWARF",
-      "position": [
-        300,
-        75
-      ]
-    },
-    {
       "npc_type": "RAT_1",
       "position": [
         -550,
@@ -1263,13 +1256,6 @@
       "position": [
         -100,
         3200
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
-        -75,
-        3000
       ]
     },
     {
@@ -2017,13 +2003,6 @@
     {
       "npc_type": "VETERAN",
       "position": [
-        9425,
-        3125
-      ]
-    },
-    {
-      "npc_type": "VETERAN",
-      "position": [
         9325,
         3200
       ]
@@ -2173,6 +2152,20 @@
       "position": [
         -300,
         2425
+      ]
+    },
+    {
+      "npc_type": "VETERAN",
+      "position": [
+        9425,
+        3200
+      ]
+    },
+    {
+      "npc_type": "NEUTRAL_DWARF",
+      "position": [
+        300,
+        125
       ]
     }
   ],
@@ -2376,13 +2369,6 @@
     {
       "wall_type": "WALL_DIRECTIONAL_N",
       "position": [
-        1050,
-        500
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_N",
-      "position": [
         1075,
         500
       ]
@@ -3057,13 +3043,6 @@
       "position": [
         1125,
         725
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        1050,
-        750
       ]
     },
     {
@@ -11873,7 +11852,7 @@
       ]
     },
     {
-      "wall_type": "WALL_CHAIR",
+      "wall_type": "CHAIR_LEFT",
       "position": [
         1075,
         3100
@@ -13284,13 +13263,6 @@
       "position": [
         725,
         3025
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        1050,
-        550
       ]
     },
     {
@@ -16279,13 +16251,6 @@
       "wall_type": "WALL_DIRECTIONAL_NW",
       "position": [
         25,
-        400
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_NE",
-      "position": [
-        175,
         400
       ]
     },
@@ -19590,13 +19555,6 @@
       "wall_type": "WALL_DIRECTIONAL_W",
       "position": [
         2100,
-        -1550
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_W",
-      "position": [
-        2100,
         -1575
       ]
     },
@@ -19661,13 +19619,6 @@
       "position": [
         2225,
         -1525
-      ]
-    },
-    {
-      "wall_type": "WALL_DIRECTIONAL_E",
-      "position": [
-        2225,
-        -1550
       ]
     },
     {
@@ -34910,20 +34861,6 @@
       ]
     },
     {
-      "wall_type": "STATUE",
-      "position": [
-        9200,
-        3600
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        9425,
-        3600
-      ]
-    },
-    {
       "wall_type": "BARREL_5",
       "position": [
         9200,
@@ -35010,34 +34947,6 @@
     {
       "wall_type": "STATUE",
       "position": [
-        9225,
-        3000
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        9400,
-        3000
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        9225,
-        2725
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        9400,
-        2725
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
         6600,
         4000
       ]
@@ -35068,13 +34977,6 @@
       "position": [
         6475,
         2250
-      ]
-    },
-    {
-      "wall_type": "SHELF_EMPTY",
-      "position": [
-        7625,
-        3425
       ]
     },
     {
@@ -35696,13 +35598,6 @@
     {
       "wall_type": "STATUE",
       "position": [
-        9400,
-        2175
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
         9225,
         2275
       ]
@@ -35711,20 +35606,6 @@
       "wall_type": "STATUE",
       "position": [
         9225,
-        2375
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        9400,
-        2275
-      ]
-    },
-    {
-      "wall_type": "STATUE",
-      "position": [
-        9400,
         2375
       ]
     },
@@ -35957,6 +35838,272 @@
       "position": [
         1650,
         1850
+      ]
+    },
+    {
+      "wall_type": "WELL",
+      "position": [
+        2425,
+        2700
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        3200,
+        2550
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        3275,
+        2400
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        3350,
+        2550
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        3125,
+        2400
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        3050,
+        2550
+      ]
+    },
+    {
+      "wall_type": "LIGHT_POLE",
+      "position": [
+        5650,
+        2825
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        9225,
+        2725
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        9400,
+        2725
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        9225,
+        2950
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        9400,
+        2950
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        9225,
+        3125
+      ]
+    },
+    {
+      "wall_type": "PILLAR",
+      "position": [
+        9400,
+        3125
+      ]
+    },
+    {
+      "wall_type": "STATUE",
+      "position": [
+        9425,
+        2175
+      ]
+    },
+    {
+      "wall_type": "STATUE",
+      "position": [
+        9425,
+        2275
+      ]
+    },
+    {
+      "wall_type": "STATUE",
+      "position": [
+        9425,
+        2375
+      ]
+    },
+    {
+      "wall_type": "LIGHT_POLE",
+      "position": [
+        7225,
+        2275
+      ]
+    },
+    {
+      "wall_type": "LIGHT_POLE",
+      "position": [
+        9225,
+        3600
+      ]
+    },
+    {
+      "wall_type": "LIGHT_POLE",
+      "position": [
+        9425,
+        3600
+      ]
+    },
+    {
+      "wall_type": "WELL",
+      "position": [
+        6600,
+        4225
+      ]
+    },
+    {
+      "wall_type": "WEAPON_RACK",
+      "position": [
+        8625,
+        4000
+      ]
+    },
+    {
+      "wall_type": "WEAPON_RACK",
+      "position": [
+        8700,
+        4000
+      ]
+    },
+    {
+      "wall_type": "WEAPON_RACK",
+      "position": [
+        8775,
+        4000
+      ]
+    },
+    {
+      "wall_type": "SIGN_LARGE_EMPTY",
+      "position": [
+        9000,
+        4000
+      ]
+    },
+    {
+      "wall_type": "SIGN_LARGE_EMPTY",
+      "position": [
+        9075,
+        4000
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_N",
+      "position": [
+        1050,
+        500
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_E",
+      "position": [
+        2225,
+        -1550
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_W",
+      "position": [
+        2100,
+        -1550
+      ]
+    },
+    {
+      "wall_type": "WEAPON_RACK",
+      "position": [
+        275,
+        50
+      ]
+    },
+    {
+      "wall_type": "WEAPON_RACK",
+      "position": [
+        325,
+        50
+      ]
+    },
+    {
+      "wall_type": "SHELF_HELMETS",
+      "position": [
+        400,
+        125
+      ]
+    },
+    {
+      "wall_type": "WELL",
+      "position": [
+        400,
+        300
+      ]
+    },
+    {
+      "wall_type": "BARREL_5",
+      "position": [
+        325,
+        350
+      ]
+    },
+    {
+      "wall_type": "BARREL_5",
+      "position": [
+        275,
+        350
+      ]
+    },
+    {
+      "wall_type": "BARREL_1",
+      "position": [
+        300,
+        325
+      ]
+    },
+    {
+      "wall_type": "SIGN_LARGE_EMPTY",
+      "position": [
+        175,
+        125
+      ]
+    },
+    {
+      "wall_type": "WALL_DIRECTIONAL_NE",
+      "position": [
+        175,
+        400
+      ]
+    },
+    {
+      "wall_type": "LIGHT_POLE",
+      "position": [
+        800,
+        -475
       ]
     }
   ],
@@ -69035,6 +69182,38 @@
       "position": [
         50,
         1875
+      ]
+    }
+  ],
+  "shrines": [
+    {
+      "position": [
+        1025,
+        550
+      ]
+    },
+    {
+      "position": [
+        2150,
+        -1850
+      ]
+    },
+    {
+      "position": [
+        -50,
+        2975
+      ]
+    },
+    {
+      "position": [
+        7675,
+        3450
+      ]
+    },
+    {
+      "position": [
+        9325,
+        2150
       ]
     }
   ]

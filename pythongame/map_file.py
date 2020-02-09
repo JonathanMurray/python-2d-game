@@ -6,9 +6,9 @@ from pygame.rect import Rect
 from pythongame.core.common import *
 from pythongame.core.entity_creation import create_npc, create_money_pile_on_ground, \
     create_consumable_on_ground, create_portal, create_wall, create_hero_world_entity, \
-    create_decoration_entity, create_item_on_ground, create_player_state, create_chest
+    create_decoration_entity, create_item_on_ground, create_player_state, create_chest, create_shrine
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Wall, Portal, DecorationEntity, \
-    MoneyPileOnGround, ItemOnGround, ConsumableOnGround, PlayerState, Chest
+    MoneyPileOnGround, ItemOnGround, ConsumableOnGround, PlayerState, Chest, Shrine
 
 
 class MapEditorConfig:
@@ -63,7 +63,8 @@ class MapJson:
             "entire_world_area": WorldAreaJson.serialize(game_state.entire_world_area),
             "decorations": [DecorationJson.serialize(d) for d in game_state.decorations_state.decoration_entities],
             "portals": [PortalJson.serialize(p) for p in game_state.portals],
-            "chests": [ChestJson.serialize(c) for c in game_state.chests]
+            "chests": [ChestJson.serialize(c) for c in game_state.chests],
+            "shrines": [ShrineJson.serialize(s) for s in game_state.shrines]
         }
 
     @staticmethod
@@ -80,7 +81,8 @@ class MapJson:
             "entire_world_area": WorldAreaJson.serialize(entire_world_area),
             "decorations": [DecorationJson.serialize(decoration_entity) for decoration_entity in decorations],
             "portals": [],
-            "chests": []
+            "chests": [],
+            "shrines": []
         }
 
     @staticmethod
@@ -98,7 +100,8 @@ class MapJson:
                                player_state=player_state,
                                decoration_entities=[DecorationJson.deserialize(d) for d in data.get("decorations", [])],
                                portals=[PortalJson.deserialize(p) for p in data.get("portals", [])],
-                               chests=[ChestJson.deserialize(c) for c in data.get("chests", [])])
+                               chests=[ChestJson.deserialize(c) for c in data.get("chests", [])],
+                               shrines=[ShrineJson.deserialize(s) for s in data.get("shrines", [])])
 
         map_editor_config = MapEditorConfig(disable_smart_grid=data.get("disable_smart_grid", False))
         grid_string = data.get("grid", None)
@@ -160,6 +163,16 @@ class ChestJson:
         return create_chest(data["position"])
 
 
+class ShrineJson:
+    @staticmethod
+    def serialize(shrine: Shrine):
+        return {"position": shrine.world_entity.get_position()}
+
+    @staticmethod
+    def deserialize(data) -> Shrine:
+        return create_shrine(data["position"])
+
+
 class DecorationJson:
     @staticmethod
     def serialize(decoration: DecorationEntity):
@@ -183,15 +196,16 @@ class MoneyJson:
 class ItemJson:
     @staticmethod
     def serialize(item: ItemOnGround):
-        return ItemJson.serialize_from_data(item.item_type, item.world_entity.get_position())
+        return ItemJson.serialize_from_data(item.item_id, item.world_entity.get_position())
 
     @staticmethod
-    def serialize_from_data(item_type: ItemType, position: Tuple[int, int]):
-        return {"item_type": item_type.name, "position": position}
+    def serialize_from_data(item_id: ItemId, position: Tuple[int, int]):
+        return {"item_id": item_id, "position": position}
 
     @staticmethod
     def deserialize(data) -> ItemOnGround:
-        return create_item_on_ground(ItemType[data["item_type"]], data["position"])
+        item_id = data["item_id"]
+        return create_item_on_ground(item_id, data["position"])
 
 
 class ConsumableJson:

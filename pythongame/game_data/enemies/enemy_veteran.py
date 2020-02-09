@@ -1,8 +1,7 @@
-from pythongame.core.common import NpcType, Sprite, Direction, Millis, SoundId
+from pythongame.core.common import NpcType, Sprite, Direction, Millis, SoundId, LootTableId
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.npc_behaviors import register_npc_behavior, MeleeEnemyNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
-from pythongame.game_data.loot_tables import LOOT_TABLE_4
 
 
 class NpcMind(MeleeEnemyNpcMind):
@@ -17,7 +16,8 @@ def register_veteran_enemy():
     movement_speed = 0.08
     health = 60
     exp_reward = 35
-    npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_4, SoundId.DEATH_HUMAN)
+    npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LootTableId.LEVEL_6,
+                             SoundId.DEATH_HUMAN)
     register_npc_data(npc_type, npc_data)
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_veteran.png")

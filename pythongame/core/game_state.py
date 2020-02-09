@@ -7,10 +7,10 @@ from pythongame.core.common import *
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import NpcCategory, PlayerLevelBonus
 from pythongame.core.item_inventory import ItemInventory
-from pythongame.core.loot import LootTable
 from pythongame.core.math import boxes_intersect, rects_intersect, get_position_from_center_position, \
     translate_in_direction, is_x_and_y_within_distance
 from pythongame.core.talents import TalentsConfig, TalentsState
+from pythongame.game_data.loot_tables import LootTableId
 
 GRID_CELL_WIDTH = 25
 
@@ -126,9 +126,9 @@ class ConsumableOnGround(LootableOnGround):
 
 
 class ItemOnGround(LootableOnGround):
-    def __init__(self, world_entity: WorldEntity, item_type: ItemType):
+    def __init__(self, world_entity: WorldEntity, item_id: ItemId):
         super().__init__(world_entity)
-        self.item_type = item_type
+        self.item_id = item_id
 
 
 class MoneyPileOnGround:
@@ -244,7 +244,7 @@ class QuestGiverState(Enum):
 class NonPlayerCharacter:
     def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health_resource: HealthOrManaResource,
                  npc_mind, npc_category: NpcCategory,
-                 enemy_loot_table: Optional[LootTable], death_sound_id: Optional[SoundId],
+                 enemy_loot_table: Optional[LootTableId], death_sound_id: Optional[SoundId],
                  max_distance_allowed_from_start_position: Optional[int], is_boss: bool = False):
         self.npc_type = npc_type
         self.world_entity = world_entity
@@ -398,7 +398,7 @@ class PlayerState:
                  consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
                  item_inventory: ItemInventory, new_level_abilities: Dict[int, AbilityType], hero_id: HeroId,
                  armor: int, base_dodge_chance: float, level_bonus: PlayerLevelBonus, talents_config: TalentsConfig,
-                 base_block_chance: float):
+                 base_block_chance: float, base_magic_resist_chance: float):
         self.health_resource: HealthOrManaResource = health_resource
         self.mana_resource: HealthOrManaResource = mana_resource
         self.consumable_inventory = consumable_inventory
@@ -429,6 +429,8 @@ class PlayerState:
         self.base_block_chance: float = base_block_chance  # depends on which hero is being used
         self.block_chance_bonus: float = 0  # affected by items/buffs. [Change it additively]
         self.block_damage_reduction: int = 0
+        self.base_magic_resist_chance: float = base_magic_resist_chance
+        self.magic_resist_chance_bonus: float = 0  # affected by items/buffs. [Change it additively]
         self.talents_were_updated = Observable()
         self.stats_were_updated = Observable()
         self.exp_was_updated = Observable()
@@ -477,6 +479,9 @@ class PlayerState:
     def get_effective_armor(self) -> int:
         return int(self.base_armor + self.armor_bonus)
 
+    def get_effective_magic_resist_chance(self) -> float:
+        return self.base_magic_resist_chance + self.magic_resist_chance_bonus
+
     def get_effective_block_chance(self) -> float:
         return self.base_block_chance + self.block_chance_bonus
 
@@ -512,6 +517,8 @@ class PlayerState:
             self.dodge_chance_bonus += stat_delta
         elif hero_stat == HeroStat.BLOCK_CHANCE:
             self.block_chance_bonus += stat_delta
+        elif hero_stat == HeroStat.MAGIC_RESIST_CHANCE:
+            self.magic_resist_chance_bonus += stat_delta
         else:
             raise Exception("Unhandled stat: " + str(hero_stat))
         self.notify_stats_observers()
@@ -538,6 +545,12 @@ class PlayerState:
     def force_cancel_all_buffs(self):
         for b in self.active_buffs:
             b.force_cancel()
+        self.notify_buff_observers()
+
+    def force_cancel_buff(self, buff_type: BuffType):
+        for b in self.active_buffs:
+            if b.buff_effect.get_buff_type() == buff_type:
+                b.force_cancel()
         self.notify_buff_observers()
 
     def handle_buffs(self, time_passed: Millis):
@@ -701,8 +714,14 @@ class Portal:
         self.world_entity.sprite = sprite
 
 
+class Shrine:
+    def __init__(self, world_entity: WorldEntity, has_been_used: bool):
+        self.world_entity = world_entity
+        self.has_been_used = has_been_used
+
+
 class Chest:
-    def __init__(self, world_entity: WorldEntity, loot_table: LootTable):
+    def __init__(self, world_entity: WorldEntity, loot_table: LootTableId):
         self.world_entity = world_entity
         self.loot_table = loot_table
         self.has_been_opened = False
@@ -739,7 +758,8 @@ class GameState:
                  items_on_ground: List[ItemOnGround], money_piles_on_ground: List[MoneyPileOnGround],
                  non_player_characters: List[NonPlayerCharacter], walls: List[Wall], camera_size: Tuple[int, int],
                  entire_world_area: Rect, player_state: PlayerState,
-                 decoration_entities: List[DecorationEntity], portals: List[Portal], chests: List[Chest]):
+                 decoration_entities: List[DecorationEntity], portals: List[Portal], chests: List[Chest],
+                 shrines: List[Shrine]):
         self.camera_size = camera_size
         self.camera_world_area = Rect((0, 0), self.camera_size)
         self.camera_shake: CameraShake = None
@@ -759,6 +779,7 @@ class GameState:
             self.entire_world_area, [w.world_entity for w in walls])
         self.decorations_state = DecorationsState(decoration_entities, entire_world_area)
         self.portals: List[Portal] = portals
+        self.shrines: List[Shrine] = shrines
         self.player_spawn_position: Tuple[int, int] = player_entity.get_position()
         self.warp_points: List[WarpPoint] = []
         self.chests: List[Chest] = chests
@@ -816,6 +837,7 @@ class GameState:
                          [e.world_entity for e in self.non_player_characters] + \
                          [p.world_entity for p in self.projectile_entities] + \
                          [p.world_entity for p in self.portals] + \
+                         [s.world_entity for s in self.shrines] + \
                          [w.world_entity for w in self.warp_points] + \
                          [c.world_entity for c in self.chests]
         return self.get_walls_in_sight_of_player() + other_entities
@@ -895,6 +917,7 @@ class GameState:
         walls = self.walls_state.get_walls_close_to_position(entity.get_position())
         other_entities = [e.world_entity for e in self.non_player_characters] + \
                          [self.player_entity] + walls + [p.world_entity for p in self.portals] + \
+                         [s.world_entity for s in self.shrines] + \
                          [w.world_entity for w in self.warp_points] + [c.world_entity for c in self.chests]
         collision = any([other for other in other_entities if self._entities_collide(entity, other)
                          and entity is not other])

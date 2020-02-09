@@ -18,6 +18,7 @@ from pythongame.game_data.buff_recovering_after_ability import register_recoveri
 from pythongame.game_data.chests import register_chest_entity
 from pythongame.game_data.coin import register_coin
 from pythongame.game_data.consumables.consumable_warpstone import register_warpstone_consumable
+from pythongame.game_data.consumables.elixir_magic_resistence import register_elixir_of_magic_resist
 from pythongame.game_data.consumables.elixir_power import register_elixir_of_power
 from pythongame.game_data.consumables.potion_brew import register_brew_potion
 from pythongame.game_data.consumables.potion_health import register_health_potion
@@ -54,12 +55,14 @@ from pythongame.game_data.items.item_blessed_chalice import register_blessed_cha
 from pythongame.game_data.items.item_blessed_shield import register_blessed_shield_item
 from pythongame.game_data.items.item_blood_amulet import register_blood_amulet
 from pythongame.game_data.items.item_blue_robe import register_blue_robe_item
+from pythongame.game_data.items.item_candle import register_candle_item
 from pythongame.game_data.items.item_cleaver import register_cleaver_item
 from pythongame.game_data.items.item_desert_blade import register_desert_blade_item
 from pythongame.game_data.items.item_druids_ring import register_druids_ring_item
 from pythongame.game_data.items.item_elite_armor import register_elite_armor
 from pythongame.game_data.items.item_elite_helmet import register_elite_helmet_item
 from pythongame.game_data.items.item_elven_armor import register_elven_armor
+from pythongame.game_data.items.item_feather_hat import register_feather_hat_item
 from pythongame.game_data.items.item_fire_wand import register_fire_wand_item
 from pythongame.game_data.items.item_freezing_gauntlet import register_freezing_gauntlet_item
 from pythongame.game_data.items.item_frog import register_frog_item
@@ -105,6 +108,7 @@ from pythongame.game_data.items.item_wizards_cowl import register_wizards_cowl
 from pythongame.game_data.items.item_wooden_shield import register_wooden_shield
 from pythongame.game_data.items.item_wooden_sword import register_wooden_sword_item
 from pythongame.game_data.items.item_zuls_aegis import register_zuls_aegis
+from pythongame.game_data.loot_tables import register_loot_tables
 from pythongame.game_data.map_editor_icons import register_map_editor_icons, register_map_smart_floor_tile_sprites
 from pythongame.game_data.neutral_npcs.neutral_npc_challenge_starter import register_challenge_starter_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_dwarf import register_dwarf_npc
@@ -113,7 +117,8 @@ from pythongame.game_data.neutral_npcs.neutral_npc_nomad import register_nomad_n
 from pythongame.game_data.neutral_npcs.neutral_npc_sorcerer import register_sorcerer_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_warpstone_merchant import register_warpstone_merchant_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_young_sorceress import register_young_sorceress_npc
-from pythongame.game_data.portals import register_portal
+from pythongame.game_data.portals import register_portals
+from pythongame.game_data.shrines import register_shrines
 from pythongame.game_data.ui_icons import register_ui_icons
 from pythongame.game_data.walls import register_walls
 from pythongame.game_data.warp_points import register_warp_point
@@ -149,6 +154,7 @@ def register_all_game_data():
     register_brew_potion()
     register_warpstone_consumable()
     register_elixir_of_power()
+    register_elixir_of_magic_resist()
 
     register_necromancer_enemy()
     register_rat_1_enemy()
@@ -228,6 +234,8 @@ def register_all_game_data():
     register_blessed_chalice_item()
     register_necklace_of_suffering_item()
     register_fire_wand_item()
+    register_feather_hat_item()
+    register_candle_item()
 
     # Register items before NPCs as vendors may rely on item data
 
@@ -247,10 +255,14 @@ def register_all_game_data():
 
     register_coin()
 
-    register_portal()
+    register_portals()
+
+    register_shrines()
 
     register_warp_point()
 
     register_chest_entity()
 
     register_generic_talents()
+
+    register_loot_tables()

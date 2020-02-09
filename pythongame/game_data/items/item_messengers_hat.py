@@ -7,6 +7,7 @@ from pythongame.game_data.items.register_items_util import register_stat_modifyi
 def register_messengers_hat_item():
     register_stat_modifying_item(
         item_type=ItemType.MESSENGERS_HAT,
+        item_level=4,
         ui_icon_sprite=UiIconSprite.ITEM_MESSENGERS_HAT,
         sprite=Sprite.ITEM_MESSENGERS_HAT,
         image_file_path="resources/graphics/item_messengers_hat.png",

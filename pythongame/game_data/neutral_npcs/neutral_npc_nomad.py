@@ -2,7 +2,7 @@ import random
 from typing import Optional
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
-    PeriodicTimer, get_random_hint, ItemType, UiIconSprite, SoundId
+    PeriodicTimer, get_random_hint, ItemType, UiIconSprite, SoundId, plain_item_id
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest, QuestGiverState
@@ -17,7 +17,7 @@ from pythongame.scenes_game.game_ui_view import GameUiView
 QUEST_ID = QuestId.MAIN_RETRIEVE_KEY
 QUEST = Quest(QUEST_ID, "The red baron", "Defeat the red baron and retrieve the key")
 
-ITEM_TYPE_KEY = ItemType.KEY
+ITEM_ID_KEY = plain_item_id(ItemType.KEY)
 NPC_TYPE = NpcType.NEUTRAL_NOMAD
 PORTRAIT_ICON_SPRITE = PortraitIconSprite.NOMAD
 
@@ -34,7 +34,7 @@ class NpcMind(AbstractNpcMind):
         if self.quest_timer.update_and_check_if_ready(time_passed):
             player_state = game_state.player_state
             if player_state.has_quest(QUEST_ID):
-                if player_state.item_inventory.has_item_in_inventory(ITEM_TYPE_KEY):
+                if player_state.item_inventory.has_item_in_inventory(ITEM_ID_KEY):
                     npc.quest_giver_state = QuestGiverState.CAN_COMPLETE_QUEST
                 else:
                     npc.quest_giver_state = QuestGiverState.WAITING_FOR_PLAYER
@@ -93,7 +93,7 @@ class AcceptQuest(AbstractNpcAction):
 class CompleteQuest(AbstractNpcAction):
 
     def on_select(self, game_state: GameState):
-        if game_state.player_state.item_inventory.has_item_in_inventory(ITEM_TYPE_KEY):
+        if game_state.player_state.item_inventory.has_item_in_inventory(ITEM_ID_KEY):
             play_sound(SoundId.EVENT_COMPLETED_QUEST)
             game_state.player_state.complete_quest(QUEST)
         else:
@@ -115,7 +115,7 @@ def highlight_boss_position(game_state, ui_view):
         position_ratio = ((position[0] - world_area.x) / world_area.w,
                           (position[1] - world_area.y) / world_area.h)
         ui_view.set_minimap_highlight(position_ratio)
-    ui_view.set_inventory_highlight(ITEM_TYPE_KEY)
+    ui_view.set_inventory_highlight(ITEM_ID_KEY)
 
 
 def clear_highlight(ui_view):
@@ -164,13 +164,15 @@ def _register_dialog():
         "Key",
         "...")
     option_bye = DialogOptionData("\"Good bye\"", "cancel", None)
+    name = "Nomad"
     dialog_text = "Greetings. I am here only to serve. Seek me out when you are wounded or need guidance!"
-    dialog_before_quest = DialogData(PORTRAIT_ICON_SPRITE, dialog_text, [option_blessing, option_advice, option_bye])
-    dialog_can_give_quest = DialogData(PORTRAIT_ICON_SPRITE, dialog_text,
+    dialog_before_quest = DialogData(name, PORTRAIT_ICON_SPRITE, dialog_text,
+                                     [option_blessing, option_advice, option_bye])
+    dialog_can_give_quest = DialogData(name, PORTRAIT_ICON_SPRITE, dialog_text,
                                        [option_blessing, option_advice, option_accept_quest, option_bye])
-    dialog_during_quest = DialogData(PORTRAIT_ICON_SPRITE, dialog_text,
+    dialog_during_quest = DialogData(name, PORTRAIT_ICON_SPRITE, dialog_text,
                                      [option_blessing, option_advice, option_complete_quest, option_bye])
-    dialog_after_quest = DialogData(PORTRAIT_ICON_SPRITE, "Oh you're back...",
+    dialog_after_quest = DialogData(name, PORTRAIT_ICON_SPRITE, "Oh you're back...",
                                     [option_blessing, option_advice, option_bye])
 
     def get_dialog_data(game_state: GameState) -> DialogData:

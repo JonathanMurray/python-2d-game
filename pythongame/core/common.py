@@ -76,6 +76,7 @@ class ConsumableType(Enum):
     SPEED = 21
     INVISIBILITY = 22
     POWER = 23
+    MAGIC_RESIST = 24
     BREW = 50
     WARP_STONE = 60
     SCROLL_SUMMON_DRAGON = 101
@@ -122,7 +123,6 @@ class WallType(Enum):
     WALL_DIRECTIONAL_POINTY_SE = 20
     WALL_DIRECTIONAL_POINTY_SW = 21
     WALL_DIRECTIONAL_POINTY_NW = 22
-    WALL_CHAIR = 30
     ALTAR = 31
     SHELF_EMPTY = 40
     SHELF_HELMETS = 41
@@ -133,6 +133,28 @@ class WallType(Enum):
     BARREL_4 = 53
     BARREL_5 = 54
     BARREL_6 = 55
+    BASKET_EMPTY = 60
+    BASKET_FRUIT = 61
+    STONE_CROSS_FLOWERS = 70
+    CHAIR_RIGHT = 80
+    CHAIR_DOWN = 81
+    CHAIR_LEFT = 82
+    CHAIR_UP = 83
+    SIGN_SMALL = 90
+    SIGN_MULTI = 91
+    SIGN_LARGE_EMPTY = 92
+    SIGN_LARGE_NOTES = 93
+    WEAPON_RACK = 100
+    PILLAR = 110
+    LIGHT_POLE = 120
+    WELL = 130
+    BENCH_MIRROR = 140
+    BED_1 = 150
+    BED_2 = 151
+    BED_3 = 152
+    PILLOW = 160
+    PILLOWS_2 = 161
+    DECORATED_TABLE = 170
 
 
 class AbilityType(Enum):
@@ -172,6 +194,7 @@ class Sprite(Enum):
     POTION_BREW = 108
     CONSUMABLE_WARPSTONE = 109
     ELIXIR_POWER = 110
+    ELIXIR_MAGIC_RESIST = 111
     ENEMY_NECROMANCER = 201
     ENEMY_RAT_1 = 202
     ENEMY_RAT_2 = 203
@@ -251,6 +274,8 @@ class Sprite(Enum):
     ITEM_BLESSED_CHALICE = 354
     ITEM_NECKLACE_OF_SUFFERING = 355
     ITEM_FIRE_WAND = 356
+    ITEM_FEATHER_HAT = 357
+    ITEM_CANDLE = 358
     COINS_1 = 400
     COINS_2 = 401
     COINS_5 = 402
@@ -273,7 +298,10 @@ class Sprite(Enum):
     WALL_DIRECTIONAL_POINTY_SE = 520
     WALL_DIRECTIONAL_POINTY_SW = 521
     WALL_DIRECTIONAL_POINTY_NW = 522
-    WALL_CHAIR = 530
+    WALL_CHAIR_RIGHT = 530
+    WALL_CHAIR_DOWN = 531
+    WALL_CHAIR_LEFT = 532
+    WALL_CHAIR_UP = 533
     WALL_SHELF_EMPTY = 540
     WALL_SHELF_HELMETS = 541
     WALL_SHELF_ARMORS = 542
@@ -283,21 +311,40 @@ class Sprite(Enum):
     WALL_BARREL_4 = 553
     WALL_BARREL_5 = 554
     WALL_BARREL_6 = 555
-    PORTAL_DISABLED = 600
-    PORTAL_BLUE = 601
-    PORTAL_GREEN = 602
-    PORTAL_RED = 603
-    PORTAL_DARK = 604
-    WARP_POINT = 650
-    HERO_MAGE = 700
-    HERO_WARRIOR = 701
-    HERO_ROGUE = 702
-    HERO_GOD = 703
-    CHEST = 800
-    MAP_EDITOR_SMART_FLOOR_1 = 900
-    MAP_EDITOR_SMART_FLOOR_2 = 901
-    MAP_EDITOR_SMART_FLOOR_3 = 902
-    MAP_EDITOR_SMART_FLOOR_4 = 903
+    WALL_BASKET_EMPTY = 560
+    WALL_BASKET_FRUIT = 561
+    WALL_STONE_CROSS_FLOWERS = 570
+    WALL_SIGN_SMALL = 580
+    WALL_SIGN_MULTI = 581
+    WALL_SIGN_LARGE_EMPTY = 582
+    WALL_SIGN_LARGE_NOTES = 583
+    WALL_WEAPON_RACK = 590
+    WALL_PILLAR = 600
+    WALL_LIGHT_POLE = 610
+    WALL_WELL = 620
+    WALL_BENCH_MIRROR = 630
+    WALL_BED_1 = 640
+    WALL_BED_2 = 641
+    WALL_BED_3 = 642
+    WALL_PILLOW = 650
+    WALL_PILLOWS_2 = 651
+    WALL_DECORATED_TABLE = 660
+    PORTAL_DISABLED = 1600
+    PORTAL_BLUE = 1601
+    PORTAL_GREEN = 1602
+    PORTAL_RED = 1603
+    PORTAL_DARK = 1604
+    WARP_POINT = 1650
+    HERO_MAGE = 1700
+    HERO_WARRIOR = 1701
+    HERO_ROGUE = 1702
+    HERO_GOD = 1703
+    CHEST = 1800
+    SHRINE = 1810
+    MAP_EDITOR_SMART_FLOOR_1 = 1900
+    MAP_EDITOR_SMART_FLOOR_2 = 1901
+    MAP_EDITOR_SMART_FLOOR_3 = 1902
+    MAP_EDITOR_SMART_FLOOR_4 = 1903
 
 
 class BuffType(Enum):
@@ -340,6 +387,11 @@ class BuffType(Enum):
     SPEED_BUFF_FROM_DASH = 42
     BUFFED_FROM_RETRIBUTION_TALENT = 43
     INCREASED_DAMAGE_FROM_NECKLACE_OF_SUFFERING = 44
+    ELIXIR_OF_MAGIC_RESIST = 45
+    SHRINE_DAMAGE = 100
+    SHRINE_ARMOR = 101
+    SHRINE_MAGIC_RESIST = 102
+    SHRINE_MOVE_SPEED = 103
 
 
 class ItemType(Enum):
@@ -347,27 +399,13 @@ class ItemType(Enum):
     SKULL_STAFF = 3
     ROD_OF_LIGHTNING = 4
     STAFF_OF_FIRE = 7
-    AMULET_OF_MANA_1 = 10
-    AMULET_OF_MANA_2 = 11
-    AMULET_OF_MANA_3 = 12
-    BLESSED_SHIELD_1 = 20
-    BLESSED_SHIELD_2 = 21
-    BLESSED_SHIELD_3 = 22
-    SOLDIERS_HELMET_1 = 30
-    SOLDIERS_HELMET_2 = 31
-    SOLDIERS_HELMET_3 = 32
-    BLUE_ROBE_1 = 40
-    BLUE_ROBE_2 = 41
-    BLUE_ROBE_3 = 42
-    ORB_OF_THE_MAGI_1 = 50
-    ORB_OF_THE_MAGI_2 = 51
-    ORB_OF_THE_MAGI_3 = 52
-    ORB_OF_WISDOM_1 = 53
-    ORB_OF_WISDOM_2 = 54
-    ORB_OF_WISDOM_3 = 55
-    ORB_OF_LIFE_1 = 56
-    ORB_OF_LIFE_2 = 57
-    ORB_OF_LIFE_3 = 58
+    AMULET_OF_MANA = 10
+    BLESSED_SHIELD = 20
+    SOLDIERS_HELMET = 30
+    BLUE_ROBE = 40
+    ORB_OF_THE_MAGI = 50
+    ORB_OF_WISDOM = 53
+    ORB_OF_LIFE = 56
     WIZARDS_COWL = 60
     ZULS_AEGIS = 70
     KNIGHTS_ARMOR = 71
@@ -413,6 +451,27 @@ class ItemType(Enum):
     BLESSED_CHALICE = 111
     NECKLACE_OF_SUFFERING = 112
     FIRE_WAND = 113
+    FEATHER_HAT = 114
+    CANDLE = 115
+
+
+# Must be of one of the following formats:
+# 1. "<ItemType>:<int>" represents one of several "random" variations of a given item type
+# 2. "<ItemType>:*" represents an item type that has no random variations
+ItemId = str
+
+
+def plain_item_id(item_type: ItemType) -> ItemId:
+    return ItemId(item_type.name + ":*")
+
+
+def randomized_item_id(item_type: ItemType, randomizer: int) -> ItemId:
+    return ItemId(item_type.name + ":" + str(randomizer))
+
+
+def item_type_from_id(item_id: ItemId) -> ItemType:
+    enum_name = item_id.split(":")[0]
+    return ItemType[enum_name]
 
 
 class ProjectileType(Enum):
@@ -469,6 +528,7 @@ class SoundId(Enum):
     ENEMY_ATTACK_NECRO = 405
     ENEMY_NECROMANCER_HEAL = 406
     ENEMY_ATTACK_WAS_DODGED = 407
+    MAGIC_DAMAGE_WAS_RESISTED = 409
     DEATH_RAT = 500
     DEATH_ZOMBIE = 501
     DEATH_BOSS = 502
@@ -513,6 +573,7 @@ class UiIconSprite(Enum):
     POTION_BREW = 14
     CONSUMABLE_WARPSTONE = 15
     ELIXIR_POWER = 16
+    ELIXIR_MAGIC_RESIST = 17
     ABILITY_FIREBALL = 101
     ABILITY_HEAL = 102
     ABILITY_ARCANE_FIRE = 103
@@ -585,6 +646,8 @@ class UiIconSprite(Enum):
     ITEM_BLESSED_CHALICE = 254
     ITEM_NECKLACE_OF_SUFFERING = 255
     ITEM_FIRE_WAND = 256
+    ITEM_FEATHER_HAT = 257
+    ITEM_CANDLE = 258
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
     INVENTORY_TEMPLATE_HELMET = 400
@@ -625,6 +688,7 @@ class HeroStat(Enum):
     PHYSICAL_DAMAGE = 11
     MAGIC_DAMAGE = 12
     BLOCK_CHANCE = 13
+    MAGIC_RESIST_CHANCE = 14
 
 
 # Use to handle timing-related boilerplate for buffs, items, enemy behaviours, etc
@@ -715,7 +779,22 @@ class DialogOptionData:
 
 
 class DialogData:
-    def __init__(self, portrait_icon_sprite: PortraitIconSprite, text_body: str, options: List[DialogOptionData]):
+    def __init__(self, name: str, portrait_icon_sprite: PortraitIconSprite, text_body: str,
+                 options: List[DialogOptionData]):
+        self.name = name
         self.portrait_icon_sprite = portrait_icon_sprite
         self.text_body = text_body
         self.options = options
+
+
+class LootTableId(Enum):
+    CHEST = 0
+    LEVEL_1 = 1
+    LEVEL_2 = 2
+    LEVEL_3 = 3
+    LEVEL_4 = 4
+    LEVEL_5 = 5
+    LEVEL_6 = 6
+    LEVEL_7 = 7
+    BOSS_GOBLIN = 100
+    BOSS_WARRIOR_KING = 101

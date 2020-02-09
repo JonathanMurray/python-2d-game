@@ -1,7 +1,8 @@
 import random
 
 from pythongame.core.buff_effects import get_buff_effect, register_buff_effect, AbstractBuffEffect
-from pythongame.core.common import ItemType, Sprite, UiIconSprite, HeroStat, BuffType, Millis, PeriodicTimer
+from pythongame.core.common import ItemType, Sprite, UiIconSprite, HeroStat, BuffType, Millis, PeriodicTimer, \
+    plain_item_id
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_state import Event, GameState, PlayerDamagedEnemy, WorldEntity, NonPlayerCharacter
 from pythongame.core.item_effects import StatModifyingItemEffect
@@ -20,7 +21,7 @@ DAMAGE_SOURCE = "cleaver_bleed"
 
 class ItemEffect(StatModifyingItemEffect):
     def __init__(self):
-        super().__init__(ITEM_TYPE, {HeroStat.PHYSICAL_DAMAGE: 0.2})
+        super().__init__(plain_item_id(ITEM_TYPE), {HeroStat.PHYSICAL_DAMAGE: 0.2})
 
     def item_handle_event(self, event: Event, game_state: GameState):
         if isinstance(event, PlayerDamagedEnemy):
@@ -53,6 +54,7 @@ class BuffEffect(AbstractBuffEffect):
 def register_cleaver_item():
     register_custom_effect_item(
         item_type=ITEM_TYPE,
+        item_level=7,
         ui_icon_sprite=UiIconSprite.ITEM_CLEAVER,
         sprite=Sprite.ITEM_CLEAVER,
         image_file_path="resources/graphics/item_cleaver.png",

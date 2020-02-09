@@ -2,7 +2,7 @@ import random
 
 from pythongame.core.buff_effects import register_buff_effect, get_buff_effect, \
     StatModifyingBuffEffect
-from pythongame.core.common import ItemType, Sprite, Millis, PeriodicTimer, BuffType, HeroStat
+from pythongame.core.common import ItemType, Sprite, Millis, PeriodicTimer, BuffType, HeroStat, ItemId, plain_item_id
 from pythongame.core.game_data import UiIconSprite, register_buff_text
 from pythongame.core.game_state import Event, EnemyDiedEvent, GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.item_effects import AbstractItemEffect
@@ -18,8 +18,8 @@ BUFF_DURATION = Millis(3000)
 
 class ItemEffect(AbstractItemEffect):
 
-    def __init__(self, item_type: ItemType):
-        super().__init__(item_type)
+    def __init__(self, item_id: ItemId):
+        super().__init__(item_id)
 
     def item_handle_event(self, event: Event, game_state: GameState):
         if isinstance(event, EnemyDiedEvent):
@@ -52,10 +52,11 @@ def register_stone_amulet_item():
     item_type = ItemType.STONE_AMULET
     register_custom_effect_item(
         item_type=item_type,
+        item_level=5,
         ui_icon_sprite=UiIconSprite.ITEM_STONE_AMULET,
         sprite=Sprite.ITEM_STONE_AMULET,
         image_file_path="resources/graphics/item_stone_amulet.png",
         item_equipment_category=ItemEquipmentCategory.NECK,
         name="Stone Amulet",
-        item_effect=ItemEffect(item_type)
+        item_effect=ItemEffect(plain_item_id(item_type))
     )

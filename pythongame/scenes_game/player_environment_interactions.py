@@ -1,10 +1,14 @@
 import sys
-from typing import List, Any
+from typing import Optional, Any, List
 
-from pythongame.core.game_state import GameState, WorldEntity, LootableOnGround
+from pythongame.core.game_data import CONSUMABLES, PORTALS, get_item_data
+from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
+    ConsumableOnGround, ItemOnGround, Chest, Shrine
+from pythongame.core.game_state import WorldEntity
 from pythongame.core.math import boxes_intersect, is_x_and_y_within_distance, \
     get_manhattan_distance_between_rects
 from pythongame.core.npc_behaviors import has_npc_dialog
+from pythongame.core.view.game_world_view import EntityActionText
 from pythongame.scenes_game.game_engine import GameEngine
 
 
@@ -55,5 +59,60 @@ class PlayerInteractionsState:
                 self.entity_to_interact_with = chest
                 distance_to_closest_entity = distance
 
+        for shrine in game_state.shrines:
+            close_to_player = is_x_and_y_within_distance(player_position, shrine.world_entity.get_position(), 75)
+            distance = get_manhattan_distance_between_rects(player_entity.rect(), shrine.world_entity.rect())
+            if close_to_player and distance < distance_to_closest_entity:
+                self.entity_to_interact_with = shrine
+                distance_to_closest_entity = distance
+
     def get_entity_to_interact_with(self):
         return self.entity_to_interact_with
+
+    def get_entity_action_text(self, is_shift_key_held_down: bool) -> Optional[EntityActionText]:
+        if self.entity_to_interact_with is None:
+            return None
+        return _get_entity_action_text(self.entity_to_interact_with, is_shift_key_held_down)
+
+
+def _get_entity_action_text(ready_entity: Any, is_shift_key_held_down: bool) -> Optional[EntityActionText]:
+    if isinstance(ready_entity, NonPlayerCharacter):
+        return EntityActionText(ready_entity.world_entity, "[Space] ...", [])
+    elif isinstance(ready_entity, LootableOnGround):
+        loot_name = _get_loot_name(ready_entity)
+        if is_shift_key_held_down:
+            loot_details = _get_loot_details(ready_entity)
+        else:
+            loot_details = []
+        return EntityActionText(ready_entity.world_entity, "[Space] " + loot_name, loot_details)
+    elif isinstance(ready_entity, Portal):
+        if ready_entity.is_enabled:
+            data = PORTALS[ready_entity.portal_id]
+            return EntityActionText(ready_entity.world_entity, "[Space] " + data.destination_name, [])
+        else:
+            return EntityActionText(ready_entity.world_entity, "[Space] ???", [])
+    elif isinstance(ready_entity, WarpPoint):
+        return EntityActionText(ready_entity.world_entity, "[Space] Warp", [])
+    elif isinstance(ready_entity, Chest):
+        return EntityActionText(ready_entity.world_entity, "[Space] Open", [])
+    elif isinstance(ready_entity, Shrine):
+        if ready_entity.has_been_used:
+            return None
+        else:
+            return EntityActionText(ready_entity.world_entity, "[Space] Touch", [])
+    else:
+        raise Exception("Unhandled entity: " + str(ready_entity))
+
+
+def _get_loot_name(lootable: LootableOnGround) -> str:
+    if isinstance(lootable, ConsumableOnGround):
+        return CONSUMABLES[lootable.consumable_type].name
+    if isinstance(lootable, ItemOnGround):
+        return get_item_data(lootable.item_id).name
+
+
+def _get_loot_details(lootable: LootableOnGround) -> List[str]:
+    if isinstance(lootable, ConsumableOnGround):
+        return [CONSUMABLES[lootable.consumable_type].description]
+    if isinstance(lootable, ItemOnGround):
+        return get_item_data(lootable.item_id).description_lines

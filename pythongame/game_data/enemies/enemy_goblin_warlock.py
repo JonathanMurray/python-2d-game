@@ -2,7 +2,7 @@ import random
 
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
 from pythongame.core.common import Millis, NpcType, Sprite, \
-    ProjectileType, BuffType, Direction, SoundId
+    ProjectileType, BuffType, Direction, SoundId, LootTableId
 from pythongame.core.damage_interactions import deal_damage_to_player, deal_npc_damage_to_npc, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import register_npc_data, NpcData, register_buff_text, register_entity_sprite_map
@@ -17,7 +17,6 @@ from pythongame.core.projectile_controllers import create_projectile_controller,
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualCircle
-from pythongame.game_data.loot_tables import LOOT_TABLE_3
 
 BUFF_TYPE = BuffType.ENEMY_GOBLIN_WARLOCK_BURNT
 PROJECTILE_TYPE = ProjectileType.ENEMY_GOBLIN_WARLOCK
@@ -155,7 +154,8 @@ def register_goblin_warlock_enemy():
     npc_type = NpcType.GOBLIN_WARLOCK
     health = 21
     exp_reward = 14
-    npc_data = NpcData.enemy(enemy_sprite, enemy_size, health, 0, 0.032, exp_reward, LOOT_TABLE_3, SoundId.DEATH_GOBLIN)
+    npc_data = NpcData.enemy(enemy_sprite, enemy_size, health, 0, 0.032, exp_reward, LootTableId.LEVEL_4,
+                             SoundId.DEATH_GOBLIN)
     register_npc_data(npc_type, npc_data)
     register_npc_behavior(npc_type, NpcMind)
 

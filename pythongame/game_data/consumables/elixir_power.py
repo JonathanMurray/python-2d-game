@@ -5,7 +5,8 @@ from pythongame.core.common import ConsumableType, BuffType, Millis, UiIconSprit
 from pythongame.core.consumable_effects import create_potion_visual_effect_at_player, ConsumableWasConsumed, \
     register_consumable_effect
 from pythongame.core.game_data import register_ui_icon_sprite_path, register_buff_text, \
-    register_consumable_data, ConsumableData, ConsumableCategory, register_entity_sprite_initializer, POTION_ENTITY_SIZE
+    register_consumable_data, ConsumableData, ConsumableCategory, register_entity_sprite_initializer, \
+    POTION_ENTITY_SIZE, register_consumable_level
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
 from pythongame.core.view.image_loading import SpriteInitializer
 from pythongame.core.visual_effects import VisualRect
@@ -37,6 +38,7 @@ def register_elixir_of_power():
     ui_icon_sprite = UiIconSprite.ELIXIR_POWER
     sprite = Sprite.ELIXIR_POWER
     consumable_type = ConsumableType.POWER
+    register_consumable_level(consumable_type, 6)
     register_consumable_effect(consumable_type, _apply)
     register_buff_effect(BUFF_TYPE, BuffedFromElixirOfPower)
     name = "Elixir of Power"

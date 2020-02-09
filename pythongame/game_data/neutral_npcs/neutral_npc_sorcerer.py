@@ -57,14 +57,16 @@ def _register_dialog():
         buy_consumable_option(ConsumableType.MANA, 5),
         buy_consumable_option(ConsumableType.SPEED, 5),
         buy_consumable_option(ConsumableType.POWER, 10),
+        buy_consumable_option(ConsumableType.MAGIC_RESIST, 10),
         DialogOptionData("\"Good bye\"", "cancel", None)]
     text_low_level = "Huh?! Well, aren't you the brave one, making it all the way out here! I would think " \
                      "twice before heading down that way! Well since you are here, see if any of these " \
                      "potions are of interest."
     text_high_level = "You are on the doorsteps of the Red Baron's domain! Please be careful. " \
                       "Here, see if any of these potions can be of use."
-    dialog_low_level = DialogData(PORTRAIT_ICON_SPRITE, text_low_level, dialog_options)
-    dialog_high_level = DialogData(PORTRAIT_ICON_SPRITE, text_high_level, dialog_options)
+    name = "Sorcerer"
+    dialog_low_level = DialogData(name, PORTRAIT_ICON_SPRITE, text_low_level, dialog_options)
+    dialog_high_level = DialogData(name, PORTRAIT_ICON_SPRITE, text_high_level, dialog_options)
 
     def get_dialog_data(game_state: GameState) -> DialogData:
         if game_state.player_state.level < 5:

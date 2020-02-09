@@ -1,4 +1,5 @@
-from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgradeId, UiIconSprite, ItemType
+from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgradeId, UiIconSprite, \
+    ItemType, plain_item_id
 from pythongame.core.game_data import Sprite, Direction, AbilityType, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData
@@ -45,7 +46,7 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
     mana_regen = 2.5
     health_per_level = 10
     mana_per_level = 10
-    armor_per_level = 1
+    armor_per_level = 0.7
     level_bonus = PlayerLevelBonus(health_per_level, mana_per_level, armor_per_level)
     armor = 2
     dodge_chance = 0.1
@@ -101,4 +102,4 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
     block_chance = 0.15
     return InitialPlayerStateData(
         health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, dodge_chance,
-        level_bonus, talents_state, block_chance, [ItemType.PRACTICE_SWORD])
+        level_bonus, talents_state, block_chance, [plain_item_id(ItemType.PRACTICE_SWORD)])

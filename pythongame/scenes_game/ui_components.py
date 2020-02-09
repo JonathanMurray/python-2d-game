@@ -1,12 +1,12 @@
 from enum import Enum
 from math import floor
-from typing import List, Tuple, Optional, Any, Iterable, Set, Callable
+from typing import List, Tuple, Optional, Any, Iterable, Set, Callable, Union
 
 import pygame
 from pygame.rect import Rect
 
-from pythongame.core.common import ConsumableType, ItemType, AbilityType, PortraitIconSprite, HeroId, Millis, \
-    PeriodicTimer, NpcType, PortalId
+from pythongame.core.common import ConsumableType, AbilityType, PortraitIconSprite, HeroId, Millis, \
+    PeriodicTimer, NpcType, PortalId, ItemId
 from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData, ItemData, NpcData, \
     NpcCategory
 from pythongame.core.game_state import PlayerState, Quest
@@ -82,6 +82,7 @@ class Dialog:
                  text_body: Optional[str], options: List[DialogOption], active_option_index: int,
                  portrait_image_size: Tuple[int, int], option_image_size: Tuple[int, int]):
         self._screen_render = screen_render
+        self._name = None
         self._portrait_image = portrait_image
         self._text_body = text_body
         self._options = options
@@ -118,7 +119,8 @@ class Dialog:
             rect_option = Rect(x, y, self._rect[2] - 16, Dialog.OPTION_LINE_HEIGHT + 2 * Dialog.OPTION_PADDING)
             self._option_rects.append(rect_option)
 
-    def show_with_data(self, image, text_body: str, options: List[DialogOption], active_option_index: int):
+    def show_with_data(self, name: str, image, text_body: str, options: List[DialogOption], active_option_index: int):
+        self._name = name
         self._portrait_image = image
         self._text_body = text_body
         self._options = options
@@ -157,6 +159,8 @@ class Dialog:
         rect_portrait = Rect(rect_portrait_pos[0], rect_portrait_pos[1], self._portrait_image_size[0],
                              self._portrait_image_size[1])
         self._screen_render.rect((160, 160, 180), rect_portrait, 2)
+        self._screen_render.text_centered(self._font_dialog, self._name,
+                                          (rect_portrait.centerx, rect_portrait.bottom + 9))
 
         dialog_pos = (x_left + 120, self._rect[1] + 15)
         dialog_lines = split_text_into_lines(self._text_body, 50)
@@ -382,7 +386,7 @@ class ConsumableIcon(UiComponent):
 
 class ItemIcon(UiComponent):
     def __init__(self, ui_render: DrawableArea, rect: Rect, image, tooltip: Optional[TooltipGraphics],
-                 slot_equipment_category: Optional[ItemEquipmentCategory], item_type: Optional[ItemType],
+                 slot_equipment_category: Optional[ItemEquipmentCategory], item_id: Optional[ItemId],
                  inventory_slot_index: int):
         super().__init__(rect)
         self._ui_render = ui_render
@@ -390,11 +394,11 @@ class ItemIcon(UiComponent):
         self.image = image
         self.slot_equipment_category = slot_equipment_category
         self.tooltip = tooltip
-        self.item_type = item_type
+        self.item_id = item_id
         self.inventory_slot_index = inventory_slot_index
 
     def render(self, highlighted: bool):
-        has_equipped_item = self.slot_equipment_category and self.item_type
+        has_equipped_item = self.slot_equipment_category and self.item_id
         color_bg = (60, 60, 90) if has_equipped_item else (40, 40, 50)
         color_outline = (160, 160, 160) if has_equipped_item else (100, 100, 140)
 
@@ -668,13 +672,15 @@ class StatsWindow(UiWindow):
 
         y_defense = y_0 + 130
         self._render_sub_header((x_right, y_defense), "DEFENSE")
-        self._render_stat((x_right, y_defense + 25), "armor", str(floor(player_state.base_armor)),
-                          str(player_state.get_effective_armor()))
-        self._render_stat((x_right, y_defense + 45), "dodge %", perc(player_state.base_dodge_chance),
+        self._render_stat((x_right, y_defense + 25), "armor", floor(player_state.base_armor),
+                          player_state.get_effective_armor())
+        self._render_stat((x_right, y_defense + 45), "resist %", perc(player_state.base_magic_resist_chance),
+                          perc(player_state.get_effective_magic_resist_chance()))
+        self._render_stat((x_right, y_defense + 65), "dodge %", perc(player_state.base_dodge_chance),
                           perc(player_state.get_effective_dodge_chance()))
-        self._render_stat((x_right, y_defense + 65), "block %", perc(player_state.base_block_chance),
+        self._render_stat((x_right, y_defense + 85), "block %", perc(player_state.base_block_chance),
                           perc(player_state.get_effective_block_chance()))
-        self._render_stat((x_right, y_defense + 85), "amount", player_state.block_damage_reduction)
+        self._render_stat((x_right, y_defense + 105), "amount", player_state.block_damage_reduction)
 
         y_misc = y_0 + 220
         self._render_sub_header((x_left, y_misc), "MISC.")
@@ -694,7 +700,8 @@ class StatsWindow(UiWindow):
         text_pos = (pos[0] + w // 2 - 2 - len(text) * 3, pos[1])
         self.ui_render.text(self.font_header, text, text_pos, (220, 220, 250))
 
-    def _render_stat(self, label_pos: Tuple[int, int], label: str, value: Any, value_with_bonus: Optional[Any] = None):
+    def _render_stat(self, label_pos: Tuple[int, int], label: str, value: Union[int, float],
+                     value_with_bonus: Optional[Union[int, float]] = None):
         x_label, y = label_pos
         w_label_rect = 70
         rect_label = Rect(x_label, y - 2, w_label_rect, 15)
@@ -710,8 +717,12 @@ class StatsWindow(UiWindow):
             x_value_2 = x_value + w_value_rect - 1
             self._render_value(color_rect_bg, value_with_bonus, w_value_rect, (x_value_2, y), color)
 
-    def _render_value(self, color_bg, value, w_rect, position: Tuple[int, int], color: Tuple[int, int, int]):
-        text = str(value)
+    def _render_value(self, color_bg, value: Union[int, float], w_rect, position: Tuple[int, int],
+                      color: Tuple[int, int, int]):
+        if int(value) == value:
+            text = str(value)
+        else:
+            text = "%.1f" % value
         x, y = position
         rect = Rect(x - 5, y - 2, w_rect, 15)
         x_text = x + w_rect // 2 - 3 - len(text) * 4

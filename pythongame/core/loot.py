@@ -1,5 +1,6 @@
+import math
 import random
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 from pythongame.core.common import ConsumableType, ItemType
 
@@ -11,6 +12,9 @@ class LootEntry:
         self.money_amount = money_amount
         self.item_type = item_type
         self.consumable_type = consumable_type
+
+    def is_item(self) -> bool:
+        return self.item_type is not None
 
     @staticmethod
     def money(amount: int):
@@ -38,8 +42,13 @@ class LootGroup:
         return LootGroup(1, [single_entry], chance_to_get_entry)
 
 
-# Represents the loot of one enemy. Made up of one to many "loot groups"
 class LootTable:
+    def generate_loot(self) -> List[LootEntry]:
+        raise Exception("Sub-classes must override this method!")
+
+
+# Represents the loot of one enemy. Made up of one to many "loot groups"
+class StaticLootTable(LootTable):
     def __init__(self, groups: List[LootGroup]):
         self.groups = groups
 
@@ -56,4 +65,42 @@ class LootTable:
 
     @staticmethod
     def single(single_entry: LootEntry, chance_to_get_entry: float):
-        return LootTable([LootGroup.single(single_entry, chance_to_get_entry)])
+        return StaticLootTable([LootGroup.single(single_entry, chance_to_get_entry)])
+
+
+class LeveledLootTable(LootTable):
+    def __init__(self, item_drop_chance: float, level: int, item_types_by_level: Dict[int, List[ItemType]],
+                 consumable_drop_chance: float,
+                 consumable_types_by_level: Dict[int, List[ConsumableType]]):
+        self.item_drop_chance = item_drop_chance
+        self.consumable_drop_chance = consumable_drop_chance
+        self.level = level
+        if [entries for entries in item_types_by_level.values() if len(entries) == 0]:
+            raise Exception("Invalid loot table! Some level doesn't have any items: %s" % item_types_by_level)
+        self.item_types_by_level = item_types_by_level
+        self.item_levels = list(item_types_by_level.keys())
+        self.item_level_weights = [1.0 / math.pow(2, abs(level - self.level)) for level in self.item_levels]
+        if [entries for entries in consumable_types_by_level.values() if len(entries) == 0]:
+            raise Exception(
+                "Invalid loot table! Some level doesn't have any consumables: %s" % consumable_types_by_level)
+
+        self.consumable_types_by_level = consumable_types_by_level
+        self.consumable_levels = list(consumable_types_by_level.keys())
+        self.consumable_level_weights = [1.0 / math.pow(2, abs(level - self.level)) for level in self.consumable_levels]
+
+        self.money_drop_chance = 0.15
+
+    def generate_loot(self) -> List[LootEntry]:
+        loot = []
+        if random.random() <= self.item_drop_chance:
+            item_level = random.choices(self.item_levels, weights=self.item_level_weights)[0]
+            item_type = random.choice(self.item_types_by_level[item_level])
+            loot.append(LootEntry.item(item_type))
+        if random.random() <= self.consumable_drop_chance:
+            consumable_level = random.choices(self.consumable_levels, weights=self.consumable_level_weights)[0]
+            consumable_type = random.choice(self.consumable_types_by_level[consumable_level])
+            loot.append(LootEntry.consumable(consumable_type))
+        if random.random() <= self.money_drop_chance:
+            amount = random.randint(1, self.level)
+            loot.append(LootEntry.money(amount))
+        return loot

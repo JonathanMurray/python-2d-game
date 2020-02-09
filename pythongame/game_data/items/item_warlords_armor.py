@@ -6,6 +6,7 @@ from pythongame.game_data.items.register_items_util import register_stat_modifyi
 def register_warlords_armor_item():
     register_stat_modifying_item(
         item_type=ItemType.WARLORDS_ARMOR,
+        item_level=7,
         ui_icon_sprite=UiIconSprite.ITEM_WARLORDS_ARMOR,
         sprite=Sprite.ITEM_WARLORDS_ARMOR,
         image_file_path="resources/graphics/item_warlords_armor.png",

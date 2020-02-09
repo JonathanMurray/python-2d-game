@@ -1,14 +1,13 @@
 import random
 
 from pythongame.core.buff_effects import get_buff_effect
-from pythongame.core.common import NpcType, Sprite, Direction, Millis, BuffType, SoundId
+from pythongame.core.common import NpcType, Sprite, Direction, Millis, BuffType, SoundId, LootTableId
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
 from pythongame.core.math import get_manhattan_distance
 from pythongame.core.npc_behaviors import register_npc_behavior, MeleeEnemyNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.view.image_loading import SpriteSheet
-from pythongame.game_data.loot_tables import LOOT_TABLE_2
 
 SPRINT_MAX_COOLDOWN = Millis(10000)
 
@@ -42,7 +41,8 @@ def register_goblin_spearman_enemy():
     movement_speed = 0.08
     health = 21
     exp_reward = 14
-    register_npc_data(npc_type, NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_2, SoundId.DEATH_GOBLIN))
+    register_npc_data(npc_type, NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LootTableId.LEVEL_3,
+                                              SoundId.DEATH_GOBLIN))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")
     original_sprite_size = (32, 32)

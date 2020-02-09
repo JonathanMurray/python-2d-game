@@ -1,16 +1,18 @@
 from typing import Tuple
 
-from pythongame.core.common import NpcType, Direction, Sprite, ItemType, ConsumableType, WallType, PortalId, HeroId
+from pythongame.core.common import NpcType, Direction, Sprite, ConsumableType, WallType, PortalId, HeroId, \
+    ItemId, LootTableId
 from pythongame.core.consumable_inventory import ConsumableInventory
-from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, ITEMS, CONSUMABLES, POTION_ENTITY_SIZE, \
-    WALLS, PORTALS, HEROES, NpcData
+from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, CONSUMABLES, POTION_ENTITY_SIZE, \
+    WALLS, PORTALS, HEROES, NpcData, get_item_data
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
-    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, HealthOrManaResource, WarpPoint, Chest
+    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, HealthOrManaResource, WarpPoint, Chest, Shrine
 from pythongame.core.item_inventory import ItemInventory, ItemInventorySlot, ItemEquipmentCategory
 from pythongame.core.math import get_position_from_center_position
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
-from pythongame.game_data.chests import CHEST_ENTITY_SIZE, CHEST_LOOT
+from pythongame.game_data.chests import CHEST_ENTITY_SIZE
+from pythongame.game_data.shrines import SHRINE_ENTITY_SIZE
 
 # TODO handle this (global path finder) in a better way!
 global_path_finder: GlobalPathFinder = None
@@ -41,10 +43,10 @@ def create_money_pile_on_ground(amount: int, pos: Tuple[int, int]) -> MoneyPileO
     return MoneyPileOnGround(WorldEntity(pos, ITEM_ENTITY_SIZE, sprite), amount)
 
 
-def create_item_on_ground(item_type: ItemType, pos: Tuple[int, int]) -> ItemOnGround:
-    entity = WorldEntity(pos, ITEM_ENTITY_SIZE, ITEMS[item_type].entity_sprite)
+def create_item_on_ground(item_id: ItemId, pos: Tuple[int, int]) -> ItemOnGround:
+    entity = WorldEntity(pos, ITEM_ENTITY_SIZE, get_item_data(item_id).entity_sprite)
     entity.view_z = 1  # It should be rendered below all other entities
-    return ItemOnGround(entity, item_type)
+    return ItemOnGround(entity, item_id)
 
 
 def create_consumable_on_ground(consumable_type: ConsumableType, pos: Tuple[int, int]) -> ConsumableOnGround:
@@ -60,7 +62,11 @@ def create_portal(portal_id: PortalId, pos: Tuple[int, int]) -> Portal:
 
 def create_chest(pos: Tuple[int, int]) -> Chest:
     # TODO Allow for other loot in chests (Currently all chests are equal)
-    return Chest(WorldEntity(pos, CHEST_ENTITY_SIZE, Sprite.CHEST), CHEST_LOOT)
+    return Chest(WorldEntity(pos, CHEST_ENTITY_SIZE, Sprite.CHEST), LootTableId.CHEST)
+
+
+def create_shrine(pos: Tuple[int, int]) -> Shrine:
+    return Shrine(WorldEntity(pos, SHRINE_ENTITY_SIZE, Sprite.SHRINE), False)
 
 
 def create_wall(wall_type: WallType, pos: Tuple[int, int]) -> Wall:
@@ -104,7 +110,7 @@ def create_player_state(hero_id: HeroId) -> PlayerState:
     return PlayerState(
         health_resource, mana_resource, consumable_inventory, list(data.abilities), item_inventory,
         data.new_level_abilities, data.hero_id, data.armor, data.dodge_chance, data.level_bonus, data.talents_state,
-        data.block_chance)
+        data.block_chance, 0.05)
 
 
 def create_warp_point(center_pos: Tuple[int, int], size: Tuple[int, int]) -> WarpPoint:

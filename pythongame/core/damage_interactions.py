@@ -8,7 +8,7 @@ from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntit
     PlayerDamagedEnemy, PlayerWasAttackedEvent, PlayerBlockedEvent
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import create_visual_damage_text, VisualRect, create_visual_healing_text, \
-    create_visual_mana_text, create_visual_block_text, create_visual_dodge_text
+    create_visual_mana_text, create_visual_block_text, create_visual_dodge_text, create_visual_resist_text
 
 
 class DamageType(Enum):
@@ -63,6 +63,13 @@ def deal_damage_to_player(game_state: GameState, base_amount: float, damage_type
             player_state.notify_about_event(PlayerBlockedEvent(npc_attacker), game_state)
         # Armor has a random element to it. Example: 5 armor absorbs 0-5 damage
         damage_reduction += random.randint(0, player_state.get_effective_armor())
+    elif damage_type == DamageType.MAGIC:
+        resist_chance = player_state.get_effective_magic_resist_chance()
+        if random.random() < resist_chance:
+            game_state.visual_effects.append(create_visual_resist_text(game_state.player_entity))
+            play_sound(SoundId.MAGIC_DAMAGE_WAS_RESISTED)
+            return
+
     amount = max(0.0, base_amount - damage_reduction)
     health_lost_integer = player_state.health_resource.lose(amount)
     if health_lost_integer > 0:

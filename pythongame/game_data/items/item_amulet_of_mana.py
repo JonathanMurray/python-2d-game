@@ -1,25 +1,16 @@
 from pythongame.core.common import ItemType, Sprite, UiIconSprite, HeroStat
-from pythongame.core.game_data import register_ui_icon_sprite_path, register_item_data, ItemData, \
-    register_entity_sprite_initializer, ITEM_ENTITY_SIZE
-from pythongame.core.item_effects import register_item_effect, StatModifyingItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
-from pythongame.core.view.image_loading import SpriteInitializer
+from pythongame.game_data.items.register_items_util import register_randomized_stat_modifying_item
 
 
 def register_amulet_of_mana_item():
-    item_types = [ItemType.AMULET_OF_MANA_1, ItemType.AMULET_OF_MANA_2, ItemType.AMULET_OF_MANA_3]
-    mana_regen_boosts = [0.5, 0.75, 1]
-    ui_icon_sprite = UiIconSprite.ITEM_AMULET_OF_MANA
-    sprite = Sprite.ITEM_AMULET_OF_MANA
-    register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/item_amulet.png")
-    register_entity_sprite_initializer(
-        sprite, SpriteInitializer("resources/graphics/item_amulet.png", ITEM_ENTITY_SIZE))
-    for i in range(3):
-        item_type = item_types[i]
-        mana_regen_boost = mana_regen_boosts[i]
-        effect = StatModifyingItemEffect(item_type, {HeroStat.MANA_REGEN: mana_regen_boost})
-        register_item_effect(item_type, effect)
-        name = "Amulet of Mana (" + str(i + 1) + ")"
-        description = effect.get_description()
-        item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.NECK)
-        register_item_data(item_type, item_data)
+    register_randomized_stat_modifying_item(
+        item_type=ItemType.AMULET_OF_MANA,
+        item_level=4,
+        ui_icon_sprite=UiIconSprite.ITEM_AMULET_OF_MANA,
+        sprite=Sprite.ITEM_AMULET_OF_MANA,
+        image_file_path="resources/graphics/item_amulet.png",
+        item_equipment_category=ItemEquipmentCategory.NECK,
+        name="Amulet of Mana",
+        stat_modifier_intervals={HeroStat.MANA_REGEN: [0.5, 0.6, 0.7, 0.8, 0.9, 1]}
+    )

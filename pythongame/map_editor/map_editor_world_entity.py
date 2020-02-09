@@ -1,9 +1,9 @@
 from typing import Optional, Tuple
 
-from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, ItemType, PortalId, HeroId
+from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, PortalId, HeroId, ItemId
 from pythongame.core.entity_creation import create_portal, create_hero_world_entity, create_npc, create_wall, \
     create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground, \
-    create_chest
+    create_chest, create_shrine
 
 
 class MapEditorWorldEntity:
@@ -16,10 +16,11 @@ class MapEditorWorldEntity:
         self.is_player: bool = False
         self.wall_type: Optional[WallType] = None
         self.consumable_type: Optional[ConsumableType] = None
-        self.item_type: Optional[ItemType] = None
+        self.item_id: Optional[ItemId] = None
         self.decoration_sprite: Optional[Sprite] = None
         self.money_amount: Optional[int] = None
         self.portal_id: Optional[PortalId] = None
+        self.is_shrine: bool = False
         self.is_chest: bool = False
         self.is_smart_floor_tile: bool = False
         self.map_editor_entity_id = MapEditorWorldEntity.next_id
@@ -65,10 +66,10 @@ class MapEditorWorldEntity:
         return e
 
     @staticmethod
-    def item(item_type: ItemType):
-        entity = create_item_on_ground(item_type, (0, 0)).world_entity
+    def item(item_id: ItemId):
+        entity = create_item_on_ground(item_id, (0, 0)).world_entity
         e = MapEditorWorldEntity(entity.sprite, (entity.pygame_collision_rect.w, entity.pygame_collision_rect.h))
-        e.item_type = item_type
+        e.item_id = item_id
         return e
 
     @staticmethod
@@ -103,4 +104,11 @@ class MapEditorWorldEntity:
     def smart_floor_tile(sprite: Sprite, width: int):
         e = MapEditorWorldEntity(sprite, (width, width))
         e.is_smart_floor_tile = True
+        return e
+
+    @staticmethod
+    def shrine():
+        entity = create_shrine((0, 0)).world_entity
+        e = MapEditorWorldEntity(entity.sprite, (entity.pygame_collision_rect.w, entity.pygame_collision_rect.h))
+        e.is_shrine = True
         return e

@@ -1,5 +1,5 @@
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect, register_buff_effect
-from pythongame.core.common import ItemType, Sprite, BuffType, Millis, HeroStat
+from pythongame.core.common import ItemType, Sprite, BuffType, Millis, HeroStat, ItemId, plain_item_id
 from pythongame.core.game_data import UiIconSprite
 from pythongame.core.game_state import Event, GameState, WorldEntity, \
     NonPlayerCharacter, PlayerBlockedEvent
@@ -15,8 +15,8 @@ BUFF_TYPE_STUNNED = BuffType.STUNNED_BY_AEGIS_ITEM
 
 class ItemEffect(StatModifyingItemEffect):
 
-    def __init__(self, item_type: ItemType, stat_modifiers):
-        super().__init__(item_type, stat_modifiers)
+    def __init__(self, item_id: ItemId, stat_modifiers):
+        super().__init__(item_id, stat_modifiers)
 
     def item_handle_event(self, event: Event, game_state: GameState):
         if isinstance(event, PlayerBlockedEvent):
@@ -47,9 +47,11 @@ def register_zuls_aegis():
     register_buff_effect(BUFF_TYPE_STUNNED, StunnedFromAegis)
 
     item_type = ItemType.ZULS_AEGIS
-    effect = ItemEffect(item_type, {HeroStat.ARMOR: 3, HeroStat.BLOCK_AMOUNT: 8})
+    item_id = plain_item_id(item_type)
+    effect = ItemEffect(item_id, {HeroStat.ARMOR: 3, HeroStat.BLOCK_AMOUNT: 8, HeroStat.MAGIC_RESIST_CHANCE: 0.1})
     register_custom_effect_item(
         item_type=item_type,
+        item_level=7,
         ui_icon_sprite=UiIconSprite.ITEM_ZULS_AEGIS,
         sprite=Sprite.ITEM_ZULS_AEGIS,
         image_file_path="resources/graphics/item_zuls_aegis.png",

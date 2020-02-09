@@ -1,9 +1,8 @@
-from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId
+from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId, LootTableId
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map
 from pythongame.core.npc_behaviors import register_npc_behavior, MeleeEnemyNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.view.image_loading import SpriteSheet
-from pythongame.game_data.loot_tables import LOOT_TABLE_3
 
 
 class NpcMind(MeleeEnemyNpcMind):
@@ -19,7 +18,7 @@ def register_mummy_enemy():
     health = 20
     health_regen = 2
     exp_reward = 15
-    npc_data = NpcData.enemy(sprite, size, health, health_regen, movement_speed, exp_reward, LOOT_TABLE_3,
+    npc_data = NpcData.enemy(sprite, size, health, health_regen, movement_speed, exp_reward, LootTableId.LEVEL_4,
                              SoundId.DEATH_ZOMBIE)
     register_npc_data(npc_type, npc_data)
     register_npc_behavior(npc_type, NpcMind)
