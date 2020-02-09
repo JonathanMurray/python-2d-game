@@ -77,10 +77,10 @@ def _register_buff(buff_type: BuffType, buff_class: Type[AbstractBuffEffect], bu
 def _get_random() -> Tuple[AbstractBuffEffect, str]:
     return random.choice(
         [
-            (get_buff_effect(BUFF_DAMAGE), "You feel powerful!"),
-            (get_buff_effect(BUFF_ARMOR), "You feel protected!"),
-            (get_buff_effect(BUFF_MAGIC_RESIST), "You feel the spirits' presence!"),
-            (get_buff_effect(BUFF_MOVE_SPEED), "You feel swift!")
+            (get_buff_effect(BUFF_DAMAGE), "You feel powerful! (Damage increased)"),
+            (get_buff_effect(BUFF_ARMOR), "You feel protected! (Armor increased)"),
+            (get_buff_effect(BUFF_MAGIC_RESIST), "You feel the spirits' presence! (Resistance increased)"),
+            (get_buff_effect(BUFF_MOVE_SPEED), "You feel swift! (Speed increased)")
         ]
     )
 
