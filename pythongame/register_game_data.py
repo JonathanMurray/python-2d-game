@@ -55,6 +55,7 @@ from pythongame.game_data.items.item_blessed_chalice import register_blessed_cha
 from pythongame.game_data.items.item_blessed_shield import register_blessed_shield_item
 from pythongame.game_data.items.item_blood_amulet import register_blood_amulet
 from pythongame.game_data.items.item_blue_robe import register_blue_robe_item
+from pythongame.game_data.items.item_candle import register_candle_item
 from pythongame.game_data.items.item_cleaver import register_cleaver_item
 from pythongame.game_data.items.item_desert_blade import register_desert_blade_item
 from pythongame.game_data.items.item_druids_ring import register_druids_ring_item
@@ -234,6 +235,7 @@ def register_all_game_data():
     register_necklace_of_suffering_item()
     register_fire_wand_item()
     register_feather_hat_item()
+    register_candle_item()
 
     # Register items before NPCs as vendors may rely on item data
 

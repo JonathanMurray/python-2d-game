@@ -275,6 +275,7 @@ class Sprite(Enum):
     ITEM_NECKLACE_OF_SUFFERING = 355
     ITEM_FIRE_WAND = 356
     ITEM_FEATHER_HAT = 357
+    ITEM_CANDLE = 358
     COINS_1 = 400
     COINS_2 = 401
     COINS_5 = 402
@@ -451,6 +452,7 @@ class ItemType(Enum):
     NECKLACE_OF_SUFFERING = 112
     FIRE_WAND = 113
     FEATHER_HAT = 114
+    CANDLE = 115
 
 
 # Must be of one of the following formats:
@@ -645,6 +647,7 @@ class UiIconSprite(Enum):
     ITEM_NECKLACE_OF_SUFFERING = 255
     ITEM_FIRE_WAND = 256
     ITEM_FEATHER_HAT = 257
+    ITEM_CANDLE = 258
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
     INVENTORY_TEMPLATE_HELMET = 400
