@@ -177,9 +177,14 @@ UI_ICON_SPRITE_PATHS: Dict[UiIconSprite, str] = {}
 
 PORTRAIT_ICON_SPRITE_PATHS: Dict[PortraitIconSprite, str] = {}
 
+# TODO use methods instead of accessing this directly
 CONSUMABLES: Dict[ConsumableType, ConsumableData] = {}
 
 WALLS: Dict[WallType, WallData] = {}
+
+consumable_data_by_type: Dict[ConsumableType, ConsumableData] = {}
+consumable_types_grouped_by_level: Dict[int, Set[ConsumableType]] = {}
+consumable_levels: Dict[ConsumableType, int] = {}
 
 item_data_by_id: Dict[ItemId, ItemData] = {}
 
@@ -267,6 +272,20 @@ def register_buff_as_channeling(buff_type: BuffType):
 
 def register_consumable_data(consumable_type: ConsumableType, data: ConsumableData):
     CONSUMABLES[consumable_type] = data
+
+
+def register_consumable_level(consumable_type: ConsumableType, level: int):
+    consumable_types = consumable_types_grouped_by_level.setdefault(level, set())
+    consumable_types.add(consumable_type)
+    consumable_levels[consumable_type] = level
+
+
+def get_consumables_with_level(level: int) -> List[ConsumableType]:
+    return list(consumable_types_grouped_by_level.get(level, set()))
+
+
+def get_optional_consumable_level(consumable_type: ConsumableType) -> Optional[int]:
+    return consumable_levels.get(consumable_type, None)
 
 
 def register_item_data(item_id: ItemId, item_data: ItemData):

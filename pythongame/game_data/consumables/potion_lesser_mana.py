@@ -2,7 +2,7 @@ from pythongame.core.common import ConsumableType, Sprite, UiIconSprite, SoundId
 from pythongame.core.consumable_effects import create_potion_visual_effect_at_player, ConsumableWasConsumed, \
     ConsumableFailedToBeConsumed, register_consumable_effect
 from pythongame.core.damage_interactions import player_receive_mana
-from pythongame.core.game_data import POTION_ENTITY_SIZE, ConsumableCategory
+from pythongame.core.game_data import POTION_ENTITY_SIZE, ConsumableCategory, register_consumable_level
 from pythongame.core.game_data import register_ui_icon_sprite_path, register_entity_sprite_initializer, \
     register_consumable_data, ConsumableData
 from pythongame.core.game_state import GameState
@@ -24,7 +24,7 @@ def register_lesser_mana_potion():
     consumable_type = ConsumableType.MANA_LESSER
     sprite = Sprite.POTION_MANA_LESSER
     ui_icon_sprite = UiIconSprite.POTION_MANA_LESSER
-
+    register_consumable_level(consumable_type, 2)
     register_consumable_effect(consumable_type, _apply_mana)
     image_path = "resources/graphics/icon_potion_lesser_mana.png"
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_path, POTION_ENTITY_SIZE))

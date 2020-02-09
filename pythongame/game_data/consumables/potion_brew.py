@@ -7,7 +7,7 @@ from pythongame.core.consumable_effects import ConsumableWasConsumed, \
 from pythongame.core.damage_interactions import player_receive_healing, player_receive_mana
 from pythongame.core.game_data import register_entity_sprite_initializer, register_ui_icon_sprite_path, \
     register_consumable_data, ConsumableData, POTION_ENTITY_SIZE, ConsumableCategory, \
-    register_buff_text
+    register_buff_text, register_consumable_level
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, PlayerLostHealthEvent, \
     BuffEventOutcome
 from pythongame.core.view.image_loading import SpriteInitializer
@@ -47,7 +47,7 @@ def register_brew_potion():
     consumable_type = ConsumableType.BREW
     sprite = Sprite.POTION_BREW
     ui_icon_sprite = UiIconSprite.POTION_BREW
-
+    register_consumable_level(consumable_type, 2)
     register_consumable_effect(consumable_type, _apply)
     image_path = "resources/graphics/icon_potion_brew.png"
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_path, POTION_ENTITY_SIZE))
