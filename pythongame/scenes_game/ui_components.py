@@ -1,6 +1,6 @@
 from enum import Enum
 from math import floor
-from typing import List, Tuple, Optional, Any, Iterable, Set, Callable
+from typing import List, Tuple, Optional, Any, Iterable, Set, Callable, Union
 
 import pygame
 from pygame.rect import Rect
@@ -672,8 +672,8 @@ class StatsWindow(UiWindow):
 
         y_defense = y_0 + 130
         self._render_sub_header((x_right, y_defense), "DEFENSE")
-        self._render_stat((x_right, y_defense + 25), "armor", str(floor(player_state.base_armor)),
-                          str(player_state.get_effective_armor()))
+        self._render_stat((x_right, y_defense + 25), "armor", floor(player_state.base_armor),
+                          player_state.get_effective_armor())
         self._render_stat((x_right, y_defense + 45), "resist %", perc(player_state.base_magic_resist_chance),
                           perc(player_state.get_effective_magic_resist_chance()))
         self._render_stat((x_right, y_defense + 65), "dodge %", perc(player_state.base_dodge_chance),
@@ -700,7 +700,8 @@ class StatsWindow(UiWindow):
         text_pos = (pos[0] + w // 2 - 2 - len(text) * 3, pos[1])
         self.ui_render.text(self.font_header, text, text_pos, (220, 220, 250))
 
-    def _render_stat(self, label_pos: Tuple[int, int], label: str, value: Any, value_with_bonus: Optional[Any] = None):
+    def _render_stat(self, label_pos: Tuple[int, int], label: str, value: Union[int, float],
+                     value_with_bonus: Optional[Union[int, float]] = None):
         x_label, y = label_pos
         w_label_rect = 70
         rect_label = Rect(x_label, y - 2, w_label_rect, 15)
@@ -716,8 +717,12 @@ class StatsWindow(UiWindow):
             x_value_2 = x_value + w_value_rect - 1
             self._render_value(color_rect_bg, value_with_bonus, w_value_rect, (x_value_2, y), color)
 
-    def _render_value(self, color_bg, value, w_rect, position: Tuple[int, int], color: Tuple[int, int, int]):
-        text = str(value)
+    def _render_value(self, color_bg, value: Union[int, float], w_rect, position: Tuple[int, int],
+                      color: Tuple[int, int, int]):
+        if int(value) == value:
+            text = str(value)
+        else:
+            text = "%.1f" % value
         x, y = position
         rect = Rect(x - 5, y - 2, w_rect, 15)
         x_text = x + w_rect // 2 - 3 - len(text) * 4
