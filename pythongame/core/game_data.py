@@ -317,6 +317,13 @@ def get_items_with_level(item_level: int) -> List[ItemType]:
     return list(item_types_grouped_by_level.get(item_level, set()))
 
 
+def get_items_within_levels(min_level: int, max_level: int) -> List[ItemType]:
+    items = []
+    for level in range(min_level, max_level + 1):
+        items += get_items_with_level(level)
+    return items
+
+
 def get_optional_item_level(item_type: ItemType) -> Optional[int]:
     return item_levels.get(item_type, None)
 
