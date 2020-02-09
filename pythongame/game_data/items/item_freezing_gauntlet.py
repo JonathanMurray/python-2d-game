@@ -62,6 +62,6 @@ def register_freezing_gauntlet_item():
     name = "Freezing Gauntlet"
     description = ["Slows your targets by " + str(int(SLOW_AMOUNT * 100)) + "% for " \
                    + "{:.1f}".format(SLOW_DURATION / 1000) + "s"]
-    item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.MAIN_HAND)
+    item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.OFF_HAND)
     register_item_data(ITEM_ID, item_data)
     register_buff_effect(BUFF_TYPE, DebuffedByFreezingGauntlet)
