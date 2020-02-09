@@ -72,7 +72,7 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
     mana_regen = 2
     health_per_level = 15
     mana_per_level = 5
-    armor_per_level = 1.5
+    armor_per_level = 1
     level_bonus = PlayerLevelBonus(health_per_level, mana_per_level, armor_per_level)
     armor = 3
     dodge_chance = 0.05
