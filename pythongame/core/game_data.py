@@ -307,6 +307,10 @@ def get_random_item_id_for_item_type(item_type: ItemType) -> ItemId:
     return random.choice(list(item_ids_grouped_by_type[item_type]))
 
 
+def get_min_item_id_for_item_type(item_type: ItemType) -> ItemId:
+    return min(item_ids_grouped_by_type[item_type])
+
+
 def register_item_level(item_type: ItemType, item_level: int):
     item_types = item_types_grouped_by_level.setdefault(item_level, set())
     item_types.add(item_type)
