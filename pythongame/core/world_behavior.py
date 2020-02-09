@@ -1,7 +1,7 @@
 from typing import Optional, Callable, Any
 
 from pythongame.core.buff_effects import get_buff_effect
-from pythongame.core.common import ConsumableType, AbstractScene
+from pythongame.core.common import ConsumableType, AbstractScene, ItemId
 from pythongame.core.common import ItemType
 from pythongame.core.common import Millis, BuffType, get_random_hint, \
     SoundId, SceneTransition
@@ -42,12 +42,12 @@ class StoryBehavior(AbstractWorldBehavior):
             self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.HEALTH_LESSER)
             self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.MANA_LESSER)
             self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.MANA_LESSER)
-            for item_type in HEROES[self.game_state.player_state.hero_id].initial_player_state.starting_items:
-                self.add_starting_item(item_type)
+            for item_id in HEROES[self.game_state.player_state.hero_id].initial_player_state.starting_items:
+                self.add_starting_item(item_id)
 
-    def add_starting_item(self, item_type: ItemType):
-        data = get_item_data(item_type)
-        item_effect = get_item_effect(item_type)
+    def add_starting_item(self, item_id: ItemId):
+        data = get_item_data(item_id)
+        item_effect = get_item_effect(item_id)
         try_add_item_to_inventory(self.game_state, item_effect, data.item_equipment_category)
 
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:

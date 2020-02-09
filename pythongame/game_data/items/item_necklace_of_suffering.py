@@ -1,7 +1,7 @@
 from typing import List
 
 from pythongame.core.buff_effects import get_buff_effect, register_buff_effect, StatModifyingBuffEffect
-from pythongame.core.common import ItemType, UiIconSprite, Sprite, HeroStat, Event, BuffType, Millis
+from pythongame.core.common import ItemType, UiIconSprite, Sprite, HeroStat, Event, BuffType, Millis, plain_item_id
 from pythongame.core.game_state import GameState, PlayerLostHealthEvent
 from pythongame.core.item_effects import StatModifyingItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
@@ -11,12 +11,13 @@ BUFF_TYPE = BuffType.INCREASED_DAMAGE_FROM_NECKLACE_OF_SUFFERING
 BUFF_DURATION = Millis(3000)
 BUFF_DAMAGE = 0.2
 ITEM_TYPE = ItemType.NECKLACE_OF_SUFFERING
+ITEM_ID = plain_item_id(ITEM_TYPE)
 
 
 class ItemEffect(StatModifyingItemEffect):
 
     def __init__(self):
-        super().__init__(ITEM_TYPE, {HeroStat.DAMAGE: 0.1})
+        super().__init__(ITEM_ID, {HeroStat.DAMAGE: 0.1})
 
     def item_handle_event(self, event: Event, game_state: GameState):
         if isinstance(event, PlayerLostHealthEvent):
@@ -36,6 +37,7 @@ class BuffEffect(StatModifyingBuffEffect):
 def register_necklace_of_suffering_item():
     register_custom_effect_item(
         item_type=ITEM_TYPE,
+        item_level=6,
         ui_icon_sprite=UiIconSprite.ITEM_NECKLACE_OF_SUFFERING,
         sprite=Sprite.ITEM_NECKLACE_OF_SUFFERING,
         image_file_path="resources/graphics/item_necklace_of_suffering.png",

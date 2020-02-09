@@ -1,8 +1,7 @@
-from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId
+from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId, LootTableId
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map
 from pythongame.core.npc_behaviors import register_npc_behavior, MeleeEnemyNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
-from pythongame.game_data.loot_tables import LOOT_TABLE_1
 
 
 class NpcMind(MeleeEnemyNpcMind):
@@ -17,7 +16,7 @@ def register_goblin_worker_enemy():
     movement_speed = 0.07
     health = 10
     exp_reward = 5
-    register_npc_data(npc_type, NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_1,
+    register_npc_data(npc_type, NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LootTableId.LEVEL_2,
                                               SoundId.DEATH_GOBLIN))
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")

@@ -1,6 +1,6 @@
 from typing import List
 
-from pythongame.core.common import ItemType, Sprite, HeroStat
+from pythongame.core.common import ItemType, Sprite, HeroStat, ItemId, plain_item_id
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import UiIconSprite
 from pythongame.core.game_state import Event, GameState, PlayerBlockedEvent
@@ -11,8 +11,8 @@ from pythongame.game_data.items.register_items_util import register_custom_effec
 
 class ItemEffect(StatModifyingItemEffect):
 
-    def __init__(self, item_type: ItemType):
-        super().__init__(item_type, {HeroStat.ARMOR: 2, HeroStat.BLOCK_AMOUNT: 7})
+    def __init__(self, item_id: ItemId):
+        super().__init__(item_id, {HeroStat.ARMOR: 2, HeroStat.BLOCK_AMOUNT: 7})
         self.damage_amount = 5
 
     def item_handle_event(self, event: Event, game_state: GameState):
@@ -25,9 +25,10 @@ class ItemEffect(StatModifyingItemEffect):
 
 def register_skull_shield_item():
     item_type = ItemType.SKULL_SHIELD
-    effect = ItemEffect(item_type)
+    effect = ItemEffect(plain_item_id(item_type))
     register_custom_effect_item(
         item_type=item_type,
+        item_level=5,
         ui_icon_sprite=UiIconSprite.ITEM_SKULL_SHIELD,
         sprite=Sprite.ITEM_SKULL_SHIELD,
         image_file_path="resources/graphics/item_skull_shield.png",

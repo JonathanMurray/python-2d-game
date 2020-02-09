@@ -1,7 +1,7 @@
 from pythongame.core.common import ItemType, Sprite, UiIconSprite, HeroStat, randomized_item_id, ItemId
 from pythongame.core.damage_interactions import player_receive_healing
 from pythongame.core.game_data import register_ui_icon_sprite_path, register_item_data, ItemData, \
-    register_entity_sprite_initializer, ITEM_ENTITY_SIZE
+    register_entity_sprite_initializer, ITEM_ENTITY_SIZE, register_item_level
 from pythongame.core.game_state import GameState, Event, PlayerBlockedEvent
 from pythongame.core.item_effects import register_item_effect, StatModifyingItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
@@ -25,6 +25,7 @@ def register_blessed_shield_item():
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/item_blessed_shield.png")
     register_entity_sprite_initializer(
         sprite, SpriteInitializer("resources/graphics/item_blessed_shield.png", ITEM_ENTITY_SIZE))
+    register_item_level(ItemType.BLESSED_SHIELD, 3)
     for i, healing_amount in enumerate([2, 3, 4, 5]):
         item_id = randomized_item_id(ItemType.BLESSED_SHIELD, i)
         effect = ItemEffect(healing_amount, item_id, {HeroStat.ARMOR: 2, HeroStat.BLOCK_AMOUNT: 6})
@@ -32,7 +33,7 @@ def register_blessed_shield_item():
         item_data = ItemData(
             icon_sprite=ui_icon_sprite,
             entity_sprite=sprite,
-            name="Blessed Shield (" + str(i + 1) + ")",
+            name="Blessed Shield",
             description_lines=effect.get_description() + ["On block: gain " + str(healing_amount) + " health"],
             item_equipment_category=ItemEquipmentCategory.OFF_HAND)
         register_item_data(item_id, item_data)

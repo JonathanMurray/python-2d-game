@@ -1,8 +1,8 @@
-from typing import Dict, Union, List, Iterable
+from typing import Dict, Union, List, Iterable, Optional
 
 from pythongame.core.common import ItemType, Sprite, UiIconSprite, HeroStat, plain_item_id, randomized_item_id
 from pythongame.core.game_data import register_ui_icon_sprite_path, register_item_data, ItemData, \
-    register_entity_sprite_initializer, ITEM_ENTITY_SIZE
+    register_entity_sprite_initializer, ITEM_ENTITY_SIZE, register_item_level
 from pythongame.core.item_effects import register_item_effect, StatModifyingItemEffect, EmptyItemEffect, \
     AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
@@ -16,13 +16,17 @@ def register_stat_modifying_item(
         image_file_path: str,
         item_equipment_category: ItemEquipmentCategory,
         name: str,
-        stat_modifiers: Dict[HeroStat, Union[int, float]]):
-    item_effect = StatModifyingItemEffect(plain_item_id(item_type), stat_modifiers)
+        stat_modifiers: Dict[HeroStat, Union[int, float]],
+        item_level: Optional[int] = None):
+    item_id = plain_item_id(item_type)
+    if item_level is not None:
+        register_item_level(item_type, item_level)
+    item_effect = StatModifyingItemEffect(item_id, stat_modifiers)
     item_data = ItemData(ui_icon_sprite, sprite, name, item_effect.get_description(), item_equipment_category)
-    register_item_effect(item_type, item_effect)
+    register_item_effect(item_id, item_effect)
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    register_item_data(item_type, item_data)
+    register_item_data(item_id, item_data)
 
 
 def register_randomized_stat_modifying_item(
@@ -32,20 +36,24 @@ def register_randomized_stat_modifying_item(
         image_file_path: str,
         item_equipment_category: ItemEquipmentCategory,
         name: str,
-        stat_modifier_intervals: Dict[HeroStat, Union[Iterable[int], List[float]]]):
+        stat_modifier_intervals: Dict[HeroStat, Union[Iterable[int], List[float]]],
+        item_level: Optional[int] = None):
     _register_randomized_stat_modifying_item(
-        item_type, ui_icon_sprite, sprite, image_file_path, item_equipment_category, name,
+        item_type, item_level, ui_icon_sprite, sprite, image_file_path, item_equipment_category, name,
         _split_stat_modifier_intervals(stat_modifier_intervals))
 
 
 def _register_randomized_stat_modifying_item(
         item_type: ItemType,
+        item_level: Optional[int],
         ui_icon_sprite: UiIconSprite,
         sprite: Sprite,
         image_file_path: str,
         item_equipment_category: ItemEquipmentCategory,
         name: str,
         multiple_stat_modifiers: List[Dict[HeroStat, Union[int, float]]]):
+    if item_level is not None:
+        register_item_level(item_type, item_level)
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
     for i, stat_modifiers in enumerate(multiple_stat_modifiers):
@@ -63,12 +71,16 @@ def register_custom_effect_item(
         image_file_path: str,
         item_equipment_category: ItemEquipmentCategory,
         name: str,
-        item_effect: AbstractItemEffect):
+        item_effect: AbstractItemEffect,
+        item_level: Optional[int] = None):
+    item_id = plain_item_id(item_type)
+    if item_level is not None:
+        register_item_level(item_type, item_level)
     item_data = ItemData(ui_icon_sprite, sprite, name, item_effect.get_description(), item_equipment_category)
-    register_item_effect(item_type, item_effect)
+    register_item_effect(item_id, item_effect)
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    register_item_data(item_type, item_data)
+    register_item_data(item_id, item_data)
 
 
 def _split_stat_modifier_intervals(randomized_stat_modifiers: Dict[HeroStat, Union[Iterable[int], List[float]]]) \
@@ -102,12 +114,13 @@ def register_passive_item(
         image_file_path: str,
         name: str,
         description_lines: List[str]):
-    item_effect = EmptyItemEffect(item_type)
+    item_id = plain_item_id(item_type)
+    item_effect = EmptyItemEffect(item_id)
     item_data = ItemData(ui_icon_sprite, sprite, name, description_lines)
-    register_item_effect(item_type, item_effect)
+    register_item_effect(item_id, item_effect)
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    register_item_data(item_type, item_data)
+    register_item_data(item_id, item_data)
 
 
 def register_quest_item(
@@ -117,9 +130,10 @@ def register_quest_item(
         image_file_path: str,
         name: str,
         description_lines: List[str]):
-    item_effect = EmptyItemEffect(item_type)
+    item_id = plain_item_id(item_type)
+    item_effect = EmptyItemEffect(item_id)
     item_data = ItemData(ui_icon_sprite, sprite, name, description_lines, ItemEquipmentCategory.QUEST)
-    register_item_effect(item_type, item_effect)
+    register_item_effect(item_id, item_effect)
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    register_item_data(item_type, item_data)
+    register_item_data(item_id, item_data)

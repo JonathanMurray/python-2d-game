@@ -779,3 +779,16 @@ class DialogData:
         self.portrait_icon_sprite = portrait_icon_sprite
         self.text_body = text_body
         self.options = options
+
+
+class LootTableId(Enum):
+    CHEST = 0
+    LEVEL_1 = 1
+    LEVEL_2 = 2
+    LEVEL_3 = 3
+    LEVEL_4 = 4
+    LEVEL_5 = 5
+    LEVEL_6 = 6
+    LEVEL_7 = 7
+    BOSS_GOBLIN = 100
+    BOSS_WARRIOR_KING = 101

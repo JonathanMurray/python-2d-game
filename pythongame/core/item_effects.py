@@ -7,8 +7,8 @@ from pythongame.core.item_inventory import ItemEquipmentCategory, ItemWasActivat
 
 class AbstractItemEffect:
 
-    def __init__(self, identifier: Union[ItemId, ItemType]):
-        self.item_id = identifier if isinstance(identifier, ItemId) else plain_item_id(identifier)
+    def __init__(self, item_id: ItemId):
+        self.item_id = item_id
         self.item_type = ItemType[self.item_id.split(":")[0]]
 
     def apply_start_effect(self, game_state: GameState):
@@ -65,8 +65,8 @@ def _get_description_of_stat_modifier(hero_stat: HeroStat, delta: Union[int, flo
 
 
 class StatModifyingItemEffect(AbstractItemEffect):
-    def __init__(self, identifier: Union[ItemType, ItemId], stat_modifiers: Dict[HeroStat, Union[int, float]]):
-        super().__init__(identifier)
+    def __init__(self, item_id: ItemId, stat_modifiers: Dict[HeroStat, Union[int, float]]):
+        super().__init__(item_id)
         self.stat_modifiers = stat_modifiers
 
     def apply_start_effect(self, game_state: GameState):
@@ -82,22 +82,20 @@ class StatModifyingItemEffect(AbstractItemEffect):
 
 
 class EmptyItemEffect(AbstractItemEffect):
-    def __init__(self, identifier: Union[ItemType, ItemId]):
-        super().__init__(identifier)
+    def __init__(self, item_id: ItemId):
+        super().__init__(item_id)
 
 
 _item_effects: Dict[ItemId, AbstractItemEffect] = {}
 
 
-def register_item_effect(identifier: Union[ItemType, ItemId], effect: AbstractItemEffect):
-    item_id = identifier if isinstance(identifier, ItemId) else plain_item_id(identifier)
+def register_item_effect(item_id: ItemId, effect: AbstractItemEffect):
     _item_effects[item_id] = effect
 
 
 # Note this is handled differently compared to buffs
 # There is only one effect instance per item type - having duplicate items with active effects may not be well supported
-def get_item_effect(identifier: Union[ItemType, ItemId]) -> AbstractItemEffect:
-    item_id = identifier if isinstance(identifier, ItemId) else plain_item_id(identifier)
+def get_item_effect(item_id: ItemId) -> AbstractItemEffect:
     return _item_effects[item_id]
 
 

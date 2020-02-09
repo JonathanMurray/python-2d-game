@@ -6,6 +6,7 @@ from pythongame.game_data.items.register_items_util import register_randomized_s
 def register_wand_item():
     register_randomized_stat_modifying_item(
         item_type=ItemType.WAND,
+        item_level=3,
         ui_icon_sprite=UiIconSprite.ITEM_WAND,
         sprite=Sprite.ITEM_WAND,
         image_file_path="resources/graphics/item_wand.png",

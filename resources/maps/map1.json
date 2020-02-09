@@ -22,6 +22,13 @@
         3625,
         2000
       ]
+    },
+    {
+      "item_id": "GOATS_RING:0",
+      "position": [
+        -125,
+        -850
+      ]
     }
   ],
   "money_piles_on_ground": [],
@@ -2166,6 +2173,167 @@
       "position": [
         300,
         125
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -150,
+        -725
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -225,
+        -650
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -150,
+        -650
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -100,
+        -700
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        0,
+        -725
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -75,
+        -750
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -325,
+        -625
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -450,
+        -625
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -425,
+        -675
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -350,
+        -675
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -375,
+        -725
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -475,
+        -750
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -450,
+        -750
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -425,
+        -750
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -450,
+        -800
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -500,
+        -800
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -325,
+        -800
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -400,
+        -825
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -475,
+        -850
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -225,
+        -850
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -250,
+        -925
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -100,
+        -625
+      ]
+    },
+    {
+      "npc_type": "RAT_1",
+      "position": [
+        -200,
+        -600
       ]
     }
   ],

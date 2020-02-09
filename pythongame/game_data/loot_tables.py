@@ -1,25 +1,10 @@
-from pythongame.core.common import ItemType, ConsumableType
-from pythongame.core.loot import LootTable, LootGroup, LootEntry
+from typing import Dict
 
-LOOT_ITEMS_1 = [
-    LootEntry.item(ItemType.WOODEN_SHIELD),
-    LootEntry.item(ItemType.LEATHER_COWL),
-    LootEntry.item(ItemType.LEATHER_ARMOR),
-    LootEntry.item(ItemType.WOODEN_SWORD),
-]
+from pythongame.core.common import ItemType, LootTableId, ConsumableType
+from pythongame.core.game_data import get_items_with_level
+from pythongame.core.loot import LootEntry, LeveledLootTable, StaticLootTable, LootGroup, LootTable
 
-LOOT_ITEMS_2 = [
-    LootEntry.item(ItemType.AMULET_OF_MANA),
-    LootEntry.item(ItemType.ORB_OF_THE_MAGI),
-    LootEntry.item(ItemType.ORB_OF_WISDOM),
-    LootEntry.item(ItemType.ORB_OF_LIFE),
-    LootEntry.item(ItemType.BLUE_ROBE),
-    LootEntry.item(ItemType.BLESSED_SHIELD),
-    LootEntry.item(ItemType.SOLDIERS_HELMET),
-    LootEntry.item(ItemType.HATCHET),
-    LootEntry.item(ItemType.WAND),
-]
-
+# TODO remove these hard-coded loot item groups
 LOOT_ITEMS_3 = [
     LootEntry.item(ItemType.MESSENGERS_HAT),
     LootEntry.item(ItemType.SKULL_STAFF),
@@ -43,57 +28,77 @@ LOOT_ITEMS_3 = [
     LootEntry.item(ItemType.SORCERESS_ROBE)
 ]
 
+# TODO remove these hard-coded loot item groups
 LOOT_ITEMS_4 = [
-    LootEntry.item(ItemType.BLESSED_CHALICE),
-    LootEntry.item(ItemType.WINGED_HELMET),
-    LootEntry.item(ItemType.WARLORDS_ARMOR),
-    LootEntry.item(ItemType.ELITE_ARMOR),
-    LootEntry.item(ItemType.GLADIATOR_ARMOR),
-    LootEntry.item(ItemType.FREEZING_GAUNTLET),
-    LootEntry.item(ItemType.WIZARDS_COWL),
-    LootEntry.item(ItemType.WARLOCKS_COWL),
-    LootEntry.item(ItemType.NOBLE_DEFENDER),
-    LootEntry.item(ItemType.LICH_ARMOR),
-    LootEntry.item(ItemType.MOLTEN_AXE),
-    LootEntry.item(ItemType.CLEAVER),
-    LootEntry.item(ItemType.DESERT_BLADE),
-    LootEntry.item(ItemType.NECKLACE_OF_SUFFERING)
+    LootEntry.item(ItemType.BLESSED_CHALICE),  # 5
+    LootEntry.item(ItemType.WINGED_HELMET),  # 7
+    LootEntry.item(ItemType.WARLORDS_ARMOR),  # 7
+    LootEntry.item(ItemType.ELITE_ARMOR),  # 5
+    LootEntry.item(ItemType.GLADIATOR_ARMOR),  # 6
+    LootEntry.item(ItemType.FREEZING_GAUNTLET),  # 6
+    LootEntry.item(ItemType.WIZARDS_COWL),  # 5
+    LootEntry.item(ItemType.WARLOCKS_COWL),  # 5
+    LootEntry.item(ItemType.NOBLE_DEFENDER),  # 6
+    LootEntry.item(ItemType.LICH_ARMOR),  # 7
+    LootEntry.item(ItemType.MOLTEN_AXE),  # 7
+    LootEntry.item(ItemType.CLEAVER),  # 7
+    LootEntry.item(ItemType.DESERT_BLADE),  # 7
+    LootEntry.item(ItemType.NECKLACE_OF_SUFFERING)  # 6
 ]
 
-LOOT_POTIONS_1 = [
-    LootEntry.consumable(ConsumableType.HEALTH_LESSER),
-    LootEntry.consumable(ConsumableType.MANA_LESSER)
-]
+loot_tables: Dict[LootTableId, LootTable] = {}
 
-LOOT_POTIONS_2 = [
-    LootEntry.consumable(ConsumableType.HEALTH),
-    LootEntry.consumable(ConsumableType.MANA),
-    LootEntry.consumable(ConsumableType.SPEED),
-    LootEntry.consumable(ConsumableType.WARP_STONE),
-    LootEntry.consumable(ConsumableType.POWER),
-    LootEntry.consumable(ConsumableType.MAGIC_RESIST),
-]
 
-LOOT_TABLE_1 = LootTable([
-    LootGroup(1, [LootEntry.money(1), LootEntry.money(2), LootEntry.money(3)], 0.1),
-    LootGroup(1, LOOT_POTIONS_1, 0.03),
-    LootGroup(1, LOOT_ITEMS_1, 0.1),
-])
+def register_loot_tables():
+    loot_tables[LootTableId.LEVEL_1] = _table_for_monster_level(1)
+    loot_tables[LootTableId.LEVEL_2] = _table_for_monster_level(2)
+    loot_tables[LootTableId.LEVEL_3] = _table_for_monster_level(3)
+    loot_tables[LootTableId.LEVEL_4] = _table_for_monster_level(4)
+    loot_tables[LootTableId.LEVEL_5] = _table_for_monster_level(5)
+    loot_tables[LootTableId.LEVEL_6] = _table_for_monster_level(6)
+    loot_tables[LootTableId.LEVEL_7] = _table_for_monster_level(7)
+    loot_tables[LootTableId.CHEST] = LeveledLootTable(chance_to_drop_anything=1, level=3,
+                                                      entries_by_level=_entries_for_monster_level(3))
+    loot_tables[LootTableId.BOSS_GOBLIN] = _table_for_goblin_boss()
+    loot_tables[LootTableId.BOSS_WARRIOR_KING] = _table_for_human_boss()
 
-LOOT_TABLE_2 = LootTable([
-    LootGroup(1, [LootEntry.money(1), LootEntry.money(2), LootEntry.money(3)], 0.1),
-    LootGroup(1, LOOT_POTIONS_1, 0.05),
-    LootGroup(1, LOOT_ITEMS_1 + LOOT_ITEMS_2 + LOOT_ITEMS_3, 0.05)
-])
 
-LOOT_TABLE_3 = LootTable([
-    LootGroup(1, [LootEntry.money(2), LootEntry.money(3), LootEntry.money(4)], 0.2),
-    LootGroup(1, LOOT_POTIONS_1 + LOOT_POTIONS_2, 0.1),
-    LootGroup(1, LOOT_ITEMS_2 + LOOT_ITEMS_3 + LOOT_ITEMS_4, 0.1)
-])
+def _table_for_goblin_boss() -> LootTable:
+    return StaticLootTable(
+        [
+            LootGroup(2, [LootEntry.item(ItemType.FROG), LootEntry.consumable(ConsumableType.WARP_STONE)], 1),
+            LootGroup(1, LOOT_ITEMS_3 + LOOT_ITEMS_4, 1),
+            LootGroup(1, [LootEntry.money(2), LootEntry.money(3), LootEntry.money(5)], 0.7)
+        ]
+    )
 
-LOOT_TABLE_4 = LootTable([
-    LootGroup(1, [LootEntry.money(3), LootEntry.money(4), LootEntry.money(5)], 0.2),
-    LootGroup(1, LOOT_POTIONS_2, 0.1),
-    LootGroup(1, LOOT_ITEMS_3 + LOOT_ITEMS_4, 0.15)
-])
+
+def _table_for_human_boss() -> LootTable:
+    return StaticLootTable(
+        [
+            LootGroup.single(LootEntry.consumable(ConsumableType.WARP_STONE), 1),
+            LootGroup(1, LOOT_ITEMS_4, 1),
+            LootGroup.single(LootEntry.item(ItemType.KEY), 1),
+        ]
+    )
+
+
+def get_loot_table(loot_table_id: LootTableId) -> LootTable:
+    return loot_tables[loot_table_id]
+
+
+def _table_for_monster_level(monster_level: int) -> LootTable:
+    return LeveledLootTable(
+        chance_to_drop_anything=0.3,
+        level=monster_level,
+        entries_by_level=_entries_for_monster_level(monster_level))
+
+
+def _entries_for_monster_level(monster_level: int):
+    d = {}
+
+    for level in range(max(monster_level - 3, 1), monster_level + 3):
+        items = get_items_with_level(level)
+        if items:
+            d[level] = items
+    return d

@@ -1,6 +1,6 @@
 import random
 
-from pythongame.core.common import ItemType, Millis, Sprite, UiIconSprite, PeriodicTimer
+from pythongame.core.common import ItemType, Millis, Sprite, UiIconSprite, PeriodicTimer, ItemId, plain_item_id
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_state import GameState
 from pythongame.core.item_effects import AbstractItemEffect
@@ -11,8 +11,8 @@ from pythongame.game_data.items.register_items_util import register_custom_effec
 
 class ItemEffect(AbstractItemEffect):
 
-    def __init__(self, item_type: ItemType):
-        super().__init__(item_type)
+    def __init__(self, item_id: ItemId):
+        super().__init__(item_id)
         self.timer = PeriodicTimer(Millis(5000))
         self.min_dmg = 1
         self.max_dmg = 3
@@ -39,10 +39,11 @@ def register_rod_of_lightning_item():
     item_type = ItemType.ROD_OF_LIGHTNING
     register_custom_effect_item(
         item_type=item_type,
+        item_level=4,
         ui_icon_sprite=UiIconSprite.ITEM_ROD_OF_LIGHTNING,
         sprite=Sprite.ITEM_ROD_OF_LIGHTNING,
         image_file_path="resources/graphics/item_rod_of_lightning.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
         name="Rod of Lightning",
-        item_effect=ItemEffect(item_type)
+        item_effect=ItemEffect(plain_item_id(item_type))
     )

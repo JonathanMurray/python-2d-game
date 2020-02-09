@@ -6,6 +6,7 @@ from pythongame.game_data.items.register_items_util import register_randomized_s
 def register_warlocks_cowl_item():
     register_randomized_stat_modifying_item(
         item_type=ItemType.WARLOCKS_COWL,
+        item_level=5,
         ui_icon_sprite=UiIconSprite.ITEM_WARLOCKS_COWL,
         sprite=Sprite.ITEM_WARLOCKS_COWL,
         image_file_path="resources/graphics/item_warlocks_cowl.png",

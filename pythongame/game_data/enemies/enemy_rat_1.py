@@ -3,7 +3,7 @@ from pythongame.core.game_data import register_npc_data, NpcData, register_entit
 from pythongame.core.npc_behaviors import register_npc_behavior, MeleeEnemyNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.view.image_loading import SpriteSheet
-from pythongame.game_data.loot_tables import LOOT_TABLE_1
+from pythongame.game_data.loot_tables import LootTableId
 
 
 class NpcMind(MeleeEnemyNpcMind):
@@ -18,7 +18,8 @@ def register_rat_1_enemy():
     movement_speed = 0.05
     health = 6
     exp_reward = 4
-    npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LOOT_TABLE_1, SoundId.DEATH_RAT)
+    npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LootTableId.LEVEL_1,
+                             SoundId.DEATH_RAT)
     register_npc_data(npc_type, npc_data)
     register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/brown_rat.png")

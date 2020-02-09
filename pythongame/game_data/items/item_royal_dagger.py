@@ -6,6 +6,7 @@ from pythongame.game_data.items.register_items_util import register_randomized_s
 def register_royal_dagger_item():
     register_randomized_stat_modifying_item(
         item_type=ItemType.ROYAL_DAGGER,
+        item_level=4,
         ui_icon_sprite=UiIconSprite.ITEM_ROYAL_DAGGER,
         sprite=Sprite.ITEM_ROYAL_DAGGER,
         image_file_path="resources/graphics/item_royal_dagger.png",

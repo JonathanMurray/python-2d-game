@@ -6,6 +6,7 @@ from pythongame.game_data.items.register_items_util import register_randomized_s
 def register_skull_staff_item():
     register_randomized_stat_modifying_item(
         item_type=ItemType.SKULL_STAFF,
+        item_level=4,
         ui_icon_sprite=UiIconSprite.ITEM_SKULL_STAFF,
         sprite=Sprite.ITEM_SKULL_STAFF,
         image_file_path="resources/graphics/item_skullstaff.png",

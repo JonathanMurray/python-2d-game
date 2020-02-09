@@ -146,7 +146,7 @@ def register_young_sorceress_npc():
 
 def _register_dialog():
     prompt = "QUEST: "
-    frog_data = get_item_data(ItemType.FROG)
+    frog_data = get_item_data(ITEM_ID_FROG)
     bye_option = DialogOptionData("\"Good bye\"", "cancel", None)
     name = "Mida"
     dialog_1 = DialogData(

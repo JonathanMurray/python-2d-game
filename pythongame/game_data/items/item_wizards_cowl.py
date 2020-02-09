@@ -1,4 +1,4 @@
-from pythongame.core.common import ItemType, Sprite
+from pythongame.core.common import ItemType, Sprite, ItemId, plain_item_id
 from pythongame.core.damage_interactions import player_receive_mana
 from pythongame.core.game_data import UiIconSprite
 from pythongame.core.game_state import Event, EnemyDiedEvent, GameState
@@ -9,8 +9,8 @@ from pythongame.game_data.items.register_items_util import register_custom_effec
 
 class ItemEffect(AbstractItemEffect):
 
-    def __init__(self, item_type: ItemType):
-        super().__init__(item_type)
+    def __init__(self, item_id: ItemId):
+        super().__init__(item_id)
         self.mana_on_kill = 3
 
     def item_handle_event(self, event: Event, game_state: GameState):
@@ -23,9 +23,10 @@ class ItemEffect(AbstractItemEffect):
 
 def register_wizards_cowl():
     item_type = ItemType.WIZARDS_COWL
-    effect = ItemEffect(item_type)
+    effect = ItemEffect(plain_item_id(item_type))
     register_custom_effect_item(
         item_type=item_type,
+        item_level=5,
         ui_icon_sprite=UiIconSprite.ITEM_WIZARDS_COWL,
         sprite=Sprite.ITEM_WIZARDS_COWL,
         image_file_path="resources/graphics/item_wizards_cowl.png",

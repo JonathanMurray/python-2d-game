@@ -6,6 +6,7 @@ from pythongame.game_data.items.register_items_util import register_randomized_s
 def register_blessed_chalice_item():
     register_randomized_stat_modifying_item(
         item_type=ItemType.BLESSED_CHALICE,
+        item_level=5,
         ui_icon_sprite=UiIconSprite.ITEM_BLESSED_CHALICE,
         sprite=Sprite.ITEM_BLESSED_CHALICE,
         image_file_path="resources/graphics/item_blessed_chalice.png",

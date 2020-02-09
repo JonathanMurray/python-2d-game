@@ -6,6 +6,7 @@ from pythongame.game_data.items.register_items_util import register_randomized_s
 def register_ring_of_power_item():
     register_randomized_stat_modifying_item(
         item_type=ItemType.RING_OF_POWER,
+        item_level=5,
         ui_icon_sprite=UiIconSprite.ITEM_RING_OF_POWER,
         sprite=Sprite.ITEM_RING_OF_POWER,
         image_file_path="resources/graphics/item_ring_of_power.png",

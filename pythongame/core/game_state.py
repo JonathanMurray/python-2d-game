@@ -7,10 +7,10 @@ from pythongame.core.common import *
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import NpcCategory, PlayerLevelBonus
 from pythongame.core.item_inventory import ItemInventory
-from pythongame.core.loot import LootTable
 from pythongame.core.math import boxes_intersect, rects_intersect, get_position_from_center_position, \
     translate_in_direction, is_x_and_y_within_distance
 from pythongame.core.talents import TalentsConfig, TalentsState
+from pythongame.game_data.loot_tables import LootTableId
 
 GRID_CELL_WIDTH = 25
 
@@ -244,7 +244,7 @@ class QuestGiverState(Enum):
 class NonPlayerCharacter:
     def __init__(self, npc_type: NpcType, world_entity: WorldEntity, health_resource: HealthOrManaResource,
                  npc_mind, npc_category: NpcCategory,
-                 enemy_loot_table: Optional[LootTable], death_sound_id: Optional[SoundId],
+                 enemy_loot_table: Optional[LootTableId], death_sound_id: Optional[SoundId],
                  max_distance_allowed_from_start_position: Optional[int], is_boss: bool = False):
         self.npc_type = npc_type
         self.world_entity = world_entity
@@ -721,7 +721,7 @@ class Shrine:
 
 
 class Chest:
-    def __init__(self, world_entity: WorldEntity, loot_table: LootTable):
+    def __init__(self, world_entity: WorldEntity, loot_table: LootTableId):
         self.world_entity = world_entity
         self.loot_table = loot_table
         self.has_been_opened = False

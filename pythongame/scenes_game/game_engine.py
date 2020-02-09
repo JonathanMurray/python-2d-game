@@ -16,6 +16,7 @@ from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vector
     get_rect_with_increased_size_in_all_directions, translate_in_direction
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import create_visual_exp_text, create_teleport_effects, VisualRect, VisualCircle
+from pythongame.game_data.loot_tables import get_loot_table
 from pythongame.game_data.portals import PORTAL_DELAY
 from pythongame.game_data.shrines import apply_shrine_buff_to_player
 from pythongame.scenes_game.game_ui_view import InfoMessage
@@ -166,7 +167,7 @@ class GameEngine:
         self.game_state.player_state.gain_buff_effect(teleport_buff_effect, PORTAL_DELAY)
 
     def open_chest(self, chest: Chest):
-        loot = chest.loot_table.generate_loot()
+        loot = get_loot_table(chest.loot_table).generate_loot()
         chest_position = chest.world_entity.get_position()
         self._put_loot_on_ground(chest_position, loot)
         chest.has_been_opened = True
@@ -212,7 +213,7 @@ class GameEngine:
                     play_sound(enemy_that_died.death_sound_id)
                 else:
                     play_sound(SoundId.EVENT_ENEMY_DIED)
-                loot = enemy_that_died.enemy_loot_table.generate_loot()
+                loot = get_loot_table(enemy_that_died.enemy_loot_table).generate_loot()
                 enemy_death_position = enemy_that_died.world_entity.get_position()
                 self._put_loot_on_ground(enemy_death_position, loot)
                 self.game_state.player_state.notify_about_event(EnemyDiedEvent(), self.game_state)
@@ -366,7 +367,7 @@ class GameEngine:
             if loot_entry.money_amount:
                 money_pile_on_ground = create_money_pile_on_ground(loot_entry.money_amount, loot_position)
                 self.game_state.money_piles_on_ground.append(money_pile_on_ground)
-            elif loot_entry.item_type:
+            elif loot_entry.is_item():
                 item_id = get_random_item_id_for_item_type(loot_entry.item_type)
                 item_on_ground = create_item_on_ground(item_id, loot_position)
                 self.game_state.items_on_ground.append(item_on_ground)

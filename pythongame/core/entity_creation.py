@@ -1,7 +1,7 @@
 from typing import Tuple
 
 from pythongame.core.common import NpcType, Direction, Sprite, ConsumableType, WallType, PortalId, HeroId, \
-    ItemId
+    ItemId, LootTableId
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, ITEM_ENTITY_SIZE, CONSUMABLES, POTION_ENTITY_SIZE, \
     WALLS, PORTALS, HEROES, NpcData, get_item_data
@@ -11,7 +11,7 @@ from pythongame.core.item_inventory import ItemInventory, ItemInventorySlot, Ite
 from pythongame.core.math import get_position_from_center_position
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
-from pythongame.game_data.chests import CHEST_ENTITY_SIZE, CHEST_LOOT
+from pythongame.game_data.chests import CHEST_ENTITY_SIZE
 from pythongame.game_data.shrines import SHRINE_ENTITY_SIZE
 
 # TODO handle this (global path finder) in a better way!
@@ -62,7 +62,7 @@ def create_portal(portal_id: PortalId, pos: Tuple[int, int]) -> Portal:
 
 def create_chest(pos: Tuple[int, int]) -> Chest:
     # TODO Allow for other loot in chests (Currently all chests are equal)
-    return Chest(WorldEntity(pos, CHEST_ENTITY_SIZE, Sprite.CHEST), CHEST_LOOT)
+    return Chest(WorldEntity(pos, CHEST_ENTITY_SIZE, Sprite.CHEST), LootTableId.CHEST)
 
 
 def create_shrine(pos: Tuple[int, int]) -> Shrine:

@@ -6,6 +6,7 @@ from pythongame.game_data.items.register_items_util import register_randomized_s
 def register_druids_ring_item():
     register_randomized_stat_modifying_item(
         item_type=ItemType.DRUIDS_RING,
+        item_level=6,
         ui_icon_sprite=UiIconSprite.ITEM_DRUIDS_RING,
         sprite=Sprite.ITEM_DRUIDS_RING,
         image_file_path="resources/graphics/item_druids_ring.png",

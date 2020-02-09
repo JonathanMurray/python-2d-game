@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, Set, Union
+from typing import Dict, Tuple, Set
 
 # We should probably not load image files in here!
 import pygame
@@ -6,7 +6,6 @@ import pygame
 from pythongame.core.common import *
 from pythongame.core.common import UiIconSprite, PortraitIconSprite
 from pythongame.core.item_inventory import ItemEquipmentCategory
-from pythongame.core.loot import LootTable
 from pythongame.core.talents import TalentsConfig
 from pythongame.core.view.image_loading import SpriteInitializer, SpriteSheet, SpriteMapInitializer, Animation
 
@@ -49,7 +48,7 @@ class NpcCategory(Enum):
 
 class NpcData:
     def __init__(self, sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
-                 exp_reward: int, npc_category: NpcCategory, enemy_loot_table: Optional[LootTable],
+                 exp_reward: int, npc_category: NpcCategory, enemy_loot_table: Optional[LootTableId],
                  death_sound_id: Optional[SoundId], max_distance_allowed_from_start_position: Optional[int],
                  is_boss=False):
         self.sprite = sprite
@@ -59,14 +58,14 @@ class NpcData:
         self.speed = speed
         self.exp_reward = exp_reward
         self.npc_category = npc_category
-        self.enemy_loot_table: LootTable = enemy_loot_table
+        self.enemy_loot_table: LootTableId = enemy_loot_table
         self.death_sound_id: Optional[SoundId] = death_sound_id
         self.max_distance_allowed_from_start_position = max_distance_allowed_from_start_position
         self.is_boss = is_boss
 
     @staticmethod
     def enemy(sprite: Sprite, size: Tuple[int, int], max_health: int, health_regen: float, speed: float,
-              exp_reward: int, enemy_loot_table: Optional[LootTable], death_sound_id: Optional[SoundId] = None,
+              exp_reward: int, enemy_loot_table: Optional[LootTableId], death_sound_id: Optional[SoundId] = None,
               is_boss: bool = False):
         return NpcData(sprite, size, max_health, health_regen, speed, exp_reward, NpcCategory.ENEMY, enemy_loot_table,
                        death_sound_id, None, is_boss=is_boss)
@@ -140,7 +139,7 @@ class InitialPlayerStateData:
             self, health: int, mana: int, mana_regen: float, consumable_slots: Dict[int, List[ConsumableType]],
             abilities: List[AbilityType], new_level_abilities: Dict[int, AbilityType], hero_id: HeroId, armor: int,
             dodge_chance: float, level_bonus: PlayerLevelBonus, talents_state: TalentsConfig, block_chance: float,
-            starting_items: List[ItemType]):
+            starting_items: List[ItemId]):
         self.health = health
         self.mana = mana
         self.mana_regen = mana_regen
@@ -185,6 +184,10 @@ WALLS: Dict[WallType, WallData] = {}
 item_data_by_id: Dict[ItemId, ItemData] = {}
 
 item_ids_grouped_by_type: Dict[ItemType, Set[ItemId]] = {}
+
+item_types_grouped_by_level: Dict[int, Set[ItemType]] = {}
+
+item_levels: Dict[ItemType, int] = {}
 
 ABILITIES: Dict[AbilityType, AbilityData] = {}
 
@@ -266,16 +269,14 @@ def register_consumable_data(consumable_type: ConsumableType, data: ConsumableDa
     CONSUMABLES[consumable_type] = data
 
 
-def register_item_data(identifier: Union[ItemType, ItemId], item_data: ItemData):
-    item_id = identifier if isinstance(identifier, ItemId) else plain_item_id(identifier)
+def register_item_data(item_id: ItemId, item_data: ItemData):
     item_type = item_type_from_id(item_id)
     item_data_by_id[item_id] = item_data
     item_ids = item_ids_grouped_by_type.setdefault(item_type, set())
     item_ids.add(item_id)
 
 
-def get_item_data(identifier: Union[ItemType, ItemId]):
-    item_id = identifier if isinstance(identifier, ItemId) else plain_item_id(identifier)
+def get_item_data(item_id: ItemId):
     return item_data_by_id[item_id]
 
 
@@ -285,6 +286,20 @@ def get_one_item_id_for_every_item_type() -> List[ItemId]:
 
 def get_random_item_id_for_item_type(item_type: ItemType) -> ItemId:
     return random.choice(list(item_ids_grouped_by_type[item_type]))
+
+
+def register_item_level(item_type: ItemType, item_level: int):
+    item_types = item_types_grouped_by_level.setdefault(item_level, set())
+    item_types.add(item_type)
+    item_levels[item_type] = item_level
+
+
+def get_items_with_level(item_level: int) -> List[ItemType]:
+    return list(item_types_grouped_by_level.get(item_level, set()))
+
+
+def get_optional_item_level(item_type: ItemType) -> Optional[int]:
+    return item_levels.get(item_type, None)
 
 
 def register_portal_data(portal_id: PortalId, portal_data: PortalData):

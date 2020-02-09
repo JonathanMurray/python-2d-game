@@ -1,6 +1,7 @@
 import random
 
-from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId, ProjectileType, PeriodicTimer
+from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId, ProjectileType, PeriodicTimer, \
+    LootTableId
 from pythongame.core.damage_interactions import deal_damage_to_player, DamageType, deal_npc_damage_to_npc
 from pythongame.core.entity_creation import create_npc
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
@@ -15,7 +16,6 @@ from pythongame.core.projectile_controllers import AbstractProjectileController,
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualLine, VisualCircle
-from pythongame.game_data.loot_tables import LOOT_TABLE_4
 
 SPRITE = Sprite.ENEMY_NECROMANCER
 ENEMY_TYPE = NpcType.NECROMANCER
@@ -170,7 +170,7 @@ def register_necromancer_enemy():
     size = (36, 36)
     health = 50
     exp_reward = 29
-    npc_data = NpcData.enemy(SPRITE, size, health, 0, 0.02, exp_reward, LOOT_TABLE_4, SoundId.DEATH_NECRO)
+    npc_data = NpcData.enemy(SPRITE, size, health, 0, 0.02, exp_reward, LootTableId.LEVEL_4, SoundId.DEATH_NECRO)
     register_npc_data(ENEMY_TYPE, npc_data)
     register_npc_behavior(ENEMY_TYPE, NpcMind)
 

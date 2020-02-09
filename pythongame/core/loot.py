@@ -1,5 +1,6 @@
+import math
 import random
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 from pythongame.core.common import ConsumableType, ItemType
 
@@ -11,6 +12,9 @@ class LootEntry:
         self.money_amount = money_amount
         self.item_type = item_type
         self.consumable_type = consumable_type
+
+    def is_item(self) -> bool:
+        return self.item_type is not None
 
     @staticmethod
     def money(amount: int):
@@ -38,8 +42,13 @@ class LootGroup:
         return LootGroup(1, [single_entry], chance_to_get_entry)
 
 
-# Represents the loot of one enemy. Made up of one to many "loot groups"
 class LootTable:
+    def generate_loot(self) -> List[LootEntry]:
+        raise Exception("Sub-classes must override this method!")
+
+
+# Represents the loot of one enemy. Made up of one to many "loot groups"
+class StaticLootTable(LootTable):
     def __init__(self, groups: List[LootGroup]):
         self.groups = groups
 
@@ -56,4 +65,24 @@ class LootTable:
 
     @staticmethod
     def single(single_entry: LootEntry, chance_to_get_entry: float):
-        return LootTable([LootGroup.single(single_entry, chance_to_get_entry)])
+        return StaticLootTable([LootGroup.single(single_entry, chance_to_get_entry)])
+
+
+class LeveledLootTable(LootTable):
+    def __init__(self, chance_to_drop_anything: float, level: int, entries_by_level: Dict[int, List[ItemType]]):
+        self.chance_to_drop_anything = chance_to_drop_anything
+        self.level = level
+        if [entries for entries in entries_by_level.values() if len(entries) == 0]:
+            raise Exception("Invalid loot table! Some level doesn't have any items: %s" % entries_by_level)
+        self.entries_by_level = entries_by_level
+        self.levels = list(entries_by_level.keys())
+        self.level_weights = [1.0 / math.pow(2, abs(level - self.level)) for level in self.levels]
+
+    def generate_loot(self) -> List[LootEntry]:
+        if random.random() >= self.chance_to_drop_anything:
+            return []
+        level = random.choices(self.levels, weights=self.level_weights)[0]
+
+        item_type = random.choice(self.entries_by_level[level])
+
+        return [LootEntry.item(item_type)]

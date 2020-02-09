@@ -1,8 +1,7 @@
 from typing import Optional, Callable
 from typing import Tuple
 
-from pythongame.core.common import ItemType, \
-    ConsumableType, Sprite, Observable
+from pythongame.core.common import ConsumableType, Sprite, Observable
 from pythongame.core.common import Millis, HeroId, AbstractScene, SceneTransition
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.entity_creation import set_global_path_finder

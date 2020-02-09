@@ -6,6 +6,7 @@ from pythongame.game_data.items.register_items_util import register_randomized_s
 def register_serpent_sword_item():
     register_randomized_stat_modifying_item(
         item_type=ItemType.SERPENT_SWORD,
+        item_level=5,
         ui_icon_sprite=UiIconSprite.ITEM_SERPENT_SWORD,
         sprite=Sprite.ITEM_SERPENT_SWORD,
         image_file_path="resources/graphics/item_serpent_sword.png",
