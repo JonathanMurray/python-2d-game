@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import *
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
@@ -98,10 +96,8 @@ class GameEngine:
             raise Exception("Unhandled type of loot: " + str(loot))
 
     def _try_pick_up_item_from_ground(self, item: ItemOnGround):
-        item_effect = get_item_effect(item.item_id)
         item_data = get_item_data(item.item_id)
-        item_equipment_category = item_data.item_equipment_category
-        did_add_item = try_add_item_to_inventory(self.game_state, item_effect, item_equipment_category)
+        did_add_item = try_add_item_to_inventory(self.game_state, item.item_id)
         if did_add_item:
             play_sound(SoundId.EVENT_PICKED_UP)
             self.game_state.items_on_ground.remove(item)

@@ -7,7 +7,7 @@ from pythongame.core.entity_creation import create_item_on_ground
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, get_item_data
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest, QuestGiverState
-from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
+from pythongame.core.item_effects import try_add_item_to_inventory
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
     DialogData, DialogOptionData, register_conditional_npc_dialog_data, register_quest
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
@@ -73,10 +73,8 @@ class AcceptFrog(AbstractNpcAction):
             game_state.player_state.item_inventory.lose_item_from_inventory(ITEM_ID_FROG)
 
             reward_item_id = _get_reward_for_hero(game_state.player_state.hero_id)
-            reward_effect = get_item_effect(reward_item_id)
             reward_data = get_item_data(reward_item_id)
-            reward_equipment_category = reward_data.item_equipment_category
-            did_add_item = try_add_item_to_inventory(game_state, reward_effect, reward_equipment_category)
+            did_add_item = try_add_item_to_inventory(game_state, reward_item_id)
             if not did_add_item:
                 game_state.items_on_ground.append(
                     create_item_on_ground(reward_item_id, game_state.player_entity.get_position()))

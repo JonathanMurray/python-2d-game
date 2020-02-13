@@ -5,7 +5,7 @@ from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import CONSUMABLES, get_item_data
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest
-from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
+from pythongame.core.item_effects import try_add_item_to_inventory
 from pythongame.core.math import is_x_and_y_within_distance, get_perpendicular_directions
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
@@ -139,8 +139,7 @@ class SellItemNpcAction(AbstractNpcAction):
         self.cost = cost
         self.item_id = item_id
         self.name = name
-        self.item_effect = get_item_effect(self.item_id)
-        self.item_equipment_category = get_item_data(self.item_id).item_equipment_category
+        self.item_id = item_id
 
     def on_select(self, game_state: GameState):
         player_state = game_state.player_state
@@ -149,7 +148,7 @@ class SellItemNpcAction(AbstractNpcAction):
             play_sound(SoundId.WARNING)
             return "Not enough gold!"
 
-        did_add_item = try_add_item_to_inventory(game_state, self.item_effect, self.item_equipment_category)
+        did_add_item = try_add_item_to_inventory(game_state, self.item_id)
         if not did_add_item:
             play_sound(SoundId.WARNING)
             return "Not enough space!"

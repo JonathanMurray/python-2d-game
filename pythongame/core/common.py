@@ -1,6 +1,6 @@
 import random
 from enum import Enum
-from typing import NewType, Optional, Any, List, Callable
+from typing import NewType, Optional, Any, List, Callable, Union, Tuple
 
 Millis = NewType('Millis', int)
 
@@ -457,10 +457,44 @@ class ItemType(Enum):
     CANDLE = 115
 
 
+class HeroStat(Enum):
+    MAX_HEALTH = 1
+    HEALTH_REGEN = 2
+    MAX_MANA = 3
+    MANA_REGEN = 4
+    ARMOR = 5
+    MOVEMENT_SPEED = 6
+    LIFE_STEAL = 7
+    BLOCK_AMOUNT = 8
+    DODGE_CHANCE = 9
+    DAMAGE = 10
+    PHYSICAL_DAMAGE = 11
+    MAGIC_DAMAGE = 12
+    BLOCK_CHANCE = 13
+    MAGIC_RESIST_CHANCE = 14
+
+
+class ItemAffixId(Enum):
+    RECKONING = 1
+
+
 # Must be of one of the following formats:
 # 1. "<ItemType>:<int>" represents one of several "random" variations of a given item type
 # 2. "<ItemType>:*" represents an item type that has no random variations
 ItemId = str
+
+
+# TODO Finish itemization
+class ItemSuffix:
+    # EXAMPLE:
+    # stat_modifiers_intervals = [(MAX_HEALTH, [10, 11, 12]), (MAX_MANA, [10, 11, 12])]
+    # name_suffix = "of the Eagle"
+    # affix_id = ItemAffixId.EAGLE
+    def __init__(self, stat_modifier_intervals: List[Tuple[HeroStat, List[Union[int, float]]]],
+                 name_suffix: str, affix_id: ItemAffixId):
+        self.stat_modifier_intervals = stat_modifier_intervals
+        self.name_suffix = name_suffix
+        self.affix_id = affix_id
 
 
 def plain_item_id(item_type: ItemType) -> ItemId:
@@ -678,23 +712,6 @@ class PortraitIconSprite(Enum):
     HERO_WARRIOR = 101
     HERO_ROGUE = 102
     HERO_GOD = 103
-
-
-class HeroStat(Enum):
-    MAX_HEALTH = 1
-    HEALTH_REGEN = 2
-    MAX_MANA = 3
-    MANA_REGEN = 4
-    ARMOR = 5
-    MOVEMENT_SPEED = 6
-    LIFE_STEAL = 7
-    BLOCK_AMOUNT = 8
-    DODGE_CHANCE = 9
-    DAMAGE = 10
-    PHYSICAL_DAMAGE = 11
-    MAGIC_DAMAGE = 12
-    BLOCK_CHANCE = 13
-    MAGIC_RESIST_CHANCE = 14
 
 
 # Use to handle timing-related boilerplate for buffs, items, enemy behaviours, etc

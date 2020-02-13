@@ -1,8 +1,10 @@
+import random
 from typing import Dict, Union, List, Iterable, Optional
 
-from pythongame.core.common import ItemType, Sprite, UiIconSprite, HeroStat, plain_item_id, randomized_item_id
+from pythongame.core.common import ItemType, Sprite, UiIconSprite, HeroStat, plain_item_id, randomized_item_id, \
+    ItemSuffix, ItemId
 from pythongame.core.game_data import register_ui_icon_sprite_path, register_item_data, ItemData, \
-    register_entity_sprite_initializer, ITEM_ENTITY_SIZE, register_item_level
+    register_entity_sprite_initializer, ITEM_ENTITY_SIZE, register_item_level, get_item_data
 from pythongame.core.item_effects import register_item_effect, StatModifyingItemEffect, EmptyItemEffect, \
     AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
@@ -36,7 +38,7 @@ def register_randomized_stat_modifying_item(
         image_file_path: str,
         item_equipment_category: ItemEquipmentCategory,
         name: str,
-        stat_modifier_intervals: Dict[HeroStat, Union[Iterable[int], List[float]]],
+        stat_modifier_intervals: Dict[HeroStat, Union[List[int], List[float]]],
         item_level: Optional[int] = None):
     _register_randomized_stat_modifying_item(
         item_type, item_level, ui_icon_sprite, sprite, image_file_path, item_equipment_category, name,
@@ -137,3 +139,15 @@ def register_quest_item(
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
     register_item_data(item_id, item_data)
+
+
+# TODO Finish itemization
+def get_random_id(item_type: ItemType, suffix: ItemSuffix) -> ItemId:
+    id_string = item_type.name + ":" + suffix.affix_id.name
+    for (hero_stat, interval) in suffix.stat_modifier_intervals:
+        id_string += "~" + hero_stat.name + "~" + str(random.choice(interval))
+    return ItemId(id_string)
+
+
+def get_stats(item_id: ItemId):
+    get_item_data(item_id)

@@ -1,8 +1,9 @@
-from typing import Dict, Union
+from typing import Dict
 
 from pythongame.core.common import *
+from pythongame.core.game_data import get_item_data
 from pythongame.core.game_state import GameState, Event
-from pythongame.core.item_inventory import ItemEquipmentCategory, ItemWasActivated
+from pythongame.core.item_inventory import ItemWasActivated
 
 
 class AbstractItemEffect:
@@ -99,8 +100,9 @@ def get_item_effect(item_id: ItemId) -> AbstractItemEffect:
     return _item_effects[item_id]
 
 
-def try_add_item_to_inventory(game_state: GameState, item_effect: AbstractItemEffect,
-                              item_equipment_category: ItemEquipmentCategory) -> bool:
+def try_add_item_to_inventory(game_state: GameState, item_id: ItemId) -> bool:
+    item_effect = get_item_effect(item_id)
+    item_equipment_category = get_item_data(item_id).item_equipment_category
     result = game_state.player_state.item_inventory.try_add_item(item_effect, item_equipment_category)
     if result:
         if isinstance(result, ItemWasActivated):
