@@ -75,11 +75,10 @@ def register_custom_item_effect(item_type: ItemType, effect: AbstractItemEffect)
 # Note this is handled differently compared to buffs
 # There is only one effect instance per item type - having duplicate items with active effects may not be well supported
 def create_item_effect(item_id: ItemId) -> AbstractItemEffect:
-    try:
-        item_type, base_stats, affix, affix_stats = parse_item_id(item_id)
-    except BaseException as e:
-        print("ERROR: Couldn't parse item_id: %s" % item_id)
-        raise e
+    item_id_obj = ItemIdObj.from_id_string(item_id)
+    item_type = item_id_obj.item_type
+    base_stats = item_id_obj.base_stats
+    affix, affix_stats = None, None
     effects = []
     if item_type in _custom_item_effects:
         effects.append(_custom_item_effects[item_type])
@@ -92,11 +91,10 @@ def create_item_effect(item_id: ItemId) -> AbstractItemEffect:
 
 
 def create_item_description(item_id: ItemId) -> List[str]:
-    try:
-        item_type, base_stats, affix, affix_stats = parse_item_id(item_id)
-    except BaseException as e:
-        print("ERROR: Couldn't parse item_id: %s" % item_id)
-        raise e
+    item_id_obj = ItemIdObj.from_id_string(item_id)
+    item_type = item_id_obj.item_type
+    base_stats = item_id_obj.base_stats
+    affix, affix_stats = None, None
     data = get_item_data_by_type(item_type)
     lines = list(data.custom_description_lines)
     if base_stats:

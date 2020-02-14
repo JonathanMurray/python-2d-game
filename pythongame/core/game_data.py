@@ -296,7 +296,7 @@ def register_item_data(item_type: ItemType, item_data: ItemData):
 
 
 def get_item_data(item_id: ItemId) -> ItemData:
-    item_type = parse_item_id(item_id)[0]
+    item_type = item_type_from_id(item_id)
     return item_data_by_type[item_type]
 
 
@@ -306,7 +306,7 @@ def get_item_data_by_type(item_type: ItemType) -> ItemData:
 
 def randomized_item_id(item_type: ItemType) -> ItemId:
     data = get_item_data_by_type(item_type)
-    return random_item_id_from_stat_modifiers(item_type, data.stats)
+    return ItemId(ItemIdObj.randomized(item_type, data.stats).id_string)
 
 
 def register_item_level(item_type: ItemType, item_level: int):

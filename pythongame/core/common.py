@@ -479,13 +479,6 @@ class ItemAffixId(Enum):
     RECKONING = 1
 
 
-# TODO Create proper class for ItemId
-# Must be of one of the following formats:
-# 1. "<ItemType>:<int>" represents one of several "random" variations of a given item type
-# 2. "<ItemType>:*" represents an item type that has no random variations
-ItemId = str
-
-
 # TODO Finish itemization
 class ItemSuffix:
     # EXAMPLE:
@@ -497,14 +490,6 @@ class ItemSuffix:
         self.stat_modifier_intervals = stat_modifier_intervals
         self.name_suffix = name_suffix
         self.affix_id = affix_id
-
-
-# TODO Create proper class for ItemId
-def plain_item_id(item_type: ItemType) -> ItemId:
-    # TODO Validate this call! You shouldn't be able to create a "plain item id" for an item type that has stat modifiers!
-    # Should this method even exist?
-
-    return ItemId(item_type.name + ":")
 
 
 class StatModifier:
@@ -558,55 +543,78 @@ class StatModifierInterval:
 
 
 # TODO Create proper class for ItemId
-def random_item_id_from_stat_modifiers(
-        item_type: ItemType, stat_modifier_intervals: List[StatModifierInterval]) -> ItemId:
-    string = item_type.name
-    for modifier_interval in stat_modifier_intervals:
-        string += "~%s~%s" % (modifier_interval.hero_stat.name, random.choice(modifier_interval.interval))
-    string += ":"
-    return ItemId(string)
+# Must be of one of the following formats:
+# 1. "<ItemType>:<int>" represents one of several "random" variations of a given item type
+# 2. "<ItemType>:*" represents an item type that has no random variations
+ItemId = str
+
+
+class ItemIdObj:
+    def __init__(self, item_type: ItemType, base_stats: List[StatModifier]):
+        self.item_type = item_type
+        self.base_stats = base_stats
+        self.id_string = self.build_id_string(item_type, base_stats)
+
+    @staticmethod
+    def build_id_string(item_type: ItemType, stat_modifiers: List[StatModifier]):
+        id_string = item_type.name
+        for modifier in stat_modifiers:
+            id_string += "~%s~%s" % (modifier.hero_stat.name, modifier.delta)
+        id_string += ":"
+        return id_string
+
+    @staticmethod
+    def randomized(item_type: ItemType, stat_modifier_intervals: List[StatModifierInterval]):
+        modifiers = [StatModifier(modifier_interval.hero_stat, random.choice(modifier_interval.interval))
+                     for modifier_interval in stat_modifier_intervals]
+        return ItemIdObj(item_type, modifiers)
+
+    @staticmethod
+    def from_id_string(item_id: str):
+        try:
+            parts = item_id.split(":")
+            item_type_part = parts[0]
+            affix_part = parts[1]
+            item_type_subparts = item_type_part.split("~")
+            item_type = ItemType[item_type_subparts[0]]
+            base_stats = []
+            for i in range(1, len(item_type_subparts) - 1, 2):
+                hero_stat: HeroStat = HeroStat[item_type_subparts[i]]
+                value_str = item_type_subparts[i + 1]
+                try:
+                    value = int(value_str)
+                except ValueError:
+                    value = float(value_str)
+                base_stats.append(StatModifier(hero_stat, value))
+            affix_id = None
+            affix_stats = []
+            if affix_part:
+                affix_subparts = affix_part.split("~")
+                affix_id = ItemAffixId[affix_subparts[0]]
+                for i in range(1, len(affix_subparts) - 1, 2):
+                    hero_stat: HeroStat = HeroStat[affix_subparts[i]]
+                    value_str = affix_subparts[i + 1]
+                    try:
+                        value = int(value_str)
+                    except ValueError:
+                        value = float(value_str)
+                    affix_stats.append(StatModifier(hero_stat, value))
+            return ItemIdObj(item_type, base_stats)
+        except BaseException as e:
+            raise Exception("Failed to parse item_id '" + item_id + "'", e)
+
+
+# TODO Create proper class for ItemId
+def plain_item_id(item_type: ItemType) -> ItemId:
+    # TODO Validate this call! You shouldn't be able to create a "plain item id" for an item type that has stat modifiers!
+    # Should this method even exist?
+
+    return ItemId(item_type.name + ":")
 
 
 # TODO Create proper class for ItemId
 def item_type_from_id(item_id: ItemId) -> ItemType:
-    try:
-        return parse_item_id(item_id)[0]
-    except BaseException as e:
-        print("Failed to parse item id %s " % item_id)
-        raise e
-
-
-# TODO Create proper class for ItemId
-def parse_item_id(item_id: ItemId) \
-        -> Tuple[ItemType, List[StatModifier], ItemAffixId, List[StatModifier]]:
-    parts = item_id.split(":")
-    item_type_part = parts[0]
-    affix_part = parts[1]
-    item_type_subparts = item_type_part.split("~")
-    item_type = ItemType[item_type_subparts[0]]
-    base_stats = []
-    for i in range(1, len(item_type_subparts) - 1, 2):
-        hero_stat: HeroStat = HeroStat[item_type_subparts[i]]
-        value_str = item_type_subparts[i + 1]
-        try:
-            value = int(value_str)
-        except ValueError:
-            value = float(value_str)
-        base_stats.append(StatModifier(hero_stat, value))
-    affix_id = None
-    affix_stats = []
-    if affix_part:
-        affix_subparts = affix_part.split("~")
-        affix_id = ItemAffixId[affix_subparts[0]]
-        for i in range(1, len(affix_subparts) - 1, 2):
-            hero_stat: HeroStat = HeroStat[affix_subparts[i]]
-            value_str = affix_subparts[i + 1]
-            try:
-                value = int(value_str)
-            except ValueError:
-                value = float(value_str)
-            affix_stats.append(StatModifier(hero_stat, value))
-    return item_type, base_stats, affix_id, affix_stats
+    return ItemIdObj.from_id_string(item_id).item_type
 
 
 class ProjectileType(Enum):

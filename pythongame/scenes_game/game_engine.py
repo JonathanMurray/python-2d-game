@@ -366,7 +366,7 @@ class GameEngine:
                 self.game_state.money_piles_on_ground.append(money_pile_on_ground)
             elif loot_entry.is_item():
                 item_data = get_item_data_by_type(loot_entry.item_type)
-                item_id = random_item_id_from_stat_modifiers(loot_entry.item_type, item_data.stats)
+                item_id = ItemId(ItemIdObj.randomized(loot_entry.item_type, item_data.stats))
                 item_on_ground = create_item_on_ground(item_id, loot_position)
                 self.game_state.items_on_ground.append(item_on_ground)
             elif loot_entry.consumable_type:
