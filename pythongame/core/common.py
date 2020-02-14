@@ -542,14 +542,8 @@ class StatModifierInterval:
         self.interval = interval
 
 
-# TODO Create proper class for ItemId
-# Must be of one of the following formats:
-# 1. "<ItemType>:<int>" represents one of several "random" variations of a given item type
-# 2. "<ItemType>:*" represents an item type that has no random variations
-ItemId = str
-
-
-class ItemIdObj:
+# TODO Handle affixes
+class ItemId:
     def __init__(self, item_type: ItemType, base_stats: List[StatModifier]):
         self.item_type = item_type
         self.base_stats = base_stats
@@ -567,7 +561,7 @@ class ItemIdObj:
     def randomized(item_type: ItemType, stat_modifier_intervals: List[StatModifierInterval]):
         modifiers = [StatModifier(modifier_interval.hero_stat, random.choice(modifier_interval.interval))
                      for modifier_interval in stat_modifier_intervals]
-        return ItemIdObj(item_type, modifiers)
+        return ItemId(item_type, modifiers)
 
     @staticmethod
     def from_id_string(item_id: str):
@@ -599,22 +593,9 @@ class ItemIdObj:
                     except ValueError:
                         value = float(value_str)
                     affix_stats.append(StatModifier(hero_stat, value))
-            return ItemIdObj(item_type, base_stats)
+            return ItemId(item_type, base_stats)
         except BaseException as e:
             raise Exception("Failed to parse item_id '" + item_id + "'", e)
-
-
-# TODO Create proper class for ItemId
-def plain_item_id(item_type: ItemType) -> ItemId:
-    # TODO Validate this call! You shouldn't be able to create a "plain item id" for an item type that has stat modifiers!
-    # Should this method even exist?
-
-    return ItemId(item_type.name + ":")
-
-
-# TODO Create proper class for ItemId
-def item_type_from_id(item_id: ItemId) -> ItemType:
-    return ItemIdObj.from_id_string(item_id).item_type
 
 
 class ProjectileType(Enum):

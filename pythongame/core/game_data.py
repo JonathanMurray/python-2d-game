@@ -296,7 +296,7 @@ def register_item_data(item_type: ItemType, item_data: ItemData):
 
 
 def get_item_data(item_id: ItemId) -> ItemData:
-    item_type = item_type_from_id(item_id)
+    item_type = item_id.item_type
     return item_data_by_type[item_type]
 
 
@@ -306,7 +306,14 @@ def get_item_data_by_type(item_type: ItemType) -> ItemData:
 
 def randomized_item_id(item_type: ItemType) -> ItemId:
     data = get_item_data_by_type(item_type)
-    return ItemId(ItemIdObj.randomized(item_type, data.stats).id_string)
+    return ItemId.randomized(item_type, data.stats)
+
+
+def plain_item_id(item_type: ItemType) -> ItemId:
+    data = get_item_data_by_type(item_type)
+    if len(data.stats) > 0:
+        raise Exception("Item %s has stats! Cannot create plain version!" % item_type)
+    return ItemId(item_type, [])
 
 
 def register_item_level(item_type: ItemType, item_level: int):

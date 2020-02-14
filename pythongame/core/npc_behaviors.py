@@ -260,7 +260,7 @@ def buy_consumable_option(consumable_type: ConsumableType, cost: int):
 
 
 def buy_item_option(item_id: ItemId, cost: int):
-    item_type = item_type_from_id(item_id)
+    item_type = item_id.item_type
     data = get_item_data_by_type(item_type)
     name_formatter = "{:<25}"
     buy_prompt = "> "
@@ -277,7 +277,7 @@ def buy_item_option(item_id: ItemId, cost: int):
 
 
 def sell_item_option(item_id: ItemId, price: int, detail_body: str):
-    item_type = item_type_from_id(item_id)
+    item_type = item_id.item_type
     name_formatter = "{:<13}"
     cost_formatter = "[{} gold]"
     sell_prompt = "> "

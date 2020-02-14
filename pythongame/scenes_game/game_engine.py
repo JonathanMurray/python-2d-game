@@ -3,7 +3,7 @@ from pythongame.core.common import *
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
     create_consumable_on_ground
 from pythongame.core.game_data import CONSUMABLES, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities, \
-    NpcCategory, PORTALS, ABILITIES, get_item_data, get_item_data_by_type
+    NpcCategory, PORTALS, ABILITIES, get_item_data, get_item_data_by_type, randomized_item_id
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
     EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest, \
     PlayerUnlockedNewTalent, AgentBuffsUpdate, Shrine
@@ -96,7 +96,7 @@ class GameEngine:
             raise Exception("Unhandled type of loot: " + str(loot))
 
     def _try_pick_up_item_from_ground(self, item: ItemOnGround):
-        item_type = item_type_from_id(item.item_id)
+        item_type = item.item_id.item_type
         item_data = get_item_data_by_type(item_type)
         did_add_item = try_add_item_to_inventory(self.game_state, item.item_id)
         if did_add_item:
@@ -365,8 +365,7 @@ class GameEngine:
                 money_pile_on_ground = create_money_pile_on_ground(loot_entry.money_amount, loot_position)
                 self.game_state.money_piles_on_ground.append(money_pile_on_ground)
             elif loot_entry.is_item():
-                item_data = get_item_data_by_type(loot_entry.item_type)
-                item_id = ItemId(ItemIdObj.randomized(loot_entry.item_type, item_data.stats))
+                item_id = randomized_item_id(loot_entry.item_type)
                 item_on_ground = create_item_on_ground(item_id, loot_position)
                 self.game_state.items_on_ground.append(item_on_ground)
             elif loot_entry.consumable_type:

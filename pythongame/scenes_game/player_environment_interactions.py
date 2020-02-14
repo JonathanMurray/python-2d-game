@@ -1,7 +1,6 @@
 import sys
 from typing import Optional, Any, List
 
-from pythongame.core.common import item_type_from_id
 from pythongame.core.game_data import CONSUMABLES, PORTALS, get_item_data_by_type
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     ConsumableOnGround, ItemOnGround, Chest, Shrine
@@ -110,7 +109,7 @@ def _get_loot_name(lootable: LootableOnGround) -> str:
     if isinstance(lootable, ConsumableOnGround):
         return CONSUMABLES[lootable.consumable_type].name
     if isinstance(lootable, ItemOnGround):
-        item_type = item_type_from_id(lootable.item_id)
+        item_type = lootable.item_id.item_type
         return get_item_data_by_type(item_type).name
 
 

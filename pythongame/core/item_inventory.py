@@ -138,7 +138,7 @@ class ItemInventory:
                 self.slots[slot_number].item = None
                 self.notify_observers()
                 return
-        print("WARN: item not found in inventory: " + item_id)
+        print("WARN: item not found in inventory: " + str(item_id))
 
     # Note: this will need to return events, if it's used for items that have effects
     def is_slot_empty(self, slot_index: int) -> bool:

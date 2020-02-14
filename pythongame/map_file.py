@@ -203,7 +203,7 @@ class ItemJson:
 
     @staticmethod
     def deserialize(data) -> ItemOnGround:
-        item_id = data["item_id"]
+        item_id = ItemId.from_id_string(data["item_id"])
         return create_item_on_ground(item_id, data["position"])
 
 

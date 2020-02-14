@@ -75,15 +75,12 @@ def register_custom_item_effect(item_type: ItemType, effect: AbstractItemEffect)
 # Note this is handled differently compared to buffs
 # There is only one effect instance per item type - having duplicate items with active effects may not be well supported
 def create_item_effect(item_id: ItemId) -> AbstractItemEffect:
-    item_id_obj = ItemIdObj.from_id_string(item_id)
-    item_type = item_id_obj.item_type
-    base_stats = item_id_obj.base_stats
-    affix, affix_stats = None, None
+    affix, affix_stats = None, []
     effects = []
-    if item_type in _custom_item_effects:
-        effects.append(_custom_item_effects[item_type])
-    if base_stats:
-        effects.append(StatModifyingItemEffect(base_stats))
+    if item_id.item_type in _custom_item_effects:
+        effects.append(_custom_item_effects[item_id.item_type])
+    if item_id.base_stats:
+        effects.append(StatModifyingItemEffect(item_id.base_stats))
     if affix:
         effects.append(StatModifyingItemEffect(affix_stats))
     effect = CompositeItemEffect(effects)
@@ -91,14 +88,11 @@ def create_item_effect(item_id: ItemId) -> AbstractItemEffect:
 
 
 def create_item_description(item_id: ItemId) -> List[str]:
-    item_id_obj = ItemIdObj.from_id_string(item_id)
-    item_type = item_id_obj.item_type
-    base_stats = item_id_obj.base_stats
-    affix, affix_stats = None, None
-    data = get_item_data_by_type(item_type)
+    affix, affix_stats = None, []
+    data = get_item_data_by_type(item_id.item_type)
     lines = list(data.custom_description_lines)
-    if base_stats:
-        for modifier in base_stats:
+    if item_id.base_stats:
+        for modifier in item_id.base_stats:
             lines.append(modifier.get_description())
     if affix_stats:
         for modifier in affix_stats:
@@ -108,7 +102,7 @@ def create_item_description(item_id: ItemId) -> List[str]:
 
 def try_add_item_to_inventory(game_state: GameState, item_id: ItemId) -> bool:
     item_effect = create_item_effect(item_id)
-    item_type = item_type_from_id(item_id)
+    item_type = item_id.item_type
     item_equipment_category = get_item_data_by_type(item_type).item_equipment_category
     result = game_state.player_state.item_inventory.try_add_item(item_id, item_effect, item_equipment_category)
     if result:

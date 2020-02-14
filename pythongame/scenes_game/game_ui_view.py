@@ -4,7 +4,7 @@ import pygame
 from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite, \
-    SoundId, NpcType, Millis, DialogData, ItemId, item_type_from_id
+    SoundId, NpcType, Millis, DialogData, ItemId
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, HEROES, get_item_data, get_item_data_by_type
 from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState, Quest
 from pythongame.core.item_effects import create_item_description
@@ -550,7 +550,7 @@ class GameUiView:
             image = None
             tooltip = None
             if item_id:
-                item_type = item_type_from_id(item_id)
+                item_type = item_id.item_type
                 data = get_item_data_by_type(item_type)
                 image = self.images_by_ui_sprite[data.icon_sprite]
                 category_name = None
@@ -725,7 +725,7 @@ class GameUiView:
             # TODO treat this as state and update it elsewhere
             highlighted = False
             if self.item_slot_being_dragged and self.item_slot_being_dragged.item_id:
-                item_type = item_type_from_id(self.item_slot_being_dragged.item_id)
+                item_type = self.item_slot_being_dragged.item_id.item_type
                 item_data = get_item_data_by_type(item_type)
                 highlighted = item_data.item_equipment_category \
                               and icon.slot_equipment_category == item_data.item_equipment_category
