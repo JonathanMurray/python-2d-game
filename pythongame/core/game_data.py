@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, Set
+from typing import Set, Dict
 
 # We should probably not load image files in here!
 import pygame
@@ -100,13 +100,18 @@ class ConsumableData:
 
 
 class ItemData:
-    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Sprite, name: str, description_lines: List[str],
+    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Sprite, name: str, custom_description_lines: List[str],
+                 stats: List[StatModifierInterval],
                  item_equipment_category: Optional[ItemEquipmentCategory] = None):
         self.icon_sprite = icon_sprite
         self.entity_sprite = entity_sprite
         self.name = name
-        self.description_lines: List[str] = description_lines
+        self.custom_description_lines: List[str] = custom_description_lines
+        self.stats = stats
         self.item_equipment_category = item_equipment_category  # If category is None, the item can't be equipped
+
+    def __repr__(self):
+        return "ItemData(%s)" % self.name
 
 
 class WallData:
@@ -186,9 +191,7 @@ consumable_data_by_type: Dict[ConsumableType, ConsumableData] = {}
 consumable_types_grouped_by_level: Dict[int, Set[ConsumableType]] = {}
 consumable_levels: Dict[ConsumableType, int] = {}
 
-item_data_by_id: Dict[ItemId, ItemData] = {}
-
-item_ids_grouped_by_type: Dict[ItemType, Set[ItemId]] = {}
+item_data_by_type: Dict[ItemType, ItemData] = {}
 
 item_types_grouped_by_level: Dict[int, Set[ItemType]] = {}
 
@@ -288,27 +291,22 @@ def get_optional_consumable_level(consumable_type: ConsumableType) -> Optional[i
     return consumable_levels.get(consumable_type, None)
 
 
-def register_item_data(item_id: ItemId, item_data: ItemData):
-    item_type = item_type_from_id(item_id)
-    item_data_by_id[item_id] = item_data
-    item_ids = item_ids_grouped_by_type.setdefault(item_type, set())
-    item_ids.add(item_id)
+def register_item_data(item_type: ItemType, item_data: ItemData):
+    item_data_by_type[item_type] = item_data
 
 
-def get_item_data(item_id: ItemId):
-    return item_data_by_id[item_id]
+def get_item_data(item_id: ItemId) -> ItemData:
+    item_type = parse_item_id(item_id)[0]
+    return item_data_by_type[item_type]
 
 
-def get_one_item_id_for_every_item_type() -> List[ItemId]:
-    return [min(item_ids) for item_ids in item_ids_grouped_by_type.values()]
+def get_item_data_by_type(item_type: ItemType) -> ItemData:
+    return item_data_by_type[item_type]
 
 
-def get_random_item_id_for_item_type(item_type: ItemType) -> ItemId:
-    return random.choice(list(item_ids_grouped_by_type[item_type]))
-
-
-def get_min_item_id_for_item_type(item_type: ItemType) -> ItemId:
-    return min(item_ids_grouped_by_type[item_type])
+def randomized_item_id(item_type: ItemType) -> ItemId:
+    data = get_item_data_by_type(item_type)
+    return random_item_id_from_stat_modifiers(item_type, data.stats)
 
 
 def register_item_level(item_type: ItemType, item_level: int):
@@ -340,9 +338,7 @@ def register_hero_data(hero_id: HeroId, hero_data: HeroData):
     HEROES[hero_id] = hero_data
 
 
-def get_items_with_category(category: Optional[ItemEquipmentCategory]) -> List[Tuple[ItemId, ItemData]]:
-    one_item_id_per_item_type = [min(item_ids) for item_ids in item_ids_grouped_by_type.values()]
-    return [(item_id, item_data)
-            for (item_id, item_data) in item_data_by_id.items()
-            if item_id in one_item_id_per_item_type
-            and item_data.item_equipment_category == category]
+def get_items_with_category(category: Optional[ItemEquipmentCategory]) -> List[Tuple[ItemType, ItemData]]:
+    return [(item_type, item_data)
+            for (item_type, item_data) in item_data_by_type.items()
+            if item_data.item_equipment_category == category]

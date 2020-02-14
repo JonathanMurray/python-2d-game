@@ -7,7 +7,7 @@ from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, AbilityType, PortraitIconSprite, HeroId, Millis, \
     PeriodicTimer, NpcType, PortalId, ItemId
-from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData, ItemData, NpcData, \
+from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData, NpcData, \
     NpcCategory
 from pythongame.core.game_state import PlayerState, Quest
 from pythongame.core.item_inventory import ItemEquipmentCategory
@@ -256,12 +256,13 @@ class TooltipGraphics:
             self._ui_render.text(self._font_details, line, (self._rect.x + 20, self._rect.y + 47 + i * 18), COLOR_WHITE)
 
     @staticmethod
-    def create_for_item(ui_render: DrawableArea, data: ItemData, category_name: str, bottom_left: Tuple[int, int]):
+    def create_for_item(ui_render: DrawableArea, item_name: str, category_name: str, bottom_left: Tuple[int, int],
+                        description_lines: List[str]):
         tooltip_details = []
         if category_name:
             tooltip_details.append("[" + category_name + "]")
-        tooltip_details += data.description_lines
-        return TooltipGraphics(ui_render, COLOR_ITEM_TOOLTIP_HEADER, data.name, tooltip_details,
+        tooltip_details += description_lines
+        return TooltipGraphics(ui_render, COLOR_ITEM_TOOLTIP_HEADER, item_name, tooltip_details,
                                bottom_left=bottom_left)
 
     @staticmethod
@@ -647,7 +648,7 @@ class StatsWindow(UiWindow):
         x_right = x_left + 155
         y_0 = self.rect[1] + 15
 
-        perc = lambda value: int(value * 100)
+        perc = lambda value: int(round(value * 100))
 
         y_hero_and_level = y_0
         self._render_header((x_left, y_hero_and_level), self.hero_id.name)

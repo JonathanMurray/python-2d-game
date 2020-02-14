@@ -1,5 +1,4 @@
 import json
-from typing import Tuple
 
 from pygame.rect import Rect
 

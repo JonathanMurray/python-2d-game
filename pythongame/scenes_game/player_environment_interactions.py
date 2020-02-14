@@ -1,10 +1,12 @@
 import sys
 from typing import Optional, Any, List
 
-from pythongame.core.game_data import CONSUMABLES, PORTALS, get_item_data
+from pythongame.core.common import item_type_from_id
+from pythongame.core.game_data import CONSUMABLES, PORTALS, get_item_data_by_type
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     ConsumableOnGround, ItemOnGround, Chest, Shrine
 from pythongame.core.game_state import WorldEntity
+from pythongame.core.item_effects import create_item_description
 from pythongame.core.math import boxes_intersect, is_x_and_y_within_distance, \
     get_manhattan_distance_between_rects
 from pythongame.core.npc_behaviors import has_npc_dialog
@@ -108,11 +110,12 @@ def _get_loot_name(lootable: LootableOnGround) -> str:
     if isinstance(lootable, ConsumableOnGround):
         return CONSUMABLES[lootable.consumable_type].name
     if isinstance(lootable, ItemOnGround):
-        return get_item_data(lootable.item_id).name
+        item_type = item_type_from_id(lootable.item_id)
+        return get_item_data_by_type(item_type).name
 
 
 def _get_loot_details(lootable: LootableOnGround) -> List[str]:
     if isinstance(lootable, ConsumableOnGround):
         return [CONSUMABLES[lootable.consumable_type].description]
     if isinstance(lootable, ItemOnGround):
-        return get_item_data(lootable.item_id).description_lines
+        return create_item_description(lootable.item_id)

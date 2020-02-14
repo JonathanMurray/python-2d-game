@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-from pythongame.core.common import item_type_from_id
-from pythongame.core.game_data import get_items_with_category, get_optional_item_level
+from typing import List, Tuple, Optional
+
+from pythongame.core.common import ItemType
+from pythongame.core.game_data import get_items_with_category, get_optional_item_level, ItemData, randomized_item_id
+from pythongame.core.item_effects import create_item_description
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.register_game_data import register_all_game_data
 
@@ -12,12 +15,13 @@ def print_items():
         else:
             print("PASSIVE:")
         print("- - - - -")
-        entries = [(i_id, i_data, get_optional_item_level(item_type_from_id(i_id)))
-                   for (i_id, i_data) in get_items_with_category(category)]
+        entries: List[Tuple[ItemType, ItemData, Optional[int]]] = [
+            (i_type, i_data, get_optional_item_level(i_type)) for (i_type, i_data) in get_items_with_category(category)]
         entries.sort(key=lambda entry: entry[2] if entry[2] else 9999)
-        for item_id, item_data, item_level in entries:
+        for item_type, item_data, item_level in entries:
             level_text = "level {:<10}".format(item_level) if item_level else " " * 16
-            print("{:<25}".format(item_id) + level_text + str(item_data.description_lines))
+            item_id = randomized_item_id(item_type)
+            print("{:<25}".format(item_type.name) + level_text + str(create_item_description(item_id)))
         print("")
 
 

@@ -1,8 +1,8 @@
 from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgradeId, UiIconSprite, \
-    ItemType, plain_item_id
+    ItemType
 from pythongame.core.game_data import Sprite, Direction, AbilityType, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, register_hero_data, HeroData, \
-    InitialPlayerStateData, register_ui_icon_sprite_path
+    InitialPlayerStateData, register_ui_icon_sprite_path, randomized_item_id
 from pythongame.core.game_state import PlayerLevelBonus
 from pythongame.core.talents import TalentsConfig, TalentTierConfig, TalentTierOptionConfig
 from pythongame.core.view.image_loading import SpriteSheet
@@ -102,4 +102,4 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
     block_chance = 0.1
     return InitialPlayerStateData(
         health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, dodge_chance,
-        level_bonus, talents_state, block_chance, [plain_item_id(ItemType.NOVICE_WAND)])
+        level_bonus, talents_state, block_chance, [randomized_item_id(ItemType.NOVICE_WAND)])

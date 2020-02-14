@@ -1,16 +1,12 @@
 from typing import Dict
 
 from pythongame.core.common import *
-from pythongame.core.game_data import get_item_data
+from pythongame.core.game_data import get_item_data_by_type
 from pythongame.core.game_state import GameState, Event
 from pythongame.core.item_inventory import ItemWasActivated
 
 
 class AbstractItemEffect:
-
-    def __init__(self, item_id: ItemId):
-        self.item_id = item_id
-        self.item_type = ItemType[self.item_id.split(":")[0]]
 
     def apply_start_effect(self, game_state: GameState):
         pass
@@ -21,89 +17,102 @@ class AbstractItemEffect:
     def apply_end_effect(self, game_state: GameState):
         pass
 
-    def get_item_id(self):
-        return self.item_id
-
     def item_handle_event(self, event: Event, game_state: GameState):
         pass
 
-    def get_description(self) -> List[str]:
-        raise Exception("No description defined for item " + str(self.get_item_id()))
 
+class CompositeItemEffect(AbstractItemEffect):
+    def __init__(self, effects: List[AbstractItemEffect]):
+        self.effects = effects
 
-def _get_description_of_stat_modifier(hero_stat: HeroStat, delta: Union[int, float]) -> str:
-    if hero_stat == HeroStat.MAX_HEALTH:
-        return "+" + str(delta) + " max health"
-    elif hero_stat == HeroStat.HEALTH_REGEN:
-        return "+" + str(delta) + " health regen"
-    elif hero_stat == HeroStat.MAX_MANA:
-        return "+" + str(delta) + " max mana"
-    elif hero_stat == HeroStat.MANA_REGEN:
-        return "+" + str(delta) + " mana regen"
-    elif hero_stat == HeroStat.ARMOR:
-        return str(delta) + " armor"
-    elif hero_stat == HeroStat.MOVEMENT_SPEED:
-        if delta >= 0:
-            return "Increases movement speed by " + str(int(delta * 100)) + "%"
-        else:
-            return "Reduces movement speed by " + str(int(delta * 100)) + "%"
-    elif hero_stat == HeroStat.DAMAGE:
-        return "+" + str(int(round(delta * 100))) + "% damage"
-    elif hero_stat == HeroStat.PHYSICAL_DAMAGE:
-        return "+" + str(int(round(delta * 100))) + "% physical damage"
-    elif hero_stat == HeroStat.MAGIC_DAMAGE:
-        return "+" + str(int(round(delta * 100))) + "% magic damage"
-    elif hero_stat == HeroStat.LIFE_STEAL:
-        return "+" + str(int(delta * 100)) + "% life steal"
-    elif hero_stat == HeroStat.BLOCK_AMOUNT:
-        return str(delta) + " block"
-    elif hero_stat == HeroStat.DODGE_CHANCE:
-        return "+" + str(int(delta * 100)) + "% dodge"
-    elif hero_stat == HeroStat.MAGIC_RESIST_CHANCE:
-        return "+" + str(int(delta * 100)) + "% magic resist"
-    else:
-        raise Exception("Unhandled stat: " + str(hero_stat))
+    def apply_start_effect(self, game_state: GameState):
+        for e in self.effects:
+            e.apply_start_effect(game_state)
+
+    def apply_middle_effect(self, game_state: GameState, time_passed: Millis):
+        for e in self.effects:
+            e.apply_middle_effect(game_state, time_passed)
+
+    def apply_end_effect(self, game_state: GameState):
+        for e in self.effects:
+            e.apply_end_effect(game_state)
+
+    def item_handle_event(self, event: Event, game_state: GameState):
+        for e in self.effects:
+            e.item_handle_event(event, game_state)
+
+    def __repr__(self):
+        return "CompositeItemEffect(%s)" % self.effects
 
 
 class StatModifyingItemEffect(AbstractItemEffect):
-    def __init__(self, item_id: ItemId, stat_modifiers: Dict[HeroStat, Union[int, float]]):
-        super().__init__(item_id)
+    def __init__(self, stat_modifiers: List[StatModifier]):
         self.stat_modifiers = stat_modifiers
 
     def apply_start_effect(self, game_state: GameState):
-        for stat, delta in self.stat_modifiers.items():
-            game_state.modify_hero_stat(stat, delta)
+        for modifier in self.stat_modifiers:
+            game_state.modify_hero_stat(modifier.hero_stat, modifier.delta)
 
     def apply_end_effect(self, game_state: GameState):
-        for stat, delta in self.stat_modifiers.items():
-            game_state.modify_hero_stat(stat, -delta)
+        for modifier in self.stat_modifiers:
+            game_state.modify_hero_stat(modifier.hero_stat, -modifier.delta)
 
-    def get_description(self) -> List[str]:
-        return [_get_description_of_stat_modifier(stat, delta) for (stat, delta) in self.stat_modifiers.items()]
+    def __repr__(self):
+        return "StatModifyingItemEffect(%s)" % self.stat_modifiers
 
 
 class EmptyItemEffect(AbstractItemEffect):
-    def __init__(self, item_id: ItemId):
-        super().__init__(item_id)
+    pass
 
 
-_item_effects: Dict[ItemId, AbstractItemEffect] = {}
+_custom_item_effects: Dict[ItemType, AbstractItemEffect] = {}
 
 
-def register_item_effect(item_id: ItemId, effect: AbstractItemEffect):
-    _item_effects[item_id] = effect
+def register_custom_item_effect(item_type: ItemType, effect: AbstractItemEffect):
+    _custom_item_effects[item_type] = effect
 
 
 # Note this is handled differently compared to buffs
 # There is only one effect instance per item type - having duplicate items with active effects may not be well supported
-def get_item_effect(item_id: ItemId) -> AbstractItemEffect:
-    return _item_effects[item_id]
+def create_item_effect(item_id: ItemId) -> AbstractItemEffect:
+    try:
+        item_type, base_stats, affix, affix_stats = parse_item_id(item_id)
+    except BaseException as e:
+        print("ERROR: Couldn't parse item_id: %s" % item_id)
+        raise e
+    effects = []
+    if item_type in _custom_item_effects:
+        effects.append(_custom_item_effects[item_type])
+    if base_stats:
+        effects.append(StatModifyingItemEffect(base_stats))
+    if affix:
+        effects.append(StatModifyingItemEffect(affix_stats))
+    effect = CompositeItemEffect(effects)
+    return effect
+
+
+def create_item_description(item_id: ItemId) -> List[str]:
+    try:
+        item_type, base_stats, affix, affix_stats = parse_item_id(item_id)
+    except BaseException as e:
+        print("ERROR: Couldn't parse item_id: %s" % item_id)
+        raise e
+    data = get_item_data_by_type(item_type)
+    lines = list(data.custom_description_lines)
+    if base_stats:
+        for modifier in base_stats:
+            lines.append(modifier.get_description())
+    if affix_stats:
+        for modifier in affix_stats:
+            lines.append(modifier.get_description())
+    return lines
 
 
 def try_add_item_to_inventory(game_state: GameState, item_id: ItemId) -> bool:
-    item_effect = get_item_effect(item_id)
-    item_equipment_category = get_item_data(item_id).item_equipment_category
-    result = game_state.player_state.item_inventory.try_add_item(item_effect, item_equipment_category)
+    item_effect = create_item_effect(item_id)
+    item_type = item_type_from_id(item_id)
+    item_equipment_category = get_item_data_by_type(item_type).item_equipment_category
+    result = game_state.player_state.item_inventory.try_add_item(item_id, item_effect, item_equipment_category)
     if result:
         if isinstance(result, ItemWasActivated):
             item_effect.apply_start_effect(game_state)

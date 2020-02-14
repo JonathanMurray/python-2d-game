@@ -4,9 +4,10 @@ import pygame
 from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite, \
-    SoundId, NpcType, Millis, DialogData, ItemId
-from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, HEROES, get_item_data
+    SoundId, NpcType, Millis, DialogData, ItemId, item_type_from_id
+from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, HEROES, get_item_data, get_item_data_by_type
 from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState, Quest
+from pythongame.core.item_effects import create_item_description
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import is_point_in_rect
 from pythongame.core.sound_player import play_sound
@@ -549,12 +550,15 @@ class GameUiView:
             image = None
             tooltip = None
             if item_id:
-                data = get_item_data(item_id)
+                item_type = item_type_from_id(item_id)
+                data = get_item_data_by_type(item_type)
                 image = self.images_by_ui_sprite[data.icon_sprite]
                 category_name = None
                 if data.item_equipment_category:
                     category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[data.item_equipment_category]
-                tooltip = TooltipGraphics.create_for_item(self.ui_render, data, category_name, icon.rect.topleft)
+                description_lines = create_item_description(item_id)
+                tooltip = TooltipGraphics.create_for_item(self.ui_render, data.name, category_name, icon.rect.topleft,
+                                                          description_lines)
             elif slot_equipment_category:
                 image = self.images_by_item_category[slot_equipment_category]
                 category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[slot_equipment_category]
@@ -719,10 +723,12 @@ class GameUiView:
         self.ui_render.rect_filled((60, 60, 80), self.inventory_icons_rect)
         for icon in self.inventory_icons:
             # TODO treat this as state and update it elsewhere
-            highlighted = self.item_slot_being_dragged and self.item_slot_being_dragged.item_id \
-                          and get_item_data(self.item_slot_being_dragged.item_id).item_equipment_category \
-                          and icon.slot_equipment_category == \
-                          get_item_data(self.item_slot_being_dragged.item_id).item_equipment_category
+            highlighted = False
+            if self.item_slot_being_dragged and self.item_slot_being_dragged.item_id:
+                item_type = item_type_from_id(self.item_slot_being_dragged.item_id)
+                item_data = get_item_data_by_type(item_type)
+                highlighted = item_data.item_equipment_category \
+                              and icon.slot_equipment_category == item_data.item_equipment_category
             if self.manually_highlighted_inventory_item and self.manually_highlighted_inventory_item == icon.item_id:
                 highlighted = True
             icon.render(highlighted)

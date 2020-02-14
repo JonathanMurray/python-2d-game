@@ -1,13 +1,12 @@
 from pythongame.core.buff_effects import get_buff_effect, register_buff_effect, AbstractBuffEffect
 from pythongame.core.common import ItemType, Sprite, BuffType, Millis, PeriodicTimer, plain_item_id
-from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
-    register_entity_sprite_initializer, ITEM_ENTITY_SIZE, register_item_level
+from pythongame.core.game_data import UiIconSprite
 from pythongame.core.game_state import Event, PlayerDamagedEnemy, GameState, WorldEntity, \
     NonPlayerCharacter
-from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
+from pythongame.core.item_effects import AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
-from pythongame.core.view.image_loading import SpriteInitializer
 from pythongame.core.visual_effects import VisualCircle
+from pythongame.game_data.items.register_items_util import register_custom_effect_item
 
 SLOW_DURATION = Millis(2000)
 SLOW_AMOUNT = 0.4
@@ -18,9 +17,6 @@ BUFF_TYPE = BuffType.DEBUFFED_BY_FREEZING_GAUNTLET
 
 
 class ItemEffect(AbstractItemEffect):
-
-    def __init__(self):
-        super().__init__(ITEM_ID)
 
     def item_handle_event(self, event: Event, game_state: GameState):
         if isinstance(event, PlayerDamagedEnemy):
@@ -52,16 +48,18 @@ class DebuffedByFreezingGauntlet(AbstractBuffEffect):
 
 
 def register_freezing_gauntlet_item():
-    register_item_level(ITEM_TYPE, 6)
-    ui_icon_sprite = UiIconSprite.ITEM_FREEZING_GAUNTLET
-    sprite = Sprite.ITEM_FREEZING_GAUNTLET
-    image_file_path = "resources/graphics/item_freezing_gauntlet.png"
-    register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
-    register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    register_item_effect(ITEM_ID, ItemEffect())
-    name = "Freezing Gauntlet"
-    description = ["Slows your targets by " + str(int(SLOW_AMOUNT * 100)) + "% for " \
-                   + "{:.1f}".format(SLOW_DURATION / 1000) + "s"]
-    item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.OFF_HAND)
-    register_item_data(ITEM_ID, item_data)
+    register_custom_effect_item(
+        item_type=ITEM_TYPE,
+        item_level=6,
+        ui_icon_sprite=UiIconSprite.ITEM_FREEZING_GAUNTLET,
+        sprite=Sprite.ITEM_FREEZING_GAUNTLET,
+        image_file_path="resources/graphics/item_freezing_gauntlet.png",
+        item_equipment_category=ItemEquipmentCategory.OFF_HAND,
+        name="Freezing Gauntlet",
+        custom_description=["Slows your targets by " + str(int(SLOW_AMOUNT * 100)) + "% for " \
+                            + "{:.1f}".format(SLOW_DURATION / 1000) + "s"],
+        stat_modifier_intervals=[],
+        custom_effect=ItemEffect()
+    )
+
     register_buff_effect(BUFF_TYPE, DebuffedByFreezingGauntlet)

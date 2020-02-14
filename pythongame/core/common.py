@@ -474,10 +474,12 @@ class HeroStat(Enum):
     MAGIC_RESIST_CHANCE = 14
 
 
+# TODO Finish itemization
 class ItemAffixId(Enum):
     RECKONING = 1
 
 
+# TODO Create proper class for ItemId
 # Must be of one of the following formats:
 # 1. "<ItemType>:<int>" represents one of several "random" variations of a given item type
 # 2. "<ItemType>:*" represents an item type that has no random variations
@@ -497,17 +499,114 @@ class ItemSuffix:
         self.affix_id = affix_id
 
 
+# TODO Create proper class for ItemId
 def plain_item_id(item_type: ItemType) -> ItemId:
-    return ItemId(item_type.name + ":*")
+    # TODO Validate this call! You shouldn't be able to create a "plain item id" for an item type that has stat modifiers!
+    # Should this method even exist?
+
+    return ItemId(item_type.name + ":")
 
 
-def randomized_item_id(item_type: ItemType, randomizer: int) -> ItemId:
-    return ItemId(item_type.name + ":" + str(randomizer))
+class StatModifier:
+    def __init__(self, hero_stat: HeroStat, delta: Union[int, float]):
+        self.hero_stat = hero_stat
+        self.delta = delta
+
+    def get_description(self):
+        hero_stat = self.hero_stat
+        delta = self.delta
+        if hero_stat == HeroStat.MAX_HEALTH:
+            return "+" + str(delta) + " max health"
+        elif hero_stat == HeroStat.HEALTH_REGEN:
+            return "+" + str(delta) + " health regen"
+        elif hero_stat == HeroStat.MAX_MANA:
+            return "+" + str(delta) + " max mana"
+        elif hero_stat == HeroStat.MANA_REGEN:
+            return "+" + str(delta) + " mana regen"
+        elif hero_stat == HeroStat.ARMOR:
+            return str(delta) + " armor"
+        elif hero_stat == HeroStat.MOVEMENT_SPEED:
+            if delta >= 0:
+                return "Increases movement speed by " + str(int(delta * 100)) + "%"
+            else:
+                return "Reduces movement speed by " + str(int(delta * 100)) + "%"
+        elif hero_stat == HeroStat.DAMAGE:
+            return "+" + str(int(round(delta * 100))) + "% damage"
+        elif hero_stat == HeroStat.PHYSICAL_DAMAGE:
+            return "+" + str(int(round(delta * 100))) + "% physical damage"
+        elif hero_stat == HeroStat.MAGIC_DAMAGE:
+            return "+" + str(int(round(delta * 100))) + "% magic damage"
+        elif hero_stat == HeroStat.LIFE_STEAL:
+            return "+" + str(int(delta * 100)) + "% life steal"
+        elif hero_stat == HeroStat.BLOCK_AMOUNT:
+            return str(delta) + " block"
+        elif hero_stat == HeroStat.DODGE_CHANCE:
+            return "+" + str(int(delta * 100)) + "% dodge"
+        elif hero_stat == HeroStat.MAGIC_RESIST_CHANCE:
+            return "+" + str(int(delta * 100)) + "% magic resist"
+        else:
+            raise Exception("Unhandled stat: " + str(hero_stat))
+
+    def __repr__(self):
+        return "%s:%s" % (self.hero_stat, self.delta)
 
 
+class StatModifierInterval:
+    def __init__(self, hero_stat: HeroStat, interval: List[Union[int, float]]):
+        self.hero_stat = hero_stat
+        self.interval = interval
+
+
+# TODO Create proper class for ItemId
+def random_item_id_from_stat_modifiers(
+        item_type: ItemType, stat_modifier_intervals: List[StatModifierInterval]) -> ItemId:
+    string = item_type.name
+    for modifier_interval in stat_modifier_intervals:
+        string += "~%s~%s" % (modifier_interval.hero_stat.name, random.choice(modifier_interval.interval))
+    string += ":"
+    return ItemId(string)
+
+
+# TODO Create proper class for ItemId
 def item_type_from_id(item_id: ItemId) -> ItemType:
-    enum_name = item_id.split(":")[0]
-    return ItemType[enum_name]
+    try:
+        return parse_item_id(item_id)[0]
+    except BaseException as e:
+        print("Failed to parse item id %s " % item_id)
+        raise e
+
+
+# TODO Create proper class for ItemId
+def parse_item_id(item_id: ItemId) \
+        -> Tuple[ItemType, List[StatModifier], ItemAffixId, List[StatModifier]]:
+    parts = item_id.split(":")
+    item_type_part = parts[0]
+    affix_part = parts[1]
+    item_type_subparts = item_type_part.split("~")
+    item_type = ItemType[item_type_subparts[0]]
+    base_stats = []
+    for i in range(1, len(item_type_subparts) - 1, 2):
+        hero_stat: HeroStat = HeroStat[item_type_subparts[i]]
+        value_str = item_type_subparts[i + 1]
+        try:
+            value = int(value_str)
+        except ValueError:
+            value = float(value_str)
+        base_stats.append(StatModifier(hero_stat, value))
+    affix_id = None
+    affix_stats = []
+    if affix_part:
+        affix_subparts = affix_part.split("~")
+        affix_id = ItemAffixId[affix_subparts[0]]
+        for i in range(1, len(affix_subparts) - 1, 2):
+            hero_stat: HeroStat = HeroStat[affix_subparts[i]]
+            value_str = affix_subparts[i + 1]
+            try:
+                value = int(value_str)
+            except ValueError:
+                value = float(value_str)
+            affix_stats.append(StatModifier(hero_stat, value))
+    return item_type, base_stats, affix_id, affix_stats
 
 
 class ProjectileType(Enum):

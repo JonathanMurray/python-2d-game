@@ -1,4 +1,4 @@
-from typing import Dict, Type, Union
+from typing import Dict, Type
 
 from pythongame.core.common import *
 from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, BuffEventOutcome

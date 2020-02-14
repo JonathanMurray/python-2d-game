@@ -5,7 +5,7 @@ from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_d
     UiIconSprite, ItemType, PeriodicTimer, HeroId, SoundId, ItemId, plain_item_id
 from pythongame.core.entity_creation import create_item_on_ground
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
-    register_portrait_icon_sprite_path, get_item_data
+    register_portrait_icon_sprite_path, get_item_data, get_item_data_by_type, randomized_item_id
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest, QuestGiverState
 from pythongame.core.item_effects import try_add_item_to_inventory
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
@@ -18,6 +18,7 @@ from pythongame.scenes_game.game_ui_view import GameUiView
 QUEST_ID = QuestId.RETRIEVE_FROG
 QUEST = Quest(QUEST_ID, "Lost pet", "Retrieve pet frog from goblin king")
 ITEM_ID_FROG = plain_item_id(ItemType.FROG)
+ITEM_TYPE = ItemType.FROG
 NPC_TYPE = NpcType.NEUTRAL_YOUNG_SORCERESS
 UI_ICON_SPRITE = PortraitIconSprite.YOUNG_SORCERESS
 
@@ -94,13 +95,13 @@ class AcceptFrog(AbstractNpcAction):
 
 def _get_reward_for_hero(hero_id: HeroId) -> ItemId:
     if hero_id == HeroId.MAGE:
-        return plain_item_id(ItemType.STAFF_OF_FIRE)
+        return randomized_item_id(ItemType.STAFF_OF_FIRE)
     elif hero_id == HeroId.ROGUE:
-        return plain_item_id(ItemType.THIEFS_MASK)
+        return randomized_item_id(ItemType.THIEFS_MASK)
     elif hero_id == HeroId.WARRIOR:
-        return plain_item_id(ItemType.CLEAVER)
+        return randomized_item_id(ItemType.CLEAVER)
     else:
-        return plain_item_id(ItemType.LEATHER_ARMOR)
+        return randomized_item_id(ItemType.LEATHER_ARMOR)
 
 
 def _highlight_boss_location(game_state, ui_view):
@@ -144,7 +145,7 @@ def register_young_sorceress_npc():
 
 def _register_dialog():
     prompt = "QUEST: "
-    frog_data = get_item_data(ITEM_ID_FROG)
+    frog_data = get_item_data_by_type(ITEM_TYPE)
     bye_option = DialogOptionData("\"Good bye\"", "cancel", None)
     name = "Mida"
     dialog_1 = DialogData(

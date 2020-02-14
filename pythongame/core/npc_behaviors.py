@@ -1,9 +1,9 @@
-from typing import Dict, Type
+from typing import Type, Dict
 
 from pythongame.core.common import *
 from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
-from pythongame.core.game_data import CONSUMABLES, get_item_data
+from pythongame.core.game_data import CONSUMABLES, get_item_data_by_type
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest
 from pythongame.core.item_effects import try_add_item_to_inventory
 from pythongame.core.math import is_x_and_y_within_distance, get_perpendicular_directions
@@ -260,23 +260,30 @@ def buy_consumable_option(consumable_type: ConsumableType, cost: int):
 
 
 def buy_item_option(item_id: ItemId, cost: int):
-    data = get_item_data(item_id)
+    item_type = item_type_from_id(item_id)
+    data = get_item_data_by_type(item_type)
     name_formatter = "{:<25}"
     buy_prompt = "> "
     cost_formatter = "[{} gold]"
-    return DialogOptionData(buy_prompt + name_formatter.format(data.name) + cost_formatter.format(cost),
+    item_name = data.name
+    icon_sprite = data.icon_sprite
+    description_lines = data.custom_description_lines
+    return DialogOptionData(buy_prompt + name_formatter.format(item_name) + cost_formatter.format(cost),
                             "buy",
-                            SellItemNpcAction(cost, item_id, data.name.lower()),
-                            data.icon_sprite,
-                            data.name,
-                            ", ".join(data.description_lines))
+                            SellItemNpcAction(cost, item_id, item_name.lower()),
+                            icon_sprite,
+                            item_name,
+                            ", ".join(description_lines))
 
 
 def sell_item_option(item_id: ItemId, price: int, detail_body: str):
+    item_type = item_type_from_id(item_id)
     name_formatter = "{:<13}"
     cost_formatter = "[{} gold]"
     sell_prompt = "> "
-    data = get_item_data(item_id)
-    return DialogOptionData(sell_prompt + name_formatter.format(data.name) + cost_formatter.format(price), "sell",
-                            BuyItemNpcAction(item_id, price, data.name.lower()),
-                            data.icon_sprite, data.name, detail_body)
+    data = get_item_data_by_type(item_type)
+    item_name = data.name
+    icon_sprite = data.icon_sprite
+    return DialogOptionData(sell_prompt + name_formatter.format(item_name) + cost_formatter.format(price), "sell",
+                            BuyItemNpcAction(item_id, price, item_name.lower()),
+                            icon_sprite, item_name, detail_body)

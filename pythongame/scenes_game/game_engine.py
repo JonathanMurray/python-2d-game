@@ -3,11 +3,11 @@ from pythongame.core.common import *
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
     create_consumable_on_ground
 from pythongame.core.game_data import CONSUMABLES, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities, \
-    NpcCategory, PORTALS, ABILITIES, get_item_data, get_random_item_id_for_item_type
+    NpcCategory, PORTALS, ABILITIES, get_item_data, get_item_data_by_type
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
     EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest, \
     PlayerUnlockedNewTalent, AgentBuffsUpdate, Shrine
-from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
+from pythongame.core.item_effects import create_item_effect, try_add_item_to_inventory
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
 from pythongame.core.loot import LootEntry
 from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vectors, \
@@ -61,9 +61,9 @@ class GameEngine:
 
     def _handle_item_equip_event(self, event):
         if isinstance(event, ItemWasDeactivated):
-            get_item_effect(event.item_id).apply_end_effect(self.game_state)
+            create_item_effect(event.item_id).apply_end_effect(self.game_state)
         elif isinstance(event, ItemWasActivated):
-            get_item_effect(event.item_id).apply_start_effect(self.game_state)
+            create_item_effect(event.item_id).apply_start_effect(self.game_state)
 
     def drag_consumable_between_inventory_slots(self, from_slot: int, to_slot: int):
         self.game_state.player_state.consumable_inventory.drag_consumable_between_inventory_slots(from_slot, to_slot)
@@ -96,7 +96,8 @@ class GameEngine:
             raise Exception("Unhandled type of loot: " + str(loot))
 
     def _try_pick_up_item_from_ground(self, item: ItemOnGround):
-        item_data = get_item_data(item.item_id)
+        item_type = item_type_from_id(item.item_id)
+        item_data = get_item_data_by_type(item_type)
         did_add_item = try_add_item_to_inventory(self.game_state, item.item_id)
         if did_add_item:
             play_sound(SoundId.EVENT_PICKED_UP)
@@ -108,11 +109,11 @@ class GameEngine:
     def set_item_inventory(self, items: List[ItemId]):
         for slot_number, item_id in enumerate(items):
             if item_id:
-                item_effect = get_item_effect(item_id)
+                item_effect = create_item_effect(item_id)
                 item_data = get_item_data(item_id)
                 item_equipment_category = item_data.item_equipment_category
                 event = self.game_state.player_state.item_inventory.put_item_in_inventory_slot(
-                    item_effect, item_equipment_category, slot_number)
+                    item_id, item_effect, item_equipment_category, slot_number)
                 self._handle_item_equip_event(event)
 
     def _try_pick_up_consumable_from_ground(self, consumable: ConsumableOnGround):
@@ -364,7 +365,8 @@ class GameEngine:
                 money_pile_on_ground = create_money_pile_on_ground(loot_entry.money_amount, loot_position)
                 self.game_state.money_piles_on_ground.append(money_pile_on_ground)
             elif loot_entry.is_item():
-                item_id = get_random_item_id_for_item_type(loot_entry.item_type)
+                item_data = get_item_data_by_type(loot_entry.item_type)
+                item_id = random_item_id_from_stat_modifiers(loot_entry.item_type, item_data.stats)
                 item_on_ground = create_item_on_ground(item_id, loot_position)
                 self.game_state.items_on_ground.append(item_on_ground)
             elif loot_entry.consumable_type:
