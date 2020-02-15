@@ -2,7 +2,7 @@ from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZ
     ItemType
 from pythongame.core.game_data import Sprite, Direction, AbilityType, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, register_hero_data, HeroData, \
-    InitialPlayerStateData, plain_item_id, randomized_item_id
+    InitialPlayerStateData, randomized_item_id
 from pythongame.core.game_state import PlayerLevelBonus
 from pythongame.core.talents import TalentsConfig, TalentTierConfig, TalentTierOptionConfig
 from pythongame.core.view.image_loading import SpriteSheet

@@ -1,6 +1,6 @@
 import random
 from enum import Enum
-from typing import NewType, Optional, Any, List, Callable, Union, Tuple
+from typing import NewType, Optional, Any, List, Callable, Union
 
 Millis = NewType('Millis', int)
 
@@ -474,24 +474,6 @@ class HeroStat(Enum):
     MAGIC_RESIST_CHANCE = 14
 
 
-# TODO Finish itemization
-class ItemAffixId(Enum):
-    RECKONING = 1
-
-
-# TODO Finish itemization
-class ItemSuffix:
-    # EXAMPLE:
-    # stat_modifiers_intervals = [(MAX_HEALTH, [10, 11, 12]), (MAX_MANA, [10, 11, 12])]
-    # name_suffix = "of the Eagle"
-    # affix_id = ItemAffixId.EAGLE
-    def __init__(self, stat_modifier_intervals: List[Tuple[HeroStat, List[Union[int, float]]]],
-                 name_suffix: str, affix_id: ItemAffixId):
-        self.stat_modifier_intervals = stat_modifier_intervals
-        self.name_suffix = name_suffix
-        self.affix_id = affix_id
-
-
 class StatModifier:
     def __init__(self, hero_stat: HeroStat, delta: Union[int, float]):
         self.hero_stat = hero_stat
@@ -542,33 +524,68 @@ class StatModifierInterval:
         self.interval = interval
 
 
-# TODO Handle affixes
+class ItemSuffixData:
+    def __init__(self, name_suffix: str, stats: List[StatModifierInterval]):
+        self.name_suffix = name_suffix
+        self.stats = stats
+
+
+class ItemSuffixId(Enum):
+    RECKONING = 1
+    VITALITY = 2
+
+
+class ItemSuffix:
+    def __init__(self, stat_modifier_intervals: List[StatModifierInterval],
+                 name_suffix: str, suffix_id: ItemSuffixId):
+        self.stat_modifier_intervals = stat_modifier_intervals
+        self.name_suffix = name_suffix
+        self.suffix_id = suffix_id
+
+
 class ItemId:
-    def __init__(self, item_type: ItemType, base_stats: List[StatModifier]):
+    def __init__(self, item_type: ItemType, base_stats: List[StatModifier], suffix_id: Optional[ItemSuffixId],
+                 suffix_stats: List[StatModifier]):
         self.item_type = item_type
         self.base_stats = base_stats
-        self.id_string = self.build_id_string(item_type, base_stats)
+        self.id_string = self.build_id_string(item_type, base_stats, suffix_id, suffix_stats)
+        self.suffix_id = suffix_id
+        self.suffix_stats = suffix_stats
 
     @staticmethod
-    def build_id_string(item_type: ItemType, stat_modifiers: List[StatModifier]):
+    def build_id_string(item_type: ItemType, base_stats: List[StatModifier], suffix_id: ItemSuffixId,
+                        suffix_stats: List[StatModifier]):
         id_string = item_type.name
-        for modifier in stat_modifiers:
+        for modifier in base_stats:
             id_string += "~%s~%s" % (modifier.hero_stat.name, modifier.delta)
         id_string += ":"
+        if suffix_id:
+            id_string += suffix_id.name
+            for modifier in suffix_stats:
+                id_string += "~%s~%s" % (modifier.hero_stat.name, modifier.delta)
         return id_string
 
     @staticmethod
-    def randomized(item_type: ItemType, stat_modifier_intervals: List[StatModifierInterval]):
+    def randomized_base(item_type: ItemType, base_stats: List[StatModifierInterval]):
         modifiers = [StatModifier(modifier_interval.hero_stat, random.choice(modifier_interval.interval))
-                     for modifier_interval in stat_modifier_intervals]
-        return ItemId(item_type, modifiers)
+                     for modifier_interval in base_stats]
+        return ItemId(item_type, modifiers, None, [])
+
+    @staticmethod
+    def randomized_with_suffix(item_type: ItemType, base_stats: List[StatModifierInterval],
+                               item_suffix_id: ItemSuffixId, suffix_stats: List[StatModifierInterval]):
+        base_stat_modifiers = [StatModifier(modifier_interval.hero_stat, random.choice(modifier_interval.interval))
+                               for modifier_interval in base_stats]
+        suffix_stat_modifiers = [StatModifier(modifier_interval.hero_stat, random.choice(modifier_interval.interval))
+                                 for modifier_interval in suffix_stats]
+        return ItemId(item_type, base_stat_modifiers, item_suffix_id, suffix_stat_modifiers)
 
     @staticmethod
     def from_id_string(item_id: str):
         try:
             parts = item_id.split(":")
             item_type_part = parts[0]
-            affix_part = parts[1]
+            suffix_part = parts[1]
             item_type_subparts = item_type_part.split("~")
             item_type = ItemType[item_type_subparts[0]]
             base_stats = []
@@ -580,20 +597,20 @@ class ItemId:
                 except ValueError:
                     value = float(value_str)
                 base_stats.append(StatModifier(hero_stat, value))
-            affix_id = None
-            affix_stats = []
-            if affix_part:
-                affix_subparts = affix_part.split("~")
-                affix_id = ItemAffixId[affix_subparts[0]]
-                for i in range(1, len(affix_subparts) - 1, 2):
-                    hero_stat: HeroStat = HeroStat[affix_subparts[i]]
-                    value_str = affix_subparts[i + 1]
+            suffix_id = None
+            suffix_stats = []
+            if suffix_part:
+                suffix_subparts = suffix_part.split("~")
+                suffix_id = ItemSuffixId[suffix_subparts[0]]
+                for i in range(1, len(suffix_subparts) - 1, 2):
+                    hero_stat: HeroStat = HeroStat[suffix_subparts[i]]
+                    value_str = suffix_subparts[i + 1]
                     try:
                         value = int(value_str)
                     except ValueError:
                         value = float(value_str)
-                    affix_stats.append(StatModifier(hero_stat, value))
-            return ItemId(item_type, base_stats)
+                    suffix_stats.append(StatModifier(hero_stat, value))
+            return ItemId(item_type, base_stats, suffix_id, suffix_stats)
         except BaseException as e:
             raise Exception("Failed to parse item_id '" + item_id + "'", e)
 

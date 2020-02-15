@@ -7,7 +7,7 @@ from pythongame.core.common import ConsumableType, HeroId, UiIconSprite, Ability
     SoundId, NpcType, Millis, DialogData, ItemId
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, HEROES, get_item_data, get_item_data_by_type
 from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState, Quest
-from pythongame.core.item_effects import create_item_description
+from pythongame.core.item_effects import create_item_description, build_item_name
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import is_point_in_rect
 from pythongame.core.sound_player import play_sound
@@ -557,7 +557,8 @@ class GameUiView:
                 if data.item_equipment_category:
                     category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[data.item_equipment_category]
                 description_lines = create_item_description(item_id)
-                tooltip = TooltipGraphics.create_for_item(self.ui_render, data.name, category_name, icon.rect.topleft,
+                item_name = build_item_name(item_id)
+                tooltip = TooltipGraphics.create_for_item(self.ui_render, item_name, category_name, icon.rect.topleft,
                                                           description_lines)
             elif slot_equipment_category:
                 image = self.images_by_item_category[slot_equipment_category]

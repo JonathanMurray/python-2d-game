@@ -232,7 +232,7 @@ class TooltipGraphics:
         self._detail_lines = []
         for detail in details:
             self._detail_lines += split_text_into_lines(detail, 32)
-        w = 260
+        w = 300
         h = 60 + 17 * len(self._detail_lines)
         if bottom_left:
             self._rect = Rect(bottom_left[0], bottom_left[1] - h - 3, w, h)

@@ -1,13 +1,15 @@
+from typing import Tuple
+
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import *
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
     create_consumable_on_ground
 from pythongame.core.game_data import CONSUMABLES, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities, \
-    NpcCategory, PORTALS, ABILITIES, get_item_data, get_item_data_by_type, randomized_item_id
+    NpcCategory, PORTALS, ABILITIES, get_item_data, randomized_item_id
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
     EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest, \
     PlayerUnlockedNewTalent, AgentBuffsUpdate, Shrine
-from pythongame.core.item_effects import create_item_effect, try_add_item_to_inventory
+from pythongame.core.item_effects import create_item_effect, try_add_item_to_inventory, build_item_name
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
 from pythongame.core.loot import LootEntry
 from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vectors, \
@@ -96,15 +98,14 @@ class GameEngine:
             raise Exception("Unhandled type of loot: " + str(loot))
 
     def _try_pick_up_item_from_ground(self, item: ItemOnGround):
-        item_type = item.item_id.item_type
-        item_data = get_item_data_by_type(item_type)
+        item_name = build_item_name(item.item_id)
         did_add_item = try_add_item_to_inventory(self.game_state, item.item_id)
         if did_add_item:
             play_sound(SoundId.EVENT_PICKED_UP)
             self.game_state.items_on_ground.remove(item)
-            self.info_message.set_message("You picked up " + item_data.name)
+            self.info_message.set_message("You picked up " + item_name)
         else:
-            self.info_message.set_message("No space for " + item_data.name)
+            self.info_message.set_message("No space for " + item_name)
 
     def set_item_inventory(self, items: List[ItemId]):
         for slot_number, item_id in enumerate(items):

@@ -5,7 +5,7 @@ from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import CONSUMABLES, get_item_data_by_type
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest
-from pythongame.core.item_effects import try_add_item_to_inventory
+from pythongame.core.item_effects import try_add_item_to_inventory, build_item_name, create_item_description
 from pythongame.core.math import is_x_and_y_within_distance, get_perpendicular_directions
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
@@ -265,9 +265,9 @@ def buy_item_option(item_id: ItemId, cost: int):
     name_formatter = "{:<25}"
     buy_prompt = "> "
     cost_formatter = "[{} gold]"
-    item_name = data.name
+    item_name = build_item_name(item_id)
     icon_sprite = data.icon_sprite
-    description_lines = data.custom_description_lines
+    description_lines = create_item_description(item_id)
     return DialogOptionData(buy_prompt + name_formatter.format(item_name) + cost_formatter.format(cost),
                             "buy",
                             SellItemNpcAction(cost, item_id, item_name.lower()),
@@ -282,7 +282,7 @@ def sell_item_option(item_id: ItemId, price: int, detail_body: str):
     cost_formatter = "[{} gold]"
     sell_prompt = "> "
     data = get_item_data_by_type(item_type)
-    item_name = data.name
+    item_name = build_item_name(item_id)
     icon_sprite = data.icon_sprite
     return DialogOptionData(sell_prompt + name_formatter.format(item_name) + cost_formatter.format(price), "sell",
                             BuyItemNpcAction(item_id, price, item_name.lower()),

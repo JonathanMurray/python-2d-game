@@ -5,7 +5,7 @@ from pythongame.core.common import ConsumableType, AbstractScene, ItemId
 from pythongame.core.common import ItemType
 from pythongame.core.common import Millis, BuffType, get_random_hint, \
     SoundId, SceneTransition
-from pythongame.core.game_data import HEROES, plain_item_id, randomized_item_id
+from pythongame.core.game_data import HEROES, randomized_item_id
 from pythongame.core.game_state import GameState, QuestId
 from pythongame.core.item_effects import try_add_item_to_inventory
 from pythongame.core.sound_player import play_sound

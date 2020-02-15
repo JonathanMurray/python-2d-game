@@ -1,5 +1,5 @@
 import math
-from typing import Dict
+from typing import Dict, Tuple
 
 from pygame.rect import Rect
 

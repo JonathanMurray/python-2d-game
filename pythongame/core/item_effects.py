@@ -1,7 +1,7 @@
 from typing import Dict
 
 from pythongame.core.common import *
-from pythongame.core.game_data import get_item_data_by_type
+from pythongame.core.game_data import get_item_data_by_type, get_item_suffix_data
 from pythongame.core.game_state import GameState, Event
 from pythongame.core.item_inventory import ItemWasActivated
 
@@ -75,29 +75,37 @@ def register_custom_item_effect(item_type: ItemType, effect: AbstractItemEffect)
 # Note this is handled differently compared to buffs
 # There is only one effect instance per item type - having duplicate items with active effects may not be well supported
 def create_item_effect(item_id: ItemId) -> AbstractItemEffect:
-    affix, affix_stats = None, []
     effects = []
     if item_id.item_type in _custom_item_effects:
         effects.append(_custom_item_effects[item_id.item_type])
     if item_id.base_stats:
         effects.append(StatModifyingItemEffect(item_id.base_stats))
-    if affix:
-        effects.append(StatModifyingItemEffect(affix_stats))
+    if item_id.suffix_id:
+        effects.append(StatModifyingItemEffect(item_id.suffix_stats))
     effect = CompositeItemEffect(effects)
     return effect
 
 
+# TODO move to game_data?
 def create_item_description(item_id: ItemId) -> List[str]:
-    affix, affix_stats = None, []
     data = get_item_data_by_type(item_id.item_type)
     lines = list(data.custom_description_lines)
     if item_id.base_stats:
         for modifier in item_id.base_stats:
             lines.append(modifier.get_description())
-    if affix_stats:
-        for modifier in affix_stats:
+    if item_id.suffix_id:
+        for modifier in item_id.suffix_stats:
             lines.append(modifier.get_description())
     return lines
+
+
+# TODO move to game_data?
+def build_item_name(item_id: ItemId) -> str:
+    data = get_item_data_by_type(item_id.item_type)
+    name = data.base_name
+    if item_id.suffix_id:
+        name += " " + get_item_suffix_data(item_id.suffix_id).name_suffix
+    return name
 
 
 def try_add_item_to_inventory(game_state: GameState, item_id: ItemId) -> bool:

@@ -1,6 +1,6 @@
 from pythongame.core.buff_effects import get_buff_effect, register_buff_effect, AbstractBuffEffect
 from pythongame.core.common import ItemType, Sprite, BuffType, Millis, PeriodicTimer
-from pythongame.core.game_data import UiIconSprite, plain_item_id
+from pythongame.core.game_data import UiIconSprite
 from pythongame.core.game_state import Event, PlayerDamagedEnemy, GameState, WorldEntity, \
     NonPlayerCharacter
 from pythongame.core.item_effects import AbstractItemEffect

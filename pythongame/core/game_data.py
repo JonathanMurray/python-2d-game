@@ -1,4 +1,4 @@
-from typing import Set, Dict
+from typing import Set, Dict, Tuple
 
 # We should probably not load image files in here!
 import pygame
@@ -100,18 +100,19 @@ class ConsumableData:
 
 
 class ItemData:
-    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Sprite, name: str, custom_description_lines: List[str],
-                 stats: List[StatModifierInterval],
+    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Sprite, base_name: str,
+                 custom_description_lines: List[str],
+                 base_stats: List[StatModifierInterval],
                  item_equipment_category: Optional[ItemEquipmentCategory] = None):
         self.icon_sprite = icon_sprite
         self.entity_sprite = entity_sprite
-        self.name = name
+        self.base_name = base_name
         self.custom_description_lines: List[str] = custom_description_lines
-        self.stats = stats
+        self.base_stats = base_stats
         self.item_equipment_category = item_equipment_category  # If category is None, the item can't be equipped
 
     def __repr__(self):
-        return "ItemData(%s)" % self.name
+        return "ItemData(%s)" % self.base_name
 
 
 class WallData:
@@ -196,6 +197,17 @@ item_data_by_type: Dict[ItemType, ItemData] = {}
 item_types_grouped_by_level: Dict[int, Set[ItemType]] = {}
 
 item_levels: Dict[ItemType, int] = {}
+
+# TODO register this elsewhere
+item_suffix_data_by_id: Dict[ItemSuffixId, ItemSuffixData] = {
+    ItemSuffixId.RECKONING:
+        ItemSuffixData("of reckoning",
+                       [StatModifierInterval(HeroStat.PHYSICAL_DAMAGE, [0.1, 0.11, 0.12]),
+                        StatModifierInterval(HeroStat.LIFE_STEAL, [0.1, 0.11, 0.12])]),
+    ItemSuffixId.VITALITY:
+        ItemSuffixData("of vitality",
+                       [StatModifierInterval(HeroStat.MAX_HEALTH, [10, 20, 30])])
+}
 
 ABILITIES: Dict[AbilityType, AbilityData] = {}
 
@@ -304,16 +316,29 @@ def get_item_data_by_type(item_type: ItemType) -> ItemData:
     return item_data_by_type[item_type]
 
 
+def get_item_suffix_data(item_suffix_id: ItemSuffixId) -> ItemSuffixData:
+    return item_suffix_data_by_id[item_suffix_id]
+
+
 def randomized_item_id(item_type: ItemType) -> ItemId:
     data = get_item_data_by_type(item_type)
-    return ItemId.randomized(item_type, data.stats)
+    # TODO this should be much more sophisticated
+    # There should be some logic around how suffixes are chosen as loot
+    # suffixes should have levels that match up with the item
+    # loot tables should configure how likely a suffix is to drop
+    if random.random() < 0.5:
+        return ItemId.randomized_base(item_type, data.base_stats)
+    else:
+        suffix_id = random.choice([suffix_id for suffix_id in ItemSuffixId])
+        suffix_stats = get_item_suffix_data(suffix_id).stats
+        return ItemId.randomized_with_suffix(item_type, data.base_stats, suffix_id, suffix_stats)
 
 
 def plain_item_id(item_type: ItemType) -> ItemId:
     data = get_item_data_by_type(item_type)
-    if len(data.stats) > 0:
+    if len(data.base_stats) > 0:
         raise Exception("Item %s has stats! Cannot create plain version!" % item_type)
-    return ItemId(item_type, [])
+    return ItemId(item_type, [], None, [])
 
 
 def register_item_level(item_type: ItemType, item_level: int):

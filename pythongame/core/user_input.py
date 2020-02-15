@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import pygame
 
 from pythongame.core.common import *
