@@ -51,7 +51,6 @@ class DebuffedByGoatsRing(AbstractBuffEffect):
 
 
 def register_goats_ring():
-    # TODO Turn this into a 'unique' item
     item_type = ItemType.GOATS_RING
     proc_chance = 0.2
     register_custom_effect_item(
@@ -65,6 +64,7 @@ def register_goats_ring():
         custom_effect=ItemEffect(proc_chance),
         stat_modifier_intervals=[],
         custom_description=["Whenever you damage an enemy, there is a  " + str(
-            int(proc_chance * 100)) + "% chance that it will be cursed and take additional magic damage over time"]
+            int(proc_chance * 100)) + "% chance that it will be cursed and take additional magic damage over time"],
+        is_unique=True
     )
     register_buff_effect(BUFF_TYPE, DebuffedByGoatsRing)

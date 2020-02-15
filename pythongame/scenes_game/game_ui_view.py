@@ -559,8 +559,10 @@ class GameUiView:
                     category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[data.item_equipment_category]
                 description_lines = create_item_description(item_id)
                 item_name = build_item_name(item_id)
+                is_rare = item_id.suffix_id is not None
+                is_unique = data.is_unique
                 tooltip = TooltipGraphics.create_for_item(self.ui_render, item_name, category_name, icon.rect.topleft,
-                                                          description_lines)
+                                                          description_lines, is_rare=is_rare, is_unique=is_unique)
             elif slot_equipment_category:
                 image = self.images_by_item_category[slot_equipment_category]
                 category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[slot_equipment_category]

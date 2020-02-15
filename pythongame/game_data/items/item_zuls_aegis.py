@@ -37,7 +37,6 @@ class StunnedFromAegis(AbstractBuffEffect):
 
 
 def register_zuls_aegis():
-    # TODO Turn this into a 'unique' item
     register_buff_effect(BUFF_TYPE_STUNNED, StunnedFromAegis)
     item_type = ItemType.ZULS_AEGIS
     effect = ItemEffect()
@@ -53,5 +52,6 @@ def register_zuls_aegis():
         stat_modifier_intervals=[StatModifierInterval(HeroStat.ARMOR, [3]),
                                  StatModifierInterval(HeroStat.BLOCK_AMOUNT, [8]),
                                  StatModifierInterval(HeroStat.MAGIC_RESIST_CHANCE, [0.1])],
-        custom_description=["On block: stun attacker for " + "{:.1f}".format(STUN_DURATION / 1000) + "s"]
+        custom_description=["On block: stun attacker for " + "{:.1f}".format(STUN_DURATION / 1000) + "s"],
+        is_unique=True
     )

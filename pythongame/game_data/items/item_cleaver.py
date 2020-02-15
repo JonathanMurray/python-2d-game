@@ -44,7 +44,6 @@ class BuffEffect(AbstractBuffEffect):
 
 
 def register_cleaver_item():
-    # TODO Turn this into a 'unique' item
     register_custom_effect_item(
         item_type=ITEM_TYPE,
         item_level=7,
@@ -57,6 +56,7 @@ def register_cleaver_item():
         custom_description=[str(
             int(PROC_CHANCE * 100)) + "% on hit: cause enemy to bleed, taking " + str(TOTAL_DAMAGE) + \
                             " physical damage over " + "{:.0f}".format(BUFF_DURATION / 1000) + "s"],
-        stat_modifier_intervals=[StatModifierInterval(HeroStat.PHYSICAL_DAMAGE, [0.2])]
+        stat_modifier_intervals=[StatModifierInterval(HeroStat.PHYSICAL_DAMAGE, [0.2])],
+        is_unique=True
     )
     register_buff_effect(BUFF_TYPE, BuffEffect)

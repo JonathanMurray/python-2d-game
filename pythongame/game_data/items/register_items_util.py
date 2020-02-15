@@ -19,7 +19,8 @@ def register_randomized_stat_modifying_item(
         item_equipment_category: ItemEquipmentCategory,
         name: str,
         stat_modifier_intervals: Union[List[StatModifierInterval], Dict[HeroStat, List[Union[int, float]]]],
-        item_level: Optional[int] = None):
+        item_level: Optional[int] = None,
+        is_unique: bool = False):
     if item_level is not None:
         register_item_level(item_type, item_level)
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
@@ -30,7 +31,8 @@ def register_randomized_stat_modifying_item(
         stat_modifier_intervals = [StatModifierInterval(hero_stat, stat_modifier_intervals[hero_stat])
                                    for hero_stat in stat_modifier_intervals]
 
-    item_data = ItemData(ui_icon_sprite, sprite, name, [], stat_modifier_intervals, item_equipment_category)
+    item_data = ItemData(ui_icon_sprite, sprite, name, [], stat_modifier_intervals, is_unique=is_unique,
+                         item_equipment_category=item_equipment_category)
     register_item_data(item_type, item_data)
 
 
@@ -44,11 +46,12 @@ def register_custom_effect_item(
         custom_effect: AbstractItemEffect,
         custom_description: List[str],
         stat_modifier_intervals: List[StatModifierInterval],
-        item_level: Optional[int] = None):
+        item_level: Optional[int] = None,
+        is_unique: bool = False):
     if item_level is not None:
         register_item_level(item_type, item_level)
     item_data = ItemData(ui_icon_sprite, sprite, name, custom_description, stat_modifier_intervals,
-                         item_equipment_category)
+                         is_unique=is_unique, item_equipment_category=item_equipment_category)
     register_custom_item_effect(item_type, custom_effect)
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
@@ -62,7 +65,8 @@ def register_passive_item(
         image_file_path: str,
         name: str,
         description_lines: List[str]):
-    item_data = ItemData(ui_icon_sprite, sprite, name, description_lines, [], None)
+    item_data = ItemData(ui_icon_sprite, sprite, name, description_lines, [], is_unique=False,
+                         item_equipment_category=None)
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
     register_item_data(item_type, item_data)
@@ -75,7 +79,8 @@ def register_quest_item(
         image_file_path: str,
         name: str,
         description_lines: List[str]):
-    item_data = ItemData(ui_icon_sprite, sprite, name, description_lines, [], ItemEquipmentCategory.QUEST)
+    item_data = ItemData(ui_icon_sprite, sprite, name, description_lines, [],
+                         is_unique=False, item_equipment_category=ItemEquipmentCategory.QUEST)
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
     register_item_data(item_type, item_data)

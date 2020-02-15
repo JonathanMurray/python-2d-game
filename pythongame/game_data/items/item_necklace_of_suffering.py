@@ -25,7 +25,6 @@ class BuffEffect(StatModifyingBuffEffect):
 
 
 def register_necklace_of_suffering_item():
-    # TODO Turn this into a 'unique' item
     register_custom_effect_item(
         item_type=ITEM_TYPE,
         item_level=6,
@@ -37,6 +36,7 @@ def register_necklace_of_suffering_item():
         custom_description=["Any time you lose health, gain +" + str(int(BUFF_DAMAGE * 100)) +
                             "% damage for " + "{:.0f}".format(BUFF_DURATION / 1000) + "s"],
         custom_effect=ItemEffect(),
-        stat_modifier_intervals=[StatModifierInterval(HeroStat.DAMAGE, [0.1])]
+        stat_modifier_intervals=[StatModifierInterval(HeroStat.DAMAGE, [0.1])],
+        is_unique=True
     )
     register_buff_effect(BUFF_TYPE, BuffEffect)

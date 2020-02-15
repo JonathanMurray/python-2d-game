@@ -4,7 +4,6 @@ from pythongame.game_data.items.register_items_util import register_randomized_s
 
 
 def register_lich_armor_item():
-    # TODO Turn this into a 'unique' item
     register_randomized_stat_modifying_item(
         item_type=ItemType.LICH_ARMOR,
         item_level=7,
@@ -15,5 +14,6 @@ def register_lich_armor_item():
         name="Lich armor",
         stat_modifier_intervals=[StatModifierInterval(HeroStat.ARMOR, [1]),
                                  StatModifierInterval(HeroStat.MAX_MANA, [40]),
-                                 StatModifierInterval(HeroStat.MAGIC_RESIST_CHANCE, [0.05])]
+                                 StatModifierInterval(HeroStat.MAGIC_RESIST_CHANCE, [0.05])],
+        is_unique=True
     )

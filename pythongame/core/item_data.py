@@ -10,12 +10,17 @@ class ItemData:
     def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Sprite, base_name: str,
                  custom_description_lines: List[str],
                  base_stats: List[StatModifierInterval],
+                 is_unique: bool,
                  item_equipment_category: Optional[ItemEquipmentCategory] = None):
         self.icon_sprite = icon_sprite
         self.entity_sprite = entity_sprite
         self.base_name = base_name
         self.custom_description_lines: List[str] = custom_description_lines
         self.base_stats = base_stats
+        # "unique" means: when this item drops as loot, it cannot receive suffixes.
+        # Other items drop as either "common" or "rare", but this one is always the same "unique"
+        # "unique" items are also rendered differently in the inventory
+        self.is_unique = is_unique
         self.item_equipment_category = item_equipment_category  # If category is None, the item can't be equipped
 
     def __repr__(self):
@@ -85,10 +90,11 @@ class DescriptionLine:
 
 def create_item_description(item_id: ItemId) -> List[DescriptionLine]:
     data = get_item_data_by_type(item_id.item_type)
-    lines = [DescriptionLine(line) for line in data.custom_description_lines]
+    lines = []
     if item_id.base_stats:
         for modifier in item_id.base_stats:
             lines.append(DescriptionLine(modifier.get_description()))
+    lines += [DescriptionLine(line) for line in data.custom_description_lines]
     if item_id.suffix_id:
         for modifier in item_id.suffix_stats:
             lines.append(DescriptionLine(modifier.get_description(), from_suffix=True))

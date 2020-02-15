@@ -21,7 +21,7 @@ COLOR_LIGHT_GRAY = (240, 240, 240)
 COLOR_GRAY = (200, 200, 200)
 COLOR_DARK_GRAY = (100, 100, 100)
 COLOR_WHITE = (250, 250, 250)
-COLOR_SPECIAL_DESCRIPTION_LINE = (170, 170, 250)
+COLOR_SPECIAL_DESCRIPTION_LINE = (140, 140, 250)
 
 COLOR_ICON_OUTLINE = (150, 150, 190)
 COLOR_BUTTON_OUTLINE = (150, 150, 190)
@@ -29,7 +29,10 @@ COLOR_HOVERED = (200, 200, 250)
 COLOR_ICON_HIGHLIGHTED = (250, 250, 150)
 COLOR_TOGGLE_HIGHLIGHTED = (150, 250, 200)
 COLOR_TOGGLE_OPENED = (50, 50, 120)
-COLOR_ITEM_TOOLTIP_HEADER = (250, 250, 150)
+COLOR_ITEM_TOOLTIP_HEADER_COMMON = (230, 230, 180)
+COLOR_ITEM_TOOLTIP_HEADER_RARE = (190, 150, 250)
+COLOR_ITEM_TOOLTIP_HEADER_UNIQUE = (250, 250, 150)
+
 DIR_FONTS = './resources/fonts/'
 
 TALENT_ICON_SIZE = (32, 32)
@@ -240,7 +243,7 @@ class TooltipGraphics:
         self._detail_lines: List[DetailLine] = []
         for detail in details:
             self._detail_lines += [DetailLine(new_line, detail.colored)
-                                   for new_line in split_text_into_lines(detail.text, 32)]
+                                   for new_line in split_text_into_lines(detail.text, 38)]
         w = 300
         h = 60 + 17 * len(self._detail_lines)
         if bottom_left:
@@ -256,7 +259,6 @@ class TooltipGraphics:
         self._ui_render.rect_transparent(self._rect, 200, (0, 0, 0))
         self._ui_render.rect(COLOR_DARK_GRAY, self._rect, 1)
         header_position = (self._rect.x + 20, self._rect.y + 12)
-        # TODO Use different color for rare items
         self._ui_render.text(self._font_header, self._title, header_position, self._title_color)
         y_separator = self._rect.y + 37
         separator_start = (self._rect.x + 10, y_separator)
@@ -269,13 +271,18 @@ class TooltipGraphics:
 
     @staticmethod
     def create_for_item(ui_render: DrawableArea, item_name: str, category_name: str, bottom_left: Tuple[int, int],
-                        description_lines: List[DescriptionLine]):
+                        description_lines: List[DescriptionLine], is_rare: bool, is_unique: bool):
         tooltip_details = []
         if category_name:
             tooltip_details.append(DetailLine("[" + category_name + "]"))
         tooltip_details += [DetailLine(text=line.text, colored=line.from_suffix) for line in description_lines]
-        return TooltipGraphics(ui_render, COLOR_ITEM_TOOLTIP_HEADER, item_name, tooltip_details,
-                               bottom_left=bottom_left)
+        if is_unique:
+            title_color = COLOR_ITEM_TOOLTIP_HEADER_UNIQUE
+        elif is_rare:
+            title_color = COLOR_ITEM_TOOLTIP_HEADER_RARE
+        else:
+            title_color = COLOR_WHITE
+        return TooltipGraphics(ui_render, title_color, item_name, tooltip_details, bottom_left=bottom_left)
 
     @staticmethod
     def create_for_consumable(ui_render: DrawableArea, data: ConsumableData, bottom_left: Tuple[int, int]):
