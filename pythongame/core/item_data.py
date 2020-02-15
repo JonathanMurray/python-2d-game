@@ -131,7 +131,7 @@ def randomized_item_id(item_type: ItemType) -> ItemId:
     return ItemId.randomized_base(item_type, data.base_stats)
 
 
-def randomized_rare_item_id(item_type: ItemType, suffix_id: ItemSuffixId) -> ItemId:
+def randomized_suffixed_item_id(item_type: ItemType, suffix_id: ItemSuffixId) -> ItemId:
     data = get_item_data_by_type(item_type)
     suffix_stats = get_item_suffix_data(suffix_id).stats
     return ItemId.randomized_with_suffix(item_type, data.base_stats, suffix_id, suffix_stats)

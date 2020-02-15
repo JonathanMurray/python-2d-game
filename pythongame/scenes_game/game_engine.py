@@ -9,11 +9,11 @@ from pythongame.core.game_data import CONSUMABLES, NON_PLAYER_CHARACTERS, alloca
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
     EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest, \
     PlayerUnlockedNewTalent, AgentBuffsUpdate, Shrine
-from pythongame.core.item_data import build_item_name, randomized_rare_item_id
+from pythongame.core.item_data import build_item_name, randomized_suffixed_item_id
 from pythongame.core.item_data import randomized_item_id, get_item_data
 from pythongame.core.item_effects import create_item_effect, try_add_item_to_inventory
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
-from pythongame.core.loot import LootEntry, MoneyLootEntry, CommonItemLootEntry, ConsumableLootEntry, RareItemLootEntry
+from pythongame.core.loot import LootEntry, MoneyLootEntry, ItemLootEntry, ConsumableLootEntry, SuffixedItemLootEntry
 from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vectors, \
     get_rect_with_increased_size_in_all_directions, translate_in_direction
 from pythongame.core.sound_player import play_sound
@@ -367,12 +367,12 @@ class GameEngine:
             if isinstance(loot_entry, MoneyLootEntry):
                 money_pile_on_ground = create_money_pile_on_ground(loot_entry.amount, loot_position)
                 self.game_state.money_piles_on_ground.append(money_pile_on_ground)
-            elif isinstance(loot_entry, CommonItemLootEntry):
+            elif isinstance(loot_entry, ItemLootEntry):
                 item_id = randomized_item_id(loot_entry.item_type)
                 item_on_ground = create_item_on_ground(item_id, loot_position)
                 self.game_state.items_on_ground.append(item_on_ground)
-            elif isinstance(loot_entry, RareItemLootEntry):
-                item_id = randomized_rare_item_id(loot_entry.item_type, loot_entry.suffix_id)
+            elif isinstance(loot_entry, SuffixedItemLootEntry):
+                item_id = randomized_suffixed_item_id(loot_entry.item_type, loot_entry.suffix_id)
                 item_on_ground = create_item_on_ground(item_id, loot_position)
                 self.game_state.items_on_ground.append(item_on_ground)
             elif isinstance(loot_entry, ConsumableLootEntry):

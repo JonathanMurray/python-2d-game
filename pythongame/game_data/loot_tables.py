@@ -4,7 +4,7 @@ from pythongame.core.common import ItemType, LootTableId, ConsumableType
 from pythongame.core.game_data import get_consumables_with_level
 from pythongame.core.item_data import get_items_with_level, get_items_within_levels
 from pythongame.core.loot import LeveledLootTable, StaticLootTable, LootGroup, LootTable, \
-    ConsumableLootEntry, MoneyLootEntry, CommonItemLootEntry
+    ConsumableLootEntry, MoneyLootEntry, ItemLootEntry
 
 loot_tables: Dict[LootTableId, LootTable] = {}
 
@@ -36,8 +36,8 @@ def _table_for_goblin_boss() -> LootTable:
     # TODO Boss should drop rares!
     return StaticLootTable(
         [
-            LootGroup(2, [CommonItemLootEntry(ItemType.FROG), ConsumableLootEntry(ConsumableType.WARP_STONE)], 1),
-            LootGroup(1, [CommonItemLootEntry(item_type) for item_type in get_items_within_levels(5, 10)], 1),
+            LootGroup(2, [ItemLootEntry(ItemType.FROG), ConsumableLootEntry(ConsumableType.WARP_STONE)], 1),
+            LootGroup(1, [ItemLootEntry(item_type) for item_type in get_items_within_levels(5, 10)], 1),
             LootGroup(1, [MoneyLootEntry(2), MoneyLootEntry(3), MoneyLootEntry(5)], 0.7)
         ]
     )
@@ -48,8 +48,8 @@ def _table_for_human_boss() -> LootTable:
     return StaticLootTable(
         [
             LootGroup.single(ConsumableLootEntry(ConsumableType.WARP_STONE), 1),
-            LootGroup(1, [CommonItemLootEntry(item_type) for item_type in get_items_within_levels(5, 10)], 1),
-            LootGroup.single(CommonItemLootEntry(ItemType.KEY), 1),
+            LootGroup(1, [ItemLootEntry(item_type) for item_type in get_items_within_levels(5, 10)], 1),
+            LootGroup.single(ItemLootEntry(ItemType.KEY), 1),
         ]
     )
 

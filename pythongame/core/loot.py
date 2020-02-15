@@ -3,9 +3,10 @@ import random
 from typing import List, Dict, Optional
 
 from pythongame.core.common import ConsumableType, ItemType, ItemSuffixId
-
-
 # Represents the smallest unit of loot. It shows up on the ground as "one item"
+from pythongame.core.item_data import get_item_data_by_type
+
+
 class LootEntry:
     pass
 
@@ -20,12 +21,12 @@ class ConsumableLootEntry(LootEntry):
         self.consumable_type = consumable_type
 
 
-class CommonItemLootEntry(LootEntry):
+class ItemLootEntry(LootEntry):
     def __init__(self, item_type: ItemType):
         self.item_type = item_type
 
 
-class RareItemLootEntry(LootEntry):
+class SuffixedItemLootEntry(LootEntry):
     def __init__(self, item_type: ItemType, suffix_id: Optional[ItemSuffixId]):
         self.item_type = item_type
         self.suffix_id = suffix_id
@@ -102,12 +103,14 @@ class LeveledLootTable(LootTable):
         if random.random() <= self.item_drop_chance:
             item_level = random.choices(self.item_levels, weights=self.item_level_weights)[0]
             item_type = random.choice(self.item_types_by_level[item_level])
-            if random.random() <= self.item_rare_chance:
+            # TODO control drop rate of uniques vs rares
+            is_unique = get_item_data_by_type(item_type).is_unique
+            if not is_unique and random.random() <= self.item_rare_chance:
                 # TODO determine suffix based on level!
                 suffix_id = random.choice([suffix_id for suffix_id in ItemSuffixId])
-                loot.append(RareItemLootEntry(item_type, suffix_id))
+                loot.append(SuffixedItemLootEntry(item_type, suffix_id))
             else:
-                loot.append(CommonItemLootEntry(item_type))
+                loot.append(ItemLootEntry(item_type))
         if random.random() <= self.consumable_drop_chance:
             consumable_level = random.choices(self.consumable_levels, weights=self.consumable_level_weights)[0]
             consumable_type = random.choice(self.consumable_types_by_level[consumable_level])
