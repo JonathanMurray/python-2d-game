@@ -17,7 +17,7 @@ from pythongame.core.view.render_util import DrawableArea
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
     ToggleButton, ControlsWindow, StatsWindow, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text, \
     DialogOption, Dialog, Checkbox, Button, Message, PausedSplashScreen, TalentTierData, TalentOptionData, TalentIcon, \
-    ToggleButtonId, QuestsWindow
+    ToggleButtonId, QuestsWindow, DetailLine
 from pythongame.scenes_game.ui_events import TrySwitchItemInInventory, EventTriggeredFromUi, \
     DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
     PickTalent, StartDraggingItemOrConsumable, SaveGame, ToggleSound, ToggleFullscreen, ToggleWindow
@@ -509,12 +509,12 @@ class GameUiView:
         mana_regen = player_state.mana_resource.get_effective_regen()
 
         tooltip_details = [
-            "regeneration: " + "{:.1f}".format(health_regen) + "/s"]
+            DetailLine("regeneration: " + "{:.1f}".format(health_regen) + "/s")]
         health_tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "Health", tooltip_details,
                                          bottom_left=(self.healthbar.rect.left - 2, self.healthbar.rect.top - 1))
         self.healthbar.tooltip = health_tooltip
         tooltip_details = [
-            "regeneration: " + "{:.1f}".format(mana_regen) + "/s"]
+            DetailLine("regeneration: " + "{:.1f}".format(mana_regen) + "/s")]
         mana_tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "Mana", tooltip_details,
                                        bottom_left=(self.manabar.rect.left - 2, self.manabar.rect.top - 1))
         self.manabar.tooltip = mana_tooltip
@@ -564,8 +564,8 @@ class GameUiView:
             elif slot_equipment_category:
                 image = self.images_by_item_category[slot_equipment_category]
                 category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[slot_equipment_category]
-                tooltip_details = ["[" + category_name + "]",
-                                   "You have nothing equipped. Drag an item here to equip it!"]
+                tooltip_details = [DetailLine("[" + category_name + "]"),
+                                   DetailLine("You have nothing equipped. Drag an item here to equip it!")]
                 tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "...", tooltip_details,
                                           bottom_left=icon.rect.topleft)
 

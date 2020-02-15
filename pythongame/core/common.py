@@ -622,6 +622,9 @@ class ItemId:
         except BaseException as e:
             raise Exception("Failed to parse item_id '" + item_id + "'", e)
 
+    def __eq__(self, other):
+        return isinstance(other, ItemId) and self.id_string == other.id_string
+
 
 class ProjectileType(Enum):
     PLAYER_FIREBALL = 1

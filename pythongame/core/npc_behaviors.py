@@ -275,7 +275,7 @@ def buy_item_option(item_id: ItemId, cost: int):
                             SellItemNpcAction(cost, item_id, item_name.lower()),
                             icon_sprite,
                             item_name,
-                            ", ".join(description_lines))
+                            ", ".join([line.text for line in description_lines]))
 
 
 def sell_item_option(item_id: ItemId, price: int, detail_body: str):

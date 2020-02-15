@@ -109,6 +109,7 @@ def _get_loot_name(lootable: LootableOnGround) -> str:
     if isinstance(lootable, ConsumableOnGround):
         return CONSUMABLES[lootable.consumable_type].name
     if isinstance(lootable, ItemOnGround):
+        # TODO Render rare items differently
         return build_item_name(lootable.item_id)
 
 
@@ -116,4 +117,5 @@ def _get_loot_details(lootable: LootableOnGround) -> List[str]:
     if isinstance(lootable, ConsumableOnGround):
         return [CONSUMABLES[lootable.consumable_type].description]
     if isinstance(lootable, ItemOnGround):
-        return create_item_description(lootable.item_id)
+        # TODO Render suffix lines differently?
+        return [line.text for line in create_item_description(lootable.item_id)]

@@ -74,15 +74,24 @@ _item_suffix_data_by_id: Dict[ItemSuffixId, ItemSuffixData] = {
 }
 
 
-def create_item_description(item_id: ItemId) -> List[str]:
+class DescriptionLine:
+    def __init__(self, text: str, from_suffix: bool = False):
+        self.text = text
+        self.from_suffix = from_suffix
+
+    def __repr__(self):
+        return self.text
+
+
+def create_item_description(item_id: ItemId) -> List[DescriptionLine]:
     data = get_item_data_by_type(item_id.item_type)
-    lines = list(data.custom_description_lines)
+    lines = [DescriptionLine(line) for line in data.custom_description_lines]
     if item_id.base_stats:
         for modifier in item_id.base_stats:
-            lines.append(modifier.get_description())
+            lines.append(DescriptionLine(modifier.get_description()))
     if item_id.suffix_id:
         for modifier in item_id.suffix_stats:
-            lines.append(modifier.get_description())
+            lines.append(DescriptionLine(modifier.get_description(), from_suffix=True))
     return lines
 
 

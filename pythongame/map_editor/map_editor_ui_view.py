@@ -219,7 +219,7 @@ class MapEditorView:
                     category_name = None
                     if data.item_equipment_category:
                         category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[data.item_equipment_category]
-                    description_lines = create_item_description(entity.item_id)
+                    description_lines = [line.text for line in create_item_description(entity.item_id)]
                     item_name = build_item_name(entity.item_id)
                     tooltip = TooltipGraphics.create_for_item(self._ui_render, item_name, category_name, (x, y),
                                                               description_lines)
