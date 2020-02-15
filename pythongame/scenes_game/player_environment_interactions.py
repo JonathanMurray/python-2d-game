@@ -1,15 +1,15 @@
 import sys
-from typing import Optional, Any, List
+from typing import Optional, Any, List, Tuple
 
 from pythongame.core.game_data import CONSUMABLES, PORTALS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     ConsumableOnGround, ItemOnGround, Chest, Shrine
 from pythongame.core.game_state import WorldEntity
-from pythongame.core.item_data import build_item_name, create_item_description
+from pythongame.core.item_data import build_item_name, create_item_description, get_item_data
 from pythongame.core.math import boxes_intersect, is_x_and_y_within_distance, \
     get_manhattan_distance_between_rects
 from pythongame.core.npc_behaviors import has_npc_dialog
-from pythongame.core.view.game_world_view import EntityActionText
+from pythongame.core.view.game_world_view import EntityActionText, EntityActionTextStyle
 from pythongame.scenes_game.game_engine import GameEngine
 
 
@@ -78,39 +78,46 @@ class PlayerInteractionsState:
 
 def _get_entity_action_text(ready_entity: Any, is_shift_key_held_down: bool) -> Optional[EntityActionText]:
     if isinstance(ready_entity, NonPlayerCharacter):
-        return EntityActionText(ready_entity.world_entity, "[Space] ...", [])
+        return EntityActionText(ready_entity.world_entity, "...", [])
     elif isinstance(ready_entity, LootableOnGround):
-        loot_name = _get_loot_name(ready_entity)
+        name, style = _get_loot_name(ready_entity)
         if is_shift_key_held_down:
             loot_details = _get_loot_details(ready_entity)
         else:
             loot_details = []
-        return EntityActionText(ready_entity.world_entity, "[Space] " + loot_name, loot_details)
+        return EntityActionText(ready_entity.world_entity, name, loot_details, style=style)
     elif isinstance(ready_entity, Portal):
         if ready_entity.is_enabled:
             data = PORTALS[ready_entity.portal_id]
-            return EntityActionText(ready_entity.world_entity, "[Space] " + data.destination_name, [])
+            return EntityActionText(ready_entity.world_entity, data.destination_name, [])
         else:
-            return EntityActionText(ready_entity.world_entity, "[Space] ???", [])
+            return EntityActionText(ready_entity.world_entity, "???", [])
     elif isinstance(ready_entity, WarpPoint):
-        return EntityActionText(ready_entity.world_entity, "[Space] Warp", [])
+        return EntityActionText(ready_entity.world_entity, "Warp", [])
     elif isinstance(ready_entity, Chest):
-        return EntityActionText(ready_entity.world_entity, "[Space] Open", [])
+        return EntityActionText(ready_entity.world_entity, "Open", [])
     elif isinstance(ready_entity, Shrine):
         if ready_entity.has_been_used:
             return None
         else:
-            return EntityActionText(ready_entity.world_entity, "[Space] Touch", [])
+            return EntityActionText(ready_entity.world_entity, "Touch", [])
     else:
         raise Exception("Unhandled entity: " + str(ready_entity))
 
 
-def _get_loot_name(lootable: LootableOnGround) -> str:
+def _get_loot_name(lootable: LootableOnGround) -> Tuple[str, EntityActionTextStyle]:
     if isinstance(lootable, ConsumableOnGround):
-        return CONSUMABLES[lootable.consumable_type].name
+        name = CONSUMABLES[lootable.consumable_type].name
+        return name, EntityActionTextStyle.PLAIN
     if isinstance(lootable, ItemOnGround):
-        # TODO Render rare items differently
-        return build_item_name(lootable.item_id)
+        name = build_item_name(lootable.item_id)
+        if lootable.item_id.suffix_id is not None:
+            style = EntityActionTextStyle.LOOT_RARE
+        elif get_item_data(lootable.item_id).is_unique:
+            style = EntityActionTextStyle.LOOT_UNIQUE
+        else:
+            style = EntityActionTextStyle.PLAIN
+        return name, style
 
 
 def _get_loot_details(lootable: LootableOnGround) -> List[str]:

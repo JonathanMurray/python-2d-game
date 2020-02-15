@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Dict, List, Tuple, Optional, Union
 
 import pygame
@@ -19,12 +20,21 @@ RENDER_WORLD_COORDINATES = False
 DIR_FONTS = './resources/fonts/'
 
 
-# Used to display some text above an NPC like "[Space] talk"
+class EntityActionTextStyle(Enum):
+    PLAIN = 1
+    LOOT_RARE = 2
+    LOOT_UNIQUE = 3
+
+
+# Used to display some text above entities (NPC's, objects, loot, etc)
+# Example "[Space] Talk" or "[Space] Health potion"
 class EntityActionText:
-    def __init__(self, entity: WorldEntity, text: str, details: List[str]):
+    def __init__(self, entity: WorldEntity, text: str, details: List[str],
+                 style: EntityActionTextStyle = EntityActionTextStyle.PLAIN):
         self.entity: WorldEntity = entity
         self.text: str = text
         self.details: List[str] = details
+        self.style = style
 
 
 class GameWorldView:
@@ -210,19 +220,29 @@ class GameWorldView:
 
     def _entity_action_text(self, entity_action_text: EntityActionText):
         entity_center_pos = entity_action_text.entity.get_center_position()
-        text = entity_action_text.text
+        header_prefix = "[Space] "
+        header_line = header_prefix + entity_action_text.text
         detail_lines = []
         for detail_entry in entity_action_text.details:
             detail_lines += split_text_into_lines(detail_entry, 30)
         if detail_lines:
-            line_length = max(max([len(line) for line in detail_lines]), len(text))
+            line_length = max(max([len(line) for line in detail_lines]), len(header_line))
         else:
-            line_length = len(text)
+            line_length = len(header_line)
         rect_width = line_length * 8
         rect_height = 16 + len(detail_lines) * 16
         rect_pos = (entity_center_pos[0] - rect_width // 2, entity_center_pos[1] - 60)
         self.world_render.rect_transparent(Rect(rect_pos[0], rect_pos[1], rect_width, rect_height), 150, (0, 0, 0))
-        self.world_render.text(self.font_npc_action, text, (rect_pos[0] + 4, rect_pos[1]))
+        if entity_action_text.style == EntityActionTextStyle.LOOT_RARE:
+            color = (190, 150, 250)
+        elif entity_action_text.style == EntityActionTextStyle.LOOT_UNIQUE:
+            color = (250, 250, 150)
+        else:
+            color = (255, 255, 255)
+        self.world_render.text(self.font_npc_action, header_prefix, (rect_pos[0] + 4, rect_pos[1]))
+        prefix_w = self.font_npc_action.size(header_prefix)[0]
+        self.world_render.text(self.font_npc_action, entity_action_text.text, (rect_pos[0] + 4 + prefix_w, rect_pos[1]),
+                               color)
         for i, detail_line in enumerate(detail_lines):
             self.world_render.text(self.font_npc_action, detail_line, (rect_pos[0] + 4, rect_pos[1] + (i + 1) * 16))
 
