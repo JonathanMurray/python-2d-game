@@ -50,31 +50,16 @@ class LootTable:
         raise Exception("Sub-classes must override this method!")
 
 
-# Represents the loot of one enemy. Made up of one to many "loot groups"
-class StaticLootTable(LootTable):
-    def __init__(self, groups: List[LootGroup]):
-        self.groups = groups
-
-    def generate_loot(self) -> List[LootEntry]:
-        loot: List[LootEntry] = []
-        for group in self.groups:
-            if random.random() < group.chance_to_get_group:
-                entries = list(group.entries)
-                for i in range(group.pick_n):
-                    pick_i = random.choice(entries)
-                    loot.append(pick_i)
-                    entries.remove(pick_i)
-        return loot
-
-
 class LeveledLootTable(LootTable):
     def __init__(self,
+                 guaranteed_drops: List[LootEntry],
                  item_drop_chance: float,
                  item_rare_chance: float,
                  level: int,
                  item_types_by_level: Dict[int, List[ItemType]],
                  consumable_drop_chance: float,
                  consumable_types_by_level: Dict[int, List[ConsumableType]]):
+        self.guaranteed_drops = guaranteed_drops
         self.item_drop_chance = item_drop_chance
         self.item_rare_chance = item_rare_chance
         self.consumable_drop_chance = consumable_drop_chance
@@ -95,7 +80,7 @@ class LeveledLootTable(LootTable):
         self.money_drop_chance = 0.15
 
     def generate_loot(self) -> List[LootEntry]:
-        loot = []
+        loot = list(self.guaranteed_drops)
         if random.random() <= self.item_drop_chance:
             item_level = random.choices(self.item_levels, weights=self.item_level_weights)[0]
             item_type = random.choice(self.item_types_by_level[item_level])
