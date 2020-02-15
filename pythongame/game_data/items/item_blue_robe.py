@@ -11,6 +11,6 @@ def register_blue_robe_item():
         sprite=Sprite.ITEM_BLUE_ROBE,
         image_file_path="resources/graphics/item_blue_robe.png",
         item_equipment_category=ItemEquipmentCategory.CHEST,
-        name="Blue Robe",
-        stat_modifier_intervals={HeroStat.MANA_REGEN: [0.3, 0.4], HeroStat.MAX_MANA: [10, 15, 20]}
+        name="Blue robe",
+        stat_modifier_intervals={HeroStat.MANA_REGEN: [0.3, 0.4]}
     )

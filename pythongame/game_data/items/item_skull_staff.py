@@ -11,6 +11,6 @@ def register_skull_staff_item():
         sprite=Sprite.ITEM_SKULL_STAFF,
         image_file_path="resources/graphics/item_skullstaff.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
-        name="Skull Staff",
+        name="Skull staff",
         stat_modifier_intervals={HeroStat.LIFE_STEAL: [0.07, 0.08, 0.09, 0.1]}
     )

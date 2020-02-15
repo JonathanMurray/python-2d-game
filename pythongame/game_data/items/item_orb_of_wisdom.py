@@ -11,6 +11,6 @@ def register_orb_of_wisdom_item():
         sprite=Sprite.ITEM_ORB_OF_WISDOM,
         image_file_path="resources/graphics/item_orb_of_wisdom.png",
         item_equipment_category=ItemEquipmentCategory.OFF_HAND,
-        name="Orb of Wisdom",
+        name="Arcane orb",
         stat_modifier_intervals={HeroStat.MANA_REGEN: [0.5, 0.6, 0.7, 0.8, 0.9, 1]}
     )

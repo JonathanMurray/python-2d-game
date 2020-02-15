@@ -11,6 +11,6 @@ def register_knights_armor():
         sprite=Sprite.ITEM_KNIGHTS_ARMOR,
         image_file_path="resources/graphics/item_knights_armor.png",
         item_equipment_category=ItemEquipmentCategory.CHEST,
-        name="Knight's Armor",
+        name="Knight's armor",
         stat_modifier_intervals={HeroStat.ARMOR: [2]}
     )

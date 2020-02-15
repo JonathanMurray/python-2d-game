@@ -11,7 +11,7 @@ def register_royal_sword_item():
         sprite=Sprite.ITEM_ROYAL_SWORD,
         image_file_path="resources/graphics/item_royal_sword.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
-        name="Royal Sword",
+        name="Royal sword",
         stat_modifier_intervals=[StatModifierInterval(HeroStat.PHYSICAL_DAMAGE, [0.14, 0.15, 0.16]),
                                  StatModifierInterval(HeroStat.ARMOR, [1])]
     )

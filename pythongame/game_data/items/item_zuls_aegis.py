@@ -37,6 +37,7 @@ class StunnedFromAegis(AbstractBuffEffect):
 
 
 def register_zuls_aegis():
+    # TODO Turn this into a 'unique' item
     register_buff_effect(BUFF_TYPE_STUNNED, StunnedFromAegis)
     item_type = ItemType.ZULS_AEGIS
     effect = ItemEffect()

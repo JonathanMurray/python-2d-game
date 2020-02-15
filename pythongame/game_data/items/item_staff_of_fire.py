@@ -4,6 +4,7 @@ from pythongame.game_data.items.register_items_util import register_randomized_s
 
 
 def register_staff_of_fire_item():
+    # TODO Turn this into a 'unique' item
     register_randomized_stat_modifying_item(
         item_type=ItemType.STAFF_OF_FIRE,
         ui_icon_sprite=UiIconSprite.ITEM_STAFF_OF_FIRE,

@@ -50,7 +50,7 @@ def register_stone_amulet_item():
         sprite=Sprite.ITEM_STONE_AMULET,
         image_file_path="resources/graphics/item_stone_amulet.png",
         item_equipment_category=ItemEquipmentCategory.NECK,
-        name="Stone Amulet",
+        name="Stone amulet",
         custom_description=[str(int(PROC_CHANCE * 100)) + "% on kill: gain " + str(ARMOR_BONUS) + " armor for " +
                             "{:.0f}".format(BUFF_DURATION / 1000) + "s"],
         stat_modifier_intervals=[],

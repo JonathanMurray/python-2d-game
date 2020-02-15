@@ -33,7 +33,7 @@ def register_noble_defender():
         sprite=Sprite.ITEM_NOBLE_DEFENDER,
         image_file_path="resources/graphics/item_noble_defender.png",
         item_equipment_category=ItemEquipmentCategory.OFF_HAND,
-        name="Noble Defender",
+        name="Noble defender",
         custom_description=["When you are attacked, your movement speed is slowed by {:.0f}".format(SLOW_AMOUNT * 100) +
                             "% for " + "{:.1f}".format(SLOW_DURATION / 1000) + "s"],
         stat_modifier_intervals=[StatModifierInterval(HeroStat.ARMOR, [4]),

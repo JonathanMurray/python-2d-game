@@ -54,7 +54,7 @@ def register_freezing_gauntlet_item():
         sprite=Sprite.ITEM_FREEZING_GAUNTLET,
         image_file_path="resources/graphics/item_freezing_gauntlet.png",
         item_equipment_category=ItemEquipmentCategory.OFF_HAND,
-        name="Freezing Gauntlet",
+        name="Freezing gauntlet",
         custom_description=["Slows your targets by " + str(int(SLOW_AMOUNT * 100)) + "% for " \
                             + "{:.1f}".format(SLOW_DURATION / 1000) + "s"],
         stat_modifier_intervals=[],

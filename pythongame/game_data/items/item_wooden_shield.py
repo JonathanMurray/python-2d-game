@@ -11,7 +11,7 @@ def register_wooden_shield():
         sprite=Sprite.ITEM_WOODEN_SHIELD,
         image_file_path="resources/graphics/item_wooden_shield.png",
         item_equipment_category=ItemEquipmentCategory.OFF_HAND,
-        name="Wooden Shield",
+        name="Wooden shield",
         stat_modifier_intervals=[StatModifierInterval(HeroStat.ARMOR, [1]),
                                  StatModifierInterval(HeroStat.BLOCK_AMOUNT, [3])]
     )

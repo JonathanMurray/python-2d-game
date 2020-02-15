@@ -30,7 +30,7 @@ def register_blood_amulet():
         sprite=Sprite.ITEM_BLOOD_AMULET,
         image_file_path="resources/graphics/item_blood_amulet.png",
         item_equipment_category=ItemEquipmentCategory.NECK,
-        name="Blood Amulet",
+        name="Blood amulet",
         custom_effect=ItemEffect(),
         stat_modifier_intervals=[],
         custom_description=[str(int(PROC_CHANCE * 100)) + "% on kill: gain " + str(HEALTH_ON_KILL_AMOUNT) + " health"]

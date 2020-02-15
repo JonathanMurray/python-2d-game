@@ -41,7 +41,7 @@ def register_rod_of_lightning_item():
         sprite=Sprite.ITEM_ROD_OF_LIGHTNING,
         image_file_path="resources/graphics/item_rod_of_lightning.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
-        name="Rod of Lightning",
+        name="Lightning rod",
         custom_description=[
             "Periodically deals " + str(MIN_DMG) + "-" + str(MAX_DMG) + " magic damage to nearby enemies"],
         stat_modifier_intervals=[],

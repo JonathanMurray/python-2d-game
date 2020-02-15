@@ -11,6 +11,6 @@ def register_leather_armor_item():
         sprite=Sprite.ITEM_LEATHER_ARMOR,
         image_file_path="resources/graphics/item_leather_armor.png",
         item_equipment_category=ItemEquipmentCategory.CHEST,
-        name="Leather Armor",
+        name="Leather armor",
         stat_modifier_intervals=[StatModifierInterval(HeroStat.ARMOR, [1])]
     )

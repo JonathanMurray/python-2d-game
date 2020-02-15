@@ -25,6 +25,7 @@ class BuffEffect(StatModifyingBuffEffect):
 
 
 def register_necklace_of_suffering_item():
+    # TODO Turn this into a 'unique' item
     register_custom_effect_item(
         item_type=ITEM_TYPE,
         item_level=6,

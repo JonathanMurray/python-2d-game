@@ -51,6 +51,7 @@ class DebuffedByGoatsRing(AbstractBuffEffect):
 
 
 def register_goats_ring():
+    # TODO Turn this into a 'unique' item
     item_type = ItemType.GOATS_RING
     proc_chance = 0.2
     register_custom_effect_item(

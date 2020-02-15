@@ -11,6 +11,6 @@ def register_royal_dagger_item():
         sprite=Sprite.ITEM_ROYAL_DAGGER,
         image_file_path="resources/graphics/item_royal_dagger.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
-        name="Royal Dagger",
+        name="Royal dagger",
         stat_modifier_intervals={HeroStat.PHYSICAL_DAMAGE: [0.18, 0.19, 0.2]}
     )

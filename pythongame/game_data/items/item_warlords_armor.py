@@ -11,6 +11,6 @@ def register_warlords_armor_item():
         sprite=Sprite.ITEM_WARLORDS_ARMOR,
         image_file_path="resources/graphics/item_warlords_armor.png",
         item_equipment_category=ItemEquipmentCategory.CHEST,
-        name="Warlord's Armor",
+        name="Warlord's armor",
         stat_modifier_intervals=[StatModifierInterval(HeroStat.ARMOR, [4])],
     )

@@ -11,6 +11,6 @@ def register_blessed_chalice_item():
         sprite=Sprite.ITEM_BLESSED_CHALICE,
         image_file_path="resources/graphics/item_blessed_chalice.png",
         item_equipment_category=ItemEquipmentCategory.OFF_HAND,
-        name="Blessed Chalice",
+        name="Blessed chalice",
         stat_modifier_intervals={HeroStat.HEALTH_REGEN: [1, 1.2, 1.4, 1.6, 1.8, 2]}
     )

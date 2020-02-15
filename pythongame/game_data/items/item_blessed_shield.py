@@ -24,7 +24,7 @@ def register_blessed_shield_item():
         sprite=Sprite.ITEM_BLESSED_SHIELD,
         image_file_path="resources/graphics/item_blessed_shield.png",
         item_equipment_category=ItemEquipmentCategory.OFF_HAND,
-        name="Blessed Shield",
+        name="Blessed shield",
         custom_description=["On block: gain " + str(HEALING_AMOUNT) + " health"],
         stat_modifier_intervals=[StatModifierInterval(HeroStat.ARMOR, [2]),
                                  StatModifierInterval(HeroStat.BLOCK_AMOUNT, [5, 6, 7])],

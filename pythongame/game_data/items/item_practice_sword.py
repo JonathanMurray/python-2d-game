@@ -10,6 +10,6 @@ def register_practice_sword_item():
         sprite=Sprite.ITEM_PRACTICE_SWORD,
         image_file_path="resources/graphics/item_practice_sword.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
-        name="Practice Sword",
+        name="Practice sword",
         stat_modifier_intervals=[StatModifierInterval(HeroStat.PHYSICAL_DAMAGE, [0.03])]
     )

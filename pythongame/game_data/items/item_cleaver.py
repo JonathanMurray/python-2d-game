@@ -44,6 +44,7 @@ class BuffEffect(AbstractBuffEffect):
 
 
 def register_cleaver_item():
+    # TODO Turn this into a 'unique' item
     register_custom_effect_item(
         item_type=ITEM_TYPE,
         item_level=7,
