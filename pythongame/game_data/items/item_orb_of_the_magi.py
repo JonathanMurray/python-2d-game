@@ -12,5 +12,5 @@ def register_orb_of_the_magi_item():
         image_file_path="resources/graphics/item_orb_of_the_magi.png",
         item_equipment_category=ItemEquipmentCategory.OFF_HAND,
         name="Wizard's orb",
-        stat_modifier_intervals={HeroStat.MAGIC_DAMAGE: [0.1, 0.12, 0.14, 0.16, 0.18, 0.2]}
+        stat_modifier_intervals={HeroStat.MAGIC_DAMAGE: [0.1, 0.11, 0.12, 0.13, 0.14, 0.15]}
     )
