@@ -76,6 +76,9 @@ _item_suffix_data_by_id: Dict[ItemSuffixId, ItemSuffixData] = {
     ItemSuffixId.SPIRITS:
         ItemSuffixData("of Spirits",
                        [StatModifierInterval(HeroStat.MAGIC_RESIST_CHANCE, interval(0.05, 0.1, 0.01))]),
+    ItemSuffixId.EVASION:
+        ItemSuffixData("of Evasion",
+                       [StatModifierInterval(HeroStat.DODGE_CHANCE, interval(0.01, 0.03, 0.01))]),
 }
 
 

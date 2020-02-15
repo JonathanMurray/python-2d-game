@@ -541,6 +541,7 @@ class ItemSuffixId(Enum):
     RECKONING = 9
     WIZARDRY = 10
     SPIRITS = 11
+    EVASION = 12
 
 
 class ItemSuffix:
