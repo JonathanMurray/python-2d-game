@@ -66,10 +66,6 @@ class StaticLootTable(LootTable):
                     entries.remove(pick_i)
         return loot
 
-    @staticmethod
-    def single(single_entry: LootEntry, chance_to_get_entry: float):
-        return StaticLootTable([LootGroup.single(single_entry, chance_to_get_entry)])
-
 
 class LeveledLootTable(LootTable):
     def __init__(self,
@@ -112,8 +108,12 @@ class LeveledLootTable(LootTable):
             else:
                 loot.append(ItemLootEntry(item_type))
         if random.random() <= self.consumable_drop_chance:
-            consumable_level = random.choices(self.consumable_levels, weights=self.consumable_level_weights)[0]
-            consumable_type = random.choice(self.consumable_types_by_level[consumable_level])
+            # Warp stone doesn't have a level, but should be dropped across all levels
+            if random.random() < 0.25:
+                consumable_type = ConsumableType.WARP_STONE
+            else:
+                consumable_level = random.choices(self.consumable_levels, weights=self.consumable_level_weights)[0]
+                consumable_type = random.choice(self.consumable_types_by_level[consumable_level])
             loot.append(ConsumableLootEntry(consumable_type))
         if random.random() <= self.money_drop_chance:
             amount = random.randint(1, self.level)

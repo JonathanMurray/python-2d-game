@@ -26,7 +26,7 @@ def register_loot_tables():
         item_rare_chance=0.1,
         level=3,
         item_types_by_level=_item_types_for_monster_level(3),
-        consumable_types_by_level=_consumable_types_for_monster_level(3),
+        consumable_types_by_level={},
         consumable_drop_chance=0)
     loot_tables[LootTableId.BOSS_GOBLIN] = _table_for_goblin_boss()
     loot_tables[LootTableId.BOSS_WARRIOR_KING] = _table_for_human_boss()
