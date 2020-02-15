@@ -18,7 +18,7 @@ from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.scenes_game.game_ui_view import GameUiView
 
 QUEST_ID = QuestId.RETRIEVE_FROG
-QUEST = Quest(QUEST_ID, "Lost pet", "Retrieve pet frog from goblin king")
+QUEST = Quest(QUEST_ID, "Lost pet", "Retrieve Mida's pet frog from the goblin king.")
 ITEM_TYPE_FROG = ItemType.FROG
 NPC_TYPE = NpcType.NEUTRAL_YOUNG_SORCERESS
 UI_ICON_SPRITE = PortraitIconSprite.YOUNG_SORCERESS

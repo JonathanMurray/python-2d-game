@@ -950,7 +950,7 @@ class QuestsWindow(UiWindow):
         for quest in self.active_quests:
             self._ui_render.text(self._font_header, "\"%s\"" % quest.name, (x_left, y), (220, 220, 250))
 
-            lines = split_text_into_lines(quest.description, 30)
+            lines = split_text_into_lines(quest.description, 31)
             for i, line in enumerate(lines):
                 line_space = 15
                 self._ui_render.text(self._font_details, line, (x_left, y + 20 + i * line_space))

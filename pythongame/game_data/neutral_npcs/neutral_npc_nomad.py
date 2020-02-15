@@ -16,7 +16,7 @@ from pythongame.core.visual_effects import create_visual_healing_text
 from pythongame.scenes_game.game_ui_view import GameUiView
 
 QUEST_ID = QuestId.MAIN_RETRIEVE_KEY
-QUEST = Quest(QUEST_ID, "The red baron", "Defeat the red baron and retrieve the key")
+QUEST = Quest(QUEST_ID, "The red baron", "Defeat the red baron and retrieve the key that he stole.")
 
 ITEM_TYPE_KEY = ItemType.KEY
 NPC_TYPE = NpcType.NEUTRAL_NOMAD
