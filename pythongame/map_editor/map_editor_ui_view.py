@@ -8,8 +8,9 @@ from pygame.rect import Rect
 from generate_dungeon import Grid
 from pythongame.core.common import Direction, Sprite, UiIconSprite
 from pythongame.core.common import PortraitIconSprite
-from pythongame.core.game_data import CONSUMABLES, NON_PLAYER_CHARACTERS, get_item_data
-from pythongame.core.item_effects import create_item_description, build_item_name
+from pythongame.core.game_data import CONSUMABLES, NON_PLAYER_CHARACTERS
+from pythongame.core.item_data import build_item_name, create_item_description
+from pythongame.core.item_data import get_item_data
 from pythongame.core.item_inventory import ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.image_loading import ImageWithRelativePosition

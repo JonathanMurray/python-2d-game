@@ -1,7 +1,8 @@
 from typing import Dict, List
 
 from pythongame.core.common import ItemType, LootTableId, ConsumableType
-from pythongame.core.game_data import get_items_with_level, get_consumables_with_level, get_items_within_levels
+from pythongame.core.game_data import get_consumables_with_level
+from pythongame.core.item_data import get_items_with_level, get_items_within_levels
 from pythongame.core.loot import LootEntry, LeveledLootTable, StaticLootTable, LootGroup, LootTable
 
 loot_tables: Dict[LootTableId, LootTable] = {}

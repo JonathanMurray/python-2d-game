@@ -2,8 +2,9 @@ from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZ
     ItemType
 from pythongame.core.game_data import Sprite, Direction, AbilityType, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, register_hero_data, HeroData, \
-    InitialPlayerStateData, register_ui_icon_sprite_path, randomized_item_id
+    InitialPlayerStateData, register_ui_icon_sprite_path
 from pythongame.core.game_state import PlayerLevelBonus
+from pythongame.core.item_data import randomized_item_id
 from pythongame.core.talents import TalentsConfig, TalentTierConfig, TalentTierOptionConfig
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.game_data.abilities.ability_arcane_fire import ARCANE_FIRE_UPGRADED_COOLDOWN, \

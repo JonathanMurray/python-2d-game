@@ -2,8 +2,9 @@ from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZ
     ItemType
 from pythongame.core.game_data import Sprite, Direction, AbilityType, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, register_hero_data, HeroData, \
-    InitialPlayerStateData, randomized_item_id
+    InitialPlayerStateData
 from pythongame.core.game_state import PlayerLevelBonus
+from pythongame.core.item_data import randomized_item_id
 from pythongame.core.talents import TalentsConfig, TalentTierConfig, TalentTierOptionConfig
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.game_data.abilities.ability_shiv import SHIV_UPGRADED_STEALTH_DAMAGE_MULTIPLIER, \

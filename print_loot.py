@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from pythongame.core.game_data import CONSUMABLES, \
-    get_consumables_with_level, get_items_with_level, get_item_data_by_type
+    get_consumables_with_level
+from pythongame.core.item_data import get_items_with_level, get_item_data_by_type
 from pythongame.register_game_data import register_all_game_data
 
 

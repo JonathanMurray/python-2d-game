@@ -5,9 +5,10 @@ from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite, \
     SoundId, NpcType, Millis, DialogData, ItemId
-from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, HEROES, get_item_data, get_item_data_by_type
+from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, HEROES
 from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState, Quest
-from pythongame.core.item_effects import create_item_description, build_item_name
+from pythongame.core.item_data import build_item_name, create_item_description
+from pythongame.core.item_data import get_item_data_by_type, get_item_data
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import is_point_in_rect
 from pythongame.core.sound_player import play_sound

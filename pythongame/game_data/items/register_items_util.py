@@ -1,8 +1,10 @@
 from typing import Dict, Union, List, Optional
 
 from pythongame.core.common import ItemType, Sprite, UiIconSprite, HeroStat
-from pythongame.core.game_data import register_ui_icon_sprite_path, register_item_data, ItemData, \
-    register_entity_sprite_initializer, ITEM_ENTITY_SIZE, register_item_level
+from pythongame.core.game_data import register_ui_icon_sprite_path, \
+    register_entity_sprite_initializer
+from pythongame.core.item_data import ItemData, register_item_level, ITEM_ENTITY_SIZE
+from pythongame.core.item_data import register_item_data
 from pythongame.core.item_effects import register_custom_item_effect, AbstractItemEffect, \
     StatModifierInterval
 from pythongame.core.item_inventory import ItemEquipmentCategory

@@ -3,9 +3,11 @@ from typing import Type, Dict
 from pythongame.core.common import *
 from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
-from pythongame.core.game_data import CONSUMABLES, get_item_data_by_type
+from pythongame.core.game_data import CONSUMABLES
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest
-from pythongame.core.item_effects import try_add_item_to_inventory, build_item_name, create_item_description
+from pythongame.core.item_data import build_item_name, create_item_description
+from pythongame.core.item_data import get_item_data_by_type
+from pythongame.core.item_effects import try_add_item_to_inventory
 from pythongame.core.math import is_x_and_y_within_distance, get_perpendicular_directions
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder

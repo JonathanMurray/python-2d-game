@@ -3,8 +3,9 @@ import random
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
     PeriodicTimer, ItemType
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
-    register_portrait_icon_sprite_path, randomized_item_id
+    register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.item_data import randomized_item_id
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, register_npc_dialog_data, DialogData, \
     DialogOptionData, buy_item_option
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
