@@ -5,13 +5,15 @@ from pythongame.core.common import *
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
     create_consumable_on_ground
 from pythongame.core.game_data import CONSUMABLES, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities, \
-    NpcCategory, PORTALS, ABILITIES, get_item_data, get_random_item_id_for_item_type
+    NpcCategory, PORTALS, ABILITIES
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
     EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest, \
     PlayerUnlockedNewTalent, AgentBuffsUpdate, Shrine
-from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
+from pythongame.core.item_data import build_item_name, randomized_suffixed_item_id
+from pythongame.core.item_data import randomized_item_id, get_item_data
+from pythongame.core.item_effects import create_item_effect, try_add_item_to_inventory
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
-from pythongame.core.loot import LootEntry
+from pythongame.core.loot import LootEntry, MoneyLootEntry, ItemLootEntry, ConsumableLootEntry, SuffixedItemLootEntry
 from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vectors, \
     get_rect_with_increased_size_in_all_directions, translate_in_direction
 from pythongame.core.sound_player import play_sound
@@ -63,9 +65,9 @@ class GameEngine:
 
     def _handle_item_equip_event(self, event):
         if isinstance(event, ItemWasDeactivated):
-            get_item_effect(event.item_id).apply_end_effect(self.game_state)
+            create_item_effect(event.item_id).apply_end_effect(self.game_state)
         elif isinstance(event, ItemWasActivated):
-            get_item_effect(event.item_id).apply_start_effect(self.game_state)
+            create_item_effect(event.item_id).apply_start_effect(self.game_state)
 
     def drag_consumable_between_inventory_slots(self, from_slot: int, to_slot: int):
         self.game_state.player_state.consumable_inventory.drag_consumable_between_inventory_slots(from_slot, to_slot)
@@ -98,25 +100,23 @@ class GameEngine:
             raise Exception("Unhandled type of loot: " + str(loot))
 
     def _try_pick_up_item_from_ground(self, item: ItemOnGround):
-        item_effect = get_item_effect(item.item_id)
-        item_data = get_item_data(item.item_id)
-        item_equipment_category = item_data.item_equipment_category
-        did_add_item = try_add_item_to_inventory(self.game_state, item_effect, item_equipment_category)
+        item_name = build_item_name(item.item_id)
+        did_add_item = try_add_item_to_inventory(self.game_state, item.item_id)
         if did_add_item:
             play_sound(SoundId.EVENT_PICKED_UP)
             self.game_state.items_on_ground.remove(item)
-            self.info_message.set_message("You picked up " + item_data.name)
+            self.info_message.set_message("You picked up " + item_name)
         else:
-            self.info_message.set_message("No space for " + item_data.name)
+            self.info_message.set_message("No space for " + item_name)
 
     def set_item_inventory(self, items: List[ItemId]):
         for slot_number, item_id in enumerate(items):
             if item_id:
-                item_effect = get_item_effect(item_id)
+                item_effect = create_item_effect(item_id)
                 item_data = get_item_data(item_id)
                 item_equipment_category = item_data.item_equipment_category
                 event = self.game_state.player_state.item_inventory.put_item_in_inventory_slot(
-                    item_effect, item_equipment_category, slot_number)
+                    item_id, item_effect, item_equipment_category, slot_number)
                 self._handle_item_equip_event(event)
 
     def _try_pick_up_consumable_from_ground(self, consumable: ConsumableOnGround):
@@ -364,14 +364,18 @@ class GameEngine:
                 position_offset = (0, 0)
             loot_position = sum_of_vectors(enemy_death_position, position_offset)
 
-            if loot_entry.money_amount:
-                money_pile_on_ground = create_money_pile_on_ground(loot_entry.money_amount, loot_position)
+            if isinstance(loot_entry, MoneyLootEntry):
+                money_pile_on_ground = create_money_pile_on_ground(loot_entry.amount, loot_position)
                 self.game_state.money_piles_on_ground.append(money_pile_on_ground)
-            elif loot_entry.is_item():
-                item_id = get_random_item_id_for_item_type(loot_entry.item_type)
+            elif isinstance(loot_entry, ItemLootEntry):
+                item_id = randomized_item_id(loot_entry.item_type)
                 item_on_ground = create_item_on_ground(item_id, loot_position)
                 self.game_state.items_on_ground.append(item_on_ground)
-            elif loot_entry.consumable_type:
+            elif isinstance(loot_entry, SuffixedItemLootEntry):
+                item_id = randomized_suffixed_item_id(loot_entry.item_type, loot_entry.suffix_id)
+                item_on_ground = create_item_on_ground(item_id, loot_position)
+                self.game_state.items_on_ground.append(item_on_ground)
+            elif isinstance(loot_entry, ConsumableLootEntry):
                 consumable_on_ground = create_consumable_on_ground(loot_entry.consumable_type, loot_position)
                 self.game_state.consumables_on_ground.append(consumable_on_ground)
 

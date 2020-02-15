@@ -1,6 +1,6 @@
 import random
 from enum import Enum
-from typing import NewType, Optional, Any, List, Callable
+from typing import NewType, Optional, Any, List, Callable, Union
 
 Millis = NewType('Millis', int)
 
@@ -457,23 +457,174 @@ class ItemType(Enum):
     CANDLE = 115
 
 
-# Must be of one of the following formats:
-# 1. "<ItemType>:<int>" represents one of several "random" variations of a given item type
-# 2. "<ItemType>:*" represents an item type that has no random variations
-ItemId = str
+class HeroStat(Enum):
+    MAX_HEALTH = 1
+    HEALTH_REGEN = 2
+    MAX_MANA = 3
+    MANA_REGEN = 4
+    ARMOR = 5
+    MOVEMENT_SPEED = 6
+    LIFE_STEAL = 7
+    BLOCK_AMOUNT = 8
+    DODGE_CHANCE = 9
+    DAMAGE = 10
+    PHYSICAL_DAMAGE = 11
+    MAGIC_DAMAGE = 12
+    BLOCK_CHANCE = 13
+    MAGIC_RESIST_CHANCE = 14
 
 
-def plain_item_id(item_type: ItemType) -> ItemId:
-    return ItemId(item_type.name + ":*")
+class StatModifier:
+    def __init__(self, hero_stat: HeroStat, delta: Union[int, float]):
+        self.hero_stat = hero_stat
+        self.delta = delta
+
+    def get_description(self):
+        hero_stat = self.hero_stat
+        delta = self.delta
+        if hero_stat == HeroStat.MAX_HEALTH:
+            return "+" + str(delta) + " max health"
+        elif hero_stat == HeroStat.HEALTH_REGEN:
+            return "+" + "{:.1f}".format(delta) + " health regen"
+        elif hero_stat == HeroStat.MAX_MANA:
+            return "+" + str(delta) + " max mana"
+        elif hero_stat == HeroStat.MANA_REGEN:
+            return "+" + "{:.1f}".format(delta) + " mana regen"
+        elif hero_stat == HeroStat.ARMOR:
+            return str(delta) + " armor"
+        elif hero_stat == HeroStat.MOVEMENT_SPEED:
+            if delta >= 0:
+                return "Increases movement speed by " + str(int(delta * 100)) + "%"
+            else:
+                return "Reduces movement speed by " + str(int(delta * 100)) + "%"
+        elif hero_stat == HeroStat.DAMAGE:
+            return "+" + str(int(round(delta * 100))) + "% damage"
+        elif hero_stat == HeroStat.PHYSICAL_DAMAGE:
+            return "+" + str(int(round(delta * 100))) + "% physical damage"
+        elif hero_stat == HeroStat.MAGIC_DAMAGE:
+            return "+" + str(int(round(delta * 100))) + "% magic damage"
+        elif hero_stat == HeroStat.LIFE_STEAL:
+            return "+" + str(int(delta * 100)) + "% life steal"
+        elif hero_stat == HeroStat.BLOCK_AMOUNT:
+            return str(delta) + " block"
+        elif hero_stat == HeroStat.DODGE_CHANCE:
+            return "+" + str(int(delta * 100)) + "% dodge"
+        elif hero_stat == HeroStat.MAGIC_RESIST_CHANCE:
+            return "+" + str(int(delta * 100)) + "% magic resist"
+        else:
+            raise Exception("Unhandled stat: " + str(hero_stat))
+
+    def __repr__(self):
+        return "%s:%s" % (self.hero_stat, self.delta)
 
 
-def randomized_item_id(item_type: ItemType, randomizer: int) -> ItemId:
-    return ItemId(item_type.name + ":" + str(randomizer))
+class StatModifierInterval:
+    def __init__(self, hero_stat: HeroStat, interval: List[Union[int, float]]):
+        self.hero_stat = hero_stat
+        self.interval = interval
 
 
-def item_type_from_id(item_id: ItemId) -> ItemType:
-    enum_name = item_id.split(":")[0]
-    return ItemType[enum_name]
+class ItemSuffixData:
+    def __init__(self, name_suffix: str, stats: List[StatModifierInterval]):
+        self.name_suffix = name_suffix
+        self.stats = stats
+
+
+class ItemSuffixId(Enum):
+    VITALITY = 2
+    DISCIPLINE = 3
+    REGROWTH = 4
+    FOCUS = 5
+    SWIFTNESS = 6
+    LEECHING = 7
+    POWER = 8
+    RECKONING = 9
+    WIZARDRY = 10
+    SPIRITS = 11
+    EVASION = 12
+
+
+class ItemSuffix:
+    def __init__(self, stat_modifier_intervals: List[StatModifierInterval],
+                 name_suffix: str, suffix_id: ItemSuffixId):
+        self.stat_modifier_intervals = stat_modifier_intervals
+        self.name_suffix = name_suffix
+        self.suffix_id = suffix_id
+
+
+class ItemId:
+    def __init__(self, item_type: ItemType, base_stats: List[StatModifier], suffix_id: Optional[ItemSuffixId],
+                 suffix_stats: List[StatModifier]):
+        self.item_type = item_type
+        self.base_stats = base_stats
+        self.id_string = self.build_id_string(item_type, base_stats, suffix_id, suffix_stats)
+        self.suffix_id = suffix_id
+        self.suffix_stats = suffix_stats
+
+    @staticmethod
+    def build_id_string(item_type: ItemType, base_stats: List[StatModifier], suffix_id: ItemSuffixId,
+                        suffix_stats: List[StatModifier]):
+        id_string = item_type.name
+        for modifier in base_stats:
+            id_string += "~%s~%s" % (modifier.hero_stat.name, modifier.delta)
+        id_string += ":"
+        if suffix_id:
+            id_string += suffix_id.name
+            for modifier in suffix_stats:
+                id_string += "~%s~%s" % (modifier.hero_stat.name, modifier.delta)
+        return id_string
+
+    @staticmethod
+    def randomized_base(item_type: ItemType, base_stats: List[StatModifierInterval]):
+        modifiers = [StatModifier(modifier_interval.hero_stat, random.choice(modifier_interval.interval))
+                     for modifier_interval in base_stats]
+        return ItemId(item_type, modifiers, None, [])
+
+    @staticmethod
+    def randomized_with_suffix(item_type: ItemType, base_stats: List[StatModifierInterval],
+                               item_suffix_id: ItemSuffixId, suffix_stats: List[StatModifierInterval]):
+        base_stat_modifiers = [StatModifier(modifier_interval.hero_stat, random.choice(modifier_interval.interval))
+                               for modifier_interval in base_stats]
+        suffix_stat_modifiers = [StatModifier(modifier_interval.hero_stat, random.choice(modifier_interval.interval))
+                                 for modifier_interval in suffix_stats]
+        return ItemId(item_type, base_stat_modifiers, item_suffix_id, suffix_stat_modifiers)
+
+    @staticmethod
+    def from_id_string(item_id: str):
+        try:
+            parts = item_id.split(":")
+            item_type_part = parts[0]
+            suffix_part = parts[1]
+            item_type_subparts = item_type_part.split("~")
+            item_type = ItemType[item_type_subparts[0]]
+            base_stats = []
+            for i in range(1, len(item_type_subparts) - 1, 2):
+                hero_stat: HeroStat = HeroStat[item_type_subparts[i]]
+                value_str = item_type_subparts[i + 1]
+                try:
+                    value = int(value_str)
+                except ValueError:
+                    value = float(value_str)
+                base_stats.append(StatModifier(hero_stat, value))
+            suffix_id = None
+            suffix_stats = []
+            if suffix_part:
+                suffix_subparts = suffix_part.split("~")
+                suffix_id = ItemSuffixId[suffix_subparts[0]]
+                for i in range(1, len(suffix_subparts) - 1, 2):
+                    hero_stat: HeroStat = HeroStat[suffix_subparts[i]]
+                    value_str = suffix_subparts[i + 1]
+                    try:
+                        value = int(value_str)
+                    except ValueError:
+                        value = float(value_str)
+                    suffix_stats.append(StatModifier(hero_stat, value))
+            return ItemId(item_type, base_stats, suffix_id, suffix_stats)
+        except BaseException as e:
+            raise Exception("Failed to parse item_id '" + item_id + "'", e)
+
+    def __eq__(self, other):
+        return isinstance(other, ItemId) and self.id_string == other.id_string
 
 
 class ProjectileType(Enum):
@@ -678,23 +829,6 @@ class PortraitIconSprite(Enum):
     HERO_WARRIOR = 101
     HERO_ROGUE = 102
     HERO_GOD = 103
-
-
-class HeroStat(Enum):
-    MAX_HEALTH = 1
-    HEALTH_REGEN = 2
-    MAX_MANA = 3
-    MANA_REGEN = 4
-    ARMOR = 5
-    MOVEMENT_SPEED = 6
-    LIFE_STEAL = 7
-    BLOCK_AMOUNT = 8
-    DODGE_CHANCE = 9
-    DAMAGE = 10
-    PHYSICAL_DAMAGE = 11
-    MAGIC_DAMAGE = 12
-    BLOCK_CHANCE = 13
-    MAGIC_RESIST_CHANCE = 14
 
 
 # Use to handle timing-related boilerplate for buffs, items, enemy behaviours, etc

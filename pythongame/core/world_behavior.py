@@ -5,9 +5,10 @@ from pythongame.core.common import ConsumableType, AbstractScene, ItemId
 from pythongame.core.common import ItemType
 from pythongame.core.common import Millis, BuffType, get_random_hint, \
     SoundId, SceneTransition
-from pythongame.core.game_data import HEROES, get_item_data
+from pythongame.core.game_data import HEROES
 from pythongame.core.game_state import GameState, QuestId
-from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
+from pythongame.core.item_data import randomized_item_id
+from pythongame.core.item_effects import try_add_item_to_inventory
 from pythongame.core.sound_player import play_sound
 from pythongame.scenes_game.game_engine import EngineEvent
 from pythongame.scenes_game.game_engine import GameEngine
@@ -46,9 +47,7 @@ class StoryBehavior(AbstractWorldBehavior):
                 self.add_starting_item(item_id)
 
     def add_starting_item(self, item_id: ItemId):
-        data = get_item_data(item_id)
-        item_effect = get_item_effect(item_id)
-        try_add_item_to_inventory(self.game_state, item_effect, data.item_equipment_category)
+        try_add_item_to_inventory(self.game_state, item_id)
 
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:
         if self.game_state.player_state.has_completed_quest(QuestId.MAIN_RETRIEVE_KEY):
@@ -97,14 +96,13 @@ class ChallengeBehavior(AbstractWorldBehavior):
                            ConsumableType.POWER]
             for consumable_type in consumables:
                 self.game_state.player_state.consumable_inventory.add_consumable(consumable_type)
-            items = [ItemType.LEATHER_COWL, ItemType.LEATHER_ARMOR, ItemType.WOODEN_SWORD, ItemType.WOODEN_SHIELD]
+            items = [randomized_item_id(ItemType.LEATHER_COWL), randomized_item_id(ItemType.LEATHER_ARMOR),
+                     randomized_item_id(ItemType.PRACTICE_SWORD), randomized_item_id(ItemType.WOODEN_SHIELD)]
             for item_type in items:
                 self._equip_item_on_startup(item_type)
 
-    def _equip_item_on_startup(self, item_type):
-        data = get_item_data(item_type)
-        item_effect = get_item_effect(item_type)
-        try_add_item_to_inventory(self.game_state, item_effect, data.item_equipment_category)
+    def _equip_item_on_startup(self, item_id):
+        try_add_item_to_inventory(self.game_state, item_id)
 
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:
         self.total_time_played += time_passed

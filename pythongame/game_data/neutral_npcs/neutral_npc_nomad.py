@@ -2,10 +2,11 @@ import random
 from typing import Optional
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
-    PeriodicTimer, get_random_hint, ItemType, UiIconSprite, SoundId, plain_item_id
+    PeriodicTimer, get_random_hint, ItemType, UiIconSprite, SoundId
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest, QuestGiverState
+from pythongame.core.item_data import plain_item_id
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
     DialogData, DialogOptionData, register_conditional_npc_dialog_data, register_quest
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
@@ -15,11 +16,16 @@ from pythongame.core.visual_effects import create_visual_healing_text
 from pythongame.scenes_game.game_ui_view import GameUiView
 
 QUEST_ID = QuestId.MAIN_RETRIEVE_KEY
-QUEST = Quest(QUEST_ID, "The red baron", "Defeat the red baron and retrieve the key")
+QUEST = Quest(QUEST_ID, "The red baron", "Defeat the red baron and retrieve the key that he stole.")
 
-ITEM_ID_KEY = plain_item_id(ItemType.KEY)
+ITEM_TYPE_KEY = ItemType.KEY
 NPC_TYPE = NpcType.NEUTRAL_NOMAD
 PORTRAIT_ICON_SPRITE = PortraitIconSprite.NOMAD
+
+
+def item_id_key():
+    # We defer calling this method as key item may not be registered yet otherwise
+    return plain_item_id(ITEM_TYPE_KEY)
 
 
 class NpcMind(AbstractNpcMind):
@@ -34,7 +40,7 @@ class NpcMind(AbstractNpcMind):
         if self.quest_timer.update_and_check_if_ready(time_passed):
             player_state = game_state.player_state
             if player_state.has_quest(QUEST_ID):
-                if player_state.item_inventory.has_item_in_inventory(ITEM_ID_KEY):
+                if player_state.item_inventory.has_item_in_inventory(item_id_key()):
                     npc.quest_giver_state = QuestGiverState.CAN_COMPLETE_QUEST
                 else:
                     npc.quest_giver_state = QuestGiverState.WAITING_FOR_PLAYER
@@ -93,7 +99,7 @@ class AcceptQuest(AbstractNpcAction):
 class CompleteQuest(AbstractNpcAction):
 
     def on_select(self, game_state: GameState):
-        if game_state.player_state.item_inventory.has_item_in_inventory(ITEM_ID_KEY):
+        if game_state.player_state.item_inventory.has_item_in_inventory(item_id_key()):
             play_sound(SoundId.EVENT_COMPLETED_QUEST)
             game_state.player_state.complete_quest(QUEST)
         else:
@@ -115,7 +121,7 @@ def highlight_boss_position(game_state, ui_view):
         position_ratio = ((position[0] - world_area.x) / world_area.w,
                           (position[1] - world_area.y) / world_area.h)
         ui_view.set_minimap_highlight(position_ratio)
-    ui_view.set_inventory_highlight(ITEM_ID_KEY)
+    ui_view.set_inventory_highlight(item_id_key())
 
 
 def clear_highlight(ui_view):

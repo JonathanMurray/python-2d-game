@@ -2,10 +2,10 @@ import random
 
 from pythongame.core.buff_effects import get_buff_effect, register_buff_effect, AbstractBuffEffect
 from pythongame.core.common import ItemType, Sprite, UiIconSprite, HeroStat, BuffType, Millis, PeriodicTimer, \
-    plain_item_id
+    StatModifierInterval
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_state import Event, GameState, PlayerDamagedEnemy, WorldEntity, NonPlayerCharacter
-from pythongame.core.item_effects import StatModifyingItemEffect
+from pythongame.core.item_effects import AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.game_data.items.register_items_util import register_custom_effect_item
 
@@ -19,21 +19,13 @@ TOTAL_DAMAGE = int(float(BUFF_DURATION / DAMAGE_INTERVAL))
 DAMAGE_SOURCE = "cleaver_bleed"
 
 
-class ItemEffect(StatModifyingItemEffect):
-    def __init__(self):
-        super().__init__(plain_item_id(ITEM_TYPE), {HeroStat.PHYSICAL_DAMAGE: 0.2})
+class ItemEffect(AbstractItemEffect):
 
     def item_handle_event(self, event: Event, game_state: GameState):
         if isinstance(event, PlayerDamagedEnemy):
             if event.damage_source != DAMAGE_SOURCE:  # the bleed shouldn't trigger new bleeds
                 if random.random() < PROC_CHANCE:
                     event.enemy_npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), BUFF_DURATION)
-
-    def get_description(self):
-        effect_description = str(
-            int(PROC_CHANCE * 100)) + "% on hit: cause enemy to bleed, taking " + str(TOTAL_DAMAGE) + \
-                             " physical damage over " + "{:.0f}".format(BUFF_DURATION / 1000) + "s"
-        return super().get_description() + [effect_description]
 
 
 class BuffEffect(AbstractBuffEffect):
@@ -59,7 +51,12 @@ def register_cleaver_item():
         sprite=Sprite.ITEM_CLEAVER,
         image_file_path="resources/graphics/item_cleaver.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
-        name="Cleaver",
-        item_effect=ItemEffect()
+        name="The Cleaver",
+        custom_effect=ItemEffect(),
+        custom_description=[str(
+            int(PROC_CHANCE * 100)) + "% on hit: cause enemy to bleed, taking " + str(TOTAL_DAMAGE) + \
+                            " physical damage over " + "{:.0f}".format(BUFF_DURATION / 1000) + "s"],
+        stat_modifier_intervals=[StatModifierInterval(HeroStat.PHYSICAL_DAMAGE, [0.2])],
+        is_unique=True
     )
     register_buff_effect(BUFF_TYPE, BuffEffect)

@@ -11,6 +11,6 @@ def register_serpent_sword_item():
         sprite=Sprite.ITEM_SERPENT_SWORD,
         image_file_path="resources/graphics/item_serpent_sword.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
-        name="Serpent Sword",
+        name="Serpent sword",
         stat_modifier_intervals={HeroStat.DAMAGE: [0.14, 0.15, 0.16], HeroStat.MANA_REGEN: [0.2, 0.3, 0.4]}
     )

@@ -8,7 +8,9 @@ from pygame.rect import Rect
 from generate_dungeon import Grid
 from pythongame.core.common import Direction, Sprite, UiIconSprite
 from pythongame.core.common import PortraitIconSprite
-from pythongame.core.game_data import CONSUMABLES, NON_PLAYER_CHARACTERS, get_item_data
+from pythongame.core.game_data import CONSUMABLES, NON_PLAYER_CHARACTERS
+from pythongame.core.item_data import build_item_name, create_item_description
+from pythongame.core.item_data import get_item_data
 from pythongame.core.item_inventory import ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.image_loading import ImageWithRelativePosition
@@ -217,7 +219,12 @@ class MapEditorView:
                     category_name = None
                     if data.item_equipment_category:
                         category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[data.item_equipment_category]
-                    tooltip = TooltipGraphics.create_for_item(self._ui_render, data, category_name, (x, y))
+                    description_lines = create_item_description(entity.item_id)
+                    item_name = build_item_name(entity.item_id)
+                    is_rare = entity.item_id.suffix_id is not None
+                    is_unique = data.is_unique
+                    tooltip = TooltipGraphics.create_for_item(self._ui_render, item_name, category_name, (x, y),
+                                                              description_lines, is_rare=is_rare, is_unique=is_unique)
                 elif entity.consumable_type is not None:
                     data = CONSUMABLES[entity.consumable_type]
                     tooltip = TooltipGraphics.create_for_consumable(self._ui_render, data, (x, y))

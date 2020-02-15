@@ -1,12 +1,13 @@
 from pythongame.core.buff_effects import register_buff_effect, StatModifyingBuffEffect, get_buff_effect
 from pythongame.core.common import HeroId, PortraitIconSprite, PLAYER_ENTITY_SIZE, HeroUpgradeId, UiIconSprite, \
     ItemType, \
-    HeroStat, BuffType, Millis, plain_item_id
+    HeroStat, BuffType, Millis
 from pythongame.core.game_data import Sprite, Direction, AbilityType, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData, register_buff_text
 from pythongame.core.game_state import PlayerLevelBonus, GameState, Event, PlayerBlockedEvent
 from pythongame.core.hero_upgrades import register_hero_upgrade_effect, HeroUpgrade
+from pythongame.core.item_data import randomized_item_id
 from pythongame.core.talents import TalentsConfig, TalentTierConfig, TalentTierOptionConfig
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.game_data.abilities.ability_bloodlust import BLOODLUST_UPGRADED_INCREASED_DURATION_FROM_KILL
@@ -132,5 +133,5 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
     block_chance = 0.2
     return InitialPlayerStateData(
         health, mana, mana_regen, consumable_slots, abilities, new_level_abilities, HERO_ID, armor, dodge_chance,
-        level_bonus, talents_state, block_chance, [plain_item_id(ItemType.PRACTICE_SWORD),
-                                                   plain_item_id(ItemType.WOODEN_SHIELD)])
+        level_bonus, talents_state, block_chance, [randomized_item_id(ItemType.PRACTICE_SWORD),
+                                                   randomized_item_id(ItemType.WOODEN_SHIELD)])

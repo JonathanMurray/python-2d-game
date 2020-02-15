@@ -11,7 +11,6 @@ def register_elven_armor():
         sprite=Sprite.ITEM_ELVEN_ARMOR,
         image_file_path="resources/graphics/item_elven_armor.png",
         item_equipment_category=ItemEquipmentCategory.CHEST,
-        name="Elven Armor",
-        stat_modifier_intervals={HeroStat.ARMOR: [1], HeroStat.MANA_REGEN: [0.4, 0.5, 0.6],
-                                 HeroStat.MAX_MANA: [13, 14, 15]}
+        name="Elven armor",
+        stat_modifier_intervals={HeroStat.ARMOR: [1], HeroStat.MANA_REGEN: [0.4, 0.5, 0.6]}
     )

@@ -1,5 +1,5 @@
 import math
-from typing import Dict, Tuple, Union
+from typing import Dict, Tuple
 
 from pygame.rect import Rect
 
@@ -638,7 +638,7 @@ class PlayerState:
         self.health_resource.gain_to_max()
         self.mana_resource.increase_max(self.level_bonus.mana)
         self.mana_resource.gain_to_max()
-        self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.6)
+        self.max_exp_in_this_level = int(self.max_exp_in_this_level * 1.65)
         self.base_physical_damage_modifier *= 1.1
         self.base_magic_damage_modifier *= 1.1
         self.base_armor += self.level_bonus.armor

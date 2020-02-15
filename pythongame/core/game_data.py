@@ -1,15 +1,14 @@
-from typing import Dict, Tuple, Set
+from typing import Set, Dict, Tuple
 
 # We should probably not load image files in here!
 import pygame
 
 from pythongame.core.common import *
 from pythongame.core.common import UiIconSprite, PortraitIconSprite
-from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.talents import TalentsConfig
 from pythongame.core.view.image_loading import SpriteInitializer, SpriteSheet, SpriteMapInitializer, Animation
 
-ITEM_ENTITY_SIZE = (30, 30)
+
 POTION_ENTITY_SIZE = (30, 30)
 
 
@@ -99,16 +98,6 @@ class ConsumableData:
         self.sound = sound
 
 
-class ItemData:
-    def __init__(self, icon_sprite: UiIconSprite, entity_sprite: Sprite, name: str, description_lines: List[str],
-                 item_equipment_category: Optional[ItemEquipmentCategory] = None):
-        self.icon_sprite = icon_sprite
-        self.entity_sprite = entity_sprite
-        self.name = name
-        self.description_lines: List[str] = description_lines
-        self.item_equipment_category = item_equipment_category  # If category is None, the item can't be equipped
-
-
 class WallData:
     def __init__(self, sprite: Sprite, size: Tuple[int, int]):
         self.sprite = sprite
@@ -185,14 +174,6 @@ WALLS: Dict[WallType, WallData] = {}
 consumable_data_by_type: Dict[ConsumableType, ConsumableData] = {}
 consumable_types_grouped_by_level: Dict[int, Set[ConsumableType]] = {}
 consumable_levels: Dict[ConsumableType, int] = {}
-
-item_data_by_id: Dict[ItemId, ItemData] = {}
-
-item_ids_grouped_by_type: Dict[ItemType, Set[ItemId]] = {}
-
-item_types_grouped_by_level: Dict[int, Set[ItemType]] = {}
-
-item_levels: Dict[ItemType, int] = {}
 
 ABILITIES: Dict[AbilityType, AbilityData] = {}
 
@@ -288,61 +269,9 @@ def get_optional_consumable_level(consumable_type: ConsumableType) -> Optional[i
     return consumable_levels.get(consumable_type, None)
 
 
-def register_item_data(item_id: ItemId, item_data: ItemData):
-    item_type = item_type_from_id(item_id)
-    item_data_by_id[item_id] = item_data
-    item_ids = item_ids_grouped_by_type.setdefault(item_type, set())
-    item_ids.add(item_id)
-
-
-def get_item_data(item_id: ItemId):
-    return item_data_by_id[item_id]
-
-
-def get_one_item_id_for_every_item_type() -> List[ItemId]:
-    return [min(item_ids) for item_ids in item_ids_grouped_by_type.values()]
-
-
-def get_random_item_id_for_item_type(item_type: ItemType) -> ItemId:
-    return random.choice(list(item_ids_grouped_by_type[item_type]))
-
-
-def get_min_item_id_for_item_type(item_type: ItemType) -> ItemId:
-    return min(item_ids_grouped_by_type[item_type])
-
-
-def register_item_level(item_type: ItemType, item_level: int):
-    item_types = item_types_grouped_by_level.setdefault(item_level, set())
-    item_types.add(item_type)
-    item_levels[item_type] = item_level
-
-
-def get_items_with_level(item_level: int) -> List[ItemType]:
-    return list(item_types_grouped_by_level.get(item_level, set()))
-
-
-def get_items_within_levels(min_level: int, max_level: int) -> List[ItemType]:
-    items = []
-    for level in range(min_level, max_level + 1):
-        items += get_items_with_level(level)
-    return items
-
-
-def get_optional_item_level(item_type: ItemType) -> Optional[int]:
-    return item_levels.get(item_type, None)
-
-
 def register_portal_data(portal_id: PortalId, portal_data: PortalData):
     PORTALS[portal_id] = portal_data
 
 
 def register_hero_data(hero_id: HeroId, hero_data: HeroData):
     HEROES[hero_id] = hero_data
-
-
-def get_items_with_category(category: Optional[ItemEquipmentCategory]) -> List[Tuple[ItemId, ItemData]]:
-    one_item_id_per_item_type = [min(item_ids) for item_ids in item_ids_grouped_by_type.values()]
-    return [(item_id, item_data)
-            for (item_id, item_data) in item_data_by_id.items()
-            if item_id in one_item_id_per_item_type
-            and item_data.item_equipment_category == category]

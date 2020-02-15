@@ -2,12 +2,14 @@ import random
 from typing import Optional
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
-    UiIconSprite, ItemType, PeriodicTimer, HeroId, SoundId, ItemId, plain_item_id
+    UiIconSprite, ItemType, PeriodicTimer, HeroId, SoundId, ItemId
 from pythongame.core.entity_creation import create_item_on_ground
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
-    register_portrait_icon_sprite_path, get_item_data
+    register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest, QuestGiverState
-from pythongame.core.item_effects import get_item_effect, try_add_item_to_inventory
+from pythongame.core.item_data import build_item_name, plain_item_id
+from pythongame.core.item_data import randomized_item_id
+from pythongame.core.item_effects import try_add_item_to_inventory
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
     DialogData, DialogOptionData, register_conditional_npc_dialog_data, register_quest
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
@@ -16,10 +18,15 @@ from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.scenes_game.game_ui_view import GameUiView
 
 QUEST_ID = QuestId.RETRIEVE_FROG
-QUEST = Quest(QUEST_ID, "Lost pet", "Retrieve pet frog from goblin king")
-ITEM_ID_FROG = plain_item_id(ItemType.FROG)
+QUEST = Quest(QUEST_ID, "Lost pet", "Retrieve Mida's pet frog from the goblin king.")
+ITEM_TYPE_FROG = ItemType.FROG
 NPC_TYPE = NpcType.NEUTRAL_YOUNG_SORCERESS
 UI_ICON_SPRITE = PortraitIconSprite.YOUNG_SORCERESS
+
+
+def item_id_frog():
+    # We defer calling this method as key item may not be registered yet otherwise
+    return plain_item_id(ITEM_TYPE_FROG)
 
 
 class NpcMind(AbstractNpcMind):
@@ -34,7 +41,7 @@ class NpcMind(AbstractNpcMind):
         if self.quest_timer.update_and_check_if_ready(time_passed):
             player_state = game_state.player_state
             if player_state.has_quest(QUEST_ID):
-                if player_state.item_inventory.has_item_in_inventory(ITEM_ID_FROG):
+                if player_state.item_inventory.has_item_in_inventory(item_id_frog()):
                     npc.quest_giver_state = QuestGiverState.CAN_COMPLETE_QUEST
                 else:
                     npc.quest_giver_state = QuestGiverState.WAITING_FOR_PLAYER
@@ -68,21 +75,18 @@ class GiveQuest(AbstractNpcAction):
 class AcceptFrog(AbstractNpcAction):
 
     def on_select(self, game_state: GameState) -> Optional[str]:
-        player_has_it = game_state.player_state.item_inventory.has_item_in_inventory(ITEM_ID_FROG)
+        player_has_it = game_state.player_state.item_inventory.has_item_in_inventory(item_id_frog())
         if player_has_it:
-            game_state.player_state.item_inventory.lose_item_from_inventory(ITEM_ID_FROG)
+            game_state.player_state.item_inventory.lose_item_from_inventory(item_id_frog())
 
             reward_item_id = _get_reward_for_hero(game_state.player_state.hero_id)
-            reward_effect = get_item_effect(reward_item_id)
-            reward_data = get_item_data(reward_item_id)
-            reward_equipment_category = reward_data.item_equipment_category
-            did_add_item = try_add_item_to_inventory(game_state, reward_effect, reward_equipment_category)
+            did_add_item = try_add_item_to_inventory(game_state, reward_item_id)
             if not did_add_item:
                 game_state.items_on_ground.append(
                     create_item_on_ground(reward_item_id, game_state.player_entity.get_position()))
             play_sound(SoundId.EVENT_COMPLETED_QUEST)
             game_state.player_state.complete_quest(QUEST)
-            return "Reward gained: " + reward_data.name
+            return "Reward gained: " + build_item_name(reward_item_id)
         else:
             play_sound(SoundId.WARNING)
             return "You don't have that!"
@@ -96,13 +100,13 @@ class AcceptFrog(AbstractNpcAction):
 
 def _get_reward_for_hero(hero_id: HeroId) -> ItemId:
     if hero_id == HeroId.MAGE:
-        return plain_item_id(ItemType.STAFF_OF_FIRE)
+        return randomized_item_id(ItemType.STAFF_OF_FIRE)
     elif hero_id == HeroId.ROGUE:
-        return plain_item_id(ItemType.THIEFS_MASK)
+        return randomized_item_id(ItemType.THIEFS_MASK)
     elif hero_id == HeroId.WARRIOR:
-        return plain_item_id(ItemType.CLEAVER)
+        return randomized_item_id(ItemType.CLEAVER)
     else:
-        return plain_item_id(ItemType.LEATHER_ARMOR)
+        return randomized_item_id(ItemType.LEATHER_ARMOR)
 
 
 def _highlight_boss_location(game_state, ui_view):
@@ -113,7 +117,7 @@ def _highlight_boss_location(game_state, ui_view):
         position_ratio = ((position[0] - world_area.x) / world_area.w,
                           (position[1] - world_area.y) / world_area.h)
         ui_view.set_minimap_highlight(position_ratio)
-    ui_view.set_inventory_highlight(ITEM_ID_FROG)
+    ui_view.set_inventory_highlight(item_id_frog())
 
 
 def _clear_highlight(ui_view):
@@ -146,16 +150,16 @@ def register_young_sorceress_npc():
 
 def _register_dialog():
     prompt = "QUEST: "
-    frog_data = get_item_data(ITEM_ID_FROG)
     bye_option = DialogOptionData("\"Good bye\"", "cancel", None)
     name = "Mida"
+    frog_name = build_item_name(item_id_frog())
     dialog_1 = DialogData(
         name,
         UI_ICON_SPRITE,
         "Hey you! Have you seen my pet frog? I bet it was that old green mean goblin king that took it!",
         [
             DialogOptionData(prompt + "\"Lost pet \"", "accept quest", GiveQuest(), UiIconSprite.ITEM_FROG,
-                             frog_data.name,
+                             frog_name,
                              "Will you help me? I'll give you something in return. Promise!"),
             bye_option
         ])
@@ -164,7 +168,7 @@ def _register_dialog():
         UI_ICON_SPRITE,
         "Hi friend! Any luck?",
         [
-            DialogOptionData(prompt + "\"Lost pet\"", "give", AcceptFrog(), UiIconSprite.ITEM_FROG, frog_data.name,
+            DialogOptionData(prompt + "\"Lost pet\"", "give", AcceptFrog(), UiIconSprite.ITEM_FROG, frog_name,
                              "..."),
             bye_option
         ])

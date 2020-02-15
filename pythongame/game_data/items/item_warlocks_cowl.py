@@ -11,7 +11,6 @@ def register_warlocks_cowl_item():
         sprite=Sprite.ITEM_WARLOCKS_COWL,
         image_file_path="resources/graphics/item_warlocks_cowl.png",
         item_equipment_category=ItemEquipmentCategory.HEAD,
-        name="Warlock's Cowl",
-        stat_modifier_intervals={HeroStat.LIFE_STEAL: [0.08, 0.09, 0.1],
-                                 HeroStat.MAGIC_RESIST_CHANCE: [0.03, 0.04, 0.05]}
+        name="Warlock's cowl",
+        stat_modifier_intervals={HeroStat.LIFE_STEAL: [0.08, 0.09, 0.1]}
     )

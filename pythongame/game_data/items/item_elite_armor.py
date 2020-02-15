@@ -11,6 +11,6 @@ def register_elite_armor():
         sprite=Sprite.ITEM_ELITE_ARMOR,
         image_file_path="resources/graphics/item_elite_armor.png",
         item_equipment_category=ItemEquipmentCategory.CHEST,
-        name="Elite Armor",
-        stat_modifier_intervals={HeroStat.ARMOR: [2], HeroStat.HEALTH_REGEN: [0.4, 0.5, 0.6]}
+        name="Elite armor",
+        stat_modifier_intervals={HeroStat.ARMOR: [3]}
     )

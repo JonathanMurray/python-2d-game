@@ -5,8 +5,10 @@ from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite, \
     SoundId, NpcType, Millis, DialogData, ItemId
-from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, HEROES, get_item_data
+from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, HEROES
 from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState, Quest
+from pythongame.core.item_data import build_item_name, create_item_description
+from pythongame.core.item_data import get_item_data_by_type, get_item_data
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import is_point_in_rect
 from pythongame.core.sound_player import play_sound
@@ -15,7 +17,7 @@ from pythongame.core.view.render_util import DrawableArea
 from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
     ToggleButton, ControlsWindow, StatsWindow, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text, \
     DialogOption, Dialog, Checkbox, Button, Message, PausedSplashScreen, TalentTierData, TalentOptionData, TalentIcon, \
-    ToggleButtonId, QuestsWindow
+    ToggleButtonId, QuestsWindow, DetailLine
 from pythongame.scenes_game.ui_events import TrySwitchItemInInventory, EventTriggeredFromUi, \
     DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
     PickTalent, StartDraggingItemOrConsumable, SaveGame, ToggleSound, ToggleFullscreen, ToggleWindow
@@ -507,12 +509,12 @@ class GameUiView:
         mana_regen = player_state.mana_resource.get_effective_regen()
 
         tooltip_details = [
-            "regeneration: " + "{:.1f}".format(health_regen) + "/s"]
+            DetailLine("regeneration: " + "{:.1f}".format(health_regen) + "/s")]
         health_tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "Health", tooltip_details,
                                          bottom_left=(self.healthbar.rect.left - 2, self.healthbar.rect.top - 1))
         self.healthbar.tooltip = health_tooltip
         tooltip_details = [
-            "regeneration: " + "{:.1f}".format(mana_regen) + "/s"]
+            DetailLine("regeneration: " + "{:.1f}".format(mana_regen) + "/s")]
         mana_tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "Mana", tooltip_details,
                                        bottom_left=(self.manabar.rect.left - 2, self.manabar.rect.top - 1))
         self.manabar.tooltip = mana_tooltip
@@ -549,17 +551,23 @@ class GameUiView:
             image = None
             tooltip = None
             if item_id:
-                data = get_item_data(item_id)
+                item_type = item_id.item_type
+                data = get_item_data_by_type(item_type)
                 image = self.images_by_ui_sprite[data.icon_sprite]
                 category_name = None
                 if data.item_equipment_category:
                     category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[data.item_equipment_category]
-                tooltip = TooltipGraphics.create_for_item(self.ui_render, data, category_name, icon.rect.topleft)
+                description_lines = create_item_description(item_id)
+                item_name = build_item_name(item_id)
+                is_rare = item_id.suffix_id is not None
+                is_unique = data.is_unique
+                tooltip = TooltipGraphics.create_for_item(self.ui_render, item_name, category_name, icon.rect.topleft,
+                                                          description_lines, is_rare=is_rare, is_unique=is_unique)
             elif slot_equipment_category:
                 image = self.images_by_item_category[slot_equipment_category]
                 category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[slot_equipment_category]
-                tooltip_details = ["[" + category_name + "]",
-                                   "You have nothing equipped. Drag an item here to equip it!"]
+                tooltip_details = [DetailLine("[" + category_name + "]"),
+                                   DetailLine("You have nothing equipped. Drag an item here to equip it!")]
                 tooltip = TooltipGraphics(self.ui_render, COLOR_WHITE, "...", tooltip_details,
                                           bottom_left=icon.rect.topleft)
 
@@ -719,10 +727,12 @@ class GameUiView:
         self.ui_render.rect_filled((60, 60, 80), self.inventory_icons_rect)
         for icon in self.inventory_icons:
             # TODO treat this as state and update it elsewhere
-            highlighted = self.item_slot_being_dragged and self.item_slot_being_dragged.item_id \
-                          and get_item_data(self.item_slot_being_dragged.item_id).item_equipment_category \
-                          and icon.slot_equipment_category == \
-                          get_item_data(self.item_slot_being_dragged.item_id).item_equipment_category
+            highlighted = False
+            if self.item_slot_being_dragged and self.item_slot_being_dragged.item_id:
+                item_type = self.item_slot_being_dragged.item_id.item_type
+                item_data = get_item_data_by_type(item_type)
+                highlighted = item_data.item_equipment_category \
+                              and icon.slot_equipment_category == item_data.item_equipment_category
             if self.manually_highlighted_inventory_item and self.manually_highlighted_inventory_item == icon.item_id:
                 highlighted = True
             icon.render(highlighted)

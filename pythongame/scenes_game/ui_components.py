@@ -7,9 +7,10 @@ from pygame.rect import Rect
 
 from pythongame.core.common import ConsumableType, AbilityType, PortraitIconSprite, HeroId, Millis, \
     PeriodicTimer, NpcType, PortalId, ItemId
-from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData, ItemData, NpcData, \
+from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData, NpcData, \
     NpcCategory
 from pythongame.core.game_state import PlayerState, Quest
+from pythongame.core.item_data import DescriptionLine
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.math import get_relative_pos_within_rect
 from pythongame.core.talents import TalentTierStatus
@@ -20,6 +21,7 @@ COLOR_LIGHT_GRAY = (240, 240, 240)
 COLOR_GRAY = (200, 200, 200)
 COLOR_DARK_GRAY = (100, 100, 100)
 COLOR_WHITE = (250, 250, 250)
+COLOR_SPECIAL_DESCRIPTION_LINE = (140, 140, 250)
 
 COLOR_ICON_OUTLINE = (150, 150, 190)
 COLOR_BUTTON_OUTLINE = (150, 150, 190)
@@ -27,7 +29,10 @@ COLOR_HOVERED = (200, 200, 250)
 COLOR_ICON_HIGHLIGHTED = (250, 250, 150)
 COLOR_TOGGLE_HIGHLIGHTED = (150, 250, 200)
 COLOR_TOGGLE_OPENED = (50, 50, 120)
-COLOR_ITEM_TOOLTIP_HEADER = (250, 250, 150)
+COLOR_ITEM_TOOLTIP_HEADER_COMMON = (230, 230, 180)
+COLOR_ITEM_TOOLTIP_HEADER_RARE = (190, 150, 250)
+COLOR_ITEM_TOOLTIP_HEADER_UNIQUE = (250, 250, 150)
+
 DIR_FONTS = './resources/fonts/'
 
 TALENT_ICON_SIZE = (32, 32)
@@ -220,19 +225,26 @@ class Dialog:
         self._screen_render.text(self._font_dialog, "[Space] : " + action_text, (x_left + 10, y_action_text))
 
 
+class DetailLine:
+    def __init__(self, text: str, colored: bool = False):
+        self.text = text
+        self.colored = colored
+
+
 class TooltipGraphics:
     def __init__(self, ui_render: DrawableArea, title_color: Tuple[int, int, int],
-                 title: str, details: List[str], bottom_left: Optional[Tuple[int, int]] = None,
+                 title: str, details: List[DetailLine], bottom_left: Optional[Tuple[int, int]] = None,
                  bottom_right: Optional[Tuple[int, int]] = None, top_right: Optional[Tuple[int, int]] = None):
         self._ui_render = ui_render
         self._font_header = pygame.font.Font(DIR_FONTS + 'Herculanum.ttf', 16)
         self._font_details = pygame.font.Font(DIR_FONTS + 'Monaco.dfont', 12)
         self._title_color = title_color
         self._title = title
-        self._detail_lines = []
+        self._detail_lines: List[DetailLine] = []
         for detail in details:
-            self._detail_lines += split_text_into_lines(detail, 32)
-        w = 260
+            self._detail_lines += [DetailLine(new_line, detail.colored)
+                                   for new_line in split_text_into_lines(detail.text, 38)]
+        w = 300
         h = 60 + 17 * len(self._detail_lines)
         if bottom_left:
             self._rect = Rect(bottom_left[0], bottom_left[1] - h - 3, w, h)
@@ -253,29 +265,40 @@ class TooltipGraphics:
         separator_end = (self._rect.x + self._rect.w - 10, y_separator)
         self._ui_render.line(COLOR_WHITE, separator_start, separator_end, 1)
         for i, line in enumerate(self._detail_lines):
-            self._ui_render.text(self._font_details, line, (self._rect.x + 20, self._rect.y + 47 + i * 18), COLOR_WHITE)
+            text_pos = (self._rect.x + 20, self._rect.y + 47 + i * 18)
+            color = COLOR_SPECIAL_DESCRIPTION_LINE if line.colored else COLOR_WHITE
+            self._ui_render.text(self._font_details, line.text, text_pos, color)
 
     @staticmethod
-    def create_for_item(ui_render: DrawableArea, data: ItemData, category_name: str, bottom_left: Tuple[int, int]):
+    def create_for_item(ui_render: DrawableArea, item_name: str, category_name: str, bottom_left: Tuple[int, int],
+                        description_lines: List[DescriptionLine], is_rare: bool, is_unique: bool):
         tooltip_details = []
         if category_name:
-            tooltip_details.append("[" + category_name + "]")
-        tooltip_details += data.description_lines
-        return TooltipGraphics(ui_render, COLOR_ITEM_TOOLTIP_HEADER, data.name, tooltip_details,
-                               bottom_left=bottom_left)
+            tooltip_details.append(DetailLine("[" + category_name + "]"))
+        tooltip_details += [DetailLine(text=line.text, colored=line.from_suffix) for line in description_lines]
+        if is_unique:
+            title_color = COLOR_ITEM_TOOLTIP_HEADER_UNIQUE
+        elif is_rare:
+            title_color = COLOR_ITEM_TOOLTIP_HEADER_RARE
+        else:
+            title_color = COLOR_WHITE
+        return TooltipGraphics(ui_render, title_color, item_name, tooltip_details, bottom_left=bottom_left)
 
     @staticmethod
     def create_for_consumable(ui_render: DrawableArea, data: ConsumableData, bottom_left: Tuple[int, int]):
-        return TooltipGraphics(ui_render, COLOR_WHITE, data.name, [data.description], bottom_left=bottom_left)
+        return TooltipGraphics(ui_render, COLOR_WHITE, data.name, [DetailLine(data.description)],
+                               bottom_left=bottom_left)
 
     @staticmethod
     def create_for_npc(ui_render: DrawableArea, npc_type: NpcType, data: NpcData, bottom_left: Tuple[int, int]):
         if data.npc_category == NpcCategory.ENEMY:
             first_line = "(Boss)" if data.is_boss else "(Enemy)"
-            details = [first_line, str(data.max_health) + " Health", str(data.exp_reward) + " Exp"]
+            details = [DetailLine(first_line),
+                       DetailLine(str(data.max_health) + " Health"),
+                       DetailLine(str(data.exp_reward) + " Exp")]
             return TooltipGraphics(ui_render, COLOR_WHITE, npc_type.name, details, bottom_left=bottom_left)
         elif data.npc_category == NpcCategory.NEUTRAL:
-            details = ["(Neutral NPC)"]
+            details = [DetailLine("(Neutral NPC)")]
             return TooltipGraphics(ui_render, COLOR_WHITE, npc_type.name, details, bottom_left=bottom_left)
 
     @staticmethod
@@ -284,9 +307,9 @@ class TooltipGraphics:
 
     @staticmethod
     def create_for_smart_floor_tile(ui_render: DrawableArea, size: Tuple[int, int], bottom_left: Tuple[int, int]):
-        details = ["Size = " + str(size),
-                   "Create rooms and corridors easily!",
-                   "Left-click to add and right-click to erase."]
+        details = [DetailLine("Size = " + str(size)),
+                   DetailLine("Create rooms and corridors easily!"),
+                   DetailLine("Left-click to add and right-click to erase.")]
         return TooltipGraphics(ui_render, COLOR_WHITE, "\"Smart floor\"", details, bottom_left=bottom_left)
 
 
@@ -326,9 +349,9 @@ class AbilityIcon(UiComponent):
         self.image = image
         self.label = label
         if ability:
-            tooltip_details = ["Cooldown: " + str(ability.cooldown / 1000.0) + " s",
-                               "Mana: " + str(ability.mana_cost),
-                               ability.description]
+            tooltip_details = [DetailLine("Cooldown: " + str(ability.cooldown / 1000.0) + " s"),
+                               DetailLine("Mana: " + str(ability.mana_cost)),
+                               DetailLine(ability.description)]
             self.tooltip = TooltipGraphics(self._ui_render, COLOR_WHITE, ability.name, tooltip_details,
                                            bottom_left=self.rect.topleft)
         else:
@@ -647,7 +670,7 @@ class StatsWindow(UiWindow):
         x_right = x_left + 155
         y_0 = self.rect[1] + 15
 
-        perc = lambda value: int(value * 100)
+        perc = lambda value: int(round(value * 100))
 
         y_hero_and_level = y_0
         self._render_header((x_left, y_hero_and_level), self.hero_id.name)
@@ -887,7 +910,7 @@ class TalentsWindow(UiWindow):
                                  rect_tier.top + tier_padding,
                                  TALENT_ICON_SIZE[0],
                                  TALENT_ICON_SIZE[1])
-                tooltip = TooltipGraphics(self._ui_render, COLOR_WHITE, option.name, [option.description],
+                tooltip = TooltipGraphics(self._ui_render, COLOR_WHITE, option.name, [DetailLine(option.description)],
                                           top_right=(rect_icon.left - 2, rect_icon.top))
                 icons.append(
                     TalentIcon(self._ui_render, rect_icon,
@@ -927,7 +950,7 @@ class QuestsWindow(UiWindow):
         for quest in self.active_quests:
             self._ui_render.text(self._font_header, "\"%s\"" % quest.name, (x_left, y), (220, 220, 250))
 
-            lines = split_text_into_lines(quest.description, 30)
+            lines = split_text_into_lines(quest.description, 31)
             for i, line in enumerate(lines):
                 line_space = 15
                 self._ui_render.text(self._font_details, line, (x_left, y + 20 + i * line_space))

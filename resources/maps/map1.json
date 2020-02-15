@@ -10,14 +10,14 @@
   "consumables_on_ground": [],
   "items_on_ground": [
     {
-      "item_id": "GOLD_NUGGET:*",
+      "item_id": "GOLD_NUGGET:",
       "position": [
         -25,
         2500
       ]
     },
     {
-      "item_id": "SAPHIRE:*",
+      "item_id": "SAPHIRE:",
       "position": [
         3625,
         2000

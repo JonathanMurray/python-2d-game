@@ -11,6 +11,6 @@ def register_feather_hat_item():
         sprite=Sprite.ITEM_FEATHER_HAT,
         image_file_path="resources/graphics/item_feather_hat.png",
         item_equipment_category=ItemEquipmentCategory.HEAD,
-        name="Feather Hat",
+        name="Feather hat",
         stat_modifier_intervals={HeroStat.HEALTH_REGEN: [0.1, 0.2, 0.3], HeroStat.MANA_REGEN: [0.1, 0.2, 0.3]}
     )

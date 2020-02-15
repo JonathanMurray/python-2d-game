@@ -1,16 +1,15 @@
 import random
 
 from pythongame.core.buff_effects import get_buff_effect, register_buff_effect, AbstractBuffEffect
-from pythongame.core.common import ItemType, Sprite, BuffType, Millis, PeriodicTimer, randomized_item_id, ItemId
+from pythongame.core.common import ItemType, Sprite, BuffType, Millis, PeriodicTimer
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
-from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
-    register_entity_sprite_initializer, ITEM_ENTITY_SIZE, register_item_level
+from pythongame.core.game_data import UiIconSprite
 from pythongame.core.game_state import Event, PlayerDamagedEnemy, GameState, WorldEntity, \
     NonPlayerCharacter
-from pythongame.core.item_effects import register_item_effect, AbstractItemEffect
+from pythongame.core.item_effects import AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
-from pythongame.core.view.image_loading import SpriteInitializer
 from pythongame.core.visual_effects import VisualCircle
+from pythongame.game_data.items.register_items_util import register_custom_effect_item
 
 ITEM_TYPE = ItemType.GOATS_RING
 BUFF_TYPE = BuffType.DEBUFFED_BY_GOATS_RING
@@ -19,8 +18,7 @@ DAMAGE_SOURCE = "goats_ring"
 
 class ItemEffect(AbstractItemEffect):
 
-    def __init__(self, item_id: ItemId, proc_chance: float):
-        super().__init__(item_id)
+    def __init__(self, proc_chance: float):
         self._proc_chance = proc_chance
 
     def item_handle_event(self, event: Event, game_state: GameState):
@@ -53,18 +51,20 @@ class DebuffedByGoatsRing(AbstractBuffEffect):
 
 
 def register_goats_ring():
-    register_item_level(ITEM_TYPE, 5)
-    ui_icon_sprite = UiIconSprite.ITEM_GOATS_RING
-    sprite = Sprite.ITEM_GOATS_RING
-    image_file_path = "resources/graphics/item_goats_ring.png"
-    register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
-    register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    name = "The Goat's Curse"
-    for i, proc_chance in enumerate([0.2, 0.21, 0.22, 0.23, 0.24, 0.25]):
-        item_id = randomized_item_id(ITEM_TYPE, i)
-        register_item_effect(item_id, ItemEffect(item_id, proc_chance))
-        description = ["Whenever you damage an enemy, there is a  " + str(
-            int(proc_chance * 100)) + "% chance that it will be cursed and take additional magic damage over time"]
-        item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.RING)
-        register_item_data(item_id, item_data)
+    item_type = ItemType.GOATS_RING
+    proc_chance = 0.2
+    register_custom_effect_item(
+        item_type=item_type,
+        item_level=5,
+        ui_icon_sprite=UiIconSprite.ITEM_GOATS_RING,
+        sprite=Sprite.ITEM_GOATS_RING,
+        image_file_path="resources/graphics/item_goats_ring.png",
+        item_equipment_category=ItemEquipmentCategory.RING,
+        name="The Goat's Curse",
+        custom_effect=ItemEffect(proc_chance),
+        stat_modifier_intervals=[],
+        custom_description=["Whenever you damage an enemy, there is a  " + str(
+            int(proc_chance * 100)) + "% chance that it will be cursed and take additional magic damage over time"],
+        is_unique=True
+    )
     register_buff_effect(BUFF_TYPE, DebuffedByGoatsRing)

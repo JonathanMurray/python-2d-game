@@ -1,22 +1,18 @@
 from pythongame.core.buff_effects import register_buff_effect, get_buff_effect, \
     StatModifyingBuffEffect
-from pythongame.core.common import ItemType, Sprite, BuffType, Millis, HeroStat, plain_item_id, ItemId
-from pythongame.core.game_data import UiIconSprite, register_ui_icon_sprite_path, register_item_data, ItemData, \
-    register_entity_sprite_initializer, ITEM_ENTITY_SIZE, register_item_level
+from pythongame.core.common import ItemType, Sprite, BuffType, Millis, HeroStat, StatModifierInterval
+from pythongame.core.game_data import UiIconSprite
 from pythongame.core.game_state import Event, GameState, PlayerWasAttackedEvent
-from pythongame.core.item_effects import register_item_effect, StatModifyingItemEffect
+from pythongame.core.item_effects import AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
-from pythongame.core.view.image_loading import SpriteInitializer
+from pythongame.game_data.items.register_items_util import register_custom_effect_item
 
 BUFF_TYPE_SLOWED = BuffType.SLOWED_FROM_NOBLE_DEFENDER
 SLOW_AMOUNT = 0.3
 SLOW_DURATION = Millis(1500)
 
 
-class ItemEffect(StatModifyingItemEffect):
-
-    def __init__(self, item_id: ItemId, stat_modifiers):
-        super().__init__(item_id, stat_modifiers)
+class ItemEffect(AbstractItemEffect):
 
     def item_handle_event(self, event: Event, game_state: GameState):
         if isinstance(event, PlayerWasAttackedEvent):
@@ -24,28 +20,25 @@ class ItemEffect(StatModifyingItemEffect):
 
 
 class SlowedFromNobleDefender(StatModifyingBuffEffect):
-
     def __init__(self):
         super().__init__(BUFF_TYPE_SLOWED, {HeroStat.MOVEMENT_SPEED: -SLOW_AMOUNT})
 
 
 def register_noble_defender():
     item_type = ItemType.NOBLE_DEFENDER
-    item_id = plain_item_id(item_type)
-    register_item_level(item_type, 6)
-    armor_boost = 4
-    ui_icon_sprite = UiIconSprite.ITEM_NOBLE_DEFENDER
-    sprite = Sprite.ITEM_NOBLE_DEFENDER
-    image_file_path = "resources/graphics/item_noble_defender.png"
-    register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
-    register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))
-    effect = ItemEffect(item_id, {HeroStat.ARMOR: armor_boost, HeroStat.BLOCK_AMOUNT: 10})
-    register_item_effect(item_id, effect)
-    name = "Noble defender"
-    description = effect.get_description() + \
-                  ["When you are attacked, your movement speed is slowed by {:.0f}".format(SLOW_AMOUNT * 100) +
-                   "% for " + "{:.1f}".format(SLOW_DURATION / 1000) + "s"]
+    register_custom_effect_item(
+        item_type=item_type,
+        item_level=6,
+        ui_icon_sprite=UiIconSprite.ITEM_NOBLE_DEFENDER,
+        sprite=Sprite.ITEM_NOBLE_DEFENDER,
+        image_file_path="resources/graphics/item_noble_defender.png",
+        item_equipment_category=ItemEquipmentCategory.OFF_HAND,
+        name="Noble defender",
+        custom_description=["When you are attacked, your movement speed is slowed by {:.0f}".format(SLOW_AMOUNT * 100) +
+                            "% for " + "{:.1f}".format(SLOW_DURATION / 1000) + "s"],
+        stat_modifier_intervals=[StatModifierInterval(HeroStat.ARMOR, [4]),
+                                 StatModifierInterval(HeroStat.BLOCK_AMOUNT, [8, 9, 10])],
+        custom_effect=ItemEffect()
+    )
 
-    item_data = ItemData(ui_icon_sprite, sprite, name, description, ItemEquipmentCategory.OFF_HAND)
-    register_item_data(item_id, item_data)
     register_buff_effect(BUFF_TYPE_SLOWED, SlowedFromNobleDefender)

@@ -200,11 +200,11 @@ class ItemJson:
 
     @staticmethod
     def serialize_from_data(item_id: ItemId, position: Tuple[int, int]):
-        return {"item_id": item_id, "position": position}
+        return {"item_id": item_id.id_string, "position": position}
 
     @staticmethod
     def deserialize(data) -> ItemOnGround:
-        item_id = data["item_id"]
+        item_id = ItemId.from_id_string(data["item_id"])
         return create_item_on_ground(item_id, data["position"])
 
 

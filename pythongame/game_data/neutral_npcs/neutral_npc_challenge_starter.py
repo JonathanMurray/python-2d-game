@@ -1,10 +1,11 @@
 import random
 
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
-    PeriodicTimer, ItemType, plain_item_id, randomized_item_id
+    PeriodicTimer, ItemType
 from pythongame.core.game_data import register_npc_data, NpcData, SpriteSheet, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.item_data import randomized_item_id
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, register_npc_dialog_data, DialogData, \
     DialogOptionData, buy_item_option
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
@@ -35,11 +36,11 @@ def register_challenge_starter_npc():
     register_npc_behavior(npc_type, NpcMind)
 
     dialog_options = [
-        buy_item_option(randomized_item_id(ItemType.GLADIATOR_ARMOR, 0), 20),
-        buy_item_option(plain_item_id(ItemType.HEALING_WAND), 20),
-        buy_item_option(plain_item_id(ItemType.ZULS_AEGIS), 20),
-        buy_item_option(randomized_item_id(ItemType.WARLOCKS_COWL, 0), 20),
-        buy_item_option(randomized_item_id(ItemType.DRUIDS_RING, 0), 20),
+        buy_item_option(randomized_item_id(ItemType.GLADIATOR_ARMOR), 20),
+        buy_item_option(randomized_item_id(ItemType.HEALING_WAND), 20),
+        buy_item_option(randomized_item_id(ItemType.ZULS_AEGIS), 20),
+        buy_item_option(randomized_item_id(ItemType.WARLOCKS_COWL), 20),
+        buy_item_option(randomized_item_id(ItemType.DRUIDS_RING), 20),
         DialogOptionData("\"Good bye\"", "cancel", None)]
     dialog_text_body = "Choose wisely."
     dialog_data = DialogData("Vendor", portrait_icon_sprite, dialog_text_body, dialog_options)

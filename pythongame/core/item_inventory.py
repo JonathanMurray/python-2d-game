@@ -45,9 +45,13 @@ class ItemActivationStateDidNotChange(ItemActivationEvent):
 
 
 class ItemInSlot:
-    def __init__(self, item_effect, item_equipment_category: ItemEquipmentCategory):
+    def __init__(self, item_id: ItemId, item_effect, item_equipment_category: ItemEquipmentCategory):
+        self.item_id = item_id
         self.item_effect = item_effect
         self.item_equipment_category = item_equipment_category
+
+    def __repr__(self):
+        return str(self.item_effect)
 
 
 class ItemInventorySlot:
@@ -70,7 +74,10 @@ class ItemInventorySlot:
         return self.enforced_equipment_category is not None
 
     def get_item_id(self) -> ItemId:
-        return self.item.item_effect.get_item_id()
+        return self.item.item_id
+
+    def __repr__(self):
+        return str(self.item)
 
 
 class ItemInventory:
@@ -131,38 +138,38 @@ class ItemInventory:
                 self.slots[slot_number].item = None
                 self.notify_observers()
                 return
-        print("WARN: item not found in inventory: " + item_id)
+        print("WARN: item not found in inventory: " + str(item_id))
 
     # Note: this will need to return events, if it's used for items that have effects
     def is_slot_empty(self, slot_index: int) -> bool:
         return self.slots[slot_index].is_empty()
 
-    def try_add_item(self, item_effect, item_equipment_category: ItemEquipmentCategory) \
+    def try_add_item(self, item_id: ItemId, item_effect, item_equipment_category: ItemEquipmentCategory) \
             -> Optional[ItemActivationEvent]:
-        item_in_slot = ItemInSlot(item_effect, item_equipment_category)
+        item_in_slot = ItemInSlot(item_id, item_effect, item_equipment_category)
         empty_slot_index = self._find_empty_slot_for_item(item_in_slot)
         if empty_slot_index is not None:
             slot = self.slots[empty_slot_index]
             slot.item = item_in_slot
             self.notify_observers()
             if slot.is_active():
-                return ItemWasActivated(item_effect.get_item_id())
+                return ItemWasActivated(item_id)
             else:
-                return ItemActivationStateDidNotChange(item_effect.get_item_id())
+                return ItemActivationStateDidNotChange(item_id)
         return None
 
-    def put_item_in_inventory_slot(self, item_effect, item_equipment_category: ItemEquipmentCategory,
+    def put_item_in_inventory_slot(self, item_id: ItemId, item_effect, item_equipment_category: ItemEquipmentCategory,
                                    slot_number: int) -> ItemActivationEvent:
-        item_in_slot = ItemInSlot(item_effect, item_equipment_category)
+        item_in_slot = ItemInSlot(item_id, item_effect, item_equipment_category)
         slot = self.slots[slot_number]
         if not slot.is_empty():
             raise Exception("Can't put item in non-empty slot!")
         slot.item = item_in_slot
         self.notify_observers()
         if slot.is_active():
-            return ItemWasActivated(item_effect.get_item_id())
+            return ItemWasActivated(item_id)
         else:
-            return ItemActivationStateDidNotChange(item_effect.get_item_id())
+            return ItemActivationStateDidNotChange(item_id)
 
     def _find_empty_slot_for_item(self, item: ItemInSlot) -> Optional[int]:
         empty_slot_indices = [i for i in range(len(self.slots))
@@ -187,3 +194,6 @@ class ItemInventory:
 
     def notify_observers(self):
         self.was_updated.notify(self.slots)
+
+    def __repr__(self):
+        return str(self.slots)

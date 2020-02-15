@@ -175,6 +175,11 @@ def register_all_game_data():
     register_goblin_sprint_buff()
     register_skeleton_mage_enemy()
 
+    # Register start items before heroes
+    register_practice_sword_item()
+    register_wooden_shield()
+    register_novice_wand_item()
+
     register_hero_mage()
     register_hero_warrior()
     register_hero_rogue()
@@ -196,7 +201,7 @@ def register_all_game_data():
     register_knights_armor()
     register_goats_ring()
     register_blood_amulet()
-    register_wooden_shield()
+
     register_elven_armor()
     register_gold_nugget()
     register_saphire()
@@ -218,7 +223,7 @@ def register_all_game_data():
     register_stone_amulet_item()
     register_torn_document_item()
     register_key_item()
-    register_practice_sword_item()
+
     register_wooden_sword_item()
     register_druids_ring_item()
     register_warlocks_cowl_item()
@@ -231,7 +236,7 @@ def register_all_game_data():
     register_whip_item()
     register_cleaver_item()
     register_desert_blade_item()
-    register_novice_wand_item()
+
     register_sorceress_robe_item()
     register_blessed_chalice_item()
     register_necklace_of_suffering_item()
