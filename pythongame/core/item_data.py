@@ -77,16 +77,13 @@ def get_item_suffix_data(item_suffix_id: ItemSuffixId) -> ItemSuffixData:
 
 def randomized_item_id(item_type: ItemType) -> ItemId:
     data = get_item_data_by_type(item_type)
-    # TODO this should be much more sophisticated
-    # There should be some logic around how suffixes are chosen as loot
-    # suffixes should have levels that match up with the item
-    # loot tables should configure how likely a suffix is to drop
-    if random.random() < 0.5:
-        return ItemId.randomized_base(item_type, data.base_stats)
-    else:
-        suffix_id = random.choice([suffix_id for suffix_id in ItemSuffixId])
-        suffix_stats = get_item_suffix_data(suffix_id).stats
-        return ItemId.randomized_with_suffix(item_type, data.base_stats, suffix_id, suffix_stats)
+    return ItemId.randomized_base(item_type, data.base_stats)
+
+
+def randomized_rare_item_id(item_type: ItemType, suffix_id: ItemSuffixId) -> ItemId:
+    data = get_item_data_by_type(item_type)
+    suffix_stats = get_item_suffix_data(suffix_id).stats
+    return ItemId.randomized_with_suffix(item_type, data.base_stats, suffix_id, suffix_stats)
 
 
 def plain_item_id(item_type: ItemType) -> ItemId:

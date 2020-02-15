@@ -3,7 +3,8 @@ from typing import Dict, List
 from pythongame.core.common import ItemType, LootTableId, ConsumableType
 from pythongame.core.game_data import get_consumables_with_level
 from pythongame.core.item_data import get_items_with_level, get_items_within_levels
-from pythongame.core.loot import LootEntry, LeveledLootTable, StaticLootTable, LootGroup, LootTable
+from pythongame.core.loot import LeveledLootTable, StaticLootTable, LootGroup, LootTable, \
+    ConsumableLootEntry, MoneyLootEntry, CommonItemLootEntry
 
 loot_tables: Dict[LootTableId, LootTable] = {}
 
@@ -22,6 +23,7 @@ def register_loot_tables():
     loot_tables[LootTableId.LEVEL_7] = _table_for_monster_level(7)
     loot_tables[LootTableId.CHEST] = LeveledLootTable(
         item_drop_chance=1,
+        item_rare_chance=0.1,
         level=3,
         item_types_by_level=_item_types_for_monster_level(3),
         consumable_types_by_level=_consumable_types_for_monster_level(3),
@@ -31,28 +33,31 @@ def register_loot_tables():
 
 
 def _table_for_goblin_boss() -> LootTable:
+    # TODO Boss should drop rares!
     return StaticLootTable(
         [
-            LootGroup(2, [LootEntry.item(ItemType.FROG), LootEntry.consumable(ConsumableType.WARP_STONE)], 1),
-            LootGroup(1, [LootEntry.item(item_type) for item_type in get_items_within_levels(5, 10)], 1),
-            LootGroup(1, [LootEntry.money(2), LootEntry.money(3), LootEntry.money(5)], 0.7)
+            LootGroup(2, [CommonItemLootEntry(ItemType.FROG), ConsumableLootEntry(ConsumableType.WARP_STONE)], 1),
+            LootGroup(1, [CommonItemLootEntry(item_type) for item_type in get_items_within_levels(5, 10)], 1),
+            LootGroup(1, [MoneyLootEntry(2), MoneyLootEntry(3), MoneyLootEntry(5)], 0.7)
         ]
     )
 
 
 def _table_for_human_boss() -> LootTable:
+    # TODO Boss should drop rares!
     return StaticLootTable(
         [
-            LootGroup.single(LootEntry.consumable(ConsumableType.WARP_STONE), 1),
-            LootGroup(1, [LootEntry.item(item_type) for item_type in get_items_within_levels(5, 10)], 1),
-            LootGroup.single(LootEntry.item(ItemType.KEY), 1),
+            LootGroup.single(ConsumableLootEntry(ConsumableType.WARP_STONE), 1),
+            LootGroup(1, [CommonItemLootEntry(item_type) for item_type in get_items_within_levels(5, 10)], 1),
+            LootGroup.single(CommonItemLootEntry(ItemType.KEY), 1),
         ]
     )
 
 
 def _table_for_monster_level(monster_level: int) -> LootTable:
     return LeveledLootTable(
-        item_drop_chance=0.15,
+        item_drop_chance=0.2,
+        item_rare_chance=0.2,
         level=monster_level,
         item_types_by_level=_item_types_for_monster_level(monster_level),
         consumable_types_by_level=_consumable_types_for_monster_level(monster_level),

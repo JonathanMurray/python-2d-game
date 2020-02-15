@@ -1,32 +1,34 @@
 import math
 import random
-from typing import Optional, List, Dict
+from typing import List, Dict, Optional
 
-from pythongame.core.common import ConsumableType, ItemType
+from pythongame.core.common import ConsumableType, ItemType, ItemSuffixId
 
 
 # Represents the smallest unit of loot. It shows up on the ground as "one item"
 class LootEntry:
-    def __init__(self, money_amount: Optional[int], item_type: Optional[ItemType],
-                 consumable_type: Optional[ConsumableType]):
-        self.money_amount = money_amount
-        self.item_type = item_type
+    pass
+
+
+class MoneyLootEntry(LootEntry):
+    def __init__(self, amount: int):
+        self.amount = amount
+
+
+class ConsumableLootEntry(LootEntry):
+    def __init__(self, consumable_type: ConsumableType):
         self.consumable_type = consumable_type
 
-    def is_item(self) -> bool:
-        return self.item_type is not None
 
-    @staticmethod
-    def money(amount: int):
-        return LootEntry(amount, None, None)
+class CommonItemLootEntry(LootEntry):
+    def __init__(self, item_type: ItemType):
+        self.item_type = item_type
 
-    @staticmethod
-    def item(item_type: ItemType):
-        return LootEntry(None, item_type, None)
 
-    @staticmethod
-    def consumable(consumable_type: ConsumableType):
-        return LootEntry(None, None, consumable_type)
+class RareItemLootEntry(LootEntry):
+    def __init__(self, item_type: ItemType, suffix_id: Optional[ItemSuffixId]):
+        self.item_type = item_type
+        self.suffix_id = suffix_id
 
 
 # A group of possible loot entries that are interdependent.
@@ -69,10 +71,15 @@ class StaticLootTable(LootTable):
 
 
 class LeveledLootTable(LootTable):
-    def __init__(self, item_drop_chance: float, level: int, item_types_by_level: Dict[int, List[ItemType]],
+    def __init__(self,
+                 item_drop_chance: float,
+                 item_rare_chance: float,
+                 level: int,
+                 item_types_by_level: Dict[int, List[ItemType]],
                  consumable_drop_chance: float,
                  consumable_types_by_level: Dict[int, List[ConsumableType]]):
         self.item_drop_chance = item_drop_chance
+        self.item_rare_chance = item_rare_chance
         self.consumable_drop_chance = consumable_drop_chance
         self.level = level
         if [entries for entries in item_types_by_level.values() if len(entries) == 0]:
@@ -95,12 +102,17 @@ class LeveledLootTable(LootTable):
         if random.random() <= self.item_drop_chance:
             item_level = random.choices(self.item_levels, weights=self.item_level_weights)[0]
             item_type = random.choice(self.item_types_by_level[item_level])
-            loot.append(LootEntry.item(item_type))
+            if random.random() <= self.item_rare_chance:
+                # TODO determine suffix based on level!
+                suffix_id = random.choice([suffix_id for suffix_id in ItemSuffixId])
+                loot.append(RareItemLootEntry(item_type, suffix_id))
+            else:
+                loot.append(CommonItemLootEntry(item_type))
         if random.random() <= self.consumable_drop_chance:
             consumable_level = random.choices(self.consumable_levels, weights=self.consumable_level_weights)[0]
             consumable_type = random.choice(self.consumable_types_by_level[consumable_level])
-            loot.append(LootEntry.consumable(consumable_type))
+            loot.append(ConsumableLootEntry(consumable_type))
         if random.random() <= self.money_drop_chance:
             amount = random.randint(1, self.level)
-            loot.append(LootEntry.money(amount))
+            loot.append(MoneyLootEntry(amount))
         return loot
