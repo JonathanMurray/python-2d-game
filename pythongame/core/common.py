@@ -485,11 +485,11 @@ class StatModifier:
         if hero_stat == HeroStat.MAX_HEALTH:
             return "+" + str(delta) + " max health"
         elif hero_stat == HeroStat.HEALTH_REGEN:
-            return "+" + str(delta) + " health regen"
+            return "+" + "{:.1f}".format(delta) + " health regen"
         elif hero_stat == HeroStat.MAX_MANA:
             return "+" + str(delta) + " max mana"
         elif hero_stat == HeroStat.MANA_REGEN:
-            return "+" + str(delta) + " mana regen"
+            return "+" + "{:.1f}".format(delta) + " mana regen"
         elif hero_stat == HeroStat.ARMOR:
             return str(delta) + " armor"
         elif hero_stat == HeroStat.MOVEMENT_SPEED:
@@ -531,8 +531,16 @@ class ItemSuffixData:
 
 
 class ItemSuffixId(Enum):
-    RECKONING = 1
     VITALITY = 2
+    DISCIPLINE = 3
+    REGROWTH = 4
+    FOCUS = 5
+    SWIFTNESS = 6
+    LEECHING = 7
+    POWER = 8
+    RECKONING = 9
+    WIZARDRY = 10
+    SPIRITS = 11
 
 
 class ItemSuffix:
