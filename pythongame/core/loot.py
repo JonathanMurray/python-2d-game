@@ -94,7 +94,7 @@ class LeveledLootTable(LootTable):
                 loot.append(ItemLootEntry(item_type))
         if random.random() <= self.consumable_drop_chance:
             # Warp stone doesn't have a level, but should be dropped across all levels
-            if random.random() < 0.25:
+            if random.random() < 0.15:
                 consumable_type = ConsumableType.WARP_STONE
             else:
                 consumable_level = random.choices(self.consumable_levels, weights=self.consumable_level_weights)[0]
