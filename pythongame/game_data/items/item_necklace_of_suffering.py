@@ -32,7 +32,7 @@ def register_necklace_of_suffering_item():
         sprite=Sprite.ITEM_NECKLACE_OF_SUFFERING,
         image_file_path="resources/graphics/item_necklace_of_suffering.png",
         item_equipment_category=ItemEquipmentCategory.NECK,
-        name="Necklace of Suffering",
+        name="Necklace of Domination",
         custom_description=["Any time you lose health, gain +" + str(int(BUFF_DAMAGE * 100)) +
                             "% damage for " + "{:.0f}".format(BUFF_DURATION / 1000) + "s"],
         custom_effect=ItemEffect(),

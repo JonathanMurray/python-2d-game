@@ -10,7 +10,7 @@ def register_thiefs_mask_item():
         sprite=Sprite.ITEM_THIEFS_MASK,
         image_file_path="resources/graphics/item_thiefs_mask.png",
         item_equipment_category=ItemEquipmentCategory.HEAD,
-        name="Thief's mask",
+        name="Mask of Thieves",
         stat_modifier_intervals={HeroStat.DODGE_CHANCE: [0.1],
                                  HeroStat.DAMAGE: [0.05],
                                  HeroStat.MANA_REGEN: [0.03]},

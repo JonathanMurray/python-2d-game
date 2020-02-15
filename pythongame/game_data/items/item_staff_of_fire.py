@@ -10,7 +10,8 @@ def register_staff_of_fire_item():
         sprite=Sprite.ITEM_STAFF_OF_FIRE,
         image_file_path="resources/graphics/item_staff_of_fire.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
-        name="Staff of Fire",
-        stat_modifier_intervals=[StatModifierInterval(HeroStat.MAGIC_DAMAGE, [0.3])],
+        name="Staff of the Phoenix",
+        stat_modifier_intervals=[StatModifierInterval(HeroStat.MAGIC_DAMAGE, [0.3]),
+                                 StatModifierInterval(HeroStat.MAX_MANA, [10])],
         is_unique=True
     )

@@ -51,7 +51,7 @@ def register_cleaver_item():
         sprite=Sprite.ITEM_CLEAVER,
         image_file_path="resources/graphics/item_cleaver.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
-        name="Cleaver",
+        name="The Cleaver",
         custom_effect=ItemEffect(),
         custom_description=[str(
             int(PROC_CHANCE * 100)) + "% on hit: cause enemy to bleed, taking " + str(TOTAL_DAMAGE) + \
