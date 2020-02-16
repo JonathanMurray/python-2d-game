@@ -542,6 +542,7 @@ class ItemSuffixId(Enum):
     WIZARDRY = 10
     SPIRITS = 11
     EVASION = 12
+    CONFIDENCE = 13
 
 
 class ItemSuffix:
