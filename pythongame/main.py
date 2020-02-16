@@ -61,6 +61,19 @@ class Main:
             self.main_menu_scene, self.creating_world_scene, self.picking_hero_scene, cmd_flags, self.save_file_handler)
 
     def main_loop(self):
+        try:
+            self._main_loop()
+        except BaseException as e:
+            print("Game crashed with an unexpected error! %s" % e)
+            if hasattr(self.scene, 'game_state'):
+                game_state = getattr(self.scene, 'game_state', None)
+                print("Saving character to file as backup...")
+                self.save_file_handler.save_to_file(game_state, None, Millis(0))
+            else:
+                print("Failed to save character to file as backup!")
+            raise e
+
+    def _main_loop(self):
         while True:
             self.clock.tick()
             time_passed = Millis(self.clock.get_time())
