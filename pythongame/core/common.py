@@ -278,6 +278,7 @@ class Sprite(Enum):
     ITEM_FIRE_WAND = 356
     ITEM_FEATHER_HAT = 357
     ITEM_CANDLE = 358
+    ITEM_BRONZE_RING = 359
     COINS_1 = 400
     COINS_2 = 401
     COINS_5 = 402
@@ -455,6 +456,7 @@ class ItemType(Enum):
     FIRE_WAND = 113
     FEATHER_HAT = 114
     CANDLE = 115
+    BRONZE_RING = 116
 
 
 class HeroStat(Enum):
@@ -863,6 +865,7 @@ class UiIconSprite(Enum):
     ITEM_FIRE_WAND = 256
     ITEM_FEATHER_HAT = 257
     ITEM_CANDLE = 258
+    ITEM_BRONZE_RING = 259
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
     INVENTORY_TEMPLATE_HELMET = 400

@@ -12,5 +12,5 @@ def register_ring_of_power_item():
         image_file_path="resources/graphics/item_ring_of_power.png",
         item_equipment_category=ItemEquipmentCategory.RING,
         name="Force ring",
-        stat_modifier_intervals={HeroStat.DAMAGE: [0.1, 0.11, 0.12, 0.13]}
+        stat_modifier_intervals={HeroStat.DAMAGE: [0.08, 0.09, 0.1, 0.11, 0.12]}
     )
