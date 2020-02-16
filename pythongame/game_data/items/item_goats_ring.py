@@ -11,6 +11,11 @@ from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.visual_effects import VisualCircle
 from pythongame.game_data.items.register_items_util import register_custom_effect_item
 
+DMG_COOLDOWN = Millis(1000)
+TICK_DMG = 1
+DURATION = Millis(6000)
+TOTAL_DAMAGE = DURATION / DMG_COOLDOWN * TICK_DMG
+
 ITEM_TYPE = ItemType.GOATS_RING
 BUFF_TYPE = BuffType.DEBUFFED_BY_GOATS_RING
 DAMAGE_SOURCE = "goats_ring"
@@ -26,19 +31,19 @@ class ItemEffect(AbstractItemEffect):
             if random.random() < self._proc_chance:
                 # Compare "source" to prevent the debuff from renewing itself indefinitely
                 if event.damage_source != DAMAGE_SOURCE:
-                    event.enemy_npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), Millis(6000))
+                    event.enemy_npc.gain_buff_effect(get_buff_effect(BUFF_TYPE), DURATION)
 
 
 class DebuffedByGoatsRing(AbstractBuffEffect):
 
     def __init__(self):
-        self.dmg_timer = PeriodicTimer(Millis(1000))
+        self.dmg_timer = PeriodicTimer(DMG_COOLDOWN)
         self.graphics_timer = PeriodicTimer(Millis(400))
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         if self.dmg_timer.update_and_check_if_ready(time_passed):
-            deal_player_damage_to_enemy(game_state, buffed_npc, 1, DamageType.MAGIC, damage_source=DAMAGE_SOURCE)
+            deal_player_damage_to_enemy(game_state, buffed_npc, TICK_DMG, DamageType.MAGIC, damage_source=DAMAGE_SOURCE)
         if self.graphics_timer.update_and_check_if_ready(time_passed):
             position = buffed_entity.get_center_position()
             visual_effect1 = VisualCircle((0, 100, 40), position, 9, 16, Millis(400), 2, buffed_entity)
@@ -63,8 +68,9 @@ def register_goats_ring():
         name="The Goat's Curse",
         custom_effect=ItemEffect(proc_chance),
         stat_modifier_intervals=[],
-        custom_description=["Whenever you damage an enemy, there is a  " + str(
-            int(proc_chance * 100)) + "% chance that it will be cursed and take additional magic damage over time"],
+        custom_description=["Whenever you damage an enemy, there is a  " +
+                            str(int(proc_chance * 100)) + "% chance that it will be cursed and take " +
+                            str(TOTAL_DAMAGE) + " magic damage over " + "{:.0f}".format(DURATION / 1000) + "s"],
         is_unique=True
     )
     register_buff_effect(BUFF_TYPE, DebuffedByGoatsRing)
