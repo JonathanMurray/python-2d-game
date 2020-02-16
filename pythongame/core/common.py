@@ -475,6 +475,35 @@ class HeroStat(Enum):
     MOVEMENT_IMPAIRING_RESIST_CHANCE = 15
 
 
+def _get_description(hero_stat: HeroStat, arg: str):
+    if hero_stat == HeroStat.MAX_HEALTH:
+        return "+" + arg + " max health"
+    elif hero_stat == HeroStat.HEALTH_REGEN:
+        return "+" + arg + " health regen"
+    elif hero_stat == HeroStat.MAX_MANA:
+        return "+" + arg + " max mana"
+    elif hero_stat == HeroStat.MANA_REGEN:
+        return "+" + arg + " mana regen"
+    elif hero_stat == HeroStat.ARMOR:
+        return arg + " armor"
+    elif hero_stat == HeroStat.DAMAGE:
+        return "+" + arg + "% damage"
+    elif hero_stat == HeroStat.PHYSICAL_DAMAGE:
+        return "+" + arg + "% physical damage"
+    elif hero_stat == HeroStat.MAGIC_DAMAGE:
+        return "+" + arg + "% magic damage"
+    elif hero_stat == HeroStat.LIFE_STEAL:
+        return "+" + arg + "% life steal"
+    elif hero_stat == HeroStat.BLOCK_AMOUNT:
+        return arg + " block"
+    elif hero_stat == HeroStat.DODGE_CHANCE:
+        return "+" + arg + "% dodge"
+    elif hero_stat == HeroStat.MAGIC_RESIST_CHANCE:
+        return "+" + arg + "% magic resist"
+    else:
+        raise Exception("Unhandled stat: " + str(hero_stat))
+
+
 class StatModifier:
     def __init__(self, hero_stat: HeroStat, delta: Union[int, float]):
         self.hero_stat = hero_stat
@@ -483,35 +512,18 @@ class StatModifier:
     def get_description(self):
         hero_stat = self.hero_stat
         delta = self.delta
-        if hero_stat == HeroStat.MAX_HEALTH:
-            return "+" + str(delta) + " max health"
-        elif hero_stat == HeroStat.HEALTH_REGEN:
-            return "+" + "{:.1f}".format(delta) + " health regen"
-        elif hero_stat == HeroStat.MAX_MANA:
-            return "+" + str(delta) + " max mana"
-        elif hero_stat == HeroStat.MANA_REGEN:
-            return "+" + "{:.1f}".format(delta) + " mana regen"
-        elif hero_stat == HeroStat.ARMOR:
-            return str(delta) + " armor"
+        if hero_stat in [HeroStat.MAX_HEALTH, HeroStat.MAX_MANA, HeroStat.ARMOR, HeroStat.BLOCK_AMOUNT]:
+            return _get_description(hero_stat, str(delta))
+        elif hero_stat in [HeroStat.HEALTH_REGEN, HeroStat.MANA_REGEN]:
+            return _get_description(hero_stat, "{:.1f}".format(delta))
+        elif hero_stat in [HeroStat.DAMAGE, HeroStat.PHYSICAL_DAMAGE, HeroStat.MAGIC_DAMAGE, HeroStat.LIFE_STEAL,
+                           HeroStat.DODGE_CHANCE, HeroStat.MAGIC_RESIST_CHANCE]:
+            return _get_description(hero_stat, str(int(round(delta * 100))))
         elif hero_stat == HeroStat.MOVEMENT_SPEED:
             if delta >= 0:
                 return "Increases movement speed by " + str(int(delta * 100)) + "%"
             else:
                 return "Reduces movement speed by " + str(int(delta * 100)) + "%"
-        elif hero_stat == HeroStat.DAMAGE:
-            return "+" + str(int(round(delta * 100))) + "% damage"
-        elif hero_stat == HeroStat.PHYSICAL_DAMAGE:
-            return "+" + str(int(round(delta * 100))) + "% physical damage"
-        elif hero_stat == HeroStat.MAGIC_DAMAGE:
-            return "+" + str(int(round(delta * 100))) + "% magic damage"
-        elif hero_stat == HeroStat.LIFE_STEAL:
-            return "+" + str(int(delta * 100)) + "% life steal"
-        elif hero_stat == HeroStat.BLOCK_AMOUNT:
-            return str(delta) + " block"
-        elif hero_stat == HeroStat.DODGE_CHANCE:
-            return "+" + str(int(delta * 100)) + "% dodge"
-        elif hero_stat == HeroStat.MAGIC_RESIST_CHANCE:
-            return "+" + str(int(delta * 100)) + "% magic resist"
         elif hero_stat == HeroStat.MOVEMENT_IMPAIRING_RESIST_CHANCE:
             if delta == 1:
                 return "Immune to slows and stuns"
@@ -528,6 +540,44 @@ class StatModifierInterval:
     def __init__(self, hero_stat: HeroStat, interval: List[Union[int, float]]):
         self.hero_stat = hero_stat
         self.interval = interval
+
+    def get_interval_description(self):
+        hero_stat = self.hero_stat
+        interval = self.interval
+
+        if hero_stat in [HeroStat.MAX_HEALTH, HeroStat.MAX_MANA, HeroStat.ARMOR, HeroStat.BLOCK_AMOUNT]:
+            if interval[0] == interval[-1]:
+                return _get_description(hero_stat, str(interval[0]))
+            else:
+                return _get_description(hero_stat, "(" + str(interval[0]) + "-" + str(interval[-1]) + ")")
+        elif hero_stat in [HeroStat.HEALTH_REGEN, HeroStat.MANA_REGEN]:
+            if interval[0] == interval[-1]:
+                return _get_description(hero_stat, "{:.1f}".format(interval[0]))
+            else:
+                return _get_description(hero_stat,
+                                        "(" + "{:.1f}".format(interval[0]) + "-" + "{:.1f}".format(interval[-1]) + ")")
+        elif hero_stat in [HeroStat.DAMAGE, HeroStat.PHYSICAL_DAMAGE, HeroStat.MAGIC_DAMAGE, HeroStat.LIFE_STEAL,
+                           HeroStat.DODGE_CHANCE, HeroStat.MAGIC_RESIST_CHANCE]:
+            if interval[0] == interval[-1]:
+                return _get_description(hero_stat, str(int(round(interval[0] * 100))))
+            else:
+                return _get_description(hero_stat,
+                                        "(" + str(int(round(interval[0] * 100))) + "-" +
+                                        str(int(round(interval[-1] * 100))) + ")")
+        elif hero_stat == HeroStat.MOVEMENT_SPEED:
+            if interval[0] == interval[-1]:
+                return "Changes movement speed by " + str(int(interval[0] * 100)) + "%"
+            else:
+                return "Changes movement speed by (" + str(int(interval[0] * 100)) + "-" + \
+                       str(int(interval[-1] * 100)) + ")%"
+        elif hero_stat == HeroStat.MOVEMENT_IMPAIRING_RESIST_CHANCE:
+            if interval[0] == interval[-1]:
+                return "Changes slow/stun resistance chance by " + str(int(interval[0] * 100)) + "%"
+            else:
+                return "Changes slow/stun resistance chance by (" + str(int(interval[0] * 100)) + "-" + \
+                       str(int(interval[-1] * 100)) + ")%"
+        else:
+            raise Exception("Unhandled stat: " + str(hero_stat))
 
 
 class ItemSuffixData:

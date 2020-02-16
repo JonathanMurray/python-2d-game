@@ -110,6 +110,16 @@ def create_item_description(item_id: ItemId) -> List[DescriptionLine]:
     return lines
 
 
+def create_item_description_for_type(item_type: ItemType) -> List[str]:
+    data = get_item_data_by_type(item_type)
+    lines = []
+    if data.base_stats:
+        for modifier in data.base_stats:
+            lines.append(modifier.get_interval_description())
+    lines += data.custom_description_lines
+    return lines
+
+
 def build_item_name(item_id: ItemId) -> str:
     data = get_item_data_by_type(item_id.item_type)
     name = data.base_name
