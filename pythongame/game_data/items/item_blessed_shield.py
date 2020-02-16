@@ -5,7 +5,7 @@ from pythongame.core.item_effects import AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.game_data.items.register_items_util import register_custom_effect_item
 
-HEALING_AMOUNT = 3
+HEALING_AMOUNT = 1
 ITEM_TYPE = ItemType.BLESSED_SHIELD
 
 
