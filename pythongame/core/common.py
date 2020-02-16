@@ -559,7 +559,7 @@ class StatModifierInterval:
                 return _get_description(hero_stat,
                                         "(" + "{:.1f}".format(interval[0]) + "-" + "{:.1f}".format(interval[-1]) + ")")
         elif hero_stat in [HeroStat.DAMAGE, HeroStat.PHYSICAL_DAMAGE, HeroStat.MAGIC_DAMAGE, HeroStat.LIFE_STEAL,
-                           HeroStat.DODGE_CHANCE, HeroStat.MAGIC_RESIST_CHANCE]:
+                           HeroStat.DODGE_CHANCE, HeroStat.MAGIC_RESIST_CHANCE, HeroStat.BLOCK_CHANCE]:
             if interval[0] == interval[-1]:
                 return _get_description(hero_stat, str(int(round(interval[0] * 100))))
             else:
