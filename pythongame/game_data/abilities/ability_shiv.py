@@ -14,7 +14,7 @@ from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import VisualRect, VisualCross
 
 MIN_DMG = 3
-MAX_DMG = 4
+MAX_DMG = 5
 
 SHIV_STEALTH_DAMAGE_MULTIPLIER = 3.5
 SHIV_UPGRADED_STEALTH_DAMAGE_MULTIPLIER = 4

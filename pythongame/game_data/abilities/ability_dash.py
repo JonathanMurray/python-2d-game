@@ -16,18 +16,20 @@ from pythongame.core.math import translate_in_direction
 from pythongame.core.visual_effects import VisualCircle, VisualRect, VisualLine
 
 ABILITY_TYPE = AbilityType.DASH
-BUFF_AFTER_ENEMY_JUMP = BuffType.AFTER_DASH
-BUFF_AFTER_ENEMY_JUMP_DURATION = Millis(3000)
+BUFF_FROM_STEALTH = BuffType.AFTER_DASH
+BUFF_FROM_STEALTH_DURATION = Millis(7_000)
 BUFF_SPEED = BuffType.SPEED_BUFF_FROM_DASH
 BUFF_SPEED_DURATION = Millis(2000)
-HEALTH_REGEN_BOOST = 5
+LIFE_STEAL_BOOST = 0.1
 DAMAGE = 5
-DODGE_CHANCE_BOOST = 0.05
+DODGE_CHANCE_BOOST = 0.1
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
     player_entity = game_state.player_entity
     previous_position = player_entity.get_center_position()
+
+    used_from_stealth = game_state.player_state.has_active_buff(BuffType.STEALTHING)
 
     for distance in range(40, 200, 10):
         new_position = translate_in_direction((player_entity.x, player_entity.y), player_entity.direction,
@@ -41,8 +43,6 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
             if enemy_hit:
                 game_state.camera_shake = CameraShake(Millis(50), Millis(150), 4)
                 deal_player_damage_to_enemy(game_state, enemy_hit, DAMAGE, DamageType.MAGIC)
-                game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_AFTER_ENEMY_JUMP),
-                                                         BUFF_AFTER_ENEMY_JUMP_DURATION)
                 has_reset_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.ABILITY_DASH_KILL_RESET)
                 enemy_died = enemy_hit.health_resource.is_at_or_below_zero()
                 if has_reset_upgrade and enemy_died:
@@ -59,6 +59,8 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
             has_speed_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.ABILITY_DASH_MOVEMENT_SPEED)
             if has_speed_upgrade:
                 game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_SPEED), BUFF_SPEED_DURATION)
+            if used_from_stealth:
+                game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_FROM_STEALTH), BUFF_FROM_STEALTH_DURATION)
             return AbilityWasUsedSuccessfully(should_regain_mana_and_cd=should_regain_mana_and_cd)
     return AbilityFailedToExecute(reason="No space")
 
@@ -92,10 +94,10 @@ def _would_collide_with_wall(game_state: GameState, player_entity: WorldEntity, 
     return False
 
 
-class AfterEnemyJump(StatModifyingBuffEffect):
+class FromStealth(StatModifyingBuffEffect):
     def __init__(self):
-        super().__init__(BUFF_AFTER_ENEMY_JUMP,
-                         {HeroStat.DODGE_CHANCE: DODGE_CHANCE_BOOST, HeroStat.HEALTH_REGEN: HEALTH_REGEN_BOOST})
+        super().__init__(BUFF_FROM_STEALTH,
+                         {HeroStat.DODGE_CHANCE: DODGE_CHANCE_BOOST, HeroStat.LIFE_STEAL: LIFE_STEAL_BOOST})
 
 
 class IncreasedSpeedAfterDash(StatModifyingBuffEffect):
@@ -113,13 +115,14 @@ class IncreasedSpeedAfterDash(StatModifyingBuffEffect):
 def register_dash_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_DASH
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    description = "Dash over an enemy, dealing " + str(DAMAGE) + " magic damage. Then, gain +" + \
+    description = "Dash over an enemy, dealing " + str(DAMAGE) + " magic damage. [from stealth: gain +" + \
                   "{:.0f}".format(DODGE_CHANCE_BOOST * 100) + "% dodge chance and +" + \
-                  str(HEALTH_REGEN_BOOST) + " health regen"
+                  "{:.0f}".format(LIFE_STEAL_BOOST * 100) + "% life steal for " + \
+                  "{:.0f}".format(BUFF_FROM_STEALTH_DURATION / 1000) + "s]"
     mana_cost = 12
     ability_data = AbilityData("Dash", ui_icon_sprite, mana_cost, Millis(4000), description, SoundId.ABILITY_DASH)
     register_ability_data(ABILITY_TYPE, ability_data)
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_ability_dash.png")
-    register_buff_effect(BUFF_AFTER_ENEMY_JUMP, AfterEnemyJump)
-    register_buff_text(BUFF_AFTER_ENEMY_JUMP, "Protected")
+    register_buff_effect(BUFF_FROM_STEALTH, FromStealth)
+    register_buff_text(BUFF_FROM_STEALTH, "Element of surprise")
     register_buff_effect(BUFF_SPEED, IncreasedSpeedAfterDash)
