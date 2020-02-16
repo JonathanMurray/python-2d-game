@@ -682,7 +682,7 @@ class ItemId:
                         value = float(value_str)
                     suffix_stats.append(StatModifier(hero_stat, value))
             return ItemId(item_type, base_stats, suffix_id, suffix_stats)
-        except BaseException as e:
+        except Exception as e:
             raise Exception("Failed to parse item_id '" + item_id + "'", e)
 
     def __eq__(self, other):

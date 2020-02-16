@@ -63,7 +63,7 @@ class Main:
     def main_loop(self):
         try:
             self._main_loop()
-        except BaseException as e:
+        except Exception as e:
             print("Game crashed with an unexpected error! %s" % e)
             if hasattr(self.scene, 'game_state'):
                 game_state = getattr(self.scene, 'game_state', None)
