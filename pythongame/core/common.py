@@ -499,9 +499,11 @@ def _get_description(hero_stat: HeroStat, arg: str):
     elif hero_stat == HeroStat.BLOCK_AMOUNT:
         return arg + " block"
     elif hero_stat == HeroStat.DODGE_CHANCE:
-        return "+" + arg + "% dodge"
+        return "+" + arg + "% dodge chance"
     elif hero_stat == HeroStat.MAGIC_RESIST_CHANCE:
         return "+" + arg + "% magic resist"
+    elif hero_stat == HeroStat.BLOCK_CHANCE:
+        return "+" + arg + "% block chance"
     else:
         raise Exception("Unhandled stat: " + str(hero_stat))
 
@@ -519,7 +521,7 @@ class StatModifier:
         elif hero_stat in [HeroStat.HEALTH_REGEN, HeroStat.MANA_REGEN]:
             return _get_description(hero_stat, "{:.1f}".format(delta))
         elif hero_stat in [HeroStat.DAMAGE, HeroStat.PHYSICAL_DAMAGE, HeroStat.MAGIC_DAMAGE, HeroStat.LIFE_STEAL,
-                           HeroStat.DODGE_CHANCE, HeroStat.MAGIC_RESIST_CHANCE]:
+                           HeroStat.DODGE_CHANCE, HeroStat.MAGIC_RESIST_CHANCE, HeroStat.BLOCK_CHANCE]:
             return _get_description(hero_stat, str(int(round(delta * 100))))
         elif hero_stat == HeroStat.MOVEMENT_SPEED:
             if delta >= 0:
