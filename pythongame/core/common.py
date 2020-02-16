@@ -472,6 +472,7 @@ class HeroStat(Enum):
     MAGIC_DAMAGE = 12
     BLOCK_CHANCE = 13
     MAGIC_RESIST_CHANCE = 14
+    MOVEMENT_IMPAIRING_RESIST_CHANCE = 15
 
 
 class StatModifier:
@@ -511,6 +512,11 @@ class StatModifier:
             return "+" + str(int(delta * 100)) + "% dodge"
         elif hero_stat == HeroStat.MAGIC_RESIST_CHANCE:
             return "+" + str(int(delta * 100)) + "% magic resist"
+        elif hero_stat == HeroStat.MOVEMENT_IMPAIRING_RESIST_CHANCE:
+            if delta == 1:
+                return "Immune to slows and stuns"
+            else:
+                return "+" + str(int(delta * 100)) + "% chance to resist slows and stuns"
         else:
             raise Exception("Unhandled stat: " + str(hero_stat))
 
@@ -543,6 +549,7 @@ class ItemSuffixId(Enum):
     SPIRITS = 11
     EVASION = 12
     CONFIDENCE = 13
+    PERSISTENCE = 14
 
 
 class ItemSuffix:

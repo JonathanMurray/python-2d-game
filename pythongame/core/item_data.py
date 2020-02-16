@@ -82,6 +82,9 @@ _item_suffix_data_by_id: Dict[ItemSuffixId, ItemSuffixData] = {
     ItemSuffixId.CONFIDENCE:
         ItemSuffixData("of Confidence",
                        [StatModifierInterval(HeroStat.BLOCK_CHANCE, interval(0.04, 0.08, 0.01))]),
+    ItemSuffixId.PERSISTENCE:
+        ItemSuffixData("of Persistence",
+                       [StatModifierInterval(HeroStat.MOVEMENT_IMPAIRING_RESIST_CHANCE, [1])]),
 }
 
 

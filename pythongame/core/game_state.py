@@ -436,6 +436,8 @@ class PlayerState:
         self.block_damage_reduction: int = 0
         self.base_magic_resist_chance: float = base_magic_resist_chance
         self.magic_resist_chance_bonus: float = 0  # affected by items/buffs. [Change it additively]
+        self.base_movement_impairing_resist_chance: float = 0
+        self.movement_impairing_resist_chance_bonus: float = 0  # affected by items/buffs. [Change it additively]
         self.talents_were_updated = Observable()
         self.stats_were_updated = Observable()
         self.exp_was_updated = Observable()
@@ -487,6 +489,9 @@ class PlayerState:
     def get_effective_magic_resist_chance(self) -> float:
         return self.base_magic_resist_chance + self.magic_resist_chance_bonus
 
+    def get_effective_movement_impairing_resist_chance(self) -> float:
+        return self.base_movement_impairing_resist_chance + self.movement_impairing_resist_chance_bonus
+
     def get_effective_block_chance(self) -> float:
         return self.base_block_chance + self.block_chance_bonus
 
@@ -524,6 +529,8 @@ class PlayerState:
             self.block_chance_bonus += stat_delta
         elif hero_stat == HeroStat.MAGIC_RESIST_CHANCE:
             self.magic_resist_chance_bonus += stat_delta
+        elif hero_stat == HeroStat.MOVEMENT_IMPAIRING_RESIST_CHANCE:
+            self.movement_impairing_resist_chance_bonus += stat_delta
         else:
             raise Exception("Unhandled stat: " + str(hero_stat))
         self.notify_stats_observers()
