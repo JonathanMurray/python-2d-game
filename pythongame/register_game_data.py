@@ -65,6 +65,7 @@ from pythongame.game_data.items.item_elite_armor import register_elite_armor
 from pythongame.game_data.items.item_elite_helmet import register_elite_helmet_item
 from pythongame.game_data.items.item_elven_armor import register_elven_armor
 from pythongame.game_data.items.item_feather_hat import register_feather_hat_item
+from pythongame.game_data.items.item_fire_gauntlet import register_fire_gauntlet_item
 from pythongame.game_data.items.item_fire_wand import register_fire_wand_item
 from pythongame.game_data.items.item_freezing_gauntlet import register_freezing_gauntlet_item
 from pythongame.game_data.items.item_frog import register_frog_item
@@ -95,10 +96,12 @@ from pythongame.game_data.items.item_saphire import register_saphire
 from pythongame.game_data.items.item_serpent_sword import register_serpent_sword_item
 from pythongame.game_data.items.item_skull_shield import register_skull_shield_item
 from pythongame.game_data.items.item_skull_staff import register_skull_staff_item
+from pythongame.game_data.items.item_skull_sword import register_skull_sword_item
 from pythongame.game_data.items.item_soldiers_helmet import register_soldiers_helmet_item
 from pythongame.game_data.items.item_sorceress_robe import register_sorceress_robe_item
 from pythongame.game_data.items.item_staff_of_fire import register_staff_of_fire_item
 from pythongame.game_data.items.item_stone_amulet import register_stone_amulet_item
+from pythongame.game_data.items.item_sun_shield import register_sun_shield_item
 from pythongame.game_data.items.item_thiefs_mask import register_thiefs_mask_item
 from pythongame.game_data.items.item_torn_document import register_torn_document_item
 from pythongame.game_data.items.item_wand import register_wand_item
@@ -245,6 +248,9 @@ def register_all_game_data():
     register_feather_hat_item()
     register_candle_item()
     register_bronze_ring_item()
+    register_fire_gauntlet_item()
+    register_skull_sword_item()
+    register_sun_shield_item()
 
     # Register items before NPCs as vendors may rely on item data
 
