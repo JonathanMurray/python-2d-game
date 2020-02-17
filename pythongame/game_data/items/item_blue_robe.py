@@ -12,5 +12,5 @@ def register_blue_robe_item():
         image_file_path="resources/graphics/item_blue_robe.png",
         item_equipment_category=ItemEquipmentCategory.CHEST,
         name="Blue robe",
-        stat_modifier_intervals={HeroStat.MANA_REGEN: [0.3, 0.4]}
+        stat_modifier_intervals={HeroStat.MANA_REGEN: [0.3, 0.4, 0.5]}
     )

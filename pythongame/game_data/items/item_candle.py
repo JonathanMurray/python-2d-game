@@ -12,5 +12,5 @@ def register_candle_item():
         image_file_path="resources/graphics/item_candle.png",
         item_equipment_category=ItemEquipmentCategory.OFF_HAND,
         name="Candle",
-        stat_modifier_intervals={HeroStat.MAGIC_RESIST_CHANCE: [0.14, 0.15, 0.16]}
+        stat_modifier_intervals={HeroStat.MAGIC_RESIST_CHANCE: [0.14, 0.15, 0.16, 0.17]}
     )

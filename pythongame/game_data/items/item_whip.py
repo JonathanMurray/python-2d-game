@@ -12,6 +12,6 @@ def register_whip_item():
         image_file_path="resources/graphics/item_whip.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
         name="Whip",
-        stat_modifier_intervals={HeroStat.PHYSICAL_DAMAGE: [0.05, 0.06, 0.07],
+        stat_modifier_intervals={HeroStat.PHYSICAL_DAMAGE: [0.08, 0.09, 0.1, 0.11],
                                  HeroStat.LIFE_STEAL: [0.05, 0.06]}
     )

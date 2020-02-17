@@ -13,7 +13,7 @@ def register_noble_defender():
         sprite=Sprite.ITEM_NOBLE_DEFENDER,
         image_file_path="resources/graphics/item_noble_defender.png",
         item_equipment_category=ItemEquipmentCategory.OFF_HAND,
-        name="Noble defender",
+        name="Lion shield",
         stat_modifier_intervals=[StatModifierInterval(HeroStat.ARMOR, [4]),
                                  StatModifierInterval(HeroStat.BLOCK_AMOUNT, [8, 9, 10]),
                                  StatModifierInterval(HeroStat.BLOCK_CHANCE, [0.04, 0.05])]

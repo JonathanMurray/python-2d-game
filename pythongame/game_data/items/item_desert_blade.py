@@ -12,6 +12,6 @@ def register_desert_blade_item():
         image_file_path="resources/graphics/item_desert_blade.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
         name="Desert blade",
-        stat_modifier_intervals={HeroStat.PHYSICAL_DAMAGE: [0.14, 0.15, 0.16],
-                                 HeroStat.DODGE_CHANCE: [0.04, 0.05, 0.06]}
+        stat_modifier_intervals={HeroStat.PHYSICAL_DAMAGE: [0.2, 0.21, 0.22, 0.23],
+                                 HeroStat.DODGE_CHANCE: [0.03, 0.04, 0.05, 0.06]}
     )

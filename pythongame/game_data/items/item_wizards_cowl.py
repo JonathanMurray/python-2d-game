@@ -25,7 +25,7 @@ def register_wizards_cowl():
         sprite=Sprite.ITEM_WIZARDS_COWL,
         image_file_path="resources/graphics/item_wizards_cowl.png",
         item_equipment_category=ItemEquipmentCategory.HEAD,
-        name="Wizard's cowl",
+        name="Wizard cowl",
         custom_effect=(ItemEffect()),
         stat_modifier_intervals=[],
         custom_description=["On kill: restore " + str(MANA_ON_KILL) + " mana"]

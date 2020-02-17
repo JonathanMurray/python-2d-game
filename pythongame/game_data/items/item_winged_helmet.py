@@ -13,5 +13,5 @@ def register_winged_helmet_item():
         image_file_path="resources/graphics/item_winged_helmet.png",
         item_equipment_category=ItemEquipmentCategory.HEAD,
         name="Winged helmet",
-        stat_modifier_intervals={HeroStat.ARMOR: [3], HeroStat.MOVEMENT_SPEED: [0.18, 0.19, 0.20]}
+        stat_modifier_intervals={HeroStat.ARMOR: [3], HeroStat.MOVEMENT_SPEED: [0.17, 0.18, 0.19, 0.20]}
     )

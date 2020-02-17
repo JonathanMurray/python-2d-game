@@ -27,7 +27,7 @@ def register_staff_of_fire_item():
         name="Staff of the Phoenix",
         custom_description=["On kill: gain " + str(HEALTH_ON_KILL_AMOUNT) + " health"],
         custom_effect=ItemEffect(),
-        stat_modifier_intervals=[StatModifierInterval(HeroStat.MAGIC_DAMAGE, [0.3]),
+        stat_modifier_intervals=[StatModifierInterval(HeroStat.MAGIC_DAMAGE, [0.25]),
                                  StatModifierInterval(HeroStat.MAX_MANA, [10])],
         is_unique=True
     )
