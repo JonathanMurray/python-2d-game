@@ -3,20 +3,18 @@ import random
 from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId, PeriodicTimer, \
     LootTableId, ProjectileType
 from pythongame.core.damage_interactions import deal_damage_to_player, DamageType, deal_npc_damage_to_npc
-from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map
+from pythongame.core.game_data import NpcData
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
 from pythongame.core.math import random_direction, get_position_from_center_position, get_directions_to_position, \
     translate_in_direction
-from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
+from pythongame.core.npc_behaviors import AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.projectile_controllers import AbstractProjectileController, create_projectile_controller, \
     register_projectile_controller
 from pythongame.core.sound_player import play_sound
-from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualCircle, VisualRect, create_visual_healing_text
+from pythongame.game_data.enemies.register_enemies_util import register_basic_enemy
 
-SPRITE = Sprite.ENEMY_SKELETON_MAGE
-ENEMY_TYPE = NpcType.SKELETON_MAGE
 PROJECTILE_TYPE = ProjectileType.ENEMY_SKELETON_MAGE
 PROJECTILE_SIZE = (13, 13)
 
@@ -86,7 +84,7 @@ class NpcMind(AbstractNpcMind):
 class ProjectileController(AbstractProjectileController):
     def __init__(self):
         super().__init__(2000)
-        self._color= (180, 180, 50)
+        self._color = (180, 180, 50)
         self._timer = PeriodicTimer(Millis(100))
         self._min_damage = 3
         self._max_damage = 6
@@ -122,27 +120,30 @@ class ProjectileController(AbstractProjectileController):
 
 
 def register_skeleton_mage_enemy():
-    size = (32, 32)  # Must not align perfectly with grid cell size (pathfinding issues)
-    sprite = Sprite.ENEMY_SKELETON_MAGE
-    npc_type = NpcType.SKELETON_MAGE
-    movement_speed = 0.05
-    health = 50
-    exp_reward = 25
-    npc_data = NpcData.enemy(sprite, size, health, 0, movement_speed, exp_reward, LootTableId.LEVEL_4,
-                             SoundId.DEATH_SKELETON_MAGE)
-    register_npc_data(npc_type, npc_data)
-    register_npc_behavior(npc_type, NpcMind)
-    sprite_sheet = SpriteSheet("resources/graphics/monsters_spritesheet.png")
-    original_sprite_size = (32, 32)
-    scaled_sprite_size = (48, 48)
-
-    sheet_x = 3
+    x = 3
     indices_by_dir = {
-        Direction.DOWN: [(sheet_x, 0), (sheet_x + 1, 0), (sheet_x + 2, 0), (sheet_x + 1, 0)],
-        Direction.LEFT: [(sheet_x, 1), (sheet_x + 1, 1), (sheet_x + 2, 1), (sheet_x + 1, 1)],
-        Direction.RIGHT: [(sheet_x, 2), (sheet_x + 1, 2), (sheet_x + 2, 2), (sheet_x + 1, 2)],
-        Direction.UP: [(sheet_x, 3), (sheet_x + 1, 3), (sheet_x + 2, 3), (sheet_x + 1, 3)]
+        Direction.DOWN: [(x, 0), (x + 1, 0), (x + 2, 0), (x + 1, 0)],
+        Direction.LEFT: [(x, 1), (x + 1, 1), (x + 2, 1), (x + 1, 1)],
+        Direction.RIGHT: [(x, 2), (x + 1, 2), (x + 2, 2), (x + 1, 2)],
+        Direction.UP: [(x, 3), (x + 1, 3), (x + 2, 3), (x + 1, 3)]
     }
-    register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir,
-                               (-8, -16))
+    register_basic_enemy(
+        npc_type=NpcType.SKELETON_MAGE,
+        npc_data=NpcData.enemy(
+            sprite=Sprite.ENEMY_SKELETON_MAGE,
+            size=(32, 32),
+            max_health=50,
+            health_regen=0,
+            speed=0.05,
+            exp_reward=25,
+            enemy_loot_table=LootTableId.LEVEL_4,
+            death_sound_id=SoundId.DEATH_SKELETON_MAGE),
+        mind_constructor=NpcMind,
+        spritesheet_path="resources/graphics/monsters_spritesheet.png",
+        original_sprite_size=(32, 32),
+        scaled_sprite_size=(48, 48),
+        spritesheet_indices=indices_by_dir,
+        sprite_position_relative_to_entity=(-8, -16)
+    )
+
     register_projectile_controller(PROJECTILE_TYPE, ProjectileController)
