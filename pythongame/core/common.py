@@ -479,6 +479,7 @@ class HeroStat(Enum):
     BLOCK_CHANCE = 13
     MAGIC_RESIST_CHANCE = 14
     MOVEMENT_IMPAIRING_RESIST_CHANCE = 15
+    INCREASED_LOOT_MONEY_CHANCE = 16
 
 
 def _get_description(hero_stat: HeroStat, arg: str):
@@ -508,6 +509,8 @@ def _get_description(hero_stat: HeroStat, arg: str):
         return "+" + arg + "% magic resist"
     elif hero_stat == HeroStat.BLOCK_CHANCE:
         return "+" + arg + "% block chance"
+    elif hero_stat == HeroStat.INCREASED_LOOT_MONEY_CHANCE:
+        return "+" + arg + "% money from enemies"
     else:
         raise Exception("Unhandled stat: " + str(hero_stat))
 
@@ -525,7 +528,8 @@ class StatModifier:
         elif hero_stat in [HeroStat.HEALTH_REGEN, HeroStat.MANA_REGEN]:
             return _get_description(hero_stat, "{:.1f}".format(delta))
         elif hero_stat in [HeroStat.DAMAGE, HeroStat.PHYSICAL_DAMAGE, HeroStat.MAGIC_DAMAGE, HeroStat.LIFE_STEAL,
-                           HeroStat.DODGE_CHANCE, HeroStat.MAGIC_RESIST_CHANCE, HeroStat.BLOCK_CHANCE]:
+                           HeroStat.DODGE_CHANCE, HeroStat.MAGIC_RESIST_CHANCE, HeroStat.BLOCK_CHANCE,
+                           HeroStat.INCREASED_LOOT_MONEY_CHANCE]:
             return _get_description(hero_stat, str(int(round(delta * 100))))
         elif hero_stat == HeroStat.MOVEMENT_SPEED:
             if delta >= 0:
@@ -565,7 +569,8 @@ class StatModifierInterval:
                 return _get_description(hero_stat,
                                         "(" + "{:.1f}".format(interval[0]) + "-" + "{:.1f}".format(interval[-1]) + ")")
         elif hero_stat in [HeroStat.DAMAGE, HeroStat.PHYSICAL_DAMAGE, HeroStat.MAGIC_DAMAGE, HeroStat.LIFE_STEAL,
-                           HeroStat.DODGE_CHANCE, HeroStat.MAGIC_RESIST_CHANCE, HeroStat.BLOCK_CHANCE]:
+                           HeroStat.DODGE_CHANCE, HeroStat.MAGIC_RESIST_CHANCE, HeroStat.BLOCK_CHANCE,
+                           HeroStat.INCREASED_LOOT_MONEY_CHANCE]:
             if interval[0] == interval[-1]:
                 return _get_description(hero_stat, str(int(round(interval[0] * 100))))
             else:
@@ -608,6 +613,7 @@ class ItemSuffixId(Enum):
     EVASION = 12
     CONFIDENCE = 13
     PERSISTENCE = 14
+    GREED = 15
 
 
 class ItemSuffix:

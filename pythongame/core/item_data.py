@@ -85,6 +85,9 @@ _item_suffix_data_by_id: Dict[ItemSuffixId, ItemSuffixData] = {
     ItemSuffixId.PERSISTENCE:
         ItemSuffixData("of Persistence",
                        [StatModifierInterval(HeroStat.MOVEMENT_IMPAIRING_RESIST_CHANCE, [1])]),
+    ItemSuffixId.GREED:
+        ItemSuffixData("of Greed",
+                       [StatModifierInterval(HeroStat.INCREASED_LOOT_MONEY_CHANCE, interval(0.25, 0.35, 0.01))])
 }
 
 

@@ -46,7 +46,7 @@ class LootGroup:
 
 
 class LootTable:
-    def generate_loot(self) -> List[LootEntry]:
+    def generate_loot(self, increased_money_chance: float) -> List[LootEntry]:
         raise Exception("Sub-classes must override this method!")
 
 
@@ -75,11 +75,12 @@ class LeveledLootTable(LootTable):
 
         self.consumable_types_by_level = consumable_types_by_level
         self.consumable_levels = list(consumable_types_by_level.keys())
-        self.consumable_level_weights = [1.0 / math.pow(1.5, abs(level - self.level)) for level in self.consumable_levels]
+        self.consumable_level_weights = [1.0 / math.pow(1.5, abs(level - self.level)) for level in
+                                         self.consumable_levels]
 
         self.money_drop_chance = 0.15
 
-    def generate_loot(self) -> List[LootEntry]:
+    def generate_loot(self, increased_money_chance: float) -> List[LootEntry]:
         loot = list(self.guaranteed_drops)
         if random.random() <= self.item_drop_chance:
             item_level = random.choices(self.item_levels, weights=self.item_level_weights)[0]
@@ -102,5 +103,7 @@ class LeveledLootTable(LootTable):
             loot.append(ConsumableLootEntry(consumable_type))
         if random.random() <= self.money_drop_chance:
             amount = random.randint(1, self.level)
+            if random.random() <= increased_money_chance:
+                amount *= 2
             loot.append(MoneyLootEntry(amount))
         return loot

@@ -448,6 +448,7 @@ class PlayerState:
         self.quests_were_updated = Observable()
         self.completed_quests: List[Quest] = []
         self.active_quests: List[Quest] = []
+        self.increased_loot_money_chance = 0
 
     def start_quest(self, quest: Quest):
         self.active_quests.append(quest)
@@ -531,6 +532,8 @@ class PlayerState:
             self.magic_resist_chance_bonus += stat_delta
         elif hero_stat == HeroStat.MOVEMENT_IMPAIRING_RESIST_CHANCE:
             self.movement_impairing_resist_chance_bonus += stat_delta
+        elif hero_stat == HeroStat.INCREASED_LOOT_MONEY_CHANCE:
+            self.increased_loot_money_chance += stat_delta
         else:
             raise Exception("Unhandled stat: " + str(hero_stat))
         self.notify_stats_observers()

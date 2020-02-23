@@ -167,7 +167,8 @@ class GameEngine:
         self.game_state.player_state.gain_buff_effect(teleport_buff_effect, PORTAL_DELAY)
 
     def open_chest(self, chest: Chest):
-        loot = get_loot_table(chest.loot_table).generate_loot()
+        increased_money_chance = self.game_state.player_state.increased_loot_money_chance
+        loot = get_loot_table(chest.loot_table).generate_loot(increased_money_chance)
         chest_position = chest.world_entity.get_position()
         self._put_loot_on_ground(chest_position, loot)
         chest.has_been_opened = True
@@ -213,7 +214,8 @@ class GameEngine:
                     play_sound(enemy_that_died.death_sound_id)
                 else:
                     play_sound(SoundId.EVENT_ENEMY_DIED)
-                loot = get_loot_table(enemy_that_died.enemy_loot_table).generate_loot()
+                increased_money_chance = self.game_state.player_state.increased_loot_money_chance
+                loot = get_loot_table(enemy_that_died.enemy_loot_table).generate_loot(increased_money_chance)
                 enemy_death_position = enemy_that_died.world_entity.get_position()
                 self._put_loot_on_ground(enemy_death_position, loot)
                 self.game_state.player_state.notify_about_event(EnemyDiedEvent(), self.game_state)
