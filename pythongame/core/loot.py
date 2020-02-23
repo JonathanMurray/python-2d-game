@@ -68,14 +68,14 @@ class LeveledLootTable(LootTable):
             raise Exception("Invalid loot table! Some level doesn't have any items: %s" % item_types_by_level)
         self.item_types_by_level = item_types_by_level
         self.item_levels = list(item_types_by_level.keys())
-        self.item_level_weights = [1.0 / math.pow(2, abs(level - self.level)) for level in self.item_levels]
+        self.item_level_weights = [1.0 / math.pow(1.5, abs(level - self.level)) for level in self.item_levels]
         if [entries for entries in consumable_types_by_level.values() if len(entries) == 0]:
             raise Exception(
                 "Invalid loot table! Some level doesn't have any consumables: %s" % consumable_types_by_level)
 
         self.consumable_types_by_level = consumable_types_by_level
         self.consumable_levels = list(consumable_types_by_level.keys())
-        self.consumable_level_weights = [1.0 / math.pow(2, abs(level - self.level)) for level in self.consumable_levels]
+        self.consumable_level_weights = [1.0 / math.pow(1.5, abs(level - self.level)) for level in self.consumable_levels]
 
         self.money_drop_chance = 0.15
 
