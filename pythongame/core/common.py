@@ -929,13 +929,9 @@ class PeriodicTimer:
 def get_random_hint():
     hints = [
         "Hold Shift to see more info about lootable items",
-        "Press Space to interact with NPCs and objects",
-        "Reaching certain levels unlocks new abilities",
-        "Use the number keys for potions and other consumables",
-        "Gold coins are looted by simply walking over them",
         "If you die, you'll respawn but lose exp points",
         "Use magic statues and warpstones to teleport long distances",
-        "Hover over things with the mouse cursor to get more info",
+        "Hover over UI elements with the mouse cursor to get more info",
         "Drag inventory items and consumables with the mouse cursor",
         "Equip items by dragging them to the appropriate inventory slot",
         "Choose talents to improve your stats and abilities"
