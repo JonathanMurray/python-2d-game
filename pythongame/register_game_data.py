@@ -41,6 +41,7 @@ from pythongame.game_data.enemies.enemy_mummy import register_mummy_enemy
 from pythongame.game_data.enemies.enemy_necromancer import register_necromancer_enemy
 from pythongame.game_data.enemies.enemy_rat_1 import register_rat_1_enemy
 from pythongame.game_data.enemies.enemy_rat_2 import register_rat_2_enemy
+from pythongame.game_data.enemies.enemy_skeleton_boss import register_skeleton_boss_enemy
 from pythongame.game_data.enemies.enemy_skeleton_mage import register_skeleton_mage_enemy
 from pythongame.game_data.enemies.enemy_veteran import register_veteran_enemy
 from pythongame.game_data.enemies.enemy_warrior import register_warrior_enemy
@@ -60,6 +61,7 @@ from pythongame.game_data.items.item_blue_robe import register_blue_robe_item
 from pythongame.game_data.items.item_bronze_ring import register_bronze_ring_item
 from pythongame.game_data.items.item_candle import register_candle_item
 from pythongame.game_data.items.item_cleaver import register_cleaver_item
+from pythongame.game_data.items.item_corrupted_orb import register_corrupted_orb_item
 from pythongame.game_data.items.item_desert_blade import register_desert_blade_item
 from pythongame.game_data.items.item_druids_ring import register_druids_ring_item
 from pythongame.game_data.items.item_elite_armor import register_elite_armor
@@ -180,6 +182,7 @@ def register_all_game_data():
     register_goblin_sprint_buff()
     register_skeleton_mage_enemy()
     register_zombie_fast_enemy()
+    register_skeleton_boss_enemy()
 
     # Register start items before heroes
     register_practice_sword_item()
@@ -229,6 +232,7 @@ def register_all_game_data():
     register_stone_amulet_item()
     register_torn_document_item()
     register_key_item()
+    register_corrupted_orb_item()
 
     register_wooden_sword_item()
     register_druids_ring_item()

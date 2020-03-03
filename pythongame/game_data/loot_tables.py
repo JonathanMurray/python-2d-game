@@ -24,6 +24,7 @@ def register_loot_tables():
     loot_tables[LootTableId.CHEST] = _table_for_chest()
     loot_tables[LootTableId.BOSS_GOBLIN] = _table_for_goblin_boss()
     loot_tables[LootTableId.BOSS_WARRIOR_KING] = _table_for_human_boss()
+    loot_tables[LootTableId.BOSS_SKELETON] = _table_for_skeleton_boss()
 
 
 def _table_for_chest():
@@ -53,6 +54,18 @@ def _table_for_human_boss() -> LootTable:
     level = 7
     return LeveledLootTable(
         guaranteed_drops=[ItemLootEntry(ItemType.KEY), ConsumableLootEntry(ConsumableType.WARP_STONE)],
+        item_drop_chance=1,
+        item_rare_chance=1,
+        level=level,
+        item_types_by_level=_item_types_for_monster_level(level),
+        consumable_types_by_level={},
+        consumable_drop_chance=0)
+
+
+def _table_for_skeleton_boss() -> LootTable:
+    level = 6
+    return LeveledLootTable(
+        guaranteed_drops=[ItemLootEntry(ItemType.QUEST_CORRUPTED_ORB), ConsumableLootEntry(ConsumableType.WARP_STONE)],
         item_drop_chance=1,
         item_rare_chance=1,
         level=level,
