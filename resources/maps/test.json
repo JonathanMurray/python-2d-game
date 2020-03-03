@@ -488,6 +488,20 @@
         450,
         125
       ]
+    },
+    {
+      "npc_type": "ZOMBIE_FAST",
+      "position": [
+        250,
+        400
+      ]
+    },
+    {
+      "npc_type": "ZOMBIE_FAST",
+      "position": [
+        325,
+        350
+      ]
     }
   ],
   "walls": [

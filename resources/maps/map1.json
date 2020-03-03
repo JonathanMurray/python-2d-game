@@ -286,20 +286,6 @@
       ]
     },
     {
-      "npc_type": "MUMMY",
-      "position": [
-        2050,
-        3400
-      ]
-    },
-    {
-      "npc_type": "RAT_2",
-      "position": [
-        2150,
-        3400
-      ]
-    },
-    {
       "npc_type": "RAT_2",
       "position": [
         2250,
@@ -363,13 +349,6 @@
       ]
     },
     {
-      "npc_type": "MUMMY",
-      "position": [
-        3675,
-        2500
-      ]
-    },
-    {
       "npc_type": "RAT_1",
       "position": [
         2925,
@@ -402,20 +381,6 @@
       "position": [
         2400,
         2800
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
-        2175,
-        2700
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
-        2225,
-        2550
       ]
     },
     {
@@ -1121,13 +1086,6 @@
     {
       "npc_type": "MUMMY",
       "position": [
-        2875,
-        1575
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
         2950,
         1500
       ]
@@ -1210,13 +1168,6 @@
       ]
     },
     {
-      "npc_type": "MUMMY",
-      "position": [
-        -200,
-        2975
-      ]
-    },
-    {
       "npc_type": "RAT_1",
       "position": [
         -75,
@@ -1233,29 +1184,8 @@
     {
       "npc_type": "MUMMY",
       "position": [
-        -275,
-        3125
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
         -700,
         3100
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
-        -250,
-        2475
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
-        -175,
-        2525
       ]
     },
     {
@@ -1429,27 +1359,6 @@
     {
       "npc_type": "ZOMBIE",
       "position": [
-        3150,
-        2875
-      ]
-    },
-    {
-      "npc_type": "ZOMBIE",
-      "position": [
-        3200,
-        2875
-      ]
-    },
-    {
-      "npc_type": "ZOMBIE",
-      "position": [
-        3175,
-        2825
-      ]
-    },
-    {
-      "npc_type": "ZOMBIE",
-      "position": [
         3500,
         2850
       ]
@@ -1466,13 +1375,6 @@
       "position": [
         3475,
         2675
-      ]
-    },
-    {
-      "npc_type": "ZOMBIE",
-      "position": [
-        2950,
-        2025
       ]
     },
     {
@@ -1508,13 +1410,6 @@
       "position": [
         3850,
         3025
-      ]
-    },
-    {
-      "npc_type": "ZOMBIE",
-      "position": [
-        2175,
-        3325
       ]
     },
     {
@@ -1591,13 +1486,6 @@
       "npc_type": "ZOMBIE",
       "position": [
         1125,
-        2550
-      ]
-    },
-    {
-      "npc_type": "MUMMY",
-      "position": [
-        1425,
         2550
       ]
     },
@@ -2222,6 +2110,111 @@
       "position": [
         9350,
         2325
+      ]
+    },
+    {
+      "npc_type": "ZOMBIE_FAST",
+      "position": [
+        2050,
+        3425
+      ]
+    },
+    {
+      "npc_type": "ZOMBIE_FAST",
+      "position": [
+        2125,
+        3375
+      ]
+    },
+    {
+      "npc_type": "ZOMBIE_FAST",
+      "position": [
+        3100,
+        3325
+      ]
+    },
+    {
+      "npc_type": "ZOMBIE_FAST",
+      "position": [
+        3175,
+        2925
+      ]
+    },
+    {
+      "npc_type": "ZOMBIE_FAST",
+      "position": [
+        3225,
+        2850
+      ]
+    },
+    {
+      "npc_type": "ZOMBIE",
+      "position": [
+        3225,
+        2925
+      ]
+    },
+    {
+      "npc_type": "ZOMBIE_FAST",
+      "position": [
+        3675,
+        2500
+      ]
+    },
+    {
+      "npc_type": "ZOMBIE_FAST",
+      "position": [
+        2950,
+        2050
+      ]
+    },
+    {
+      "npc_type": "ZOMBIE_FAST",
+      "position": [
+        2925,
+        1575
+      ]
+    },
+    {
+      "npc_type": "ZOMBIE_FAST",
+      "position": [
+        2200,
+        2725
+      ]
+    },
+    {
+      "npc_type": "ZOMBIE_FAST",
+      "position": [
+        2275,
+        2550
+      ]
+    },
+    {
+      "npc_type": "ZOMBIE_FAST",
+      "position": [
+        1475,
+        2550
+      ]
+    },
+    {
+      "npc_type": "ZOMBIE_FAST",
+      "position": [
+        -275,
+        3075
+      ]
+    },
+    {
+      "npc_type": "ZOMBIE_FAST",
+      "position": [
+        -175,
+        2525
+      ]
+    },
+    {
+      "npc_type": "ZOMBIE_FAST",
+      "position": [
+        -250,
+        2475
       ]
     }
   ],
