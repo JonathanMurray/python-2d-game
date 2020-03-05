@@ -72,6 +72,9 @@ def init_sound_player():
         SoundId.PLAYER_PAIN: load_sound_file('pain1.ogg', 'pain2.ogg', 'pain3.ogg', 'pain4.ogg'),
         SoundId.ENEMY_ATTACK_GOBLIN_WARLOCK: load_sound_file('goblin_fireball_1.ogg', 'goblin_fireball_2.ogg',
                                                              'goblin_fireball_3.ogg', volume=4),
+        # TODO create new sound for skeleton boss magic
+        SoundId.ENEMY_MAGIC_SKELETON_BOSS: load_sound_file('goblin_fireball_1.ogg', 'goblin_fireball_2.ogg',
+                                                           'goblin_fireball_3.ogg', volume=4),
         SoundId.ENEMY_ATTACK_ICE_WITCH: load_sound_file('enemy_icewitch_ability.ogg', volume=2),
         SoundId.ENEMY_ATTACK_SKELETON_MAGE: load_sound_file('enemy_skeleton_mage_attack_1.ogg',
                                                             'enemy_skeleton_mage_attack_2.ogg', volume=4),

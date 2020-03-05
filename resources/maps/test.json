@@ -455,52 +455,10 @@
   "money_piles_on_ground": [],
   "non_player_characters": [
     {
-      "npc_type": "WARRIOR",
-      "position": [
-        125,
-        0
-      ]
-    },
-    {
-      "npc_type": "VETERAN",
-      "position": [
-        200,
-        0
-      ]
-    },
-    {
-      "npc_type": "RAT_1",
+      "npc_type": "SKELETON_BOSS",
       "position": [
         400,
-        250
-      ]
-    },
-    {
-      "npc_type": "RAT_1",
-      "position": [
-        400,
-        150
-      ]
-    },
-    {
-      "npc_type": "RAT_1",
-      "position": [
-        450,
-        125
-      ]
-    },
-    {
-      "npc_type": "ZOMBIE_FAST",
-      "position": [
-        250,
-        400
-      ]
-    },
-    {
-      "npc_type": "ZOMBIE_FAST",
-      "position": [
-        325,
-        350
+        300
       ]
     }
   ],

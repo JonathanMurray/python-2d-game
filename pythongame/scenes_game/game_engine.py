@@ -189,7 +189,7 @@ class GameEngine:
 
         for npc in self.game_state.non_player_characters:
             # NonPlayerCharacter AI shouldn't run if enemy is too far out of sight
-            if self._is_npc_close_to_camera(npc) and not npc.stun_status.is_stunned():
+            if self._is_npc_close_to_camera(npc):
                 npc.npc_mind.control_npc(self.game_state, npc, self.game_state.player_entity,
                                          self.game_state.player_state.is_invisible, time_passed)
 
@@ -264,7 +264,7 @@ class GameEngine:
 
         for npc in self.game_state.non_player_characters:
             # Enemies shouldn't move towards player when they are out of sight
-            if self._is_npc_close_to_camera(npc) and not npc.stun_status.is_stunned():
+            if self._is_npc_close_to_camera(npc):
                 self.game_state.update_npc_position_within_game_world(npc, time_passed)
         # player can still move when stunned (could be charging)
         self.game_state.update_world_entity_position_within_game_world(self.game_state.player_entity, time_passed)
