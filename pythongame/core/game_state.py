@@ -389,6 +389,7 @@ class AgentBuffsUpdate:
 class QuestId(Enum):
     MAIN_RETRIEVE_KEY = 1
     RETRIEVE_FROG = 2
+    RETRIEVE_CORRUPTED_ORB = 3
 
 
 class Quest:
@@ -451,6 +452,9 @@ class PlayerState:
         self.increased_loot_money_chance = 0
 
     def start_quest(self, quest: Quest):
+        if [q for q in self.active_quests if q.quest_id == quest.quest_id]:
+            print("WARN: Cannot start quest that's already in progress: %s" % quest.quest_id)
+            return
         self.active_quests.append(quest)
         self.notify_quest_observers()
 

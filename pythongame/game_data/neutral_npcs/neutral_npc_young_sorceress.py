@@ -66,10 +66,10 @@ class GiveQuest(AbstractNpcAction):
         return "Quest accepted: " + QUEST.name
 
     def on_hover(self, game_state: GameState, ui_view: GameUiView):
-        _highlight_boss_location(game_state, ui_view)
+        _on_hover(game_state, ui_view)
 
     def on_blur(self, game_state: GameState, ui_view: GameUiView):
-        _clear_highlight(ui_view)
+        _on_blur(ui_view)
 
 
 class AcceptFrog(AbstractNpcAction):
@@ -92,10 +92,10 @@ class AcceptFrog(AbstractNpcAction):
             return "You don't have that!"
 
     def on_hover(self, game_state: GameState, ui_view: GameUiView):
-        _highlight_boss_location(game_state, ui_view)
+        _on_hover(game_state, ui_view)
 
     def on_blur(self, game_state: GameState, ui_view: GameUiView):
-        _clear_highlight(ui_view)
+        _on_blur(ui_view)
 
 
 def _get_reward_for_hero(hero_id: HeroId) -> ItemId:
@@ -109,7 +109,7 @@ def _get_reward_for_hero(hero_id: HeroId) -> ItemId:
         return randomized_item_id(ItemType.LEATHER_ARMOR)
 
 
-def _highlight_boss_location(game_state, ui_view):
+def _on_hover(game_state, ui_view):
     bosses = [npc for npc in game_state.non_player_characters if npc.npc_type == NpcType.GOBLIN_WARRIOR]
     if bosses:
         position = bosses[0].world_entity.get_center_position()
@@ -120,7 +120,7 @@ def _highlight_boss_location(game_state, ui_view):
     ui_view.set_inventory_highlight(item_id_frog())
 
 
-def _clear_highlight(ui_view):
+def _on_blur(ui_view):
     ui_view.remove_minimap_highlight()
     ui_view.remove_inventory_highlight()
 
