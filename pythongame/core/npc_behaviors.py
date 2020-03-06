@@ -250,7 +250,7 @@ def get_dialog_data(npc_type: NpcType, game_state: GameState) -> DialogData:
     return _npc_dialog_data[npc_type](game_state)
 
 
-def buy_consumable_option(consumable_type: ConsumableType, cost: int):
+def buy_consumable_option(consumable_type: ConsumableType, cost: int) -> DialogOptionData:
     data = CONSUMABLES[consumable_type]
     name_formatter = "{:<25}"
     buy_prompt = "> "
@@ -263,7 +263,7 @@ def buy_consumable_option(consumable_type: ConsumableType, cost: int):
                             data.description)
 
 
-def buy_item_option(item_id: ItemId, cost: int):
+def buy_item_option(item_id: ItemId, cost: int) -> DialogOptionData:
     item_type = item_id.item_type
     data = get_item_data_by_type(item_type)
     name_formatter = "{:<25}"
@@ -280,7 +280,7 @@ def buy_item_option(item_id: ItemId, cost: int):
                             ", ".join([line.text for line in description_lines]))
 
 
-def sell_item_option(item_id: ItemId, price: int, detail_body: str):
+def sell_item_option(item_id: ItemId, price: int, detail_body: str) -> DialogOptionData:
     item_type = item_id.item_type
     name_formatter = "{:<13}"
     cost_formatter = "[{} gold]"
