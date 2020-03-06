@@ -100,7 +100,7 @@ def complete_quest_option(quest: Quest, boss_npc_type: NpcType, quest_item_type:
         summary="QUEST: \"%s\"" % quest.name,
         action_text="give",
         action=CompleteQuestNpcAction(quest, boss_npc_type, quest_item_type, reward_item_id),
-        ui_icon_sprite=UiIconSprite.ITEM_CORRUPTED_ORB,
+        ui_icon_sprite=get_item_data_by_type(quest_item_type).icon_sprite,
         detail_header=get_item_data_by_type(quest_item_type).base_name,
         detail_body="...")
 
