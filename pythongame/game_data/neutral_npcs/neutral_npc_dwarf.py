@@ -1,15 +1,13 @@
-import random
-
-from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
-    ItemType, PeriodicTimer
+from pythongame.core.common import NpcType, Sprite, Direction, PortraitIconSprite, \
+    ItemType
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest, QuestGiverState
+from pythongame.core.game_state import GameState, QuestId, Quest
 from pythongame.core.item_data import plain_item_id, randomized_item_id
-from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, DialogData, DialogOptionData, \
+from pythongame.core.npc_behaviors import register_npc_behavior, DialogData, DialogOptionData, \
     register_conditional_npc_dialog_data
 from pythongame.core.npc_behaviors import sell_item_option
-from pythongame.core.npc_quest_behaviors import complete_quest_option, give_quest_option
+from pythongame.core.npc_quest_behaviors import complete_quest_option, give_quest_option, QuestGiverNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.view.image_loading import SpriteSheet
 
@@ -20,33 +18,9 @@ ITEM_TYPE_CORRUPTED_ORB = ItemType.QUEST_CORRUPTED_ORB
 NPC_TYPE = NpcType.NEUTRAL_DWARF
 
 
-class NpcMind(AbstractNpcMind):
+class NpcMind(QuestGiverNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
-        super().__init__(global_path_finder)
-        self.timer = PeriodicTimer(Millis(500))
-        self.quest_timer = PeriodicTimer(Millis(1000))
-
-    def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
-                    is_player_invisible: bool, time_passed: Millis):
-
-        if self.quest_timer.update_and_check_if_ready(time_passed):
-            player_state = game_state.player_state
-            if player_state.has_quest(QUEST_ID):
-                if player_state.item_inventory.has_item_in_inventory(plain_item_id(ITEM_TYPE_CORRUPTED_ORB)):
-                    npc.quest_giver_state = QuestGiverState.CAN_COMPLETE_QUEST
-                else:
-                    npc.quest_giver_state = QuestGiverState.WAITING_FOR_PLAYER
-            elif player_state.has_completed_quest(QUEST_ID):
-                npc.quest_giver_state = None
-            else:
-                npc.quest_giver_state = QuestGiverState.CAN_GIVE_NEW_QUEST
-
-        if self.timer.update_and_check_if_ready(time_passed):
-            if random.random() < 0.8:
-                npc.world_entity.set_not_moving()
-            else:
-                direction = random.choice(get_all_directions())
-                npc.world_entity.set_moving_in_dir(direction)
+        super().__init__(global_path_finder, QUEST_ID, plain_item_id(ITEM_TYPE_CORRUPTED_ORB))
 
 
 def register_dwarf_npc():
