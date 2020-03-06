@@ -58,5 +58,5 @@ def register_dwarf_npc():
                           "deal!",
         dialog_during_quest="Hey! Any luck with the orb?",
         dialog_after_completed="Hi old friend! Got any more good stuff?",
-        reward_item_id=randomized_item_id(ItemType.ROYAL_SWORD)
+        reward_item_id=lambda _: randomized_item_id(ItemType.ROYAL_SWORD)
     )

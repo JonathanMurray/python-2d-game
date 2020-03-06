@@ -37,7 +37,7 @@ class GiveQuestNpcAction(AbstractNpcAction):
 class CompleteQuestNpcAction(AbstractNpcAction):
 
     def __init__(self, quest: Quest, boss_npc_type: NpcType, quest_item_type: ItemType,
-                 reward_item_id: ItemId):
+                 reward_item_id: Callable[[GameState], ItemId]):
         super().__init__()
         self.quest = quest
         self.boss_npc_type = boss_npc_type
@@ -49,13 +49,14 @@ class CompleteQuestNpcAction(AbstractNpcAction):
             plain_item_id(self.quest_item_type))
         if player_has_it:
             game_state.player_state.item_inventory.lose_item_from_inventory(plain_item_id(self.quest_item_type))
-            did_add_item = try_add_item_to_inventory(game_state, self.reward_item_id)
+            reward_item_id = self.reward_item_id(game_state)
+            did_add_item = try_add_item_to_inventory(game_state, reward_item_id)
             if not did_add_item:
                 game_state.items_on_ground.append(
-                    create_item_on_ground(self.reward_item_id, game_state.player_entity.get_position()))
+                    create_item_on_ground(reward_item_id, game_state.player_entity.get_position()))
             play_sound(SoundId.EVENT_COMPLETED_QUEST)
             game_state.player_state.complete_quest(self.quest)
-            return "Reward gained: " + build_item_name(self.reward_item_id)
+            return "Reward gained: " + build_item_name(reward_item_id)
         else:
             play_sound(SoundId.WARNING)
             return "You don't have that!"
@@ -95,7 +96,7 @@ def give_quest_option(quest: Quest, quest_intro: str, boss_npc_type: NpcType,
 
 
 def complete_quest_option(quest: Quest, boss_npc_type: NpcType, quest_item_type: ItemType,
-                          reward_item_id: ItemId) -> DialogOptionData:
+                          reward_item_id: Callable[[GameState], ItemId]) -> DialogOptionData:
     return DialogOptionData(
         summary="QUEST: \"%s\"" % quest.name,
         action_text="give",
@@ -149,7 +150,7 @@ def register_quest_giver_dialog(
         dialog_give_quest: str,
         dialog_during_quest: str,
         dialog_after_completed: str,
-        reward_item_id: ItemId):
+        reward_item_id: Callable[[GameState], ItemId]):
     bye_option = DialogOptionData("\"Good bye\"", "cancel", None)
 
     register_quest(quest.quest_id, quest)
