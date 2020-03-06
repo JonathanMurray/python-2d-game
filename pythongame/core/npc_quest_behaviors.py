@@ -7,7 +7,7 @@ from pythongame.core.item_data import build_item_name
 from pythongame.core.item_data import get_item_data_by_type
 from pythongame.core.item_data import plain_item_id
 from pythongame.core.item_effects import try_add_item_to_inventory
-from pythongame.core.npc_behaviors import AbstractNpcAction, register_conditional_npc_dialog_data
+from pythongame.core.npc_behaviors import AbstractNpcAction, register_conditional_npc_dialog_data, register_quest
 from pythongame.core.npc_behaviors import AbstractNpcMind, DialogOptionData
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.sound_player import play_sound
@@ -151,6 +151,8 @@ def register_quest_giver_dialog(
         dialog_after_completed: str,
         reward_item_id: ItemId):
     bye_option = DialogOptionData("\"Good bye\"", "cancel", None)
+
+    register_quest(quest.quest_id, quest)
 
     give_quest = give_quest_option(quest, quest_intro, boss_npc_type, quest_item_type)
     complete_quest = complete_quest_option(quest, boss_npc_type, quest_item_type, reward_item_id)
