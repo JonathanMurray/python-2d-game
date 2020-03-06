@@ -10,6 +10,7 @@ from pythongame.core.npc_quest_behaviors import QuestGiverNpcMind, \
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.view.image_loading import SpriteSheet
 
+QUEST_MIN_LEVEL = 2
 UI_ICON_SPRITE = PortraitIconSprite.VIKING
 QUEST_ID = QuestId.RETRIEVE_CORRUPTED_ORB
 QUEST_ITEM_TYPE = ItemType.QUEST_CORRUPTED_ORB
@@ -17,7 +18,7 @@ QUEST_ITEM_TYPE = ItemType.QUEST_CORRUPTED_ORB
 
 class NpcMind(QuestGiverNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
-        super().__init__(global_path_finder, QUEST_ID, plain_item_id(QUEST_ITEM_TYPE))
+        super().__init__(global_path_finder, QUEST_ID, plain_item_id(QUEST_ITEM_TYPE), QUEST_MIN_LEVEL)
 
 
 def register_dwarf_npc():
@@ -45,6 +46,7 @@ def register_dwarf_npc():
         icon_sprite=UI_ICON_SPRITE,
         icon_sprite_file_path='resources/graphics/viking_portrait.png',
         quest=Quest(QUEST_ID, "Corrupted orb", "Defeat the skeleton king and retrieve the magic orb."),
+        quest_min_level=QUEST_MIN_LEVEL,
         quest_intro="I've heard tales of a powerful skeleton mage that possesses a very rare magic orb. I think it's "
                     "time that it finds itself a new owner!",
         boss_npc_type=NpcType.SKELETON_BOSS,
@@ -54,6 +56,8 @@ def register_dwarf_npc():
                              "I'll give you good money for a nugget of pure gold!"),
             sell_item_option(plain_item_id(ItemType.SAPPHIRE), 30, "If you find a sapphire I can make you real rich!")
         ],
+        dialog_before_quest="Hello there. I'm always looking for treasure. If you find any, we might be able to strike a "
+                            "deal!",
         dialog_give_quest="Hello there. I'm always looking for treasure. If you find any, we might be able to strike a "
                           "deal!",
         dialog_during_quest="Hey! Any luck with the orb?",

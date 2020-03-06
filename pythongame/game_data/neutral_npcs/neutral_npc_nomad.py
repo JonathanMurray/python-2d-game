@@ -13,28 +13,15 @@ from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import create_visual_healing_text
 
+QUEST_MIN_LEVEL = 3
 QUEST_ID = QuestId.MAIN_RETRIEVE_KEY
 QUEST = Quest(QUEST_ID, "The red baron", "Defeat the red baron and retrieve the key that he stole.")
-
-ITEM_TYPE_KEY = ItemType.KEY
-NPC_TYPE = NpcType.NEUTRAL_NOMAD
-PORTRAIT_ICON_SPRITE = PortraitIconSprite.NOMAD
-
-
-def item_id_key():
-    # We defer calling this method as key item may not be registered yet otherwise
-    return plain_item_id(ITEM_TYPE_KEY)
+QUEST_ITEM_TYPE = ItemType.KEY
 
 
 class NpcMind(QuestGiverNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
-        super().__init__(global_path_finder, QUEST_ID, plain_item_id(ITEM_TYPE_KEY))
-
-
-# TODO use
-def _is_player_eligible_for_quest(game_state: GameState):
-    eligible = game_state.player_state.level >= 3
-    return eligible
+        super().__init__(global_path_finder, QUEST_ID, plain_item_id(QUEST_ITEM_TYPE), QUEST_MIN_LEVEL)
 
 
 class HealAction(AbstractNpcAction):
@@ -55,8 +42,9 @@ class HintAction(AbstractNpcAction):
 
 def register_nomad_npc():
     sprite = Sprite.NEUTRAL_NPC_NOMAD
-    register_npc_data(NPC_TYPE, NpcData.neutral(sprite=sprite, size=(30, 30), speed=0.03))
-    register_npc_behavior(NPC_TYPE, NpcMind)
+    npc_type = NpcType.NEUTRAL_NOMAD
+    register_npc_data(npc_type, NpcData.neutral(sprite=sprite, size=(30, 30), speed=0.03))
+    register_npc_behavior(npc_type, NpcMind)
     register_entity_sprite_map(
         sprite=sprite,
         sprite_sheet=SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png"),
@@ -77,12 +65,14 @@ def register_nomad_npc():
         icon_sprite=PortraitIconSprite.NOMAD,
         icon_sprite_file_path='resources/graphics/nomad_portrait.png',
         quest=QUEST,
+        quest_min_level=QUEST_MIN_LEVEL,
         quest_intro="The red baron... Yes, he has caused us much trouble. He stole from me a key that may "
                     "lead us out of here. You must bring it back to me!",
         boss_npc_type=NpcType.WARRIOR_KING,
-        quest_item_type=ItemType.KEY,
+        quest_item_type=QUEST_ITEM_TYPE,
         custom_options=[DialogOptionData("Receive blessing", "gain full health", HealAction()),
                         DialogOptionData("Ask for advice", "see random hint", HintAction())],
+        dialog_before_quest="Greetings. I am here only to serve. Seek me out when you are wounded or need guidance!",
         dialog_give_quest="Greetings. I am here only to serve. Seek me out when you are wounded or need guidance!",
         dialog_during_quest="Greetings. I am here only to serve. Seek me out when you are wounded or need guidance!",
         dialog_after_completed="Greetings. I am here only to serve. Seek me out when you are wounded or need guidance!",

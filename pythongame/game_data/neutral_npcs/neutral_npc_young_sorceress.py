@@ -9,13 +9,14 @@ from pythongame.core.npc_quest_behaviors import register_quest_giver_dialog, Que
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.view.image_loading import SpriteSheet
 
+QUEST_MIN_LEVEL = 1
 QUEST_ID = QuestId.RETRIEVE_FROG
 QUEST_ITEM_TYPE = ItemType.FROG
 
 
 class NpcMind(QuestGiverNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
-        super().__init__(global_path_finder, QUEST_ID, plain_item_id(QUEST_ITEM_TYPE))
+        super().__init__(global_path_finder, QUEST_ID, plain_item_id(QUEST_ITEM_TYPE), QUEST_MIN_LEVEL)
         self.timer = PeriodicTimer(Millis(500))
         self.quest_timer = PeriodicTimer(Millis(1000))
 
@@ -58,10 +59,12 @@ def register_young_sorceress_npc():
         icon_sprite=PortraitIconSprite.YOUNG_SORCERESS,
         icon_sprite_file_path='resources/graphics/portrait_young_sorceress_npc.png',
         quest=Quest(QUEST_ID, "Lost pet", "Retrieve Mida's pet frog from the goblin king."),
+        quest_min_level=QUEST_MIN_LEVEL,
         quest_intro="Will you help me? I'll give you something in return. Promise!",
         boss_npc_type=NpcType.GOBLIN_WARRIOR,
         quest_item_type=ItemType.FROG,
         custom_options=[],
+        dialog_before_quest="",
         dialog_give_quest="Hey you! Have you seen my pet frog? I bet it was that old green mean goblin king that took "
                           "it!",
         dialog_during_quest="Hi friend! Any luck?",

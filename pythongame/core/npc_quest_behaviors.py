@@ -109,12 +109,14 @@ def complete_quest_option(quest: Quest, boss_npc_type: NpcType, quest_item_type:
 
 
 class QuestGiverNpcMind(AbstractNpcMind):
-    def __init__(self, global_path_finder: GlobalPathFinder, quest_id: QuestId, quest_item_id: ItemId):
+    def __init__(self, global_path_finder: GlobalPathFinder, quest_id: QuestId, quest_item_id: ItemId,
+                 quest_min_level: int):
         super().__init__(global_path_finder)
         self.timer = PeriodicTimer(Millis(500))
         self.quest_timer = PeriodicTimer(Millis(1000))
         self.quest_id = quest_id
         self.quest_item_id = quest_item_id
+        self.quest_min_level = quest_min_level
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
                     is_player_invisible: bool, time_passed: Millis):
@@ -128,8 +130,10 @@ class QuestGiverNpcMind(AbstractNpcMind):
                     npc.quest_giver_state = QuestGiverState.WAITING_FOR_PLAYER
             elif player_state.has_completed_quest(self.quest_id):
                 npc.quest_giver_state = None
-            else:
+            elif player_state.level >= self.quest_min_level:
                 npc.quest_giver_state = QuestGiverState.CAN_GIVE_NEW_QUEST
+            else:
+                npc.quest_giver_state = None
 
         if self.timer.update_and_check_if_ready(time_passed):
             if random.random() < 0.8:
@@ -145,10 +149,12 @@ def register_quest_giver_dialog(
         icon_sprite: PortraitIconSprite,
         icon_sprite_file_path: str,
         quest: Quest,
+        quest_min_level: int,
         quest_intro: str,
         boss_npc_type: NpcType,
         quest_item_type: ItemType,
         custom_options: List[DialogOptionData],
+        dialog_before_quest: str,
         dialog_give_quest: str,
         dialog_during_quest: str,
         dialog_after_completed: str,
@@ -160,17 +166,22 @@ def register_quest_giver_dialog(
     give_quest = give_quest_option(quest, quest_intro, boss_npc_type, quest_item_type)
     complete_quest = complete_quest_option(quest, boss_npc_type, quest_item_type, reward_item_id)
 
-    dialog_give_quest = DialogData(
+    dialog_data_before_quest = DialogData(
+        npc_name,
+        icon_sprite,
+        dialog_before_quest,
+        custom_options + [bye_option])
+    dialog_data_give_quest = DialogData(
         npc_name,
         icon_sprite,
         dialog_give_quest,
         custom_options + [give_quest, bye_option])
-    dialog_during_quest = DialogData(
+    dialog_data_during_quest = DialogData(
         npc_name,
         icon_sprite,
         dialog_during_quest,
         custom_options + [complete_quest, bye_option])
-    dialog_after_completed = DialogData(
+    dialog_data_after_completed = DialogData(
         npc_name,
         icon_sprite,
         dialog_after_completed,
@@ -178,11 +189,13 @@ def register_quest_giver_dialog(
 
     def get_dialog_data(game_state: GameState) -> DialogData:
         if game_state.player_state.has_completed_quest(quest.quest_id):
-            return dialog_after_completed
+            return dialog_data_after_completed
         elif game_state.player_state.has_quest(quest.quest_id):
-            return dialog_during_quest
+            return dialog_data_during_quest
+        elif game_state.player_state.level >= quest_min_level:
+            return dialog_data_give_quest
         else:
-            return dialog_give_quest
+            return dialog_data_before_quest
 
     register_conditional_npc_dialog_data(npc_type, get_dialog_data)
     register_portrait_icon_sprite_path(icon_sprite, icon_sprite_file_path)
