@@ -95,7 +95,7 @@ from pythongame.game_data.items.item_ring_of_power import register_ring_of_power
 from pythongame.game_data.items.item_rod_of_lightning import register_rod_of_lightning_item
 from pythongame.game_data.items.item_royal_dagger import register_royal_dagger_item
 from pythongame.game_data.items.item_royal_sword import register_royal_sword_item
-from pythongame.game_data.items.item_saphire import register_saphire
+from pythongame.game_data.items.item_sapphire import register_sapphire
 from pythongame.game_data.items.item_serpent_sword import register_serpent_sword_item
 from pythongame.game_data.items.item_skull_shield import register_skull_shield_item
 from pythongame.game_data.items.item_skull_staff import register_skull_staff_item
@@ -213,7 +213,7 @@ def register_all_game_data():
 
     register_elven_armor()
     register_gold_nugget()
-    register_saphire()
+    register_sapphire()
     register_leather_cowl_item()
     register_winged_helmet_item()
     register_elite_armor()

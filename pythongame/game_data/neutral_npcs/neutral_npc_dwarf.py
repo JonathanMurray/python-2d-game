@@ -143,8 +143,8 @@ def _register_dialog():
     item_name = build_item_name(item_id_corrupted_orb())
     sell_option_1 = sell_item_option(plain_item_id(ItemType.GOLD_NUGGET), 20,
                                      "I'll give you good money for a nugget of pure gold!")
-    sell_option_2 = sell_item_option(plain_item_id(ItemType.SAPHIRE), 30,
-                                     "If you find a saphire I can make you real rich!")
+    sell_option_2 = sell_item_option(plain_item_id(ItemType.SAPPHIRE), 30,
+                                     "If you find a sapphire I can make you real rich!")
     dialog_1 = DialogData(
         name,
         UI_ICON_SPRITE,
