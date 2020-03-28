@@ -1,30 +1,24 @@
-import random
-
-from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
-    ItemType, PeriodicTimer
-from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
-    register_portrait_icon_sprite_path
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
-from pythongame.core.item_data import plain_item_id
-from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, register_npc_dialog_data, DialogData, \
-    DialogOptionData, sell_item_option
+from pythongame.core.common import NpcType, Sprite, Direction, PortraitIconSprite, \
+    ItemType
+from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map
+from pythongame.core.game_state import QuestId, Quest
+from pythongame.core.item_data import plain_item_id, randomized_item_id
+from pythongame.core.npc_behaviors import register_npc_behavior
+from pythongame.core.npc_behaviors import sell_item_option
+from pythongame.core.npc_quest_behaviors import QuestGiverNpcMind, \
+    register_quest_giver_dialog
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.view.image_loading import SpriteSheet
 
+QUEST_MIN_LEVEL = 2
+UI_ICON_SPRITE = PortraitIconSprite.VIKING
+QUEST_ID = QuestId.RETRIEVE_CORRUPTED_ORB
+QUEST_ITEM_TYPE = ItemType.QUEST_CORRUPTED_ORB
 
-class NpcMind(AbstractNpcMind):
+
+class NpcMind(QuestGiverNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
-        super().__init__(global_path_finder)
-        self.timer = PeriodicTimer(Millis(500))
-
-    def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
-                    is_player_invisible: bool, time_passed: Millis):
-        if self.timer.update_and_check_if_ready(time_passed):
-            if random.random() < 0.8:
-                npc.world_entity.set_not_moving()
-            else:
-                direction = random.choice(get_all_directions())
-                npc.world_entity.set_moving_in_dir(direction)
+        super().__init__(global_path_finder, QUEST_ID, plain_item_id(QUEST_ITEM_TYPE), QUEST_MIN_LEVEL)
 
 
 def register_dwarf_npc():
@@ -34,14 +28,6 @@ def register_dwarf_npc():
     movement_speed = 0.03
     register_npc_data(npc_type, NpcData.neutral(sprite, size, movement_speed))
     register_npc_behavior(npc_type, NpcMind)
-    introduction = "Hello there. I'm always looking for treasure. If you find any, we might be able to strike a deal!"
-    dialog_options = [
-        sell_item_option(plain_item_id(ItemType.GOLD_NUGGET), 20,
-                         "I'll give you good money for a nugget of pure gold!"),
-        sell_item_option(plain_item_id(ItemType.SAPHIRE), 30, "If you find a saphire I can make you real rich!"),
-        DialogOptionData("\"Good bye\"", "cancel", None)]
-    dialog_data = DialogData("Gimli", PortraitIconSprite.VIKING, introduction, dialog_options)
-    register_npc_dialog_data(npc_type, dialog_data)
     sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet.png")
     original_sprite_size = (32, 32)
     scaled_sprite_size = (48, 48)
@@ -53,4 +39,28 @@ def register_dwarf_npc():
     }
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir,
                                (-8, -16))
-    register_portrait_icon_sprite_path(PortraitIconSprite.VIKING, 'resources/graphics/viking_portrait.png')
+
+    register_quest_giver_dialog(
+        npc_name="Gimli",
+        npc_type=npc_type,
+        icon_sprite=UI_ICON_SPRITE,
+        icon_sprite_file_path='resources/graphics/viking_portrait.png',
+        quest=Quest(QUEST_ID, "Corrupted orb", "Defeat the skeleton king and retrieve the magic orb."),
+        quest_min_level=QUEST_MIN_LEVEL,
+        quest_intro="I've heard tales of a powerful skeleton mage that possesses a very rare magic orb. I think it's "
+                    "time that it finds itself a new owner!",
+        boss_npc_type=NpcType.SKELETON_BOSS,
+        quest_item_type=QUEST_ITEM_TYPE,
+        custom_options=[
+            sell_item_option(plain_item_id(ItemType.GOLD_NUGGET), 20,
+                             "I'll give you good money for a nugget of pure gold!"),
+            sell_item_option(plain_item_id(ItemType.SAPPHIRE), 30, "If you find a sapphire I can make you real rich!")
+        ],
+        dialog_before_quest="Hello there. I'm always looking for treasure. If you find any, we might be able to strike a "
+                            "deal!",
+        dialog_give_quest="Hello there. I'm always looking for treasure. If you find any, we might be able to strike a "
+                          "deal!",
+        dialog_during_quest="Hey! Any luck with the orb?",
+        dialog_after_completed="Hi old friend! Got any more good stuff?",
+        reward_item_id=lambda _: randomized_item_id(ItemType.ROYAL_SWORD)
+    )

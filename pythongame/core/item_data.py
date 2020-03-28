@@ -48,37 +48,46 @@ def interval(min_inclusive: Union[int, float], max_inclusive: Union[int, float],
 _item_suffix_data_by_id: Dict[ItemSuffixId, ItemSuffixData] = {
     ItemSuffixId.VITALITY:
         ItemSuffixData("of Vitality",
-                       [StatModifierInterval(HeroStat.MAX_HEALTH, int_interval(5, 10))]),
+                       [StatModifierInterval(HeroStat.MAX_HEALTH, int_interval(5, 15))]),
     ItemSuffixId.REGROWTH:
         ItemSuffixData("of Regrowth",
                        [StatModifierInterval(HeroStat.HEALTH_REGEN, interval(0.1, 0.4, 0.1))]),
     ItemSuffixId.DISCIPLINE:
         ItemSuffixData("of Discipline",
-                       [StatModifierInterval(HeroStat.MAX_MANA, int_interval(5, 10))]),
+                       [StatModifierInterval(HeroStat.MAX_MANA, int_interval(5, 15))]),
     ItemSuffixId.FOCUS:
         ItemSuffixData("of Focus",
                        [StatModifierInterval(HeroStat.MANA_REGEN, interval(0.1, 0.4, 0.1))]),
     ItemSuffixId.SWIFTNESS:
         ItemSuffixData("of Swiftness",
-                       [StatModifierInterval(HeroStat.MOVEMENT_SPEED, interval(0.05, 0.1, 0.01))]),
+                       [StatModifierInterval(HeroStat.MOVEMENT_SPEED, interval(0.04, 0.1, 0.01))]),
     ItemSuffixId.LEECHING:
         ItemSuffixData("of Leeching",
-                       [StatModifierInterval(HeroStat.LIFE_STEAL, interval(0.03, 0.06, 0.01))]),
+                       [StatModifierInterval(HeroStat.LIFE_STEAL, interval(0.02, 0.06, 0.01))]),
     ItemSuffixId.POWER:
         ItemSuffixData("of Power",
-                       [StatModifierInterval(HeroStat.DAMAGE, interval(0.03, 0.06, 0.01))]),
+                       [StatModifierInterval(HeroStat.DAMAGE, interval(0.02, 0.06, 0.01))]),
     ItemSuffixId.RECKONING:
         ItemSuffixData("of Reckoning",
-                       [StatModifierInterval(HeroStat.PHYSICAL_DAMAGE, interval(0.03, 0.06, 0.01))]),
+                       [StatModifierInterval(HeroStat.PHYSICAL_DAMAGE, interval(0.03, 0.08, 0.01))]),
     ItemSuffixId.WIZARDRY:
         ItemSuffixData("of Wizardry",
-                       [StatModifierInterval(HeroStat.MAGIC_DAMAGE, interval(0.03, 0.06, 0.01))]),
+                       [StatModifierInterval(HeroStat.MAGIC_DAMAGE, interval(0.03, 0.08, 0.01))]),
     ItemSuffixId.SPIRITS:
         ItemSuffixData("of Spirits",
-                       [StatModifierInterval(HeroStat.MAGIC_RESIST_CHANCE, interval(0.05, 0.1, 0.01))]),
+                       [StatModifierInterval(HeroStat.MAGIC_RESIST_CHANCE, interval(0.05, 0.15, 0.01))]),
     ItemSuffixId.EVASION:
         ItemSuffixData("of Evasion",
-                       [StatModifierInterval(HeroStat.DODGE_CHANCE, interval(0.01, 0.03, 0.01))]),
+                       [StatModifierInterval(HeroStat.DODGE_CHANCE, interval(0.02, 0.05, 0.01))]),
+    ItemSuffixId.CONFIDENCE:
+        ItemSuffixData("of Confidence",
+                       [StatModifierInterval(HeroStat.BLOCK_CHANCE, interval(0.04, 0.08, 0.01))]),
+    ItemSuffixId.PERSISTENCE:
+        ItemSuffixData("of Persistence",
+                       [StatModifierInterval(HeroStat.MOVEMENT_IMPAIRING_RESIST_CHANCE, [1])]),
+    ItemSuffixId.GREED:
+        ItemSuffixData("of Greed",
+                       [StatModifierInterval(HeroStat.INCREASED_LOOT_MONEY_CHANCE, interval(0.25, 0.35, 0.01))])
 }
 
 
@@ -101,6 +110,16 @@ def create_item_description(item_id: ItemId) -> List[DescriptionLine]:
     if item_id.suffix_id:
         for modifier in item_id.suffix_stats:
             lines.append(DescriptionLine(modifier.get_description(), from_suffix=True))
+    return lines
+
+
+def create_item_description_for_type(item_type: ItemType) -> List[str]:
+    data = get_item_data_by_type(item_type)
+    lines = []
+    if data.base_stats:
+        for modifier in data.base_stats:
+            lines.append(modifier.get_interval_description())
+    lines += data.custom_description_lines
     return lines
 
 

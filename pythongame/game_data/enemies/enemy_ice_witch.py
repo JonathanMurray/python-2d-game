@@ -82,7 +82,10 @@ class NpcMind(AbstractNpcMind):
                     game_state.visual_effects += [
                         (VisualLine((100, 100, 200), enemy_position, target_center_pos, Millis(120), 3)),
                         (VisualLine((150, 150, 250), enemy_position, target_center_pos, Millis(240), 2))]
-                    game_state.player_state.gain_buff_effect(get_buff_effect(SLOW_BUFF_TYPE), Millis(1500))
+                    chance_to_resist_slow = game_state.player_state.get_effective_movement_impairing_resist_chance()
+                    # TODO It's error-prone that we have to check this for every negative debuff that can slow player
+                    if random.random() > chance_to_resist_slow:
+                        game_state.player_state.gain_buff_effect(get_buff_effect(SLOW_BUFF_TYPE), Millis(1500))
 
 
 class SlowedByIceWitch(StatModifyingBuffEffect):

@@ -41,11 +41,13 @@ from pythongame.game_data.enemies.enemy_mummy import register_mummy_enemy
 from pythongame.game_data.enemies.enemy_necromancer import register_necromancer_enemy
 from pythongame.game_data.enemies.enemy_rat_1 import register_rat_1_enemy
 from pythongame.game_data.enemies.enemy_rat_2 import register_rat_2_enemy
+from pythongame.game_data.enemies.enemy_skeleton_boss import register_skeleton_boss_enemy
 from pythongame.game_data.enemies.enemy_skeleton_mage import register_skeleton_mage_enemy
 from pythongame.game_data.enemies.enemy_veteran import register_veteran_enemy
 from pythongame.game_data.enemies.enemy_warrior import register_warrior_enemy
 from pythongame.game_data.enemies.enemy_warrior_king import register_warrior_king_enemy
 from pythongame.game_data.enemies.enemy_zombie import register_zombie_enemy
+from pythongame.game_data.enemies.enemy_zombie_fast import register_zombie_fast_enemy
 from pythongame.game_data.heroes.generic_talents import register_generic_talents
 from pythongame.game_data.heroes.hero_god import register_hero_god
 from pythongame.game_data.heroes.hero_mage import register_hero_mage
@@ -56,14 +58,17 @@ from pythongame.game_data.items.item_blessed_chalice import register_blessed_cha
 from pythongame.game_data.items.item_blessed_shield import register_blessed_shield_item
 from pythongame.game_data.items.item_blood_amulet import register_blood_amulet
 from pythongame.game_data.items.item_blue_robe import register_blue_robe_item
+from pythongame.game_data.items.item_bronze_ring import register_bronze_ring_item
 from pythongame.game_data.items.item_candle import register_candle_item
 from pythongame.game_data.items.item_cleaver import register_cleaver_item
+from pythongame.game_data.items.item_corrupted_orb import register_corrupted_orb_item
 from pythongame.game_data.items.item_desert_blade import register_desert_blade_item
 from pythongame.game_data.items.item_druids_ring import register_druids_ring_item
 from pythongame.game_data.items.item_elite_armor import register_elite_armor
 from pythongame.game_data.items.item_elite_helmet import register_elite_helmet_item
 from pythongame.game_data.items.item_elven_armor import register_elven_armor
 from pythongame.game_data.items.item_feather_hat import register_feather_hat_item
+from pythongame.game_data.items.item_fire_gauntlet import register_fire_gauntlet_item
 from pythongame.game_data.items.item_fire_wand import register_fire_wand_item
 from pythongame.game_data.items.item_freezing_gauntlet import register_freezing_gauntlet_item
 from pythongame.game_data.items.item_frog import register_frog_item
@@ -90,14 +95,16 @@ from pythongame.game_data.items.item_ring_of_power import register_ring_of_power
 from pythongame.game_data.items.item_rod_of_lightning import register_rod_of_lightning_item
 from pythongame.game_data.items.item_royal_dagger import register_royal_dagger_item
 from pythongame.game_data.items.item_royal_sword import register_royal_sword_item
-from pythongame.game_data.items.item_saphire import register_saphire
+from pythongame.game_data.items.item_sapphire import register_sapphire
 from pythongame.game_data.items.item_serpent_sword import register_serpent_sword_item
 from pythongame.game_data.items.item_skull_shield import register_skull_shield_item
 from pythongame.game_data.items.item_skull_staff import register_skull_staff_item
+from pythongame.game_data.items.item_skull_sword import register_skull_sword_item
 from pythongame.game_data.items.item_soldiers_helmet import register_soldiers_helmet_item
 from pythongame.game_data.items.item_sorceress_robe import register_sorceress_robe_item
 from pythongame.game_data.items.item_staff_of_fire import register_staff_of_fire_item
 from pythongame.game_data.items.item_stone_amulet import register_stone_amulet_item
+from pythongame.game_data.items.item_sun_shield import register_sun_shield_item
 from pythongame.game_data.items.item_thiefs_mask import register_thiefs_mask_item
 from pythongame.game_data.items.item_torn_document import register_torn_document_item
 from pythongame.game_data.items.item_wand import register_wand_item
@@ -174,6 +181,8 @@ def register_all_game_data():
     register_goblin_warrior_enemy()
     register_goblin_sprint_buff()
     register_skeleton_mage_enemy()
+    register_zombie_fast_enemy()
+    register_skeleton_boss_enemy()
 
     # Register start items before heroes
     register_practice_sword_item()
@@ -204,7 +213,7 @@ def register_all_game_data():
 
     register_elven_armor()
     register_gold_nugget()
-    register_saphire()
+    register_sapphire()
     register_leather_cowl_item()
     register_winged_helmet_item()
     register_elite_armor()
@@ -223,6 +232,7 @@ def register_all_game_data():
     register_stone_amulet_item()
     register_torn_document_item()
     register_key_item()
+    register_corrupted_orb_item()
 
     register_wooden_sword_item()
     register_druids_ring_item()
@@ -243,6 +253,10 @@ def register_all_game_data():
     register_fire_wand_item()
     register_feather_hat_item()
     register_candle_item()
+    register_bronze_ring_item()
+    register_fire_gauntlet_item()
+    register_skull_sword_item()
+    register_sun_shield_item()
 
     # Register items before NPCs as vendors may rely on item data
 

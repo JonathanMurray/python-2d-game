@@ -4,21 +4,18 @@ from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId, 
     LootTableId
 from pythongame.core.damage_interactions import deal_damage_to_player, DamageType, deal_npc_damage_to_npc
 from pythongame.core.entity_creation import create_npc
-from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
-    NON_PLAYER_CHARACTERS
+from pythongame.core.game_data import NpcData, NON_PLAYER_CHARACTERS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
 from pythongame.core.math import random_direction, get_position_from_center_position, sum_of_vectors, \
     is_x_and_y_within_distance, rect_from_corners, get_directions_to_position, translate_in_direction
-from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
+from pythongame.core.npc_behaviors import AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.projectile_controllers import AbstractProjectileController, register_projectile_controller, \
     create_projectile_controller
 from pythongame.core.sound_player import play_sound
-from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualLine, VisualCircle
+from pythongame.game_data.enemies.register_enemies_util import register_basic_enemy
 
-SPRITE = Sprite.ENEMY_NECROMANCER
-ENEMY_TYPE = NpcType.NECROMANCER
 PROJECTILE_TYPE = ProjectileType.ENEMY_NECROMANCER
 PROJECTILE_SIZE = (30, 30)
 
@@ -167,22 +164,30 @@ class ProjectileController(AbstractProjectileController):
 
 
 def register_necromancer_enemy():
-    size = (36, 36)
-    health = 60
-    exp_reward = 29
-    npc_data = NpcData.enemy(SPRITE, size, health, 0, 0.02, exp_reward, LootTableId.LEVEL_5, SoundId.DEATH_NECRO)
-    register_npc_data(ENEMY_TYPE, npc_data)
-    register_npc_behavior(ENEMY_TYPE, NpcMind)
-
-    enemy_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_3.png")
-    enemy_original_sprite_size = (32, 32)
-    enemy_scaled_sprite_size = (48, 64)
-    enemy_indices_by_dir = {
+    indices_by_dir = {
         Direction.DOWN: [(x, 0) for x in range(9, 12)],
         Direction.LEFT: [(x, 1) for x in range(9, 12)],
         Direction.RIGHT: [(x, 2) for x in range(9, 12)],
         Direction.UP: [(x, 3) for x in range(9, 12)]
     }
-    register_entity_sprite_map(SPRITE, enemy_sprite_sheet, enemy_original_sprite_size,
-                               enemy_scaled_sprite_size, enemy_indices_by_dir, (-6, -28))
+
+    register_basic_enemy(
+        npc_type=NpcType.NECROMANCER,
+        npc_data=NpcData.enemy(
+            sprite=Sprite.ENEMY_NECROMANCER,
+            size=(36, 36),
+            max_health=60,
+            health_regen=0,
+            speed=0.02,
+            exp_reward=29,
+            enemy_loot_table=LootTableId.LEVEL_5,
+            death_sound_id=SoundId.DEATH_NECRO),
+        mind_constructor=NpcMind,
+        spritesheet_path="resources/graphics/enemy_sprite_sheet_3.png",
+        original_sprite_size=(32, 32),
+        scaled_sprite_size=(48, 64),
+        spritesheet_indices=indices_by_dir,
+        sprite_position_relative_to_entity=(-6, -28)
+    )
+
     register_projectile_controller(PROJECTILE_TYPE, ProjectileController)

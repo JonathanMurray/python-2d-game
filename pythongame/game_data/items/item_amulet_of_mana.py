@@ -11,6 +11,6 @@ def register_amulet_of_mana_item():
         sprite=Sprite.ITEM_AMULET_OF_MANA,
         image_file_path="resources/graphics/item_amulet.png",
         item_equipment_category=ItemEquipmentCategory.NECK,
-        name="Arcane amulet",
-        stat_modifier_intervals={HeroStat.MANA_REGEN: [0.5, 0.6, 0.7, 0.8]}
+        name="Arcane necklace",
+        stat_modifier_intervals={HeroStat.MANA_REGEN: [0.4, 0.5, 0.6, 0.7, 0.8]}
     )

@@ -40,8 +40,6 @@ class StoryBehavior(AbstractWorldBehavior):
         self.info_message.set_message("Hint: " + get_random_hint())
         if new_hero_was_created:
             self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.HEALTH_LESSER)
-            self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.HEALTH_LESSER)
-            self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.MANA_LESSER)
             self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.MANA_LESSER)
             for item_id in HEROES[self.game_state.player_state.hero_id].initial_player_state.starting_items:
                 self.add_starting_item(item_id)

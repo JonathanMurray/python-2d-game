@@ -10,7 +10,7 @@ from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacte
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import VisualRect, VisualCircle, create_visual_stun_text
 
-STUN_DURATION = Millis(3500)
+STUN_DURATION = Millis(2500)
 CHANNELING_STOMP = BuffType.CHANNELING_STOMP
 STUNNED_BY_STOMP = BuffType.STUNNED_BY_STOMP
 
@@ -85,7 +85,8 @@ def register_stomp_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_STOMP
 
     register_ability_effect(ability_type, _apply_ability)
-    description = "Stun and deal " + str(MIN_DMG) + "-" + str(MAX_DMG) + " physical damage to all enemies around you."
+    description = "Deal " + str(MIN_DMG) + "-" + str(MAX_DMG) + " physical damage to all enemies around you and stun " + \
+                  "them for " + "{:.1f}".format(STUN_DURATION / 1000) + "s."
     register_ability_data(
         ability_type,
         AbilityData("War Stomp", ui_icon_sprite, 13, Millis(10000), description, SoundId.ABILITY_STOMP))

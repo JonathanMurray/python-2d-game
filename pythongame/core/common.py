@@ -99,6 +99,8 @@ class NpcType(Enum):
     ICE_WITCH = 16
     WARRIOR_KING = 17
     SKELETON_MAGE = 18
+    ZOMBIE_FAST = 19
+    SKELETON_BOSS = 20
     NEUTRAL_DWARF = 100
     NEUTRAL_NOMAD = 101
     NEUTRAL_NINJA = 102
@@ -212,6 +214,8 @@ class Sprite(Enum):
     ENEMY_ICE_WITCH = 215
     ENEMY_WARRIOR_KING = 216
     ENEMY_SKELETON_MAGE = 217
+    ENEMY_ZOMBIE_FAST = 218
+    ENEMY_SKELETON_BOSS = 219
     PLAYER_SUMMON_DRAGON = 250
     NEUTRAL_NPC_DWARF = 260
     NEUTRAL_NPC_NOMAD = 261
@@ -237,7 +241,7 @@ class Sprite(Enum):
     ITEM_WOODEN_SHIELD = 315
     ITEM_ELVEN_ARMOR = 316
     ITEM_GOLD_NUGGET = 317
-    ITEM_SAPHIRE = 318
+    ITEM_SAPPHIRE = 318
     ITEM_LEATHER_COWL = 319
     ITEM_WINGED_HELMET = 320
     ITEM_ELITE_ARMOR = 321
@@ -278,6 +282,11 @@ class Sprite(Enum):
     ITEM_FIRE_WAND = 356
     ITEM_FEATHER_HAT = 357
     ITEM_CANDLE = 358
+    ITEM_BRONZE_RING = 359
+    ITEM_FIRE_GAUNTLET = 360
+    ITEM_SKULL_SWORD = 361
+    ITEM_SUN_SHIELD = 362
+    ITEM_CORRUPTED_ORB = 363
     COINS_1 = 400
     COINS_2 = 401
     COINS_5 = 402
@@ -367,7 +376,6 @@ class BuffType(Enum):
     CHANNELING_STOMP = 18
     STUNNED_BY_STOMP = 19
     STEALTHING = 20
-    AFTER_STEALTHING = 21
     STUNNED_BY_AEGIS_ITEM = 22
     DEBUFFED_BY_GOATS_RING = 23
     DAMAGED_BY_INFUSED_DAGGER = 26
@@ -375,7 +383,6 @@ class BuffType(Enum):
     RESTORING_HEALTH_FROM_BREW = 28
     DEBUFFED_BY_FREEZING_GAUNTLET = 29
     SLOWED_BY_ICE_WITCH = 30
-    SLOWED_FROM_NOBLE_DEFENDER = 31
     TELEPORTING_WITH_PORTAL = 32
     TELEPORTING_WITH_WARP_STONE = 33
     TELEPORTING_WITH_WARP_POINT = 34
@@ -390,6 +397,7 @@ class BuffType(Enum):
     BUFFED_FROM_RETRIBUTION_TALENT = 43
     INCREASED_DAMAGE_FROM_NECKLACE_OF_SUFFERING = 44
     ELIXIR_OF_MAGIC_RESIST = 45
+    ENEMY_SKELETON_BOSS_STUNNED_FROM_FIRING = 46
     SHRINE_DAMAGE = 100
     SHRINE_ARMOR = 101
     SHRINE_MAGIC_RESIST = 102
@@ -416,7 +424,7 @@ class ItemType(Enum):
     WOODEN_SHIELD = 74
     ELVEN_ARMOR = 75
     GOLD_NUGGET = 76
-    SAPHIRE = 77
+    SAPPHIRE = 77
     LEATHER_COWL = 78
     WINGED_HELMET = 79
     ELITE_ARMOR = 80
@@ -455,6 +463,11 @@ class ItemType(Enum):
     FIRE_WAND = 113
     FEATHER_HAT = 114
     CANDLE = 115
+    BRONZE_RING = 116
+    FIRE_GAUNTLET = 117
+    SKULL_SWORD = 118
+    SUN_SHIELD = 119
+    QUEST_CORRUPTED_ORB = 120
 
 
 class HeroStat(Enum):
@@ -472,6 +485,41 @@ class HeroStat(Enum):
     MAGIC_DAMAGE = 12
     BLOCK_CHANCE = 13
     MAGIC_RESIST_CHANCE = 14
+    MOVEMENT_IMPAIRING_RESIST_CHANCE = 15
+    INCREASED_LOOT_MONEY_CHANCE = 16
+
+
+def _get_description(hero_stat: HeroStat, arg: str):
+    if hero_stat == HeroStat.MAX_HEALTH:
+        return "+" + arg + " max health"
+    elif hero_stat == HeroStat.HEALTH_REGEN:
+        return "+" + arg + " health regen"
+    elif hero_stat == HeroStat.MAX_MANA:
+        return "+" + arg + " max mana"
+    elif hero_stat == HeroStat.MANA_REGEN:
+        return "+" + arg + " mana regen"
+    elif hero_stat == HeroStat.ARMOR:
+        return arg + " armor"
+    elif hero_stat == HeroStat.DAMAGE:
+        return "+" + arg + "% damage"
+    elif hero_stat == HeroStat.PHYSICAL_DAMAGE:
+        return "+" + arg + "% physical damage"
+    elif hero_stat == HeroStat.MAGIC_DAMAGE:
+        return "+" + arg + "% magic damage"
+    elif hero_stat == HeroStat.LIFE_STEAL:
+        return "+" + arg + "% life steal"
+    elif hero_stat == HeroStat.BLOCK_AMOUNT:
+        return arg + " block"
+    elif hero_stat == HeroStat.DODGE_CHANCE:
+        return "+" + arg + "% dodge chance"
+    elif hero_stat == HeroStat.MAGIC_RESIST_CHANCE:
+        return "+" + arg + "% magic resist"
+    elif hero_stat == HeroStat.BLOCK_CHANCE:
+        return "+" + arg + "% block chance"
+    elif hero_stat == HeroStat.INCREASED_LOOT_MONEY_CHANCE:
+        return "+" + arg + "% money from enemies"
+    else:
+        raise Exception("Unhandled stat: " + str(hero_stat))
 
 
 class StatModifier:
@@ -482,35 +530,24 @@ class StatModifier:
     def get_description(self):
         hero_stat = self.hero_stat
         delta = self.delta
-        if hero_stat == HeroStat.MAX_HEALTH:
-            return "+" + str(delta) + " max health"
-        elif hero_stat == HeroStat.HEALTH_REGEN:
-            return "+" + "{:.1f}".format(delta) + " health regen"
-        elif hero_stat == HeroStat.MAX_MANA:
-            return "+" + str(delta) + " max mana"
-        elif hero_stat == HeroStat.MANA_REGEN:
-            return "+" + "{:.1f}".format(delta) + " mana regen"
-        elif hero_stat == HeroStat.ARMOR:
-            return str(delta) + " armor"
+        if hero_stat in [HeroStat.MAX_HEALTH, HeroStat.MAX_MANA, HeroStat.ARMOR, HeroStat.BLOCK_AMOUNT]:
+            return _get_description(hero_stat, str(delta))
+        elif hero_stat in [HeroStat.HEALTH_REGEN, HeroStat.MANA_REGEN]:
+            return _get_description(hero_stat, "{:.1f}".format(delta))
+        elif hero_stat in [HeroStat.DAMAGE, HeroStat.PHYSICAL_DAMAGE, HeroStat.MAGIC_DAMAGE, HeroStat.LIFE_STEAL,
+                           HeroStat.DODGE_CHANCE, HeroStat.MAGIC_RESIST_CHANCE, HeroStat.BLOCK_CHANCE,
+                           HeroStat.INCREASED_LOOT_MONEY_CHANCE]:
+            return _get_description(hero_stat, str(int(round(delta * 100))))
         elif hero_stat == HeroStat.MOVEMENT_SPEED:
             if delta >= 0:
                 return "Increases movement speed by " + str(int(delta * 100)) + "%"
             else:
                 return "Reduces movement speed by " + str(int(delta * 100)) + "%"
-        elif hero_stat == HeroStat.DAMAGE:
-            return "+" + str(int(round(delta * 100))) + "% damage"
-        elif hero_stat == HeroStat.PHYSICAL_DAMAGE:
-            return "+" + str(int(round(delta * 100))) + "% physical damage"
-        elif hero_stat == HeroStat.MAGIC_DAMAGE:
-            return "+" + str(int(round(delta * 100))) + "% magic damage"
-        elif hero_stat == HeroStat.LIFE_STEAL:
-            return "+" + str(int(delta * 100)) + "% life steal"
-        elif hero_stat == HeroStat.BLOCK_AMOUNT:
-            return str(delta) + " block"
-        elif hero_stat == HeroStat.DODGE_CHANCE:
-            return "+" + str(int(delta * 100)) + "% dodge"
-        elif hero_stat == HeroStat.MAGIC_RESIST_CHANCE:
-            return "+" + str(int(delta * 100)) + "% magic resist"
+        elif hero_stat == HeroStat.MOVEMENT_IMPAIRING_RESIST_CHANCE:
+            if delta == 1:
+                return "Immune to slows and stuns"
+            else:
+                return "+" + str(int(delta * 100)) + "% chance to resist slows and stuns"
         else:
             raise Exception("Unhandled stat: " + str(hero_stat))
 
@@ -522,6 +559,45 @@ class StatModifierInterval:
     def __init__(self, hero_stat: HeroStat, interval: List[Union[int, float]]):
         self.hero_stat = hero_stat
         self.interval = interval
+
+    def get_interval_description(self):
+        hero_stat = self.hero_stat
+        interval = self.interval
+
+        if hero_stat in [HeroStat.MAX_HEALTH, HeroStat.MAX_MANA, HeroStat.ARMOR, HeroStat.BLOCK_AMOUNT]:
+            if interval[0] == interval[-1]:
+                return _get_description(hero_stat, str(interval[0]))
+            else:
+                return _get_description(hero_stat, "(" + str(interval[0]) + "-" + str(interval[-1]) + ")")
+        elif hero_stat in [HeroStat.HEALTH_REGEN, HeroStat.MANA_REGEN]:
+            if interval[0] == interval[-1]:
+                return _get_description(hero_stat, "{:.1f}".format(interval[0]))
+            else:
+                return _get_description(hero_stat,
+                                        "(" + "{:.1f}".format(interval[0]) + "-" + "{:.1f}".format(interval[-1]) + ")")
+        elif hero_stat in [HeroStat.DAMAGE, HeroStat.PHYSICAL_DAMAGE, HeroStat.MAGIC_DAMAGE, HeroStat.LIFE_STEAL,
+                           HeroStat.DODGE_CHANCE, HeroStat.MAGIC_RESIST_CHANCE, HeroStat.BLOCK_CHANCE,
+                           HeroStat.INCREASED_LOOT_MONEY_CHANCE]:
+            if interval[0] == interval[-1]:
+                return _get_description(hero_stat, str(int(round(interval[0] * 100))))
+            else:
+                return _get_description(hero_stat,
+                                        "(" + str(int(round(interval[0] * 100))) + "-" +
+                                        str(int(round(interval[-1] * 100))) + ")")
+        elif hero_stat == HeroStat.MOVEMENT_SPEED:
+            if interval[0] == interval[-1]:
+                return "Changes movement speed by " + str(int(interval[0] * 100)) + "%"
+            else:
+                return "Changes movement speed by (" + str(int(interval[0] * 100)) + "-" + \
+                       str(int(interval[-1] * 100)) + ")%"
+        elif hero_stat == HeroStat.MOVEMENT_IMPAIRING_RESIST_CHANCE:
+            if interval[0] == interval[-1]:
+                return "Changes slow/stun resistance chance by " + str(int(interval[0] * 100)) + "%"
+            else:
+                return "Changes slow/stun resistance chance by (" + str(int(interval[0] * 100)) + "-" + \
+                       str(int(interval[-1] * 100)) + ")%"
+        else:
+            raise Exception("Unhandled stat: " + str(hero_stat))
 
 
 class ItemSuffixData:
@@ -542,6 +618,9 @@ class ItemSuffixId(Enum):
     WIZARDRY = 10
     SPIRITS = 11
     EVASION = 12
+    CONFIDENCE = 13
+    PERSISTENCE = 14
+    GREED = 15
 
 
 class ItemSuffix:
@@ -620,7 +699,7 @@ class ItemId:
                         value = float(value_str)
                     suffix_stats.append(StatModifier(hero_stat, value))
             return ItemId(item_type, base_stats, suffix_id, suffix_stats)
-        except BaseException as e:
+        except Exception as e:
             raise Exception("Failed to parse item_id '" + item_id + "'", e)
 
     def __eq__(self, other):
@@ -635,6 +714,7 @@ class ProjectileType(Enum):
     ENEMY_GOBLIN_WARLOCK = 101
     ENEMY_NECROMANCER = 102
     ENEMY_SKELETON_MAGE = 103
+    ENEMY_SKELETON_BOSS = 104
 
 
 class SoundId(Enum):
@@ -685,6 +765,7 @@ class SoundId(Enum):
     MAGIC_DAMAGE_WAS_RESISTED = 409
     ENEMY_ATTACK_SKELETON_MAGE = 410
     ENEMY_SKELETON_MAGE_HEAL = 411
+    ENEMY_MAGIC_SKELETON_BOSS = 412
     DEATH_RAT = 500
     DEATH_ZOMBIE = 501
     DEATH_BOSS = 502
@@ -764,7 +845,7 @@ class UiIconSprite(Enum):
     ITEM_WOODEN_SHIELD = 215
     ITEM_ELVEN_ARMOR = 216
     ITEM_GOLD_NUGGET = 217
-    ITEM_SAPHIRE = 218
+    ITEM_SAPPHIRE = 218
     ITEM_LEATHER_COWL = 219
     ITEM_WINGED_HELMET = 220
     ITEM_ELITE_ARMOR = 221
@@ -805,6 +886,11 @@ class UiIconSprite(Enum):
     ITEM_FIRE_WAND = 256
     ITEM_FEATHER_HAT = 257
     ITEM_CANDLE = 258
+    ITEM_BRONZE_RING = 259
+    ITEM_FIRE_GAUNTLET = 260
+    ITEM_SKULL_SWORD = 261
+    ITEM_SUN_SHIELD = 262
+    ITEM_CORRUPTED_ORB = 263
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
     INVENTORY_TEMPLATE_HELMET = 400
@@ -851,13 +937,9 @@ class PeriodicTimer:
 def get_random_hint():
     hints = [
         "Hold Shift to see more info about lootable items",
-        "Press Space to interact with NPCs and objects",
-        "Reaching certain levels unlocks new abilities",
-        "Use the number keys for potions and other consumables",
-        "Gold coins are looted by simply walking over them",
         "If you die, you'll respawn but lose exp points",
         "Use magic statues and warpstones to teleport long distances",
-        "Hover over things with the mouse cursor to get more info",
+        "Hover over UI elements with the mouse cursor to get more info",
         "Drag inventory items and consumables with the mouse cursor",
         "Equip items by dragging them to the appropriate inventory slot",
         "Choose talents to improve your stats and abilities"
@@ -938,3 +1020,4 @@ class LootTableId(Enum):
     LEVEL_7 = 7
     BOSS_GOBLIN = 100
     BOSS_WARRIOR_KING = 101
+    BOSS_SKELETON = 102

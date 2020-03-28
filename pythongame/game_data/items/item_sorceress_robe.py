@@ -11,6 +11,6 @@ def register_sorceress_robe_item():
         sprite=Sprite.ITEM_SORCERESS_ROBE,
         image_file_path="resources/graphics/item_sorceress_robe.png",
         item_equipment_category=ItemEquipmentCategory.CHEST,
-        name="Sorceress' robe",
-        stat_modifier_intervals={HeroStat.ARMOR: [1], HeroStat.MAGIC_DAMAGE: [0.13, 0.14, 0.15]}
+        name="Spell robe",
+        stat_modifier_intervals={HeroStat.ARMOR: [1], HeroStat.MAGIC_DAMAGE: [0.10, 0.11, 0.12, 0.13, 0.14, 0.15]}
     )

@@ -12,6 +12,6 @@ def register_soldiers_helmet_item():
         sprite=Sprite.ITEM_SOLDIERS_HELMET,
         image_file_path="resources/graphics/item_soldiers_helmet.png",
         item_equipment_category=ItemEquipmentCategory.HEAD,
-        name="Soldier's helmet",
+        name="Soldier helmet",
         stat_modifier_intervals={HeroStat.ARMOR: [2]}
     )

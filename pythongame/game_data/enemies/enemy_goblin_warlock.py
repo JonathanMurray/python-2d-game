@@ -5,11 +5,11 @@ from pythongame.core.common import Millis, NpcType, Sprite, \
     ProjectileType, BuffType, Direction, SoundId, LootTableId
 from pythongame.core.damage_interactions import deal_damage_to_player, deal_npc_damage_to_npc, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
-from pythongame.core.game_data import register_npc_data, NpcData, register_buff_text, register_entity_sprite_map
+from pythongame.core.game_data import NpcData, register_buff_text, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
 from pythongame.core.math import get_perpendicular_directions, get_position_from_center_position, \
     translate_in_direction, get_directions_to_position
-from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
+from pythongame.core.npc_behaviors import AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
@@ -17,6 +17,7 @@ from pythongame.core.projectile_controllers import create_projectile_controller,
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualCircle
+from pythongame.game_data.enemies.register_enemies_util import register_basic_enemy
 
 BUFF_TYPE = BuffType.ENEMY_GOBLIN_WARLOCK_BURNT
 PROJECTILE_TYPE = ProjectileType.ENEMY_GOBLIN_WARLOCK
@@ -149,27 +150,30 @@ class Burnt(AbstractBuffEffect):
 
 
 def register_goblin_warlock_enemy():
-    enemy_size = (24, 24)
-    enemy_sprite = Sprite.ENEMY_GOBLIN_WARLOCK
-    npc_type = NpcType.GOBLIN_WARLOCK
-    health = 21
-    exp_reward = 14
-    npc_data = NpcData.enemy(enemy_sprite, enemy_size, health, 0, 0.032, exp_reward, LootTableId.LEVEL_4,
-                             SoundId.DEATH_GOBLIN)
-    register_npc_data(npc_type, npc_data)
-    register_npc_behavior(npc_type, NpcMind)
-
-    enemy_sprite_sheet = SpriteSheet("resources/graphics/enemy_sprite_sheet_2.png")
-    enemy_original_sprite_size = (32, 32)
-    enemy_scaled_sprite_size = (48, 48)
     enemy_indices_by_dir = {
         Direction.DOWN: [(0, 4), (1, 4), (2, 4)],
         Direction.LEFT: [(0, 5), (1, 5), (2, 5)],
         Direction.RIGHT: [(0, 6), (1, 6), (2, 6)],
         Direction.UP: [(0, 7), (1, 7), (2, 7)]
     }
-    register_entity_sprite_map(enemy_sprite, enemy_sprite_sheet, enemy_original_sprite_size, enemy_scaled_sprite_size,
-                               enemy_indices_by_dir, (-12, -24))
+    register_basic_enemy(
+        npc_type=NpcType.GOBLIN_WARLOCK,
+        npc_data=NpcData.enemy(
+            sprite=Sprite.ENEMY_GOBLIN_WARLOCK,
+            size=(24, 24),
+            max_health=21,
+            health_regen=0,
+            speed=0.032,
+            exp_reward=14,
+            enemy_loot_table=LootTableId.LEVEL_4,
+            death_sound_id=SoundId.DEATH_GOBLIN),
+        mind_constructor=NpcMind,
+        spritesheet_path="resources/graphics/enemy_sprite_sheet_2.png",
+        original_sprite_size=(32, 32),
+        scaled_sprite_size=(48, 48),
+        spritesheet_indices=enemy_indices_by_dir,
+        sprite_position_relative_to_entity=(-12, -24)
+    )
 
     register_projectile_controller(PROJECTILE_TYPE, ProjectileController)
 

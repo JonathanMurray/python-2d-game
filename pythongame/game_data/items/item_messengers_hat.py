@@ -12,6 +12,6 @@ def register_messengers_hat_item():
         sprite=Sprite.ITEM_MESSENGERS_HAT,
         image_file_path="resources/graphics/item_messengers_hat.png",
         item_equipment_category=ItemEquipmentCategory.HEAD,
-        name="Messenger's hat",
+        name="Messenger hat",
         stat_modifier_intervals=[StatModifierInterval(HeroStat.MOVEMENT_SPEED, [0.2])]
     )

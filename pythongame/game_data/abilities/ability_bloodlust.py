@@ -13,7 +13,7 @@ from pythongame.core.hero_upgrades import register_hero_upgrade_effect
 from pythongame.core.visual_effects import VisualCircle
 
 COOLDOWN = Millis(25000)
-BUFF_DURATION = Millis(10000)
+BUFF_DURATION = Millis(15000)
 BUFF_TYPE = BuffType.BLOOD_LUST
 LIFE_STEAL_BONUS_RATIO = 0.15
 SPEED_BONUS = 0.3

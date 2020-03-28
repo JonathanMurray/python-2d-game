@@ -22,6 +22,23 @@ class AbstractBuffEffect:
         return None
 
 
+# TODO Use this instead of re-inventing similar buff effects
+class StunningBuffEffect(AbstractBuffEffect):
+
+    def __init__(self, buff_type: BuffType):
+        self._buff_type = buff_type
+
+    def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
+        buffed_npc.stun_status.add_one()
+        buffed_entity.set_not_moving()
+
+    def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
+        buffed_npc.stun_status.remove_one()
+
+    def get_buff_type(self) -> BuffType:
+        return self._buff_type
+
+
 class StatModifyingBuffEffect(AbstractBuffEffect):
 
     def __init__(self, buff_type: BuffType, stat_modifiers: Dict[HeroStat, Union[int, float]]):

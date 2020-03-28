@@ -331,6 +331,11 @@ class PlayerBlockedEvent(Event):
         self.npc_attacker = npc_attacker
 
 
+class PlayerDodgedEvent(Event):
+    def __init__(self, npc_attacker: NonPlayerCharacter):
+        self.npc_attacker = npc_attacker
+
+
 class PlayerWasAttackedEvent(Event):
     def __init__(self, npc_attacker: NonPlayerCharacter):
         self.npc_attacker = npc_attacker
@@ -384,6 +389,7 @@ class AgentBuffsUpdate:
 class QuestId(Enum):
     MAIN_RETRIEVE_KEY = 1
     RETRIEVE_FROG = 2
+    RETRIEVE_CORRUPTED_ORB = 3
 
 
 class Quest:
@@ -431,6 +437,8 @@ class PlayerState:
         self.block_damage_reduction: int = 0
         self.base_magic_resist_chance: float = base_magic_resist_chance
         self.magic_resist_chance_bonus: float = 0  # affected by items/buffs. [Change it additively]
+        self.base_movement_impairing_resist_chance: float = 0
+        self.movement_impairing_resist_chance_bonus: float = 0  # affected by items/buffs. [Change it additively]
         self.talents_were_updated = Observable()
         self.stats_were_updated = Observable()
         self.exp_was_updated = Observable()
@@ -441,8 +449,12 @@ class PlayerState:
         self.quests_were_updated = Observable()
         self.completed_quests: List[Quest] = []
         self.active_quests: List[Quest] = []
+        self.increased_loot_money_chance = 0
 
     def start_quest(self, quest: Quest):
+        if [q for q in self.active_quests if q.quest_id == quest.quest_id]:
+            print("WARN: Cannot start quest that's already in progress: %s" % quest.quest_id)
+            return
         self.active_quests.append(quest)
         self.notify_quest_observers()
 
@@ -482,6 +494,9 @@ class PlayerState:
     def get_effective_magic_resist_chance(self) -> float:
         return self.base_magic_resist_chance + self.magic_resist_chance_bonus
 
+    def get_effective_movement_impairing_resist_chance(self) -> float:
+        return self.base_movement_impairing_resist_chance + self.movement_impairing_resist_chance_bonus
+
     def get_effective_block_chance(self) -> float:
         return self.base_block_chance + self.block_chance_bonus
 
@@ -519,6 +534,10 @@ class PlayerState:
             self.block_chance_bonus += stat_delta
         elif hero_stat == HeroStat.MAGIC_RESIST_CHANCE:
             self.magic_resist_chance_bonus += stat_delta
+        elif hero_stat == HeroStat.MOVEMENT_IMPAIRING_RESIST_CHANCE:
+            self.movement_impairing_resist_chance_bonus += stat_delta
+        elif hero_stat == HeroStat.INCREASED_LOOT_MONEY_CHANCE:
+            self.increased_loot_money_chance += stat_delta
         else:
             raise Exception("Unhandled stat: " + str(hero_stat))
         self.notify_stats_observers()

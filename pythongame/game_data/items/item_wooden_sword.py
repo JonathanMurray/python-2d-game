@@ -12,5 +12,5 @@ def register_wooden_sword_item():
         image_file_path="resources/graphics/item_wooden_sword.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
         name="Wooden sword",
-        stat_modifier_intervals={HeroStat.PHYSICAL_DAMAGE: [0.04, 0.05, 0.06]}
+        stat_modifier_intervals={HeroStat.PHYSICAL_DAMAGE: [0.04, 0.05, 0.06, 0.07]}
     )

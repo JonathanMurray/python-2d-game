@@ -11,6 +11,6 @@ def register_wand_item():
         sprite=Sprite.ITEM_WAND,
         image_file_path="resources/graphics/item_wand.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
-        name="Wizard's wand",
+        name="Mage wand",
         stat_modifier_intervals={HeroStat.MANA_REGEN: [0.2, 0.3, 0.4], HeroStat.MAX_MANA: [10, 12, 13, 13, 14, 15]}
     )

@@ -1,104 +1,28 @@
-import random
-from typing import Optional
-
-from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_directions, PortraitIconSprite, \
-    UiIconSprite, ItemType, PeriodicTimer, HeroId, SoundId, ItemId
-from pythongame.core.entity_creation import create_item_on_ground
-from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
-    register_portrait_icon_sprite_path
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest, QuestGiverState
-from pythongame.core.item_data import build_item_name, plain_item_id
+from pythongame.core.common import NpcType, Sprite, Direction, Millis, PortraitIconSprite, \
+    ItemType, PeriodicTimer, HeroId, ItemId
+from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map
+from pythongame.core.game_state import QuestId, Quest, GameState
+from pythongame.core.item_data import plain_item_id
 from pythongame.core.item_data import randomized_item_id
-from pythongame.core.item_effects import try_add_item_to_inventory
-from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, AbstractNpcAction, \
-    DialogData, DialogOptionData, register_conditional_npc_dialog_data, register_quest
+from pythongame.core.npc_behaviors import register_npc_behavior
+from pythongame.core.npc_quest_behaviors import register_quest_giver_dialog, QuestGiverNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
-from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
-from pythongame.scenes_game.game_ui_view import GameUiView
 
+QUEST_MIN_LEVEL = 1
 QUEST_ID = QuestId.RETRIEVE_FROG
-QUEST = Quest(QUEST_ID, "Lost pet", "Retrieve Mida's pet frog from the goblin king.")
-ITEM_TYPE_FROG = ItemType.FROG
-NPC_TYPE = NpcType.NEUTRAL_YOUNG_SORCERESS
-UI_ICON_SPRITE = PortraitIconSprite.YOUNG_SORCERESS
+QUEST_ITEM_TYPE = ItemType.FROG
 
 
-def item_id_frog():
-    # We defer calling this method as key item may not be registered yet otherwise
-    return plain_item_id(ITEM_TYPE_FROG)
-
-
-class NpcMind(AbstractNpcMind):
+class NpcMind(QuestGiverNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
-        super().__init__(global_path_finder)
+        super().__init__(global_path_finder, QUEST_ID, plain_item_id(QUEST_ITEM_TYPE), QUEST_MIN_LEVEL)
         self.timer = PeriodicTimer(Millis(500))
         self.quest_timer = PeriodicTimer(Millis(1000))
 
-    def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
-                    is_player_invisible: bool, time_passed: Millis):
 
-        if self.quest_timer.update_and_check_if_ready(time_passed):
-            player_state = game_state.player_state
-            if player_state.has_quest(QUEST_ID):
-                if player_state.item_inventory.has_item_in_inventory(item_id_frog()):
-                    npc.quest_giver_state = QuestGiverState.CAN_COMPLETE_QUEST
-                else:
-                    npc.quest_giver_state = QuestGiverState.WAITING_FOR_PLAYER
-            elif player_state.has_completed_quest(QUEST_ID):
-                npc.quest_giver_state = None
-            else:
-                npc.quest_giver_state = QuestGiverState.CAN_GIVE_NEW_QUEST
-
-        if self.timer.update_and_check_if_ready(time_passed):
-            if random.random() < 0.8:
-                npc.world_entity.set_not_moving()
-            else:
-                direction = random.choice(get_all_directions())
-                npc.world_entity.set_moving_in_dir(direction)
-
-
-class GiveQuest(AbstractNpcAction):
-
-    def on_select(self, game_state: GameState) -> Optional[str]:
-        game_state.player_state.start_quest(QUEST)
-        play_sound(SoundId.EVENT_ACCEPTED_QUEST)
-        return "Quest accepted: " + QUEST.name
-
-    def on_hover(self, game_state: GameState, ui_view: GameUiView):
-        _highlight_boss_location(game_state, ui_view)
-
-    def on_blur(self, game_state: GameState, ui_view: GameUiView):
-        _clear_highlight(ui_view)
-
-
-class AcceptFrog(AbstractNpcAction):
-
-    def on_select(self, game_state: GameState) -> Optional[str]:
-        player_has_it = game_state.player_state.item_inventory.has_item_in_inventory(item_id_frog())
-        if player_has_it:
-            game_state.player_state.item_inventory.lose_item_from_inventory(item_id_frog())
-
-            reward_item_id = _get_reward_for_hero(game_state.player_state.hero_id)
-            did_add_item = try_add_item_to_inventory(game_state, reward_item_id)
-            if not did_add_item:
-                game_state.items_on_ground.append(
-                    create_item_on_ground(reward_item_id, game_state.player_entity.get_position()))
-            play_sound(SoundId.EVENT_COMPLETED_QUEST)
-            game_state.player_state.complete_quest(QUEST)
-            return "Reward gained: " + build_item_name(reward_item_id)
-        else:
-            play_sound(SoundId.WARNING)
-            return "You don't have that!"
-
-    def on_hover(self, game_state: GameState, ui_view: GameUiView):
-        _highlight_boss_location(game_state, ui_view)
-
-    def on_blur(self, game_state: GameState, ui_view: GameUiView):
-        _clear_highlight(ui_view)
-
-
-def _get_reward_for_hero(hero_id: HeroId) -> ItemId:
+def _get_reward_for_hero(game_state: GameState) -> ItemId:
+    hero_id = game_state.player_state.hero_id
     if hero_id == HeroId.MAGE:
         return randomized_item_id(ItemType.STAFF_OF_FIRE)
     elif hero_id == HeroId.ROGUE:
@@ -109,29 +33,13 @@ def _get_reward_for_hero(hero_id: HeroId) -> ItemId:
         return randomized_item_id(ItemType.LEATHER_ARMOR)
 
 
-def _highlight_boss_location(game_state, ui_view):
-    bosses = [npc for npc in game_state.non_player_characters if npc.npc_type == NpcType.GOBLIN_WARRIOR]
-    if bosses:
-        position = bosses[0].world_entity.get_center_position()
-        world_area = game_state.entire_world_area
-        position_ratio = ((position[0] - world_area.x) / world_area.w,
-                          (position[1] - world_area.y) / world_area.h)
-        ui_view.set_minimap_highlight(position_ratio)
-    ui_view.set_inventory_highlight(item_id_frog())
-
-
-def _clear_highlight(ui_view):
-    ui_view.remove_minimap_highlight()
-    ui_view.remove_inventory_highlight()
-
-
 def register_young_sorceress_npc():
-    register_quest(QUEST_ID, QUEST)
+    npc_type = NpcType.NEUTRAL_YOUNG_SORCERESS
     size = (30, 30)  # Must not align perfectly with grid cell size (pathfinding issues)
     sprite = Sprite.NEUTRAL_NPC_YOUNG_SORCERESS
     movement_speed = 0.03
-    register_npc_data(NPC_TYPE, NpcData.neutral(sprite, size, movement_speed))
-    register_npc_behavior(NPC_TYPE, NpcMind)
+    register_npc_data(npc_type, NpcData.neutral(sprite, size, movement_speed))
+    register_npc_behavior(npc_type, NpcMind)
     sprite_sheet = SpriteSheet("resources/graphics/manga_spritesheet.png")
     original_sprite_size = (32, 32)
     scaled_sprite_size = (48, 48)
@@ -145,42 +53,21 @@ def register_young_sorceress_npc():
     register_entity_sprite_map(sprite, sprite_sheet, original_sprite_size, scaled_sprite_size, indices_by_dir,
                                (-8, -16))
 
-    _register_dialog()
-
-
-def _register_dialog():
-    prompt = "QUEST: "
-    bye_option = DialogOptionData("\"Good bye\"", "cancel", None)
-    name = "Mida"
-    frog_name = build_item_name(item_id_frog())
-    dialog_1 = DialogData(
-        name,
-        UI_ICON_SPRITE,
-        "Hey you! Have you seen my pet frog? I bet it was that old green mean goblin king that took it!",
-        [
-            DialogOptionData(prompt + "\"Lost pet \"", "accept quest", GiveQuest(), UiIconSprite.ITEM_FROG,
-                             frog_name,
-                             "Will you help me? I'll give you something in return. Promise!"),
-            bye_option
-        ])
-    dialog_2 = DialogData(
-        name,
-        UI_ICON_SPRITE,
-        "Hi friend! Any luck?",
-        [
-            DialogOptionData(prompt + "\"Lost pet\"", "give", AcceptFrog(), UiIconSprite.ITEM_FROG, frog_name,
-                             "..."),
-            bye_option
-        ])
-    dialog_3 = DialogData(name, UI_ICON_SPRITE, "Thank you for helping me!", [bye_option])
-
-    def get_dialog_data(game_state: GameState):
-        if game_state.player_state.has_completed_quest(QUEST_ID):
-            return dialog_3
-        elif game_state.player_state.has_quest(QUEST_ID):
-            return dialog_2
-        else:
-            return dialog_1
-
-    register_conditional_npc_dialog_data(NPC_TYPE, get_dialog_data)
-    register_portrait_icon_sprite_path(UI_ICON_SPRITE, 'resources/graphics/portrait_young_sorceress_npc.png')
+    register_quest_giver_dialog(
+        npc_name="Mida",
+        npc_type=NpcType.NEUTRAL_YOUNG_SORCERESS,
+        icon_sprite=PortraitIconSprite.YOUNG_SORCERESS,
+        icon_sprite_file_path='resources/graphics/portrait_young_sorceress_npc.png',
+        quest=Quest(QUEST_ID, "Lost pet", "Retrieve Mida's pet frog from the goblin king."),
+        quest_min_level=QUEST_MIN_LEVEL,
+        quest_intro="Will you help me? I'll give you something in return. Promise!",
+        boss_npc_type=NpcType.GOBLIN_WARRIOR,
+        quest_item_type=ItemType.FROG,
+        custom_options=[],
+        dialog_before_quest="",
+        dialog_give_quest="Hey you! Have you seen my pet frog? I bet it was that old green mean goblin king that took "
+                          "it!",
+        dialog_during_quest="Hi friend! Any luck?",
+        dialog_after_completed="Thank you for helping me!",
+        reward_item_id=_get_reward_for_hero
+    )

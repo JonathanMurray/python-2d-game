@@ -11,7 +11,7 @@ def register_druids_ring_item():
         sprite=Sprite.ITEM_DRUIDS_RING,
         image_file_path="resources/graphics/item_druids_ring.png",
         item_equipment_category=ItemEquipmentCategory.RING,
-        name="Druid's ring",
-        stat_modifier_intervals={HeroStat.MANA_REGEN: [0.4, 0.5, 0.6],
-                                 HeroStat.HEALTH_REGEN: [0.4, 0.5, 0.6]}
+        name="Druid ring",
+        stat_modifier_intervals={HeroStat.MANA_REGEN: [0.4, 0.5, 0.6, 0.7, 0.8],
+                                 HeroStat.HEALTH_REGEN: [0.4, 0.5, 0.6, 0.7, 0.8]}
     )

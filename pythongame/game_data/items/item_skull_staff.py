@@ -12,5 +12,6 @@ def register_skull_staff_item():
         image_file_path="resources/graphics/item_skullstaff.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
         name="Skull staff",
-        stat_modifier_intervals={HeroStat.LIFE_STEAL: [0.07, 0.08, 0.09, 0.1]}
+        stat_modifier_intervals={HeroStat.DAMAGE: [0.04, 0.05, 0.06],
+                                 HeroStat.LIFE_STEAL: [0.07, 0.08, 0.09, 0.1]}
     )

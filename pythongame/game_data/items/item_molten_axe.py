@@ -12,5 +12,5 @@ def register_molten_axe_item():
         image_file_path="resources/graphics/item_molten_axe.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
         name="Molten axe",
-        stat_modifier_intervals={HeroStat.PHYSICAL_DAMAGE: [0.25, 0.26, 0.27, 0.28, 0.29, 0.30]}
+        stat_modifier_intervals={HeroStat.PHYSICAL_DAMAGE: [0.3, 0.31, 0.32, 0.33, 0.34, 0.35]}
     )

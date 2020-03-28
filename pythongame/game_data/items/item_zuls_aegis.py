@@ -8,7 +8,7 @@ from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.visual_effects import VisualCircle, create_visual_stun_text
 from pythongame.game_data.items.register_items_util import register_custom_effect_item
 
-STUN_DURATION = Millis(2500)
+STUN_DURATION = Millis(2000)
 
 BUFF_TYPE_STUNNED = BuffType.STUNNED_BY_AEGIS_ITEM
 
@@ -50,7 +50,7 @@ def register_zuls_aegis():
         name="Zul's Aegis",
         custom_effect=effect,
         stat_modifier_intervals=[StatModifierInterval(HeroStat.ARMOR, [3]),
-                                 StatModifierInterval(HeroStat.BLOCK_AMOUNT, [8]),
+                                 StatModifierInterval(HeroStat.BLOCK_AMOUNT, [6]),
                                  StatModifierInterval(HeroStat.MAGIC_RESIST_CHANCE, [0.1]),
                                  StatModifierInterval(HeroStat.DAMAGE, [0.05])],
         custom_description=["On block: stun attacker for " + "{:.1f}".format(STUN_DURATION / 1000) + "s"],

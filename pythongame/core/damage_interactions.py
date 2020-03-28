@@ -5,7 +5,7 @@ from typing import Optional
 from pythongame.core.common import SoundId, Millis
 from pythongame.core.enemy_target_selection import EnemyTarget
 from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, PlayerLostHealthEvent, \
-    PlayerDamagedEnemy, PlayerWasAttackedEvent, PlayerBlockedEvent
+    PlayerDamagedEnemy, PlayerWasAttackedEvent, PlayerBlockedEvent, PlayerDodgedEvent
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import create_visual_damage_text, VisualRect, create_visual_healing_text, \
     create_visual_mana_text, create_visual_block_text, create_visual_dodge_text, create_visual_resist_text
@@ -55,6 +55,7 @@ def deal_damage_to_player(game_state: GameState, base_amount: float, damage_type
         if random.random() < dodge_chance:
             game_state.visual_effects.append(create_visual_dodge_text(game_state.player_entity))
             play_sound(SoundId.ENEMY_ATTACK_WAS_DODGED)
+            player_state.notify_about_event(PlayerDodgedEvent(npc_attacker), game_state)
             return
         elif random.random() < block_chance:
             if player_state.block_damage_reduction > 0:
