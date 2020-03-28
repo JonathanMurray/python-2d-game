@@ -73,6 +73,7 @@ class Rooted(AbstractBuffEffect):
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         buffed_npc.stun_status.add_one()
+        buffed_entity.set_not_moving()
         game_state.visual_effects.append(create_visual_stun_text(buffed_entity))
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
