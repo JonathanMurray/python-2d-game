@@ -3,8 +3,9 @@ import random
 from typing import List, Dict, Optional
 
 from pythongame.core.common import ConsumableType, ItemType, ItemSuffixId
+
+
 # Represents the smallest unit of loot. It shows up on the ground as "one item"
-from pythongame.core.item_data import get_item_data_by_type
 
 
 class LootEntry:
@@ -54,24 +55,27 @@ class LeveledLootTable(LootTable):
     def __init__(self,
                  guaranteed_drops: List[LootEntry],
                  item_drop_chance: float,
-                 item_rare_chance: float,
+                 item_rare_or_unique_chance: float,
                  level: int,
-                 item_types_by_level: Dict[int, List[ItemType]],
+                 regular_item_types_by_level: Dict[int, List[ItemType]],
+                 unique_item_types_by_level: Dict[int, List[ItemType]],
                  consumable_drop_chance: float,
                  consumable_types_by_level: Dict[int, List[ConsumableType]]):
         self.guaranteed_drops = guaranteed_drops
         self.item_drop_chance = item_drop_chance
-        self.item_rare_chance = item_rare_chance
+        self.item_rare_or_unique_chance = item_rare_or_unique_chance
         self.consumable_drop_chance = consumable_drop_chance
         self.level = level
-        if [entries for entries in item_types_by_level.values() if len(entries) == 0]:
-            raise Exception("Invalid loot table! Some level doesn't have any items: %s" % item_types_by_level)
-        self.item_types_by_level = item_types_by_level
-        self.item_levels = list(item_types_by_level.keys())
+        if [entries for entries in regular_item_types_by_level.values() if len(entries) == 0]:
+            raise Exception("Invalid loot table: %s" % regular_item_types_by_level)
+        if [entries for entries in unique_item_types_by_level.values() if len(entries) == 0]:
+            raise Exception("Invalid loot table: %s" % unique_item_types_by_level)
+        self.regular_item_types_by_level = regular_item_types_by_level
+        self.unique_item_types_by_level = unique_item_types_by_level
+        self.item_levels = list(regular_item_types_by_level.keys())
         self.item_level_weights = [1.0 / math.pow(1.5, abs(level - self.level)) for level in self.item_levels]
         if [entries for entries in consumable_types_by_level.values() if len(entries) == 0]:
-            raise Exception(
-                "Invalid loot table! Some level doesn't have any consumables: %s" % consumable_types_by_level)
+            raise Exception("Invalid loot table: %s" % consumable_types_by_level)
 
         self.consumable_types_by_level = consumable_types_by_level
         self.consumable_levels = list(consumable_types_by_level.keys())
@@ -84,15 +88,23 @@ class LeveledLootTable(LootTable):
         loot = list(self.guaranteed_drops)
         if random.random() <= self.item_drop_chance:
             item_level = random.choices(self.item_levels, weights=self.item_level_weights)[0]
-            item_type = random.choice(self.item_types_by_level[item_level])
-            # TODO control drop rate of uniques vs rares
-            is_unique = get_item_data_by_type(item_type).is_unique
-            if not is_unique and random.random() <= self.item_rare_chance:
-                # TODO determine suffix based on level!
-                suffix_id = random.choice([suffix_id for suffix_id in ItemSuffixId])
-                loot.append(SuffixedItemLootEntry(item_type, suffix_id))
+            rare_or_unique = random.random() <= self.item_rare_or_unique_chance
+            # There are 3 cases: 1) common item, 2) rare item (common + suffix), 3) unique item
+            if rare_or_unique:
+                if random.random() <= 0.25 and item_level in self.unique_item_types_by_level:
+                    unique_item_type = random.choice(self.unique_item_types_by_level[item_level])
+                    unique_item = ItemLootEntry(unique_item_type)
+                    loot.append(unique_item)
+                else:
+                    item_type = random.choice(self.regular_item_types_by_level[item_level])
+                    suffix_id = random.choice([suffix_id for suffix_id in ItemSuffixId])
+                    rare_item = SuffixedItemLootEntry(item_type, suffix_id)
+                    loot.append(rare_item)
             else:
-                loot.append(ItemLootEntry(item_type))
+                item_type = random.choice(self.regular_item_types_by_level[item_level])
+                common_item = ItemLootEntry(item_type)
+                loot.append(common_item)
+
         if random.random() <= self.consumable_drop_chance:
             # Warp stone doesn't have a level, but should be dropped across all levels
             if random.random() < 0.15:
