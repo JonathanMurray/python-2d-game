@@ -29,11 +29,12 @@ def register_warrior_king_enemy():
             speed=0.13,
             exp_reward=90,
             enemy_loot_table=LootTableId.BOSS_WARRIOR_KING,
-            death_sound_id=SoundId.DEATH_BOSS),
+            death_sound_id=SoundId.DEATH_BOSS,
+            is_boss=True),
         mind_constructor=NpcMind,
         spritesheet_path="resources/graphics/enemy_sprite_sheet_3.png",
         original_sprite_size=(32, 32),
         scaled_sprite_size=(54, 60),
         spritesheet_indices=indices_by_dir,
-        sprite_position_relative_to_entity=(-11, -23)
+        sprite_position_relative_to_entity=(-11, -23),
     )
