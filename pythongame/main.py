@@ -53,6 +53,7 @@ class Main:
         self.ui_view = GameUiView(
             self.pygame_screen, CAMERA_SIZE, SCREEN_SIZE, images_by_ui_sprite,
             big_images_by_ui_sprite, self.images_by_portrait_sprite, ABILITY_KEY_LABELS)
+        self.ui_view.on_fullscreen_changed(self.fullscreen)
         self.save_file_handler = SaveFileHandler()
         init_sound_player()
         self.clock = pygame.time.Clock()
