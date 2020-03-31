@@ -120,6 +120,7 @@ from pythongame.game_data.loot_tables import register_loot_tables
 from pythongame.game_data.map_editor_icons import register_map_editor_icons, register_map_smart_floor_tile_sprites
 from pythongame.game_data.neutral_npcs.neutral_npc_challenge_starter import register_challenge_starter_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_dwarf import register_dwarf_npc
+from pythongame.game_data.neutral_npcs.neutral_npc_frog import register_frog_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_ninja import register_ninja_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_nomad import register_nomad_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_sorcerer import register_sorcerer_npc
@@ -267,6 +268,7 @@ def register_all_game_data():
     register_young_sorceress_npc()
     register_warpstone_merchant_npc()
     register_challenge_starter_npc()
+    register_frog_npc()
 
     register_decorations()
     register_map_editor_icons()

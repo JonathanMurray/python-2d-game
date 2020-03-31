@@ -2230,6 +2230,13 @@
         3575,
         1800
       ]
+    },
+    {
+      "npc_type": "NEUTRAL_FROG",
+      "position": [
+        5625,
+        3050
+      ]
     }
   ],
   "walls": [
@@ -36370,6 +36377,41 @@
       "position": [
         3475,
         1725
+      ]
+    },
+    {
+      "wall_type": "PILLOWS_2",
+      "position": [
+        5750,
+        3050
+      ]
+    },
+    {
+      "wall_type": "PILLOW",
+      "position": [
+        5700,
+        3050
+      ]
+    },
+    {
+      "wall_type": "BARREL_3",
+      "position": [
+        5250,
+        3075
+      ]
+    },
+    {
+      "wall_type": "BARREL_2",
+      "position": [
+        5250,
+        3050
+      ]
+    },
+    {
+      "wall_type": "BARREL_2",
+      "position": [
+        5300,
+        3075
       ]
     }
   ],

@@ -159,6 +159,12 @@ def randomized_suffixed_item_id(item_type: ItemType, suffix_id: ItemSuffixId) ->
     return ItemId.randomized_with_suffix(item_type, data.base_stats, suffix_id, suffix_stats)
 
 
+def random_rare_item(item_level: int) -> ItemId:
+    item_type = random.choice([i for i in get_items_with_level(item_level) if not get_item_data_by_type(i).is_unique])
+    suffix_id = random.choice([suffix_id for suffix_id in ItemSuffixId])
+    return randomized_suffixed_item_id(item_type, suffix_id)
+
+
 def plain_item_id(item_type: ItemType) -> ItemId:
     data = get_item_data_by_type(item_type)
     if len(data.base_stats) > 0:

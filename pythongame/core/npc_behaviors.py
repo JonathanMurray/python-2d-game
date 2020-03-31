@@ -266,7 +266,7 @@ def buy_consumable_option(consumable_type: ConsumableType, cost: int) -> DialogO
 def buy_item_option(item_id: ItemId, cost: int) -> DialogOptionData:
     item_type = item_id.item_type
     data = get_item_data_by_type(item_type)
-    name_formatter = "{:<25}"
+    name_formatter = "{:<35}"
     buy_prompt = "> "
     cost_formatter = "[{} gold]"
     item_name = build_item_name(item_id)
