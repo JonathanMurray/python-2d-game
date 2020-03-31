@@ -755,10 +755,7 @@ class GameUiView:
 
         self.message.render(self.info_message.message)
 
-        if self.hovered_component and self.hovered_component.tooltip and not self.item_slot_being_dragged \
-                and not self.consumable_slot_being_dragged:
-            tooltip: TooltipGraphics = self.hovered_component.tooltip
-            tooltip.render()
+
 
         # TODO Bring back relative render position for dragged entities
         if self.item_slot_being_dragged:
@@ -770,5 +767,10 @@ class GameUiView:
                                                   (UI_ICON_SIZE[0] // 2, (UI_ICON_SIZE[1] // 2)))
 
         self.dialog.render()
+
+        if self.hovered_component and self.hovered_component.tooltip and not self.item_slot_being_dragged \
+                and not self.consumable_slot_being_dragged:
+            tooltip: TooltipGraphics = self.hovered_component.tooltip
+            tooltip.render()
 
         self.paused_splash_screen.render()
