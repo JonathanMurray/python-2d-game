@@ -14,7 +14,7 @@ from pythongame.game_data.loot_tables import LootTableId
 class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
-        self._summon_trait = EnemySummonTrait(2, [NpcType.RAT_1], (Millis(500), Millis(2000)), create_npc)
+        self._summon_trait = EnemySummonTrait(2, [NpcType.FIRE_DEMON], (Millis(500), Millis(2000)), create_npc)
         self._random_walk_trait = EnemyRandomWalkTrait(Millis(750))
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,

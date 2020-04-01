@@ -31,6 +31,7 @@ from pythongame.game_data.consumables.scroll_ability_summon import register_summ
 from pythongame.game_data.decorations import register_decorations
 from pythongame.game_data.enemies.buff_goblin_sprint import register_goblin_sprint_buff
 from pythongame.game_data.enemies.enemy_dark_reaper import register_dark_reaper_enemy
+from pythongame.game_data.enemies.enemy_fire_demon import register_fire_demon_enemy
 from pythongame.game_data.enemies.enemy_goblin_spearman import register_goblin_spearman_enemy
 from pythongame.game_data.enemies.enemy_goblin_spearman_elite import register_goblin_spearman_elite_enemy
 from pythongame.game_data.enemies.enemy_goblin_warlock import register_goblin_warlock_enemy
@@ -186,6 +187,7 @@ def register_all_game_data():
     register_zombie_fast_enemy()
     register_skeleton_boss_enemy()
     register_human_summoner_enemy()
+    register_fire_demon_enemy()
 
     # Register start items before heroes
     register_practice_sword_item()
