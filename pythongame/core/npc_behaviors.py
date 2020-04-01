@@ -1,17 +1,22 @@
+from typing import Tuple
 from typing import Type, Dict
 
 from pythongame.core.common import *
 from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import CONSUMABLES
+from pythongame.core.game_data import NON_PLAYER_CHARACTERS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest
 from pythongame.core.item_data import build_item_name, create_item_description
 from pythongame.core.item_data import get_item_data_by_type
 from pythongame.core.item_effects import try_add_item_to_inventory
 from pythongame.core.math import is_x_and_y_within_distance, get_perpendicular_directions
+from pythongame.core.math import random_direction, get_position_from_center_position, sum_of_vectors, \
+    rect_from_corners
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.sound_player import play_sound
+from pythongame.core.visual_effects import VisualCircle
 from pythongame.scenes_game.game_ui_view import GameUiView
 
 
@@ -94,11 +99,74 @@ class MeleeEnemyNpcMind(AbstractNpcMind):
                     deal_npc_damage(self.damage_amount, DamageType.PHYSICAL, game_state, enemy_entity, npc, target)
 
 
-def _move_in_dir(enemy_entity, direction):
+def _move_in_dir(enemy_entity: WorldEntity, direction: Direction):
     if direction:
         enemy_entity.set_moving_in_dir(direction)
     else:
         enemy_entity.set_not_moving()
+
+
+# TRAIT = a reusable part of an enemy's behaviour
+
+class EnemySummonTrait:
+    def __init__(self, max_summons: int, summon_npc_types: List[NpcType], summon_cd_interval: Tuple[Millis, Millis],
+                 create_npc: Callable[[NpcType, Tuple[int, int]], NonPlayerCharacter]):
+        self._max_summons = max_summons
+        self._summon_npc_types = summon_npc_types
+        self._summon_cd_interval = summon_cd_interval
+        self._time_since_summoning = 0
+        self._summoning_cooldown = self._random_summoning_cooldown()
+        self._alive_summons = []
+        self._create_npc = create_npc  # We inject this method as we cannot depend on entity_creation.py from here
+
+    def update(self, npc: NonPlayerCharacter, game_state: GameState, time_passed: Millis):
+        self._time_since_summoning += time_passed
+        if self._time_since_summoning > self._summoning_cooldown:
+            necro_center_pos = npc.world_entity.get_center_position()
+            self._time_since_summoning = 0
+            self._alive_summons = [summon for summon in self._alive_summons
+                                   if summon in game_state.non_player_characters]
+            if len(self._alive_summons) < self._max_summons:
+                relative_pos_from_summoner = (random.randint(-150, 150), random.randint(-150, 150))
+                summon_center_pos = sum_of_vectors(necro_center_pos, relative_pos_from_summoner)
+                summon_type = random.choice(self._summon_npc_types)
+                summon_size = NON_PLAYER_CHARACTERS[summon_type].size
+                summon_pos = game_state.get_within_world(
+                    get_position_from_center_position(summon_center_pos, summon_size), summon_size)
+                summon_enemy = self._create_npc(summon_type, summon_pos)
+                is_wall_blocking = game_state.walls_state.does_rect_intersect_with_wall(
+                    rect_from_corners(necro_center_pos, summon_center_pos))
+                is_position_blocked = game_state.would_entity_collide_if_new_pos(summon_enemy.world_entity, summon_pos)
+                if not is_wall_blocking and not is_position_blocked:
+                    self._summoning_cooldown = self._random_summoning_cooldown()
+                    game_state.add_non_player_character(summon_enemy)
+                    self._alive_summons.append(summon_enemy)
+                    game_state.visual_effects.append(
+                        VisualCircle((80, 150, 100), necro_center_pos, 40, 70, Millis(120), 3))
+                    game_state.visual_effects.append(
+                        VisualCircle((80, 150, 100), summon_center_pos, 40, 70, Millis(120), 3))
+                    play_sound(SoundId.ENEMY_NECROMANCER_SUMMON)
+                else:
+                    # Failed to summon, so try again without waiting full duration
+                    self._summoning_cooldown = 500
+            else:
+                self._summoning_cooldown = self._random_summoning_cooldown()
+
+    def _random_summoning_cooldown(self):
+        return random.randint(self._summon_cd_interval[0], self._summon_cd_interval[1])
+
+
+class EnemyRandomWalkTrait:
+    def __init__(self, interval: Millis):
+        self._timer = PeriodicTimer(interval)
+
+    def update(self, npc: NonPlayerCharacter, time_passed: Millis):
+        if self._timer.update_and_check_if_ready(time_passed):
+            if random.random() < 0.2:
+                direction = random_direction()
+                npc.world_entity.set_moving_in_dir(direction)
+            else:
+                npc.world_entity.set_not_moving()
 
 
 class AbstractNpcAction:

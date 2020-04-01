@@ -36,6 +36,7 @@ from pythongame.game_data.enemies.enemy_goblin_spearman_elite import register_go
 from pythongame.game_data.enemies.enemy_goblin_warlock import register_goblin_warlock_enemy
 from pythongame.game_data.enemies.enemy_goblin_warrior import register_goblin_warrior_enemy
 from pythongame.game_data.enemies.enemy_goblin_worker import register_goblin_worker_enemy
+from pythongame.game_data.enemies.enemy_human_summoner import register_human_summoner_enemy
 from pythongame.game_data.enemies.enemy_ice_witch import register_ice_witch_enemy
 from pythongame.game_data.enemies.enemy_mummy import register_mummy_enemy
 from pythongame.game_data.enemies.enemy_necromancer import register_necromancer_enemy
@@ -184,6 +185,7 @@ def register_all_game_data():
     register_skeleton_mage_enemy()
     register_zombie_fast_enemy()
     register_skeleton_boss_enemy()
+    register_human_summoner_enemy()
 
     # Register start items before heroes
     register_practice_sword_item()
