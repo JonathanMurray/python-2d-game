@@ -6,8 +6,7 @@ from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId, 
 from pythongame.core.damage_interactions import deal_damage_to_player, DamageType, deal_npc_damage_to_npc
 from pythongame.core.game_data import NpcData
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
-from pythongame.core.math import random_direction
-from pythongame.core.npc_behaviors import AbstractNpcMind, EnemyShootProjectileTrait
+from pythongame.core.npc_behaviors import AbstractNpcMind, EnemyShootProjectileTrait, EnemyRandomWalkTrait
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.projectile_controllers import AbstractProjectileController, create_projectile_controller, \
     register_projectile_controller
@@ -27,8 +26,7 @@ def create_projectile(pos: Tuple[int, int], direction: Direction):
 class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
-        self._time_since_decision = 0
-        self._decision_interval = 750
+        self._random_walk_trait = EnemyRandomWalkTrait(Millis(750))
         self._time_since_healing = 0
         self._healing_cooldown = self._random_healing_cooldown()
         self._shoot_fireball_trait = EnemyShootProjectileTrait(
@@ -40,7 +38,6 @@ class NpcMind(AbstractNpcMind):
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
                     _is_player_invisible: bool, time_passed: Millis):
-        self._time_since_decision += time_passed
         self._time_since_healing += time_passed
         if self._time_since_healing > self._healing_cooldown:
             self._time_since_healing = 0
@@ -56,22 +53,12 @@ class NpcMind(AbstractNpcMind):
                 play_sound(SoundId.ENEMY_SKELETON_MAGE_HEAL)
 
         self._shoot_fireball_trait.update(npc, game_state, time_passed)
-
-        if self._time_since_decision > self._decision_interval:
-            self._time_since_decision = 0
-            if random.random() < 0.2:
-                direction = random_direction()
-                npc.world_entity.set_moving_in_dir(direction)
-            else:
-                npc.world_entity.set_not_moving()
+        self._random_walk_trait.update(npc, game_state, time_passed)
 
     @staticmethod
     def _random_healing_cooldown():
         return random.randint(4000, 9000)
 
-    @staticmethod
-    def _random_shoot_cooldown():
-        return random.randint(1000, 4000)
 
 
 class ProjectileController(AbstractProjectileController):
