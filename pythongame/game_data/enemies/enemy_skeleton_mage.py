@@ -1,13 +1,13 @@
 import random
+from typing import Tuple
 
 from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId, PeriodicTimer, \
     LootTableId, ProjectileType
 from pythongame.core.damage_interactions import deal_damage_to_player, DamageType, deal_npc_damage_to_npc
 from pythongame.core.game_data import NpcData
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
-from pythongame.core.math import random_direction, get_position_from_center_position, get_directions_to_position, \
-    translate_in_direction
-from pythongame.core.npc_behaviors import AbstractNpcMind
+from pythongame.core.math import random_direction
+from pythongame.core.npc_behaviors import AbstractNpcMind, EnemyShootProjectileTrait
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.projectile_controllers import AbstractProjectileController, create_projectile_controller, \
     register_projectile_controller
@@ -19,6 +19,11 @@ PROJECTILE_TYPE = ProjectileType.ENEMY_SKELETON_MAGE
 PROJECTILE_SIZE = (13, 13)
 
 
+def create_projectile(pos: Tuple[int, int], direction: Direction):
+    world_entity = WorldEntity(pos, PROJECTILE_SIZE, Sprite.NONE, direction, 0.2)
+    return Projectile(world_entity, create_projectile_controller(PROJECTILE_TYPE))
+
+
 class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
@@ -26,14 +31,17 @@ class NpcMind(AbstractNpcMind):
         self._decision_interval = 750
         self._time_since_healing = 0
         self._healing_cooldown = self._random_healing_cooldown()
-        self._time_since_shoot = 0
-        self._shoot_cooldown = self._random_shoot_cooldown()
+        self._shoot_fireball_trait = EnemyShootProjectileTrait(
+            create_projectile=create_projectile,
+            projectile_size=PROJECTILE_SIZE,
+            cooldown_interval=(Millis(1000), Millis(4000)),
+            chance_to_shoot_other_direction=0,
+            sound_id=SoundId.ENEMY_ATTACK_SKELETON_MAGE)
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
                     _is_player_invisible: bool, time_passed: Millis):
         self._time_since_decision += time_passed
         self._time_since_healing += time_passed
-        self._time_since_shoot += time_passed
         if self._time_since_healing > self._healing_cooldown:
             self._time_since_healing = 0
             self._healing_cooldown = self._random_healing_cooldown()
@@ -47,22 +55,7 @@ class NpcMind(AbstractNpcMind):
                 game_state.visual_effects.append(number_effect)
                 play_sound(SoundId.ENEMY_SKELETON_MAGE_HEAL)
 
-        if self._time_since_shoot > self._shoot_cooldown:
-            self._time_since_shoot = 0
-            self._shoot_cooldown = self._random_shoot_cooldown()
-            npc.world_entity.direction = get_directions_to_position(npc.world_entity, player_entity.get_position())[0]
-            npc.world_entity.set_not_moving()
-            center_position = npc.world_entity.get_center_position()
-            distance_from_enemy = 35
-            projectile_pos = translate_in_direction(
-                get_position_from_center_position(center_position, PROJECTILE_SIZE),
-                npc.world_entity.direction, distance_from_enemy)
-            projectile_speed = 0.2
-            projectile_entity = WorldEntity(projectile_pos, PROJECTILE_SIZE, Sprite.NONE, npc.world_entity.direction,
-                                            projectile_speed)
-            projectile = Projectile(projectile_entity, create_projectile_controller(PROJECTILE_TYPE))
-            game_state.projectile_entities.append(projectile)
-            play_sound(SoundId.ENEMY_ATTACK_SKELETON_MAGE)
+        self._shoot_fireball_trait.update(npc, game_state, time_passed)
 
         if self._time_since_decision > self._decision_interval:
             self._time_since_decision = 0

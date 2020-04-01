@@ -35,7 +35,7 @@ class NpcMind(AbstractNpcMind):
                     _is_player_invisible: bool, time_passed: Millis):
 
         self._summon_trait.update(npc, game_state, time_passed)
-        self._random_walk_trait.update(npc, time_passed)
+        self._random_walk_trait.update(npc, game_state, time_passed)
 
         self._time_since_healing += time_passed
         self._time_since_shoot += time_passed

@@ -6,12 +6,14 @@ from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import CONSUMABLES
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest
+from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest, Projectile
 from pythongame.core.item_data import build_item_name, create_item_description
 from pythongame.core.item_data import get_item_data_by_type
 from pythongame.core.item_effects import try_add_item_to_inventory
-from pythongame.core.math import is_x_and_y_within_distance, get_perpendicular_directions
-from pythongame.core.math import random_direction, get_position_from_center_position, sum_of_vectors, \
+from pythongame.core.math import get_perpendicular_directions, get_position_from_center_position, \
+    translate_in_direction, get_directions_to_position
+from pythongame.core.math import is_x_and_y_within_distance
+from pythongame.core.math import random_direction, sum_of_vectors, \
     rect_from_corners
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
@@ -108,7 +110,12 @@ def _move_in_dir(enemy_entity: WorldEntity, direction: Direction):
 
 # TRAIT = a reusable part of an enemy's behaviour
 
-class EnemySummonTrait:
+class EnemyTrait:
+    def update(self, npc: NonPlayerCharacter, game_state: GameState, time_passed: Millis):
+        raise Exception("Must be overridden by sub-class!")
+
+
+class EnemySummonTrait(EnemyTrait):
     def __init__(self, max_summons: int, summon_npc_types: List[NpcType], summon_cd_interval: Tuple[Millis, Millis],
                  create_npc: Callable[[NpcType, Tuple[int, int]], NonPlayerCharacter]):
         self._max_summons = max_summons
@@ -156,17 +163,53 @@ class EnemySummonTrait:
         return random.randint(self._summon_cd_interval[0], self._summon_cd_interval[1])
 
 
-class EnemyRandomWalkTrait:
+class EnemyRandomWalkTrait(EnemyTrait):
     def __init__(self, interval: Millis):
         self._timer = PeriodicTimer(interval)
 
-    def update(self, npc: NonPlayerCharacter, time_passed: Millis):
+    def update(self, npc: NonPlayerCharacter, game_state: GameState, time_passed: Millis):
         if self._timer.update_and_check_if_ready(time_passed):
             if random.random() < 0.2:
                 direction = random_direction()
                 npc.world_entity.set_moving_in_dir(direction)
             else:
                 npc.world_entity.set_not_moving()
+
+
+class EnemyShootProjectileTrait(EnemyTrait):
+    def __init__(self, create_projectile: Callable[[Tuple[int, int], Direction], Projectile],
+                 projectile_size: Tuple[int, int], cooldown_interval: Tuple[Millis, Millis],
+                 chance_to_shoot_other_direction: float, sound_id: SoundId):
+        self._create_projectile = create_projectile
+        self._projectile_size = projectile_size
+        self._cooldown_interval = cooldown_interval
+        self._chance_to_shoot_other_direction = chance_to_shoot_other_direction
+        self._sound_id = sound_id
+        self._time_since_attack = 0
+        self._update_attack_interval()
+
+    def update(self, npc: NonPlayerCharacter, game_state: GameState, time_passed: Millis):
+        self._time_since_attack += time_passed
+        if self._time_since_attack > self._attack_interval:
+            self._time_since_attack = 0
+            self._update_attack_interval()
+            directions_to_player = get_directions_to_position(npc.world_entity, game_state.player_entity.get_position())
+            new_direction = directions_to_player[0]
+            if random.random() < self._chance_to_shoot_other_direction and directions_to_player[1] is not None:
+                new_direction = directions_to_player[1]
+            npc.world_entity.direction = new_direction
+            npc.world_entity.set_not_moving()
+            center_position = npc.world_entity.get_center_position()
+            distance_from_enemy = 35
+            projectile_pos = translate_in_direction(
+                get_position_from_center_position(center_position, self._projectile_size),
+                npc.world_entity.direction, distance_from_enemy)
+            projectile = self._create_projectile(projectile_pos, npc.world_entity.direction)
+            game_state.projectile_entities.append(projectile)
+            play_sound(self._sound_id)
+
+    def _update_attack_interval(self):
+        self._attack_interval = random.randint(self._cooldown_interval[0], self._cooldown_interval[1])
 
 
 class AbstractNpcAction:
