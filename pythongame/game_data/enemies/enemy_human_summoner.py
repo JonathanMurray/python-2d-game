@@ -40,7 +40,7 @@ def register_human_summoner_enemy():
             max_health=60,
             health_regen=2,
             speed=0.08,
-            exp_reward=35,
+            exp_reward=52,
             enemy_loot_table=LootTableId.LEVEL_6,
             death_sound_id=SoundId.DEATH_ICE_WITCH),  # TODO
         mind_constructor=NpcMind,

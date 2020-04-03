@@ -31,9 +31,9 @@ def register_fire_demon_enemy():
             max_health=60,
             health_regen=0,
             speed=0.1,
-            exp_reward=4,
+            exp_reward=42,
             enemy_loot_table=LootTableId.LEVEL_5,
-            death_sound_id=SoundId.DEATH_RAT),  # TODO
+            death_sound_id=SoundId.DEATH_HUMAN),  # TODO
         mind_constructor=NpcMind,
         spritesheet_path="resources/graphics/monsters_spritesheet.png",
         original_sprite_size=(32, 32),
