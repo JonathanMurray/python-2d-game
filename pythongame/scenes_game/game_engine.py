@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import *
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
@@ -9,7 +7,7 @@ from pythongame.core.game_data import CONSUMABLES, NON_PLAYER_CHARACTERS, alloca
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
     EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest, \
     PlayerUnlockedNewTalent, AgentBuffsUpdate, Shrine
-from pythongame.core.item_data import build_item_name, randomized_suffixed_item_id
+from pythongame.core.item_data import build_item_name, randomized_suffixed_item_id, ITEM_ENTITY_SIZE
 from pythongame.core.item_data import randomized_item_id, get_item_data
 from pythongame.core.item_effects import create_item_effect, try_add_item_to_inventory
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
@@ -377,6 +375,12 @@ class GameEngine:
                 item_id = randomized_suffixed_item_id(loot_entry.item_type, loot_entry.suffix_id)
                 item_on_ground = create_item_on_ground(item_id, loot_position)
                 self.game_state.items_on_ground.append(item_on_ground)
+                loot_center_pos = (loot_position[0] + ITEM_ENTITY_SIZE[0] // 2,
+                                   loot_position[1] + ITEM_ENTITY_SIZE[1] // 2)
+                self.game_state.visual_effects.append(
+                    VisualCircle((170, 200, 170), loot_center_pos, 30, 40, Millis(500), 2))
+                self.game_state.visual_effects.append(
+                    VisualCircle((70, 100, 70), loot_center_pos, 25, 35, Millis(500), 2))
             elif isinstance(loot_entry, ConsumableLootEntry):
                 consumable_on_ground = create_consumable_on_ground(loot_entry.consumable_type, loot_position)
                 self.game_state.consumables_on_ground.append(consumable_on_ground)
