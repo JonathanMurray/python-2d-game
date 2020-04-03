@@ -1,4 +1,4 @@
-from typing import Set, Dict, Tuple
+from typing import Set, Dict
 
 from pythongame.core.common import *
 from pythongame.core.item_inventory import ItemEquipmentCategory
@@ -46,47 +46,68 @@ def interval(min_inclusive: Union[int, float], max_inclusive: Union[int, float],
 
 
 _item_suffix_data_by_id: Dict[ItemSuffixId, ItemSuffixData] = {
-    ItemSuffixId.VITALITY:
-        ItemSuffixData("of Vitality",
+    ItemSuffixId.MAX_HEALTH_1:
+        ItemSuffixData("of Health", (1, 5),
                        [StatModifierInterval(HeroStat.MAX_HEALTH, int_interval(5, 15))]),
-    ItemSuffixId.REGROWTH:
-        ItemSuffixData("of Regrowth",
-                       [StatModifierInterval(HeroStat.HEALTH_REGEN, interval(0.1, 0.4, 0.1))]),
-    ItemSuffixId.DISCIPLINE:
-        ItemSuffixData("of Discipline",
-                       [StatModifierInterval(HeroStat.MAX_MANA, int_interval(5, 15))]),
-    ItemSuffixId.FOCUS:
-        ItemSuffixData("of Focus",
-                       [StatModifierInterval(HeroStat.MANA_REGEN, interval(0.1, 0.4, 0.1))]),
-    ItemSuffixId.SWIFTNESS:
-        ItemSuffixData("of Swiftness",
+    ItemSuffixId.MAX_HEALTH_2:
+        ItemSuffixData("of Vigor", (4, 9),
+                       [StatModifierInterval(HeroStat.MAX_HEALTH, int_interval(15, 30))]),
+    ItemSuffixId.HEALTH_REGEN_1:
+        ItemSuffixData("of Rejuvenation", (1, 5),
+                       [StatModifierInterval(HeroStat.HEALTH_REGEN, interval(0.2, 0.4, 0.1))]),
+    ItemSuffixId.HEALTH_REGEN_2:
+        ItemSuffixData("of Regrowth", (4, 9),
+                       [StatModifierInterval(HeroStat.HEALTH_REGEN, interval(0.5, 1, 0.1))]),
+    ItemSuffixId.MAX_MANA_1:
+        ItemSuffixData("of Discipline", (1, 5),
+                       [StatModifierInterval(HeroStat.MAX_MANA, int_interval(10, 20))]),
+    ItemSuffixId.MAX_MANA_2:
+        ItemSuffixData("of Resolve", (4, 9),
+                       [StatModifierInterval(HeroStat.MAX_MANA, int_interval(20, 40))]),
+    ItemSuffixId.MANA_REGEN_1:
+        ItemSuffixData("of Focus", (1, 5),
+                       [StatModifierInterval(HeroStat.MANA_REGEN, interval(0.2, 0.4, 0.1))]),
+    ItemSuffixId.MANA_REGEN_2:
+        ItemSuffixData("of Presence", (4, 9),
+                       [StatModifierInterval(HeroStat.MANA_REGEN, interval(0.4, 0.8, 0.1))]),
+    ItemSuffixId.MOVEMENT_SPEED:
+        ItemSuffixData("of Swiftness", (1, 9),
                        [StatModifierInterval(HeroStat.MOVEMENT_SPEED, interval(0.04, 0.1, 0.01))]),
-    ItemSuffixId.LEECHING:
-        ItemSuffixData("of Leeching",
+    ItemSuffixId.LIFE_STEAL:
+        ItemSuffixData("of Leeching", (1, 9),
                        [StatModifierInterval(HeroStat.LIFE_STEAL, interval(0.02, 0.06, 0.01))]),
-    ItemSuffixId.POWER:
-        ItemSuffixData("of Power",
+    ItemSuffixId.DAMAGE_1:
+        ItemSuffixData("of Power", (1, 5),
                        [StatModifierInterval(HeroStat.DAMAGE, interval(0.02, 0.06, 0.01))]),
-    ItemSuffixId.RECKONING:
-        ItemSuffixData("of Reckoning",
+    ItemSuffixId.DAMAGE_2:
+        ItemSuffixData("of Might", (4, 9),
+                       [StatModifierInterval(HeroStat.DAMAGE, interval(0.05, 0.1, 0.01))]),
+    ItemSuffixId.PHYSICAL_DAMAGE_1:
+        ItemSuffixData("of Reckoning", (1, 5),
                        [StatModifierInterval(HeroStat.PHYSICAL_DAMAGE, interval(0.03, 0.08, 0.01))]),
-    ItemSuffixId.WIZARDRY:
-        ItemSuffixData("of Wizardry",
+    ItemSuffixId.PHYSICAL_DAMAGE_2:
+        ItemSuffixData("of Destruction", (4, 9),
+                       [StatModifierInterval(HeroStat.PHYSICAL_DAMAGE, interval(0.08, 0.15, 0.01))]),
+    ItemSuffixId.MAGIC_DAMAGE_1:
+        ItemSuffixData("of Wizardry", (1, 5),
                        [StatModifierInterval(HeroStat.MAGIC_DAMAGE, interval(0.03, 0.08, 0.01))]),
-    ItemSuffixId.SPIRITS:
-        ItemSuffixData("of Spirits",
-                       [StatModifierInterval(HeroStat.MAGIC_RESIST_CHANCE, interval(0.05, 0.15, 0.01))]),
-    ItemSuffixId.EVASION:
-        ItemSuffixData("of Evasion",
-                       [StatModifierInterval(HeroStat.DODGE_CHANCE, interval(0.02, 0.05, 0.01))]),
-    ItemSuffixId.CONFIDENCE:
-        ItemSuffixData("of Confidence",
+    ItemSuffixId.MAGIC_DAMAGE_2:
+        ItemSuffixData("of Chaos", (4, 9),
+                       [StatModifierInterval(HeroStat.MAGIC_DAMAGE, interval(0.08, 0.15, 0.01))]),
+    ItemSuffixId.MAGIC_RESIST:
+        ItemSuffixData("of Spirits", (1, 9),
+                       [StatModifierInterval(HeroStat.MAGIC_RESIST_CHANCE, interval(0.08, 0.15, 0.01))]),
+    ItemSuffixId.DODGE_CHANCE:
+        ItemSuffixData("of Evasion", (1, 9),
+                       [StatModifierInterval(HeroStat.DODGE_CHANCE, interval(0.03, 0.06, 0.01))]),
+    ItemSuffixId.BLOCK_CHANCE:
+        ItemSuffixData("of Confidence", (1, 9),
                        [StatModifierInterval(HeroStat.BLOCK_CHANCE, interval(0.04, 0.08, 0.01))]),
-    ItemSuffixId.PERSISTENCE:
-        ItemSuffixData("of Persistence",
+    ItemSuffixId.MOVEMENT_IMPAIR_IMMUNE:
+        ItemSuffixData("of Persistence", (1, 9),
                        [StatModifierInterval(HeroStat.MOVEMENT_IMPAIRING_RESIST_CHANCE, [1])]),
-    ItemSuffixId.GREED:
-        ItemSuffixData("of Greed",
+    ItemSuffixId.INCREASED_LOOT_MONEY:
+        ItemSuffixData("of Greed", (1, 9),
                        [StatModifierInterval(HeroStat.INCREASED_LOOT_MONEY_CHANCE, interval(0.25, 0.35, 0.01))])
 }
 
@@ -148,6 +169,11 @@ def get_item_suffix_data(item_suffix_id: ItemSuffixId) -> ItemSuffixData:
     return _item_suffix_data_by_id[item_suffix_id]
 
 
+def get_item_suffixes_at_level(level: int) -> List[ItemSuffixId]:
+    return [id for id in ItemSuffixId
+            if _item_suffix_data_by_id[id].level_interval[0] <= level <= _item_suffix_data_by_id[id].level_interval[1]]
+
+
 def randomized_item_id(item_type: ItemType) -> ItemId:
     data = get_item_data_by_type(item_type)
     return ItemId.randomized_base(item_type, data.base_stats)
@@ -161,7 +187,12 @@ def randomized_suffixed_item_id(item_type: ItemType, suffix_id: ItemSuffixId) ->
 
 def random_rare_item(item_level: int) -> ItemId:
     item_type = random.choice([i for i in get_items_with_level(item_level) if not get_item_data_by_type(i).is_unique])
-    suffix_id = random.choice([suffix_id for suffix_id in ItemSuffixId])
+    suffixes_at_level = get_item_suffixes_at_level(item_level)
+    if suffixes_at_level:
+        suffix_id = random.choice(suffixes_at_level)
+    else:
+        print("WARN: No item suffix available for level " + str(item_level) + ". Falling back to random suffix.")
+        suffix_id = random.choice([suffix_id for suffix_id in ItemSuffixId])
     return randomized_suffixed_item_id(item_type, suffix_id)
 
 

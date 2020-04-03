@@ -1,6 +1,6 @@
 import random
 from enum import Enum
-from typing import NewType, Optional, Any, List, Callable, Union
+from typing import NewType, Optional, Any, List, Callable, Union, Tuple
 
 Millis = NewType('Millis', int)
 
@@ -608,26 +608,34 @@ class StatModifierInterval:
 
 
 class ItemSuffixData:
-    def __init__(self, name_suffix: str, stats: List[StatModifierInterval]):
+    def __init__(self, name_suffix: str, level_interval: Tuple[int, int], stats: List[StatModifierInterval]):
         self.name_suffix = name_suffix
+        self.level_interval = level_interval
         self.stats = stats
 
 
 class ItemSuffixId(Enum):
-    VITALITY = 2
-    DISCIPLINE = 3
-    REGROWTH = 4
-    FOCUS = 5
-    SWIFTNESS = 6
-    LEECHING = 7
-    POWER = 8
-    RECKONING = 9
-    WIZARDRY = 10
-    SPIRITS = 11
-    EVASION = 12
-    CONFIDENCE = 13
-    PERSISTENCE = 14
-    GREED = 15
+    MAX_HEALTH_1 = 0
+    MAX_HEALTH_2 = 1
+    MAX_MANA_1 = 10
+    MAX_MANA_2 = 11
+    HEALTH_REGEN_1 = 20
+    HEALTH_REGEN_2 = 21
+    MANA_REGEN_1 = 30
+    MANA_REGEN_2 = 31
+    MOVEMENT_SPEED = 40
+    LIFE_STEAL = 50
+    DAMAGE_1 = 60
+    DAMAGE_2 = 61
+    PHYSICAL_DAMAGE_1 = 70
+    PHYSICAL_DAMAGE_2 = 71
+    MAGIC_DAMAGE_1 = 80
+    MAGIC_DAMAGE_2 = 81
+    MAGIC_RESIST = 90
+    DODGE_CHANCE = 100
+    BLOCK_CHANCE = 110
+    MOVEMENT_IMPAIR_IMMUNE = 120
+    INCREASED_LOOT_MONEY = 130
 
 
 class ItemSuffix:

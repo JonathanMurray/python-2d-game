@@ -6,6 +6,7 @@ from pythongame.core.common import ConsumableType, ItemType, ItemSuffixId
 
 
 # Represents the smallest unit of loot. It shows up on the ground as "one item"
+from pythongame.core.item_data import get_item_suffixes_at_level
 
 
 class LootEntry:
@@ -97,7 +98,7 @@ class LeveledLootTable(LootTable):
                     loot.append(unique_item)
                 else:
                     item_type = random.choice(self.regular_item_types_by_level[item_level])
-                    suffix_id = random.choice([suffix_id for suffix_id in ItemSuffixId])
+                    suffix_id = random.choice(get_item_suffixes_at_level(item_level))
                     rare_item = SuffixedItemLootEntry(item_type, suffix_id)
                     loot.append(rare_item)
             else:
