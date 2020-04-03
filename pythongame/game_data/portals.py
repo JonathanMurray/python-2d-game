@@ -82,8 +82,16 @@ def register_portals():
         scaled_sprite_size,
         indices_by_dir,
         sprite_position_relative_to_entity)
+    register_entity_sprite_map(
+        Sprite.PORTAL_PURPLE,
+        SpriteSheet("resources/graphics/statue_purple.png"),
+        original_sprite_size,
+        scaled_sprite_size,
+        indices_by_dir,
+        sprite_position_relative_to_entity)
 
     warp_home = "Home"
+    warp_red_barons_fortress = "Red Baron's Fortress"
     register_portal_data(PortalId.GOBLIN_HIDEOUT_BASE,
                          _data(False, PortalId.GOBLIN_HIDEOUT_REMOTE, Sprite.PORTAL_DISABLED, "Goblin Hideout"))
     register_portal_data(PortalId.GOBLIN_HIDEOUT_REMOTE,
@@ -98,9 +106,13 @@ def register_portals():
                          _data(True, PortalId.GOBLIN_FORTRESS_BASE, Sprite.PORTAL_DARK, warp_home))
     register_portal_data(PortalId.RED_BARON_FORTRESS_BASE,
                          _data(False, PortalId.RED_BARON_FORTRESS_REMOTE, Sprite.PORTAL_DISABLED,
-                               "Red Baron's Fortress"))
+                               warp_red_barons_fortress))
     register_portal_data(PortalId.RED_BARON_FORTRESS_REMOTE,
                          _data(True, PortalId.RED_BARON_FORTRESS_BASE, Sprite.PORTAL_GREEN, warp_home))
+    register_portal_data(PortalId.DEMON_HALL_BASE,
+                         _data(False, PortalId.DEMON_HALL_REMOTE, Sprite.PORTAL_DISABLED, "Demon Hall"))
+    register_portal_data(PortalId.DEMON_HALL_REMOTE,
+                         _data(True, PortalId.DEMON_HALL_BASE, Sprite.PORTAL_PURPLE, warp_red_barons_fortress))
 
     register_buff_effect(BUFF_TYPE, BeingTeleported)
 
