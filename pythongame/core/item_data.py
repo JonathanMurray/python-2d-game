@@ -72,7 +72,7 @@ _item_suffix_data_by_id: Dict[ItemSuffixId, ItemSuffixData] = {
                        [StatModifierInterval(HeroStat.MANA_REGEN, interval(0.4, 0.8, 0.1))]),
     ItemSuffixId.MOVEMENT_SPEED:
         ItemSuffixData("of Swiftness", (1, 9),
-                       [StatModifierInterval(HeroStat.MOVEMENT_SPEED, interval(0.04, 0.1, 0.01))]),
+                       [StatModifierInterval(HeroStat.MOVEMENT_SPEED, interval(0.05, 0.15, 0.01))]),
     ItemSuffixId.LIFE_STEAL:
         ItemSuffixData("of Leeching", (1, 9),
                        [StatModifierInterval(HeroStat.LIFE_STEAL, interval(0.02, 0.06, 0.01))]),
