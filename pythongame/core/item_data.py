@@ -108,7 +108,14 @@ _item_suffix_data_by_id: Dict[ItemSuffixId, ItemSuffixData] = {
                        [StatModifierInterval(HeroStat.MOVEMENT_IMPAIRING_RESIST_CHANCE, [1])]),
     ItemSuffixId.INCREASED_LOOT_MONEY:
         ItemSuffixData("of Greed", (1, 9),
-                       [StatModifierInterval(HeroStat.INCREASED_LOOT_MONEY_CHANCE, interval(0.25, 0.35, 0.01))])
+                       [StatModifierInterval(HeroStat.INCREASED_LOOT_MONEY_CHANCE, interval(0.25, 0.35, 0.01))]),
+    ItemSuffixId.MANA_ON_KILL:
+        ItemSuffixData("of Sadism", (1, 9), [StatModifierInterval(HeroStat.MANA_ON_KILL, [1])]),
+    ItemSuffixId.LIFE_ON_KILL_1:
+        ItemSuffixData("of Fury", (1, 5), [StatModifierInterval(HeroStat.LIFE_ON_KILL, int_interval(1, 2))]),
+    ItemSuffixId.LIFE_ON_KILL_2:
+        ItemSuffixData("of Madness", (4, 9), [StatModifierInterval(HeroStat.LIFE_ON_KILL, int_interval(2, 4))]),
+
 }
 
 

@@ -494,6 +494,8 @@ class HeroStat(Enum):
     MAGIC_RESIST_CHANCE = 14
     MOVEMENT_IMPAIRING_RESIST_CHANCE = 15
     INCREASED_LOOT_MONEY_CHANCE = 16
+    MANA_ON_KILL = 17
+    LIFE_ON_KILL = 18
 
 
 def _get_description(hero_stat: HeroStat, arg: str):
@@ -525,6 +527,10 @@ def _get_description(hero_stat: HeroStat, arg: str):
         return "+" + arg + "% block chance"
     elif hero_stat == HeroStat.INCREASED_LOOT_MONEY_CHANCE:
         return "+" + arg + "% money from enemies"
+    elif hero_stat == HeroStat.MANA_ON_KILL:
+        return "On kill: restore " + arg + " mana"
+    elif hero_stat == HeroStat.LIFE_ON_KILL:
+        return "On kill: gain " + arg + " health"
     else:
         raise Exception("Unhandled stat: " + str(hero_stat))
 
@@ -537,7 +543,8 @@ class StatModifier:
     def get_description(self):
         hero_stat = self.hero_stat
         delta = self.delta
-        if hero_stat in [HeroStat.MAX_HEALTH, HeroStat.MAX_MANA, HeroStat.ARMOR, HeroStat.BLOCK_AMOUNT]:
+        if hero_stat in [HeroStat.MAX_HEALTH, HeroStat.MAX_MANA, HeroStat.ARMOR, HeroStat.BLOCK_AMOUNT,
+                         HeroStat.MANA_ON_KILL, HeroStat.LIFE_ON_KILL]:
             return _get_description(hero_stat, str(delta))
         elif hero_stat in [HeroStat.HEALTH_REGEN, HeroStat.MANA_REGEN]:
             return _get_description(hero_stat, "{:.1f}".format(delta))
@@ -571,7 +578,8 @@ class StatModifierInterval:
         hero_stat = self.hero_stat
         interval = self.interval
 
-        if hero_stat in [HeroStat.MAX_HEALTH, HeroStat.MAX_MANA, HeroStat.ARMOR, HeroStat.BLOCK_AMOUNT]:
+        if hero_stat in [HeroStat.MAX_HEALTH, HeroStat.MAX_MANA, HeroStat.ARMOR, HeroStat.BLOCK_AMOUNT,
+                         HeroStat.MANA_ON_KILL, HeroStat.LIFE_ON_KILL]:
             if interval[0] == interval[-1]:
                 return _get_description(hero_stat, str(interval[0]))
             else:
@@ -636,6 +644,9 @@ class ItemSuffixId(Enum):
     BLOCK_CHANCE = 110
     MOVEMENT_IMPAIR_IMMUNE = 120
     INCREASED_LOOT_MONEY = 130
+    MANA_ON_KILL = 140
+    LIFE_ON_KILL_1 = 150
+    LIFE_ON_KILL_2 = 151
 
 
 class ItemSuffix:

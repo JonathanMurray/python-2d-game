@@ -1,5 +1,5 @@
 import math
-from typing import Dict, Tuple
+from typing import Dict
 
 from pygame.rect import Rect
 
@@ -450,6 +450,8 @@ class PlayerState:
         self.completed_quests: List[Quest] = []
         self.active_quests: List[Quest] = []
         self.increased_loot_money_chance = 0
+        self.life_on_kill: int = 0  # affected by items/buffs. [Change it additively]
+        self.mana_on_kill: int = 0  # affected by items/buffs. [Change it additively]
 
     def start_quest(self, quest: Quest):
         if [q for q in self.active_quests if q.quest_id == quest.quest_id]:
@@ -538,6 +540,10 @@ class PlayerState:
             self.movement_impairing_resist_chance_bonus += stat_delta
         elif hero_stat == HeroStat.INCREASED_LOOT_MONEY_CHANCE:
             self.increased_loot_money_chance += stat_delta
+        elif hero_stat == HeroStat.MANA_ON_KILL:
+            self.mana_on_kill += stat_delta
+        elif hero_stat == HeroStat.LIFE_ON_KILL:
+            self.life_on_kill += stat_delta
         else:
             raise Exception("Unhandled stat: " + str(hero_stat))
         self.notify_stats_observers()
@@ -682,6 +688,9 @@ class PlayerState:
             item_effect.item_handle_event(event, game_state)
         for upgrade in self._upgrades:
             upgrade.handle_event(event, game_state)
+        if isinstance(event, EnemyDiedEvent):
+            self.mana_resource.gain(self.mana_on_kill)
+            self.health_resource.gain(self.life_on_kill)
 
     def choose_talent(self, tier_index: int, option_index: int) -> Tuple[str, HeroUpgradeId]:
         option = self._talents_state.pick(tier_index, option_index)
