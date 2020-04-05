@@ -175,8 +175,8 @@ def get_item_data_by_type(item_type: ItemType) -> ItemData:
     return _item_data_by_type[item_type]
 
 
-def get_item_affix_data(item_suffix_id: ItemAffixId) -> ItemSuffixData:
-    return _item_affix_data_by_id[item_suffix_id]
+def get_item_affix_data(affix_id: ItemAffixId) -> ItemSuffixData:
+    return _item_affix_data_by_id[affix_id]
 
 
 def get_item_affixes_at_level(level: int) -> List[ItemAffixId]:
@@ -220,6 +220,25 @@ def random_item_one_affix(item_level: int) -> ItemId:
         prefix_id = affix_id
     else:
         suffix_id = affix_id
+    return randomized_affixed_item_id(item_type, prefix_id, suffix_id)
+
+
+def random_item_two_affixes(item_level: int) -> ItemId:
+    item_type = random.choice([i for i in get_items_with_level(item_level) if not get_item_data_by_type(i).is_unique])
+    affixes_at_level = get_item_affixes_at_level(item_level)
+    if not affixes_at_level:
+        print("ERROR: No item affix available for level " + str(item_level) + ". Falling back to random prefix.")
+        prefix_id = random.choice([affix_id for affix_id in ItemAffixId])
+        return randomized_affixed_item_id(item_type, prefix_id, None)
+
+    # Pick random prefix
+    prefix_id = random.choice([affix_id for affix_id in affixes_at_level
+                               if get_item_affix_data(affix_id).name_prefix])
+
+    # pick random suffix that isn't identical to the prefix! (we don't want items like "Vigorous sword of Vigor")
+    suffix_id = random.choice([affix_id for affix_id in affixes_at_level
+                               if get_item_affix_data(affix_id).name_suffix
+                               and affix_id != prefix_id])
     return randomized_affixed_item_id(item_type, prefix_id, suffix_id)
 
 

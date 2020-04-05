@@ -4,7 +4,7 @@ from typing import List, Dict
 
 from pythongame.core.common import ConsumableType, ItemType, ItemId
 # Represents the smallest unit of loot. It shows up on the ground as "one item"
-from pythongame.core.item_data import random_item_one_affix
+from pythongame.core.item_data import random_item_two_affixes, random_item_one_affix
 
 
 class LootEntry:
@@ -87,12 +87,21 @@ class LeveledLootTable(LootTable):
         if random.random() <= self.item_drop_chance:
             item_level = random.choices(self.item_levels, weights=self.item_level_weights)[0]
             rare_or_unique = random.random() <= self.item_rare_or_unique_chance
-            # There are 3 cases: 1) common item, 2) rare item (common + suffix), 3) unique item
+            # There are 4 classes of items:
+            # common: a regular item with no affixes
+            # rare-1: a regular item with 1 bonus affix
+            # rare-2: a regular item with 2 bonus affixes
+            # unique: a unique item
             if rare_or_unique:
-                if random.random() <= 0.25 and item_level in self.unique_item_types_by_level:
+                random_outcome = random.random()
+                if random_outcome <= 0.25 and item_level in self.unique_item_types_by_level:
                     unique_item_type = random.choice(self.unique_item_types_by_level[item_level])
                     unique_item = ItemLootEntry(unique_item_type)
                     loot.append(unique_item)
+                elif random_outcome <= 0.4:
+                    rare_item_id = random_item_two_affixes(item_level)
+                    rare_item = AffixedItemLootEntry(rare_item_id)
+                    loot.append(rare_item)
                 else:
                     rare_item_id = random_item_one_affix(item_level)
                     rare_item = AffixedItemLootEntry(rare_item_id)

@@ -244,7 +244,7 @@ class TooltipGraphics:
         for detail in details:
             self._detail_lines += [DetailLine(new_line, detail.colored)
                                    for new_line in split_text_into_lines(detail.text, 38)]
-        w = 300
+        w = 330
         h = 60 + 17 * len(self._detail_lines)
         if bottom_left:
             self._rect = Rect(bottom_left[0], bottom_left[1] - h - 3, w, h)
