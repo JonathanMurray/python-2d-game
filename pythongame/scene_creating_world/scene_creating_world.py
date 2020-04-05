@@ -128,8 +128,9 @@ class CreatingWorldScene(AbstractScene):
         if saved_player_state:
             game_engine.gain_levels(saved_player_state.level - 1)
             game_state.player_state.gain_exp(saved_player_state.exp)
-            game_engine.set_item_inventory([ItemId.from_id_string(item_id) if item_id else None
-                                            for item_id in saved_player_state.items])
+            game_engine.set_item_inventory([ItemId.from_stats_string(item_stats_and_name[0], item_stats_and_name[1])
+                                            if item_stats_and_name else None
+                                            for item_stats_and_name in saved_player_state.items])
             game_state.player_state.consumable_inventory = ConsumableInventory(
                 {int(slot_number): [ConsumableType[c] for c in consumables] for (slot_number, consumables)
                  in saved_player_state.consumables_in_slots.items()}

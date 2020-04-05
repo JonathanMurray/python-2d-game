@@ -10,7 +10,8 @@
   "consumables_on_ground": [],
   "items_on_ground": [
     {
-      "item_id": "GOLD_NUGGET:",
+      "item_id": "GOLD_NUGGET~~",
+      "item_name": "Gold Nugget",
       "position": [
         -25,
         2500

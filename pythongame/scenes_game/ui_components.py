@@ -275,7 +275,7 @@ class TooltipGraphics:
         tooltip_details = []
         if category_name:
             tooltip_details.append(DetailLine("[" + category_name + "]"))
-        tooltip_details += [DetailLine(text=line.text, colored=line.from_suffix) for line in description_lines]
+        tooltip_details += [DetailLine(text=line.text, colored=line.from_affix) for line in description_lines]
         if is_unique:
             title_color = COLOR_ITEM_TOOLTIP_HEADER_UNIQUE
         elif is_rare:

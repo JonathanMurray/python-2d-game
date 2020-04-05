@@ -1,5 +1,4 @@
 import json
-from typing import Tuple
 
 from pygame.rect import Rect
 
@@ -200,11 +199,11 @@ class ItemJson:
 
     @staticmethod
     def serialize_from_data(item_id: ItemId, position: Tuple[int, int]):
-        return {"item_id": item_id.id_string, "position": position}
+        return {"item_id": item_id.stats_string, "position": position, "item_name": item_id.name}
 
     @staticmethod
     def deserialize(data) -> ItemOnGround:
-        item_id = ItemId.from_id_string(data["item_id"])
+        item_id = ItemId.from_stats_string(data["item_id"], data["item_name"])
         return create_item_on_ground(item_id, data["position"])
 
 

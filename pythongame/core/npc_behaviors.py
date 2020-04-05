@@ -1,4 +1,3 @@
-from typing import Tuple
 from typing import Type, Dict
 
 from pythongame.core.common import *
@@ -7,7 +6,7 @@ from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import CONSUMABLES
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest, Projectile
-from pythongame.core.item_data import build_item_name, create_item_description
+from pythongame.core.item_data import create_item_description
 from pythongame.core.item_data import get_item_data_by_type
 from pythongame.core.item_effects import try_add_item_to_inventory
 from pythongame.core.math import get_perpendicular_directions, get_position_from_center_position, \
@@ -380,7 +379,7 @@ def buy_item_option(item_id: ItemId, cost: int) -> DialogOptionData:
     name_formatter = "{:<35}"
     buy_prompt = "> "
     cost_formatter = "[{} gold]"
-    item_name = build_item_name(item_id)
+    item_name = item_id.name
     icon_sprite = data.icon_sprite
     description_lines = create_item_description(item_id)
     return DialogOptionData(buy_prompt + name_formatter.format(item_name) + cost_formatter.format(cost),
@@ -397,7 +396,7 @@ def sell_item_option(item_id: ItemId, price: int, detail_body: str) -> DialogOpt
     cost_formatter = "[{} gold]"
     sell_prompt = "> "
     data = get_item_data_by_type(item_type)
-    item_name = build_item_name(item_id)
+    item_name = item_id.name
     icon_sprite = data.icon_sprite
     return DialogOptionData(sell_prompt + name_formatter.format(item_name) + cost_formatter.format(price), "sell",
                             BuyItemNpcAction(item_id, price, item_name.lower()),

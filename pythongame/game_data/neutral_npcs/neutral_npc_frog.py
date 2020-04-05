@@ -5,7 +5,7 @@ from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_d
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
-from pythongame.core.item_data import random_rare_item
+from pythongame.core.item_data import random_item_one_affix
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, DialogData, \
     DialogOptionData, register_npc_dialog_data, buy_item_option
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
@@ -62,10 +62,10 @@ def _register_dialog():
         portrait_icon_sprite=UI_ICON_SPRITE,
         text_body="Ribbit! I mean hi! I have been cursed! Once I was a wealthy salesman, but now I have to "
                   "hide out here. Please help a poor frog by buying some of my goods?",
-        options=[buy_item_option(random_rare_item(4), 15),
-                 buy_item_option(random_rare_item(5), 25),
-                 buy_item_option(random_rare_item(6), 35),
-                 buy_item_option(random_rare_item(7), 50),
+        options=[buy_item_option(random_item_one_affix(4), 15),
+                 buy_item_option(random_item_one_affix(5), 25),
+                 buy_item_option(random_item_one_affix(6), 35),
+                 buy_item_option(random_item_one_affix(7), 50),
                  bye_option],
     )
 

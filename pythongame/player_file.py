@@ -8,13 +8,13 @@ from pythongame.core.game_state import GameState
 
 class SavedPlayerState:
     def __init__(self, hero_id: str, level: int, exp: int, consumables_in_slots: Dict[str, List[str]],
-                 items: List[str], money: int, enabled_portals: Dict[str, str], talent_tier_choices: List[int],
+                 items: List[List[str]], money: int, enabled_portals: Dict[str, str], talent_tier_choices: List[int],
                  total_time_played_on_character: Millis, active_quests: List[str], completed_quests: List[str]):
         self.hero_id = hero_id
         self.level = level
         self.exp = exp
         self.consumables_in_slots = consumables_in_slots
-        self.items = items
+        self.items: List[List[str]] = items
         self.money = money
         self.enabled_portals = enabled_portals
         self.talent_tier_choices = talent_tier_choices
@@ -88,7 +88,7 @@ class SaveFileHandler:
             exp=player_state.exp,
             consumables_in_slots={slot_number: [c.name for c in consumables] for (slot_number, consumables)
                                   in player_state.consumable_inventory.consumables_in_slots.items()},
-            items=[slot.get_item_id().id_string if not slot.is_empty() else None
+            items=[[slot.get_item_id().stats_string, slot.get_item_id().name] if not slot.is_empty() else None
                    for slot in player_state.item_inventory.slots],
             money=player_state.money,
             enabled_portals={p.portal_id.name: p.world_entity.sprite.name for p in game_state.portals if p.is_enabled},

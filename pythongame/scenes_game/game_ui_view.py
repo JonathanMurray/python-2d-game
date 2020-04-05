@@ -7,7 +7,7 @@ from pythongame.core.common import ConsumableType, HeroId, UiIconSprite, Ability
     SoundId, NpcType, Millis, DialogData, ItemId
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, HEROES
 from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState, Quest
-from pythongame.core.item_data import build_item_name, create_item_description
+from pythongame.core.item_data import create_item_description
 from pythongame.core.item_data import get_item_data_by_type, get_item_data
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import is_point_in_rect
@@ -558,8 +558,8 @@ class GameUiView:
                 if data.item_equipment_category:
                     category_name = ITEM_EQUIPMENT_CATEGORY_NAMES[data.item_equipment_category]
                 description_lines = create_item_description(item_id)
-                item_name = build_item_name(item_id)
-                is_rare = item_id.suffix_id is not None
+                item_name = item_id.name
+                is_rare = bool(item_id.affix_stats)
                 is_unique = data.is_unique
                 tooltip = TooltipGraphics.create_for_item(self.ui_render, item_name, category_name, icon.rect.topleft,
                                                           description_lines, is_rare=is_rare, is_unique=is_unique)
@@ -754,8 +754,6 @@ class GameUiView:
         self.screen_render.text(self.font_debug_info, "fps: " + self.fps_string, (5, 3))
 
         self.message.render(self.info_message.message)
-
-
 
         # TODO Bring back relative render position for dragged entities
         if self.item_slot_being_dragged:

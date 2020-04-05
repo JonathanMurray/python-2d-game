@@ -1,12 +1,10 @@
 import math
 import random
-from typing import List, Dict, Optional
+from typing import List, Dict
 
-from pythongame.core.common import ConsumableType, ItemType, ItemSuffixId
-
-
+from pythongame.core.common import ConsumableType, ItemType, ItemId
 # Represents the smallest unit of loot. It shows up on the ground as "one item"
-from pythongame.core.item_data import get_item_suffixes_at_level
+from pythongame.core.item_data import random_item_one_affix
 
 
 class LootEntry:
@@ -28,10 +26,9 @@ class ItemLootEntry(LootEntry):
         self.item_type = item_type
 
 
-class SuffixedItemLootEntry(LootEntry):
-    def __init__(self, item_type: ItemType, suffix_id: Optional[ItemSuffixId]):
-        self.item_type = item_type
-        self.suffix_id = suffix_id
+class AffixedItemLootEntry(LootEntry):
+    def __init__(self, item_id: ItemId):
+        self.item_id = item_id
 
 
 # A group of possible loot entries that are interdependent.
@@ -97,9 +94,8 @@ class LeveledLootTable(LootTable):
                     unique_item = ItemLootEntry(unique_item_type)
                     loot.append(unique_item)
                 else:
-                    item_type = random.choice(self.regular_item_types_by_level[item_level])
-                    suffix_id = random.choice(get_item_suffixes_at_level(item_level))
-                    rare_item = SuffixedItemLootEntry(item_type, suffix_id)
+                    rare_item_id = random_item_one_affix(item_level)
+                    rare_item = AffixedItemLootEntry(rare_item_id)
                     loot.append(rare_item)
             else:
                 item_type = random.choice(self.regular_item_types_by_level[item_level])
