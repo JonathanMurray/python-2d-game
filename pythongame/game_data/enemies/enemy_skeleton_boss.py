@@ -40,6 +40,8 @@ class NpcMind(MeleeEnemyNpcMind):
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
                     is_player_invisible: bool, time_passed: Millis):
+        if npc.stun_status.is_stunned():
+            return
         super().control_npc(game_state, npc, player_entity, is_player_invisible, time_passed)
 
         self._time_since_state_change += time_passed

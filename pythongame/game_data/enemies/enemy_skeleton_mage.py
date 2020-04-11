@@ -38,6 +38,8 @@ class NpcMind(AbstractNpcMind):
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
                     _is_player_invisible: bool, time_passed: Millis):
+        if npc.stun_status.is_stunned():
+            return
         self._time_since_healing += time_passed
         if self._time_since_healing > self._healing_cooldown:
             self._time_since_healing = 0

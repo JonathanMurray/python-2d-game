@@ -34,6 +34,8 @@ class NpcMind(AbstractNpcMind):
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
                     is_player_invisible: bool, time_passed: Millis):
+        if npc.stun_status.is_stunned():
+            return
         self._time_since_attack += time_passed
         self._time_since_updated_path += time_passed
         self._time_since_reevaluated += time_passed
