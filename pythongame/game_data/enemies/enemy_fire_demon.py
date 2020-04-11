@@ -28,9 +28,9 @@ def register_fire_demon_enemy():
         npc_data=NpcData.enemy(
             sprite=Sprite.ENEMY_FIRE_DEMON,
             size=(32, 32),
-            max_health=60,
+            max_health=50,
             health_regen=0,
-            speed=0.1,
+            speed=0.09,
             exp_reward=42,
             enemy_loot_table=LootTableId.LEVEL_5,
             death_sound_id=SoundId.DEATH_HUMAN),  # TODO
