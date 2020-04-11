@@ -5,7 +5,7 @@ from pythongame.core.game_data import CONSUMABLES, PORTALS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     ConsumableOnGround, ItemOnGround, Chest, Shrine
 from pythongame.core.game_state import WorldEntity
-from pythongame.core.item_data import build_item_name, create_item_description, get_item_data
+from pythongame.core.item_data import create_item_description, get_item_data
 from pythongame.core.math import boxes_intersect, is_x_and_y_within_distance, \
     get_manhattan_distance_between_rects
 from pythongame.core.npc_behaviors import has_npc_dialog
@@ -110,8 +110,8 @@ def _get_loot_name(lootable: LootableOnGround) -> Tuple[str, EntityActionTextSty
         name = CONSUMABLES[lootable.consumable_type].name
         return name, EntityActionTextStyle.PLAIN
     if isinstance(lootable, ItemOnGround):
-        name = build_item_name(lootable.item_id)
-        if lootable.item_id.suffix_id is not None:
+        name = lootable.item_id.name
+        if lootable.item_id.affix_stats:
             style = EntityActionTextStyle.LOOT_RARE
         elif get_item_data(lootable.item_id).is_unique:
             style = EntityActionTextStyle.LOOT_UNIQUE

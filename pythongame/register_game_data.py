@@ -31,11 +31,13 @@ from pythongame.game_data.consumables.scroll_ability_summon import register_summ
 from pythongame.game_data.decorations import register_decorations
 from pythongame.game_data.enemies.buff_goblin_sprint import register_goblin_sprint_buff
 from pythongame.game_data.enemies.enemy_dark_reaper import register_dark_reaper_enemy
+from pythongame.game_data.enemies.enemy_fire_demon import register_fire_demon_enemy
 from pythongame.game_data.enemies.enemy_goblin_spearman import register_goblin_spearman_enemy
 from pythongame.game_data.enemies.enemy_goblin_spearman_elite import register_goblin_spearman_elite_enemy
 from pythongame.game_data.enemies.enemy_goblin_warlock import register_goblin_warlock_enemy
 from pythongame.game_data.enemies.enemy_goblin_warrior import register_goblin_warrior_enemy
 from pythongame.game_data.enemies.enemy_goblin_worker import register_goblin_worker_enemy
+from pythongame.game_data.enemies.enemy_human_summoner import register_human_summoner_enemy
 from pythongame.game_data.enemies.enemy_ice_witch import register_ice_witch_enemy
 from pythongame.game_data.enemies.enemy_mummy import register_mummy_enemy
 from pythongame.game_data.enemies.enemy_necromancer import register_necromancer_enemy
@@ -120,6 +122,7 @@ from pythongame.game_data.loot_tables import register_loot_tables
 from pythongame.game_data.map_editor_icons import register_map_editor_icons, register_map_smart_floor_tile_sprites
 from pythongame.game_data.neutral_npcs.neutral_npc_challenge_starter import register_challenge_starter_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_dwarf import register_dwarf_npc
+from pythongame.game_data.neutral_npcs.neutral_npc_frog import register_frog_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_ninja import register_ninja_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_nomad import register_nomad_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_sorcerer import register_sorcerer_npc
@@ -183,6 +186,8 @@ def register_all_game_data():
     register_skeleton_mage_enemy()
     register_zombie_fast_enemy()
     register_skeleton_boss_enemy()
+    register_human_summoner_enemy()
+    register_fire_demon_enemy()
 
     # Register start items before heroes
     register_practice_sword_item()
@@ -267,6 +272,7 @@ def register_all_game_data():
     register_young_sorceress_npc()
     register_warpstone_merchant_npc()
     register_challenge_starter_npc()
+    register_frog_npc()
 
     register_decorations()
     register_map_editor_icons()

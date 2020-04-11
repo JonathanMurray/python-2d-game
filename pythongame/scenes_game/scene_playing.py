@@ -94,6 +94,9 @@ class PlayingScene(AbstractScene):
                         self.user_input_handler.forget_held_down_keys()
                 if isinstance(action, ActionMouseMovement):
                     self.ui_view.handle_mouse_movement_in_dialog(action.mouse_screen_position)
+                    # we handle "normal UI" mouse movement here primarily so that you can hover your equipment
+                    # while in a dialog. (especially important when buying from an NPC)
+                    self.ui_view.handle_mouse_movement(action.mouse_screen_position)
                 if isinstance(action, ActionMouseClicked):
                     result = self.ui_view.handle_mouse_click_in_dialog()
                     if result:

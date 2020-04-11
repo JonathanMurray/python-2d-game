@@ -80,8 +80,8 @@ def create_item_effect(item_id: ItemId) -> AbstractItemEffect:
         effects.append(_custom_item_effects[item_id.item_type])
     if item_id.base_stats:
         effects.append(StatModifyingItemEffect(item_id.base_stats))
-    if item_id.suffix_id:
-        effects.append(StatModifyingItemEffect(item_id.suffix_stats))
+    if item_id.affix_stats:
+        effects.append(StatModifyingItemEffect(item_id.affix_stats))
     effect = CompositeItemEffect(effects)
     return effect
 

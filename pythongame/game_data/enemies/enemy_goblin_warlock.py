@@ -1,4 +1,5 @@
 import random
+from typing import Tuple
 
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
 from pythongame.core.common import Millis, NpcType, Sprite, \
@@ -7,14 +8,12 @@ from pythongame.core.damage_interactions import deal_damage_to_player, deal_npc_
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import NpcData, register_buff_text, register_entity_sprite_map
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
-from pythongame.core.math import get_perpendicular_directions, get_position_from_center_position, \
-    translate_in_direction, get_directions_to_position
-from pythongame.core.npc_behaviors import AbstractNpcMind
+from pythongame.core.math import get_perpendicular_directions
+from pythongame.core.npc_behaviors import AbstractNpcMind, EnemyShootProjectileTrait
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
-from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualCircle
 from pythongame.game_data.enemies.register_enemies_util import register_basic_enemy
@@ -25,21 +24,29 @@ PROJECTILE_SPRITE = Sprite.PROJECTILE_ENEMY_GOBLIN_WARLOCK
 PROJECTILE_SIZE = (20, 20)
 
 
+def create_projectile(pos: Tuple[int, int], direction: Direction):
+    world_entity = WorldEntity(pos, PROJECTILE_SIZE, PROJECTILE_SPRITE, direction, 0.11)
+    return Projectile(world_entity, create_projectile_controller(PROJECTILE_TYPE))
+
+
 class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
-        self._update_attack_interval()
-        self._time_since_attack = 0
         self._update_path_interval = 900
         self._time_since_updated_path = random.randint(0, self._update_path_interval)
         self.pathfinder = NpcPathfinder(global_path_finder)
         self.next_waypoint = None
         self._reevaluate_next_waypoint_direction_interval = 1000
         self._time_since_reevaluated = self._reevaluate_next_waypoint_direction_interval
+        self._shoot_fireball_trait = EnemyShootProjectileTrait(
+            create_projectile=create_projectile,
+            projectile_size=PROJECTILE_SIZE,
+            cooldown_interval=(Millis(500), Millis(5000)),
+            chance_to_shoot_other_direction=0.3,
+            sound_id=SoundId.ENEMY_ATTACK_GOBLIN_WARLOCK)
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
                     is_player_invisible: bool, time_passed: Millis):
-        self._time_since_attack += time_passed
         self._time_since_updated_path += time_passed
         self._time_since_reevaluated += time_passed
 
@@ -69,29 +76,7 @@ class NpcMind(AbstractNpcMind):
             else:
                 enemy_entity.set_not_moving()
 
-        if self._time_since_attack > self._attack_interval:
-            self._time_since_attack = 0
-            self._update_attack_interval()
-            directions_to_player = get_directions_to_position(npc.world_entity, player_entity.get_position())
-            new_direction = directions_to_player[0]
-            if random.random() < 0.3 and directions_to_player[1] is not None:
-                new_direction = directions_to_player[1]
-            npc.world_entity.direction = new_direction
-            npc.world_entity.set_not_moving()
-            center_position = npc.world_entity.get_center_position()
-            distance_from_enemy = 35
-            projectile_pos = translate_in_direction(
-                get_position_from_center_position(center_position, PROJECTILE_SIZE),
-                npc.world_entity.direction, distance_from_enemy)
-            projectile_speed = 0.11
-            projectile_entity = WorldEntity(projectile_pos, PROJECTILE_SIZE, PROJECTILE_SPRITE,
-                                            npc.world_entity.direction, projectile_speed)
-            projectile = Projectile(projectile_entity, create_projectile_controller(PROJECTILE_TYPE))
-            game_state.projectile_entities.append(projectile)
-            play_sound(SoundId.ENEMY_ATTACK_GOBLIN_WARLOCK)
-
-    def _update_attack_interval(self):
-        self._attack_interval = 500 + random.random() * 4500
+        self._shoot_fireball_trait.update(npc, game_state, time_passed)
 
 
 def _move_in_dir(enemy_entity, direction):

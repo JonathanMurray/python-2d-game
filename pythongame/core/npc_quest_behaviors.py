@@ -3,7 +3,6 @@ from pythongame.core.common import NpcType, Millis, get_all_directions, ItemType
 from pythongame.core.entity_creation import create_item_on_ground
 from pythongame.core.game_data import register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Quest, QuestGiverState, QuestId
-from pythongame.core.item_data import build_item_name
 from pythongame.core.item_data import get_item_data_by_type
 from pythongame.core.item_data import plain_item_id
 from pythongame.core.item_effects import try_add_item_to_inventory
@@ -57,7 +56,7 @@ class CompleteQuestNpcAction(AbstractNpcAction):
                 if not did_add_item:
                     game_state.items_on_ground.append(
                         create_item_on_ground(reward_item_id, game_state.player_entity.get_position()))
-                return "Quest completed! Reward gained: " + build_item_name(reward_item_id)
+                return "Quest completed! Reward gained: " + reward_item_id.name
             return "Quest completed!"
         else:
             play_sound(SoundId.WARNING)
