@@ -4,11 +4,11 @@ from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId, 
     LootTableId
 from pythongame.core.damage_interactions import deal_damage_to_player, DamageType, deal_npc_damage_to_npc
 from pythongame.core.entity_creation import create_npc
-from pythongame.core.game_data import NpcData, NON_PLAYER_CHARACTERS
+from pythongame.core.game_data import NpcData
 from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
-from pythongame.core.math import random_direction, get_position_from_center_position, sum_of_vectors, \
-    is_x_and_y_within_distance, rect_from_corners, get_directions_to_position, translate_in_direction
-from pythongame.core.npc_behaviors import AbstractNpcMind
+from pythongame.core.math import get_position_from_center_position, is_x_and_y_within_distance, \
+    get_directions_to_position, translate_in_direction
+from pythongame.core.npc_behaviors import AbstractNpcMind, EnemySummonTrait, EnemyRandomWalkTrait
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.projectile_controllers import AbstractProjectileController, register_projectile_controller, \
     create_projectile_controller
@@ -23,52 +23,22 @@ PROJECTILE_SIZE = (30, 30)
 class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
-        self._time_since_decision = 0
-        self._decision_interval = 750
-        self._time_since_summoning = 0
-        self._summoning_cooldown = self._random_summoning_cooldown()
         self._time_since_healing = 0
         self._healing_cooldown = self._random_healing_cooldown()
-        self._alive_summons = []
         self._time_since_shoot = 0
         self._shoot_cooldown = self._random_shoot_cooldown()
+        self._summon_trait = EnemySummonTrait(3, [NpcType.ZOMBIE, NpcType.MUMMY], (Millis(500), Millis(5500)),
+                                              create_npc)
+        self._random_walk_trait = EnemyRandomWalkTrait(Millis(750))
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
                     _is_player_invisible: bool, time_passed: Millis):
-        self._time_since_decision += time_passed
-        self._time_since_summoning += time_passed
+
+        self._summon_trait.update(npc, game_state, time_passed)
+        self._random_walk_trait.update(npc, game_state, time_passed)
+
         self._time_since_healing += time_passed
         self._time_since_shoot += time_passed
-        if self._time_since_summoning > self._summoning_cooldown:
-            necro_center_pos = npc.world_entity.get_center_position()
-            self._time_since_summoning = 0
-            self._alive_summons = [summon for summon in self._alive_summons
-                                   if summon in game_state.non_player_characters]
-            if len(self._alive_summons) < 3:
-                relative_pos_from_summoner = (random.randint(-150, 150), random.randint(-150, 150))
-                summon_center_pos = sum_of_vectors(necro_center_pos, relative_pos_from_summoner)
-                summon_type = random.choice([NpcType.ZOMBIE, NpcType.MUMMY])
-                summon_size = NON_PLAYER_CHARACTERS[summon_type].size
-                summon_pos = game_state.get_within_world(
-                    get_position_from_center_position(summon_center_pos, summon_size), summon_size)
-                summon_enemy = create_npc(summon_type, summon_pos)
-                is_wall_blocking = game_state.walls_state.does_rect_intersect_with_wall(
-                    rect_from_corners(necro_center_pos, summon_center_pos))
-                is_position_blocked = game_state.would_entity_collide_if_new_pos(summon_enemy.world_entity, summon_pos)
-                if not is_wall_blocking and not is_position_blocked:
-                    self._summoning_cooldown = self._random_summoning_cooldown()
-                    game_state.add_non_player_character(summon_enemy)
-                    self._alive_summons.append(summon_enemy)
-                    game_state.visual_effects.append(
-                        VisualCircle((80, 150, 100), necro_center_pos, 40, 70, Millis(120), 3))
-                    game_state.visual_effects.append(
-                        VisualCircle((80, 150, 100), summon_center_pos, 40, 70, Millis(120), 3))
-                    play_sound(SoundId.ENEMY_NECROMANCER_SUMMON)
-                else:
-                    # Failed to summon, so try again without waiting full duration
-                    self._summoning_cooldown = 500
-            else:
-                self._summoning_cooldown = self._random_summoning_cooldown()
 
         if self._time_since_healing > self._healing_cooldown:
             self._time_since_healing = 0
@@ -104,18 +74,6 @@ class NpcMind(AbstractNpcMind):
             projectile = Projectile(projectile_entity, create_projectile_controller(PROJECTILE_TYPE))
             game_state.projectile_entities.append(projectile)
             play_sound(SoundId.ENEMY_ATTACK_NECRO)
-
-        if self._time_since_decision > self._decision_interval:
-            self._time_since_decision = 0
-            if random.random() < 0.2:
-                direction = random_direction()
-                npc.world_entity.set_moving_in_dir(direction)
-            else:
-                npc.world_entity.set_not_moving()
-
-    @staticmethod
-    def _random_summoning_cooldown():
-        return random.randint(500, 5500)
 
     @staticmethod
     def _random_healing_cooldown():

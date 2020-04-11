@@ -25,7 +25,7 @@ SLOW_BUFF_TYPE = BuffType.SLOWED_BY_ICE_WITCH
 class NpcMind(AbstractNpcMind):
     def __init__(self, global_path_finder: GlobalPathFinder):
         super().__init__(global_path_finder)
-        self._base_attack_interval = 3000
+        self._base_attack_interval = 4000
         self._attack_interval = None
         self.randomize_attack_interval()
         self._time_since_attack = self._attack_interval

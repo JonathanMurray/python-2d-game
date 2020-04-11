@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import *
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
@@ -9,11 +7,11 @@ from pythongame.core.game_data import CONSUMABLES, NON_PLAYER_CHARACTERS, alloca
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
     EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest, \
     PlayerUnlockedNewTalent, AgentBuffsUpdate, Shrine
-from pythongame.core.item_data import build_item_name, randomized_suffixed_item_id
+from pythongame.core.item_data import ITEM_ENTITY_SIZE
 from pythongame.core.item_data import randomized_item_id, get_item_data
 from pythongame.core.item_effects import create_item_effect, try_add_item_to_inventory
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
-from pythongame.core.loot import LootEntry, MoneyLootEntry, ItemLootEntry, ConsumableLootEntry, SuffixedItemLootEntry
+from pythongame.core.loot import LootEntry, MoneyLootEntry, ItemLootEntry, ConsumableLootEntry, AffixedItemLootEntry
 from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vectors, \
     get_rect_with_increased_size_in_all_directions, translate_in_direction
 from pythongame.core.sound_player import play_sound
@@ -100,7 +98,7 @@ class GameEngine:
             raise Exception("Unhandled type of loot: " + str(loot))
 
     def _try_pick_up_item_from_ground(self, item: ItemOnGround):
-        item_name = build_item_name(item.item_id)
+        item_name = item.item_id.name
         did_add_item = try_add_item_to_inventory(self.game_state, item.item_id)
         if did_add_item:
             play_sound(SoundId.EVENT_PICKED_UP)
@@ -215,7 +213,8 @@ class GameEngine:
                 else:
                     play_sound(SoundId.EVENT_ENEMY_DIED)
                 increased_money_chance = self.game_state.player_state.increased_loot_money_chance
-                loot = get_loot_table(enemy_that_died.enemy_loot_table).generate_loot(increased_money_chance)
+                loot: List[LootEntry] = get_loot_table(enemy_that_died.enemy_loot_table).generate_loot(
+                    increased_money_chance)
                 enemy_death_position = enemy_that_died.world_entity.get_position()
                 self._put_loot_on_ground(enemy_death_position, loot)
                 self.game_state.player_state.notify_about_event(EnemyDiedEvent(), self.game_state)
@@ -373,10 +372,16 @@ class GameEngine:
                 item_id = randomized_item_id(loot_entry.item_type)
                 item_on_ground = create_item_on_ground(item_id, loot_position)
                 self.game_state.items_on_ground.append(item_on_ground)
-            elif isinstance(loot_entry, SuffixedItemLootEntry):
-                item_id = randomized_suffixed_item_id(loot_entry.item_type, loot_entry.suffix_id)
+            elif isinstance(loot_entry, AffixedItemLootEntry):
+                item_id = loot_entry.item_id
                 item_on_ground = create_item_on_ground(item_id, loot_position)
                 self.game_state.items_on_ground.append(item_on_ground)
+                loot_center_pos = (loot_position[0] + ITEM_ENTITY_SIZE[0] // 2,
+                                   loot_position[1] + ITEM_ENTITY_SIZE[1] // 2)
+                self.game_state.visual_effects.append(
+                    VisualCircle((170, 200, 170), loot_center_pos, 30, 40, Millis(500), 2))
+                self.game_state.visual_effects.append(
+                    VisualCircle((70, 100, 70), loot_center_pos, 25, 35, Millis(500), 2))
             elif isinstance(loot_entry, ConsumableLootEntry):
                 consumable_on_ground = create_consumable_on_ground(loot_entry.consumable_type, loot_position)
                 self.game_state.consumables_on_ground.append(consumable_on_ground)
