@@ -6,8 +6,8 @@ from pythongame.core.game_data import CONSUMABLES, NON_PLAYER_CHARACTERS, alloca
     NpcCategory, PORTALS, ABILITIES
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
     EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest, \
-    PlayerUnlockedNewTalent, AgentBuffsUpdate, Shrine
-from pythongame.core.item_data import ITEM_ENTITY_SIZE
+    PlayerUnlockedNewTalent, AgentBuffsUpdate, Shrine, DungeonEntrance
+from pythongame.core.item_data import ITEM_ENTITY_SIZE, plain_item_id
 from pythongame.core.item_data import randomized_item_id, get_item_data
 from pythongame.core.item_effects import create_item_effect, try_add_item_to_inventory
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
@@ -156,6 +156,15 @@ class GameEngine:
             shrine.has_been_used = True
             message = apply_shrine_buff_to_player(self.game_state.player_state)
             self.info_message.set_message(message)
+
+    def interact_with_dungeon_entrance(self, dungeon_entrance: DungeonEntrance):
+        has_key = self.game_state.player_state.item_inventory.has_item_in_inventory(
+            plain_item_id(ItemType.PORTAL_KEY))
+        if has_key:
+            # TODO
+            self.info_message.set_message("TODO: portal")
+        else:
+            self.info_message.set_message("There is a keyhole on the side!")
 
     def use_warp_point(self, warp_point: WarpPoint):
         destination_warp_point = [w for w in self.game_state.warp_points if w != warp_point][0]

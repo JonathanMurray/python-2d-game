@@ -5,7 +5,7 @@ import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 from pythongame.core.common import Millis, SoundId, AbstractScene, SceneTransition, NpcType
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
-    Chest, Shrine
+    Chest, Shrine, DungeonEntrance
 from pythongame.core.hero_upgrades import pick_talent
 from pythongame.core.math import get_directions_to_position
 from pythongame.core.npc_behaviors import select_npc_action, get_dialog_data, blur_npc_action, \
@@ -152,6 +152,8 @@ class PlayingScene(AbstractScene):
                             self.game_engine.open_chest(ready_entity)
                         elif isinstance(ready_entity, Shrine):
                             self.game_engine.interact_with_shrine(ready_entity)
+                        elif isinstance(ready_entity, DungeonEntrance):
+                            self.game_engine.interact_with_dungeon_entrance(ready_entity)
                         else:
                             raise Exception("Unhandled entity: " + str(ready_entity))
                 elif isinstance(action, ActionPressKey):

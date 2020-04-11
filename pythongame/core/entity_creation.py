@@ -6,13 +6,15 @@ from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, CONSUMABLES, POTION_ENTITY_SIZE, \
     WALLS, PORTALS, HEROES, NpcData
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
-    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, HealthOrManaResource, WarpPoint, Chest, Shrine
+    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, HealthOrManaResource, WarpPoint, Chest, Shrine, \
+    DungeonEntrance
 from pythongame.core.item_data import get_item_data_by_type, ITEM_ENTITY_SIZE
 from pythongame.core.item_inventory import ItemInventory, ItemInventorySlot, ItemEquipmentCategory
 from pythongame.core.math import get_position_from_center_position
 from pythongame.core.npc_behaviors import create_npc_mind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.game_data.chests import CHEST_ENTITY_SIZE
+from pythongame.game_data.dungeon_entrances import DUNGEON_ENTRANCE_ENTITY_SIZE
 from pythongame.game_data.shrines import SHRINE_ENTITY_SIZE
 
 # TODO handle this (global path finder) in a better way!
@@ -69,6 +71,10 @@ def create_chest(pos: Tuple[int, int]) -> Chest:
 
 def create_shrine(pos: Tuple[int, int]) -> Shrine:
     return Shrine(WorldEntity(pos, SHRINE_ENTITY_SIZE, Sprite.SHRINE), False)
+
+
+def create_dungeon_entrance(pos: Tuple[int, int]) -> DungeonEntrance:
+    return DungeonEntrance(WorldEntity(pos, DUNGEON_ENTRANCE_ENTITY_SIZE, Sprite.DUNGEON_ENTRANCE))
 
 
 def create_wall(wall_type: WallType, pos: Tuple[int, int]) -> Wall:

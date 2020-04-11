@@ -30,6 +30,7 @@ from pythongame.game_data.consumables.potion_mana import register_mana_potion
 from pythongame.game_data.consumables.potion_speed import register_speed_potion
 from pythongame.game_data.consumables.scroll_ability_summon import register_summon_scroll
 from pythongame.game_data.decorations import register_decorations
+from pythongame.game_data.dungeon_entrances import register_dungeon_entrance
 from pythongame.game_data.enemies.buff_goblin_sprint import register_goblin_sprint_buff
 from pythongame.game_data.enemies.enemy_dark_reaper import register_dark_reaper_enemy
 from pythongame.game_data.enemies.enemy_fire_demon import register_fire_demon_enemy
@@ -80,8 +81,6 @@ from pythongame.game_data.items.item_goats_ring import register_goats_ring
 from pythongame.game_data.items.item_gold_nugget import register_gold_nugget
 from pythongame.game_data.items.item_hatchet import register_hatchet_item
 from pythongame.game_data.items.item_healing_wand import register_healing_wand_item
-from pythongame.game_data.items.item_portal_key import register_portal_key_item
-from pythongame.game_data.items.item_quest_key import register_quest_key_item
 from pythongame.game_data.items.item_knights_armor import register_knights_armor
 from pythongame.game_data.items.item_leather_armor import register_leather_armor_item
 from pythongame.game_data.items.item_leather_cowl import register_leather_cowl_item
@@ -94,7 +93,9 @@ from pythongame.game_data.items.item_novice_wand import register_novice_wand_ite
 from pythongame.game_data.items.item_orb_of_life import register_orb_of_life_item
 from pythongame.game_data.items.item_orb_of_the_magi import register_orb_of_the_magi_item
 from pythongame.game_data.items.item_orb_of_wisdom import register_orb_of_wisdom_item
+from pythongame.game_data.items.item_portal_key import register_portal_key_item
 from pythongame.game_data.items.item_practice_sword import register_practice_sword_item
+from pythongame.game_data.items.item_quest_key import register_quest_key_item
 from pythongame.game_data.items.item_ring_of_power import register_ring_of_power_item
 from pythongame.game_data.items.item_rod_of_lightning import register_rod_of_lightning_item
 from pythongame.game_data.items.item_royal_dagger import register_royal_dagger_item
@@ -293,6 +294,8 @@ def register_all_game_data():
     register_warp_point()
 
     register_chest_entity()
+
+    register_dungeon_entrance()
 
     register_generic_talents()
 

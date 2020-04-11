@@ -3,7 +3,7 @@ from typing import Optional, Any, List, Tuple
 
 from pythongame.core.game_data import CONSUMABLES, PORTALS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
-    ConsumableOnGround, ItemOnGround, Chest, Shrine
+    ConsumableOnGround, ItemOnGround, Chest, Shrine, DungeonEntrance
 from pythongame.core.game_state import WorldEntity
 from pythongame.core.item_data import create_item_description, get_item_data
 from pythongame.core.math import boxes_intersect, is_x_and_y_within_distance, \
@@ -67,6 +67,14 @@ class PlayerInteractionsState:
                 self.entity_to_interact_with = shrine
                 distance_to_closest_entity = distance
 
+        for dungeon_entrance in game_state.dungeon_entrances:
+            close_to_player = is_x_and_y_within_distance(
+                player_position, dungeon_entrance.world_entity.get_position(), 60)
+            distance = get_manhattan_distance_between_rects(player_entity.rect(), dungeon_entrance.world_entity.rect())
+            if close_to_player and distance < distance_to_closest_entity:
+                self.entity_to_interact_with = dungeon_entrance
+                distance_to_closest_entity = distance
+
     def get_entity_to_interact_with(self):
         return self.entity_to_interact_with
 
@@ -101,6 +109,8 @@ def _get_entity_action_text(ready_entity: Any, is_shift_key_held_down: bool) -> 
             return None
         else:
             return EntityActionText(ready_entity.world_entity, "Touch", [])
+    elif isinstance(ready_entity, DungeonEntrance):
+        return EntityActionText(ready_entity.world_entity, "...", [])
     else:
         raise Exception("Unhandled entity: " + str(ready_entity))
 

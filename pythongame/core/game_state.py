@@ -766,6 +766,11 @@ class WarpPoint:
         self.world_entity.visible = True
 
 
+class DungeonEntrance:
+    def __init__(self, world_entity: WorldEntity):
+        self.world_entity = world_entity
+
+
 class CameraShake:
 
     def __init__(self, shake_frequency: Millis, duration: Millis, max_offset: int):
@@ -790,7 +795,7 @@ class GameState:
                  non_player_characters: List[NonPlayerCharacter], walls: List[Wall], camera_size: Tuple[int, int],
                  entire_world_area: Rect, player_state: PlayerState,
                  decoration_entities: List[DecorationEntity], portals: List[Portal], chests: List[Chest],
-                 shrines: List[Shrine]):
+                 shrines: List[Shrine], dungeon_entrances: List[DungeonEntrance]):
         self.camera_size = camera_size
         self.camera_world_area = Rect((0, 0), self.camera_size)
         self.camera_shake: CameraShake = None
@@ -815,6 +820,7 @@ class GameState:
         self.warp_points: List[WarpPoint] = []
         self.chests: List[Chest] = chests
         self.player_movement_speed_was_updated = Observable()
+        self.dungeon_entrances = dungeon_entrances
 
     @staticmethod
     def _setup_pathfinder_wall_grid(entire_world_area: Rect, walls: List[WorldEntity]):
@@ -870,7 +876,8 @@ class GameState:
                          [p.world_entity for p in self.portals] + \
                          [s.world_entity for s in self.shrines] + \
                          [w.world_entity for w in self.warp_points] + \
-                         [c.world_entity for c in self.chests]
+                         [c.world_entity for c in self.chests] + \
+                         [e.world_entity for e in self.dungeon_entrances]
         return self.get_walls_in_sight_of_player() + other_entities
 
     def get_walls_in_sight_of_player(self) -> List[WorldEntity]:
@@ -949,7 +956,8 @@ class GameState:
         other_entities = [e.world_entity for e in self.non_player_characters] + \
                          [self.player_entity] + walls + [p.world_entity for p in self.portals] + \
                          [s.world_entity for s in self.shrines] + \
-                         [w.world_entity for w in self.warp_points] + [c.world_entity for c in self.chests]
+                         [w.world_entity for w in self.warp_points] + [c.world_entity for c in self.chests] + \
+                         [e.world_entity for e in self.dungeon_entrances]
         collision = any([other for other in other_entities if self._entities_collide(entity, other)
                          and entity is not other])
         entity.set_position(old_pos)

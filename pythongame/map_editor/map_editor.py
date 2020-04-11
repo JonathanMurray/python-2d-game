@@ -10,7 +10,7 @@ from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, Po
     Millis, ItemId, ItemType
 from pythongame.core.entity_creation import create_portal, create_hero_world_entity, create_npc, create_wall, \
     create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground, \
-    create_player_state, create_chest, create_shrine
+    create_player_state, create_chest, create_shrine, create_dungeon_entrance
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, PORTRAIT_ICON_SPRITE_PATHS
 from pythongame.core.game_state import GameState
 from pythongame.core.item_data import randomized_item_id
@@ -53,6 +53,7 @@ MISC_ENTITIES: List[MapEditorWorldEntity] = \
         MapEditorWorldEntity.decoration(Sprite.DECORATION_GROUND_STONE_GRAY),
         MapEditorWorldEntity.decoration(Sprite.DECORATION_PLANT),
         MapEditorWorldEntity.shrine(),
+        MapEditorWorldEntity.dungeon_entrance()
     ] + \
     [MapEditorWorldEntity.consumable(consumable_type) for consumable_type in ConsumableType] + \
     [MapEditorWorldEntity.portal(portal_id) for portal_id in PortalId]
@@ -104,7 +105,7 @@ class MapEditor:
             player_entity = create_hero_world_entity(HERO_ID, (0, 0))
             player_state = create_player_state(HERO_ID)
             game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, Rect(-250, -250, 1500, 1000),
-                                   player_state, [], [], [], [])
+                                   player_state, [], [], [], [], [])
             self._set_game_state(game_state)
             self.config = MapEditorConfig(disable_smart_grid=False)
             grid_size = (game_state.entire_world_area.w // GRID_CELL_SIZE,
@@ -281,6 +282,8 @@ class MapEditor:
                 _add_chest(self.game_state, action.world_position)
             elif entity_being_placed.is_shrine:
                 self._add_shrine(action.world_position)
+            elif entity_being_placed.is_dungeon_entrance:
+                self._add_dungeon_entrance(action.world_position)
             else:
                 raise Exception("Unknown entity: " + str(entity_being_placed))
         elif isinstance(action, DeleteEntities):
@@ -398,6 +401,13 @@ class MapEditor:
             shrine = create_shrine(world_pos)
             self.game_state.shrines.append(shrine)
 
+    def _add_dungeon_entrance(self, world_pos: Tuple[int, int]):
+        already_has = any([x for x in self.game_state.dungeon_entrances
+                           if x.world_entity.get_position() == world_pos])
+        if not already_has:
+            dungeon_entrance = create_dungeon_entrance(world_pos)
+            self.game_state.dungeon_entrances.append(dungeon_entrance)
+
     def _delete_map_entities_from_position(self, snapped_mouse_world_position: Tuple[int, int]):
         self.game_state.walls_state.remove_all_from_position(snapped_mouse_world_position)
         for enemy in [e for e in self.game_state.non_player_characters if
@@ -418,6 +428,9 @@ class MapEditor:
         for shrine in [s for s in self.game_state.shrines
                        if s.world_entity.get_position() == snapped_mouse_world_position]:
             self.game_state.shrines.remove(shrine)
+        for dungeon_entrance in [e for e in self.game_state.dungeon_entrances
+                                 if e.world_entity.get_position() == snapped_mouse_world_position]:
+            self.game_state.dungeon_entrances.remove(dungeon_entrance)
 
         self._notify_ui_of_new_wall_positions()
 
