@@ -1,4 +1,5 @@
 from pythongame.core.common import ItemType, Sprite, UiIconSprite, HeroStat
+from pythongame.core.item_data import interval
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.game_data.items.register_items_util import register_randomized_stat_modifying_item
 
@@ -12,5 +13,5 @@ def register_gladiator_armor():
         image_file_path="resources/graphics/item_gladiator_armor.png",
         item_equipment_category=ItemEquipmentCategory.CHEST,
         name="Gladiator armor",
-        stat_modifier_intervals={HeroStat.ARMOR: [2], HeroStat.DAMAGE: [0.04, 0.05, 0.06, 0.07, 0.08]}
+        stat_modifier_intervals={HeroStat.ARMOR: [2], HeroStat.DAMAGE: interval(0.07, 0.15, 0.01)}
     )

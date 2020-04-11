@@ -27,8 +27,8 @@ def register_thiefs_mask_item():
         name="Mask of Thieves",
         custom_description=["On dodge: gain " + str(MANA_ON_DODGE_AMOUNT) + " mana"],
         custom_effect=ItemEffect(),
-        stat_modifier_intervals=[StatModifierInterval(HeroStat.DODGE_CHANCE, [0.1]),
-                                 StatModifierInterval(HeroStat.DAMAGE, [0.05]),
+        stat_modifier_intervals=[StatModifierInterval(HeroStat.DODGE_CHANCE, [0.09]),
+                                 StatModifierInterval(HeroStat.DAMAGE, [0.12]),
                                  StatModifierInterval(HeroStat.MANA_REGEN, [0.05])],
         is_unique=True
     )

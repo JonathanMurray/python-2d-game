@@ -1,5 +1,6 @@
 from pythongame.core.common import ItemType, Sprite, HeroStat, StatModifierInterval
 from pythongame.core.game_data import UiIconSprite
+from pythongame.core.item_data import interval
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.game_data.items.register_items_util import register_randomized_stat_modifying_item
 
@@ -14,6 +15,6 @@ def register_skull_sword_item():
         image_file_path="resources/graphics/item_skull_sword.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
         name="Skull sword",
-        stat_modifier_intervals=[StatModifierInterval(HeroStat.DAMAGE, [0.20, 0.21, 0.22, 0.23, 0.24, 0.25]),
-                                 StatModifierInterval(HeroStat.LIFE_STEAL, [0.1, 0.11, 0.12, 0.13, 0.14])]
+        stat_modifier_intervals=[StatModifierInterval(HeroStat.DAMAGE, interval(0.4, 0.5, 0.01)),
+                                 StatModifierInterval(HeroStat.LIFE_STEAL, interval(0.10, 0.15, 0.01))]
     )

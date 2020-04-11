@@ -1,5 +1,6 @@
 from pythongame.core.common import ItemType, Sprite, HeroStat, StatModifierInterval
 from pythongame.core.game_data import UiIconSprite
+from pythongame.core.item_data import interval
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.game_data.items.register_items_util import register_randomized_stat_modifying_item
 
@@ -14,6 +15,6 @@ def register_fire_gauntlet_item():
         image_file_path="resources/graphics/item_fire_gauntlet.png",
         item_equipment_category=ItemEquipmentCategory.OFF_HAND,
         name="Fire gauntlet",
-        stat_modifier_intervals=[StatModifierInterval(HeroStat.DAMAGE, [0.13, 0.14, 0.15, 0.16]),
-                                 StatModifierInterval(HeroStat.HEALTH_REGEN, [0.2, 0.3, 0.4])]
+        stat_modifier_intervals=[StatModifierInterval(HeroStat.DAMAGE, interval(0.15, 0.2, 0.01)),
+                                 StatModifierInterval(HeroStat.HEALTH_REGEN, interval(0.2, 0.4, 0.1))]
     )

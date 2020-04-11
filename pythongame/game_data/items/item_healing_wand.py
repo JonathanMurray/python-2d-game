@@ -8,7 +8,7 @@ from pythongame.game_data.items.register_items_util import register_custom_effec
 
 BUFF_TYPE = BuffType.BUFFED_BY_HEALING_WAND
 HEALTH_REGEN_BONUS = 1
-BUFF_DURATION = Millis(3000)
+BUFF_DURATION = Millis(5000)
 
 
 class ItemEffect(AbstractItemEffect):

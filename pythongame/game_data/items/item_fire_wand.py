@@ -1,4 +1,5 @@
 from pythongame.core.common import ItemType, Sprite, UiIconSprite, HeroStat
+from pythongame.core.item_data import interval
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.game_data.items.register_items_util import register_randomized_stat_modifying_item
 
@@ -12,5 +13,5 @@ def register_fire_wand_item():
         image_file_path="resources/graphics/item_fire_wand.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
         name="Fire wand",
-        stat_modifier_intervals={HeroStat.MAGIC_DAMAGE: [0.09, 0.1, 0.11]}
+        stat_modifier_intervals={HeroStat.MAGIC_DAMAGE: interval(0.13, 0.18, 0.01)}
     )

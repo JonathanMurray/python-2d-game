@@ -1,4 +1,5 @@
 from pythongame.core.common import ItemType, Sprite, UiIconSprite, HeroStat
+from pythongame.core.item_data import interval
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.game_data.items.register_items_util import register_randomized_stat_modifying_item
 
@@ -12,6 +13,6 @@ def register_whip_item():
         image_file_path="resources/graphics/item_whip.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
         name="Whip",
-        stat_modifier_intervals={HeroStat.PHYSICAL_DAMAGE: [0.08, 0.09, 0.1, 0.11],
-                                 HeroStat.LIFE_STEAL: [0.05, 0.06]}
+        stat_modifier_intervals={HeroStat.PHYSICAL_DAMAGE: interval(0.16, 0.2, 0.01),
+                                 HeroStat.LIFE_STEAL: interval(0.04, 0.08, 0.01)}
     )
