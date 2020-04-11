@@ -46,7 +46,7 @@ def register_elixir_of_power():
     image_path = "resources/graphics/item_elixir_of_power.png"
     register_ui_icon_sprite_path(ui_icon_sprite, image_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_path, POTION_ENTITY_SIZE))
-    description = "Gain +" + "{:.0f}".format(DAMAGE_MODIFIER_INCREASE * 100) + "% damage for " + \
+    description = "Gain +" + "{:.0f}".format(DAMAGE_MODIFIER_INCREASE * 100) + " attack power for " + \
                   "{:.0f}".format(DURATION / 1000) + "s."
     data = ConsumableData(ui_icon_sprite, sprite, name, description, ConsumableCategory.OTHER, SoundId.CONSUMABLE_BUFF)
     register_consumable_data(consumable_type, data)

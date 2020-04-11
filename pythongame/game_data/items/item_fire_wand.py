@@ -13,5 +13,5 @@ def register_fire_wand_item():
         image_file_path="resources/graphics/item_fire_wand.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
         name="Fire wand",
-        stat_modifier_intervals={HeroStat.MAGIC_DAMAGE: interval(0.13, 0.18, 0.01)}
+        stat_modifier_intervals={HeroStat.MAGIC_DAMAGE: interval(0.15, 0.3, 0.01)}
     )

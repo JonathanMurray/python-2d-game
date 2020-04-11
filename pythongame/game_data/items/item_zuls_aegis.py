@@ -52,7 +52,8 @@ def register_zuls_aegis():
         stat_modifier_intervals=[StatModifierInterval(HeroStat.ARMOR, [3]),
                                  StatModifierInterval(HeroStat.BLOCK_AMOUNT, [6]),
                                  StatModifierInterval(HeroStat.MAGIC_RESIST_CHANCE, [0.1]),
-                                 StatModifierInterval(HeroStat.DAMAGE, [0.05])],
+                                 StatModifierInterval(HeroStat.DAMAGE, [0.12]),
+                                 StatModifierInterval(HeroStat.MANA_ON_KILL, [1])],
         custom_description=["On block: stun attacker for " + "{:.1f}".format(STUN_DURATION / 1000) + "s"],
         is_unique=True
     )

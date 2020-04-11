@@ -126,7 +126,7 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
                                    str(int(BUFF_RETRIBUTION_BONUS_BLOCK_CHANCE * 100)) +
                                    "%. Blocking an enemy attack gives +" +
                                    str(int(BUFF_RETRIBUTION_BONUS_DAMAGE * 100)) +
-                                   "% damage for " + "{:.1f}".format(BUFF_RETRIBUTION_DURATION / 1000) + "s",
+                                   " attack power for " + "{:.1f}".format(BUFF_RETRIBUTION_DURATION / 1000) + "s",
                                    RetributionHeroUpgrade(HeroUpgradeId.WARRIOR_RETRIBUTION),
                                    UiIconSprite.ITEM_SKULL_SHIELD)),
     })

@@ -13,6 +13,6 @@ def register_serpent_sword_item():
         image_file_path="resources/graphics/item_serpent_sword.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
         name="Serpent sword",
-        stat_modifier_intervals={HeroStat.DAMAGE: interval(0.36, 0.44, 0.01),
+        stat_modifier_intervals={HeroStat.DAMAGE: interval(0.20, 0.35, 0.01),
                                  HeroStat.MANA_REGEN: interval(0.3, 0.6, 0.1)}
     )

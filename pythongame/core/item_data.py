@@ -57,7 +57,7 @@ _item_affix_data_by_id: Dict[ItemAffixId, ItemSuffixData] = {
                        [StatModifierInterval(HeroStat.HEALTH_REGEN, interval(0.2, 0.4, 0.1))]),
     ItemAffixId.HEALTH_REGEN_2:
         ItemSuffixData(None, "of Regrowth", (4, 9),
-                       [StatModifierInterval(HeroStat.HEALTH_REGEN, interval(0.5, 1, 0.1))]),
+                       [StatModifierInterval(HeroStat.HEALTH_REGEN, interval(0.6, 1.5, 0.1))]),
     ItemAffixId.MAX_MANA_1:
         ItemSuffixData("Strange", "of Discipline", (1, 5),
                        [StatModifierInterval(HeroStat.MAX_MANA, int_interval(10, 20))]),
@@ -72,28 +72,28 @@ _item_affix_data_by_id: Dict[ItemAffixId, ItemSuffixData] = {
                        [StatModifierInterval(HeroStat.MANA_REGEN, interval(0.4, 0.8, 0.1))]),
     ItemAffixId.MOVEMENT_SPEED:
         ItemSuffixData("Quick", "of Swiftness", (1, 9),
-                       [StatModifierInterval(HeroStat.MOVEMENT_SPEED, interval(0.05, 0.15, 0.01))]),
+                       [StatModifierInterval(HeroStat.MOVEMENT_SPEED, interval(0.08, 0.2, 0.01))]),
     ItemAffixId.LIFE_STEAL:
         ItemSuffixData("Vampire", "of Leeching", (1, 9),
                        [StatModifierInterval(HeroStat.LIFE_STEAL, interval(0.02, 0.06, 0.01))]),
     ItemAffixId.DAMAGE_1:
         ItemSuffixData("Powerful", None, (1, 5),
-                       [StatModifierInterval(HeroStat.DAMAGE, interval(0.02, 0.06, 0.01))]),
+                       [StatModifierInterval(HeroStat.DAMAGE, interval(0.04, 0.08, 0.01))]),
     ItemAffixId.DAMAGE_2:
         ItemSuffixData("Mighty", None, (4, 9),
-                       [StatModifierInterval(HeroStat.DAMAGE, interval(0.05, 0.1, 0.01))]),
+                       [StatModifierInterval(HeroStat.DAMAGE, interval(0.09, 0.13, 0.01))]),
     ItemAffixId.PHYSICAL_DAMAGE_1:
         ItemSuffixData("Reckless", None, (1, 5),
-                       [StatModifierInterval(HeroStat.PHYSICAL_DAMAGE, interval(0.03, 0.08, 0.01))]),
+                       [StatModifierInterval(HeroStat.PHYSICAL_DAMAGE, interval(0.05, 0.1, 0.01))]),
     ItemAffixId.PHYSICAL_DAMAGE_2:
         ItemSuffixData("Destructive", None, (4, 9),
-                       [StatModifierInterval(HeroStat.PHYSICAL_DAMAGE, interval(0.08, 0.15, 0.01))]),
+                       [StatModifierInterval(HeroStat.PHYSICAL_DAMAGE, interval(0.11, 0.18, 0.01))]),
     ItemAffixId.MAGIC_DAMAGE_1:
         ItemSuffixData("Arcane", None, (1, 5),
-                       [StatModifierInterval(HeroStat.MAGIC_DAMAGE, interval(0.03, 0.08, 0.01))]),
+                       [StatModifierInterval(HeroStat.MAGIC_DAMAGE, interval(0.05, 0.1, 0.01))]),
     ItemAffixId.MAGIC_DAMAGE_2:
         ItemSuffixData("Chaotic", None, (4, 9),
-                       [StatModifierInterval(HeroStat.MAGIC_DAMAGE, interval(0.08, 0.15, 0.01))]),
+                       [StatModifierInterval(HeroStat.MAGIC_DAMAGE, interval(0.11, 0.18, 0.01))]),
     ItemAffixId.MAGIC_RESIST:
         ItemSuffixData("Spirituous", "of Spirits", (1, 9),
                        [StatModifierInterval(HeroStat.MAGIC_RESIST_CHANCE, interval(0.08, 0.15, 0.01))]),

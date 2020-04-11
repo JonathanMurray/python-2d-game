@@ -34,7 +34,7 @@ def register_necklace_of_suffering_item():
         item_equipment_category=ItemEquipmentCategory.NECK,
         name="Necklace of Domination",
         custom_description=["Any time you lose health, gain +" + str(int(BUFF_DAMAGE * 100)) +
-                            "% damage for " + "{:.0f}".format(BUFF_DURATION / 1000) + "s"],
+                            " attack power for " + "{:.0f}".format(BUFF_DURATION / 1000) + "s"],
         custom_effect=ItemEffect(),
         stat_modifier_intervals=[StatModifierInterval(HeroStat.DAMAGE, [0.1])],
         is_unique=True
