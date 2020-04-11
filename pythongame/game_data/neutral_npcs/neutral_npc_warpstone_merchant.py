@@ -63,18 +63,29 @@ def _register_dialog():
                   "Just give me a while, and come back later!",
         options=[bye_option])
 
-    high_level_dialog = DialogData(
+    mid_level_dialog = DialogData(
         name=name,
         portrait_icon_sprite=UI_ICON_SPRITE,
         text_body="Hah! I managed to infuse the statues' teleporting powers into these stones. " \
                   "You can carry them with you and use them any time you want to return to this place! "
                   "Isn't that neat?",
-        options=[buy_consumable_option(ConsumableType.WARP_STONE, 2), bye_option])
+        options=[buy_consumable_option(ConsumableType.WARP_STONE, 2),
+                 bye_option])
+
+    high_level_dialog = DialogData(
+        name=name,
+        portrait_icon_sprite=UI_ICON_SPRITE,
+        text_body="Check it out! These acid bombs should come in handy if you find yourself surrounded!",
+        options=[buy_consumable_option(ConsumableType.WARP_STONE, 2),
+                 buy_consumable_option(ConsumableType.ACID_BOMB, 4),
+                 bye_option])
 
     def get_dialog_data(game_state: GameState) -> DialogData:
-        if game_state.player_state.level < 2:
-            return low_level_dialog
-        else:
+        if game_state.player_state.level >= 4:
             return high_level_dialog
+        elif game_state.player_state.level >= 2:
+            return mid_level_dialog
+        else:
+            return low_level_dialog
 
     register_conditional_npc_dialog_data(NPC_TYPE, get_dialog_data)
