@@ -450,6 +450,7 @@ class PlayerState:
         self.completed_quests: List[Quest] = []
         self.active_quests: List[Quest] = []
         self.increased_loot_money_chance = 0
+        self.increased_loot_rare_or_unique_chance = 0
         self.life_on_kill: int = 0  # affected by items/buffs. [Change it additively]
         self.mana_on_kill: int = 0  # affected by items/buffs. [Change it additively]
 
@@ -544,6 +545,8 @@ class PlayerState:
             self.mana_on_kill += stat_delta
         elif hero_stat == HeroStat.LIFE_ON_KILL:
             self.life_on_kill += stat_delta
+        elif hero_stat == HeroStat.INCREASED_LOOT_RARE_OR_UNIQUE_CHANCE:
+            self.increased_loot_rare_or_unique_chance += stat_delta
         else:
             raise Exception("Unhandled stat: " + str(hero_stat))
         self.notify_stats_observers()

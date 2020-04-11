@@ -45,7 +45,7 @@ class LootGroup:
 
 
 class LootTable:
-    def generate_loot(self, increased_money_chance: float) -> List[LootEntry]:
+    def generate_loot(self, increased_money_chance: float, increased_rare_or_unique_chance: float) -> List[LootEntry]:
         raise Exception("Sub-classes must override this method!")
 
 
@@ -82,11 +82,11 @@ class LeveledLootTable(LootTable):
 
         self.money_drop_chance = 0.15
 
-    def generate_loot(self, increased_money_chance: float) -> List[LootEntry]:
+    def generate_loot(self, increased_money_chance: float, increased_rare_or_unique_chance: float) -> List[LootEntry]:
         loot = list(self.guaranteed_drops)
         if random.random() <= self.item_drop_chance:
             item_level = random.choices(self.item_levels, weights=self.item_level_weights)[0]
-            rare_or_unique = random.random() <= self.item_rare_or_unique_chance
+            rare_or_unique = random.random() <= self.item_rare_or_unique_chance * (1 + increased_rare_or_unique_chance)
             # There are 4 classes of items:
             # common: a regular item with no affixes
             # rare-1: a regular item with 1 bonus affix
@@ -121,7 +121,7 @@ class LeveledLootTable(LootTable):
             loot.append(ConsumableLootEntry(consumable_type))
         if random.random() <= self.money_drop_chance:
             amount = random.randint(1, self.level)
-            if random.random() <= increased_money_chance:
+            if random.random() <= increased_money_chance:  # NOTE: anything above 100% "increased chance" is wasted
                 amount *= 2
             loot.append(MoneyLootEntry(amount))
         return loot

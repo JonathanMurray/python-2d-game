@@ -499,6 +499,7 @@ class HeroStat(Enum):
     INCREASED_LOOT_MONEY_CHANCE = 16
     MANA_ON_KILL = 17
     LIFE_ON_KILL = 18
+    INCREASED_LOOT_RARE_OR_UNIQUE_CHANCE = 19
 
 
 def _get_description(hero_stat: HeroStat, arg: str):
@@ -534,6 +535,8 @@ def _get_description(hero_stat: HeroStat, arg: str):
         return "On kill: restore " + arg + " mana"
     elif hero_stat == HeroStat.LIFE_ON_KILL:
         return "On kill: gain " + arg + " health"
+    elif hero_stat == HeroStat.INCREASED_LOOT_RARE_OR_UNIQUE_CHANCE:
+        return "+" + arg + "% increased chance to find rare items"
     else:
         raise Exception("Unhandled stat: " + str(hero_stat))
 
@@ -553,7 +556,7 @@ class StatModifier:
             return _get_description(hero_stat, "{:.1f}".format(delta))
         elif hero_stat in [HeroStat.DAMAGE, HeroStat.PHYSICAL_DAMAGE, HeroStat.MAGIC_DAMAGE, HeroStat.LIFE_STEAL,
                            HeroStat.DODGE_CHANCE, HeroStat.MAGIC_RESIST_CHANCE, HeroStat.BLOCK_CHANCE,
-                           HeroStat.INCREASED_LOOT_MONEY_CHANCE]:
+                           HeroStat.INCREASED_LOOT_MONEY_CHANCE, HeroStat.INCREASED_LOOT_RARE_OR_UNIQUE_CHANCE]:
             return _get_description(hero_stat, str(int(round(delta * 100))))
         elif hero_stat == HeroStat.MOVEMENT_SPEED:
             if delta >= 0:
@@ -595,7 +598,7 @@ class StatModifierInterval:
                                         "(" + "{:.1f}".format(interval[0]) + "-" + "{:.1f}".format(interval[-1]) + ")")
         elif hero_stat in [HeroStat.DAMAGE, HeroStat.PHYSICAL_DAMAGE, HeroStat.MAGIC_DAMAGE, HeroStat.LIFE_STEAL,
                            HeroStat.DODGE_CHANCE, HeroStat.MAGIC_RESIST_CHANCE, HeroStat.BLOCK_CHANCE,
-                           HeroStat.INCREASED_LOOT_MONEY_CHANCE]:
+                           HeroStat.INCREASED_LOOT_MONEY_CHANCE, HeroStat.INCREASED_LOOT_RARE_OR_UNIQUE_CHANCE]:
             if interval[0] == interval[-1]:
                 return _get_description(hero_stat, str(int(round(interval[0] * 100))))
             else:
@@ -652,6 +655,7 @@ class ItemAffixId(Enum):
     MANA_ON_KILL = 140
     LIFE_ON_KILL_1 = 150
     LIFE_ON_KILL_2 = 151
+    INCREASED_LOOT_RARE_OR_UNIQUE_CHANCE = 160
 
 
 class ItemId:
