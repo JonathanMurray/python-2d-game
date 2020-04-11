@@ -501,11 +501,11 @@ def _get_description(hero_stat: HeroStat, arg: str):
     elif hero_stat == HeroStat.ARMOR:
         return arg + " armor"
     elif hero_stat == HeroStat.DAMAGE:
-        return "+" + arg + "% damage"
+        return "+" + arg + " attack power"
     elif hero_stat == HeroStat.PHYSICAL_DAMAGE:
-        return "+" + arg + "% physical damage"
+        return "+" + arg + " physical attack power"
     elif hero_stat == HeroStat.MAGIC_DAMAGE:
-        return "+" + arg + "% magic damage"
+        return "+" + arg + " magic attack power"
     elif hero_stat == HeroStat.LIFE_STEAL:
         return "+" + arg + "% life steal"
     elif hero_stat == HeroStat.BLOCK_AMOUNT:
