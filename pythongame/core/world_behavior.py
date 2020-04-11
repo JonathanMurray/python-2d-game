@@ -6,7 +6,7 @@ from pythongame.core.common import ItemType
 from pythongame.core.common import Millis, BuffType, get_random_hint, \
     SoundId, SceneTransition
 from pythongame.core.game_data import HEROES
-from pythongame.core.game_state import GameState, QuestId
+from pythongame.core.game_state import GameState
 from pythongame.core.item_data import randomized_item_id
 from pythongame.core.item_effects import try_add_item_to_inventory
 from pythongame.core.sound_player import play_sound
@@ -48,8 +48,10 @@ class StoryBehavior(AbstractWorldBehavior):
         try_add_item_to_inventory(self.game_state, item_id)
 
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:
-        if self.game_state.player_state.has_completed_quest(QuestId.MAIN_RETRIEVE_KEY):
-            return SceneTransition(self.victory_screen_scene())
+        pass
+        # uncomment to conditionally go to victory screen
+        # if self.game_state.player_state.has_completed_quest(QuestId.MAIN_RETRIEVE_KEY):
+        #    return SceneTransition(self.victory_screen_scene())
 
     def handle_event(self, event: EngineEvent) -> Optional[SceneTransition]:
         if event == EngineEvent.PLAYER_DIED:

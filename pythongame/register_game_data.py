@@ -80,7 +80,8 @@ from pythongame.game_data.items.item_goats_ring import register_goats_ring
 from pythongame.game_data.items.item_gold_nugget import register_gold_nugget
 from pythongame.game_data.items.item_hatchet import register_hatchet_item
 from pythongame.game_data.items.item_healing_wand import register_healing_wand_item
-from pythongame.game_data.items.item_key import register_key_item
+from pythongame.game_data.items.item_portal_key import register_portal_key_item
+from pythongame.game_data.items.item_quest_key import register_quest_key_item
 from pythongame.game_data.items.item_knights_armor import register_knights_armor
 from pythongame.game_data.items.item_leather_armor import register_leather_armor_item
 from pythongame.game_data.items.item_leather_cowl import register_leather_cowl_item
@@ -238,8 +239,9 @@ def register_all_game_data():
     register_elite_helmet_item()
     register_stone_amulet_item()
     register_torn_document_item()
-    register_key_item()
+    register_quest_key_item()
     register_corrupted_orb_item()
+    register_portal_key_item()
 
     register_wooden_sword_item()
     register_druids_ring_item()

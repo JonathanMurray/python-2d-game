@@ -1,7 +1,7 @@
 from typing import Optional
 
 from pythongame.core.common import NpcType, Sprite, Direction, PortraitIconSprite, \
-    get_random_hint, ItemType, SoundId
+    get_random_hint, ItemType, SoundId, ItemId
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map
 from pythongame.core.game_state import GameState, QuestId, Quest
 from pythongame.core.item_data import plain_item_id
@@ -15,8 +15,8 @@ from pythongame.core.visual_effects import create_visual_healing_text
 
 QUEST_MIN_LEVEL = 3
 QUEST_ID = QuestId.MAIN_RETRIEVE_KEY
-QUEST = Quest(QUEST_ID, "The red baron", "Defeat the red baron and retrieve the key that he stole.")
-QUEST_ITEM_TYPE = ItemType.KEY
+QUEST = Quest(QUEST_ID, "The red baron", "Defeat the red baron and retrieve any item of interest that he's carrying.")
+QUEST_ITEM_TYPE = ItemType.QUEST_KEY
 
 
 class NpcMind(QuestGiverNpcMind):
@@ -66,8 +66,8 @@ def register_nomad_npc():
         icon_sprite_file_path='resources/graphics/nomad_portrait.png',
         quest=QUEST,
         quest_min_level=QUEST_MIN_LEVEL,
-        quest_intro="The red baron... Yes, he has caused us much trouble. He stole from me a key that may "
-                    "lead us out of here. You must bring it back to me!",
+        quest_intro="The red baron has caused us great trouble. Get rid of him and I'll be forever "
+                    "grateful! Oh, and please bring back anything interesting that he's carrying.",
         boss_npc_type=NpcType.WARRIOR_KING,
         quest_item_type=QUEST_ITEM_TYPE,
         custom_options=[DialogOptionData("Receive blessing", "gain full health", HealAction()),
@@ -76,5 +76,5 @@ def register_nomad_npc():
         dialog_give_quest="Greetings. I am here only to serve. Seek me out when you are wounded or need guidance!",
         dialog_during_quest="Greetings. I am here only to serve. Seek me out when you are wounded or need guidance!",
         dialog_after_completed="Greetings. I am here only to serve. Seek me out when you are wounded or need guidance!",
-        reward_item_id=lambda _: None
+        reward_item_id=lambda _: plain_item_id(ItemType.PORTAL_KEY)
     )
