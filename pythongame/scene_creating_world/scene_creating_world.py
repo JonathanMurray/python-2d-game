@@ -4,13 +4,12 @@ from typing import Tuple
 from pythongame.core.common import ConsumableType, Sprite, Observable, ItemId
 from pythongame.core.common import Millis, HeroId, AbstractScene, SceneTransition
 from pythongame.core.consumable_inventory import ConsumableInventory
-from pythongame.core.entity_creation import set_global_path_finder
 from pythongame.core.footsteps import play_or_stop_footstep_sounds
 from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_state import QuestId
+from pythongame.core.global_path_finder import init_global_path_finder
 from pythongame.core.hero_upgrades import pick_talent
 from pythongame.core.npc_behaviors import get_quest
-from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.world_behavior import ChallengeBehavior, StoryBehavior
 from pythongame.map_file import load_map_from_json_file
 from pythongame.player_file import SavedPlayerState
@@ -72,8 +71,7 @@ class CreatingWorldScene(AbstractScene):
 
         # NPC's share a "global path finder" that needs to be initialized before we start creating NPCs.
         # TODO This is very messy
-        path_finder = GlobalPathFinder()
-        set_global_path_finder(path_finder)
+        path_finder = init_global_path_finder()
 
         map_data = load_map_from_json_file(self.camera_size, map_file_path, picked_hero)
 

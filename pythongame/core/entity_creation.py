@@ -8,28 +8,20 @@ from pythongame.core.game_data import NON_PLAYER_CHARACTERS, CONSUMABLES, POTION
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
     ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, HealthOrManaResource, WarpPoint, Chest, Shrine, \
     DungeonEntrance
+from pythongame.core.global_path_finder import get_global_path_finder
 from pythongame.core.item_data import get_item_data_by_type, ITEM_ENTITY_SIZE
 from pythongame.core.item_inventory import ItemInventory, ItemInventorySlot, ItemEquipmentCategory
 from pythongame.core.math import get_position_from_center_position
 from pythongame.core.npc_behaviors import create_npc_mind
-from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.game_data.chests import CHEST_ENTITY_SIZE
 from pythongame.game_data.dungeon_entrances import DUNGEON_ENTRANCE_ENTITY_SIZE
 from pythongame.game_data.shrines import SHRINE_ENTITY_SIZE
-
-# TODO handle this (global path finder) in a better way!
-global_path_finder: GlobalPathFinder = None
-
-
-def set_global_path_finder(_global_path_finder: GlobalPathFinder):
-    global global_path_finder
-    global_path_finder = _global_path_finder
 
 
 def create_npc(npc_type: NpcType, pos: Tuple[int, int]) -> NonPlayerCharacter:
     data: NpcData = NON_PLAYER_CHARACTERS[npc_type]
     entity = WorldEntity(pos, data.size, data.sprite, Direction.LEFT, data.speed)
-    npc_mind = create_npc_mind(npc_type, global_path_finder)
+    npc_mind = create_npc_mind(npc_type, get_global_path_finder())
     health_resource = HealthOrManaResource(data.max_health, data.health_regen)
     return NonPlayerCharacter(npc_type, entity, health_resource, npc_mind,
                               data.npc_category, data.enemy_loot_table, data.death_sound_id,
