@@ -20,8 +20,8 @@ from pythongame.core.visual_effects import create_visual_exp_text, create_telepo
 from pythongame.game_data.loot_tables import get_loot_table
 from pythongame.game_data.portals import PORTAL_DELAY
 from pythongame.game_data.shrines import apply_shrine_buff_to_player
-from pythongame.scenes_game.game_ui_view import InfoMessage
-from pythongame.scenes_game.player_controls import PlayerControls
+from pythongame.scenes.scenes_game.game_ui_view import InfoMessage
+from pythongame.scenes.scenes_game.player_controls import PlayerControls
 
 
 class GameEngine:

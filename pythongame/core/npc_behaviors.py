@@ -18,7 +18,7 @@ from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import VisualCircle
-from pythongame.scenes_game.game_ui_view import GameUiView
+from pythongame.scenes.scenes_game.game_ui_view import GameUiView
 
 
 class AbstractNpcMind:

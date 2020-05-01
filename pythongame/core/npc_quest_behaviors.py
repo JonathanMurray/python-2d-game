@@ -10,7 +10,7 @@ from pythongame.core.npc_behaviors import AbstractNpcAction, register_conditiona
 from pythongame.core.npc_behaviors import AbstractNpcMind, DialogOptionData
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.sound_player import play_sound
-from pythongame.scenes_game.game_ui_view import GameUiView
+from pythongame.scenes.scenes_game.game_ui_view import GameUiView
 
 
 class GiveQuestNpcAction(AbstractNpcAction):

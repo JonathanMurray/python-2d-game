@@ -16,7 +16,7 @@ from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.image_loading import ImageWithRelativePosition
 from pythongame.core.view.render_util import DrawableArea
 from pythongame.map_editor.map_editor_world_entity import MapEditorWorldEntity
-from pythongame.scenes_game.ui_components import RadioButton, Checkbox, Minimap, MapEditorIcon, TooltipGraphics, Button
+from pythongame.scenes.scenes_game.ui_components import RadioButton, Checkbox, Minimap, MapEditorIcon, TooltipGraphics, Button
 
 COLOR_WHITE = (250, 250, 250)
 COLOR_BLACK = (0, 0, 0)

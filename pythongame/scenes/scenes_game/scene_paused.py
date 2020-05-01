@@ -5,7 +5,7 @@ import pygame
 from pythongame.core.common import AbstractScene, SceneTransition
 from pythongame.core.game_state import GameState
 from pythongame.core.view.game_world_view import GameWorldView
-from pythongame.scenes_game.game_ui_view import GameUiView
+from pythongame.scenes.scenes_game.game_ui_view import GameUiView
 
 
 class PausedScene(AbstractScene):

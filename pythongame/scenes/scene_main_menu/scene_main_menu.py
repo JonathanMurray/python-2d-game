@@ -5,9 +5,9 @@ import pygame
 from pythongame.core.common import AbstractScene, SceneTransition, Millis, SoundId
 from pythongame.core.sound_player import play_sound
 from pythongame.player_file import SavedPlayerState, SaveFileHandler
-from pythongame.scene_creating_world.scene_creating_world import InitFlags
-from pythongame.scene_factory import AbstractSceneFactory
-from pythongame.scene_main_menu.view_main_menu import MainMenuView, NUM_SHOWN_SAVE_FILES
+from pythongame.scenes.scene_creating_world.scene_creating_world import InitFlags
+from pythongame.scenes.scene_factory import AbstractSceneFactory
+from pythongame.scenes.scene_main_menu.view_main_menu import MainMenuView, NUM_SHOWN_SAVE_FILES
 
 DIR_FONTS = './resources/fonts/'
 

@@ -13,18 +13,18 @@ from pythongame.core.view.image_loading import load_images_by_sprite, \
     load_images_by_ui_sprite, load_images_by_portrait_sprite
 from pythongame.player_file import SaveFileHandler
 from pythongame.register_game_data import register_all_game_data
-from pythongame.scene_challenge_complete_screen.scene_challenge_complete_screen import ChallengeCompleteScreenScene
-from pythongame.scene_creating_world.scene_creating_world import CreatingWorldScene, InitFlags
-from pythongame.scene_factory import AbstractSceneFactory
-from pythongame.scene_main_menu.scene_main_menu import MainMenuScene
-from pythongame.scene_main_menu.view_main_menu import MainMenuView
-from pythongame.scene_picking_hero.scene_picking_hero import PickingHeroScene
-from pythongame.scene_picking_hero.view_picking_hero import PickingHeroView
-from pythongame.scene_starting_program.scene_starting_program import CommandlineFlags, StartingProgramScene
-from pythongame.scene_victory_screen.scene_victory_screen import VictoryScreenScene
-from pythongame.scenes_game.game_engine import GameEngine
-from pythongame.scenes_game.game_ui_view import GameUiView, UI_ICON_SIZE, PORTRAIT_ICON_SIZE, UI_ICON_BIG_SIZE
-from pythongame.scenes_game.scene_playing import PlayingScene
+from pythongame.scenes.scene_challenge_complete_screen.scene_challenge_complete_screen import ChallengeCompleteScreenScene
+from pythongame.scenes.scene_creating_world.scene_creating_world import CreatingWorldScene, InitFlags
+from pythongame.scenes.scene_factory import AbstractSceneFactory
+from pythongame.scenes.scene_main_menu.scene_main_menu import MainMenuScene
+from pythongame.scenes.scene_main_menu.view_main_menu import MainMenuView
+from pythongame.scenes.scene_picking_hero.scene_picking_hero import PickingHeroScene
+from pythongame.scenes.scene_picking_hero.view_picking_hero import PickingHeroView
+from pythongame.scenes.scene_starting_program.scene_starting_program import CommandlineFlags, StartingProgramScene
+from pythongame.scenes.scene_victory_screen.scene_victory_screen import VictoryScreenScene
+from pythongame.scenes.scenes_game.game_engine import GameEngine
+from pythongame.scenes.scenes_game.game_ui_view import GameUiView, UI_ICON_SIZE, PORTRAIT_ICON_SIZE, UI_ICON_BIG_SIZE
+from pythongame.scenes.scenes_game.scene_playing import PlayingScene
 
 ABILITY_KEY_LABELS = ["Q", "W", "E", "R", "T"]
 SCREEN_SIZE = (800, 600)  # If this is not a supported resolution, performance takes a big hit

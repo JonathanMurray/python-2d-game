@@ -2,8 +2,8 @@ from typing import Optional
 
 from pythongame.core.common import HeroId, Millis, AbstractScene, SceneTransition
 from pythongame.player_file import SaveFileHandler
-from pythongame.scene_creating_world.scene_creating_world import InitFlags
-from pythongame.scene_factory import AbstractSceneFactory
+from pythongame.scenes.scene_creating_world.scene_creating_world import InitFlags
+from pythongame.scenes.scene_factory import AbstractSceneFactory
 
 
 class CommandlineFlags:

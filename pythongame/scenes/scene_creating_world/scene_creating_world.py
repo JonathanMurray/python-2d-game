@@ -13,9 +13,9 @@ from pythongame.core.npc_behaviors import get_quest
 from pythongame.core.world_behavior import ChallengeBehavior, StoryBehavior
 from pythongame.map_file import load_map_from_json_file
 from pythongame.player_file import SavedPlayerState
-from pythongame.scene_factory import AbstractSceneFactory
-from pythongame.scenes_game.game_engine import GameEngine
-from pythongame.scenes_game.game_ui_view import GameUiView
+from pythongame.scenes.scene_factory import AbstractSceneFactory
+from pythongame.scenes.scenes_game.game_engine import GameEngine
+from pythongame.scenes.scenes_game.game_ui_view import GameUiView
 
 
 class InitFlags:

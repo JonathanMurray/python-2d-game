@@ -4,9 +4,9 @@ import pygame
 
 from pythongame.core.common import HeroId, AbstractScene, SceneTransition, SoundId
 from pythongame.core.sound_player import play_sound
-from pythongame.scene_creating_world.scene_creating_world import InitFlags
-from pythongame.scene_factory import AbstractSceneFactory
-from pythongame.scene_picking_hero.view_picking_hero import PickingHeroView
+from pythongame.scenes.scene_creating_world.scene_creating_world import InitFlags
+from pythongame.scenes.scene_factory import AbstractSceneFactory
+from pythongame.scenes.scene_picking_hero.view_picking_hero import PickingHeroView
 
 HEROES = [HeroId.MAGE, HeroId.WARRIOR, HeroId.ROGUE]
 

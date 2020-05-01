@@ -2,8 +2,8 @@ from typing import Optional
 
 from pythongame.core.common import Millis, AbstractScene, AbstractWorldBehavior
 from pythongame.core.game_state import GameState
-from pythongame.scenes_game.game_engine import GameEngine
-from pythongame.scenes_game.game_ui_view import GameUiView
+from pythongame.scenes.scenes_game.game_engine import GameEngine
+from pythongame.scenes.scenes_game.game_ui_view import GameUiView
 
 
 class AbstractSceneFactory:

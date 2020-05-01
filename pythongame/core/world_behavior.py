@@ -10,9 +10,9 @@ from pythongame.core.game_state import GameState
 from pythongame.core.item_data import randomized_item_id
 from pythongame.core.item_effects import try_add_item_to_inventory
 from pythongame.core.sound_player import play_sound
-from pythongame.scene_factory import AbstractSceneFactory
-from pythongame.scenes_game.game_engine import GameEngine
-from pythongame.scenes_game.game_ui_view import InfoMessage
+from pythongame.scenes.scene_factory import AbstractSceneFactory
+from pythongame.scenes.scenes_game.game_engine import GameEngine
+from pythongame.scenes.scenes_game.game_ui_view import InfoMessage
 
 
 class StoryBehavior(AbstractWorldBehavior):

@@ -17,14 +17,14 @@ from pythongame.core.user_input import ActionTryUseAbility, ActionTryUsePotion, 
     ActionChangeDialogOption, PlayingUserInputHandler, ActionRightMouseClicked, ActionPressKey
 from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.player_file import SaveFileHandler
-from pythongame.scenes_game.game_engine import GameEngine
-from pythongame.scenes_game.game_ui_view import DragItemBetweenInventorySlots, DropItemOnGround, \
+from pythongame.scenes.scenes_game.game_engine import GameEngine
+from pythongame.scenes.scenes_game.game_ui_view import DragItemBetweenInventorySlots, DropItemOnGround, \
     DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
     PickTalent, StartDraggingItemOrConsumable, TrySwitchItemInInventory, ToggleSound, SaveGame, EventTriggeredFromUi
-from pythongame.scenes_game.game_ui_view import GameUiView
-from pythongame.scenes_game.player_environment_interactions import PlayerInteractionsState
-from pythongame.scenes_game.scene_paused import PausedScene
-from pythongame.scenes_game.ui_events import ToggleFullscreen, ToggleWindow
+from pythongame.scenes.scenes_game.game_ui_view import GameUiView
+from pythongame.scenes.scenes_game.player_environment_interactions import PlayerInteractionsState
+from pythongame.scenes.scenes_game.scene_paused import PausedScene
+from pythongame.scenes.scenes_game.ui_events import ToggleFullscreen, ToggleWindow
 
 
 class PlayingScene(AbstractScene):
