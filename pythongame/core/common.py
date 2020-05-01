@@ -981,6 +981,7 @@ def get_random_hint():
 
 
 class SceneTransition:
+    # scene: AbstractScene
     def __init__(self, scene):
         self.scene = scene
 
