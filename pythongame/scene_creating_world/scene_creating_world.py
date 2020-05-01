@@ -1,4 +1,4 @@
-from typing import Optional, Callable
+from typing import Optional
 from typing import Tuple
 
 from pythongame.core.common import ConsumableType, Sprite, Observable, ItemId
@@ -7,13 +7,14 @@ from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.entity_creation import set_global_path_finder
 from pythongame.core.footsteps import play_or_stop_footstep_sounds
 from pythongame.core.game_data import allocate_input_keys_for_abilities
-from pythongame.core.game_state import GameState, QuestId
+from pythongame.core.game_state import QuestId
 from pythongame.core.hero_upgrades import pick_talent
 from pythongame.core.npc_behaviors import get_quest
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
-from pythongame.core.world_behavior import ChallengeBehavior, StoryBehavior, AbstractWorldBehavior
+from pythongame.core.world_behavior import ChallengeBehavior, StoryBehavior
 from pythongame.map_file import load_map_from_json_file
 from pythongame.player_file import SavedPlayerState
+from pythongame.scene_factory import AbstractSceneFactory
 from pythongame.scenes_game.game_engine import GameEngine
 from pythongame.scenes_game.game_ui_view import GameUiView
 
@@ -41,18 +42,10 @@ class InitFlags:
 class CreatingWorldScene(AbstractScene):
     def __init__(
             self,
-            playing_scene: Callable[
-                [GameState, GameEngine, AbstractWorldBehavior, GameUiView, bool, Optional[str], Millis],
-                AbstractScene],
-            picking_hero_scene: Callable[[InitFlags], AbstractScene],
-            challenge_complete_scene: Callable[[Millis], AbstractScene],
-            victory_screen_scene: Callable[[], AbstractScene],
+            scene_factory: AbstractSceneFactory,
             camera_size: Tuple[int, int], ui_view: GameUiView,
             flags: InitFlags):
-        self.playing_scene = playing_scene
-        self.picking_hero_scene = picking_hero_scene
-        self.challenge_complete_scene = challenge_complete_scene
-        self.victory_screen_scene = victory_screen_scene
+        self.scene_factory = scene_factory
         self.camera_size = camera_size
         self.ui_view = ui_view
 
@@ -120,10 +113,9 @@ class CreatingWorldScene(AbstractScene):
 
         if map_file_path == 'resources/maps/challenge.json':
             world_behavior = ChallengeBehavior(
-                self.picking_hero_scene, self.challenge_complete_scene, game_state, self.ui_view.info_message,
-                game_engine, self.flags)
+                self.scene_factory, game_state, self.ui_view.info_message, game_engine, self.flags)
         else:
-            world_behavior = StoryBehavior(self.victory_screen_scene, game_state, self.ui_view.info_message)
+            world_behavior = StoryBehavior(self.scene_factory, game_state, self.ui_view.info_message)
 
         if saved_player_state:
             game_engine.gain_levels(saved_player_state.level - 1)
@@ -173,7 +165,7 @@ class CreatingWorldScene(AbstractScene):
         allocate_input_keys_for_abilities(game_state.player_state.abilities)
 
         new_hero_was_created = saved_player_state is None
-        playing_scene = self.playing_scene(
+        playing_scene = self.scene_factory.playing_scene(
             game_state, game_engine, world_behavior, self.ui_view, new_hero_was_created, character_file,
             total_time_played_on_character)
         return SceneTransition(playing_scene)

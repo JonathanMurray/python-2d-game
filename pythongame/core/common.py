@@ -1055,3 +1055,20 @@ class LootTableId(Enum):
     BOSS_GOBLIN = 100
     BOSS_WARRIOR_KING = 101
     BOSS_SKELETON = 102
+
+
+class EngineEvent(Enum):
+    PLAYER_DIED = 1
+    ENEMY_DIED = 2
+
+
+class AbstractWorldBehavior:
+
+    def on_startup(self, new_hero_was_created: bool):
+        pass
+
+    def control(self, time_passed: Millis) -> Optional[SceneTransition]:
+        pass
+
+    def handle_event(self, event: EngineEvent) -> Optional[SceneTransition]:
+        pass

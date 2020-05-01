@@ -1,5 +1,6 @@
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import *
+from pythongame.core.common import EngineEvent
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
     create_consumable_on_ground
 from pythongame.core.game_data import CONSUMABLES, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities, \
@@ -21,11 +22,6 @@ from pythongame.game_data.portals import PORTAL_DELAY
 from pythongame.game_data.shrines import apply_shrine_buff_to_player
 from pythongame.scenes_game.game_ui_view import InfoMessage
 from pythongame.scenes_game.player_controls import PlayerControls
-
-
-class EngineEvent(Enum):
-    PLAYER_DIED = 1
-    ENEMY_DIED = 2
 
 
 class GameEngine:

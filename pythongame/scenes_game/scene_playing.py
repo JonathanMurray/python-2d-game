@@ -3,7 +3,7 @@ from typing import Optional, Any, List, Tuple, Callable
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis, SoundId, AbstractScene, SceneTransition, NpcType
+from pythongame.core.common import Millis, SoundId, AbstractScene, SceneTransition, NpcType, AbstractWorldBehavior
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     Chest, Shrine, DungeonEntrance
 from pythongame.core.hero_upgrades import pick_talent
@@ -16,7 +16,6 @@ from pythongame.core.user_input import ActionTryUseAbility, ActionTryUsePotion, 
     ActionMouseClicked, ActionMouseReleased, ActionPressSpaceKey, get_dialog_actions, \
     ActionChangeDialogOption, PlayingUserInputHandler, ActionRightMouseClicked, ActionPressKey
 from pythongame.core.view.game_world_view import GameWorldView
-from pythongame.core.world_behavior import AbstractWorldBehavior
 from pythongame.player_file import SaveFileHandler
 from pythongame.scenes_game.game_engine import GameEngine
 from pythongame.scenes_game.game_ui_view import DragItemBetweenInventorySlots, DropItemOnGround, \
