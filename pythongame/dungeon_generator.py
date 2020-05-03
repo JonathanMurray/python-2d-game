@@ -250,7 +250,7 @@ class DungeonGenerator:
         return (room.x + room.w // 2) * CELL_SIZE, (room.y + room.h // 2) * CELL_SIZE
 
     @staticmethod
-    def _determine_wall_type(grid: Grid, cell: Tuple[int, int]) -> WallType:
+    def determine_wall_type(grid: Grid, cell: Tuple[int, int]) -> WallType:
         x, y = cell
         w = (x - 1, y)
         e = (x + 1, y)
@@ -308,7 +308,7 @@ class DungeonGenerator:
                 if is_even_cell and any([grid.is_floor(c) for c in [(x, y), (x + 1, y), (x, y + 1), (x + 1, y + 1)]]):
                     decorations.append(create_decoration_entity(position, Sprite.DECORATION_GROUND_STONE))
                 if grid.is_wall((x, y)):
-                    wall_type = self._determine_wall_type(grid, (x, y))
+                    wall_type = self.determine_wall_type(grid, (x, y))
                     walls.append(create_wall(wall_type, position))
         return decorations, walls
 

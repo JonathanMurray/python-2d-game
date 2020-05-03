@@ -184,8 +184,10 @@ def get_item_affix_data(affix_id: ItemAffixId) -> ItemSuffixData:
 
 
 def get_item_affixes_at_level(level: int) -> List[ItemAffixId]:
-    return [id for id in ItemAffixId
-            if _item_affix_data_by_id[id].level_interval[0] <= level <= _item_affix_data_by_id[id].level_interval[1]]
+    return [item_id for item_id in ItemAffixId
+            if _item_affix_data_by_id[item_id].level_interval[0]
+            <= level
+            <= _item_affix_data_by_id[item_id].level_interval[1]]
 
 
 def randomized_item_id(item_type: ItemType) -> ItemId:

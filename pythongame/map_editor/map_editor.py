@@ -369,7 +369,7 @@ class MapEditor:
                         [self.grid.is_floor(c) for c in [(x, y), (x + 1, y), (x, y + 1), (x + 1, y + 1)]]):
                     _add_decoration(Sprite.DECORATION_GROUND_STONE, self.game_state, pos)
                 if self.grid.is_wall((x, y)):
-                    wall_type = determine_wall_type(self.grid, (x, y))
+                    wall_type = DungeonGenerator.determine_wall_type(self.grid, (x, y))
                     self._set_wall(pos, wall_type)
                 if self.grid.is_floor((x, y)):
                     # print("deleting wall from cell (%i,%i)" % (pos))
@@ -396,7 +396,7 @@ class MapEditor:
                     else:
                         _delete_map_decorations_from_position(self.game_state, pos)
                 if self.grid.is_wall((x, y)):
-                    wall_type = determine_wall_type(self.grid, (x, y))
+                    wall_type = DungeonGenerator.determine_wall_type(self.grid, (x, y))
                     self._set_wall(pos, wall_type)
                 else:
                     self._delete_wall(pos)
