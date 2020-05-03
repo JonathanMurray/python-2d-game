@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Dict
 
 from pythongame.core.common import NpcType, Direction, Sprite, ConsumableType, WallType, PortalId, HeroId, \
     ItemId, LootTableId
@@ -87,7 +87,7 @@ def create_decoration_entity(pos: Tuple[int, int], sprite: Sprite) -> Decoration
     return DecorationEntity(pos, sprite)
 
 
-def create_player_state_as_initial(hero_id: HeroId) -> PlayerState:
+def create_player_state_as_initial(hero_id: HeroId, enabled_portals: Dict[PortalId, Sprite]) -> PlayerState:
     # Note: All mutable types should be cloned before being given to game_state
     data = HEROES[hero_id].initial_player_state
     consumable_slots = {}
@@ -114,7 +114,7 @@ def create_player_state_as_initial(hero_id: HeroId) -> PlayerState:
     return PlayerState(
         health_resource, mana_resource, consumable_inventory, list(data.abilities), item_inventory,
         data.new_level_abilities, data.hero_id, data.armor, data.dodge_chance, data.level_bonus, data.talents_state,
-        data.block_chance, 0.05)
+        data.block_chance, 0.05, enabled_portals)
 
 
 def create_warp_point(center_pos: Tuple[int, int], size: Tuple[int, int]) -> WarpPoint:

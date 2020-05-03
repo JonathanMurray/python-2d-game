@@ -143,11 +143,13 @@ class GameEngine:
 
     def interact_with_portal(self, portal: Portal):
         if portal.is_enabled:
-            destination_portal = [p for p in self.game_state.game_world.portals if p.portal_id == portal.leads_to][0]
-            destination_portal.activate(portal.world_entity.sprite)
+            destination_portal_id = portal.leads_to
+            sprite = portal.world_entity.sprite
+            delay = PORTALS[portal.portal_id].teleport_delay
+            destination_portal = self.game_state.game_world.get_portal_with_id(destination_portal_id)
+            self.activate_portal(destination_portal, sprite)
             destination = translate_in_direction(destination_portal.world_entity.get_position(), Direction.DOWN, 50)
             teleport_buff_effect: AbstractBuffEffect = get_buff_effect(BuffType.TELEPORTING_WITH_PORTAL, destination)
-            delay = PORTALS[portal.portal_id].teleport_delay
             self.game_state.player_state.gain_buff_effect(teleport_buff_effect, delay)
         else:
             self.info_message.set_message("Hmm... Looks suspicious!")
@@ -155,13 +157,17 @@ class GameEngine:
     def handle_being_close_to_portal(self, portal: Portal):
         # When finding a new portal out on the map, it's enough to walk close to it, to activate its sibling
         if portal.is_enabled:
-            destination_portal = [p for p in self.game_state.game_world.portals if p.portal_id == portal.leads_to][0]
+            destination_portal = self.game_state.game_world.get_portal_with_id(portal.leads_to)
             if not destination_portal.is_enabled:
                 play_sound(SoundId.EVENT_PORTAL_ACTIVATED)
                 self.info_message.set_message("Portal was activated")
-                destination_portal.activate(portal.world_entity.sprite)
+                self.activate_portal(destination_portal, portal.world_entity.sprite)
                 self.game_state.game_world.visual_effects += create_teleport_effects(
                     portal.world_entity.get_center_position())
+
+    def activate_portal(self, portal: Portal, sprite: Sprite):
+        portal.activate(sprite)
+        self.game_state.player_state.enabled_portals[portal.portal_id] = sprite
 
     def interact_with_shrine(self, shrine: Shrine):
         if not shrine.has_been_used:

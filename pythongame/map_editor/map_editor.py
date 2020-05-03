@@ -316,7 +316,9 @@ class MapEditor:
             raise Exception("Unhandled event: " + str(action))
 
     def _set_game_world(self, game_world: GameWorldState, player_spawn_position: Tuple[int, int]):
-        player_state = create_player_state_as_initial(HERO_ID)
+        enabled_portals = {portal.portal_id: portal.world_entity.sprite for portal in game_world.portals
+                           if portal.is_enabled}
+        player_state = create_player_state_as_initial(HERO_ID, enabled_portals)
         self.game_state = GameState(game_world, CAMERA_SIZE, player_state, False, player_spawn_position)
         self.game_state.game_world.player_entity = create_hero_world_entity(HERO_ID, player_spawn_position)
         self.game_state.center_camera_on_position(player_spawn_position)

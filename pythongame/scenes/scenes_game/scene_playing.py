@@ -263,23 +263,25 @@ class PlayingScene(AbstractScene):
 
         entity_action_text = None
         # Don't display any actions on screen if player is stunned. It would look weird when using warp stones
-        if not self.game_state.player_state.stun_status.is_stunned():
+        player_state = self.game_state.player_state
+        if not player_state.stun_status.is_stunned():
             entity_action_text = self.player_interactions_state.get_entity_action_text(
                 self.user_input_handler.is_shift_held_down())
 
+        game_world = self.game_state.game_world
         self.world_view.render_world(
             all_entities_to_render=self.game_state.get_all_entities_to_render(),
             decorations_to_render=self.game_state.get_decorations_to_render(),
-            player_entity=self.game_state.game_world.player_entity,
-            is_player_invisible=self.game_state.player_state.is_invisible,
-            player_active_buffs=self.game_state.player_state.active_buffs,
+            player_entity=game_world.player_entity,
+            is_player_invisible=player_state.is_invisible,
+            player_active_buffs=player_state.active_buffs,
             camera_world_area=self.game_state.get_camera_world_area_including_camera_shake(),
-            non_player_characters=self.game_state.game_world.non_player_characters,
-            visual_effects=self.game_state.game_world.visual_effects,
+            non_player_characters=game_world.non_player_characters,
+            visual_effects=game_world.visual_effects,
             render_hit_and_collision_boxes=self.render_hit_and_collision_boxes,
-            player_health=self.game_state.player_state.health_resource.value,
-            player_max_health=self.game_state.player_state.health_resource.max_value,
-            entire_world_area=self.game_state.game_world.entire_world_area,
+            player_health=player_state.health_resource.value,
+            player_max_health=player_state.health_resource.max_value,
+            entire_world_area=game_world.entire_world_area,
             entity_action_text=entity_action_text)
 
         self.ui_view.render()
@@ -287,7 +289,7 @@ class PlayingScene(AbstractScene):
     def _save_game(self):
         play_sound(SoundId.EVENT_SAVED_GAME)
         filename = self.save_file_handler.save_to_file(
-            self.game_state, self.character_file, self.total_time_played_on_character)
+            self.game_state.player_state, self.character_file, self.total_time_played_on_character)
         if self.character_file is None:
             # This is relevant when saving a character for the first time. If we didn't update the field, we would
             # be creating a new file everytime we saved.

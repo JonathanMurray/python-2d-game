@@ -120,9 +120,9 @@ class Main:
         except Exception as e:
             print("Game crashed with an unexpected error! %s" % e)
             if hasattr(self.scene, 'game_state'):
-                game_state = getattr(self.scene, 'game_state', None)
+                game_state: GameState = getattr(self.scene, 'game_state', None)
                 print("Saving character to file as backup...")
-                self.save_file_handler.save_to_file(game_state, None, Millis(0))
+                self.save_file_handler.save_to_file(game_state.player_state, None, Millis(0))
             else:
                 print("Failed to save character to file as backup!")
             raise e

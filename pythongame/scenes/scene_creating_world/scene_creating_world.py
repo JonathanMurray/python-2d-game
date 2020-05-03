@@ -72,7 +72,7 @@ class CreatingWorldScene(AbstractScene):
         # NPC's share a "global path finder" that needs to be initialized before we start creating NPCs.
         # TODO This is very messy
         path_finder = init_global_path_finder()
-        game_state = self.load_map_and_setup_game_state(map_file_path, picked_hero_id)
+        game_state = self._load_map_and_setup_game_state(map_file_path, picked_hero_id)
         path_finder.set_grid(game_state.pathfinder_wall_grid)
 
         # Must center camera before notifying player position as it affects which walls are shown on the minimap
@@ -100,7 +100,7 @@ class CreatingWorldScene(AbstractScene):
             for portal in game_state.game_world.portals:
                 if portal.portal_id.name in saved_player_state.enabled_portals:
                     sprite = saved_player_state.enabled_portals[portal.portal_id.name]
-                    portal.activate(Sprite[sprite])
+                    game_engine.activate_portal(portal, Sprite[sprite])
             for tier_index, option_index in enumerate(saved_player_state.talent_tier_choices):
                 if option_index is not None:
                     pick_talent(game_state, tier_index, option_index)
@@ -139,12 +139,14 @@ class CreatingWorldScene(AbstractScene):
             total_time_played_on_character)
         return SceneTransition(playing_scene)
 
-    def load_map_and_setup_game_state(self, map_file_path: str, picked_hero_id: HeroId) -> GameState:
+    def _load_map_and_setup_game_state(self, map_file_path: str, picked_hero_id: HeroId) -> GameState:
         map_data = load_map_from_json_file(map_file_path)
         game_world = map_data.game_world
         game_world.player_entity = create_hero_world_entity(picked_hero_id, map_data.player_position)
+        enabled_portals = {portal.portal_id: portal.world_entity.sprite for portal in game_world.portals
+                           if portal.is_enabled}
         return GameState(game_world=game_world,
                          camera_size=self.camera_size,
-                         player_state=create_player_state_as_initial(picked_hero_id),
+                         player_state=create_player_state_as_initial(picked_hero_id, enabled_portals),
                          is_dungeon=False,
                          player_spawn_position=map_data.player_position)

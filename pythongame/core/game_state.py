@@ -231,7 +231,8 @@ class PlayerState:
                  level_bonus: PlayerLevelBonus,
                  talents_config: TalentsConfig,
                  base_block_chance: float,
-                 base_magic_resist_chance: float):
+                 base_magic_resist_chance: float,
+                 enabled_portals: Dict[PortalId, Sprite]):
         self.health_resource: HealthOrManaResource = health_resource
         self.mana_resource: HealthOrManaResource = mana_resource
         self.consumable_inventory = consumable_inventory
@@ -281,6 +282,7 @@ class PlayerState:
         self.life_on_kill: int = 0  # affected by items/buffs. [Change it additively]
         self.mana_on_kill: int = 0  # affected by items/buffs. [Change it additively]
         self.dungeon_difficulty_level = 1
+        self.enabled_portals = enabled_portals  # Part of playerState so that we can save it in save file easily
 
     def start_quest(self, quest: Quest):
         if [q for q in self.active_quests if q.quest_id == quest.quest_id]:
@@ -650,6 +652,9 @@ class GameWorldState:
         self.chests: List[Chest] = chests
         self.dungeon_entrances = dungeon_entrances
         self.player_movement_speed_was_updated = Observable()
+
+    def get_portal_with_id(self, portal_id: PortalId) -> Portal:
+        return [p for p in self.portals if p.portal_id == portal_id][0]
 
     def notify_movement_speed_observers(self):
         self.player_movement_speed_was_updated.notify(self.player_entity.get_speed_multiplier())

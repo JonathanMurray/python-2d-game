@@ -3,7 +3,7 @@ import os
 from typing import Dict, List, Optional
 
 from pythongame.core.common import Millis
-from pythongame.core.game_state import GameState
+from pythongame.core.game_state import PlayerState
 
 
 class SavedPlayerState:
@@ -75,13 +75,12 @@ class SaveFileHandler:
         with open(self.directory + "/" + filename, 'w') as file:
             file.write(json.dumps(json_data, indent=2))
 
-    def save_to_file(self, game_state: GameState, existing_save_file: Optional[str],
+    def save_to_file(self, player_state: PlayerState, existing_save_file: Optional[str],
                      total_time_played_on_character: Millis) -> str:
         if existing_save_file:
             filename = existing_save_file
         else:
             filename = self._generate_filename_for_new_character()
-        player_state = game_state.player_state
         saved_player_state = SavedPlayerState(
             hero_id=player_state.hero_id.name,
             level=player_state.level,
@@ -91,9 +90,8 @@ class SaveFileHandler:
             items=[[slot.get_item_id().stats_string, slot.get_item_id().name] if not slot.is_empty() else None
                    for slot in player_state.item_inventory.slots],
             money=player_state.money,
-            enabled_portals={p.portal_id.name: p.world_entity.sprite.name
-                             for p in game_state.game_world.portals if
-                             p.is_enabled},
+            enabled_portals={portal_id.name: sprite.name
+                             for (portal_id, sprite) in player_state.enabled_portals.items()},
             talent_tier_choices=player_state.get_serilized_talent_tier_choices(),
             total_time_played_on_character=total_time_played_on_character,
             active_quests=[q.quest_id.name for q in player_state.active_quests],
