@@ -25,7 +25,7 @@ class MainMenuScene(AbstractScene):
         self.scene_factory = scene_factory
         self.flags = flags
         self._files = save_file_handler.list_save_files()
-        self._files.sort()
+        self._files.sort(key=lambda file: int(file.split(".")[0]))
         self._saved_characters: List[SavedPlayerState] = [
             save_file_handler.load_player_state_from_json_file(file) for file in self._files]
         self._view = view
