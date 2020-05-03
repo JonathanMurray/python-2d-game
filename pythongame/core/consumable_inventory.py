@@ -9,6 +9,10 @@ class ConsumableInventory:
         self.capacity_per_slot = 2
         self.was_updated = Observable()
 
+    def set_slots(self, slots: Dict[int, List[ConsumableType]]):
+        self.consumables_in_slots = slots
+        self.notify_observers()
+
     def has_space_for_more(self) -> bool:
         slots_with_space = [consumables for consumables in self.consumables_in_slots.values() if
                             len(consumables) < self.capacity_per_slot]

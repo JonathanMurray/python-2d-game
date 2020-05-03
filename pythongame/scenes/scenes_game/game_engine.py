@@ -103,7 +103,7 @@ class GameEngine:
         else:
             self.info_message.set_message("No space for " + item_name)
 
-    def set_item_inventory(self, items: List[ItemId]):
+    def fill_item_inventory(self, items: List[ItemId]):
         for slot_number, item_id in enumerate(items):
             if item_id:
                 item_effect = create_item_effect(item_id)
