@@ -178,7 +178,9 @@ class GameEngine:
     def open_chest(self, chest: Chest):
         increased_money_chance = self.game_state.player_state.increased_loot_money_chance
         increased_rare_or_unique_chance = self.game_state.player_state.increased_loot_rare_or_unique_chance
-        loot = get_loot_table(chest.loot_table).generate_loot(increased_money_chance, increased_rare_or_unique_chance)
+        loot_table = get_loot_table(chest.loot_table)
+        loot = loot_table.generate_loot(increased_money_chance, increased_rare_or_unique_chance,
+                                        self.game_state.is_dungeon)
         chest_position = chest.world_entity.get_position()
         self._put_loot_on_ground(chest_position, loot)
         chest.has_been_opened = True
@@ -226,8 +228,9 @@ class GameEngine:
                     play_sound(SoundId.EVENT_ENEMY_DIED)
                 increased_money_chance = self.game_state.player_state.increased_loot_money_chance
                 increased_rare_or_unique_chance = self.game_state.player_state.increased_loot_rare_or_unique_chance
-                loot: List[LootEntry] = get_loot_table(enemy_that_died.enemy_loot_table).generate_loot(
-                    increased_money_chance, increased_rare_or_unique_chance)
+                loot_table = get_loot_table(enemy_that_died.enemy_loot_table)
+                loot: List[LootEntry] = loot_table.generate_loot(
+                    increased_money_chance, increased_rare_or_unique_chance, self.game_state.is_dungeon)
                 enemy_death_position = enemy_that_died.world_entity.get_position()
                 self._put_loot_on_ground(enemy_death_position, loot)
                 self.game_state.player_state.notify_about_event(EnemyDiedEvent(), self.game_state)

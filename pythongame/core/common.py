@@ -449,7 +449,7 @@ class ItemType(Enum):
     WAND = 87
     GLADIATOR_ARMOR = 88
     NOBLE_DEFENDER = 89
-    FROG = 90
+    QUEST_FROG = 90
     HATCHET = 91
     ELITE_HELMET = 92
     STONE_AMULET = 93

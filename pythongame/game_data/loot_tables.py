@@ -43,7 +43,7 @@ def _table_for_chest():
 def _table_for_goblin_boss() -> LootTable:
     level = 5
     return LeveledLootTable(
-        guaranteed_drops=[ItemLootEntry(ItemType.FROG), ConsumableLootEntry(ConsumableType.WARP_STONE)],
+        guaranteed_drops=[ItemLootEntry(ItemType.QUEST_FROG), ConsumableLootEntry(ConsumableType.WARP_STONE)],
         item_drop_chance=1,
         item_rare_or_unique_chance=1,
         level=level,

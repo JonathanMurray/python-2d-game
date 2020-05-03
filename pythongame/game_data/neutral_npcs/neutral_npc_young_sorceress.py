@@ -11,7 +11,7 @@ from pythongame.core.view.image_loading import SpriteSheet
 
 QUEST_MIN_LEVEL = 1
 QUEST_ID = QuestId.RETRIEVE_FROG
-QUEST_ITEM_TYPE = ItemType.FROG
+QUEST_ITEM_TYPE = ItemType.QUEST_FROG
 
 
 class NpcMind(QuestGiverNpcMind):
@@ -62,7 +62,7 @@ def register_young_sorceress_npc():
         quest_min_level=QUEST_MIN_LEVEL,
         quest_intro="Will you help me? I'll give you something in return. Promise!",
         boss_npc_type=NpcType.GOBLIN_WARRIOR,
-        quest_item_type=ItemType.FROG,
+        quest_item_type=ItemType.QUEST_FROG,
         custom_options=[],
         dialog_before_quest="",
         dialog_give_quest="Hey you! Have you seen my pet frog? I bet it was that old green mean goblin king that took "
