@@ -30,6 +30,7 @@ def create_dungeon_game_state(player_state: PlayerState, camera_size: Tuple[int,
         camera_size=camera_size,
         player_state=player_state,
         is_dungeon=True,
+        player_spawn_position=dungeon.player_position
     )
 
 

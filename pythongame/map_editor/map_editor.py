@@ -89,9 +89,9 @@ class MapEditor:
 
         if Path(self.map_file_path).exists():
             print("Loading map '%s' from file." % self.map_file_path)
-            map_data = load_map_from_json_file(CAMERA_SIZE, self.map_file_path, HERO_ID)
-            game_state = map_data.game_state
-            self._set_game_state(game_state)
+            map_data = load_map_from_json_file(self.map_file_path)
+            player_position = map_data.player_position
+            self._set_game_world(map_data.game_world, player_position)
             self.config = map_data.map_editor_config
             if map_data.grid_string:
                 print("Initializing grid from existing map data.")
@@ -104,10 +104,9 @@ class MapEditor:
                     print("Grid disabled for this map. Using smart floor tiles will not work.")
         else:
             print("Map file '%s' not found! New map is created." % self.map_file_path)
-            player_entity = create_hero_world_entity(HERO_ID, (0, 0))
-            player_state = create_player_state_as_initial(HERO_ID)
+            player_position = (0, 0)
             game_world = GameWorldState(
-                player_entity=player_entity,
+                player_entity=None,
                 consumables_on_ground=[],
                 items_on_ground=[],
                 money_piles_on_ground=[],
@@ -120,15 +119,10 @@ class MapEditor:
                 shrines=[],
                 dungeon_entrances=[],
             )
-            game_state = GameState(
-                game_world=game_world,
-                camera_size=CAMERA_SIZE,
-                player_state=player_state,
-                is_dungeon=False)
-            self._set_game_state(game_state)
+            self._set_game_world(game_world, player_position)
             self.config = MapEditorConfig(disable_smart_grid=False)
-            grid_size = (game_state.game_world.entire_world_area.w // GRID_CELL_SIZE,
-                         game_state.game_world.entire_world_area.h // GRID_CELL_SIZE)
+            grid_size = (self.game_state.game_world.entire_world_area.w // GRID_CELL_SIZE,
+                         self.game_state.game_world.entire_world_area.h // GRID_CELL_SIZE)
             self.grid = Grid.create_from_rects(grid_size, [])
 
         pygame.init()
@@ -243,9 +237,9 @@ class MapEditor:
                              self.game_state.game_world.non_player_characters]
 
             named_portal_positions = {p.world_entity.get_position(): p.portal_id.name for p in
-                                      game_state.game_world.portals}
+                                      self.game_state.game_world.portals}
             named_npc_positions = {npc.world_entity.get_position(): npc.npc_type.name for npc in
-                                   game_state.game_world.non_player_characters}
+                                   self.game_state.game_world.non_player_characters}
             named_world_positions = {**named_portal_positions, **named_npc_positions}
 
             fps_string = str(int(clock.get_fps()))
@@ -267,7 +261,8 @@ class MapEditor:
 
     def save(self):
         grid_string = self.grid.serialize()
-        map_data = MapData(self.game_state, self.config, grid_string)
+        game_world = self.game_state.game_world
+        map_data = MapData(game_world, self.config, grid_string, game_world.player_entity.get_position())
         save_map_to_json_file(map_data, self.map_file_path)
         print("Saved state to " + self.map_file_path)
 
@@ -320,9 +315,11 @@ class MapEditor:
         else:
             raise Exception("Unhandled event: " + str(action))
 
-    def _set_game_state(self, game_state: GameState):
-        self.game_state = game_state
-        self.game_state.center_camera_on_player()
+    def _set_game_world(self, game_world: GameWorldState, player_spawn_position: Tuple[int, int]):
+        player_state = create_player_state_as_initial(HERO_ID)
+        self.game_state = GameState(game_world, CAMERA_SIZE, player_state, False, player_spawn_position)
+        self.game_state.game_world.player_entity = create_hero_world_entity(HERO_ID, player_spawn_position)
+        self.game_state.center_camera_on_position(player_spawn_position)
         self.game_state.snap_camera_to_grid(self.grid_cell_size)
         if self.ui_view:  # UI view may not have been created yet at this time
             self._notify_ui_of_new_wall_positions()
@@ -355,9 +352,9 @@ class MapEditor:
         print("Generating random mapp ...")
         self.grid, rooms = dungeon_generator.generate_random_grid()
         map_json = dungeon_generator.generate_random_map_as_json_from_grid(self.grid, rooms)
-        map_data = create_map_from_json(CAMERA_SIZE, map_json, HERO_ID)
+        map_data = create_map_from_json(map_json)
         print("Random map generated.")
-        self._set_game_state(map_data.game_state)
+        self._set_game_world(map_data.game_world, map_data.player_position)
 
     @staticmethod
     def generate_npc_for_random_map(x: int, y: int) -> Optional[NonPlayerCharacter]:

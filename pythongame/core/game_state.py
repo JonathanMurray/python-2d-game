@@ -619,7 +619,7 @@ class CameraShake:
 
 class GameWorldState:
     def __init__(self,
-                 player_entity: WorldEntity,
+                 player_entity: Optional[WorldEntity],  # sometimes we want to model a map without caring about the hero
                  consumables_on_ground: List[ConsumableOnGround],
                  items_on_ground: List[ItemOnGround],
                  money_piles_on_ground: List[MoneyPileOnGround],
@@ -784,7 +784,9 @@ class GameState:
                  game_world: GameWorldState,
                  camera_size: Tuple[int, int],
                  player_state: PlayerState,
-                 is_dungeon: bool):
+                 is_dungeon: bool,
+                 player_spawn_position: Tuple[int, int],
+                 ):
 
         self.game_world = game_world
         self.camera_size = camera_size
@@ -792,7 +794,7 @@ class GameState:
         self.camera_shake: CameraShake = None
         self.pathfinder_wall_grid = self._setup_pathfinder_wall_grid(
             self.game_world.entire_world_area, [w.world_entity for w in game_world.walls_state.walls])
-        self.player_spawn_position: Tuple[int, int] = game_world.player_entity.get_position()
+        self.player_spawn_position: Tuple[int, int] = player_spawn_position
         self.is_dungeon = is_dungeon
         self.player_state: PlayerState = player_state
 
@@ -839,8 +841,10 @@ class GameState:
         return camera_world_area
 
     def center_camera_on_player(self):
-        new_camera_pos = get_position_from_center_position(self.game_world.player_entity.get_center_position(),
-                                                           self.camera_size)
+        self.center_camera_on_position(self.game_world.player_entity.get_center_position())
+
+    def center_camera_on_position(self, position: Tuple[int, int]):
+        new_camera_pos = get_position_from_center_position(position, self.camera_size)
         new_camera_pos_within_world = self.game_world.get_within_world(new_camera_pos,
                                                                        (self.camera_size[0], self.camera_size[1]))
         self.camera_world_area.topleft = new_camera_pos_within_world

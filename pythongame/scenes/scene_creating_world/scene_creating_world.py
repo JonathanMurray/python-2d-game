@@ -3,7 +3,9 @@ from typing import Tuple
 
 from pythongame.core.common import ConsumableType, Sprite, ItemId
 from pythongame.core.common import Millis, HeroId, AbstractScene, SceneTransition
+from pythongame.core.entity_creation import create_player_state_as_initial, create_hero_world_entity
 from pythongame.core.game_data import allocate_input_keys_for_abilities
+from pythongame.core.game_state import GameState
 from pythongame.core.global_path_finder import init_global_path_finder
 from pythongame.core.hero_upgrades import pick_talent
 from pythongame.core.npc_behaviors import get_quest
@@ -56,21 +58,21 @@ class CreatingWorldScene(AbstractScene):
         saved_player_state = self.flags.saved_player_state
         hero_start_level = self.flags.hero_start_level
         start_money = self.flags.start_money
-        picked_hero = self.flags.picked_hero
+        picked_hero_id = self.flags.picked_hero
         map_file_path = self.flags.map_file_path
         character_file = self.flags.character_file
         if saved_player_state:
             hero_from_saved_state = HeroId[saved_player_state.hero_id]
-            if picked_hero is not None and picked_hero != hero_from_saved_state:
+            if picked_hero_id is not None and picked_hero_id != hero_from_saved_state:
                 raise Exception("Mismatch! Hero from saved state: " + str(hero_from_saved_state) + ", but picked hero: "
-                                + str(picked_hero))
-            picked_hero = hero_from_saved_state
+                                + str(picked_hero_id))
+            picked_hero_id = hero_from_saved_state
         total_time_played_on_character = saved_player_state.total_time_played_on_character if saved_player_state else 0
 
         # NPC's share a "global path finder" that needs to be initialized before we start creating NPCs.
         # TODO This is very messy
         path_finder = init_global_path_finder()
-        game_state = load_map_from_json_file(self.camera_size, map_file_path, picked_hero).game_state
+        game_state = self.load_map_and_setup_game_state(map_file_path, picked_hero_id)
         path_finder.set_grid(game_state.pathfinder_wall_grid)
 
         # Must center camera before notifying player position as it affects which walls are shown on the minimap
@@ -136,3 +138,13 @@ class CreatingWorldScene(AbstractScene):
             game_state, game_engine, world_behavior, self.ui_view, new_hero_was_created, character_file,
             total_time_played_on_character)
         return SceneTransition(playing_scene)
+
+    def load_map_and_setup_game_state(self, map_file_path: str, picked_hero_id: HeroId) -> GameState:
+        map_data = load_map_from_json_file(map_file_path)
+        game_world = map_data.game_world
+        game_world.player_entity = create_hero_world_entity(picked_hero_id, map_data.player_position)
+        return GameState(game_world=game_world,
+                         camera_size=self.camera_size,
+                         player_state=create_player_state_as_initial(picked_hero_id),
+                         is_dungeon=False,
+                         player_spawn_position=map_data.player_position)
