@@ -1,3 +1,4 @@
+import random
 import sys
 from pathlib import Path
 from typing import Tuple, Optional, List
@@ -10,8 +11,9 @@ from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, Po
 from pythongame.core.entity_creation import create_portal, create_hero_world_entity, create_npc, create_wall, \
     create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground, \
     create_player_state, create_chest, create_shrine, create_dungeon_entrance
-from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, PORTRAIT_ICON_SPRITE_PATHS
-from pythongame.core.game_state import GameState
+from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, PORTRAIT_ICON_SPRITE_PATHS, \
+    NON_PLAYER_CHARACTERS, NpcCategory
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.item_data import randomized_item_id
 from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.game_world_view import GameWorldView
@@ -321,13 +323,32 @@ class MapEditor:
         self.grid.add_floor_cells(floor_cells)
 
     def _generate_random_map(self):
-        dungeon_generator = DungeonGenerator()
+        # Prefer maps that are longer on the horizontal axis, due to the aspect ratio of the in-game camera
+        w = random.randint(100, 130)
+        world_size = (w, 200 - w)
+        dungeon_generator = DungeonGenerator(
+            world_size=world_size,
+            max_num_rooms=15,
+            room_allowed_width=(8, 25),
+            room_allowed_height=(8, 25),
+            corridor_allowed_width=(2, 6),
+            generate_npc=self.generate_npc_for_random_map)
         print("Generating random mapp ...")
         self.grid, rooms = dungeon_generator.generate_random_grid()
         map_json = dungeon_generator.generate_random_map_as_json_from_grid(self.grid, rooms)
         map_data = create_map_from_json(CAMERA_SIZE, map_json, HERO_ID)
         print("Random map generated.")
         self._set_game_state(map_data.game_state)
+
+    @staticmethod
+    def generate_npc_for_random_map(x: int, y: int) -> Optional[NonPlayerCharacter]:
+        npc_types = list(NpcType.__members__.values())
+        valid_enemy_types = [npc_type for npc_type in npc_types
+                             if NON_PLAYER_CHARACTERS[npc_type].npc_category == NpcCategory.ENEMY
+                             and npc_type != NpcType.DARK_REAPER]
+        if random.random() < 0.2:
+            npc_type = random.choice(valid_enemy_types)
+            return create_npc(npc_type, (x, y))
 
     def _add_smart_floor_tiles(self, tiles: List[Tuple[int, int, int, int]]):
         floor_cells = [((r[0] - self.game_state.entire_world_area.x) // GRID_CELL_SIZE,

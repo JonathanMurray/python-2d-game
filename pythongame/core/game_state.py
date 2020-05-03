@@ -453,6 +453,7 @@ class PlayerState:
         self.increased_loot_rare_or_unique_chance = 0
         self.life_on_kill: int = 0  # affected by items/buffs. [Change it additively]
         self.mana_on_kill: int = 0  # affected by items/buffs. [Change it additively]
+        self.dungeon_difficulty_level = 1
 
     def start_quest(self, quest: Quest):
         if [q for q in self.active_quests if q.quest_id == quest.quest_id]:

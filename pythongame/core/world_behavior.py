@@ -84,11 +84,13 @@ class DungeonBehavior(AbstractWorldBehavior):
                         "You will be warped out in %s" % self.countdown_until_hero_will_be_warped_out_of_dungeon)
                     self.countdown_until_hero_will_be_warped_out_of_dungeon -= 1
                 else:
+                    self.game_state.player_state.dungeon_difficulty_level += 1
                     return self._transition_out_of_dungeon()
 
     def handle_event(self, event: EngineEvent) -> Optional[SceneTransition]:
         if event == EngineEvent.PLAYER_DIED:
             # Player will "die again" outside of the dungeon which will trigger exp loss and respawning at base
+            # TODO spawn animation doesn't work? Maybe we should just set HP to 1 and let hero spawn at entrance
             return self._transition_out_of_dungeon()
         elif event == EngineEvent.ENEMY_DIED:
             num_enemies = len([npc for npc in self.game_state.non_player_characters if npc.is_enemy])

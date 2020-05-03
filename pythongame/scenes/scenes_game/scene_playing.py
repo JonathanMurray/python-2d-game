@@ -5,9 +5,8 @@ import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 from pythongame.core.common import AbstractWorldBehavior
 from pythongame.core.common import Millis, SoundId, AbstractScene, SceneTransition, NpcType, ItemType
-from pythongame.core.entity_creation import create_hero_world_entity
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
-    Chest, Shrine, DungeonEntrance, PlayerState
+    Chest, Shrine, DungeonEntrance
 from pythongame.core.hero_upgrades import pick_talent
 from pythongame.core.item_data import plain_item_id
 from pythongame.core.math import get_directions_to_position
@@ -20,7 +19,7 @@ from pythongame.core.user_input import ActionTryUseAbility, ActionTryUsePotion, 
     ActionChangeDialogOption, PlayingUserInputHandler, ActionRightMouseClicked, ActionPressKey
 from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.core.world_behavior import DungeonBehavior
-from pythongame.dungeon_generator import GeneratedDungeon, DungeonGenerator
+from pythongame.leveled_dungeons import create_dungeon_game_state
 from pythongame.player_file import SaveFileHandler
 from pythongame.scenes.scene_factory import AbstractSceneFactory
 from pythongame.scenes.scenes_game.game_engine import GameEngine
@@ -221,11 +220,13 @@ class PlayingScene(AbstractScene):
             return SceneTransition(PausedScene(self, self.world_view, self.ui_view, self.game_state))
 
     def _create_dungeon_engine_and_behavior(self, previous_engine: GameEngine):
-        new_game_state = _create_dungeon_game_state(
-            previous_engine.game_state.player_state, previous_engine.game_state.camera_size)
+        previous_game_state = previous_engine.game_state
+        player_state = previous_game_state.player_state
+        new_game_state = create_dungeon_game_state(player_state, previous_game_state.camera_size,
+                                                   player_state.dungeon_difficulty_level)
         new_game_engine = GameEngine(new_game_state, self.ui_view.info_message)
         new_behavior = DungeonBehavior(
-            self.scene_factory, previous_engine.game_state, new_game_engine,
+            self.scene_factory, previous_game_state, new_game_engine,
             self.ui_view.info_message, self.character_file,
             self.total_time_played_on_character)
         return new_game_engine, new_behavior
@@ -297,29 +298,3 @@ class PlayingScene(AbstractScene):
 def _get_mouse_world_pos(game_state: GameState, mouse_screen_position: Tuple[int, int]):
     return (int(mouse_screen_position[0] + game_state.camera_world_area.x),
             int(mouse_screen_position[1] + game_state.camera_world_area.y))
-
-
-def _create_dungeon_game_state(player_state: PlayerState, camera_size: Tuple[int, int]) -> GameState:
-    dungeon = _generate_dungeon()
-    player_entity = create_hero_world_entity(player_state.hero_id, dungeon.player_position)
-    return GameState(
-        player_entity=player_entity,
-        consumables_on_ground=[],
-        items_on_ground=[],
-        money_piles_on_ground=[],
-        non_player_characters=dungeon.npcs,
-        walls=dungeon.walls,
-        camera_size=camera_size,
-        entire_world_area=dungeon.world_area,
-        player_state=player_state,
-        decoration_entities=dungeon.decorations,
-        portals=[],
-        chests=[],
-        shrines=[],
-        dungeon_entrances=[])
-
-
-def _generate_dungeon() -> GeneratedDungeon:
-    generator = DungeonGenerator()
-    dungeon_grid, dungeon_rooms = generator.generate_random_grid()
-    return generator.generate_random_dungeon_from_grid(dungeon_grid, dungeon_rooms)
