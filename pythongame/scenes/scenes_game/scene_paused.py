@@ -33,16 +33,16 @@ class PausedScene(AbstractScene):
         self.world_view.render_world(
             all_entities_to_render=self.game_state.get_all_entities_to_render(),
             decorations_to_render=self.game_state.get_decorations_to_render(),
-            player_entity=self.game_state.player_entity,
+            player_entity=self.game_state.game_world.player_entity,
             is_player_invisible=self.game_state.player_state.is_invisible,
             player_active_buffs=self.game_state.player_state.active_buffs,
             camera_world_area=self.game_state.camera_world_area,
-            non_player_characters=self.game_state.non_player_characters,
-            visual_effects=self.game_state.visual_effects,
+            non_player_characters=self.game_state.game_world.non_player_characters,
+            visual_effects=self.game_state.game_world.visual_effects,
             render_hit_and_collision_boxes=False,
             player_health=self.game_state.player_state.health_resource.value,
             player_max_health=self.game_state.player_state.health_resource.max_value,
-            entire_world_area=self.game_state.entire_world_area,
+            entire_world_area=self.game_state.game_world.entire_world_area,
             entity_action_text=None)
 
         self.ui_view.render()

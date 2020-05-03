@@ -48,8 +48,8 @@ class DebuffedByGoatsRing(AbstractBuffEffect):
             position = buffed_entity.get_center_position()
             visual_effect1 = VisualCircle((0, 100, 40), position, 9, 16, Millis(400), 2, buffed_entity)
             visual_effect2 = VisualCircle((0, 180, 90), position, 9, 16, Millis(500), 2, buffed_entity)
-            game_state.visual_effects.append(visual_effect1)
-            game_state.visual_effects.append(visual_effect2)
+            game_state.game_world.visual_effects.append(visual_effect1)
+            game_state.game_world.visual_effects.append(visual_effect2)
 
     def get_buff_type(self):
         return BUFF_TYPE

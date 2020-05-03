@@ -26,19 +26,19 @@ class BuffEffect(AbstractBuffEffect):
             deal_player_damage_to_enemy(game_state, buffed_npc, DAMAGE, DamageType.MAGIC)
             pos = buffed_entity.get_center_position()
             effect = VisualCircle((100, 150, 100), pos, 40, 50, Millis(500), 1)
-            game_state.visual_effects += [effect]
+            game_state.game_world.visual_effects += [effect]
 
     def get_buff_type(self):
         return BUFF_TYPE
 
 
 def _apply(game_state: GameState):
-    pos = game_state.player_entity.get_center_position()
+    pos = game_state.game_world.player_entity.get_center_position()
     effect1 = VisualCircle((100, 150, 100), pos, 40, 120, Millis(2200), 2)
     effect2 = VisualCircle((100, 150, 100), pos, 40, 130, Millis(2000), 1)
-    game_state.visual_effects += [effect1, effect2]
+    game_state.game_world.visual_effects += [effect1, effect2]
 
-    affected_enemies = game_state.get_enemies_within_x_y_distance_of(120, pos)
+    affected_enemies = game_state.game_world.get_enemies_within_x_y_distance_of(120, pos)
     for enemy in affected_enemies:
         enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE), DEBUFF_DURATION)
 

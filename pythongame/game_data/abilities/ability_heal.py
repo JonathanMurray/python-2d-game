@@ -23,10 +23,10 @@ class HealingOverTime(AbstractBuffEffect):
         game_state.player_state.health_resource.gain(healing_amount * float(time_passed))
         if self._time_since_graphics > 500:
             estimate_health_gained = int(self._time_since_graphics * healing_amount)
-            game_state.visual_effects.append(
-                create_visual_healing_text(game_state.player_entity, estimate_health_gained))
-            game_state.visual_effects.append(
-                VisualCircle((200, 200, 50), game_state.player_entity.get_center_position(),
+            game_state.game_world.visual_effects.append(
+                create_visual_healing_text(game_state.game_world.player_entity, estimate_health_gained))
+            game_state.game_world.visual_effects.append(
+                VisualCircle((200, 200, 50), game_state.game_world.player_entity.get_center_position(),
                              5, 10, Millis(100), 0))
             self._time_since_graphics = 0
 

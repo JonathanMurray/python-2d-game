@@ -95,19 +95,20 @@ class ProjectileController(AbstractProjectileController):
     def apply_player_collision(self, game_state: GameState, projectile: Projectile):
         deal_damage_to_player(game_state, 1, DamageType.MAGIC, None)
         game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.ENEMY_GOBLIN_WARLOCK_BURNT), Millis(5000))
-        game_state.visual_effects.append(VisualCircle((180, 50, 50), game_state.player_entity.get_center_position(),
-                                                      25, 50, Millis(100), 0))
+        game_state.game_world.visual_effects.append(
+            VisualCircle((180, 50, 50), game_state.game_world.player_entity.get_center_position(),
+                         25, 50, Millis(100), 0))
         projectile.has_collided_and_should_be_removed = True
 
     def apply_player_summon_collision(self, npc: NonPlayerCharacter, game_state: GameState, projectile: Projectile):
         deal_npc_damage_to_npc(game_state, npc, 1)
         npc.gain_buff_effect(get_buff_effect(BuffType.ENEMY_GOBLIN_WARLOCK_BURNT), Millis(5000))
-        game_state.visual_effects.append(
+        game_state.game_world.visual_effects.append(
             VisualCircle((180, 50, 50), npc.world_entity.get_center_position(), 25, 50, Millis(100), 0))
         projectile.has_collided_and_should_be_removed = True
 
     def apply_wall_collision(self, game_state: GameState, projectile: Projectile):
-        game_state.visual_effects.append(
+        game_state.game_world.visual_effects.append(
             VisualCircle((180, 50, 50), projectile.world_entity.get_center_position(), 12, 24, Millis(100), 0))
         projectile.has_collided_and_should_be_removed = True
 
@@ -123,13 +124,14 @@ class Burnt(AbstractBuffEffect):
             self._time_since_graphics = 0
             if buffed_npc:
                 deal_npc_damage_to_npc(game_state, buffed_npc, 2)
-                game_state.visual_effects.append(
+                game_state.game_world.visual_effects.append(
                     VisualCircle((180, 50, 50), buffed_npc.world_entity.get_center_position(), 10, 20, Millis(50), 0,
                                  buffed_entity))
             else:
                 deal_damage_to_player(game_state, 2, DamageType.MAGIC, None)
-                game_state.visual_effects.append(
-                    VisualCircle((180, 50, 50), game_state.player_entity.get_center_position(), 10, 20, Millis(50), 0,
+                game_state.game_world.visual_effects.append(
+                    VisualCircle((180, 50, 50), game_state.game_world.player_entity.get_center_position(), 10, 20,
+                                 Millis(50), 0,
                                  buffed_entity))
 
     def get_buff_type(self):

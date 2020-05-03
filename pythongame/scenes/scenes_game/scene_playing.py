@@ -77,7 +77,7 @@ class PlayingScene(AbstractScene):
         # TODO handle dialog/no dialog more explicitly as states, and delegate more things to them (?)
 
         if self.ui_view.has_open_dialog():
-            self.game_state.player_entity.set_not_moving()
+            self.game_state.game_world.player_entity.set_not_moving()
             user_actions = get_dialog_actions(events)
             for action in user_actions:
                 if isinstance(action, ActionChangeDialogOption):
@@ -139,7 +139,8 @@ class PlayingScene(AbstractScene):
                     if ready_entity is not None:
                         if isinstance(ready_entity, NonPlayerCharacter):
                             ready_entity.world_entity.direction = get_directions_to_position(
-                                ready_entity.world_entity, self.game_state.player_entity.get_center_position())[0]
+                                ready_entity.world_entity,
+                                self.game_state.game_world.player_entity.get_center_position())[0]
                             ready_entity.world_entity.set_not_moving()
                             ready_entity.stun_status.add_one()
                             npc_type = ready_entity.npc_type
@@ -241,7 +242,7 @@ class PlayingScene(AbstractScene):
 
         if not self.ui_view.has_open_dialog():
             self.player_interactions_state.handle_nearby_entities(
-                self.game_state.player_entity, self.game_state, self.game_engine)
+                self.game_state.game_world.player_entity, self.game_state, self.game_engine)
 
         # ------------------------------------
         #     UPDATE STATE BASED ON CLOCK
@@ -269,16 +270,16 @@ class PlayingScene(AbstractScene):
         self.world_view.render_world(
             all_entities_to_render=self.game_state.get_all_entities_to_render(),
             decorations_to_render=self.game_state.get_decorations_to_render(),
-            player_entity=self.game_state.player_entity,
+            player_entity=self.game_state.game_world.player_entity,
             is_player_invisible=self.game_state.player_state.is_invisible,
             player_active_buffs=self.game_state.player_state.active_buffs,
             camera_world_area=self.game_state.get_camera_world_area_including_camera_shake(),
-            non_player_characters=self.game_state.non_player_characters,
-            visual_effects=self.game_state.visual_effects,
+            non_player_characters=self.game_state.game_world.non_player_characters,
+            visual_effects=self.game_state.game_world.visual_effects,
             render_hit_and_collision_boxes=self.render_hit_and_collision_boxes,
             player_health=self.game_state.player_state.health_resource.value,
             player_max_health=self.game_state.player_state.health_resource.max_value,
-            entire_world_area=self.game_state.entire_world_area,
+            entire_world_area=self.game_state.game_world.entire_world_area,
             entity_action_text=entity_action_text)
 
         self.ui_view.render()

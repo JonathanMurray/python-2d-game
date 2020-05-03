@@ -23,7 +23,7 @@ SHIV_TALENT_FULL_HEALTH_DAMAGE_MULTIPLIER = 1.5
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
-    player_entity = game_state.player_entity
+    player_entity = game_state.game_world.player_entity
     rect_w = 28
     slash_center_pos = translate_in_direction(
         player_entity.get_center_position(),
@@ -31,7 +31,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
         rect_w / 2 + PLAYER_ENTITY_SIZE[0] * 0.25)
 
     slash_rect = Rect(int(slash_center_pos[0] - rect_w / 2), int(slash_center_pos[1] - rect_w / 2), rect_w, rect_w)
-    affected_enemies = game_state.get_enemy_intersecting_rect(slash_rect)
+    affected_enemies = game_state.game_world.get_enemy_intersecting_rect(slash_rect)
     is_stealthed = game_state.player_state.has_active_buff(BuffType.STEALTHING)
     if is_stealthed:
         play_sound(SoundId.ABILITY_SHIV_STEALTHED)
@@ -56,9 +56,9 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
         deal_player_damage_to_enemy(game_state, enemy, damage, DamageType.PHYSICAL, visual_emphasis=is_stealthed)
         break
 
-    game_state.visual_effects.append(
+    game_state.game_world.visual_effects.append(
         VisualRect((150, 150, 75), slash_center_pos, rect_w, int(rect_w * 0.7), Millis(200), 2, None))
-    game_state.visual_effects.append(VisualCross((100, 100, 70), slash_center_pos, 6, Millis(100), 2))
+    game_state.game_world.visual_effects.append(VisualCross((100, 100, 70), slash_center_pos, 6, Millis(100), 2))
 
     game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(250))
     return AbilityWasUsedSuccessfully()

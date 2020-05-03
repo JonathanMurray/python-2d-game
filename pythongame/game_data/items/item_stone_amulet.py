@@ -33,7 +33,7 @@ class ProtectedByStoneAmulet(StatModifyingBuffEffect):
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         if self.timer.update_and_check_if_ready(time_passed):
-            game_state.visual_effects.append(
+            game_state.game_world.visual_effects.append(
                 VisualCircle((130, 100, 60), buffed_entity.get_center_position(), 20, 40, Millis(100), 1,
                              buffed_entity))
 

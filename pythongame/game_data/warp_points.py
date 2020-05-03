@@ -22,28 +22,28 @@ class TeleportingWithWarpStone(AbstractBuffEffect):
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.add_one()
-        player_entity = game_state.player_entity
+        player_entity = game_state.game_world.player_entity
         player_entity.set_not_moving()
         player_entity.visible = False
-        game_state.visual_effects += create_teleport_effects(buffed_entity.get_center_position())
+        game_state.game_world.visual_effects += create_teleport_effects(buffed_entity.get_center_position())
         player_collision_rect = (player_entity.pygame_collision_rect.w, player_entity.pygame_collision_rect.h)
         home_warp_point = create_warp_point(game_state.player_spawn_position, player_collision_rect)
         remote_warp_point = create_warp_point(player_entity.get_center_position(), player_collision_rect)
-        game_state.warp_points = [home_warp_point, remote_warp_point]
+        game_state.game_world.warp_points = [home_warp_point, remote_warp_point]
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         self.time_since_start += time_passed
         if not self.has_teleport_happened and self.time_since_start > PORTAL_DELAY / 2:
             self.has_teleport_happened = True
-            for warp_point in game_state.warp_points:
+            for warp_point in game_state.game_world.warp_points:
                 warp_point.make_visible()
-            game_state.player_entity.set_position(self.destination)
-            game_state.visual_effects += create_teleport_effects(buffed_entity.get_center_position())
+            game_state.game_world.player_entity.set_position(self.destination)
+            game_state.game_world.visual_effects += create_teleport_effects(buffed_entity.get_center_position())
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.remove_one()
-        game_state.player_entity.visible = True
+        game_state.game_world.player_entity.visible = True
 
     def get_buff_type(self):
         return WARP_STONE_BUFF
@@ -57,23 +57,23 @@ class TeleportingWithWarpPoint(AbstractBuffEffect):
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.add_one()
-        game_state.player_entity.set_not_moving()
-        game_state.player_entity.visible = False
-        game_state.visual_effects += create_teleport_effects(buffed_entity.get_center_position())
+        game_state.game_world.player_entity.set_not_moving()
+        game_state.game_world.player_entity.visible = False
+        game_state.game_world.visual_effects += create_teleport_effects(buffed_entity.get_center_position())
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         self.time_since_start += time_passed
         if not self.has_teleport_happened and self.time_since_start > PORTAL_DELAY / 2:
             self.has_teleport_happened = True
-            game_state.warp_points = []
-            game_state.player_entity.set_position(self.destination)
-            game_state.visual_effects += create_teleport_effects(buffed_entity.get_center_position())
+            game_state.game_world.warp_points = []
+            game_state.game_world.player_entity.set_position(self.destination)
+            game_state.game_world.visual_effects += create_teleport_effects(buffed_entity.get_center_position())
             play_sound(SoundId.WARP)
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.remove_one()
-        game_state.player_entity.visible = True
+        game_state.game_world.player_entity.visible = True
 
     def get_buff_type(self):
         return WARP_STONE_BUFF

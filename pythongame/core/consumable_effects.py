@@ -20,9 +20,9 @@ class ConsumableFailedToBeConsumed(AbstractConsumableResult):
 
 
 def create_potion_visual_effect_at_player(game_state):
-    game_state.visual_effects.append(VisualCircle(
-        (230, 230, 230), game_state.player_entity.get_center_position(), 27, 55, Millis(90), 3,
-        game_state.player_entity))
+    game_state.game_world.visual_effects.append(VisualCircle(
+        (230, 230, 230), game_state.game_world.player_entity.get_center_position(), 27, 55, Millis(90), 3,
+        game_state.game_world.player_entity))
 
 
 _consumable_effects: Dict[ConsumableType, Callable[[GameState], AbstractConsumableResult]] = {}

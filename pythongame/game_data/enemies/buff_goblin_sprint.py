@@ -28,8 +28,8 @@ class BuffEffect(AbstractBuffEffect):
         return BUFF_SPRINT
 
     @staticmethod
-    def create_sprint_visual_effect(buffed_entity, game_state):
-        game_state.visual_effects.append(
+    def create_sprint_visual_effect(buffed_entity: WorldEntity, game_state: GameState):
+        game_state.game_world.visual_effects.append(
             VisualCircle((150, 50, 0), buffed_entity.get_center_position(), 20, 22, Millis(250), 2, buffed_entity))
 
 

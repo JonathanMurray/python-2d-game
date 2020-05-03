@@ -54,18 +54,19 @@ class MapJson:
         return {
             "grid": grid,
             "disable_smart_grid": config.disable_smart_grid,
-            "player": PlayerJson.serialize(game_state.player_entity),
-            "consumables_on_ground": [ConsumableJson.serialize(p) for p in game_state.consumables_on_ground],
-            "items_on_ground": [ItemJson.serialize(i) for i in game_state.items_on_ground],
-            "money_piles_on_ground": [MoneyJson.serialize(m) for m in game_state.money_piles_on_ground],
-            "non_player_characters": [NpcJson.serialize(npc) for npc in game_state.non_player_characters],
-            "walls": [WallJson.serialize(wall) for wall in game_state.walls_state.walls],
-            "entire_world_area": WorldAreaJson.serialize(game_state.entire_world_area),
-            "decorations": [DecorationJson.serialize(d) for d in game_state.decorations_state.decoration_entities],
-            "portals": [PortalJson.serialize(p) for p in game_state.portals],
-            "chests": [ChestJson.serialize(c) for c in game_state.chests],
-            "shrines": [ShrineJson.serialize(s) for s in game_state.shrines],
-            "dungeon_entrances": [DungeonEntranceJson.serialize(e) for e in game_state.dungeon_entrances]
+            "player": PlayerJson.serialize(game_state.game_world.player_entity),
+            "consumables_on_ground": [ConsumableJson.serialize(p) for p in game_state.game_world.consumables_on_ground],
+            "items_on_ground": [ItemJson.serialize(i) for i in game_state.game_world.items_on_ground],
+            "money_piles_on_ground": [MoneyJson.serialize(m) for m in game_state.game_world.money_piles_on_ground],
+            "non_player_characters": [NpcJson.serialize(npc) for npc in game_state.game_world.non_player_characters],
+            "walls": [WallJson.serialize(wall) for wall in game_state.game_world.walls_state.walls],
+            "entire_world_area": WorldAreaJson.serialize(game_state.game_world.entire_world_area),
+            "decorations": [DecorationJson.serialize(d) for d in
+                            game_state.game_world.decorations_state.decoration_entities],
+            "portals": [PortalJson.serialize(p) for p in game_state.game_world.portals],
+            "chests": [ChestJson.serialize(c) for c in game_state.game_world.chests],
+            "shrines": [ShrineJson.serialize(s) for s in game_state.game_world.shrines],
+            "dungeon_entrances": [DungeonEntranceJson.serialize(e) for e in game_state.game_world.dungeon_entrances]
         }
 
     @staticmethod

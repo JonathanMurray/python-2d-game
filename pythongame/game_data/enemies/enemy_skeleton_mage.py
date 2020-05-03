@@ -49,9 +49,9 @@ class NpcMind(AbstractNpcMind):
                 npc.health_resource.gain(healing_amount)
                 circle_effect = VisualCircle((80, 200, 150), npc.world_entity.get_center_position(), 30, 50,
                                              Millis(350), 3)
-                game_state.visual_effects.append(circle_effect)
+                game_state.game_world.visual_effects.append(circle_effect)
                 number_effect = create_visual_healing_text(npc.world_entity, healing_amount)
-                game_state.visual_effects.append(number_effect)
+                game_state.game_world.visual_effects.append(number_effect)
                 play_sound(SoundId.ENEMY_SKELETON_MAGE_HEAL)
 
         self._shoot_fireball_trait.update(npc, game_state, time_passed)
@@ -60,7 +60,6 @@ class NpcMind(AbstractNpcMind):
     @staticmethod
     def _random_healing_cooldown():
         return random.randint(4000, 9000)
-
 
 
 class ProjectileController(AbstractProjectileController):
@@ -79,24 +78,25 @@ class ProjectileController(AbstractProjectileController):
                               Millis(150), 4, projectile.world_entity)
             tail = VisualCircle(color, projectile.world_entity.get_center_position(), 13, 13,
                                 Millis(400), 2)
-            game_state.visual_effects += [head, tail]
+            game_state.game_world.visual_effects += [head, tail]
 
     def apply_player_collision(self, game_state: GameState, projectile: Projectile):
         damage = random.randint(self._min_damage, self._max_damage)
         deal_damage_to_player(game_state, damage, DamageType.MAGIC, None)
-        game_state.visual_effects.append(VisualCircle(self._color, game_state.player_entity.get_center_position(),
-                                                      25, 35, Millis(100), 0))
+        game_state.game_world.visual_effects.append(
+            VisualCircle(self._color, game_state.game_world.player_entity.get_center_position(),
+                         25, 35, Millis(100), 0))
         projectile.has_collided_and_should_be_removed = True
 
     def apply_player_summon_collision(self, npc: NonPlayerCharacter, game_state: GameState, projectile: Projectile):
         damage = random.randint(self._min_damage, self._max_damage)
         deal_npc_damage_to_npc(game_state, npc, damage)
-        game_state.visual_effects.append(
+        game_state.game_world.visual_effects.append(
             VisualCircle(self._color, npc.world_entity.get_center_position(), 25, 35, Millis(100), 0))
         projectile.has_collided_and_should_be_removed = True
 
     def apply_wall_collision(self, game_state: GameState, projectile: Projectile):
-        game_state.visual_effects.append(
+        game_state.game_world.visual_effects.append(
             VisualCircle(self._color, projectile.world_entity.get_center_position(), 13, 26, Millis(100), 0))
         projectile.has_collided_and_should_be_removed = True
 

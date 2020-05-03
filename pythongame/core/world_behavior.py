@@ -43,7 +43,7 @@ class StoryBehavior(AbstractWorldBehavior):
 
     def handle_event(self, event: EngineEvent) -> Optional[SceneTransition]:
         if event == EngineEvent.PLAYER_DIED:
-            self.game_state.player_entity.set_position(self.game_state.player_spawn_position)
+            self.game_state.game_world.player_entity.set_position(self.game_state.player_spawn_position)
             self.game_state.player_state.health_resource.set_to_partial_of_max(0.5)
             self.game_state.player_state.lose_exp_from_death()
             self.game_state.player_state.force_cancel_all_buffs()
@@ -99,7 +99,7 @@ class DungeonBehavior(AbstractWorldBehavior):
             # TODO spawn animation doesn't work? Maybe we should just set HP to 1 and let hero spawn at entrance
             return self._transition_out_of_dungeon()
         elif event == EngineEvent.ENEMY_DIED:
-            num_enemies = len([npc for npc in self.game_state.non_player_characters if npc.is_enemy])
+            num_enemies = len([npc for npc in self.game_state.game_world.non_player_characters if npc.is_enemy])
             if num_enemies == 0:
                 self.ui_view.info_message.set_message("Dungeon cleared!")
                 self.warp_countdown_timer = PeriodicTimer(Millis(1000))
@@ -169,7 +169,7 @@ class ChallengeBehavior(AbstractWorldBehavior):
         if event == EngineEvent.PLAYER_DIED:
             return SceneTransition(self.scene_factory.picking_hero_scene(self.init_flags))
         elif event == EngineEvent.ENEMY_DIED:
-            num_enemies = len([npc for npc in self.game_state.non_player_characters if npc.is_enemy])
+            num_enemies = len([npc for npc in self.game_state.game_world.non_player_characters if npc.is_enemy])
             if num_enemies == 0:
                 return SceneTransition(self.scene_factory.challenge_complete_scene(self.total_time_played))
             self.info_message.set_message(str(num_enemies) + " enemies remaining")

@@ -22,7 +22,7 @@ MAX_DMG = 5
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
-    player_entity = game_state.player_entity
+    player_entity = game_state.game_world.player_entity
     rect_w = 36
     # Note: We assume that this ability is used by this specific hero
     hero_entity_size = HEROES[HeroId.WARRIOR].entity_size
@@ -32,7 +32,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
         rect_w / 2 + hero_entity_size[0] * 0.25)
 
     slash_rect = Rect(int(slash_pos[0] - rect_w / 2), int(slash_pos[1] - rect_w / 2), rect_w, rect_w)
-    affected_enemies = game_state.get_enemy_intersecting_rect(slash_rect)
+    affected_enemies = game_state.game_world.get_enemy_intersecting_rect(slash_rect)
     has_aoe_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.ABILITY_SLASH_AOE_BONUS_DAMAGE)
     hit_multiple_enemies = len(affected_enemies) > 1
     for enemy in affected_enemies:
@@ -42,7 +42,7 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
             damage: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
         deal_player_damage_to_enemy(game_state, enemy, damage, DamageType.PHYSICAL)
 
-    game_state.visual_effects.append(
+    game_state.game_world.visual_effects.append(
         VisualRect((100, 0, 0), slash_pos, rect_w, int(rect_w * 0.7), Millis(200), 2, None))
     game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(300))
     return AbilityWasUsedSuccessfully()

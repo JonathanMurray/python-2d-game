@@ -19,8 +19,10 @@ class NpcPathfinder:
         self.global_path_finder: GlobalPathFinder = global_path_finder
 
     def update_path_towards_target(self, agent_entity: WorldEntity, game_state: GameState, target_entity: WorldEntity):
-        agent_cell = _translate_world_position_to_cell(agent_entity.get_position(), game_state.entire_world_area)
-        target_cell = _translate_world_position_to_cell(target_entity.get_position(), game_state.entire_world_area)
+        agent_cell = _translate_world_position_to_cell(agent_entity.get_position(),
+                                                       game_state.game_world.entire_world_area)
+        target_cell = _translate_world_position_to_cell(target_entity.get_position(),
+                                                        game_state.game_world.entire_world_area)
 
         agent_cell_size = (agent_entity.pygame_collision_rect.w // GRID_CELL_WIDTH + 1,
                            agent_entity.pygame_collision_rect.h // GRID_CELL_WIDTH + 1)
@@ -28,7 +30,8 @@ class NpcPathfinder:
         path_with_cells = self.global_path_finder.run(agent_cell_size, agent_cell, target_cell)
         if path_with_cells:
             # Note: Cells are expressed in non-negative values (and need to be translated to game world coordinates)
-            path = [_translate_cell_to_world_position(cell, game_state.entire_world_area) for cell in path_with_cells]
+            path = [_translate_cell_to_world_position(cell, game_state.game_world.entire_world_area) for cell in
+                    path_with_cells]
             if DEBUG_RENDER_PATHFINDING:
                 _add_visual_lines_along_path(game_state, path)
             self.path = path
@@ -99,18 +102,18 @@ class NpcPathfinder:
 def _add_visual_line_to_next_waypoint(destination, agent_entity: WorldEntity, game_state: GameState):
     start = _get_middle_of_cell_from_position(agent_entity.get_position())
     end = _get_middle_of_cell_from_position(destination)
-    game_state.visual_effects.append(VisualLine((150, 150, 150), start, end, Millis(100), 2))
+    game_state.game_world.visual_effects.append(VisualLine((150, 150, 150), start, end, Millis(100), 2))
 
 
-def _add_visual_lines_along_path(game_state, path):
+def _add_visual_lines_along_path(game_state: GameState, path):
     for i in range(len(path) - 1):
         current_pos = path[i]
         next_pos = path[i + 1]
-        game_state.visual_effects.append(
+        game_state.game_world.visual_effects.append(
             VisualRect((100, 150, 150),
                        _get_middle_of_cell_from_position(current_pos), 7, 10,
                        Millis(DEBUG_PATHFINDER_INTERVAL), 1))
-        game_state.visual_effects.append(
+        game_state.game_world.visual_effects.append(
             VisualLine((250, 250, 250),
                        _get_middle_of_cell_from_position(current_pos),
                        _get_middle_of_cell_from_position(next_pos),
@@ -126,9 +129,9 @@ def _would_collide_with_dir(direction: Direction, agent_entity: WorldEntity, gam
     # TODO Is this too naive to work?
     future_time = Millis(100)
     future_pos = agent_entity.get_new_position_according_to_other_dir_and_speed(direction, future_time)
-    future_pos_within_world = game_state.get_within_world(
+    future_pos_within_world = game_state.game_world.get_within_world(
         future_pos, (agent_entity.pygame_collision_rect.w, agent_entity.pygame_collision_rect.h))
-    would_collide = game_state.would_entity_collide_if_new_pos(agent_entity, future_pos_within_world)
+    would_collide = game_state.game_world.would_entity_collide_if_new_pos(agent_entity, future_pos_within_world)
     return would_collide
 
 

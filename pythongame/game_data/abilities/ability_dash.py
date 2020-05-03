@@ -26,7 +26,7 @@ DODGE_CHANCE_BOOST = 0.1
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
-    player_entity = game_state.player_entity
+    player_entity = game_state.game_world.player_entity
     previous_position = player_entity.get_center_position()
 
     used_from_stealth = game_state.player_state.has_active_buff(BuffType.STEALTHING)
@@ -34,8 +34,8 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
     for distance in range(40, 200, 10):
         new_position = translate_in_direction((player_entity.x, player_entity.y), player_entity.direction,
                                               distance)
-        if game_state.is_position_within_game_world(new_position) \
-                and not game_state.would_entity_collide_if_new_pos(player_entity, new_position):
+        if game_state.game_world.is_position_within_game_world(new_position) \
+                and not game_state.game_world.would_entity_collide_if_new_pos(player_entity, new_position):
             if _would_collide_with_wall(game_state, player_entity, distance):
                 return AbilityFailedToExecute(reason="Wall is blocking")
             should_regain_mana_and_cd = False
@@ -51,10 +51,11 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
             player_entity.set_position(new_position)
             new_center_position = player_entity.get_center_position()
             color = (250, 140, 80)
-            game_state.visual_effects.append(VisualCircle(color, previous_position, 17, 35, Millis(150), 1))
-            game_state.visual_effects.append(VisualLine(color, previous_position, new_center_position, Millis(250), 2))
-            game_state.visual_effects.append(VisualRect(color, previous_position, 37, 46, Millis(150), 1))
-            game_state.visual_effects.append(
+            game_state.game_world.visual_effects.append(VisualCircle(color, previous_position, 17, 35, Millis(150), 1))
+            game_state.game_world.visual_effects.append(
+                VisualLine(color, previous_position, new_center_position, Millis(250), 2))
+            game_state.game_world.visual_effects.append(VisualRect(color, previous_position, 37, 46, Millis(150), 1))
+            game_state.game_world.visual_effects.append(
                 VisualCircle(color, new_center_position, 25, 40, Millis(300), 1, player_entity))
             has_speed_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.ABILITY_DASH_MOVEMENT_SPEED)
             if has_speed_upgrade:
@@ -71,7 +72,7 @@ def _get_enemy_that_was_hit(game_state: GameState, player_entity: WorldEntity, d
     partial_distance = 10
     while partial_distance < distance_jumped:
         intermediate_position = translate_in_direction(previous_position, player_entity.direction, partial_distance)
-        enemies_hit = game_state.get_enemy_intersecting_rect(
+        enemies_hit = game_state.game_world.get_enemy_intersecting_rect(
             Rect(intermediate_position[0], intermediate_position[1], player_entity.pygame_collision_rect.w,
                  player_entity.pygame_collision_rect.h))
         if enemies_hit:
@@ -85,7 +86,7 @@ def _would_collide_with_wall(game_state: GameState, player_entity: WorldEntity, 
     partial_distance = 10
     while partial_distance < distance_jumped:
         intermediate_position = translate_in_direction(previous_position, player_entity.direction, partial_distance)
-        intersection = game_state.walls_state.does_rect_intersect_with_wall(
+        intersection = game_state.game_world.walls_state.does_rect_intersect_with_wall(
             (intermediate_position[0], intermediate_position[1], player_entity.pygame_collision_rect.w,
              player_entity.pygame_collision_rect.h))
         if intersection:
@@ -108,8 +109,9 @@ class IncreasedSpeedAfterDash(StatModifyingBuffEffect):
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         if self.timer.update_and_check_if_ready(time_passed):
-            game_state.visual_effects.append(
-                VisualCircle((150, 200, 250), game_state.player_entity.get_center_position(), 5, 10, Millis(200), 0))
+            game_state.game_world.visual_effects.append(
+                VisualCircle((150, 200, 250), game_state.game_world.player_entity.get_center_position(), 5, 10,
+                             Millis(200), 0))
 
 
 def register_dash_ability():

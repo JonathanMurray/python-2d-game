@@ -19,10 +19,10 @@ DURATION_SUMMON = Millis(50000)
 
 
 def _apply_scroll(game_state: GameState):
-    player_entity = game_state.player_entity
+    player_entity = game_state.game_world.player_entity
 
     summon_size = NON_PLAYER_CHARACTERS[NpcType.PLAYER_SUMMON_DRAGON].size
-    player_size = game_state.player_entity.pygame_collision_rect.w, game_state.player_entity.h
+    player_size = game_state.game_world.player_entity.pygame_collision_rect.w, game_state.game_world.player_entity.h
     candidate_relative_positions = [
         (0, - summon_size[1]),  # top
         (player_size[0], - summon_size[1]),  # top right
@@ -36,14 +36,15 @@ def _apply_scroll(game_state: GameState):
     for relative_pos in candidate_relative_positions:
         summon_pos = sum_of_vectors(player_entity.get_position(), relative_pos)
         summon = create_npc(NpcType.PLAYER_SUMMON_DRAGON, summon_pos)
-        is_valid_pos = not game_state.would_entity_collide_if_new_pos(summon.world_entity, summon_pos)
+        is_valid_pos = not game_state.game_world.would_entity_collide_if_new_pos(summon.world_entity, summon_pos)
         if is_valid_pos:
-            game_state.remove_all_player_summons()
-            game_state.add_non_player_character(summon)
+            game_state.game_world.remove_all_player_summons()
+            game_state.game_world.add_non_player_character(summon)
             summon.gain_buff_effect(get_buff_effect(BuffType.SUMMON_DIE_AFTER_DURATION), DURATION_SUMMON)
-            game_state.visual_effects.append(
+            game_state.game_world.visual_effects.append(
                 VisualCircle((200, 200, 30), player_entity.get_position(), 40, 70, Millis(140), 3))
-            game_state.visual_effects.append(VisualCircle((200, 200, 30), summon_pos, 40, 70, Millis(140), 3))
+            game_state.game_world.visual_effects.append(
+                VisualCircle((200, 200, 30), summon_pos, 40, 70, Millis(140), 3))
             return ConsumableWasConsumed("Summoned dragon")
     return ConsumableFailedToBeConsumed("No space to summon dragon")
 
@@ -70,11 +71,12 @@ class NpcMind(AbstractNpcMind):
 
         if self._time_since_updated_path > self._update_path_interval:
             self._time_since_updated_path = 0
-            nearby_enemies = game_state.get_enemies_within_x_y_distance_of(300, npc.world_entity.get_position())
+            nearby_enemies = game_state.game_world.get_enemies_within_x_y_distance_of(300,
+                                                                                      npc.world_entity.get_position())
             if nearby_enemies:
                 target_entity = nearby_enemies[0].world_entity
             else:
-                target_entity = game_state.player_entity
+                target_entity = game_state.game_world.player_entity
             self.pathfinder.update_path_towards_target(summon_entity, game_state, target_entity)
 
         new_next_waypoint = self.pathfinder.get_next_waypoint_along_path(summon_entity)
@@ -94,12 +96,12 @@ class NpcMind(AbstractNpcMind):
                 summon_entity.set_not_moving()
         if self._time_since_attack > self._attack_interval:
             self._time_since_attack = 0
-            nearby_enemies = game_state.get_enemies_within_x_y_distance_of(100, summon_entity.get_position())
+            nearby_enemies = game_state.game_world.get_enemies_within_x_y_distance_of(100, summon_entity.get_position())
             if nearby_enemies:
                 damage_amount = 3
                 target = nearby_enemies[0]
                 deal_npc_damage_to_npc(game_state, target, damage_amount)
-                game_state.visual_effects.append(
+                game_state.game_world.visual_effects.append(
                     VisualLine((220, 0, 0), summon_entity.get_center_position(),
                                target.world_entity.get_center_position(), Millis(100), damage_amount))
 

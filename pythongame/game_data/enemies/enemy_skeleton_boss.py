@@ -77,7 +77,7 @@ class NpcMind(MeleeEnemyNpcMind):
                 projectile_entity = WorldEntity(projectile_pos, PROJECTILE_SIZE, Sprite.NONE,
                                                 npc.world_entity.direction, projectile_speed)
                 projectile = Projectile(projectile_entity, create_projectile_controller(PROJECTILE_TYPE))
-                game_state.projectile_entities.append(projectile)
+                game_state.game_world.projectile_entities.append(projectile)
                 play_sound(SoundId.ENEMY_MAGIC_SKELETON_BOSS)
 
 
@@ -102,24 +102,25 @@ class ProjectileController(AbstractProjectileController):
                               Millis(120), 4, projectile.world_entity)
             tail = VisualCircle(color, projectile.world_entity.get_center_position(), 13, 13,
                                 Millis(180), 2)
-            game_state.visual_effects += [head, tail]
+            game_state.game_world.visual_effects += [head, tail]
 
     def apply_player_collision(self, game_state: GameState, projectile: Projectile):
         damage = random.randint(self._min_damage, self._max_damage)
         deal_damage_to_player(game_state, damage, DamageType.MAGIC, None)
-        game_state.visual_effects.append(VisualCircle(self._color, game_state.player_entity.get_center_position(),
-                                                      25, 35, Millis(100), 0))
+        game_state.game_world.visual_effects.append(
+            VisualCircle(self._color, game_state.game_world.player_entity.get_center_position(),
+                         25, 35, Millis(100), 0))
         projectile.has_collided_and_should_be_removed = True
 
     def apply_player_summon_collision(self, npc: NonPlayerCharacter, game_state: GameState, projectile: Projectile):
         damage = random.randint(self._min_damage, self._max_damage)
         deal_npc_damage_to_npc(game_state, npc, damage)
-        game_state.visual_effects.append(
+        game_state.game_world.visual_effects.append(
             VisualCircle(self._color, npc.world_entity.get_center_position(), 25, 35, Millis(100), 0))
         projectile.has_collided_and_should_be_removed = True
 
     def apply_wall_collision(self, game_state: GameState, projectile: Projectile):
-        game_state.visual_effects.append(
+        game_state.game_world.visual_effects.append(
             VisualCircle(self._color, projectile.world_entity.get_center_position(), 13, 26, Millis(100), 0))
         projectile.has_collided_and_should_be_removed = True
 

@@ -43,13 +43,13 @@ class ProjectileController(AbstractProjectileController):
                                  victim_center_pos[1] - ENTANGLING_ROOTS_SIZE[1] // 2)
             debuff_visual_effect = VisualSprite(Sprite.DECORATION_ENTANGLING_ROOTS_EFFECT, visual_effect_pos,
                                                 DEBUFF_DURATION, npc.world_entity)
-            game_state.visual_effects.append(debuff_visual_effect)
+            game_state.game_world.visual_effects.append(debuff_visual_effect)
             play_sound(SoundId.ABILITY_ENTANGLING_ROOTS_HIT)
         projectile.has_collided_and_should_be_removed = True
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
-    player_entity = game_state.player_entity
+    player_entity = game_state.game_world.player_entity
     distance_from_player = 35
     projectile_pos = translate_in_direction(
         get_position_from_center_position(player_entity.get_center_position(), PROJECTILE_SIZE),
@@ -59,10 +59,10 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
     entity = WorldEntity(projectile_pos, PROJECTILE_SIZE, PROJECTILE_SPRITE, player_entity.direction,
                          projectile_speed)
     projectile = Projectile(entity, create_projectile_controller(PROJECTILE_TYPE))
-    game_state.projectile_entities.append(projectile)
+    game_state.game_world.projectile_entities.append(projectile)
     effect_position = (projectile_pos[0] + PROJECTILE_SIZE[0] // 2,
                        projectile_pos[1] + PROJECTILE_SIZE[1] // 2)
-    game_state.visual_effects.append(VisualCircle((250, 150, 50), effect_position, 9, 18, Millis(80), 0))
+    game_state.game_world.visual_effects.append(VisualCircle((250, 150, 50), effect_position, 9, 18, Millis(80), 0))
     return AbilityWasUsedSuccessfully()
 
 
@@ -74,13 +74,13 @@ class Rooted(AbstractBuffEffect):
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         buffed_npc.stun_status.add_one()
         buffed_entity.set_not_moving()
-        game_state.visual_effects.append(create_visual_stun_text(buffed_entity))
+        game_state.game_world.visual_effects.append(create_visual_stun_text(buffed_entity))
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         if self.timer.update_and_check_if_ready(time_passed):
             deal_player_damage_to_enemy(game_state, buffed_npc, 1, DamageType.MAGIC)
-            game_state.visual_effects.append(
+            game_state.game_world.visual_effects.append(
                 VisualCircle((0, 150, 0), buffed_entity.get_center_position(), 30, 55, Millis(150), 2, buffed_entity))
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):

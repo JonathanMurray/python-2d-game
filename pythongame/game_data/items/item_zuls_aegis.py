@@ -24,8 +24,8 @@ class StunnedFromAegis(AbstractBuffEffect):
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         visual_effect = VisualCircle((220, 220, 50), buffed_entity.get_center_position(), 9, 16, Millis(250), 2)
-        game_state.visual_effects.append(visual_effect)
-        game_state.visual_effects.append(create_visual_stun_text(buffed_entity))
+        game_state.game_world.visual_effects.append(visual_effect)
+        game_state.game_world.visual_effects.append(create_visual_stun_text(buffed_entity))
         buffed_npc.stun_status.add_one()
         buffed_entity.set_not_moving()
 

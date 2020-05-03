@@ -1,4 +1,5 @@
 import random
+from typing import Tuple
 
 from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import get_buff_effect, AbstractBuffEffect, register_buff_effect
@@ -30,8 +31,8 @@ FIREBALL_TALENT_BURN_TOTAL_DAMAGE = int(round(FIREBALL_TALENT_BURN_DURATION / FI
 BUFF_TYPE = BuffType.BURNT_BY_FIREBALL
 
 
-def _create_visual_splash(effect_position, game_state):
-    game_state.visual_effects.append(
+def _create_visual_splash(effect_position: Tuple[int, int], game_state: GameState):
+    game_state.game_world.visual_effects.append(
         VisualCircle((250, 100, 50), effect_position, 22, 45, Millis(100), 0))
     particle_colors = [(250, 100, 100),
                        (250, 50, 100),
@@ -42,7 +43,7 @@ def _create_visual_splash(effect_position, game_state):
         colors=particle_colors,
         alpha=100,
         duration_interval=(Millis(50), Millis(200)))
-    game_state.visual_effects.append(particle_system)
+    game_state.game_world.visual_effects.append(particle_system)
 
 
 class ProjectileController(AbstractProjectileController):
@@ -73,7 +74,7 @@ class BurntByFireball(AbstractBuffEffect):
                             time_passed: Millis):
         if self.timer.update_and_check_if_ready(time_passed):
             deal_player_damage_to_enemy(game_state, buffed_npc, 1, DamageType.MAGIC)
-            game_state.visual_effects.append(
+            game_state.game_world.visual_effects.append(
                 VisualCircle((180, 50, 50), buffed_npc.world_entity.get_center_position(), 10, 20, Millis(50), 0,
                              buffed_entity))
 
@@ -82,7 +83,7 @@ class BurntByFireball(AbstractBuffEffect):
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
-    player_entity = game_state.player_entity
+    player_entity = game_state.game_world.player_entity
     distance_from_player = 35
     projectile_pos = translate_in_direction(
         get_position_from_center_position(player_entity.get_center_position(), PROJECTILE_SIZE),
@@ -92,10 +93,10 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
     entity = WorldEntity(projectile_pos, PROJECTILE_SIZE, Sprite.PROJECTILE_PLAYER_FIREBALL, player_entity.direction,
                          projectile_speed)
     projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER_FIREBALL))
-    game_state.projectile_entities.append(projectile)
+    game_state.game_world.projectile_entities.append(projectile)
     effect_position = (projectile_pos[0] + PROJECTILE_SIZE[0] // 2,
                        projectile_pos[1] + PROJECTILE_SIZE[1] // 2)
-    game_state.visual_effects.append(VisualCircle((250, 150, 50), effect_position, 15, 5, Millis(300), 0))
+    game_state.game_world.visual_effects.append(VisualCircle((250, 150, 50), effect_position, 15, 5, Millis(300), 0))
     has_lightfooted_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.MAGE_LIGHT_FOOTED)
     if not has_lightfooted_upgrade:
         game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(300))

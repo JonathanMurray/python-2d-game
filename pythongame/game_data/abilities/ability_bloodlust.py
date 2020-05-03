@@ -46,7 +46,7 @@ class BloodLust(StatModifyingBuffEffect):
         if self.timer.update_and_check_if_ready(time_passed):
             visual_effect = VisualCircle(
                 (250, 0, 0,), buffed_entity.get_center_position(), 25, 30, Millis(350), 1, buffed_entity)
-            game_state.visual_effects.append(visual_effect)
+            game_state.game_world.visual_effects.append(visual_effect)
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         super().apply_end_effect(game_state, buffed_entity, buffed_npc)

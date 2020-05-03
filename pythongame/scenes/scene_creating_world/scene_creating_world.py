@@ -75,7 +75,7 @@ class CreatingWorldScene(AbstractScene):
 
         # Must center camera before notifying player position as it affects which walls are shown on the minimap
         game_state.center_camera_on_player()
-        self.ui_view.on_world_area_updated(game_state.entire_world_area)
+        self.ui_view.on_world_area_updated(game_state.game_world.entire_world_area)
         self.ui_view.update_hero(game_state.player_state.hero_id)
 
         game_engine = GameEngine(game_state, self.ui_view.info_message)
@@ -95,7 +95,7 @@ class CreatingWorldScene(AbstractScene):
                                 for (slot_number, consumables) in saved_player_state.consumables_in_slots.items()}
             game_state.player_state.consumable_inventory.set_slots(consumable_slots)
             game_state.player_state.modify_money(saved_player_state.money)
-            for portal in game_state.portals:
+            for portal in game_state.game_world.portals:
                 if portal.portal_id.name in saved_player_state.enabled_portals:
                     sprite = saved_player_state.enabled_portals[portal.portal_id.name]
                     portal.activate(Sprite[sprite])

@@ -706,16 +706,21 @@ class CameraShake:
         return self._time_left > 0
 
 
-class GameState:
-    def __init__(self, player_entity: WorldEntity, consumables_on_ground: List[ConsumableOnGround],
-                 items_on_ground: List[ItemOnGround], money_piles_on_ground: List[MoneyPileOnGround],
-                 non_player_characters: List[NonPlayerCharacter], walls: List[Wall], camera_size: Tuple[int, int],
-                 entire_world_area: Rect, player_state: PlayerState,
-                 decoration_entities: List[DecorationEntity], portals: List[Portal], chests: List[Chest],
-                 shrines: List[Shrine], dungeon_entrances: List[DungeonEntrance], is_dungeon: bool):
-        self.camera_size = camera_size
-        self.camera_world_area = Rect((0, 0), self.camera_size)
-        self.camera_shake: CameraShake = None
+class GameWorldState:
+    def __init__(self,
+                 player_entity: WorldEntity,
+                 consumables_on_ground: List[ConsumableOnGround],
+                 items_on_ground: List[ItemOnGround],
+                 money_piles_on_ground: List[MoneyPileOnGround],
+                 non_player_characters: List[NonPlayerCharacter],
+                 walls: List[Wall],
+                 entire_world_area: Rect,
+                 decoration_entities: List[DecorationEntity],
+                 portals: List[Portal],
+                 chests: List[Chest],
+                 shrines: List[Shrine],
+                 dungeon_entrances: List[DungeonEntrance],
+                 ):
         self.player_entity = player_entity
         self.projectile_entities: List[Projectile] = []
         # TODO: unify code for picking up stuff from the ground. The way they are rendered and picked up are similar,
@@ -727,55 +732,20 @@ class GameState:
         self.entire_world_area = entire_world_area
         self.walls_state = WallsState(walls, entire_world_area)
         self.visual_effects = []
-        self.player_state: PlayerState = player_state
-        self.pathfinder_wall_grid = self._setup_pathfinder_wall_grid(
-            self.entire_world_area, [w.world_entity for w in walls])
         self.decorations_state = DecorationsState(decoration_entities, entire_world_area)
         self.portals: List[Portal] = portals
         self.shrines: List[Shrine] = shrines
-        self.player_spawn_position: Tuple[int, int] = player_entity.get_position()
         self.warp_points: List[WarpPoint] = []
         self.chests: List[Chest] = chests
-        self.player_movement_speed_was_updated = Observable()
         self.dungeon_entrances = dungeon_entrances
-        self.is_dungeon = is_dungeon
-
-    @staticmethod
-    def _setup_pathfinder_wall_grid(entire_world_area: Rect, walls: List[WorldEntity]):
-        # TODO extract world area arithmetic
-        grid_width = entire_world_area.w // GRID_CELL_WIDTH
-        grid_height = entire_world_area.h // GRID_CELL_WIDTH
-        grid = []
-        for x in range(grid_width + 1):
-            grid.append((grid_height + 1) * [0])
-        for w in walls:
-            cell_x = (w.x - entire_world_area.x) // GRID_CELL_WIDTH
-            cell_y = (w.y - entire_world_area.y) // GRID_CELL_WIDTH
-            grid[cell_x][cell_y] = 1
-        return grid
-
-    def handle_camera_shake(self, time_passed: Millis):
-        if self.camera_shake is not None:
-            self.camera_shake.notify_time_passed(time_passed)
-            if not self.camera_shake.has_time_left():
-                self.camera_shake = None
-
-    def get_camera_world_area_including_camera_shake(self) -> Rect:
-        camera_world_area = Rect(self.camera_world_area)
-        if self.camera_shake is not None:
-            camera_world_area[0] += self.camera_shake.offset[0]
-            camera_world_area[1] += self.camera_shake.offset[1]
-        return camera_world_area
-
-    def modify_hero_stat(self, hero_stat: HeroStat, stat_delta: Union[int, float]):
-        if hero_stat == HeroStat.MOVEMENT_SPEED:
-            self.player_entity.add_to_speed_multiplier(stat_delta)
-            self.notify_movement_speed_observers()
-        else:
-            self.player_state.modify_stat(hero_stat, stat_delta)
+        self.player_movement_speed_was_updated = Observable()
 
     def notify_movement_speed_observers(self):
         self.player_movement_speed_was_updated.notify(self.player_entity.get_speed_multiplier())
+
+    def modify_hero_movement_speed(self, delta: Union[int, float]):
+        self.player_entity.add_to_speed_multiplier(delta)
+        self.notify_movement_speed_observers()
 
     def add_non_player_character(self, npc: NonPlayerCharacter):
         self.non_player_characters.append(npc)
@@ -784,46 +754,11 @@ class GameState:
         self.non_player_characters = [npc for npc in self.non_player_characters
                                       if npc.npc_category != NpcCategory.PLAYER_SUMMON]
 
-    def get_all_entities_to_render(self) -> List[WorldEntity]:
-        other_entities = [self.player_entity] + \
-                         [p.world_entity for p in self.consumables_on_ground] + \
-                         [i.world_entity for i in self.items_on_ground] + \
-                         [m.world_entity for m in self.money_piles_on_ground] + \
-                         [e.world_entity for e in self.non_player_characters] + \
-                         [p.world_entity for p in self.projectile_entities] + \
-                         [p.world_entity for p in self.portals] + \
-                         [s.world_entity for s in self.shrines] + \
-                         [w.world_entity for w in self.warp_points] + \
-                         [c.world_entity for c in self.chests] + \
-                         [e.world_entity for e in self.dungeon_entrances]
-        return self.get_walls_in_sight_of_player() + other_entities
+    def get_walls_in_sight_of_player(self, camera_world_area: Rect) -> List[WorldEntity]:
+        return self.walls_state.get_walls_in_camera(camera_world_area)
 
-    def get_walls_in_sight_of_player(self) -> List[WorldEntity]:
-        return self.walls_state.get_walls_in_camera(self.camera_world_area)
-
-    def get_decorations_to_render(self) -> List[DecorationEntity]:
-        return self.decorations_state.get_decorations_in_camera(self.camera_world_area)
-
-    def center_camera_on_player(self):
-        new_camera_pos = get_position_from_center_position(self.player_entity.get_center_position(), self.camera_size)
-        new_camera_pos_within_world = self.get_within_world(new_camera_pos, (self.camera_size[0], self.camera_size[1]))
-        self.camera_world_area.topleft = new_camera_pos_within_world
-
-    def translate_camera_position(self, translation_vector: Tuple[int, int]):
-        new_camera_pos = (self.camera_world_area.x + translation_vector[0],
-                          self.camera_world_area.y + translation_vector[1])
-        new_camera_pos_within_world = self.get_within_world(new_camera_pos, (self.camera_size[0], self.camera_size[1]))
-        self.camera_world_area.topleft = new_camera_pos_within_world
-
-    def set_camera_position_to_ratio_of_world(self, ratio: Tuple[float, float]):
-        new_camera_pos = (self.entire_world_area.x + ratio[0] * self.entire_world_area.w - self.camera_size[0] // 2,
-                          self.entire_world_area.y + ratio[1] * self.entire_world_area.h - self.camera_size[1] // 2)
-        new_camera_pos_within_world = self.get_within_world(new_camera_pos, (self.camera_size[0], self.camera_size[1]))
-        self.camera_world_area.topleft = new_camera_pos_within_world
-
-    def snap_camera_to_grid(self, cell_size: int):
-        self.camera_world_area.x -= self.camera_world_area.x % cell_size
-        self.camera_world_area.y -= self.camera_world_area.y % cell_size
+    def get_decorations_to_render(self, camera_world_area: Rect) -> List[DecorationEntity]:
+        return self.decorations_state.get_decorations_in_camera(camera_world_area)
 
     def get_projectiles_intersecting_with(self, entity: WorldEntity) -> List[Projectile]:
         return [p for p in self.projectile_entities if boxes_intersect(entity.rect(), p.world_entity.rect())]
@@ -918,6 +853,120 @@ class GameState:
     def _entities_collide(a: WorldEntity, b: WorldEntity):
         # Optimization: collision checking done with C-code from Pygame
         return a.pygame_collision_rect.colliderect(b.pygame_collision_rect)
+
+    def get_renderable_non_wall_entities(self) -> List[WorldEntity]:
+        return [self.player_entity] + \
+               [p.world_entity for p in self.consumables_on_ground] + \
+               [i.world_entity for i in self.items_on_ground] + \
+               [m.world_entity for m in self.money_piles_on_ground] + \
+               [e.world_entity for e in self.non_player_characters] + \
+               [p.world_entity for p in self.projectile_entities] + \
+               [p.world_entity for p in self.portals] + \
+               [s.world_entity for s in self.shrines] + \
+               [w.world_entity for w in self.warp_points] + \
+               [c.world_entity for c in self.chests] + \
+               [e.world_entity for e in self.dungeon_entrances]
+
+
+class GameState:
+    def __init__(self, player_entity: WorldEntity, consumables_on_ground: List[ConsumableOnGround],
+                 items_on_ground: List[ItemOnGround], money_piles_on_ground: List[MoneyPileOnGround],
+                 non_player_characters: List[NonPlayerCharacter], walls: List[Wall], camera_size: Tuple[int, int],
+                 entire_world_area: Rect, player_state: PlayerState,
+                 decoration_entities: List[DecorationEntity], portals: List[Portal], chests: List[Chest],
+                 shrines: List[Shrine], dungeon_entrances: List[DungeonEntrance], is_dungeon: bool):
+
+        self.game_world = GameWorldState(
+            player_entity=player_entity,
+            consumables_on_ground=consumables_on_ground,
+            items_on_ground=items_on_ground,
+            money_piles_on_ground=money_piles_on_ground,
+            non_player_characters=non_player_characters,
+            walls=walls,
+            entire_world_area=entire_world_area,
+            decoration_entities=decoration_entities,
+            portals=portals,
+            chests=chests,
+            shrines=shrines,
+            dungeon_entrances=dungeon_entrances
+        )
+
+        self.camera_size = camera_size
+        self.camera_world_area = Rect((0, 0), self.camera_size)
+        self.camera_shake: CameraShake = None
+        self.pathfinder_wall_grid = self._setup_pathfinder_wall_grid(
+            self.game_world.entire_world_area, [w.world_entity for w in walls])
+        self.player_spawn_position: Tuple[int, int] = player_entity.get_position()
+        self.is_dungeon = is_dungeon
+        self.player_state: PlayerState = player_state
+
+    @staticmethod
+    def _setup_pathfinder_wall_grid(entire_world_area: Rect, walls: List[WorldEntity]):
+        # TODO extract world area arithmetic
+        grid_width = entire_world_area.w // GRID_CELL_WIDTH
+        grid_height = entire_world_area.h // GRID_CELL_WIDTH
+        grid = []
+        for x in range(grid_width + 1):
+            grid.append((grid_height + 1) * [0])
+        for w in walls:
+            cell_x = (w.x - entire_world_area.x) // GRID_CELL_WIDTH
+            cell_y = (w.y - entire_world_area.y) // GRID_CELL_WIDTH
+            grid[cell_x][cell_y] = 1
+        return grid
+
+    def handle_camera_shake(self, time_passed: Millis):
+        if self.camera_shake is not None:
+            self.camera_shake.notify_time_passed(time_passed)
+            if not self.camera_shake.has_time_left():
+                self.camera_shake = None
+
+    def get_camera_world_area_including_camera_shake(self) -> Rect:
+        camera_world_area = Rect(self.camera_world_area)
+        if self.camera_shake is not None:
+            camera_world_area[0] += self.camera_shake.offset[0]
+            camera_world_area[1] += self.camera_shake.offset[1]
+        return camera_world_area
+
+    def modify_hero_stat(self, hero_stat: HeroStat, stat_delta: Union[int, float]):
+        if hero_stat == HeroStat.MOVEMENT_SPEED:
+            self.game_world.modify_hero_movement_speed(stat_delta)
+        else:
+            self.player_state.modify_stat(hero_stat, stat_delta)
+
+    def get_all_entities_to_render(self) -> List[WorldEntity]:
+        return self.get_walls_in_sight_of_player() + self.game_world.get_renderable_non_wall_entities()
+
+    def get_walls_in_sight_of_player(self) -> List[WorldEntity]:
+        return self.game_world.get_walls_in_sight_of_player(self.camera_world_area)
+
+    def get_decorations_to_render(self) -> List[DecorationEntity]:
+        return self.game_world.get_decorations_to_render(self.camera_world_area)
+
+    def center_camera_on_player(self):
+        new_camera_pos = get_position_from_center_position(self.game_world.player_entity.get_center_position(),
+                                                           self.camera_size)
+        new_camera_pos_within_world = self.game_world.get_within_world(new_camera_pos,
+                                                                       (self.camera_size[0], self.camera_size[1]))
+        self.camera_world_area.topleft = new_camera_pos_within_world
+
+    def translate_camera_position(self, translation_vector: Tuple[int, int]):
+        new_camera_pos = (self.camera_world_area.x + translation_vector[0],
+                          self.camera_world_area.y + translation_vector[1])
+        new_camera_pos_within_world = self.game_world.get_within_world(new_camera_pos,
+                                                                       (self.camera_size[0], self.camera_size[1]))
+        self.camera_world_area.topleft = new_camera_pos_within_world
+
+    def set_camera_position_to_ratio_of_world(self, ratio: Tuple[float, float]):
+        entire_world_area = self.game_world.entire_world_area
+        new_camera_pos = (entire_world_area.x + ratio[0] * entire_world_area.w - self.camera_size[0] // 2,
+                          entire_world_area.y + ratio[1] * entire_world_area.h - self.camera_size[1] // 2)
+        new_camera_pos_within_world = self.game_world.get_within_world(new_camera_pos,
+                                                                       (self.camera_size[0], self.camera_size[1]))
+        self.camera_world_area.topleft = new_camera_pos_within_world
+
+    def snap_camera_to_grid(self, cell_size: int):
+        self.camera_world_area.x -= self.camera_world_area.x % cell_size
+        self.camera_world_area.y -= self.camera_world_area.y % cell_size
 
 
 class WallsState:

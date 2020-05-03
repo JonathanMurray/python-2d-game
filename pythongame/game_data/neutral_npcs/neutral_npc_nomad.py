@@ -29,7 +29,8 @@ class HealAction(AbstractNpcAction):
     def on_select(self, game_state: GameState) -> Optional[str]:
         if not game_state.player_state.health_resource.is_at_max():
             health_gained = game_state.player_state.health_resource.gain_to_max()
-            game_state.visual_effects.append(create_visual_healing_text(game_state.player_entity, health_gained))
+            game_state.game_world.visual_effects.append(
+                create_visual_healing_text(game_state.game_world.player_entity, health_gained))
             play_sound(SoundId.CONSUMABLE_POTION)
             return "You feel healthy again!"
         play_sound(SoundId.WARNING)

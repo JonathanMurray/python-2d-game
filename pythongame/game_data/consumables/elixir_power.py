@@ -30,8 +30,8 @@ class BuffedFromElixirOfPower(StatModifyingBuffEffect):
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         if self.timer.update_and_check_if_ready(time_passed):
-            game_state.visual_effects.append(
-                VisualRect((0, 0, 0), game_state.player_entity.get_center_position(), 6, 18, Millis(200), 3))
+            game_state.game_world.visual_effects.append(
+                VisualRect((0, 0, 0), game_state.game_world.player_entity.get_center_position(), 6, 18, Millis(200), 3))
 
 
 def register_elixir_of_power():

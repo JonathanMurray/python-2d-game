@@ -38,7 +38,7 @@ class Charging(AbstractBuffEffect):
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.add_one()
         game_state.modify_hero_stat(HeroStat.MOVEMENT_SPEED, BONUS_SPEED_MULTIPLIER)
-        game_state.player_entity.set_moving_in_dir(game_state.player_entity.direction)
+        game_state.game_world.player_entity.set_moving_in_dir(game_state.game_world.player_entity.direction)
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis) -> Optional[bool]:
@@ -49,7 +49,7 @@ class Charging(AbstractBuffEffect):
 
         if self.graphics_timer.update_and_check_if_ready(time_passed):
             visual_circle = VisualCircle((250, 250, 250), charger_center_pos, 15, 25, Millis(120), 2, None)
-            game_state.visual_effects.append(visual_circle)
+            game_state.game_world.visual_effects.append(visual_circle)
 
         rect_w = 32
         # NOTE: We assume that this ability is used by this specific hero
@@ -58,7 +58,7 @@ class Charging(AbstractBuffEffect):
             charger_center_pos, buffed_entity.direction, rect_w / 2 + hero_entity_size[0] / 2)
 
         impact_rect = Rect(int(impact_pos[0] - rect_w / 2), int(impact_pos[1] - rect_w / 2), rect_w, rect_w)
-        affected_enemies = game_state.get_enemy_intersecting_rect(impact_rect)
+        affected_enemies = game_state.game_world.get_enemy_intersecting_rect(impact_rect)
         for enemy in affected_enemies:
             visual_impact_pos = get_middle_point(charger_center_pos, enemy.world_entity.get_center_position())
             damage = MIN_DMG
@@ -70,9 +70,9 @@ class Charging(AbstractBuffEffect):
                 damage = MAX_DMG
             deal_player_damage_to_enemy(game_state, enemy, damage, DamageType.PHYSICAL,
                                         visual_emphasis=damage_increased)
-            game_state.visual_effects.append(
+            game_state.game_world.visual_effects.append(
                 VisualRect((250, 170, 0), visual_impact_pos, 45, 25, IMPACT_STUN_DURATION, 2, None))
-            game_state.visual_effects.append(
+            game_state.game_world.visual_effects.append(
                 VisualRect((150, 0, 0), visual_impact_pos, 35, 20, IMPACT_STUN_DURATION, 2, None))
             game_state.player_state.gain_buff_effect(get_buff_effect(BUFF_TYPE_STUNNED), IMPACT_STUN_DURATION)
             enemy.gain_buff_effect(get_buff_effect(BUFF_TYPE_STUNNED), IMPACT_STUN_DURATION)

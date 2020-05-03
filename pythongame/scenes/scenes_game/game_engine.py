@@ -43,12 +43,12 @@ class GameEngine:
 
     def move_in_direction(self, direction: Direction):
         if not self.game_state.player_state.stun_status.is_stunned():
-            self.game_state.player_entity.set_moving_in_dir(direction)
+            self.game_state.game_world.player_entity.set_moving_in_dir(direction)
 
     def stop_moving(self):
         # Don't stop moving if stunned (could be charging)
         if not self.game_state.player_state.stun_status.is_stunned():
-            self.game_state.player_entity.set_not_moving()
+            self.game_state.game_world.player_entity.set_not_moving()
 
     def drag_item_between_inventory_slots(self, slot_1: int, slot_2: int) -> bool:
         item_equip_events = self.game_state.player_state.item_inventory.switch_item_slots(slot_1, slot_2)
@@ -71,12 +71,12 @@ class GameEngine:
         item_id = item_equip_event.item_id
         self._handle_item_equip_event(item_equip_event)
         item = create_item_on_ground(item_id, game_world_position)
-        self.game_state.items_on_ground.append(item)
+        self.game_state.game_world.items_on_ground.append(item)
 
     def drop_consumable_on_ground(self, consumable_slot: int, game_world_position: Tuple[int, int]):
         consumable_type = self.game_state.player_state.consumable_inventory.remove_consumable_from_slot(consumable_slot)
         consumable = create_consumable_on_ground(consumable_type, game_world_position)
-        self.game_state.consumables_on_ground.append(consumable)
+        self.game_state.game_world.consumables_on_ground.append(consumable)
 
     def try_switch_item_at_slot(self, item_slot: int) -> bool:
         item_equip_events = self.game_state.player_state.item_inventory.try_switch_item_at_slot(item_slot)
@@ -98,7 +98,7 @@ class GameEngine:
         did_add_item = try_add_item_to_inventory(self.game_state, item.item_id)
         if did_add_item:
             play_sound(SoundId.EVENT_PICKED_UP)
-            self.game_state.items_on_ground.remove(item)
+            self.game_state.game_world.items_on_ground.remove(item)
             self.info_message.set_message("You picked up " + item_name)
         else:
             self.info_message.set_message("No space for " + item_name)
@@ -137,13 +137,13 @@ class GameEngine:
             self.game_state.player_state.consumable_inventory.add_consumable(consumable_type)
             self.info_message.set_message("You picked up " + consumable_name)
             play_sound(SoundId.EVENT_PICKED_UP)
-            self.game_state.consumables_on_ground.remove(consumable)
+            self.game_state.game_world.consumables_on_ground.remove(consumable)
         else:
             self.info_message.set_message("No space for " + consumable_name)
 
     def interact_with_portal(self, portal: Portal):
         if portal.is_enabled:
-            destination_portal = [p for p in self.game_state.portals if p.portal_id == portal.leads_to][0]
+            destination_portal = [p for p in self.game_state.game_world.portals if p.portal_id == portal.leads_to][0]
             destination_portal.activate(portal.world_entity.sprite)
             destination = translate_in_direction(destination_portal.world_entity.get_position(), Direction.DOWN, 50)
             teleport_buff_effect: AbstractBuffEffect = get_buff_effect(BuffType.TELEPORTING_WITH_PORTAL, destination)
@@ -155,12 +155,13 @@ class GameEngine:
     def handle_being_close_to_portal(self, portal: Portal):
         # When finding a new portal out on the map, it's enough to walk close to it, to activate its sibling
         if portal.is_enabled:
-            destination_portal = [p for p in self.game_state.portals if p.portal_id == portal.leads_to][0]
+            destination_portal = [p for p in self.game_state.game_world.portals if p.portal_id == portal.leads_to][0]
             if not destination_portal.is_enabled:
                 play_sound(SoundId.EVENT_PORTAL_ACTIVATED)
                 self.info_message.set_message("Portal was activated")
                 destination_portal.activate(portal.world_entity.sprite)
-                self.game_state.visual_effects += create_teleport_effects(portal.world_entity.get_center_position())
+                self.game_state.game_world.visual_effects += create_teleport_effects(
+                    portal.world_entity.get_center_position())
 
     def interact_with_shrine(self, shrine: Shrine):
         if not shrine.has_been_used:
@@ -169,7 +170,7 @@ class GameEngine:
             self.info_message.set_message(message)
 
     def use_warp_point(self, warp_point: WarpPoint):
-        destination_warp_point = [w for w in self.game_state.warp_points if w != warp_point][0]
+        destination_warp_point = [w for w in self.game_state.game_world.warp_points if w != warp_point][0]
         # It's safe to teleport to warp point's position as hero and warp point entities are the exact same size
         teleport_buff_effect: AbstractBuffEffect = get_buff_effect(
             BuffType.TELEPORTING_WITH_WARP_POINT, destination_warp_point.world_entity.get_position())
@@ -188,7 +189,7 @@ class GameEngine:
             VisualRect((200, 0, 200), chest.world_entity.get_center_position(), 50, 100, Millis(100), 2),
             VisualRect((200, 0, 200), chest.world_entity.get_center_position(), 50, 100, Millis(180), 3)
         ]
-        self.game_state.visual_effects += visual_effects
+        self.game_state.game_world.visual_effects += visual_effects
 
     def gain_levels(self, num_levels: int):
         gain_exp_events = self.game_state.player_state.gain_exp_worth_n_levels(num_levels)
@@ -199,25 +200,26 @@ class GameEngine:
 
         events = []
 
-        for npc in self.game_state.non_player_characters:
+        for npc in self.game_state.game_world.non_player_characters:
             # NonPlayerCharacter AI shouldn't run if enemy is too far out of sight
             if self._is_npc_close_to_camera(npc):
-                npc.npc_mind.control_npc(self.game_state, npc, self.game_state.player_entity,
+                npc.npc_mind.control_npc(self.game_state, npc, self.game_state.game_world.player_entity,
                                          self.game_state.player_state.is_invisible, time_passed)
 
-        for projectile in self.game_state.projectile_entities:
+        for projectile in self.game_state.game_world.projectile_entities:
             projectile.projectile_controller.notify_time_passed(self.game_state, projectile, time_passed)
 
-        for visual_effect in self.game_state.visual_effects:
+        for visual_effect in self.game_state.game_world.visual_effects:
             visual_effect.notify_time_passed(time_passed)
 
         self.game_state.handle_camera_shake(time_passed)
 
-        npcs_that_died = self.game_state.remove_dead_npcs()
+        npcs_that_died = self.game_state.game_world.remove_dead_npcs()
         enemies_that_died = [e for e in npcs_that_died if e.is_enemy]
         if enemies_that_died:
             exp_gained = sum([NON_PLAYER_CHARACTERS[e.npc_type].exp_reward for e in enemies_that_died])
-            self.game_state.visual_effects.append(create_visual_exp_text(self.game_state.player_entity, exp_gained))
+            self.game_state.game_world.visual_effects.append(
+                create_visual_exp_text(self.game_state.game_world.player_entity, exp_gained))
             gain_exp_events = self.game_state.player_state.gain_exp(exp_gained)
             self._handle_gain_exp_events(gain_exp_events)
 
@@ -236,23 +238,23 @@ class GameEngine:
                 self.game_state.player_state.notify_about_event(EnemyDiedEvent(), self.game_state)
             events.append(EngineEvent.ENEMY_DIED)
 
-        self.game_state.remove_expired_projectiles()
-        self.game_state.remove_expired_visual_effects()
-        self.game_state.remove_opened_chests()
+        self.game_state.game_world.remove_expired_projectiles()
+        self.game_state.game_world.remove_expired_visual_effects()
+        self.game_state.game_world.remove_opened_chests()
 
         player_buffs_update = self.game_state.player_state.handle_buffs(time_passed)
         for buff in player_buffs_update.buffs_that_started:
-            buff.buff_effect.apply_start_effect(self.game_state, self.game_state.player_entity, None)
+            buff.buff_effect.apply_start_effect(self.game_state, self.game_state.game_world.player_entity, None)
         for buff in player_buffs_update.buffs_that_were_active:
             buff_should_end = buff.buff_effect.apply_middle_effect(
-                self.game_state, self.game_state.player_entity, None, time_passed)
+                self.game_state, self.game_state.game_world.player_entity, None, time_passed)
             if buff_should_end:
                 buff.force_cancel()
 
         for buff in player_buffs_update.buffs_that_ended:
-            buff.buff_effect.apply_end_effect(self.game_state, self.game_state.player_entity, None)
+            buff.buff_effect.apply_end_effect(self.game_state, self.game_state.game_world.player_entity, None)
 
-        for enemy in self.game_state.non_player_characters:
+        for enemy in self.game_state.game_world.non_player_characters:
             enemy.health_resource.regenerate(time_passed)
             buffs_update = _handle_buffs(enemy.active_buffs, time_passed)
             for buff in buffs_update.buffs_that_started:
@@ -269,65 +271,68 @@ class GameEngine:
         self.game_state.player_state.mana_resource.regenerate(time_passed)
         self.game_state.player_state.recharge_ability_cooldowns(time_passed)
 
-        self.game_state.player_entity.update_movement_animation(time_passed)
-        for npc in self.game_state.non_player_characters:
+        self.game_state.game_world.player_entity.update_movement_animation(time_passed)
+        for npc in self.game_state.game_world.non_player_characters:
             npc.world_entity.update_movement_animation(time_passed)
-        for projectile in self.game_state.projectile_entities:
+        for projectile in self.game_state.game_world.projectile_entities:
             projectile.world_entity.update_movement_animation(time_passed)
-        for warp_point in self.game_state.warp_points:
+        for warp_point in self.game_state.game_world.warp_points:
             warp_point.world_entity.update_animation(time_passed)
 
-        for npc in self.game_state.non_player_characters:
+        for npc in self.game_state.game_world.non_player_characters:
             # Enemies shouldn't move towards player when they are out of sight
             if self._is_npc_close_to_camera(npc):
-                self.game_state.update_npc_position_within_game_world(npc, time_passed)
+                self.game_state.game_world.update_npc_position_within_game_world(npc, time_passed)
         # player can still move when stunned (could be charging)
-        self.game_state.update_world_entity_position_within_game_world(self.game_state.player_entity, time_passed)
-        for projectile in self.game_state.projectile_entities:
+        self.game_state.game_world.update_world_entity_position_within_game_world(
+            self.game_state.game_world.player_entity, time_passed)
+        for projectile in self.game_state.game_world.projectile_entities:
             new_pos = projectile.world_entity.get_new_position_according_to_dir_and_speed(time_passed)
             projectile.world_entity.set_position(new_pos)
 
-        for visual_effect in self.game_state.visual_effects:
+        for visual_effect in self.game_state.game_world.visual_effects:
             visual_effect.update_position_if_attached_to_entity()
             if visual_effect.attached_to_entity:
-                npcs = [e.world_entity for e in self.game_state.non_player_characters]
-                projectiles = [p.world_entity for p in self.game_state.projectile_entities]
-                if not visual_effect.attached_to_entity in npcs + projectiles + [self.game_state.player_entity]:
+                npcs = [e.world_entity for e in self.game_state.game_world.non_player_characters]
+                projectiles = [p.world_entity for p in self.game_state.game_world.projectile_entities]
+                if not visual_effect.attached_to_entity in npcs + projectiles + [
+                    self.game_state.game_world.player_entity]:
                     visual_effect.has_expired = True
 
         # ------------------------------------
         #          HANDLE COLLISIONS
         # ------------------------------------
 
-        for money_pile in self.game_state.money_piles_on_ground:
-            if boxes_intersect(self.game_state.player_entity.rect(), money_pile.world_entity.rect()):
+        for money_pile in self.game_state.game_world.money_piles_on_ground:
+            if boxes_intersect(self.game_state.game_world.player_entity.rect(), money_pile.world_entity.rect()):
                 play_sound(SoundId.EVENT_PICKED_UP_MONEY)
                 money_pile.has_been_picked_up_and_should_be_removed = True
                 self.game_state.player_state.modify_money(money_pile.amount)
 
-        for enemy in [e for e in self.game_state.non_player_characters if e.is_enemy]:
-            for projectile in self.game_state.get_projectiles_intersecting_with(enemy.world_entity):
+        for enemy in [e for e in self.game_state.game_world.non_player_characters if e.is_enemy]:
+            for projectile in self.game_state.game_world.get_projectiles_intersecting_with(enemy.world_entity):
                 if not projectile.has_collided_and_should_be_removed:
                     projectile.projectile_controller.apply_enemy_collision(enemy, self.game_state, projectile)
 
-        for player_summon in [npc for npc in self.game_state.non_player_characters
+        for player_summon in [npc for npc in self.game_state.game_world.non_player_characters
                               if npc.npc_category == NpcCategory.PLAYER_SUMMON]:
-            for projectile in self.game_state.get_projectiles_intersecting_with(player_summon.world_entity):
+            for projectile in self.game_state.game_world.get_projectiles_intersecting_with(player_summon.world_entity):
                 if not projectile.has_collided_and_should_be_removed:
                     projectile.projectile_controller.apply_player_summon_collision(player_summon, self.game_state,
                                                                                    projectile)
 
-        for projectile in self.game_state.get_projectiles_intersecting_with(self.game_state.player_entity):
+        for projectile in self.game_state.game_world.get_projectiles_intersecting_with(
+                self.game_state.game_world.player_entity):
             if not projectile.has_collided_and_should_be_removed:
                 projectile.projectile_controller.apply_player_collision(self.game_state, projectile)
 
-        for projectile in self.game_state.projectile_entities:
+        for projectile in self.game_state.game_world.projectile_entities:
             if not projectile.has_collided_and_should_be_removed:
-                if self.game_state.walls_state.does_entity_intersect_with_wall(projectile.world_entity):
+                if self.game_state.game_world.walls_state.does_entity_intersect_with_wall(projectile.world_entity):
                     projectile.projectile_controller.apply_wall_collision(self.game_state, projectile)
 
-        self.game_state.remove_money_piles_that_have_been_picked_up()
-        self.game_state.remove_projectiles_that_have_been_destroyed()
+        self.game_state.game_world.remove_money_piles_that_have_been_picked_up()
+        self.game_state.game_world.remove_projectiles_that_have_been_destroyed()
 
         # ------------------------------------
         #       UPDATE CAMERA POSITION
@@ -354,8 +359,8 @@ class GameEngine:
 
         if did_level_up:
             play_sound(SoundId.EVENT_PLAYER_LEVELED_UP)
-            self.game_state.visual_effects.append(
-                VisualCircle((150, 150, 250), self.game_state.player_entity.get_center_position(), 9, 35,
+            self.game_state.game_world.visual_effects.append(
+                VisualCircle((150, 150, 250), self.game_state.game_world.player_entity.get_center_position(), 9, 35,
                              Millis(150), 2))
             self.info_message.set_message("You reached level " + str(self.game_state.player_state.level))
         if new_abilities:
@@ -383,24 +388,24 @@ class GameEngine:
 
             if isinstance(loot_entry, MoneyLootEntry):
                 money_pile_on_ground = create_money_pile_on_ground(loot_entry.amount, loot_position)
-                self.game_state.money_piles_on_ground.append(money_pile_on_ground)
+                self.game_state.game_world.money_piles_on_ground.append(money_pile_on_ground)
             elif isinstance(loot_entry, ItemLootEntry):
                 item_id = randomized_item_id(loot_entry.item_type)
                 item_on_ground = create_item_on_ground(item_id, loot_position)
-                self.game_state.items_on_ground.append(item_on_ground)
+                self.game_state.game_world.items_on_ground.append(item_on_ground)
             elif isinstance(loot_entry, AffixedItemLootEntry):
                 item_id = loot_entry.item_id
                 item_on_ground = create_item_on_ground(item_id, loot_position)
-                self.game_state.items_on_ground.append(item_on_ground)
+                self.game_state.game_world.items_on_ground.append(item_on_ground)
                 loot_center_pos = (loot_position[0] + ITEM_ENTITY_SIZE[0] // 2,
                                    loot_position[1] + ITEM_ENTITY_SIZE[1] // 2)
-                self.game_state.visual_effects.append(
+                self.game_state.game_world.visual_effects.append(
                     VisualCircle((170, 200, 170), loot_center_pos, 30, 40, Millis(500), 2))
-                self.game_state.visual_effects.append(
+                self.game_state.game_world.visual_effects.append(
                     VisualCircle((70, 100, 70), loot_center_pos, 25, 35, Millis(500), 2))
             elif isinstance(loot_entry, ConsumableLootEntry):
                 consumable_on_ground = create_consumable_on_ground(loot_entry.consumable_type, loot_position)
-                self.game_state.consumables_on_ground.append(consumable_on_ground)
+                self.game_state.game_world.consumables_on_ground.append(consumable_on_ground)
 
 
 def _handle_buffs(active_buffs: List[BuffWithDuration], time_passed: Millis) -> AgentBuffsUpdate:

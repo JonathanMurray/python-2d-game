@@ -25,14 +25,14 @@ class EnemyTarget:
 
 def get_target(agent_entity: WorldEntity, game_state: GameState) -> EnemyTarget:
     # Enemies should prioritize attacking a summon over attacking the player
-    player_summons = [npc for npc in game_state.non_player_characters
+    player_summons = [npc for npc in game_state.game_world.non_player_characters
                       if npc.npc_category == NpcCategory.PLAYER_SUMMON]
     if player_summons:
         player_summon = player_summons[0]
         agent_position = agent_entity.get_position()
         distance_to_npc_target = get_manhattan_distance(player_summon.world_entity.get_position(),
                                                         agent_position)
-        distance_to_player = get_manhattan_distance(game_state.player_entity.get_position(), agent_position)
+        distance_to_player = get_manhattan_distance(game_state.game_world.player_entity.get_position(), agent_position)
         if distance_to_npc_target < distance_to_player:
             return EnemyTarget.npc(player_summon.world_entity, player_summon)
-    return EnemyTarget.player(game_state.player_entity)
+    return EnemyTarget.player(game_state.game_world.player_entity)

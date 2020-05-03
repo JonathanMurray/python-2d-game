@@ -91,7 +91,8 @@ class SaveFileHandler:
             items=[[slot.get_item_id().stats_string, slot.get_item_id().name] if not slot.is_empty() else None
                    for slot in player_state.item_inventory.slots],
             money=player_state.money,
-            enabled_portals={p.portal_id.name: p.world_entity.sprite.name for p in game_state.portals if p.is_enabled},
+            enabled_portals={p.portal_id.name: p.world_entity.sprite.name for p in game_state.game_world.portals if
+                             p.is_enabled},
             talent_tier_choices=player_state.get_serilized_talent_tier_choices(),
             total_time_played_on_character=total_time_played_on_character,
             active_quests=[q.quest_id.name for q in player_state.active_quests],

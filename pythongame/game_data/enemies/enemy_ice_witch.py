@@ -81,7 +81,7 @@ class NpcMind(AbstractNpcMind):
                     play_sound(SoundId.ENEMY_ATTACK_ICE_WITCH)
                     damage = random.randint(DAMAGE_MIN, DAMAGE_MAX)
                     deal_npc_damage(damage, DamageType.MAGIC, game_state, enemy_entity, npc, target)
-                    game_state.visual_effects += [
+                    game_state.game_world.visual_effects += [
                         (VisualLine((100, 100, 200), enemy_position, target_center_pos, Millis(120), 3)),
                         (VisualLine((150, 150, 250), enemy_position, target_center_pos, Millis(240), 2))]
                     chance_to_resist_slow = game_state.player_state.get_effective_movement_impairing_resist_chance()

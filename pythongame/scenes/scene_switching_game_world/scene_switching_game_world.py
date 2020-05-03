@@ -38,7 +38,7 @@ class SwitchingGameWorldScene(AbstractScene):
 
         # Must center camera before notifying player position as it affects which walls are shown on the minimap
         new_game_state.center_camera_on_player()
-        self.ui_view.on_world_area_updated(new_game_state.entire_world_area)
+        self.ui_view.on_world_area_updated(new_game_state.game_world.entire_world_area)
 
         # We set up observers for gameEngine and gameState, since they are newly created in this scene. The player
         # state's observers (ui view) have already been setup in an earlier scene however.

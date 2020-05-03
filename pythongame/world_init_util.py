@@ -12,15 +12,15 @@ def register_game_engine_observers(game_engine: GameEngine, ui_view: GameUiView)
 
 
 def register_game_state_observers(game_state: GameState, ui_view: GameUiView, include_player_state: bool):
-    game_state.player_movement_speed_was_updated.register_observer(ui_view.on_player_movement_speed_updated)
-    game_state.notify_movement_speed_observers()  # Must notify the initial state
-    game_state.player_entity.movement_changed = Observable()
-    game_state.player_entity.movement_changed.register_observer(play_or_stop_footstep_sounds)
-    game_state.player_entity.position_changed = Observable()
-    game_state.player_entity.position_changed.register_observer(ui_view.on_player_position_updated)
-    game_state.player_entity.position_changed.register_observer(
+    game_state.game_world.player_movement_speed_was_updated.register_observer(ui_view.on_player_movement_speed_updated)
+    game_state.game_world.notify_movement_speed_observers()  # Must notify the initial state
+    game_state.game_world.player_entity.movement_changed = Observable()
+    game_state.game_world.player_entity.movement_changed.register_observer(play_or_stop_footstep_sounds)
+    game_state.game_world.player_entity.position_changed = Observable()
+    game_state.game_world.player_entity.position_changed.register_observer(ui_view.on_player_position_updated)
+    game_state.game_world.player_entity.position_changed.register_observer(
         lambda _: ui_view.on_walls_seen([w.get_position() for w in game_state.get_walls_in_sight_of_player()]))
-    game_state.player_entity.notify_position_observers()  # Must notify the initial state
+    game_state.game_world.player_entity.notify_position_observers()  # Must notify the initial state
 
     if include_player_state:
         _register_player_state_observers(game_state.player_state, ui_view)
