@@ -15,7 +15,7 @@ class ConsumableWasConsumed(AbstractConsumableResult):
 
 
 class ConsumableFailedToBeConsumed(AbstractConsumableResult):
-    def __init__(self, reason):
+    def __init__(self, reason: str):
         self.reason = reason
 
 

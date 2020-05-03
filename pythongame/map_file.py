@@ -105,7 +105,9 @@ class MapJson:
                                chests=[ChestJson.deserialize(c) for c in data.get("chests", [])],
                                shrines=[ShrineJson.deserialize(s) for s in data.get("shrines", [])],
                                dungeon_entrances=[DungeonEntranceJson.deserialize(e) for e in
-                                                  data.get("dungeon_entrances", [])])
+                                                  data.get("dungeon_entrances", [])],
+                               is_dungeon=False,
+                               )
 
         map_editor_config = MapEditorConfig(disable_smart_grid=data.get("disable_smart_grid", False))
         grid_string = data.get("grid", None)

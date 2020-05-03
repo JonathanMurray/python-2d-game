@@ -796,7 +796,7 @@ class GameState:
                  non_player_characters: List[NonPlayerCharacter], walls: List[Wall], camera_size: Tuple[int, int],
                  entire_world_area: Rect, player_state: PlayerState,
                  decoration_entities: List[DecorationEntity], portals: List[Portal], chests: List[Chest],
-                 shrines: List[Shrine], dungeon_entrances: List[DungeonEntrance]):
+                 shrines: List[Shrine], dungeon_entrances: List[DungeonEntrance], is_dungeon: bool):
         self.camera_size = camera_size
         self.camera_world_area = Rect((0, 0), self.camera_size)
         self.camera_shake: CameraShake = None
@@ -822,6 +822,7 @@ class GameState:
         self.chests: List[Chest] = chests
         self.player_movement_speed_was_updated = Observable()
         self.dungeon_entrances = dungeon_entrances
+        self.is_dungeon = is_dungeon
 
     @staticmethod
     def _setup_pathfinder_wall_grid(entire_world_area: Rect, walls: List[WorldEntity]):

@@ -107,7 +107,7 @@ class MapEditor:
             player_entity = create_hero_world_entity(HERO_ID, (0, 0))
             player_state = create_player_state(HERO_ID)
             game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, Rect(-250, -250, 1500, 1000),
-                                   player_state, [], [], [], [], [])
+                                   player_state, [], [], [], [], [], is_dungeon=False)
             self._set_game_state(game_state)
             self.config = MapEditorConfig(disable_smart_grid=False)
             grid_size = (game_state.entire_world_area.w // GRID_CELL_SIZE,

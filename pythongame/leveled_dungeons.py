@@ -25,7 +25,9 @@ def create_dungeon_game_state(player_state: PlayerState, camera_size: Tuple[int,
         portals=[],
         chests=[],
         shrines=[],
-        dungeon_entrances=[])
+        dungeon_entrances=[],
+        is_dungeon=True,
+    )
 
 
 def _generate_dungeon(difficulty_level: int) -> GeneratedDungeon:
