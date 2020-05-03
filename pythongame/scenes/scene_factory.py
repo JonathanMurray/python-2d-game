@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Callable
 
 from pythongame.core.common import Millis, AbstractScene, AbstractWorldBehavior
 from pythongame.core.game_state import GameState
@@ -32,8 +32,11 @@ class AbstractSceneFactory:
     def victory_screen_scene(self) -> AbstractScene:
         raise Exception("Not implemented")
 
-    def entering_dungeon(self,
-                         game_engine: GameEngine,
-                         character_file: str,
-                         total_time_played_on_character: Millis) -> AbstractScene:
+    def switching_game_world(
+            self,
+            game_engine: GameEngine,
+            character_file: str,
+            total_time_played_on_character: Millis,
+            create_new_game_state: Callable[[GameEngine], GameState],
+            create_world_behavior: Callable[[GameState], AbstractWorldBehavior]) -> AbstractScene:
         raise Exception("Not implemented")

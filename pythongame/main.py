@@ -1,5 +1,5 @@
 import sys
-from typing import Optional, List, Any, Tuple
+from typing import Optional, List, Any, Tuple, Callable
 
 import pygame
 
@@ -16,7 +16,7 @@ from pythongame.register_game_data import register_all_game_data
 from pythongame.scenes.scene_challenge_complete_screen.scene_challenge_complete_screen import \
     ChallengeCompleteScreenScene
 from pythongame.scenes.scene_creating_world.scene_creating_world import CreatingWorldScene, InitFlags
-from pythongame.scenes.scene_entering_dungeon.scene_entering_dungeon import EnteringDungeonScene
+from pythongame.scenes.scene_switching_game_world.scene_switching_game_world import SwitchingGameWorldScene
 from pythongame.scenes.scene_factory import AbstractSceneFactory
 from pythongame.scenes.scene_main_menu.scene_main_menu import MainMenuScene
 from pythongame.scenes.scene_main_menu.view_main_menu import MainMenuView
@@ -73,11 +73,15 @@ class SceneFactory(AbstractSceneFactory):
     def victory_screen_scene(self) -> AbstractScene:
         return VictoryScreenScene(self.pygame_screen)
 
-    def entering_dungeon(self,
-                         game_engine: GameEngine,
-                         character_file: str,
-                         total_time_played_on_character: Millis) -> AbstractScene:
-        return EnteringDungeonScene(self, game_engine, self.ui_view, character_file, total_time_played_on_character)
+    def switching_game_world(
+            self,
+            game_engine: GameEngine,
+            character_file: str,
+            total_time_played_on_character: Millis,
+            create_new_game_state: Callable[[GameEngine], GameState],
+            create_world_behavior: Callable[[GameState], AbstractWorldBehavior]) -> AbstractScene:
+        return SwitchingGameWorldScene(self, game_engine, self.ui_view, character_file, total_time_played_on_character,
+                                       create_new_game_state, create_world_behavior)
 
 
 class Main:
