@@ -9,6 +9,7 @@ from pythongame.core.health_and_mana import HealthOrManaResource
 from pythongame.core.item_inventory import ItemInventory
 from pythongame.core.math import boxes_intersect, rects_intersect, get_position_from_center_position, \
     translate_in_direction, is_x_and_y_within_distance
+from pythongame.core.quests import QuestId, Quest
 from pythongame.core.talents import TalentsConfig, TalentsState
 from pythongame.game_data.loot_tables import LootTableId
 
@@ -312,19 +313,6 @@ class AgentBuffsUpdate:
         self.buffs_that_started = buffs_that_started
         self.buffs_that_were_active = buffs_that_were_active
         self.buffs_that_ended = buffs_that_ended
-
-
-class QuestId(Enum):
-    MAIN_RETRIEVE_KEY = 1
-    RETRIEVE_FROG = 2
-    RETRIEVE_CORRUPTED_ORB = 3
-
-
-class Quest:
-    def __init__(self, quest_id: QuestId, name: str, description: str):
-        self.quest_id = quest_id
-        self.name = name
-        self.description = description
 
 
 class PlayerState:

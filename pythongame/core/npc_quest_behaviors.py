@@ -2,13 +2,14 @@ from pythongame.core.common import *
 from pythongame.core.common import NpcType, Millis, get_all_directions, ItemType, PeriodicTimer
 from pythongame.core.entity_creation import create_item_on_ground
 from pythongame.core.game_data import register_portrait_icon_sprite_path
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Quest, QuestGiverState, QuestId
+from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestGiverState
 from pythongame.core.item_data import get_item_data_by_type
 from pythongame.core.item_data import plain_item_id
 from pythongame.core.item_effects import try_add_item_to_inventory
 from pythongame.core.npc_behaviors import AbstractNpcAction, register_conditional_npc_dialog_data, register_quest
 from pythongame.core.npc_behaviors import AbstractNpcMind, DialogOptionData
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.quests import QuestId, Quest
 from pythongame.core.sound_player import play_sound
 from pythongame.scenes.scenes_game.game_ui_view import GameUiView
 

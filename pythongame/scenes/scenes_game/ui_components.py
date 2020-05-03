@@ -9,10 +9,11 @@ from pythongame.core.common import ConsumableType, AbilityType, PortraitIconSpri
     PeriodicTimer, NpcType, PortalId, ItemId
 from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData, NpcData, \
     NpcCategory
-from pythongame.core.game_state import PlayerState, Quest
+from pythongame.core.game_state import PlayerState
 from pythongame.core.item_data import DescriptionLine
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.math import get_relative_pos_within_rect
+from pythongame.core.quests import Quest
 from pythongame.core.talents import TalentTierStatus
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
 

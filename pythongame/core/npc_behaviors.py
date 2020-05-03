@@ -5,7 +5,7 @@ from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import CONSUMABLES
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest, Projectile
+from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
 from pythongame.core.item_data import create_item_description
 from pythongame.core.item_data import get_item_data_by_type
 from pythongame.core.item_effects import try_add_item_to_inventory
@@ -16,6 +16,7 @@ from pythongame.core.math import random_direction, sum_of_vectors, \
     rect_from_corners
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
+from pythongame.core.quests import QuestId, Quest
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import VisualCircle
 from pythongame.scenes.scenes_game.game_ui_view import GameUiView

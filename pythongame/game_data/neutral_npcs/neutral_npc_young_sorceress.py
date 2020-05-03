@@ -1,12 +1,13 @@
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, PortraitIconSprite, \
     ItemType, PeriodicTimer, HeroId, ItemId
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map
-from pythongame.core.game_state import QuestId, Quest, GameState
+from pythongame.core.game_state import GameState
 from pythongame.core.item_data import plain_item_id
 from pythongame.core.item_data import randomized_item_id
 from pythongame.core.npc_behaviors import register_npc_behavior
 from pythongame.core.npc_quest_behaviors import register_quest_giver_dialog, QuestGiverNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.quests import QuestId, Quest
 from pythongame.core.view.image_loading import SpriteSheet
 
 QUEST_MIN_LEVEL = 1

@@ -4,10 +4,10 @@ from typing import Tuple
 from pythongame.core.common import ConsumableType, Sprite, ItemId
 from pythongame.core.common import Millis, HeroId, AbstractScene, SceneTransition
 from pythongame.core.game_data import allocate_input_keys_for_abilities
-from pythongame.core.game_state import QuestId
 from pythongame.core.global_path_finder import init_global_path_finder
 from pythongame.core.hero_upgrades import pick_talent
 from pythongame.core.npc_behaviors import get_quest
+from pythongame.core.quests import QuestId
 from pythongame.core.world_behavior import ChallengeBehavior, StoryBehavior
 from pythongame.map_file import load_map_from_json_file
 from pythongame.player_file import SavedPlayerState
