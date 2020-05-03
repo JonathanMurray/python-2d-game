@@ -7,10 +7,11 @@ from pythongame.core.common import BuffType, Millis, AbilityType, UiIconSprite, 
     HeroStat
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text, ABILITIES
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, BuffEventOutcome, \
+from pythongame.core.game_state import GameState, NonPlayerCharacter, Event, BuffEventOutcome, \
     EnemyDiedEvent
 from pythongame.core.hero_upgrades import register_hero_upgrade_effect
 from pythongame.core.visual_effects import VisualCircle
+from pythongame.core.world_entity import WorldEntity
 
 COOLDOWN = Millis(25000)
 BUFF_DURATION = Millis(15000)

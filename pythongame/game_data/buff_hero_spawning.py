@@ -1,8 +1,9 @@
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect
 from pythongame.core.common import Millis, BuffType, SoundId
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import create_teleport_effects
+from pythongame.core.world_entity import WorldEntity
 
 BUFF_TYPE = BuffType.BEING_SPAWNED
 DELAY = Millis(1000)

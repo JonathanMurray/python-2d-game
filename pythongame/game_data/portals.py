@@ -3,10 +3,11 @@ from typing import Tuple
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect
 from pythongame.core.common import Direction, PortalId, Millis, BuffType, SoundId
 from pythongame.core.game_data import Sprite, register_entity_sprite_map, register_portal_data, PortalData
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import create_teleport_effects
+from pythongame.core.world_entity import WorldEntity
 
 PORTAL_SIZE = (42, 46)
 BUFF_TYPE = BuffType.TELEPORTING_WITH_PORTAL

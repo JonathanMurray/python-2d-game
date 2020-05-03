@@ -6,9 +6,10 @@ from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, 
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_as_channeling
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, CameraShake
+from pythongame.core.game_state import GameState, NonPlayerCharacter, CameraShake
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import VisualRect, VisualCircle, create_visual_stun_text
+from pythongame.core.world_entity import WorldEntity
 
 STUN_DURATION = Millis(2500)
 CHANNELING_STOMP = BuffType.CHANNELING_STOMP

@@ -5,10 +5,11 @@ from pythongame.core.common import AbilityType, Millis, \
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_entity_sprite_map
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.math import get_position_from_center_position
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualCircle, VisualSprite, VisualRect
+from pythongame.core.world_entity import WorldEntity
 
 EFFECT_SPRITE_SIZE = (230, 230)
 

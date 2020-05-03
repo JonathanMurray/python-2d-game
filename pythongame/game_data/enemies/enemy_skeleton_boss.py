@@ -6,7 +6,7 @@ from pythongame.core.common import Millis, NpcType, Sprite, \
     Direction, SoundId, LootTableId, ProjectileType, PeriodicTimer, BuffType
 from pythongame.core.damage_interactions import deal_damage_to_player, deal_npc_damage_to_npc, DamageType
 from pythongame.core.game_data import NpcData
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
+from pythongame.core.game_state import GameState, NonPlayerCharacter, Projectile
 from pythongame.core.math import get_position_from_center_position, \
     translate_in_direction, get_directions_to_position
 from pythongame.core.npc_behaviors import MeleeEnemyNpcMind
@@ -15,6 +15,7 @@ from pythongame.core.projectile_controllers import AbstractProjectileController
 from pythongame.core.projectile_controllers import create_projectile_controller, register_projectile_controller
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import VisualCircle, VisualRect
+from pythongame.core.world_entity import WorldEntity
 from pythongame.game_data.enemies.register_enemies_util import register_basic_enemy
 
 PROJECTILE_TYPE = ProjectileType.ENEMY_SKELETON_BOSS

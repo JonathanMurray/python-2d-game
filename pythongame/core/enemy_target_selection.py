@@ -1,8 +1,9 @@
 from typing import Optional
 
 from pythongame.core.game_data import NpcCategory
-from pythongame.core.game_state import WorldEntity, GameState, NonPlayerCharacter
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.math import get_manhattan_distance
+from pythongame.core.world_entity import WorldEntity
 
 
 # Represents a hostile target for an enemy.

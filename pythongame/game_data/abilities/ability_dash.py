@@ -11,9 +11,10 @@ from pythongame.core.common import AbilityType, Millis, UiIconSprite, SoundId, B
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, CameraShake
+from pythongame.core.game_state import GameState, NonPlayerCharacter, CameraShake
 from pythongame.core.math import translate_in_direction
 from pythongame.core.visual_effects import VisualCircle, VisualRect, VisualLine
+from pythongame.core.world_entity import WorldEntity
 
 ABILITY_TYPE = AbilityType.DASH
 BUFF_FROM_STEALTH = BuffType.AFTER_DASH

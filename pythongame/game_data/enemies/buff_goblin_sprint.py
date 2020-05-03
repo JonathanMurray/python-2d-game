@@ -1,7 +1,8 @@
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect
 from pythongame.core.common import Millis, PeriodicTimer, BuffType
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.visual_effects import VisualCircle
+from pythongame.core.world_entity import WorldEntity
 
 SPRINT_SPEED_BONUS = 0.7
 BUFF_SPRINT = BuffType.ENEMY_GOBLIN_SPEARMAN_SPRINT

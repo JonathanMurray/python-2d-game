@@ -4,11 +4,11 @@ from pythongame.core.buff_effects import get_buff_effect, register_buff_effect, 
 from pythongame.core.common import ItemType, Sprite, BuffType, Millis, PeriodicTimer
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import UiIconSprite
-from pythongame.core.game_state import Event, PlayerDamagedEnemy, GameState, WorldEntity, \
-    NonPlayerCharacter
+from pythongame.core.game_state import Event, PlayerDamagedEnemy, GameState, NonPlayerCharacter
 from pythongame.core.item_effects import AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.visual_effects import VisualCircle
+from pythongame.core.world_entity import WorldEntity
 from pythongame.game_data.items.register_items_util import register_custom_effect_item
 
 DMG_COOLDOWN = Millis(1000)

@@ -1,6 +1,7 @@
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect
 from pythongame.core.common import BuffType
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.game_state import GameState, NonPlayerCharacter
+from pythongame.core.world_entity import WorldEntity
 
 BUFF_TYPE = BuffType.RECOVERING_AFTER_ABILITY
 

@@ -6,12 +6,13 @@ from pygame.rect import Rect
 
 from pythongame.core.common import Direction, Sprite
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, CHANNELING_BUFFS
-from pythongame.core.game_state import WorldEntity, DecorationEntity, NonPlayerCharacter, BuffWithDuration, \
+from pythongame.core.game_state import DecorationEntity, NonPlayerCharacter, BuffWithDuration, \
     QuestGiverState
 from pythongame.core.view.image_loading import ImageWithRelativePosition
 from pythongame.core.view.render_util import DrawableArea, split_text_into_lines
 from pythongame.core.visual_effects import VisualLine, VisualCircle, VisualRect, VisualText, VisualSprite, VisualCross, \
     VisualParticleSystem
+from pythongame.core.world_entity import WorldEntity
 
 COLOR_BACKGROUND = (88 + 30, 72 + 30, 40 + 30)
 COLOR_BACKGROUND_LINES = (93 + 30, 77 + 30, 45 + 30)

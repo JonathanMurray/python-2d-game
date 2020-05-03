@@ -4,12 +4,12 @@ from typing import Optional, Any, List, Tuple
 from pythongame.core.game_data import CONSUMABLES, PORTALS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     ConsumableOnGround, ItemOnGround, Chest, Shrine, DungeonEntrance
-from pythongame.core.game_state import WorldEntity
 from pythongame.core.item_data import create_item_description, get_item_data
 from pythongame.core.math import boxes_intersect, is_x_and_y_within_distance, \
     get_manhattan_distance_between_rects
 from pythongame.core.npc_behaviors import has_npc_dialog
 from pythongame.core.view.game_world_view import EntityActionText, EntityActionTextStyle
+from pythongame.core.world_entity import WorldEntity
 from pythongame.scenes.scenes_game.game_engine import GameEngine
 
 

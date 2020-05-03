@@ -7,7 +7,7 @@ from pythongame.core.common import Millis, NpcType, Sprite, \
 from pythongame.core.damage_interactions import deal_damage_to_player, deal_npc_damage_to_npc, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import NpcData, register_buff_text, register_entity_sprite_map
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
+from pythongame.core.game_state import GameState, NonPlayerCharacter, Projectile
 from pythongame.core.math import get_perpendicular_directions
 from pythongame.core.npc_behaviors import AbstractNpcMind, EnemyShootProjectileTrait
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
@@ -16,6 +16,7 @@ from pythongame.core.projectile_controllers import create_projectile_controller,
     register_projectile_controller
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualCircle
+from pythongame.core.world_entity import WorldEntity
 from pythongame.game_data.enemies.register_enemies_util import register_basic_enemy
 
 BUFF_TYPE = BuffType.ENEMY_GOBLIN_WARLOCK_BURNT

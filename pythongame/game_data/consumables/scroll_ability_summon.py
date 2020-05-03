@@ -7,13 +7,14 @@ from pythongame.core.entity_creation import create_npc
 from pythongame.core.game_data import register_entity_sprite_initializer, register_ui_icon_sprite_path, \
     register_consumable_data, ConsumableData, POTION_ENTITY_SIZE, ConsumableCategory, \
     NON_PLAYER_CHARACTERS, NpcData, register_npc_data, register_entity_sprite_map
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.math import *
 from pythongame.core.npc_behaviors import AbstractNpcMind, register_npc_behavior
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.view.image_loading import SpriteInitializer, SpriteSheet
 from pythongame.core.visual_effects import VisualCircle, VisualLine
+from pythongame.core.world_entity import WorldEntity
 
 DURATION_SUMMON = Millis(50000)
 

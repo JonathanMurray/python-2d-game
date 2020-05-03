@@ -7,8 +7,9 @@ from pythongame.core.entity_creation import create_npc, create_money_pile_on_gro
     create_consumable_on_ground, create_portal, create_wall, create_hero_world_entity, \
     create_decoration_entity, create_item_on_ground, create_player_state, create_chest, create_shrine, \
     create_dungeon_entrance
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Wall, Portal, DecorationEntity, \
+from pythongame.core.game_state import GameState, NonPlayerCharacter, Wall, Portal, DecorationEntity, \
     MoneyPileOnGround, ItemOnGround, ConsumableOnGround, PlayerState, Chest, Shrine, DungeonEntrance
+from pythongame.core.world_entity import WorldEntity
 
 
 class MapEditorConfig:

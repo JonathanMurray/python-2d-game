@@ -3,10 +3,11 @@ import random
 from pythongame.core.buff_effects import get_buff_effect
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, BuffType, SoundId, LootTableId
 from pythongame.core.game_data import NpcData
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.math import get_manhattan_distance
 from pythongame.core.npc_behaviors import MeleeEnemyNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.world_entity import WorldEntity
 from pythongame.game_data.enemies.register_enemies_util import register_basic_enemy
 
 SPRINT_MAX_COOLDOWN = Millis(10000)

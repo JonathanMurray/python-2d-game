@@ -4,11 +4,12 @@ from typing import Optional
 
 from pythongame.core.common import SoundId, Millis
 from pythongame.core.enemy_target_selection import EnemyTarget
-from pythongame.core.game_state import NonPlayerCharacter, GameState, WorldEntity, PlayerLostHealthEvent, \
+from pythongame.core.game_state import NonPlayerCharacter, GameState, PlayerLostHealthEvent, \
     PlayerDamagedEnemy, PlayerWasAttackedEvent, PlayerBlockedEvent, PlayerDodgedEvent
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import create_visual_damage_text, VisualRect, create_visual_healing_text, \
     create_visual_mana_text, create_visual_block_text, create_visual_dodge_text, create_visual_resist_text
+from pythongame.core.world_entity import WorldEntity
 
 
 class DamageType(Enum):

@@ -9,10 +9,11 @@ from pythongame.core.common import BuffType, Millis, AbilityType, SoundId, HeroI
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     HEROES, register_buff_as_channeling
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, CameraShake
+from pythongame.core.game_state import GameState, NonPlayerCharacter, CameraShake
 from pythongame.core.math import translate_in_direction, get_middle_point
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import VisualRect, VisualCircle
+from pythongame.core.world_entity import WorldEntity
 
 CHARGE_DURATION = Millis(500)
 IMPACT_STUN_DURATION = Millis(200)

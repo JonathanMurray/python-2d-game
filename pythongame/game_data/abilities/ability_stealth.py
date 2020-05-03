@@ -7,9 +7,10 @@ from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, 
     HeroStat
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text, ABILITIES
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, BuffEventOutcome, \
+from pythongame.core.game_state import GameState, NonPlayerCharacter, Event, BuffEventOutcome, \
     PlayerUsedAbilityEvent, PlayerLostHealthEvent
 from pythongame.core.hero_upgrades import register_hero_upgrade_effect
+from pythongame.core.world_entity import WorldEntity
 
 STEALTH_MANA_COST = 25
 STEALTH_UPGRADED_MANA_COST = 20

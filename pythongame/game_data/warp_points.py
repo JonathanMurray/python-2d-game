@@ -4,10 +4,11 @@ from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effec
 from pythongame.core.common import Direction, PLAYER_ENTITY_SIZE, Millis, BuffType, SoundId
 from pythongame.core.entity_creation import create_warp_point
 from pythongame.core.game_data import Sprite, register_entity_sprite_map
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import create_teleport_effects
+from pythongame.core.world_entity import WorldEntity
 from pythongame.game_data.portals import PORTAL_DELAY
 
 WARP_STONE_BUFF = BuffType.TELEPORTING_WITH_WARP_STONE

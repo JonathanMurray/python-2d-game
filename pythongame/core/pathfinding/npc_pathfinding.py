@@ -3,10 +3,11 @@ from typing import Tuple, Optional, List
 from pygame.rect import Rect
 
 from pythongame.core.common import Millis, Direction
-from pythongame.core.game_state import GRID_CELL_WIDTH, GameState, WorldEntity
+from pythongame.core.game_state import GRID_CELL_WIDTH, GameState
 from pythongame.core.math import get_directions_to_position, get_opposite_direction, is_x_and_y_within_distance
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.visual_effects import VisualLine, VisualRect
+from pythongame.core.world_entity import WorldEntity
 
 DEBUG_RENDER_PATHFINDING = False
 DEBUG_PATHFINDER_INTERVAL = 900

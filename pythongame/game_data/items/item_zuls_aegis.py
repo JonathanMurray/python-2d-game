@@ -1,11 +1,11 @@
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect, register_buff_effect
 from pythongame.core.common import ItemType, Sprite, BuffType, Millis, HeroStat, StatModifierInterval
 from pythongame.core.game_data import UiIconSprite
-from pythongame.core.game_state import Event, GameState, WorldEntity, \
-    NonPlayerCharacter, PlayerBlockedEvent
+from pythongame.core.game_state import Event, GameState, NonPlayerCharacter, PlayerBlockedEvent
 from pythongame.core.item_effects import AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.visual_effects import VisualCircle, create_visual_stun_text
+from pythongame.core.world_entity import WorldEntity
 from pythongame.game_data.items.register_items_util import register_custom_effect_item
 
 STUN_DURATION = Millis(2000)

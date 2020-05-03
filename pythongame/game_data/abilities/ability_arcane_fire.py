@@ -5,13 +5,14 @@ from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, Projec
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_entity_sprite_initializer, register_buff_as_channeling, ABILITIES
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile, CameraShake
+from pythongame.core.game_state import GameState, NonPlayerCharacter, Projectile, CameraShake
 from pythongame.core.hero_upgrades import register_hero_upgrade_effect
 from pythongame.core.math import get_position_from_center_position
 from pythongame.core.projectile_controllers import AbstractProjectileController, register_projectile_controller, \
     create_projectile_controller
 from pythongame.core.view.image_loading import SpriteInitializer
 from pythongame.core.visual_effects import VisualCircle, VisualRect
+from pythongame.core.world_entity import WorldEntity
 
 ARCANE_FIRE_MANA_COST = 40
 ARCANE_FIRE_UPGRADED_MANA_COST = 60

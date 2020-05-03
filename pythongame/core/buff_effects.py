@@ -1,7 +1,8 @@
 from typing import Dict, Type
 
 from pythongame.core.common import *
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, BuffEventOutcome
+from pythongame.core.game_state import GameState, NonPlayerCharacter, Event, BuffEventOutcome
+from pythongame.core.world_entity import WorldEntity
 
 
 class AbstractBuffEffect:

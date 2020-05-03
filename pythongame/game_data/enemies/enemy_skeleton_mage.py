@@ -5,13 +5,14 @@ from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId, 
     LootTableId, ProjectileType
 from pythongame.core.damage_interactions import deal_damage_to_player, DamageType, deal_npc_damage_to_npc
 from pythongame.core.game_data import NpcData
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
+from pythongame.core.game_state import GameState, NonPlayerCharacter, Projectile
 from pythongame.core.npc_behaviors import AbstractNpcMind, EnemyShootProjectileTrait, EnemyRandomWalkTrait
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.projectile_controllers import AbstractProjectileController, create_projectile_controller, \
     register_projectile_controller
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import VisualCircle, VisualRect, create_visual_healing_text
+from pythongame.core.world_entity import WorldEntity
 from pythongame.game_data.enemies.register_enemies_util import register_basic_enemy
 
 PROJECTILE_TYPE = ProjectileType.ENEMY_SKELETON_MAGE

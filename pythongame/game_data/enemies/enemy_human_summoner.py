@@ -1,12 +1,10 @@
 from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId
 from pythongame.core.entity_creation import create_npc
-
 from pythongame.core.game_data import NpcData
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
-
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.npc_behaviors import AbstractNpcMind, EnemySummonTrait, EnemyRandomWalkTrait
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
-
+from pythongame.core.world_entity import WorldEntity
 from pythongame.game_data.enemies.register_enemies_util import register_basic_enemy
 from pythongame.game_data.loot_tables import LootTableId
 

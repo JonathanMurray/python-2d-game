@@ -4,11 +4,12 @@ from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_d
     PeriodicTimer, ConsumableType
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, DialogData, \
     DialogOptionData, buy_consumable_option, register_conditional_npc_dialog_data
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.view.image_loading import SpriteSheet
+from pythongame.core.world_entity import WorldEntity
 
 NPC_TYPE = NpcType.NEUTRAL_WARPSTONE_MERCHANT
 UI_ICON_SPRITE = PortraitIconSprite.WARPSTONE_MERCHANT

@@ -4,9 +4,10 @@ from pythongame.core.consumable_effects import register_consumable_effect, Consu
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_entity_sprite_initializer, register_ui_icon_sprite_path, \
     register_consumable_data, ConsumableData, POTION_ENTITY_SIZE, ConsumableCategory
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.view.image_loading import SpriteInitializer
 from pythongame.core.visual_effects import VisualCircle
+from pythongame.core.world_entity import WorldEntity
 
 DAMAGE = 1
 BUFF_TYPE = BuffType.POISONED_BY_ACID_BOMB

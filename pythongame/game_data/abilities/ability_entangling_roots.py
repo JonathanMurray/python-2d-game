@@ -5,7 +5,7 @@ from pythongame.core.common import Sprite, ProjectileType, AbilityType, Millis, 
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_entity_sprite_map, ABILITIES
-from pythongame.core.game_state import GameState, WorldEntity, Projectile, NonPlayerCharacter
+from pythongame.core.game_state import GameState, Projectile, NonPlayerCharacter
 from pythongame.core.hero_upgrades import register_hero_upgrade_effect
 from pythongame.core.math import get_position_from_center_position, translate_in_direction
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
@@ -13,6 +13,7 @@ from pythongame.core.projectile_controllers import create_projectile_controller,
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualCircle, VisualSprite, create_visual_stun_text
+from pythongame.core.world_entity import WorldEntity
 
 ENTANGLING_ROOTS_COOLDOWN = Millis(12_000)
 ENTANGLING_ROOTS_UPGRADED_COOLDOWN = Millis(8_000)
