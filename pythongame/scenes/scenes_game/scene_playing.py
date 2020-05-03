@@ -162,22 +162,9 @@ class PlayingScene(AbstractScene):
                             has_key = self.game_state.player_state.item_inventory.has_item_in_inventory(
                                 plain_item_id(ItemType.PORTAL_KEY))
                             if has_key:
-                                # TODO Figure out how we'll get back to this game-state
-                                # Problem: What happens to items on the ground in this map?
-                                # Do we need another scene for transitioning back or can we re-use an existing one?
-                                # Should there be a general "transition between different game worlds"-scene?
-                                # We'd need to restore state in game-world (enabled portals, etc)
-
-                                def create_dungeon_game_state(engine: GameEngine):
-                                    return _create_dungeon_game_state(engine.game_state.player_state,
-                                                                      engine.game_state.camera_size)
-
-                                def create_dungeon_behavior(game_state: GameState):
-                                    return DungeonBehavior(self.scene_factory, game_state, self.ui_view.info_message)
-
                                 entering_dungeon_scene = self.scene_factory.switching_game_world(
                                     self.game_engine, self.character_file, self.total_time_played_on_character,
-                                    create_dungeon_game_state, create_dungeon_behavior)
+                                    self._create_dungeon_engine_and_behavior)
                                 return SceneTransition(entering_dungeon_scene)
                             else:
                                 self.ui_view.info_message.set_message("There is a keyhole on the side!")
@@ -232,6 +219,16 @@ class PlayingScene(AbstractScene):
 
         if transition_to_pause:
             return SceneTransition(PausedScene(self, self.world_view, self.ui_view, self.game_state))
+
+    def _create_dungeon_engine_and_behavior(self, previous_engine: GameEngine):
+        new_game_state = _create_dungeon_game_state(
+            previous_engine.game_state.player_state, previous_engine.game_state.camera_size)
+        new_game_engine = GameEngine(new_game_state, self.ui_view.info_message)
+        new_behavior = DungeonBehavior(
+            self.scene_factory, previous_engine.game_state, new_game_engine,
+            self.ui_view.info_message, self.character_file,
+            self.total_time_played_on_character)
+        return new_game_engine, new_behavior
 
     def _handle_dialog_change_option(self, npc_type: NpcType, previous_index: int, new_index: int):
         play_sound(SoundId.DIALOG)

@@ -16,13 +16,13 @@ from pythongame.register_game_data import register_all_game_data
 from pythongame.scenes.scene_challenge_complete_screen.scene_challenge_complete_screen import \
     ChallengeCompleteScreenScene
 from pythongame.scenes.scene_creating_world.scene_creating_world import CreatingWorldScene, InitFlags
-from pythongame.scenes.scene_switching_game_world.scene_switching_game_world import SwitchingGameWorldScene
 from pythongame.scenes.scene_factory import AbstractSceneFactory
 from pythongame.scenes.scene_main_menu.scene_main_menu import MainMenuScene
 from pythongame.scenes.scene_main_menu.view_main_menu import MainMenuView
 from pythongame.scenes.scene_picking_hero.scene_picking_hero import PickingHeroScene
 from pythongame.scenes.scene_picking_hero.view_picking_hero import PickingHeroView
 from pythongame.scenes.scene_starting_program.scene_starting_program import CommandlineFlags, StartingProgramScene
+from pythongame.scenes.scene_switching_game_world.scene_switching_game_world import SwitchingGameWorldScene
 from pythongame.scenes.scene_victory_screen.scene_victory_screen import VictoryScreenScene
 from pythongame.scenes.scenes_game.game_engine import GameEngine
 from pythongame.scenes.scenes_game.game_ui_view import GameUiView, UI_ICON_SIZE, PORTRAIT_ICON_SIZE, UI_ICON_BIG_SIZE
@@ -78,10 +78,10 @@ class SceneFactory(AbstractSceneFactory):
             game_engine: GameEngine,
             character_file: str,
             total_time_played_on_character: Millis,
-            create_new_game_state: Callable[[GameEngine], GameState],
-            create_world_behavior: Callable[[GameState], AbstractWorldBehavior]) -> AbstractScene:
+            create_new_game_engine_and_behavior: Callable[[GameEngine], Tuple[GameEngine, AbstractWorldBehavior]]) \
+            -> AbstractScene:
         return SwitchingGameWorldScene(self, game_engine, self.ui_view, character_file, total_time_played_on_character,
-                                       create_new_game_state, create_world_behavior)
+                                       create_new_game_engine_and_behavior)
 
 
 class Main:

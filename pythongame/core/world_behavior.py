@@ -1,7 +1,7 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 from pythongame.core.buff_effects import get_buff_effect
-from pythongame.core.common import ConsumableType, ItemId, AbstractWorldBehavior, EngineEvent
+from pythongame.core.common import ConsumableType, ItemId, AbstractWorldBehavior, EngineEvent, PeriodicTimer
 from pythongame.core.common import ItemType
 from pythongame.core.common import Millis, BuffType, get_random_hint, \
     SoundId, SceneTransition
@@ -55,36 +55,65 @@ class StoryBehavior(AbstractWorldBehavior):
 
 class DungeonBehavior(AbstractWorldBehavior):
 
-    def __init__(self, scene_factory: AbstractSceneFactory, game_state: GameState, info_message: InfoMessage):
+    def __init__(self,
+                 scene_factory: AbstractSceneFactory,
+                 game_state_before_entering_dungeon: GameState,
+                 game_engine: GameEngine,
+                 info_message: InfoMessage,
+                 character_file: str,
+                 total_time_played_on_character: Millis):
         self.scene_factory = scene_factory
-        self.game_state = game_state
+        self.game_state_before_entering_dungeon = game_state_before_entering_dungeon
+        self.game_engine = game_engine
+        self.game_state = game_engine.game_state
         self.info_message = info_message
+        self.character_file = character_file
+        self.total_time_played_on_character = total_time_played_on_character
+        self.countdown_until_hero_will_be_warped_out_of_dungeon: int = None
+        self.warp_countdown_timer: PeriodicTimer = None
 
     def on_startup(self, new_hero_was_created: bool):
         self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
-        # TODO What message would make sense here?
-        self.info_message.set_message("DUNGEON TIME!!")
+        self.info_message.set_message("Fight through all enemies to get out!")
 
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:
-        pass
+        if self.warp_countdown_timer is not None:
+            if self.warp_countdown_timer.update_and_check_if_ready(time_passed):
+                if self.countdown_until_hero_will_be_warped_out_of_dungeon > 0:
+                    self.info_message.set_message(
+                        "You will be warped out in %s" % self.countdown_until_hero_will_be_warped_out_of_dungeon)
+                    self.countdown_until_hero_will_be_warped_out_of_dungeon -= 1
+                else:
+                    return self._transition_out_of_dungeon()
 
     def handle_event(self, event: EngineEvent) -> Optional[SceneTransition]:
         if event == EngineEvent.PLAYER_DIED:
-            self.game_state.player_entity.set_position(self.game_state.player_spawn_position)
-            self.game_state.player_state.health_resource.set_to_partial_of_max(0.5)
-            self.game_state.player_state.lose_exp_from_death()
-            self.game_state.player_state.force_cancel_all_buffs()
-            self.info_message.set_message("Lost exp from dying")
-            play_sound(SoundId.EVENT_PLAYER_DIED)
-            self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
+            # Player will "die again" outside of the dungeon which will trigger exp loss and respawning at base
+            return self._transition_out_of_dungeon()
         elif event == EngineEvent.ENEMY_DIED:
-            # TODO Should something more significant happen?
             num_enemies = len([npc for npc in self.game_state.non_player_characters if npc.is_enemy])
             if num_enemies == 0:
                 self.info_message.set_message("Dungeon cleared!")
+                self.warp_countdown_timer = PeriodicTimer(Millis(1000))
+                self.countdown_until_hero_will_be_warped_out_of_dungeon = 10
             else:
                 self.info_message.set_message(str(num_enemies) + " enemies remaining in dungeon")
         return None
+
+    def _transition_out_of_dungeon(self):
+        scene = self.scene_factory.switching_game_world(
+            self.game_engine,
+            self.character_file,
+            self.total_time_played_on_character,
+            self._recreate_main_world_engine_and_behavior
+        )
+        return SceneTransition(scene)
+
+    def _recreate_main_world_engine_and_behavior(self, _: GameEngine) -> Tuple[GameEngine, AbstractWorldBehavior]:
+        game_state = self.game_state_before_entering_dungeon
+        engine = GameEngine(game_state, self.info_message)
+        behavior = StoryBehavior(self.scene_factory, game_state, self.info_message)
+        return engine, behavior
 
 
 class ChallengeBehavior(AbstractWorldBehavior):

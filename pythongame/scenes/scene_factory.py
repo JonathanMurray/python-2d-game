@@ -1,4 +1,4 @@
-from typing import Optional, Callable
+from typing import Optional, Callable, Tuple
 
 from pythongame.core.common import Millis, AbstractScene, AbstractWorldBehavior
 from pythongame.core.game_state import GameState
@@ -37,6 +37,6 @@ class AbstractSceneFactory:
             game_engine: GameEngine,
             character_file: str,
             total_time_played_on_character: Millis,
-            create_new_game_state: Callable[[GameEngine], GameState],
-            create_world_behavior: Callable[[GameState], AbstractWorldBehavior]) -> AbstractScene:
+            create_new_game_engine_and_behavior: Callable[[GameEngine], Tuple[GameEngine, AbstractWorldBehavior]]) \
+            -> AbstractScene:
         raise Exception("Not implemented")

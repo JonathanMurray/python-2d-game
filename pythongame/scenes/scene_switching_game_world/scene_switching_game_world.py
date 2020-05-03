@@ -1,7 +1,6 @@
-from typing import Optional, Callable
+from typing import Optional, Callable, Tuple
 
 from pythongame.core.common import Millis, AbstractScene, SceneTransition, AbstractWorldBehavior
-from pythongame.core.game_state import GameState
 from pythongame.core.global_path_finder import init_global_path_finder
 from pythongame.scenes.scene_factory import AbstractSceneFactory
 from pythongame.scenes.scenes_game.game_engine import GameEngine
@@ -17,15 +16,13 @@ class SwitchingGameWorldScene(AbstractScene):
             ui_view: GameUiView,
             character_file: str,
             total_time_played_on_character: Millis,
-            create_new_game_state: Callable[[GameEngine], GameState],
-            create_world_behavior: Callable[[GameState], AbstractWorldBehavior]):
+            create_new_game_engine_and_behavior: Callable[[GameEngine], Tuple[GameEngine, AbstractWorldBehavior]]):
         self.scene_factory = scene_factory
         self.previous_game_engine = game_engine
         self.ui_view = ui_view
         self.character_file = character_file
         self.total_time_played_on_character = total_time_played_on_character
-        self.create_new_game_state = create_new_game_state
-        self.create_world_behavior = create_world_behavior
+        self.create_new_game_engine_and_behavior = create_new_game_engine_and_behavior
 
     def run_one_frame(self, _time_passed: Millis) -> Optional[SceneTransition]:
         # We do this to temporarily deactivate all item effects, to later re-activate them with the new game state
@@ -35,16 +32,13 @@ class SwitchingGameWorldScene(AbstractScene):
         # NPC's share a "global path finder" that needs to be initialized before we start creating NPCs.
         # TODO This is very messy
         path_finder = init_global_path_finder()
-        new_game_state = self.create_new_game_state(self.previous_game_engine)
+        new_game_engine, new_world_behavior = self.create_new_game_engine_and_behavior(self.previous_game_engine)
+        new_game_state = new_game_engine.game_state
         path_finder.set_grid(new_game_state.pathfinder_wall_grid)
-
-        new_world_behavior = self.create_world_behavior(new_game_state)
 
         # Must center camera before notifying player position as it affects which walls are shown on the minimap
         new_game_state.center_camera_on_player()
         self.ui_view.on_world_area_updated(new_game_state.entire_world_area)
-
-        new_game_engine = GameEngine(new_game_state, self.ui_view.info_message)
 
         # We set up observers for gameEngine and gameState, since they are newly created in this scene. The player
         # state's observers (ui view) have already been setup in an earlier scene however.
