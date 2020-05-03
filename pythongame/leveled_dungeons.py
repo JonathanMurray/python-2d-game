@@ -3,7 +3,7 @@ from typing import Optional, Tuple, Callable
 
 from pythongame.core.common import NpcType
 from pythongame.core.entity_creation import create_hero_world_entity, create_npc
-from pythongame.core.game_state import GameState, NonPlayerCharacter, PlayerState
+from pythongame.core.game_state import GameState, NonPlayerCharacter, PlayerState, GameWorldState
 from pythongame.dungeon_generator import GeneratedDungeon, DungeonGenerator
 
 
@@ -11,21 +11,24 @@ def create_dungeon_game_state(player_state: PlayerState, camera_size: Tuple[int,
                               difficulty_level: int) -> GameState:
     dungeon = _generate_dungeon(difficulty_level)
     player_entity = create_hero_world_entity(player_state.hero_id, dungeon.player_position)
-    return GameState(
+    game_world = GameWorldState(
         player_entity=player_entity,
+        non_player_characters=dungeon.npcs,
         consumables_on_ground=[],
         items_on_ground=[],
         money_piles_on_ground=[],
-        non_player_characters=dungeon.npcs,
         walls=dungeon.walls,
-        camera_size=camera_size,
         entire_world_area=dungeon.world_area,
-        player_state=player_state,
         decoration_entities=dungeon.decorations,
         portals=[],
         chests=[],
         shrines=[],
         dungeon_entrances=[],
+    )
+    return GameState(
+        game_world=game_world,
+        camera_size=camera_size,
+        player_state=player_state,
         is_dungeon=True,
     )
 

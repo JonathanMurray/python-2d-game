@@ -5,10 +5,10 @@ from pygame.rect import Rect
 from pythongame.core.common import *
 from pythongame.core.entity_creation import create_npc, create_money_pile_on_ground, \
     create_consumable_on_ground, create_portal, create_wall, create_hero_world_entity, \
-    create_decoration_entity, create_item_on_ground, create_player_state, create_chest, create_shrine, \
+    create_decoration_entity, create_item_on_ground, create_player_state_as_initial, create_chest, create_shrine, \
     create_dungeon_entrance
 from pythongame.core.game_state import GameState, NonPlayerCharacter, Wall, Portal, DecorationEntity, \
-    MoneyPileOnGround, ItemOnGround, ConsumableOnGround, PlayerState, Chest, Shrine, DungeonEntrance
+    MoneyPileOnGround, ItemOnGround, ConsumableOnGround, PlayerState, Chest, Shrine, DungeonEntrance, GameWorldState
 from pythongame.core.world_entity import WorldEntity
 
 
@@ -31,7 +31,7 @@ def load_map_from_json_file(camera_size: Tuple[int, int], map_file_path: str, he
 
 
 def create_map_from_json(camera_size: Tuple[int, int], json_data, hero_id: HeroId) -> MapData:
-    player_state = create_player_state(hero_id)
+    player_state = create_player_state_as_initial(hero_id)
     return MapJson.deserialize(json_data, player_state, camera_size)
 
 
@@ -91,25 +91,30 @@ class MapJson:
 
     @staticmethod
     def deserialize(data, player_state: PlayerState, camera_size: Tuple[int, int]) -> MapData:
-        game_state = GameState(player_entity=PlayerJson.deserialize(player_state.hero_id, data["player"]),
-                               consumables_on_ground=[ConsumableJson.deserialize(p) for p in
-                                                      data.get("consumables_on_ground", [])],
-                               items_on_ground=[ItemJson.deserialize(i) for i in data.get("items_on_ground", [])],
-                               money_piles_on_ground=[MoneyJson.deserialize(p) for p in
-                                                      data.get("money_piles_on_ground", [])],
-                               non_player_characters=[NpcJson.deserialize(e) for e in
-                                                      data.get("non_player_characters", [])],
-                               walls=[WallJson.deserialize(w) for w in data.get("walls", [])], camera_size=camera_size,
-                               entire_world_area=WorldAreaJson.deserialize(data["entire_world_area"]),
-                               player_state=player_state,
-                               decoration_entities=[DecorationJson.deserialize(d) for d in data.get("decorations", [])],
-                               portals=[PortalJson.deserialize(p) for p in data.get("portals", [])],
-                               chests=[ChestJson.deserialize(c) for c in data.get("chests", [])],
-                               shrines=[ShrineJson.deserialize(s) for s in data.get("shrines", [])],
-                               dungeon_entrances=[DungeonEntranceJson.deserialize(e) for e in
-                                                  data.get("dungeon_entrances", [])],
-                               is_dungeon=False,
-                               )
+        game_world = GameWorldState(
+            non_player_characters=[NpcJson.deserialize(e) for e in
+                                   data.get("non_player_characters", [])],
+            walls=[WallJson.deserialize(w) for w in data.get("walls", [])],
+            entire_world_area=WorldAreaJson.deserialize(data["entire_world_area"]),
+            decoration_entities=[DecorationJson.deserialize(d) for d in data.get("decorations", [])],
+            portals=[PortalJson.deserialize(p) for p in data.get("portals", [])],
+            chests=[ChestJson.deserialize(c) for c in data.get("chests", [])],
+            shrines=[ShrineJson.deserialize(s) for s in data.get("shrines", [])],
+            dungeon_entrances=[DungeonEntranceJson.deserialize(e) for e in
+                               data.get("dungeon_entrances", [])],
+            consumables_on_ground=[ConsumableJson.deserialize(p) for p in
+                                   data.get("consumables_on_ground", [])],
+            items_on_ground=[ItemJson.deserialize(i) for i in data.get("items_on_ground", [])],
+            money_piles_on_ground=[MoneyJson.deserialize(p) for p in
+                                   data.get("money_piles_on_ground", [])],
+            player_entity=PlayerJson.deserialize(player_state.hero_id, data["player"]),
+        )
+        game_state = GameState(
+            game_world=game_world,
+            camera_size=camera_size,
+            player_state=player_state,
+            is_dungeon=False,
+        )
 
         map_editor_config = MapEditorConfig(disable_smart_grid=data.get("disable_smart_grid", False))
         grid_string = data.get("grid", None)

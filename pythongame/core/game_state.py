@@ -218,11 +218,20 @@ class AgentBuffsUpdate:
 
 
 class PlayerState:
-    def __init__(self, health_resource: HealthOrManaResource, mana_resource: HealthOrManaResource,
-                 consumable_inventory: ConsumableInventory, abilities: List[AbilityType],
-                 item_inventory: ItemInventory, new_level_abilities: Dict[int, AbilityType], hero_id: HeroId,
-                 armor: int, base_dodge_chance: float, level_bonus: PlayerLevelBonus, talents_config: TalentsConfig,
-                 base_block_chance: float, base_magic_resist_chance: float):
+    def __init__(self,
+                 health_resource: HealthOrManaResource,
+                 mana_resource: HealthOrManaResource,
+                 consumable_inventory: ConsumableInventory,
+                 abilities: List[AbilityType],
+                 item_inventory: ItemInventory,
+                 new_level_abilities: Dict[int, AbilityType],
+                 hero_id: HeroId,
+                 armor: int,
+                 base_dodge_chance: float,
+                 level_bonus: PlayerLevelBonus,
+                 talents_config: TalentsConfig,
+                 base_block_chance: float,
+                 base_magic_resist_chance: float):
         self.health_resource: HealthOrManaResource = health_resource
         self.mana_resource: HealthOrManaResource = mana_resource
         self.consumable_inventory = consumable_inventory
@@ -771,34 +780,19 @@ class GameWorldState:
 
 
 class GameState:
-    def __init__(self, player_entity: WorldEntity, consumables_on_ground: List[ConsumableOnGround],
-                 items_on_ground: List[ItemOnGround], money_piles_on_ground: List[MoneyPileOnGround],
-                 non_player_characters: List[NonPlayerCharacter], walls: List[Wall], camera_size: Tuple[int, int],
-                 entire_world_area: Rect, player_state: PlayerState,
-                 decoration_entities: List[DecorationEntity], portals: List[Portal], chests: List[Chest],
-                 shrines: List[Shrine], dungeon_entrances: List[DungeonEntrance], is_dungeon: bool):
+    def __init__(self,
+                 game_world: GameWorldState,
+                 camera_size: Tuple[int, int],
+                 player_state: PlayerState,
+                 is_dungeon: bool):
 
-        self.game_world = GameWorldState(
-            player_entity=player_entity,
-            consumables_on_ground=consumables_on_ground,
-            items_on_ground=items_on_ground,
-            money_piles_on_ground=money_piles_on_ground,
-            non_player_characters=non_player_characters,
-            walls=walls,
-            entire_world_area=entire_world_area,
-            decoration_entities=decoration_entities,
-            portals=portals,
-            chests=chests,
-            shrines=shrines,
-            dungeon_entrances=dungeon_entrances
-        )
-
+        self.game_world = game_world
         self.camera_size = camera_size
         self.camera_world_area = Rect((0, 0), self.camera_size)
         self.camera_shake: CameraShake = None
         self.pathfinder_wall_grid = self._setup_pathfinder_wall_grid(
-            self.game_world.entire_world_area, [w.world_entity for w in walls])
-        self.player_spawn_position: Tuple[int, int] = player_entity.get_position()
+            self.game_world.entire_world_area, [w.world_entity for w in game_world.walls_state.walls])
+        self.player_spawn_position: Tuple[int, int] = game_world.player_entity.get_position()
         self.is_dungeon = is_dungeon
         self.player_state: PlayerState = player_state
 

@@ -10,10 +10,10 @@ from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, Po
     Millis, ItemId, ItemType
 from pythongame.core.entity_creation import create_portal, create_hero_world_entity, create_npc, create_wall, \
     create_consumable_on_ground, create_item_on_ground, create_decoration_entity, create_money_pile_on_ground, \
-    create_player_state, create_chest, create_shrine, create_dungeon_entrance
+    create_player_state_as_initial, create_chest, create_shrine, create_dungeon_entrance
 from pythongame.core.game_data import ENTITY_SPRITE_INITIALIZERS, UI_ICON_SPRITE_PATHS, PORTRAIT_ICON_SPRITE_PATHS, \
     NON_PLAYER_CHARACTERS, NpcCategory
-from pythongame.core.game_state import GameState, NonPlayerCharacter
+from pythongame.core.game_state import GameState, NonPlayerCharacter, GameWorldState
 from pythongame.core.item_data import randomized_item_id
 from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.game_world_view import GameWorldView
@@ -105,9 +105,26 @@ class MapEditor:
         else:
             print("Map file '%s' not found! New map is created." % self.map_file_path)
             player_entity = create_hero_world_entity(HERO_ID, (0, 0))
-            player_state = create_player_state(HERO_ID)
-            game_state = GameState(player_entity, [], [], [], [], [], CAMERA_SIZE, Rect(-250, -250, 1500, 1000),
-                                   player_state, [], [], [], [], [], is_dungeon=False)
+            player_state = create_player_state_as_initial(HERO_ID)
+            game_world = GameWorldState(
+                player_entity=player_entity,
+                consumables_on_ground=[],
+                items_on_ground=[],
+                money_piles_on_ground=[],
+                non_player_characters=[],
+                walls=[],
+                entire_world_area=Rect(-250, -250, 1500, 1000),
+                decoration_entities=[],
+                portals=[],
+                chests=[],
+                shrines=[],
+                dungeon_entrances=[],
+            )
+            game_state = GameState(
+                game_world=game_world,
+                camera_size=CAMERA_SIZE,
+                player_state=player_state,
+                is_dungeon=False)
             self._set_game_state(game_state)
             self.config = MapEditorConfig(disable_smart_grid=False)
             grid_size = (game_state.game_world.entire_world_area.w // GRID_CELL_SIZE,

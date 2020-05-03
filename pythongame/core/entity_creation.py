@@ -87,7 +87,7 @@ def create_decoration_entity(pos: Tuple[int, int], sprite: Sprite) -> Decoration
     return DecorationEntity(pos, sprite)
 
 
-def create_player_state(hero_id: HeroId) -> PlayerState:
+def create_player_state_as_initial(hero_id: HeroId) -> PlayerState:
     # Note: All mutable types should be cloned before being given to game_state
     data = HEROES[hero_id].initial_player_state
     consumable_slots = {}
