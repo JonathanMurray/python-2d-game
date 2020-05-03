@@ -6,8 +6,9 @@ from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, CONSUMABLES, POTION_ENTITY_SIZE, \
     WALLS, PORTALS, HEROES, NpcData
 from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
-    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, HealthOrManaResource, WarpPoint, Chest, Shrine, \
+    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, WarpPoint, Chest, Shrine, \
     DungeonEntrance
+from pythongame.core.health_and_mana import HealthOrManaResource
 from pythongame.core.global_path_finder import get_global_path_finder
 from pythongame.core.item_data import get_item_data_by_type, ITEM_ENTITY_SIZE
 from pythongame.core.item_inventory import ItemInventory, ItemInventorySlot, ItemEquipmentCategory
