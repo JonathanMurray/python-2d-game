@@ -53,6 +53,40 @@ class StoryBehavior(AbstractWorldBehavior):
         return None
 
 
+class DungeonBehavior(AbstractWorldBehavior):
+
+    def __init__(self, scene_factory: AbstractSceneFactory, game_state: GameState, info_message: InfoMessage):
+        self.scene_factory = scene_factory
+        self.game_state = game_state
+        self.info_message = info_message
+
+    def on_startup(self, new_hero_was_created: bool):
+        self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
+        # TODO What message would make sense here?
+        self.info_message.set_message("DUNGEON TIME!!")
+
+    def control(self, time_passed: Millis) -> Optional[SceneTransition]:
+        pass
+
+    def handle_event(self, event: EngineEvent) -> Optional[SceneTransition]:
+        if event == EngineEvent.PLAYER_DIED:
+            self.game_state.player_entity.set_position(self.game_state.player_spawn_position)
+            self.game_state.player_state.health_resource.set_to_partial_of_max(0.5)
+            self.game_state.player_state.lose_exp_from_death()
+            self.game_state.player_state.force_cancel_all_buffs()
+            self.info_message.set_message("Lost exp from dying")
+            play_sound(SoundId.EVENT_PLAYER_DIED)
+            self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
+        elif event == EngineEvent.ENEMY_DIED:
+            # TODO Should something more significant happen?
+            num_enemies = len([npc for npc in self.game_state.non_player_characters if npc.is_enemy])
+            if num_enemies == 0:
+                self.info_message.set_message("Dungeon cleared!")
+            else:
+                self.info_message.set_message(str(num_enemies) + " enemies remaining in dungeon")
+        return None
+
+
 class ChallengeBehavior(AbstractWorldBehavior):
     def __init__(self,
                  scene_factory: AbstractSceneFactory,

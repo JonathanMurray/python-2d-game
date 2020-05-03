@@ -1111,6 +1111,9 @@ class Minimap(UiComponent):
     def remove_highlight(self):
         self._highlight_pos_ratio = None
 
+    def clear_exploration(self):
+        self.set_walls([])
+
 
 class Buffs:
     def __init__(self, ui_render: DrawableArea, font, bottomleft: Tuple[int, int]):

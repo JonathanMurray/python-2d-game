@@ -3,10 +3,12 @@ from typing import Optional, Any, List, Tuple, Callable
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
 import pythongame.core.pathfinding.npc_pathfinding
-from pythongame.core.common import Millis, SoundId, AbstractScene, SceneTransition, NpcType, AbstractWorldBehavior
+from pythongame.core.common import AbstractWorldBehavior
+from pythongame.core.common import Millis, SoundId, AbstractScene, SceneTransition, NpcType, ItemType
 from pythongame.core.game_state import GameState, NonPlayerCharacter, LootableOnGround, Portal, WarpPoint, \
     Chest, Shrine, DungeonEntrance
 from pythongame.core.hero_upgrades import pick_talent
+from pythongame.core.item_data import plain_item_id
 from pythongame.core.math import get_directions_to_position
 from pythongame.core.npc_behaviors import select_npc_action, get_dialog_data, blur_npc_action, \
     hover_npc_action
@@ -17,6 +19,7 @@ from pythongame.core.user_input import ActionTryUseAbility, ActionTryUsePotion, 
     ActionChangeDialogOption, PlayingUserInputHandler, ActionRightMouseClicked, ActionPressKey
 from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.player_file import SaveFileHandler
+from pythongame.scenes.scene_factory import AbstractSceneFactory
 from pythongame.scenes.scenes_game.game_engine import GameEngine
 from pythongame.scenes.scenes_game.game_ui_view import DragItemBetweenInventorySlots, DropItemOnGround, \
     DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
@@ -29,6 +32,7 @@ from pythongame.scenes.scenes_game.ui_events import ToggleFullscreen, ToggleWind
 
 class PlayingScene(AbstractScene):
     def __init__(self,
+                 scene_factory: AbstractSceneFactory,
                  world_view: GameWorldView,
                  game_state: GameState,
                  game_engine: GameEngine,
@@ -40,10 +44,10 @@ class PlayingScene(AbstractScene):
                  total_time_played_on_character: Millis,
                  toggle_fullscreen_callback: Callable[[], Any]):
 
+        self.scene_factory = scene_factory
         self.player_interactions_state = PlayerInteractionsState()
         self.world_view = world_view
         self.render_hit_and_collision_boxes = False
-        self.total_time_played = 0
         self.game_state: GameState = game_state
         self.game_engine: GameEngine = game_engine
         self.world_behavior: AbstractWorldBehavior = world_behavior
@@ -152,7 +156,19 @@ class PlayingScene(AbstractScene):
                         elif isinstance(ready_entity, Shrine):
                             self.game_engine.interact_with_shrine(ready_entity)
                         elif isinstance(ready_entity, DungeonEntrance):
-                            self.game_engine.interact_with_dungeon_entrance(ready_entity)
+                            has_key = self.game_state.player_state.item_inventory.has_item_in_inventory(
+                                plain_item_id(ItemType.PORTAL_KEY))
+                            if has_key:
+                                # TODO Figure out how we'll get back to this game-state
+                                # Problem: What happens to items on the ground in this map?
+                                # Do we need another scene for transitioning back or can we re-use an existing one?
+                                # Should there be a general "transition between different game worlds"-scene?
+                                # We'd need to restore state in game-world (enabled portals, etc)
+                                entering_dungeon_scene = self.scene_factory.entering_dungeon(
+                                    self.game_engine, self.character_file, self.total_time_played_on_character)
+                                return SceneTransition(entering_dungeon_scene)
+                            else:
+                                self.ui_view.info_message.set_message("There is a keyhole on the side!")
                         else:
                             raise Exception("Unhandled entity: " + str(ready_entity))
                 elif isinstance(action, ActionPressKey):
@@ -212,7 +228,6 @@ class PlayingScene(AbstractScene):
 
     def run_one_frame(self, time_passed: Millis) -> Optional[SceneTransition]:
 
-        self.total_time_played += time_passed
         self.total_time_played_on_character += time_passed
 
         if not self.ui_view.has_open_dialog():

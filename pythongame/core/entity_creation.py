@@ -21,7 +21,9 @@ from pythongame.game_data.shrines import SHRINE_ENTITY_SIZE
 def create_npc(npc_type: NpcType, pos: Tuple[int, int]) -> NonPlayerCharacter:
     data: NpcData = NON_PLAYER_CHARACTERS[npc_type]
     entity = WorldEntity(pos, data.size, data.sprite, Direction.LEFT, data.speed)
-    npc_mind = create_npc_mind(npc_type, get_global_path_finder())
+    # TODO is this global pathfinder a problem for handling dungeons that exist in parallel with the main map?
+    global_path_finder = get_global_path_finder()
+    npc_mind = create_npc_mind(npc_type, global_path_finder)
     health_resource = HealthOrManaResource(data.max_health, data.health_regen)
     return NonPlayerCharacter(npc_type, entity, health_resource, npc_mind,
                               data.npc_category, data.enemy_loot_table, data.death_sound_id,

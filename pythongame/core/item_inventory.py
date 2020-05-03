@@ -189,6 +189,16 @@ class ItemInventory:
             return ItemWasDeactivated(item_id)
         return ItemActivationStateDidNotChange(item_id)
 
+    def clear(self) -> List[ItemActivationEvent]:
+        events = []
+        for slot in self.slots:
+            if not slot.is_empty() and slot.is_active():
+                active_item_id = slot.get_item_id()
+                events.append(ItemWasDeactivated(active_item_id))
+            slot.item = None
+        self.notify_observers()
+        return events
+
     def get_all_active_item_effects(self) -> List[Any]:
         return [slot.item.item_effect for slot in self.slots if slot.is_active() and not slot.is_empty()]
 

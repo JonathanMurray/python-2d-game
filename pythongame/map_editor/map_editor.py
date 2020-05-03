@@ -5,7 +5,6 @@ from typing import Tuple, Optional, List
 import pygame
 from pygame.rect import Rect
 
-from generate_dungeon import generate_random_map_as_json_from_grid, Grid, generate_random_grid, determine_wall_type
 from pythongame.core.common import Sprite, WallType, NpcType, ConsumableType, PortalId, HeroId, PeriodicTimer, \
     Millis, ItemId, ItemType
 from pythongame.core.entity_creation import create_portal, create_hero_world_entity, create_npc, create_wall, \
@@ -18,6 +17,7 @@ from pythongame.core.math import sum_of_vectors
 from pythongame.core.view.game_world_view import GameWorldView
 from pythongame.core.view.image_loading import load_images_by_sprite, load_images_by_ui_sprite, \
     load_images_by_portrait_sprite
+from pythongame.dungeon_generator import DungeonGenerator, Grid
 from pythongame.map_editor.map_editor_ui_view import MapEditorView, PORTRAIT_ICON_SIZE, MAP_EDITOR_UI_ICON_SIZE, \
     EntityTab, GenerateRandomMap, SetCameraPosition, AddEntity, DeleteEntities, DeleteDecorations, MapEditorAction, \
     SaveMap, ToggleOutlines, AddSmartFloorTiles, DeleteSmartFloorTiles
@@ -321,9 +321,10 @@ class MapEditor:
         self.grid.add_floor_cells(floor_cells)
 
     def _generate_random_map(self):
+        dungeon_generator = DungeonGenerator()
         print("Generating random mapp ...")
-        self.grid, rooms = generate_random_grid()
-        map_json = generate_random_map_as_json_from_grid(self.grid, rooms)
+        self.grid, rooms = dungeon_generator.generate_random_grid()
+        map_json = dungeon_generator.generate_random_map_as_json_from_grid(self.grid, rooms)
         map_data = create_map_from_json(CAMERA_SIZE, map_json, HERO_ID)
         print("Random map generated.")
         self._set_game_state(map_data.game_state)

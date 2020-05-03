@@ -8,7 +8,7 @@ from pygame.rect import Rect
 from pythongame.core.common import WallType, Sprite, NpcType
 from pythongame.core.entity_creation import create_wall, create_decoration_entity, create_npc
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, NpcCategory
-from pythongame.core.game_state import DecorationEntity, Wall
+from pythongame.core.game_state import DecorationEntity, Wall, NonPlayerCharacter
 from pythongame.map_file import MapJson
 
 MAX_ROOM_ATTEMPTS = 100
@@ -168,37 +168,52 @@ class Grid:
         return Grid(grid, (w, h))
 
 
+class GeneratedDungeon:
+    def __init__(self, decorations: List[DecorationEntity], walls: List[Wall], world_area: Rect,
+                 player_position: Tuple[int, int], npcs: List[NonPlayerCharacter]):
+        self.decorations = decorations
+        self.walls = walls
+        self.world_area = world_area
+        self.player_position = player_position
+        self.npcs = npcs
+
+
 class DungeonGenerator:
 
     def generate_random_grid(self) -> Tuple[Grid, List[Rect]]:
         # Prefer maps that are longer on the horizontal axis, due to the aspect ratio of the in-game camera
         w = random.randint(100, 130)
         map_size = (w, 200 - w)
-        rooms, corridors = self.generate_rooms_and_corridors(map_size)
+        rooms, corridors = self._generate_rooms_and_corridors(map_size)
 
         grid = Grid.create_from_rects(map_size, rooms + corridors)
         return grid, rooms
 
     def generate_random_map_as_json_from_grid(self, grid: Grid, rooms: List[Rect]):
-        decorations, walls = self.create_floor_tiles_and_walls_from_grid(grid, (0, grid.size[0]), (0, grid.size[1]))
-
-        world_area = Rect(0, 0, grid.size[0] * CELL_SIZE, grid.size[1] * CELL_SIZE)
-        start_room = random.choice(rooms)
-        player_position = self.get_room_center(start_room)
-
-        npcs = self.generate_npcs(rooms, start_room)
-
-        json = MapJson.serialize_from_data(walls, decorations, [], world_area, player_position, npcs)
+        generated_dungeon = self.generate_random_dungeon_from_grid(grid, rooms)
+        json = MapJson.serialize_from_data(generated_dungeon.walls, generated_dungeon.decorations, [],
+                                           generated_dungeon.world_area, generated_dungeon.player_position,
+                                           generated_dungeon.npcs)
         return json
 
-    def generate_room(self, map_size: Tuple[int, int]) -> Rect:
+    def generate_random_dungeon_from_grid(self, grid: Grid, rooms: List[Rect]) -> GeneratedDungeon:
+        decorations, walls = self._create_floor_tiles_and_walls_from_grid(grid, (0, grid.size[0]), (0, grid.size[1]))
+        world_area = Rect(0, 0, grid.size[0] * CELL_SIZE, grid.size[1] * CELL_SIZE)
+        start_room = random.choice(rooms)
+        player_position = self._get_room_center(start_room)
+        npcs = self._generate_npcs(rooms, start_room)
+        return GeneratedDungeon(decorations, walls, world_area, player_position, npcs)
+
+    @staticmethod
+    def _generate_room(map_size: Tuple[int, int]) -> Rect:
         w = random.randint(ROOM_ALLOWED_WIDTH[0], ROOM_ALLOWED_HEIGHT[1] + 1)
         h = random.randint(ROOM_ALLOWED_HEIGHT[0], ROOM_ALLOWED_HEIGHT[1] + 1)
         x = random.randint(1, map_size[0] - w - 3)
         y = random.randint(1, map_size[1] - h - 3)
         return Rect(x, y, w, h)
 
-    def generate_corridor_between_rooms(self, room1: Rect, room2: Rect) -> List[Rect]:
+    @staticmethod
+    def _generate_corridor_between_rooms(room1: Rect, room2: Rect) -> List[Rect]:
         x1, y1 = room1.x + room1.w // 2, room1.y + room1.h // 2
         x2, y2 = room2.x + room2.w // 2, room2.y + room2.h // 2
 
@@ -209,11 +224,11 @@ class DungeonGenerator:
 
         return [ver_rect, hor_rect]
 
-    def generate_rooms_and_corridors(self, map_size: Tuple[int, int]) -> Tuple[List[Rect], List[Rect]]:
+    def _generate_rooms_and_corridors(self, map_size: Tuple[int, int]) -> Tuple[List[Rect], List[Rect]]:
         rooms = []
         for _ in range(MAX_ROOM_ATTEMPTS):
-            new_room = self.generate_room(map_size)
-            collision = any(r for r in rooms if self.are_rooms_too_close(r, new_room))
+            new_room = self._generate_room(map_size)
+            collision = any(r for r in rooms if self._are_rooms_too_close(r, new_room))
             if collision:
                 pass
             else:
@@ -222,18 +237,21 @@ class DungeonGenerator:
                 break
         corridors = []
         for i in range(len(rooms) - 1):
-            corridor = self.generate_corridor_between_rooms(rooms[i], rooms[i + 1])
+            corridor = self._generate_corridor_between_rooms(rooms[i], rooms[i + 1])
             corridors += corridor
-        corridors += self.generate_corridor_between_rooms(rooms[-1], rooms[0])
+        corridors += self._generate_corridor_between_rooms(rooms[-1], rooms[0])
         return rooms, corridors
 
-    def are_rooms_too_close(self, room1: Rect, room2: Rect):
+    @staticmethod
+    def _are_rooms_too_close(room1: Rect, room2: Rect):
         return room1.inflate(2, 2).colliderect(room2.inflate(2, 2))
 
-    def get_room_center(self, room: Rect):
+    @staticmethod
+    def _get_room_center(room: Rect):
         return (room.x + room.w // 2) * CELL_SIZE, (room.y + room.h // 2) * CELL_SIZE
 
-    def determine_wall_type(self, grid: Grid, cell: Tuple[int, int]) -> WallType:
+    @staticmethod
+    def _determine_wall_type(grid: Grid, cell: Tuple[int, int]) -> WallType:
         x, y = cell
         w = (x - 1, y)
         e = (x + 1, y)
@@ -279,9 +297,8 @@ class DungeonGenerator:
         print("WARNING: Couldn't find fitting wall type for cell: " + str(cell))
         return WallType.WALL
 
-    def create_floor_tiles_and_walls_from_grid(self, grid: Grid, xrange: Tuple[int, int], yrange: Tuple[int, int]) -> \
-    Tuple[
-        List[DecorationEntity], List[Wall]]:
+    def _create_floor_tiles_and_walls_from_grid(self, grid: Grid, xrange: Tuple[int, int], yrange: Tuple[int, int]) -> \
+            Tuple[List[DecorationEntity], List[Wall]]:
         decorations: List[DecorationEntity] = []
         walls: List[Wall] = []
 
@@ -292,11 +309,11 @@ class DungeonGenerator:
                 if is_even_cell and any([grid.is_floor(c) for c in [(x, y), (x + 1, y), (x, y + 1), (x + 1, y + 1)]]):
                     decorations.append(create_decoration_entity(position, Sprite.DECORATION_GROUND_STONE))
                 if grid.is_wall((x, y)):
-                    wall_type = self.determine_wall_type(grid, (x, y))
+                    wall_type = self._determine_wall_type(grid, (x, y))
                     walls.append(create_wall(wall_type, position))
         return decorations, walls
 
-    def generate_npcs(self, rooms: List[Rect], start_room: Rect):
+    def _generate_npcs(self, rooms: List[Rect], start_room: Rect) -> List[NonPlayerCharacter]:
         # TODO Check collisions, use more rules to spawn sensible enemy groups
         npcs = []
         npc_types = list(NpcType.__members__.values())
@@ -304,7 +321,7 @@ class DungeonGenerator:
                              if NON_PLAYER_CHARACTERS[npc_type].npc_category == NpcCategory.ENEMY
                              and npc_type != NpcType.DARK_REAPER]
         for room in [r for r in rooms if r != start_room]:
-            xmid, ymid = self.get_room_center(room)
+            xmid, ymid = self._get_room_center(room)
             distance = CELL_SIZE * 2
             for x in range(xmid - distance, xmid + distance * 2, distance):
                 for y in range(ymid - distance, ymid + distance * 2, distance):

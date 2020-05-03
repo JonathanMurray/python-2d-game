@@ -13,8 +13,10 @@ from pythongame.core.view.image_loading import load_images_by_sprite, \
     load_images_by_ui_sprite, load_images_by_portrait_sprite
 from pythongame.player_file import SaveFileHandler
 from pythongame.register_game_data import register_all_game_data
-from pythongame.scenes.scene_challenge_complete_screen.scene_challenge_complete_screen import ChallengeCompleteScreenScene
+from pythongame.scenes.scene_challenge_complete_screen.scene_challenge_complete_screen import \
+    ChallengeCompleteScreenScene
 from pythongame.scenes.scene_creating_world.scene_creating_world import CreatingWorldScene, InitFlags
+from pythongame.scenes.scene_entering_dungeon.scene_entering_dungeon import EnteringDungeonScene
 from pythongame.scenes.scene_factory import AbstractSceneFactory
 from pythongame.scenes.scene_main_menu.scene_main_menu import MainMenuScene
 from pythongame.scenes.scene_main_menu.view_main_menu import MainMenuView
@@ -62,7 +64,7 @@ class SceneFactory(AbstractSceneFactory):
             ui_view: GameUiView, new_hero_was_created: bool, character_file: Optional[str],
             total_time_played_on_character: Millis) -> AbstractScene:
         return PlayingScene(
-            self.world_view, game_state, game_engine, world_behavior, ui_view, new_hero_was_created,
+            self, self.world_view, game_state, game_engine, world_behavior, ui_view, new_hero_was_created,
             character_file, self.save_file_handler, total_time_played_on_character, self.toggle_fullscreen)
 
     def challenge_complete_scene(self, total_time_played: Millis) -> AbstractScene:
@@ -70,6 +72,12 @@ class SceneFactory(AbstractSceneFactory):
 
     def victory_screen_scene(self) -> AbstractScene:
         return VictoryScreenScene(self.pygame_screen)
+
+    def entering_dungeon(self,
+                         game_engine: GameEngine,
+                         character_file: str,
+                         total_time_played_on_character: Millis) -> AbstractScene:
+        return EnteringDungeonScene(self, game_engine, self.ui_view, character_file, total_time_played_on_character)
 
 
 class Main:

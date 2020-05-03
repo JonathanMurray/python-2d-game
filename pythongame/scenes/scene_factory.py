@@ -31,3 +31,9 @@ class AbstractSceneFactory:
 
     def victory_screen_scene(self) -> AbstractScene:
         raise Exception("Not implemented")
+
+    def entering_dungeon(self,
+                         game_engine: GameEngine,
+                         character_file: str,
+                         total_time_played_on_character: Millis) -> AbstractScene:
+        raise Exception("Not implemented")

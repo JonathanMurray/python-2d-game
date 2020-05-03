@@ -1,10 +1,9 @@
 from typing import Optional
 from typing import Tuple
 
-from pythongame.core.common import ConsumableType, Sprite, Observable, ItemId
+from pythongame.core.common import ConsumableType, Sprite, ItemId
 from pythongame.core.common import Millis, HeroId, AbstractScene, SceneTransition
 from pythongame.core.consumable_inventory import ConsumableInventory
-from pythongame.core.footsteps import play_or_stop_footstep_sounds
 from pythongame.core.game_data import allocate_input_keys_for_abilities
 from pythongame.core.game_state import QuestId
 from pythongame.core.global_path_finder import init_global_path_finder
@@ -16,6 +15,8 @@ from pythongame.player_file import SavedPlayerState
 from pythongame.scenes.scene_factory import AbstractSceneFactory
 from pythongame.scenes.scenes_game.game_engine import GameEngine
 from pythongame.scenes.scenes_game.game_ui_view import GameUiView
+from pythongame.world_init_util import register_game_engine_observers, \
+    register_game_state_observers
 
 
 class InitFlags:
@@ -59,61 +60,29 @@ class CreatingWorldScene(AbstractScene):
         picked_hero = self.flags.picked_hero
         map_file_path = self.flags.map_file_path
         character_file = self.flags.character_file
-
         if saved_player_state:
             hero_from_saved_state = HeroId[saved_player_state.hero_id]
             if picked_hero is not None and picked_hero != hero_from_saved_state:
                 raise Exception("Mismatch! Hero from saved state: " + str(hero_from_saved_state) + ", but picked hero: "
                                 + str(picked_hero))
             picked_hero = hero_from_saved_state
-
         total_time_played_on_character = saved_player_state.total_time_played_on_character if saved_player_state else 0
 
         # NPC's share a "global path finder" that needs to be initialized before we start creating NPCs.
         # TODO This is very messy
         path_finder = init_global_path_finder()
+        game_state = load_map_from_json_file(self.camera_size, map_file_path, picked_hero).game_state
+        path_finder.set_grid(game_state.pathfinder_wall_grid)
 
-        map_data = load_map_from_json_file(self.camera_size, map_file_path, picked_hero)
-
-        path_finder.set_grid(map_data.game_state.pathfinder_wall_grid)
-
-        game_state = map_data.game_state
-        game_engine = GameEngine(game_state, self.ui_view.info_message)
-        game_state.player_state.exp_was_updated.register_observer(self.ui_view.on_player_exp_updated)
-        game_state.player_state.talents_were_updated.register_observer(self.ui_view.on_talents_updated)
-        game_state.player_state.notify_talent_observers()  # Must notify the initial state
-        game_state.player_movement_speed_was_updated.register_observer(self.ui_view.on_player_movement_speed_updated)
-        game_state.notify_movement_speed_observers()  # Must notify the initial state
-        game_state.player_state.stats_were_updated.register_observer(self.ui_view.on_player_stats_updated)
-        game_state.player_state.notify_stats_observers()  # Must notify the initial state
-        game_engine.talent_was_unlocked.register_observer(self.ui_view.on_talent_was_unlocked)
-        game_engine.ability_was_clicked.register_observer(self.ui_view.on_ability_was_clicked)
-        game_engine.consumable_was_clicked.register_observer(self.ui_view.on_consumable_was_clicked)
-        game_state.player_state.money_was_updated.register_observer(self.ui_view.on_money_updated)
-        game_state.player_state.notify_money_observers()  # Must notify the initial state
-        game_state.player_state.abilities_were_updated.register_observer(self.ui_view.on_abilities_updated)
-        game_state.player_state.notify_ability_observers()  # Must notify the initial state
-        game_state.player_state.cooldowns_were_updated.register_observer(self.ui_view.on_cooldowns_updated)
-        game_state.player_state.health_resource.value_was_updated.register_observer(self.ui_view.on_health_updated)
-        game_state.player_state.mana_resource.value_was_updated.register_observer(self.ui_view.on_mana_updated)
-        game_state.player_state.buffs_were_updated.register_observer(self.ui_view.on_buffs_updated)
-        game_state.player_state.quests_were_updated.register_observer(self.ui_view.on_player_quests_updated)
-        game_state.player_entity.movement_changed = Observable()
-        game_state.player_entity.movement_changed.register_observer(play_or_stop_footstep_sounds)
-        game_state.player_entity.position_changed = Observable()
-        game_state.player_entity.position_changed.register_observer(self.ui_view.on_player_position_updated)
-        game_state.player_entity.position_changed.register_observer(
-            lambda _: self.ui_view.on_walls_seen([w.get_position() for w in game_state.get_walls_in_sight_of_player()]))
-        self.ui_view.on_world_area_updated(game_state.entire_world_area)
         # Must center camera before notifying player position as it affects which walls are shown on the minimap
         game_state.center_camera_on_player()
-        game_state.player_entity.notify_position_observers()  # Must notify the initial state
+        self.ui_view.on_world_area_updated(game_state.entire_world_area)
+        self.ui_view.update_hero(game_state.player_state.hero_id)
 
-        if map_file_path == 'resources/maps/challenge.json':
-            world_behavior = ChallengeBehavior(
-                self.scene_factory, game_state, self.ui_view.info_message, game_engine, self.flags)
-        else:
-            world_behavior = StoryBehavior(self.scene_factory, game_state, self.ui_view.info_message)
+        game_engine = GameEngine(game_state, self.ui_view.info_message)
+
+        register_game_engine_observers(game_engine, self.ui_view)
+        register_game_state_observers(game_state, self.ui_view, include_player_state=True)
 
         if saved_player_state:
             game_engine.gain_levels(saved_player_state.level - 1)
@@ -146,12 +115,6 @@ class CreatingWorldScene(AbstractScene):
             if start_money > 0:
                 game_state.player_state.modify_money(start_money)
 
-        game_state.player_state.item_inventory.was_updated.register_observer(self.ui_view.on_inventory_updated)
-        game_state.player_state.item_inventory.notify_observers()  # Must notify the initial state
-        game_state.player_state.consumable_inventory.was_updated.register_observer(self.ui_view.on_consumables_updated)
-        game_state.player_state.consumable_inventory.notify_observers()  # Must notify the initial state
-        self.ui_view.update_hero(game_state.player_state.hero_id)
-
         # When loading from a savefile a bunch of messages are generated (levelup, learning talents, etc), but they
         # are irrelevant, since we're loading an exiting character
         self.ui_view.info_message.clear_messages()
@@ -161,6 +124,12 @@ class CreatingWorldScene(AbstractScene):
         self.ui_view.remove_highlight_from_talent_toggle()
 
         allocate_input_keys_for_abilities(game_state.player_state.abilities)
+
+        if map_file_path == 'resources/maps/challenge.json':
+            world_behavior = ChallengeBehavior(
+                self.scene_factory, game_state, self.ui_view.info_message, game_engine, self.flags)
+        else:
+            world_behavior = StoryBehavior(self.scene_factory, game_state, self.ui_view.info_message)
 
         new_hero_was_created = saved_player_state is None
         playing_scene = self.scene_factory.playing_scene(

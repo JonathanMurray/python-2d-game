@@ -7,8 +7,8 @@ from pythongame.core.game_data import CONSUMABLES, NON_PLAYER_CHARACTERS, alloca
     NpcCategory, PORTALS, ABILITIES
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
     EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest, \
-    PlayerUnlockedNewTalent, AgentBuffsUpdate, Shrine, DungeonEntrance
-from pythongame.core.item_data import ITEM_ENTITY_SIZE, plain_item_id
+    PlayerUnlockedNewTalent, AgentBuffsUpdate, Shrine
+from pythongame.core.item_data import ITEM_ENTITY_SIZE
 from pythongame.core.item_data import randomized_item_id, get_item_data
 from pythongame.core.item_effects import create_item_effect, try_add_item_to_inventory
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
@@ -113,6 +113,21 @@ class GameEngine:
                     item_id, item_effect, item_equipment_category, slot_number)
                 self._handle_item_equip_event(event)
 
+    def clear_item_inventory(self) -> List[ItemId]:
+        inventory = self.game_state.player_state.item_inventory
+
+        # get a copy of the inventory before it was cleared, to return to caller
+        slot_item_ids = []
+        for slot in inventory.slots:
+            item_id = slot.get_item_id() if not slot.is_empty() else None
+            slot_item_ids.append(item_id)
+
+        events = inventory.clear()
+        for event in events:
+            self._handle_item_equip_event(event)
+
+        return slot_item_ids
+
     def _try_pick_up_consumable_from_ground(self, consumable: ConsumableOnGround):
         # TODO move some logic into ConsumableInventory class
         has_space = self.game_state.player_state.consumable_inventory.has_space_for_more()
@@ -152,15 +167,6 @@ class GameEngine:
             shrine.has_been_used = True
             message = apply_shrine_buff_to_player(self.game_state.player_state)
             self.info_message.set_message(message)
-
-    def interact_with_dungeon_entrance(self, dungeon_entrance: DungeonEntrance):
-        has_key = self.game_state.player_state.item_inventory.has_item_in_inventory(
-            plain_item_id(ItemType.PORTAL_KEY))
-        if has_key:
-            # TODO
-            self.info_message.set_message("TODO: portal")
-        else:
-            self.info_message.set_message("There is a keyhole on the side!")
 
     def use_warp_point(self, warp_point: WarpPoint):
         destination_warp_point = [w for w in self.game_state.warp_points if w != warp_point][0]
@@ -245,7 +251,7 @@ class GameEngine:
 
         for enemy in self.game_state.non_player_characters:
             enemy.health_resource.regenerate(time_passed)
-            buffs_update = handle_buffs(enemy.active_buffs, time_passed)
+            buffs_update = _handle_buffs(enemy.active_buffs, time_passed)
             for buff in buffs_update.buffs_that_started:
                 buff.buff_effect.apply_start_effect(self.game_state, enemy.world_entity, enemy)
             for buff in buffs_update.buffs_that_were_active:
@@ -394,7 +400,7 @@ class GameEngine:
                 self.game_state.consumables_on_ground.append(consumable_on_ground)
 
 
-def handle_buffs(active_buffs: List[BuffWithDuration], time_passed: Millis) -> AgentBuffsUpdate:
+def _handle_buffs(active_buffs: List[BuffWithDuration], time_passed: Millis) -> AgentBuffsUpdate:
     # NOTE: duplication between NPC's and player's buff handling
     copied_buffs_list = list(active_buffs)
     buffs_that_started = []

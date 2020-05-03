@@ -11,11 +11,11 @@
   "items_on_ground": [
     {
       "item_id": "GOLD_NUGGET~~",
-      "item_name": "Gold Nugget",
       "position": [
         -25,
         2500
-      ]
+      ],
+      "item_name": "Gold Nugget"
     }
   ],
   "money_piles_on_ground": [],
@@ -75950,6 +75950,14 @@
       "position": [
         7675,
         3450
+      ]
+    }
+  ],
+  "dungeon_entrances": [
+    {
+      "position": [
+        -50,
+        -750
       ]
     }
   ]
