@@ -89,6 +89,11 @@ class DungeonBehavior(AbstractWorldBehavior):
 
     def handle_event(self, event: EngineEvent) -> Optional[SceneTransition]:
         if event == EngineEvent.PLAYER_DIED:
+
+            # If player has any movement buffs/debuffs that affect the hero entity, and the buff was retained when we
+            # switch back to the old game state, then we'd incorrectly modify the hero entity when it expires
+            self.game_state.player_state.force_cancel_all_buffs()
+
             # Player will "die again" outside of the dungeon which will trigger exp loss and respawning at base
             # TODO spawn animation doesn't work? Maybe we should just set HP to 1 and let hero spawn at entrance
             return self._transition_out_of_dungeon()
@@ -97,7 +102,7 @@ class DungeonBehavior(AbstractWorldBehavior):
             if num_enemies == 0:
                 self.info_message.set_message("Dungeon cleared!")
                 self.warp_countdown_timer = PeriodicTimer(Millis(1000))
-                self.countdown_until_hero_will_be_warped_out_of_dungeon = 10
+                self.countdown_until_hero_will_be_warped_out_of_dungeon = 5
             else:
                 self.info_message.set_message(str(num_enemies) + " enemies remaining in dungeon")
         return None

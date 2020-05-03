@@ -48,20 +48,38 @@ def _generate_npc_function(difficulty_level: int) -> Callable[[int, int], Option
         return _generate_npc_1
     elif difficulty_level == 2:
         return _generate_npc_2
+    elif difficulty_level == 3:
+        return _generate_npc_3
+    elif difficulty_level == 4:
+        return _generate_npc_4
     else:
         print("WARN: Unhandled dungeon difficulty level (%s)! Falling back to some other difficulty" % difficulty_level)
-        return _generate_npc_2
+        return _generate_npc_4
 
 
 def _generate_npc_1(x: int, y: int) -> Optional[NonPlayerCharacter]:
-    valid_enemy_types = [NpcType.MUMMY, NpcType.ZOMBIE, NpcType.ZOMBIE_FAST, NpcType.NECROMANCER]
+    valid_enemy_types = [NpcType.GOBLIN_SPEARMAN_ELITE, NpcType.SKELETON_MAGE, NpcType.ZOMBIE_FAST, NpcType.NECROMANCER]
     if random.random() < 0.3:
         npc_type = random.choice(valid_enemy_types)
         return create_npc(npc_type, (x, y))
 
 
 def _generate_npc_2(x: int, y: int) -> Optional[NonPlayerCharacter]:
-    valid_enemy_types = [NpcType.FIRE_DEMON]
+    valid_enemy_types = [NpcType.WARRIOR, NpcType.VETERAN, NpcType.ICE_WITCH]
     if random.random() < 0.5:
+        npc_type = random.choice(valid_enemy_types)
+        return create_npc(npc_type, (x, y))
+
+
+def _generate_npc_3(x: int, y: int) -> Optional[NonPlayerCharacter]:
+    valid_enemy_types = [NpcType.HUMAN_SUMMONER, NpcType.ICE_WITCH, NpcType.VETERAN]
+    if random.random() < 0.5:
+        npc_type = random.choice(valid_enemy_types)
+        return create_npc(npc_type, (x, y))
+
+
+def _generate_npc_4(x: int, y: int) -> Optional[NonPlayerCharacter]:
+    valid_enemy_types = [NpcType.SKELETON_BOSS, NpcType.GOBLIN_WARRIOR, NpcType.WARRIOR_KING]
+    if random.random() < 0.3:
         npc_type = random.choice(valid_enemy_types)
         return create_npc(npc_type, (x, y))
