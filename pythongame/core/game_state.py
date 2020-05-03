@@ -914,19 +914,6 @@ class GameState:
             grid[cell_x][cell_y] = 1
         return grid
 
-    def handle_camera_shake(self, time_passed: Millis):
-        if self.camera_shake is not None:
-            self.camera_shake.notify_time_passed(time_passed)
-            if not self.camera_shake.has_time_left():
-                self.camera_shake = None
-
-    def get_camera_world_area_including_camera_shake(self) -> Rect:
-        camera_world_area = Rect(self.camera_world_area)
-        if self.camera_shake is not None:
-            camera_world_area[0] += self.camera_shake.offset[0]
-            camera_world_area[1] += self.camera_shake.offset[1]
-        return camera_world_area
-
     def modify_hero_stat(self, hero_stat: HeroStat, stat_delta: Union[int, float]):
         if hero_stat == HeroStat.MOVEMENT_SPEED:
             self.game_world.modify_hero_movement_speed(stat_delta)
@@ -941,6 +928,19 @@ class GameState:
 
     def get_decorations_to_render(self) -> List[DecorationEntity]:
         return self.game_world.get_decorations_to_render(self.camera_world_area)
+
+    def handle_camera_shake(self, time_passed: Millis):
+        if self.camera_shake is not None:
+            self.camera_shake.notify_time_passed(time_passed)
+            if not self.camera_shake.has_time_left():
+                self.camera_shake = None
+
+    def get_camera_world_area_including_camera_shake(self) -> Rect:
+        camera_world_area = Rect(self.camera_world_area)
+        if self.camera_shake is not None:
+            camera_world_area[0] += self.camera_shake.offset[0]
+            camera_world_area[1] += self.camera_shake.offset[1]
+        return camera_world_area
 
     def center_camera_on_player(self):
         new_camera_pos = get_position_from_center_position(self.game_world.player_entity.get_center_position(),
