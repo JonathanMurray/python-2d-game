@@ -15,6 +15,6 @@ def register_skull_sword_item():
         image_file_path="resources/graphics/item_skull_sword.png",
         item_equipment_category=ItemEquipmentCategory.MAIN_HAND,
         name="Skull sword",
-        stat_modifier_intervals=[StatModifierInterval(HeroStat.DAMAGE, interval(0.4, 0.5, 0.01)),
+        stat_modifier_intervals=[StatModifierInterval(HeroStat.PHYSICAL_DAMAGE, interval(0.4, 0.5, 0.01)),
                                  StatModifierInterval(HeroStat.LIFE_STEAL, interval(0.10, 0.15, 0.01))]
     )
