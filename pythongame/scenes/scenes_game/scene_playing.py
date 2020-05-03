@@ -226,8 +226,7 @@ class PlayingScene(AbstractScene):
                                                    player_state.dungeon_difficulty_level)
         new_game_engine = GameEngine(new_game_state, self.ui_view.info_message)
         new_behavior = DungeonBehavior(
-            self.scene_factory, previous_game_state, new_game_engine,
-            self.ui_view.info_message, self.character_file,
+            self.scene_factory, previous_game_state, new_game_engine, self.ui_view, self.character_file,
             self.total_time_played_on_character)
         return new_game_engine, new_behavior
 

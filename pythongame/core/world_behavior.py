@@ -12,20 +12,20 @@ from pythongame.core.item_effects import try_add_item_to_inventory
 from pythongame.core.sound_player import play_sound
 from pythongame.scenes.scene_factory import AbstractSceneFactory
 from pythongame.scenes.scenes_game.game_engine import GameEngine
-from pythongame.scenes.scenes_game.game_ui_view import InfoMessage
+from pythongame.scenes.scenes_game.game_ui_view import InfoMessage, GameUiView
 
 
 class StoryBehavior(AbstractWorldBehavior):
 
-    def __init__(self, scene_factory: AbstractSceneFactory, game_state: GameState,
-                 info_message: InfoMessage):
+    def __init__(self, scene_factory: AbstractSceneFactory, game_state: GameState, ui_view: GameUiView):
         self.scene_factory = scene_factory
         self.game_state = game_state
-        self.info_message = info_message
+        self.ui_view = ui_view
 
     def on_startup(self, new_hero_was_created: bool):
         self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
-        self.info_message.set_message("Hint: " + get_random_hint())
+        self.ui_view.info_message.set_message("Hint: " + get_random_hint())
+        self.ui_view.update_game_mode_string("")
         if new_hero_was_created:
             self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.HEALTH_LESSER)
             self.game_state.player_state.consumable_inventory.add_consumable(ConsumableType.MANA_LESSER)
@@ -47,7 +47,7 @@ class StoryBehavior(AbstractWorldBehavior):
             self.game_state.player_state.health_resource.set_to_partial_of_max(0.5)
             self.game_state.player_state.lose_exp_from_death()
             self.game_state.player_state.force_cancel_all_buffs()
-            self.info_message.set_message("Lost exp from dying")
+            self.ui_view.info_message.set_message("Lost exp from dying")
             play_sound(SoundId.EVENT_PLAYER_DIED)
             self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
         return None
@@ -59,14 +59,14 @@ class DungeonBehavior(AbstractWorldBehavior):
                  scene_factory: AbstractSceneFactory,
                  game_state_before_entering_dungeon: GameState,
                  game_engine: GameEngine,
-                 info_message: InfoMessage,
+                 ui_view: GameUiView,
                  character_file: str,
                  total_time_played_on_character: Millis):
         self.scene_factory = scene_factory
         self.game_state_before_entering_dungeon = game_state_before_entering_dungeon
         self.game_engine = game_engine
         self.game_state = game_engine.game_state
-        self.info_message = info_message
+        self.ui_view = ui_view
         self.character_file = character_file
         self.total_time_played_on_character = total_time_played_on_character
         self.countdown_until_hero_will_be_warped_out_of_dungeon: int = None
@@ -74,13 +74,14 @@ class DungeonBehavior(AbstractWorldBehavior):
 
     def on_startup(self, new_hero_was_created: bool):
         self.game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.BEING_SPAWNED), Millis(1000))
-        self.info_message.set_message("Fight through all enemies to get out!")
+        self.ui_view.info_message.set_message("Fight through all enemies to get out!")
+        self.ui_view.update_game_mode_string("Dungeon %i" % self.game_state.player_state.dungeon_difficulty_level)
 
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:
         if self.warp_countdown_timer is not None:
             if self.warp_countdown_timer.update_and_check_if_ready(time_passed):
                 if self.countdown_until_hero_will_be_warped_out_of_dungeon > 0:
-                    self.info_message.set_message(
+                    self.ui_view.info_message.set_message(
                         "You will be warped out in %s" % self.countdown_until_hero_will_be_warped_out_of_dungeon)
                     self.countdown_until_hero_will_be_warped_out_of_dungeon -= 1
                 else:
@@ -100,11 +101,11 @@ class DungeonBehavior(AbstractWorldBehavior):
         elif event == EngineEvent.ENEMY_DIED:
             num_enemies = len([npc for npc in self.game_state.non_player_characters if npc.is_enemy])
             if num_enemies == 0:
-                self.info_message.set_message("Dungeon cleared!")
+                self.ui_view.info_message.set_message("Dungeon cleared!")
                 self.warp_countdown_timer = PeriodicTimer(Millis(1000))
                 self.countdown_until_hero_will_be_warped_out_of_dungeon = 5
             else:
-                self.info_message.set_message(str(num_enemies) + " enemies remaining in dungeon")
+                self.ui_view.info_message.set_message(str(num_enemies) + " enemies remaining in dungeon")
         return None
 
     def _transition_out_of_dungeon(self):
@@ -118,8 +119,8 @@ class DungeonBehavior(AbstractWorldBehavior):
 
     def _recreate_main_world_engine_and_behavior(self, _: GameEngine) -> Tuple[GameEngine, AbstractWorldBehavior]:
         game_state = self.game_state_before_entering_dungeon
-        engine = GameEngine(game_state, self.info_message)
-        behavior = StoryBehavior(self.scene_factory, game_state, self.info_message)
+        engine = GameEngine(game_state, self.ui_view.info_message)
+        behavior = StoryBehavior(self.scene_factory, game_state, self.ui_view)
         return engine, behavior
 
 

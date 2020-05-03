@@ -148,6 +148,7 @@ class GameUiView:
         # QUICKLY CHANGING STATE
         self.hovered_component = None
         self.fps_string = ""
+        self.game_mode_string = ""
         self.enabled_toggle: ToggleButton = None
         self.item_slot_being_dragged: ItemIcon = None
         self.consumable_slot_being_dragged: ConsumableIcon = None
@@ -657,6 +658,9 @@ class GameUiView:
     def update_fps_string(self, fps_string: str):
         self.fps_string = fps_string
 
+    def update_game_mode_string(self, game_mode_string: str):
+        self.game_mode_string = game_mode_string
+
     def remove_highlight_from_talent_toggle(self):
         self.talents_toggle.highlighted = False
 
@@ -750,8 +754,11 @@ class GameUiView:
 
         self.screen_render.rect(COLOR_BORDER, self.ui_screen_area, 1)
 
-        self.screen_render.rect_transparent(Rect(0, 0, 70, 20), 100, COLOR_BLACK)
-        self.screen_render.text(self.font_debug_info, "fps: " + self.fps_string, (5, 3))
+        self.screen_render.rect_transparent(Rect(1, 1, 70, 20), 100, COLOR_BLACK)
+        self.screen_render.text(self.font_debug_info, "fps: " + self.fps_string, (6, 4))
+        if self.game_mode_string:
+            self.screen_render.rect_transparent(Rect(1, 23, 70, 20), 100, COLOR_BLACK)
+            self.screen_render.text(self.font_debug_info, self.game_mode_string, (6, 26))
 
         self.message.render(self.info_message.message)
 

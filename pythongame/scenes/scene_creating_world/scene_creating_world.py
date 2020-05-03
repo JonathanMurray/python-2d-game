@@ -129,7 +129,7 @@ class CreatingWorldScene(AbstractScene):
             world_behavior = ChallengeBehavior(
                 self.scene_factory, game_state, self.ui_view.info_message, game_engine, self.flags)
         else:
-            world_behavior = StoryBehavior(self.scene_factory, game_state, self.ui_view.info_message)
+            world_behavior = StoryBehavior(self.scene_factory, game_state, self.ui_view)
 
         new_hero_was_created = saved_player_state is None
         playing_scene = self.scene_factory.playing_scene(
