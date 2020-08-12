@@ -1,8 +1,9 @@
+from pythongame.core.abilities import AbilityData, register_ability_data
 from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.common import HeroId, PortraitIconSprite, UiIconSprite, Millis, PLAYER_ENTITY_SIZE
 from pythongame.core.game_data import Sprite, Direction, AbilityType, register_entity_sprite_map, \
     register_portrait_icon_sprite_path, register_hero_data, HeroData, \
-    InitialPlayerStateData, AbilityData, register_ability_data, register_ui_icon_sprite_path
+    InitialPlayerStateData, register_ui_icon_sprite_path
 from pythongame.core.game_state import PlayerLevelBonus, GameState
 from pythongame.core.talents import TalentsConfig
 from pythongame.core.view.image_loading import SpriteSheet

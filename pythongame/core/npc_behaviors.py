@@ -9,7 +9,6 @@ from pythongame.core.game_state import GameState, NonPlayerCharacter, Projectile
 from pythongame.core.hero_upgrades import reset_talents
 from pythongame.core.item_data import create_item_description
 from pythongame.core.item_data import get_item_data_by_type
-from pythongame.core.item_effects import try_add_item_to_inventory
 from pythongame.core.math import get_perpendicular_directions, get_position_from_center_position, \
     translate_in_direction, get_directions_to_position
 from pythongame.core.math import is_x_and_y_within_distance
@@ -219,7 +218,7 @@ class EnemyShootProjectileTrait(EnemyTrait):
 class AbstractNpcAction:
 
     # perform action, and optionally return a message to be displayed
-    def on_select(self, game_state: GameState) -> Optional[str]:
+    def on_select(self, game_engine: Any) -> Optional[str]:
         pass
 
     # is called when the option is selected/hovered in the dialog
@@ -237,8 +236,8 @@ class SellConsumableNpcAction(AbstractNpcAction):
         self.consumable_type = consumable_type
         self.name = name
 
-    def on_select(self, game_state: GameState):
-        player_state = game_state.player_state
+    def on_select(self, game_engine: Any):
+        player_state = game_engine.game_state.player_state
         can_afford = player_state.money >= self.cost
         has_space = player_state.consumable_inventory.has_space_for_more()
         if not can_afford:
@@ -260,14 +259,15 @@ class SellItemNpcAction(AbstractNpcAction):
         self.name = name
         self.item_id = item_id
 
-    def on_select(self, game_state: GameState):
+    def on_select(self, game_engine: Any):
+        game_state = game_engine.game_state
         player_state = game_state.player_state
         can_afford = player_state.money >= self.cost
         if not can_afford:
             play_sound(SoundId.WARNING)
             return "Not enough gold!"
 
-        did_add_item = try_add_item_to_inventory(game_state, self.item_id)
+        did_add_item = game_engine.try_add_item_to_inventory(self.item_id)
         if not did_add_item:
             play_sound(SoundId.WARNING)
             return "Not enough space!"
@@ -284,7 +284,8 @@ class BuyItemNpcAction(AbstractNpcAction):
         self.price = price
         self.name = name
 
-    def on_select(self, game_state: GameState) -> Optional[str]:
+    def on_select(self, game_engine: Any) -> Optional[str]:
+        game_state = game_engine.game_state
         player_has_it = game_state.player_state.item_inventory.has_item_in_inventory(self.item_id)
         if player_has_it:
             game_state.player_state.item_inventory.lose_item_from_inventory(self.item_id)
@@ -307,7 +308,8 @@ class ResetTalentsNpcAction(AbstractNpcAction):
     def __init__(self, price: int):
         self.price = price
 
-    def on_select(self, game_state: GameState) -> Optional[str]:
+    def on_select(self, game_engine: Any) -> Optional[str]:
+        game_state = game_engine.game_state
         player_state = game_state.player_state
         can_afford = player_state.money >= self.price
         if not can_afford:
@@ -352,12 +354,12 @@ def register_conditional_npc_dialog_data(npc_type: NpcType, get_data: Callable[[
     _npc_dialog_data[npc_type] = get_data
 
 
-def select_npc_action(npc_type: NpcType, option_index: int, game_state: GameState) -> Optional[str]:
-    data = _npc_dialog_data[npc_type](game_state)
+def select_npc_action(npc_type: NpcType, option_index: int, game_engine: Any) -> Optional[str]:
+    data = _npc_dialog_data[npc_type](game_engine.game_state)
     action = data.options[option_index].action
     if not action:
         return None
-    optional_message = action.on_select(game_state)
+    optional_message = action.on_select(game_engine)
     return optional_message
 
 

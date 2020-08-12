@@ -9,6 +9,7 @@ def register_game_engine_observers(game_engine: GameEngine, ui_view: GameUiView)
     game_engine.talent_was_unlocked.register_observer(ui_view.on_talent_was_unlocked)
     game_engine.ability_was_clicked.register_observer(ui_view.on_ability_was_clicked)
     game_engine.consumable_was_clicked.register_observer(ui_view.on_consumable_was_clicked)
+    game_engine.abilities_were_updated.register_observer(ui_view.on_abilities_updated)
 
 
 def register_game_state_observers(game_state: GameState, ui_view: GameUiView, include_player_state: bool):
@@ -34,8 +35,7 @@ def _register_player_state_observers(player_state: PlayerState, ui_view: GameUiV
     player_state.notify_stats_observers()  # Must notify the initial state
     player_state.money_was_updated.register_observer(ui_view.on_money_updated)
     player_state.notify_money_observers()  # Must notify the initial state
-    player_state.abilities_were_updated.register_observer(ui_view.on_abilities_updated)
-    player_state.notify_ability_observers()  # Must notify the initial state
+
     player_state.cooldowns_were_updated.register_observer(ui_view.on_cooldowns_updated)
     player_state.health_resource.value_was_updated.register_observer(ui_view.on_health_updated)
     player_state.mana_resource.value_was_updated.register_observer(ui_view.on_mana_updated)

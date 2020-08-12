@@ -237,6 +237,7 @@ class PlayerState:
         self.mana_resource: HealthOrManaResource = mana_resource
         self.consumable_inventory = consumable_inventory
         self.abilities: List[AbilityType] = abilities
+        self._active_item_ability: Optional[AbilityType] = None
         self._ability_cooldowns_remaining: Dict[AbilityType, int] = {ability_type: 0 for ability_type in abilities}
         self.active_buffs: List[BuffWithDuration] = []
         self.is_invisible = False
@@ -271,7 +272,6 @@ class PlayerState:
         self.stats_were_updated = Observable()
         self.exp_was_updated = Observable()
         self.money_was_updated = Observable()
-        self.abilities_were_updated = Observable()
         self.cooldowns_were_updated = Observable()
         self.buffs_were_updated = Observable()
         self.quests_were_updated = Observable()
@@ -450,9 +450,6 @@ class PlayerState:
         self._ability_cooldowns_remaining[ability_type] = 0
         self.notify_cooldown_observers()
 
-    def notify_ability_observers(self):
-        self.abilities_were_updated.notify(self.abilities)
-
     def notify_cooldown_observers(self):
         self.cooldowns_were_updated.notify(self._ability_cooldowns_remaining)
 
@@ -503,10 +500,23 @@ class PlayerState:
         self.notify_stats_observers()
 
     def gain_ability(self, ability_type: AbilityType):
-        self._ability_cooldowns_remaining[ability_type] = 0
+        if ability_type not in self._ability_cooldowns_remaining:
+            self._ability_cooldowns_remaining[ability_type] = 0
         self.abilities.append(ability_type)
-        self.notify_ability_observers()
         self.notify_cooldown_observers()
+
+    def _lose_ability(self, ability_type: AbilityType):
+        self.abilities.remove(ability_type)
+        # We don't remove the cooldown, as that would let you exploit by quickly un-equipping and equipping again
+        self.notify_cooldown_observers()
+
+    def set_active_item_ability(self, ability_type: Optional[AbilityType]):
+        # You can only have one active item ability
+        if self._active_item_ability:
+            self._lose_ability(self._active_item_ability)
+        self._active_item_ability = ability_type
+        if ability_type:
+            self.gain_ability(ability_type)
 
     def notify_about_event(self, event: Event, game_state):
         for buff in self.active_buffs:

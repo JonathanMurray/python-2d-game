@@ -1,11 +1,12 @@
 import random
 
+from pythongame.core.abilities import AbilityData, register_ability_data
 from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect, register_buff_effect
 from pythongame.core.common import AbilityType, Sprite, \
     ProjectileType, Millis, Direction, BuffType, SoundId, PeriodicTimer, HeroUpgradeId
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
-from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
+from pythongame.core.game_data import UiIconSprite, \
     register_ui_icon_sprite_path, register_entity_sprite_map
 from pythongame.core.game_state import GameState, Projectile, NonPlayerCharacter
 from pythongame.core.math import get_position_from_center_position, translate_in_direction

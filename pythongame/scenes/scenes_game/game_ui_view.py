@@ -3,9 +3,10 @@ from typing import List, Tuple, Optional, Dict, Any
 import pygame
 from pygame.rect import Rect
 
+from pythongame.core.abilities import ABILITIES
 from pythongame.core.common import ConsumableType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite, \
     SoundId, NpcType, Millis, DialogData, ItemId
-from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, HEROES
+from pythongame.core.game_data import BUFF_TEXTS, CONSUMABLES, HEROES
 from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState
 from pythongame.core.item_data import create_item_description
 from pythongame.core.item_data import get_item_data_by_type, get_item_data
@@ -523,14 +524,15 @@ class GameUiView:
                                        bottom_left=(self.manabar.rect.left - 2, self.manabar.rect.top - 1))
         self.manabar.tooltip = mana_tooltip
 
-    def on_abilities_updated(self, abilities: List[AbilityType]):
+    def on_abilities_updated(self, abilities_by_key_string: Dict[str, AbilityType]):
         for i, icon in enumerate(self.ability_icons):
-            ability_type = abilities[i] if i < len(abilities) else None
+            key_string = self.ability_key_labels[i]
+            ability_type = abilities_by_key_string.get(key_string, None)
             ability = ABILITIES[ability_type] if ability_type else None
             image = self.images_by_ui_sprite[ability.icon_sprite] if ability else None
             icon.update(
                 image=image,
-                label=self.ability_key_labels[i],
+                label=key_string,
                 ability=ability,
                 ability_type=ability_type)
 

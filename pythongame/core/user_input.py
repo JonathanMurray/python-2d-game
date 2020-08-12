@@ -1,7 +1,7 @@
 import pygame
 
+from pythongame.core.abilities import KEYS_BY_ABILITY_TYPE
 from pythongame.core.common import *
-from pythongame.core.game_data import KEYS_BY_ABILITY_TYPE
 
 EXIT_ON_ESCAPE = False
 

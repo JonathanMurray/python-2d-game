@@ -113,6 +113,14 @@ class ItemInventory:
                 events.append(event_2)
             slot_1.item = content_2
             slot_2.item = content_1
+
+        if len(events) == 2:
+            # If switching two items that both have active abilities, the currently active ability needs to be removed
+            # before the new one can be activated. If we don't switch the order here, the consequence is that no ability
+            # will be active.
+            if isinstance(events[0], ItemWasActivated) and isinstance(events[1], ItemWasDeactivated):
+                events = [events[1], events[0]]
+
         self.notify_observers()
         return events
 

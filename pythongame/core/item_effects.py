@@ -2,8 +2,6 @@ from typing import Dict
 
 from pythongame.core.common import *
 from pythongame.core.game_state import GameState, Event
-from pythongame.core.item_data import get_item_data_by_type
-from pythongame.core.item_inventory import ItemWasActivated
 
 
 class AbstractItemEffect:
@@ -84,14 +82,3 @@ def create_item_effect(item_id: ItemId) -> AbstractItemEffect:
         effects.append(StatModifyingItemEffect(item_id.affix_stats))
     effect = CompositeItemEffect(effects)
     return effect
-
-
-def try_add_item_to_inventory(game_state: GameState, item_id: ItemId) -> bool:
-    item_effect = create_item_effect(item_id)
-    item_type = item_id.item_type
-    item_equipment_category = get_item_data_by_type(item_type).item_equipment_category
-    result = game_state.player_state.item_inventory.try_add_item(item_id, item_effect, item_equipment_category)
-    if result:
-        if isinstance(result, ItemWasActivated):
-            item_effect.apply_start_effect(game_state)
-    return result is not None

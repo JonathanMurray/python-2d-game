@@ -182,6 +182,7 @@ class AbilityType(Enum):
     INFUSE_DAGGER = 16
     DASH = 17
     KILL_EVERYTHING = 18
+    ITEM_ZULS_AEGIS = 100
 
 
 class Sprite(Enum):

@@ -3,7 +3,6 @@ from typing import Optional
 from pythongame.core.common import NpcType, Sprite, Direction, PortraitIconSprite, \
     get_random_hint, ItemType, SoundId
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map
-from pythongame.core.game_state import GameState
 from pythongame.core.item_data import plain_item_id
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcAction, \
     DialogOptionData
@@ -13,6 +12,7 @@ from pythongame.core.quests import QuestId, Quest
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import create_visual_healing_text
+from pythongame.scenes.scenes_game.game_engine import GameEngine
 
 QUEST_MIN_LEVEL = 3
 QUEST_ID = QuestId.MAIN_RETRIEVE_KEY
@@ -26,7 +26,8 @@ class NpcMind(QuestGiverNpcMind):
 
 
 class HealAction(AbstractNpcAction):
-    def on_select(self, game_state: GameState) -> Optional[str]:
+    def on_select(self, game_engine: GameEngine) -> Optional[str]:
+        game_state = game_engine.game_state
         if not game_state.player_state.health_resource.is_at_max():
             health_gained = game_state.player_state.health_resource.gain_to_max()
             game_state.game_world.visual_effects.append(
@@ -38,7 +39,7 @@ class HealAction(AbstractNpcAction):
 
 
 class HintAction(AbstractNpcAction):
-    def on_select(self, game_state: GameState) -> Optional[str]:
+    def on_select(self, game_engine: GameEngine) -> Optional[str]:
         return get_random_hint()
 
 

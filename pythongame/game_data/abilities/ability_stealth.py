@@ -1,12 +1,13 @@
 from typing import Optional
 
+from pythongame.core.abilities import AbilityData, ABILITIES, register_ability_data
 from pythongame.core.ability_effects import register_ability_effect, AbilityWasUsedSuccessfully, AbilityResult
 from pythongame.core.buff_effects import get_buff_effect, register_buff_effect, \
     StatModifyingBuffEffect
 from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, SoundId, HeroUpgradeId, \
     HeroStat
-from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
-    register_buff_text, ABILITIES
+from pythongame.core.game_data import register_ui_icon_sprite_path, \
+    register_buff_text
 from pythongame.core.game_state import GameState, NonPlayerCharacter, Event, BuffEventOutcome, \
     PlayerUsedAbilityEvent, PlayerLostHealthEvent
 from pythongame.core.hero_upgrades import register_hero_upgrade_effect, AbstractHeroUpgradeEffect

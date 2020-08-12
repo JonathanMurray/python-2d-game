@@ -89,7 +89,7 @@ class PlayingScene(AbstractScene):
                         npc_in_dialog, option_index = result
                         npc_type = npc_in_dialog.npc_type
                         blur_npc_action(npc_type, option_index, self.game_state, self.ui_view)
-                        message = select_npc_action(npc_type, option_index, self.game_state)
+                        message = select_npc_action(npc_type, option_index, self.game_engine)
                         if message:
                             self.ui_view.info_message.set_message(message)
                         npc_in_dialog.stun_status.remove_one()

@@ -2,12 +2,13 @@ from typing import Optional
 
 from pygame.rect import Rect
 
+from pythongame.core.abilities import AbilityData, register_ability_data
 from pythongame.core.ability_effects import register_ability_effect, AbilityResult, AbilityWasUsedSuccessfully
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect, get_buff_effect
 from pythongame.core.common import BuffType, Millis, AbilityType, SoundId, HeroId, UiIconSprite, PeriodicTimer, \
     HeroUpgradeId, HeroStat
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
-from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
+from pythongame.core.game_data import register_ui_icon_sprite_path, \
     HEROES, register_buff_as_channeling
 from pythongame.core.game_state import GameState, NonPlayerCharacter, CameraShake
 from pythongame.core.math import translate_in_direction, get_middle_point
