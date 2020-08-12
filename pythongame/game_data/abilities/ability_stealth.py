@@ -9,7 +9,7 @@ from pythongame.core.game_data import register_ability_data, AbilityData, regist
     register_buff_text, ABILITIES
 from pythongame.core.game_state import GameState, NonPlayerCharacter, Event, BuffEventOutcome, \
     PlayerUsedAbilityEvent, PlayerLostHealthEvent
-from pythongame.core.hero_upgrades import register_hero_upgrade_effect
+from pythongame.core.hero_upgrades import register_hero_upgrade_effect, AbstractHeroUpgradeEffect
 from pythongame.core.world_entity import WorldEntity
 
 STEALTH_MANA_COST = 25
@@ -51,8 +51,12 @@ class Stealthing(StatModifyingBuffEffect):
             return BuffEventOutcome.cancel_effect()
 
 
-def _upgrade_mana_cost(_game_state: GameState):
-    ABILITIES[ABILITY_TYPE].mana_cost = STEALTH_UPGRADED_MANA_COST
+class UpgradeStealthManaCost(AbstractHeroUpgradeEffect):
+    def apply(self, game_state: GameState):
+        ABILITIES[ABILITY_TYPE].mana_cost = STEALTH_UPGRADED_MANA_COST
+
+    def revert(self, game_state: GameState):
+        ABILITIES[ABILITY_TYPE].mana_cost = STEALTH_MANA_COST
 
 
 def register_stealth_ability():
@@ -66,4 +70,4 @@ def register_stealth_ability():
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/sneak_icon.png")
     register_buff_effect(BUFF_STEALTH, Stealthing)
     register_buff_text(BUFF_STEALTH, "Stealthed")
-    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_STEALTH_MANA_COST, _upgrade_mana_cost)
+    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_STEALTH_MANA_COST, UpgradeStealthManaCost())

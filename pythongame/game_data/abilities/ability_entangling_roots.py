@@ -6,7 +6,7 @@ from pythongame.core.damage_interactions import deal_player_damage_to_enemy, Dam
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_entity_sprite_map, ABILITIES
 from pythongame.core.game_state import GameState, Projectile, NonPlayerCharacter
-from pythongame.core.hero_upgrades import register_hero_upgrade_effect
+from pythongame.core.hero_upgrades import register_hero_upgrade_effect, AbstractHeroUpgradeEffect
 from pythongame.core.math import get_position_from_center_position, translate_in_direction
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
@@ -91,8 +91,12 @@ class Rooted(AbstractBuffEffect):
         return BUFF_TYPE
 
 
-def _upgrade_entangling_roots_cooldown(_game_state: GameState):
-    ABILITIES[AbilityType.ENTANGLING_ROOTS].cooldown = ENTANGLING_ROOTS_UPGRADED_COOLDOWN
+class UpgradeEntanglingRootsCooldown(AbstractHeroUpgradeEffect):
+    def apply(self, game_state: GameState):
+        ABILITIES[AbilityType.ENTANGLING_ROOTS].cooldown = ENTANGLING_ROOTS_UPGRADED_COOLDOWN
+
+    def revert(self, game_state: GameState):
+        ABILITIES[AbilityType.ENTANGLING_ROOTS].cooldown = ENTANGLING_ROOTS_COOLDOWN
 
 
 def register_entangling_roots_ability():
@@ -115,7 +119,7 @@ def register_entangling_roots_ability():
                                (0, 0))
     register_buff_effect(BUFF_TYPE, Rooted)
     _register_engangling_roots_effect_decoration()
-    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_ENTANGLING_ROOTS_COOLDOWN, _upgrade_entangling_roots_cooldown)
+    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_ENTANGLING_ROOTS_COOLDOWN, UpgradeEntanglingRootsCooldown())
 
 
 def _register_engangling_roots_effect_decoration():
