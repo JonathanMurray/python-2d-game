@@ -5,8 +5,9 @@ from pythongame.core.buff_effects import StatModifyingBuffEffect, register_buff_
     get_buff_effect
 from pythongame.core.common import Direction, BuffType, HeroStat, Millis
 from pythongame.core.game_data import Sprite, register_entity_sprite_map, register_buff_text
-from pythongame.core.game_state import PlayerState, GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.game_state import PlayerState, GameState, NonPlayerCharacter
 from pythongame.core.view.image_loading import SpriteSheet
+from pythongame.core.world_entity import WorldEntity
 
 SHRINE_ENTITY_SIZE = (42, 39)
 

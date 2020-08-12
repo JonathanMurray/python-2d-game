@@ -7,9 +7,10 @@ from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, 
     PLAYER_ENTITY_SIZE
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, CameraShake
+from pythongame.core.game_state import GameState, NonPlayerCharacter, CameraShake
 from pythongame.core.math import translate_in_direction
 from pythongame.core.visual_effects import VisualRect, VisualCross, create_visual_stun_text
+from pythongame.core.world_entity import WorldEntity
 
 ABILITY_TYPE = AbilityType.INFUSE_DAGGER
 DEBUFF = BuffType.DAMAGED_BY_INFUSED_DAGGER
@@ -20,14 +21,14 @@ TOTAL_DOT_DAMAGE = DEBUFF_DURATION // DAMAGE_TICK_INTERVAL * DAMAGE_PER_TICK
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
-    player_entity = game_state.player_entity
+    player_entity = game_state.game_world.player_entity
     rect_w = 28
     slash_center_pos = translate_in_direction(
         player_entity.get_center_position(),
         player_entity.direction,
         rect_w / 2 + PLAYER_ENTITY_SIZE[0] * 0.25)
     slash_rect = Rect(int(slash_center_pos[0] - rect_w / 2), int(slash_center_pos[1] - rect_w / 2), rect_w, rect_w)
-    affected_enemies = game_state.get_enemy_intersecting_rect(slash_rect)
+    affected_enemies = game_state.game_world.get_enemy_intersecting_rect(slash_rect)
     if not affected_enemies:
         return AbilityFailedToExecute(reason="No targets")
 
@@ -38,9 +39,9 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
     buff_effect = get_buff_effect(DEBUFF, should_stun)
     affected_enemies[0].gain_buff_effect(buff_effect, DEBUFF_DURATION)
 
-    game_state.visual_effects.append(
+    game_state.game_world.visual_effects.append(
         VisualRect((150, 150, 75), slash_center_pos, rect_w, int(rect_w * 0.7), Millis(200), 2, None))
-    game_state.visual_effects.append(VisualCross((100, 100, 70), slash_center_pos, 6, Millis(100), 2))
+    game_state.game_world.visual_effects.append(VisualCross((100, 100, 70), slash_center_pos, 6, Millis(100), 2))
     game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(250))
     return AbilityWasUsedSuccessfully()
 
@@ -55,7 +56,7 @@ class DamagedByInfusedDagger(AbstractBuffEffect):
         if self.should_stun:
             buffed_npc.stun_status.add_one()
             buffed_entity.set_not_moving()
-            game_state.visual_effects.append(create_visual_stun_text(buffed_entity))
+            game_state.game_world.visual_effects.append(create_visual_stun_text(buffed_entity))
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
@@ -63,7 +64,7 @@ class DamagedByInfusedDagger(AbstractBuffEffect):
             deal_player_damage_to_enemy(game_state, buffed_npc, DAMAGE_PER_TICK, DamageType.PHYSICAL)
             if self.should_stun:
                 effect_position = buffed_entity.get_center_position()
-                game_state.visual_effects.append(
+                game_state.game_world.visual_effects.append(
                     VisualRect((250, 250, 50), effect_position, 30, 40, Millis(100), 1, buffed_entity))
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):

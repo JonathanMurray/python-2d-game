@@ -1,7 +1,8 @@
 from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effect
 from pythongame.core.common import Millis, PeriodicTimer, BuffType
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.visual_effects import VisualCircle
+from pythongame.core.world_entity import WorldEntity
 
 SPRINT_SPEED_BONUS = 0.7
 BUFF_SPRINT = BuffType.ENEMY_GOBLIN_SPEARMAN_SPRINT
@@ -28,8 +29,8 @@ class BuffEffect(AbstractBuffEffect):
         return BUFF_SPRINT
 
     @staticmethod
-    def create_sprint_visual_effect(buffed_entity, game_state):
-        game_state.visual_effects.append(
+    def create_sprint_visual_effect(buffed_entity: WorldEntity, game_state: GameState):
+        game_state.game_world.visual_effects.append(
             VisualCircle((150, 50, 0), buffed_entity.get_center_position(), 20, 22, Millis(250), 2, buffed_entity))
 
 

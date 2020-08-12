@@ -7,7 +7,7 @@ from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_buff_text
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.math import is_x_and_y_within_distance
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
@@ -15,6 +15,7 @@ from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.sound_player import play_sound
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualLine
+from pythongame.core.world_entity import WorldEntity
 
 DAMAGE_MIN = 6
 DAMAGE_MAX = 12
@@ -41,6 +42,8 @@ class NpcMind(AbstractNpcMind):
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
                     is_player_invisible: bool, time_passed: Millis):
+        if npc.stun_status.is_stunned():
+            return
         self._time_since_attack += time_passed
         self._time_since_updated_path += time_passed
         self._time_since_reevaluated += time_passed
@@ -79,7 +82,7 @@ class NpcMind(AbstractNpcMind):
                     play_sound(SoundId.ENEMY_ATTACK_ICE_WITCH)
                     damage = random.randint(DAMAGE_MIN, DAMAGE_MAX)
                     deal_npc_damage(damage, DamageType.MAGIC, game_state, enemy_entity, npc, target)
-                    game_state.visual_effects += [
+                    game_state.game_world.visual_effects += [
                         (VisualLine((100, 100, 200), enemy_position, target_center_pos, Millis(120), 3)),
                         (VisualLine((150, 150, 250), enemy_position, target_center_pos, Millis(240), 2))]
                     chance_to_resist_slow = game_state.player_state.get_effective_movement_impairing_resist_chance()

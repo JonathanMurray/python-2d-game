@@ -3,8 +3,9 @@ from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effec
 from pythongame.core.common import BuffType, Millis, AbilityType, UiIconSprite
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_text
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.visual_effects import create_visual_healing_text, VisualCircle
+from pythongame.core.world_entity import WorldEntity
 
 
 def _apply_heal(game_state: GameState) -> AbilityResult:
@@ -23,10 +24,10 @@ class HealingOverTime(AbstractBuffEffect):
         game_state.player_state.health_resource.gain(healing_amount * float(time_passed))
         if self._time_since_graphics > 500:
             estimate_health_gained = int(self._time_since_graphics * healing_amount)
-            game_state.visual_effects.append(
-                create_visual_healing_text(game_state.player_entity, estimate_health_gained))
-            game_state.visual_effects.append(
-                VisualCircle((200, 200, 50), game_state.player_entity.get_center_position(),
+            game_state.game_world.visual_effects.append(
+                create_visual_healing_text(game_state.game_world.player_entity, estimate_health_gained))
+            game_state.game_world.visual_effects.append(
+                VisualCircle((200, 200, 50), game_state.game_world.player_entity.get_center_position(),
                              5, 10, Millis(100), 0))
             self._time_since_graphics = 0
 

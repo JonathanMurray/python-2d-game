@@ -6,9 +6,10 @@ from pythongame.core.common import AbilityType, Millis, BuffType, UiIconSprite, 
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_buff_as_channeling
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, CameraShake
+from pythongame.core.game_state import GameState, NonPlayerCharacter, CameraShake
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import VisualRect, VisualCircle, create_visual_stun_text
+from pythongame.core.world_entity import WorldEntity
 
 STUN_DURATION = Millis(2500)
 CHANNELING_STOMP = BuffType.CHANNELING_STOMP
@@ -31,7 +32,7 @@ class ChannelingStomp(AbstractBuffEffect):
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.add_one()
-        game_state.player_entity.set_not_moving()
+        game_state.game_world.player_entity.set_not_moving()
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis) -> bool:
@@ -40,19 +41,19 @@ class ChannelingStomp(AbstractBuffEffect):
                 (250, 250, 250), buffed_entity.get_center_position(), self.graphics_size, self.graphics_size + 10,
                 Millis(70), 2, None)
             self.graphics_size -= 7
-            game_state.visual_effects.append(visual_effect)
+            game_state.game_world.visual_effects.append(visual_effect)
         return False
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.remove_one()
-        hero_center_pos = game_state.player_entity.get_center_position()
+        hero_center_pos = game_state.game_world.player_entity.get_center_position()
         distance = 80
-        affected_enemies = game_state.get_enemies_within_x_y_distance_of(distance, hero_center_pos)
-        game_state.visual_effects.append(
+        affected_enemies = game_state.game_world.get_enemies_within_x_y_distance_of(distance, hero_center_pos)
+        game_state.game_world.visual_effects.append(
             VisualRect((50, 50, 50), hero_center_pos, distance * 2, int(distance * 2.1), Millis(200), 2, None))
-        game_state.visual_effects.append(
+        game_state.game_world.visual_effects.append(
             VisualRect((150, 150, 0), hero_center_pos, distance, distance * 2, Millis(150), 3, None))
-        game_state.visual_effects.append(
+        game_state.game_world.visual_effects.append(
             VisualRect((250, 250, 0), hero_center_pos, distance, distance * 2, Millis(100), 4, None))
         for enemy in affected_enemies:
             damage: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
@@ -71,7 +72,7 @@ class StunnedFromStomp(AbstractBuffEffect):
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         buffed_npc.stun_status.add_one()
         buffed_entity.set_not_moving()
-        game_state.visual_effects.append(create_visual_stun_text(buffed_entity))
+        game_state.game_world.visual_effects.append(create_visual_stun_text(buffed_entity))
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         buffed_npc.stun_status.remove_one()

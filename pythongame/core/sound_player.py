@@ -44,6 +44,7 @@ def init_sound_player():
         SoundId.WARP: load_sound_file('Retro_8-Bit_Game-Gun_Laser_Weapon_Shoot_Beam_23.wav'),
         SoundId.CONSUMABLE_POTION: load_sound_file('PowerUp04.ogg'),
         SoundId.CONSUMABLE_BUFF: load_sound_file('Retro_8-Bit_Game-Powerup_Achievement_07.wav'),
+        SoundId.CONSUMABLE_ACID_BOMB: load_sound_file('poison.ogg', volume=5), # same as ability Infuse dagger
         SoundId.EVENT_PLAYER_LEVELED_UP: load_sound_file('PowerUp02.ogg'),
         SoundId.EVENT_PICKED_UP: load_sound_file('UI01.ogg'),
         SoundId.EVENT_PICKED_UP_MONEY: load_sound_file('Retro_8-Bit_Game-Pickup_Object_Item_Coin_08.wav'),

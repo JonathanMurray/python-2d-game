@@ -1,11 +1,11 @@
 from pythongame.core.buff_effects import get_buff_effect, register_buff_effect, AbstractBuffEffect
 from pythongame.core.common import ItemType, Sprite, BuffType, Millis, PeriodicTimer
 from pythongame.core.game_data import UiIconSprite
-from pythongame.core.game_state import Event, PlayerDamagedEnemy, GameState, WorldEntity, \
-    NonPlayerCharacter
+from pythongame.core.game_state import Event, PlayerDamagedEnemy, GameState, NonPlayerCharacter
 from pythongame.core.item_effects import AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.visual_effects import VisualCircle
+from pythongame.core.world_entity import WorldEntity
 from pythongame.game_data.items.register_items_util import register_custom_effect_item
 
 SLOW_DURATION = Millis(2000)
@@ -39,8 +39,8 @@ class DebuffedByFreezingGauntlet(AbstractBuffEffect):
             position = buffed_entity.get_center_position()
             visual_effect1 = VisualCircle((0, 40, 100), position, 9, 16, Millis(400), 2, buffed_entity)
             visual_effect2 = VisualCircle((0, 90, 180), position, 9, 16, Millis(500), 2, buffed_entity)
-            game_state.visual_effects.append(visual_effect1)
-            game_state.visual_effects.append(visual_effect2)
+            game_state.game_world.visual_effects.append(visual_effect1)
+            game_state.game_world.visual_effects.append(visual_effect2)
 
     def get_buff_type(self):
         return BUFF_TYPE

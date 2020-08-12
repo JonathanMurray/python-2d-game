@@ -7,17 +7,19 @@ from pythongame.core.visual_effects import VisualCircle, VisualRect, VisualLine
 
 
 def _apply_teleport(game_state: GameState) -> AbilityResult:
-    player_entity = game_state.player_entity
+    player_entity = game_state.game_world.player_entity
     previous_position = player_entity.get_center_position()
     new_position = translate_in_direction((player_entity.x, player_entity.y), player_entity.direction, 140)
     player_entity.set_position(new_position)
     new_center_position = player_entity.get_center_position()
 
     color = (140, 140, 230)
-    game_state.visual_effects.append(VisualCircle(color, previous_position, 17, 35, Millis(150), 1))
-    game_state.visual_effects.append(VisualRect(color, previous_position, 37, 50, Millis(150), 1))
-    game_state.visual_effects.append(VisualLine(color, previous_position, new_center_position, Millis(200), 1))
-    game_state.visual_effects.append(VisualCircle(color, new_center_position, 25, 50, Millis(300), 2, player_entity))
+    game_state.game_world.visual_effects.append(VisualCircle(color, previous_position, 17, 35, Millis(150), 1))
+    game_state.game_world.visual_effects.append(VisualRect(color, previous_position, 37, 50, Millis(150), 1))
+    game_state.game_world.visual_effects.append(
+        VisualLine(color, previous_position, new_center_position, Millis(200), 1))
+    game_state.game_world.visual_effects.append(
+        VisualCircle(color, new_center_position, 25, 50, Millis(300), 2, player_entity))
     return AbilityWasUsedSuccessfully()
 
 

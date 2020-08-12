@@ -5,13 +5,14 @@ from pythongame.core.common import BuffType, Millis, AbilityType, Sprite, Projec
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_entity_sprite_initializer, register_buff_as_channeling, ABILITIES
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile, CameraShake
+from pythongame.core.game_state import GameState, NonPlayerCharacter, Projectile, CameraShake
 from pythongame.core.hero_upgrades import register_hero_upgrade_effect
 from pythongame.core.math import get_position_from_center_position
 from pythongame.core.projectile_controllers import AbstractProjectileController, register_projectile_controller, \
     create_projectile_controller
 from pythongame.core.view.image_loading import SpriteInitializer
 from pythongame.core.visual_effects import VisualCircle, VisualRect
+from pythongame.core.world_entity import WorldEntity
 
 ARCANE_FIRE_MANA_COST = 40
 ARCANE_FIRE_UPGRADED_MANA_COST = 60
@@ -37,19 +38,20 @@ class Channeling(AbstractBuffEffect):
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.add_one()
-        game_state.player_entity.set_not_moving()
+        game_state.game_world.player_entity.set_not_moving()
         game_state.camera_shake = CameraShake(Millis(50), CHANNEL_DURATION, 5)
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         if self.timer.update_and_check_if_ready(time_passed):
-            player_center_position = game_state.player_entity.get_center_position()
+            player_center_position = game_state.game_world.player_entity.get_center_position()
             projectile_pos = get_position_from_center_position(player_center_position, PROJECTILE_SIZE)
             entity = WorldEntity(projectile_pos, PROJECTILE_SIZE, Sprite.PROJECTILE_PLAYER_ARCANE_FIRE,
-                                 game_state.player_entity.direction, PROJECTILE_SPEED)
+                                 game_state.game_world.player_entity.direction, PROJECTILE_SPEED)
             projectile = Projectile(entity, create_projectile_controller(ProjectileType.PLAYER_ARCANE_FIRE))
-            game_state.projectile_entities.append(projectile)
-            game_state.visual_effects.append(VisualRect((250, 0, 250), player_center_position, 45, 60, Millis(250), 1))
+            game_state.game_world.projectile_entities.append(projectile)
+            game_state.game_world.visual_effects.append(
+                VisualRect((250, 0, 250), player_center_position, 45, 60, Millis(250), 1))
 
     def apply_end_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         game_state.player_state.stun_status.remove_one()
@@ -66,7 +68,7 @@ class ProjectileController(AbstractProjectileController):
     def apply_enemy_collision(self, npc: NonPlayerCharacter, game_state: GameState, projectile: Projectile):
         if npc not in self._enemies_hit:
             deal_player_damage_to_enemy(game_state, npc, DAMAGE, DamageType.MAGIC)
-            game_state.visual_effects.append(
+            game_state.game_world.visual_effects.append(
                 VisualCircle((250, 100, 250), npc.world_entity.get_center_position(), 15, 25, Millis(100), 0))
             self._enemies_hit.append(npc)
         # Projectile pierces enemies (so we don't mark projectile as destroyed)

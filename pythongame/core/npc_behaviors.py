@@ -5,7 +5,7 @@ from pythongame.core.damage_interactions import deal_npc_damage, DamageType
 from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import CONSUMABLES
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, QuestId, Quest, Projectile
+from pythongame.core.game_state import GameState, NonPlayerCharacter, Projectile
 from pythongame.core.item_data import create_item_description
 from pythongame.core.item_data import get_item_data_by_type
 from pythongame.core.item_effects import try_add_item_to_inventory
@@ -16,9 +16,11 @@ from pythongame.core.math import random_direction, sum_of_vectors, \
     rect_from_corners
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
+from pythongame.core.quests import QuestId, Quest
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import VisualCircle
-from pythongame.scenes_game.game_ui_view import GameUiView
+from pythongame.core.world_entity import WorldEntity
+from pythongame.scenes.scenes_game.game_ui_view import GameUiView
 
 
 class AbstractNpcMind:
@@ -131,25 +133,26 @@ class EnemySummonTrait(EnemyTrait):
             necro_center_pos = npc.world_entity.get_center_position()
             self._time_since_summoning = 0
             self._alive_summons = [summon for summon in self._alive_summons
-                                   if summon in game_state.non_player_characters]
+                                   if summon in game_state.game_world.non_player_characters]
             if len(self._alive_summons) < self._max_summons:
                 relative_pos_from_summoner = (random.randint(-150, 150), random.randint(-150, 150))
                 summon_center_pos = sum_of_vectors(necro_center_pos, relative_pos_from_summoner)
                 summon_type = random.choice(self._summon_npc_types)
                 summon_size = NON_PLAYER_CHARACTERS[summon_type].size
-                summon_pos = game_state.get_within_world(
+                summon_pos = game_state.game_world.get_within_world(
                     get_position_from_center_position(summon_center_pos, summon_size), summon_size)
                 summon_enemy = self._create_npc(summon_type, summon_pos)
-                is_wall_blocking = game_state.walls_state.does_rect_intersect_with_wall(
+                is_wall_blocking = game_state.game_world.walls_state.does_rect_intersect_with_wall(
                     rect_from_corners(necro_center_pos, summon_center_pos))
-                is_position_blocked = game_state.would_entity_collide_if_new_pos(summon_enemy.world_entity, summon_pos)
+                is_position_blocked = game_state.game_world.would_entity_collide_if_new_pos(summon_enemy.world_entity,
+                                                                                            summon_pos)
                 if not is_wall_blocking and not is_position_blocked:
                     self._summoning_cooldown = self._random_summoning_cooldown()
-                    game_state.add_non_player_character(summon_enemy)
+                    game_state.game_world.add_non_player_character(summon_enemy)
                     self._alive_summons.append(summon_enemy)
-                    game_state.visual_effects.append(
+                    game_state.game_world.visual_effects.append(
                         VisualCircle((80, 150, 100), necro_center_pos, 40, 70, Millis(120), 3))
-                    game_state.visual_effects.append(
+                    game_state.game_world.visual_effects.append(
                         VisualCircle((80, 150, 100), summon_center_pos, 40, 70, Millis(120), 3))
                     play_sound(SoundId.ENEMY_NECROMANCER_SUMMON)
                 else:
@@ -192,7 +195,8 @@ class EnemyShootProjectileTrait(EnemyTrait):
         if self._time_since_attack > self._attack_interval:
             self._time_since_attack = 0
             self._update_attack_interval()
-            directions_to_player = get_directions_to_position(npc.world_entity, game_state.player_entity.get_position())
+            directions_to_player = get_directions_to_position(npc.world_entity,
+                                                              game_state.game_world.player_entity.get_position())
             new_direction = directions_to_player[0]
             if random.random() < self._chance_to_shoot_other_direction and directions_to_player[1] is not None:
                 new_direction = directions_to_player[1]
@@ -204,7 +208,7 @@ class EnemyShootProjectileTrait(EnemyTrait):
                 get_position_from_center_position(center_position, self._projectile_size),
                 npc.world_entity.direction, distance_from_enemy)
             projectile = self._create_projectile(projectile_pos, npc.world_entity.direction)
-            game_state.projectile_entities.append(projectile)
+            game_state.game_world.projectile_entities.append(projectile)
             play_sound(self._sound_id)
 
     def _update_attack_interval(self):

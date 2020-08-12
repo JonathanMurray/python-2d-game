@@ -4,11 +4,12 @@ from pythongame.core.common import NpcType, Sprite, Direction, Millis, get_all_d
     PeriodicTimer, ConsumableType
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map, \
     register_portrait_icon_sprite_path
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind, DialogData, \
     DialogOptionData, buy_consumable_option, register_conditional_npc_dialog_data
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.view.image_loading import SpriteSheet
+from pythongame.core.world_entity import WorldEntity
 
 NPC_TYPE = NpcType.NEUTRAL_WARPSTONE_MERCHANT
 UI_ICON_SPRITE = PortraitIconSprite.WARPSTONE_MERCHANT
@@ -63,18 +64,29 @@ def _register_dialog():
                   "Just give me a while, and come back later!",
         options=[bye_option])
 
-    high_level_dialog = DialogData(
+    mid_level_dialog = DialogData(
         name=name,
         portrait_icon_sprite=UI_ICON_SPRITE,
         text_body="Hah! I managed to infuse the statues' teleporting powers into these stones. " \
                   "You can carry them with you and use them any time you want to return to this place! "
                   "Isn't that neat?",
-        options=[buy_consumable_option(ConsumableType.WARP_STONE, 2), bye_option])
+        options=[buy_consumable_option(ConsumableType.WARP_STONE, 2),
+                 bye_option])
+
+    high_level_dialog = DialogData(
+        name=name,
+        portrait_icon_sprite=UI_ICON_SPRITE,
+        text_body="Check it out! These acid bombs should come in handy if you find yourself surrounded!",
+        options=[buy_consumable_option(ConsumableType.WARP_STONE, 2),
+                 buy_consumable_option(ConsumableType.ACID_BOMB, 4),
+                 bye_option])
 
     def get_dialog_data(game_state: GameState) -> DialogData:
-        if game_state.player_state.level < 2:
-            return low_level_dialog
-        else:
+        if game_state.player_state.level >= 4:
             return high_level_dialog
+        elif game_state.player_state.level >= 2:
+            return mid_level_dialog
+        else:
+            return low_level_dialog
 
     register_conditional_npc_dialog_data(NPC_TYPE, get_dialog_data)

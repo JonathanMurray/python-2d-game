@@ -5,23 +5,24 @@ from pythongame.core.common import AbilityType, Millis, \
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_entity_sprite_map
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.math import get_position_from_center_position
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualCircle, VisualSprite, VisualRect
+from pythongame.core.world_entity import WorldEntity
 
 EFFECT_SPRITE_SIZE = (230, 230)
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
-    player_entity = game_state.player_entity
+    player_entity = game_state.game_world.player_entity
 
     player_center_pos = player_entity.get_center_position()
-    game_state.visual_effects.append(
+    game_state.game_world.visual_effects.append(
         VisualCircle((150, 150, 250), player_center_pos, 95, 190, Millis(200), 3))
-    affected_enemies = game_state.get_enemies_within_x_y_distance_of(180, player_center_pos)
+    affected_enemies = game_state.game_world.get_enemies_within_x_y_distance_of(180, player_center_pos)
     effect_position = get_position_from_center_position(player_center_pos, EFFECT_SPRITE_SIZE)
-    game_state.visual_effects.append(
+    game_state.game_world.visual_effects.append(
         VisualSprite(Sprite.EFFECT_ABILITY_FROST_NOVA, effect_position, Millis(200), player_entity))
     for enemy in affected_enemies:
         damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, 5, DamageType.MAGIC
@@ -43,7 +44,7 @@ class ReducedMovementSpeed(AbstractBuffEffect):
                             time_passed: Millis):
         self._time_since_graphics += time_passed
         if self._time_since_graphics > 800:
-            game_state.visual_effects.append(
+            game_state.game_world.visual_effects.append(
                 VisualRect((0, 100, 200), buffed_entity.get_center_position(), 50, 50, Millis(400), 1, buffed_entity))
             self._time_since_graphics = 0
 

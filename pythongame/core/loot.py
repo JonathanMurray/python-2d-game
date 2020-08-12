@@ -4,7 +4,8 @@ from typing import List, Dict
 
 from pythongame.core.common import ConsumableType, ItemType, ItemId
 # Represents the smallest unit of loot. It shows up on the ground as "one item"
-from pythongame.core.item_data import random_item_two_affixes, random_item_one_affix
+from pythongame.core.item_data import random_item_two_affixes, random_item_one_affix, get_item_data_by_type
+from pythongame.core.item_inventory import ItemEquipmentCategory
 
 
 class LootEntry:
@@ -45,7 +46,8 @@ class LootGroup:
 
 
 class LootTable:
-    def generate_loot(self, increased_money_chance: float) -> List[LootEntry]:
+    def generate_loot(self, increased_money_chance: float, increased_rare_or_unique_chance: float,
+                      is_inside_dungeon: bool) -> List[LootEntry]:
         raise Exception("Sub-classes must override this method!")
 
 
@@ -82,11 +84,12 @@ class LeveledLootTable(LootTable):
 
         self.money_drop_chance = 0.15
 
-    def generate_loot(self, increased_money_chance: float) -> List[LootEntry]:
+    def generate_loot(self, increased_money_chance: float, increased_rare_or_unique_chance: float,
+                      is_inside_dungeon: bool) -> List[LootEntry]:
         loot = list(self.guaranteed_drops)
         if random.random() <= self.item_drop_chance:
             item_level = random.choices(self.item_levels, weights=self.item_level_weights)[0]
-            rare_or_unique = random.random() <= self.item_rare_or_unique_chance
+            rare_or_unique = random.random() <= self.item_rare_or_unique_chance * (1 + increased_rare_or_unique_chance)
             # There are 4 classes of items:
             # common: a regular item with no affixes
             # rare-1: a regular item with 1 bonus affix
@@ -121,7 +124,24 @@ class LeveledLootTable(LootTable):
             loot.append(ConsumableLootEntry(consumable_type))
         if random.random() <= self.money_drop_chance:
             amount = random.randint(1, self.level)
-            if random.random() <= increased_money_chance:
+            if random.random() <= increased_money_chance:  # NOTE: anything above 100% "increased chance" is wasted
                 amount *= 2
             loot.append(MoneyLootEntry(amount))
+
+        if is_inside_dungeon:
+            loot = [entry for entry in loot if _allowed_drop_inside_dungeon(entry)]
+
         return loot
+
+
+def _allowed_drop_inside_dungeon(loot_entry: LootEntry):
+    if isinstance(loot_entry, ItemLootEntry):
+        if get_item_data_by_type(loot_entry.item_type).item_equipment_category == ItemEquipmentCategory.QUEST:
+            # Player has probably completed the quest anyway and there may be several bosses inside the dungeon, so the
+            # ground can get quite crowded
+            return False
+    if isinstance(loot_entry, ConsumableLootEntry):
+        if loot_entry.consumable_type == ConsumableType.WARP_STONE:
+            # Warp stones can't be used inside dungeons, and bosses are guaranteed to drop them
+            return False
+    return True

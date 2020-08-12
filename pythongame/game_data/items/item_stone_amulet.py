@@ -4,10 +4,11 @@ from pythongame.core.buff_effects import register_buff_effect, get_buff_effect, 
     StatModifyingBuffEffect
 from pythongame.core.common import ItemType, Sprite, Millis, PeriodicTimer, BuffType, HeroStat
 from pythongame.core.game_data import UiIconSprite, register_buff_text
-from pythongame.core.game_state import Event, EnemyDiedEvent, GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.game_state import Event, EnemyDiedEvent, GameState, NonPlayerCharacter
 from pythongame.core.item_effects import AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.visual_effects import VisualCircle
+from pythongame.core.world_entity import WorldEntity
 from pythongame.game_data.items.register_items_util import register_custom_effect_item
 
 PROC_CHANCE = 0.2
@@ -33,7 +34,7 @@ class ProtectedByStoneAmulet(StatModifyingBuffEffect):
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):
         if self.timer.update_and_check_if_ready(time_passed):
-            game_state.visual_effects.append(
+            game_state.game_world.visual_effects.append(
                 VisualCircle((130, 100, 60), buffed_entity.get_center_position(), 20, 40, Millis(100), 1,
                              buffed_entity))
 

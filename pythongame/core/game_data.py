@@ -1,4 +1,4 @@
-from typing import Set, Dict, Tuple
+from typing import Set, Dict
 
 # We should probably not load image files in here!
 import pygame
@@ -7,7 +7,6 @@ from pythongame.core.common import *
 from pythongame.core.common import UiIconSprite, PortraitIconSprite
 from pythongame.core.talents import TalentsConfig
 from pythongame.core.view.image_loading import SpriteInitializer, SpriteSheet, SpriteMapInitializer, Animation
-
 
 POTION_ENTITY_SIZE = (30, 30)
 

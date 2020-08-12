@@ -19,16 +19,16 @@ class ItemEffect(AbstractItemEffect):
 
     def apply_middle_effect(self, game_state: GameState, time_passed: Millis):
         if self.timer.update_and_check_if_ready(time_passed):
-            player_entity = game_state.player_entity
+            player_entity = game_state.game_world.player_entity
             player_center_position = player_entity.get_center_position()
-            close_enemies = game_state.get_enemies_within_x_y_distance_of(140, player_center_position)
+            close_enemies = game_state.game_world.get_enemies_within_x_y_distance_of(140, player_center_position)
             if close_enemies:
                 damage_amount: float = MIN_DMG + random.random() * (MAX_DMG - MIN_DMG)
                 deal_player_damage_to_enemy(game_state, close_enemies[0], damage_amount, DamageType.MAGIC)
                 enemy_center_position = close_enemies[0].world_entity.get_center_position()
-                game_state.visual_effects.append(
+                game_state.game_world.visual_effects.append(
                     VisualCircle((250, 250, 0), player_center_position, 50, 140, Millis(100), 1, player_entity))
-                game_state.visual_effects.append(
+                game_state.game_world.visual_effects.append(
                     VisualLine((250, 250, 0), player_center_position, enemy_center_position, Millis(80), 3))
 
 

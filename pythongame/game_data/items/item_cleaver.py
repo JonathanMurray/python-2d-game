@@ -4,9 +4,10 @@ from pythongame.core.buff_effects import get_buff_effect, register_buff_effect, 
 from pythongame.core.common import ItemType, Sprite, UiIconSprite, HeroStat, BuffType, Millis, PeriodicTimer, \
     StatModifierInterval
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
-from pythongame.core.game_state import Event, GameState, PlayerDamagedEnemy, WorldEntity, NonPlayerCharacter
+from pythongame.core.game_state import Event, GameState, PlayerDamagedEnemy, NonPlayerCharacter
 from pythongame.core.item_effects import AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
+from pythongame.core.world_entity import WorldEntity
 from pythongame.game_data.items.register_items_util import register_custom_effect_item
 
 ITEM_TYPE = ItemType.CLEAVER

@@ -3,10 +3,11 @@ import random
 from pythongame.core.buff_effects import get_buff_effect
 from pythongame.core.common import NpcType, Sprite, Direction, Millis, BuffType, SoundId, LootTableId
 from pythongame.core.game_data import NpcData
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.math import get_manhattan_distance
 from pythongame.core.npc_behaviors import MeleeEnemyNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.world_entity import WorldEntity
 from pythongame.game_data.enemies.register_enemies_util import register_basic_enemy
 
 SPRINT_MAX_COOLDOWN = Millis(10000)
@@ -23,6 +24,8 @@ class NpcMind(MeleeEnemyNpcMind):
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
                     is_player_invisible: bool, time_passed: Millis):
+        if npc.stun_status.is_stunned():
+            return
         super().control_npc(game_state, npc, player_entity, is_player_invisible, time_passed)
         self.sprint_cooldown_remaining -= time_passed
         sprint_distance_limit = 250

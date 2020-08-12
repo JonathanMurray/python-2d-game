@@ -4,13 +4,14 @@ from pythongame.core.buff_effects import AbstractBuffEffect, register_buff_effec
 from pythongame.core.common import Millis, NpcType, Sprite, Direction, BuffType, LootTableId
 from pythongame.core.damage_interactions import deal_damage_to_player, DamageType
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity
+from pythongame.core.game_state import GameState, NonPlayerCharacter
 from pythongame.core.math import get_perpendicular_directions, is_x_and_y_within_distance
 from pythongame.core.npc_behaviors import register_npc_behavior, AbstractNpcMind
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.pathfinding.npc_pathfinding import NpcPathfinder
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualLine, VisualCircle
+from pythongame.core.world_entity import WorldEntity
 
 BUFF_TYPE_INVULN = BuffType.INVULNERABILITY
 SPEECH_DURATION = Millis(3000)
@@ -34,6 +35,8 @@ class NpcMind(AbstractNpcMind):
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
                     is_player_invisible: bool, time_passed: Millis):
+        if npc.stun_status.is_stunned():
+            return
         self._time_since_attack += time_passed
         self._time_since_updated_path += time_passed
         self._time_since_reevaluated += time_passed
@@ -43,7 +46,7 @@ class NpcMind(AbstractNpcMind):
 
         if self._time_since_updated_path > self._update_path_interval:
             self._time_since_updated_path = 0
-            self.pathfinder.update_path_towards_target(enemy_entity, game_state, game_state.player_entity)
+            self.pathfinder.update_path_towards_target(enemy_entity, game_state, game_state.game_world.player_entity)
 
         new_next_waypoint = self.pathfinder.get_next_waypoint_along_path(enemy_entity)
 
@@ -67,13 +70,13 @@ class NpcMind(AbstractNpcMind):
 
         if self._time_since_attack > self._attack_interval:
             self._time_since_attack = 0
-            game_state.visual_effects.append(VisualCircle((100, 100, 100), enemy_center_pos, 180, 180,
-                                                          Millis(self._attack_interval), 1, enemy_entity))
+            game_state.game_world.visual_effects.append(VisualCircle((100, 100, 100), enemy_center_pos, 180, 180,
+                                                                     Millis(self._attack_interval), 1, enemy_entity))
             if not is_player_invisible:
-                player_center_pos = game_state.player_entity.get_center_position()
+                player_center_pos = game_state.game_world.player_entity.get_center_position()
                 if is_x_and_y_within_distance(enemy_center_pos, player_center_pos, 160):
                     deal_damage_to_player(game_state, 3, DamageType.MAGIC, npc)
-                    game_state.visual_effects += [
+                    game_state.game_world.visual_effects += [
                         VisualCircle((0, 0, 0), enemy_center_pos, 25, 50, Millis(200), 2, enemy_entity),
                         VisualLine((0, 100, 0), enemy_center_pos, player_center_pos, Millis(200), 2),
                         VisualCircle((0, 100, 0), player_center_pos, 20, 40, Millis(150), 2, player_entity),
@@ -84,7 +87,7 @@ class NpcMind(AbstractNpcMind):
         if self._time_since_shield > self._shield_interval:
             self._time_since_shield = 0
 
-            game_state.visual_effects.append(
+            game_state.game_world.visual_effects.append(
                 VisualCircle((0, 0, 150), enemy_center_pos, 60, 20, Millis(self._shield_duration), 2, enemy_entity)
             )
             npc.gain_buff_effect(get_buff_effect(BUFF_TYPE_INVULN), Millis(self._shield_duration))

@@ -6,19 +6,20 @@ from pygame.rect import Rect
 from pythongame.core.common import ConsumableType, HeroId, UiIconSprite, AbilityType, PortraitIconSprite, \
     SoundId, NpcType, Millis, DialogData, ItemId
 from pythongame.core.game_data import ABILITIES, BUFF_TEXTS, CONSUMABLES, HEROES
-from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState, Quest
+from pythongame.core.game_state import BuffWithDuration, NonPlayerCharacter, PlayerState
 from pythongame.core.item_data import create_item_description
 from pythongame.core.item_data import get_item_data_by_type, get_item_data
 from pythongame.core.item_inventory import ItemInventorySlot, ItemEquipmentCategory, ITEM_EQUIPMENT_CATEGORY_NAMES
 from pythongame.core.math import is_point_in_rect
+from pythongame.core.quests import Quest
 from pythongame.core.sound_player import play_sound
 from pythongame.core.talents import TalentsState, TalentsConfig
 from pythongame.core.view.render_util import DrawableArea
-from pythongame.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
+from pythongame.scenes.scenes_game.ui_components import AbilityIcon, ConsumableIcon, ItemIcon, TooltipGraphics, StatBar, \
     ToggleButton, ControlsWindow, StatsWindow, TalentsWindow, ExpBar, Portrait, Minimap, Buffs, Text, \
     DialogOption, Dialog, Checkbox, Button, Message, PausedSplashScreen, TalentTierData, TalentOptionData, TalentIcon, \
     ToggleButtonId, QuestsWindow, DetailLine
-from pythongame.scenes_game.ui_events import TrySwitchItemInInventory, EventTriggeredFromUi, \
+from pythongame.scenes.scenes_game.ui_events import TrySwitchItemInInventory, EventTriggeredFromUi, \
     DragItemBetweenInventorySlots, DropItemOnGround, DragConsumableBetweenInventorySlots, DropConsumableOnGround, \
     PickTalent, StartDraggingItemOrConsumable, SaveGame, ToggleSound, ToggleFullscreen, ToggleWindow
 
@@ -148,6 +149,7 @@ class GameUiView:
         # QUICKLY CHANGING STATE
         self.hovered_component = None
         self.fps_string = ""
+        self.game_mode_string = ""
         self.enabled_toggle: ToggleButton = None
         self.item_slot_being_dragged: ItemIcon = None
         self.consumable_slot_being_dragged: ConsumableIcon = None
@@ -657,6 +659,9 @@ class GameUiView:
     def update_fps_string(self, fps_string: str):
         self.fps_string = fps_string
 
+    def update_game_mode_string(self, game_mode_string: str):
+        self.game_mode_string = game_mode_string
+
     def remove_highlight_from_talent_toggle(self):
         self.talents_toggle.highlighted = False
 
@@ -750,8 +755,11 @@ class GameUiView:
 
         self.screen_render.rect(COLOR_BORDER, self.ui_screen_area, 1)
 
-        self.screen_render.rect_transparent(Rect(0, 0, 70, 20), 100, COLOR_BLACK)
-        self.screen_render.text(self.font_debug_info, "fps: " + self.fps_string, (5, 3))
+        self.screen_render.rect_transparent(Rect(1, 1, 70, 20), 100, COLOR_BLACK)
+        self.screen_render.text(self.font_debug_info, "fps: " + self.fps_string, (6, 4))
+        if self.game_mode_string:
+            self.screen_render.rect_transparent(Rect(1, 23, 70, 20), 100, COLOR_BLACK)
+            self.screen_render.text(self.font_debug_info, self.game_mode_string, (6, 26))
 
         self.message.render(self.info_message.message)
 

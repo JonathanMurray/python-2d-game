@@ -8,9 +8,10 @@ from pythongame.core.damage_interactions import player_receive_healing, player_r
 from pythongame.core.game_data import register_entity_sprite_initializer, register_ui_icon_sprite_path, \
     register_consumable_data, ConsumableData, POTION_ENTITY_SIZE, ConsumableCategory, \
     register_buff_text, register_consumable_level
-from pythongame.core.game_state import GameState, WorldEntity, NonPlayerCharacter, Event, PlayerLostHealthEvent, \
+from pythongame.core.game_state import GameState, NonPlayerCharacter, Event, PlayerLostHealthEvent, \
     BuffEventOutcome
 from pythongame.core.view.image_loading import SpriteInitializer
+from pythongame.core.world_entity import WorldEntity
 
 BUFF_DURATION = Millis(10000)
 BUFF_TYPE = BuffType.RESTORING_HEALTH_FROM_BREW

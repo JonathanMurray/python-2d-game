@@ -60,8 +60,8 @@ def _get_initial_player_state_god() -> InitialPlayerStateData:
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
-    player_entity = game_state.player_entity
-    for enemy in game_state.get_enemies_within_x_y_distance_of(400, player_entity.get_center_position()):
+    player_entity = game_state.game_world.player_entity
+    for enemy in game_state.game_world.get_enemies_within_x_y_distance_of(400, player_entity.get_center_position()):
         enemy.health_resource.set_zero()
     return AbilityWasUsedSuccessfully()
 

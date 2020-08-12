@@ -1,11 +1,11 @@
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect, register_buff_effect
 from pythongame.core.common import ItemType, Sprite, BuffType, Millis, HeroStat, StatModifierInterval
 from pythongame.core.game_data import UiIconSprite
-from pythongame.core.game_state import Event, GameState, WorldEntity, \
-    NonPlayerCharacter, PlayerBlockedEvent
+from pythongame.core.game_state import Event, GameState, NonPlayerCharacter, PlayerBlockedEvent
 from pythongame.core.item_effects import AbstractItemEffect
 from pythongame.core.item_inventory import ItemEquipmentCategory
 from pythongame.core.visual_effects import VisualCircle, create_visual_stun_text
+from pythongame.core.world_entity import WorldEntity
 from pythongame.game_data.items.register_items_util import register_custom_effect_item
 
 STUN_DURATION = Millis(2000)
@@ -24,8 +24,8 @@ class StunnedFromAegis(AbstractBuffEffect):
 
     def apply_start_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter):
         visual_effect = VisualCircle((220, 220, 50), buffed_entity.get_center_position(), 9, 16, Millis(250), 2)
-        game_state.visual_effects.append(visual_effect)
-        game_state.visual_effects.append(create_visual_stun_text(buffed_entity))
+        game_state.game_world.visual_effects.append(visual_effect)
+        game_state.game_world.visual_effects.append(create_visual_stun_text(buffed_entity))
         buffed_npc.stun_status.add_one()
         buffed_entity.set_not_moving()
 

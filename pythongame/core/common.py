@@ -79,6 +79,7 @@ class ConsumableType(Enum):
     MAGIC_RESIST = 24
     BREW = 50
     WARP_STONE = 60
+    ACID_BOMB = 70
     SCROLL_SUMMON_DRAGON = 101
 
 
@@ -201,6 +202,7 @@ class Sprite(Enum):
     CONSUMABLE_WARPSTONE = 109
     ELIXIR_POWER = 110
     ELIXIR_MAGIC_RESIST = 111
+    CONSUMABLE_ACID_BOMB = 112
     ENEMY_NECROMANCER = 201
     ENEMY_RAT_1 = 202
     ENEMY_RAT_2 = 203
@@ -293,6 +295,7 @@ class Sprite(Enum):
     ITEM_SKULL_SWORD = 361
     ITEM_SUN_SHIELD = 362
     ITEM_CORRUPTED_ORB = 363
+    ITEM_PORTAL_KEY = 364
     COINS_1 = 400
     COINS_2 = 401
     COINS_5 = 402
@@ -359,6 +362,7 @@ class Sprite(Enum):
     HERO_GOD = 1703
     CHEST = 1800
     SHRINE = 1810
+    DUNGEON_ENTRANCE = 1820
     MAP_EDITOR_SMART_FLOOR_1 = 1900
     MAP_EDITOR_SMART_FLOOR_2 = 1901
     MAP_EDITOR_SMART_FLOOR_3 = 1902
@@ -405,6 +409,7 @@ class BuffType(Enum):
     INCREASED_DAMAGE_FROM_NECKLACE_OF_SUFFERING = 44
     ELIXIR_OF_MAGIC_RESIST = 45
     ENEMY_SKELETON_BOSS_STUNNED_FROM_FIRING = 46
+    POISONED_BY_ACID_BOMB = 47
     SHRINE_DAMAGE = 100
     SHRINE_ARMOR = 101
     SHRINE_MAGIC_RESIST = 102
@@ -444,12 +449,12 @@ class ItemType(Enum):
     WAND = 87
     GLADIATOR_ARMOR = 88
     NOBLE_DEFENDER = 89
-    FROG = 90
+    QUEST_FROG = 90
     HATCHET = 91
     ELITE_HELMET = 92
     STONE_AMULET = 93
     TORN_DOCUMENT = 94
-    KEY = 95
+    QUEST_KEY = 95
     WOODEN_SWORD = 96
     DRUIDS_RING = 97
     WARLOCKS_COWL = 98
@@ -475,6 +480,7 @@ class ItemType(Enum):
     SKULL_SWORD = 118
     SUN_SHIELD = 119
     QUEST_CORRUPTED_ORB = 120
+    PORTAL_KEY = 121
 
 
 class HeroStat(Enum):
@@ -496,6 +502,7 @@ class HeroStat(Enum):
     INCREASED_LOOT_MONEY_CHANCE = 16
     MANA_ON_KILL = 17
     LIFE_ON_KILL = 18
+    INCREASED_LOOT_RARE_OR_UNIQUE_CHANCE = 19
 
 
 def _get_description(hero_stat: HeroStat, arg: str):
@@ -531,6 +538,8 @@ def _get_description(hero_stat: HeroStat, arg: str):
         return "On kill: restore " + arg + " mana"
     elif hero_stat == HeroStat.LIFE_ON_KILL:
         return "On kill: gain " + arg + " health"
+    elif hero_stat == HeroStat.INCREASED_LOOT_RARE_OR_UNIQUE_CHANCE:
+        return "+" + arg + "% increased chance to find rare items"
     else:
         raise Exception("Unhandled stat: " + str(hero_stat))
 
@@ -550,7 +559,7 @@ class StatModifier:
             return _get_description(hero_stat, "{:.1f}".format(delta))
         elif hero_stat in [HeroStat.DAMAGE, HeroStat.PHYSICAL_DAMAGE, HeroStat.MAGIC_DAMAGE, HeroStat.LIFE_STEAL,
                            HeroStat.DODGE_CHANCE, HeroStat.MAGIC_RESIST_CHANCE, HeroStat.BLOCK_CHANCE,
-                           HeroStat.INCREASED_LOOT_MONEY_CHANCE]:
+                           HeroStat.INCREASED_LOOT_MONEY_CHANCE, HeroStat.INCREASED_LOOT_RARE_OR_UNIQUE_CHANCE]:
             return _get_description(hero_stat, str(int(round(delta * 100))))
         elif hero_stat == HeroStat.MOVEMENT_SPEED:
             if delta >= 0:
@@ -592,7 +601,7 @@ class StatModifierInterval:
                                         "(" + "{:.1f}".format(interval[0]) + "-" + "{:.1f}".format(interval[-1]) + ")")
         elif hero_stat in [HeroStat.DAMAGE, HeroStat.PHYSICAL_DAMAGE, HeroStat.MAGIC_DAMAGE, HeroStat.LIFE_STEAL,
                            HeroStat.DODGE_CHANCE, HeroStat.MAGIC_RESIST_CHANCE, HeroStat.BLOCK_CHANCE,
-                           HeroStat.INCREASED_LOOT_MONEY_CHANCE]:
+                           HeroStat.INCREASED_LOOT_MONEY_CHANCE, HeroStat.INCREASED_LOOT_RARE_OR_UNIQUE_CHANCE]:
             if interval[0] == interval[-1]:
                 return _get_description(hero_stat, str(int(round(interval[0] * 100))))
             else:
@@ -649,6 +658,7 @@ class ItemAffixId(Enum):
     MANA_ON_KILL = 140
     LIFE_ON_KILL_1 = 150
     LIFE_ON_KILL_2 = 151
+    INCREASED_LOOT_RARE_OR_UNIQUE_CHANCE = 160
 
 
 class ItemId:
@@ -756,6 +766,7 @@ class SoundId(Enum):
     WARP = 40
     CONSUMABLE_POTION = 50
     CONSUMABLE_BUFF = 51
+    CONSUMABLE_ACID_BOMB = 52
     EVENT_PLAYER_LEVELED_UP = 100
     EVENT_PICKED_UP = 101
     EVENT_PLAYER_DIED = 102
@@ -831,6 +842,7 @@ class UiIconSprite(Enum):
     CONSUMABLE_WARPSTONE = 15
     ELIXIR_POWER = 16
     ELIXIR_MAGIC_RESIST = 17
+    CONSUMABLE_ACID_BOMB = 18
     ABILITY_FIREBALL = 101
     ABILITY_HEAL = 102
     ABILITY_ARCANE_FIRE = 103
@@ -910,6 +922,7 @@ class UiIconSprite(Enum):
     ITEM_SKULL_SWORD = 261
     ITEM_SUN_SHIELD = 262
     ITEM_CORRUPTED_ORB = 263
+    ITEM_PORTAL_KEY = 264
     MAP_EDITOR_TRASHCAN = 301
     MAP_EDITOR_RECYCLING = 302
     INVENTORY_TEMPLATE_HELMET = 400
@@ -968,6 +981,7 @@ def get_random_hint():
 
 
 class SceneTransition:
+    # scene: AbstractScene
     def __init__(self, scene):
         self.scene = scene
 
@@ -1041,3 +1055,20 @@ class LootTableId(Enum):
     BOSS_GOBLIN = 100
     BOSS_WARRIOR_KING = 101
     BOSS_SKELETON = 102
+
+
+class EngineEvent(Enum):
+    PLAYER_DIED = 1
+    ENEMY_DIED = 2
+
+
+class AbstractWorldBehavior:
+
+    def on_startup(self, new_hero_was_created: bool):
+        pass
+
+    def control(self, time_passed: Millis) -> Optional[SceneTransition]:
+        pass
+
+    def handle_event(self, event: EngineEvent) -> Optional[SceneTransition]:
+        pass

@@ -1,13 +1,13 @@
 from pythongame.core.common import NpcType, Sprite, Direction, PortraitIconSprite, \
     ItemType
 from pythongame.core.game_data import register_npc_data, NpcData, register_entity_sprite_map
-from pythongame.core.game_state import QuestId, Quest
-from pythongame.core.item_data import plain_item_id, randomized_item_id
+from pythongame.core.item_data import plain_item_id, random_item_two_affixes
 from pythongame.core.npc_behaviors import register_npc_behavior
 from pythongame.core.npc_behaviors import sell_item_option
 from pythongame.core.npc_quest_behaviors import QuestGiverNpcMind, \
     register_quest_giver_dialog
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.quests import QuestId, Quest
 from pythongame.core.view.image_loading import SpriteSheet
 
 QUEST_MIN_LEVEL = 2
@@ -62,5 +62,5 @@ def register_dwarf_npc():
                           "deal!",
         dialog_during_quest="Hey! Any luck with the orb?",
         dialog_after_completed="Hi old friend! Got any more good stuff?",
-        reward_item_id=lambda _: randomized_item_id(ItemType.ROYAL_SWORD)
+        reward_item_id=lambda _: random_item_two_affixes(5)
     )

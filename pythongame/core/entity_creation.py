@@ -1,32 +1,30 @@
-from typing import Tuple
+from typing import Tuple, Dict
 
 from pythongame.core.common import NpcType, Direction, Sprite, ConsumableType, WallType, PortalId, HeroId, \
     ItemId, LootTableId
 from pythongame.core.consumable_inventory import ConsumableInventory
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS, CONSUMABLES, POTION_ENTITY_SIZE, \
     WALLS, PORTALS, HEROES, NpcData
-from pythongame.core.game_state import WorldEntity, NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
-    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, HealthOrManaResource, WarpPoint, Chest, Shrine
+from pythongame.core.game_state import NonPlayerCharacter, MoneyPileOnGround, ItemOnGround, \
+    ConsumableOnGround, Portal, Wall, DecorationEntity, PlayerState, WarpPoint, Chest, Shrine, \
+    DungeonEntrance
+from pythongame.core.global_path_finder import get_global_path_finder
+from pythongame.core.health_and_mana import HealthOrManaResource
 from pythongame.core.item_data import get_item_data_by_type, ITEM_ENTITY_SIZE
 from pythongame.core.item_inventory import ItemInventory, ItemInventorySlot, ItemEquipmentCategory
 from pythongame.core.math import get_position_from_center_position
 from pythongame.core.npc_behaviors import create_npc_mind
-from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.world_entity import WorldEntity
 from pythongame.game_data.chests import CHEST_ENTITY_SIZE
+from pythongame.game_data.dungeon_entrances import DUNGEON_ENTRANCE_ENTITY_SIZE
 from pythongame.game_data.shrines import SHRINE_ENTITY_SIZE
-
-# TODO handle this (global path finder) in a better way!
-global_path_finder: GlobalPathFinder = None
-
-
-def set_global_path_finder(_global_path_finder: GlobalPathFinder):
-    global global_path_finder
-    global_path_finder = _global_path_finder
 
 
 def create_npc(npc_type: NpcType, pos: Tuple[int, int]) -> NonPlayerCharacter:
     data: NpcData = NON_PLAYER_CHARACTERS[npc_type]
     entity = WorldEntity(pos, data.size, data.sprite, Direction.LEFT, data.speed)
+    # TODO is this global pathfinder a problem for handling dungeons that exist in parallel with the main map?
+    global_path_finder = get_global_path_finder()
     npc_mind = create_npc_mind(npc_type, global_path_finder)
     health_resource = HealthOrManaResource(data.max_health, data.health_regen)
     return NonPlayerCharacter(npc_type, entity, health_resource, npc_mind,
@@ -71,6 +69,10 @@ def create_shrine(pos: Tuple[int, int]) -> Shrine:
     return Shrine(WorldEntity(pos, SHRINE_ENTITY_SIZE, Sprite.SHRINE), False)
 
 
+def create_dungeon_entrance(pos: Tuple[int, int]) -> DungeonEntrance:
+    return DungeonEntrance(WorldEntity(pos, DUNGEON_ENTRANCE_ENTITY_SIZE, Sprite.DUNGEON_ENTRANCE))
+
+
 def create_wall(wall_type: WallType, pos: Tuple[int, int]) -> Wall:
     entity = WorldEntity(pos, WALLS[wall_type].size, WALLS[wall_type].sprite)
     return Wall(wall_type, entity)
@@ -85,7 +87,7 @@ def create_decoration_entity(pos: Tuple[int, int], sprite: Sprite) -> Decoration
     return DecorationEntity(pos, sprite)
 
 
-def create_player_state(hero_id: HeroId) -> PlayerState:
+def create_player_state_as_initial(hero_id: HeroId, enabled_portals: Dict[PortalId, Sprite]) -> PlayerState:
     # Note: All mutable types should be cloned before being given to game_state
     data = HEROES[hero_id].initial_player_state
     consumable_slots = {}
@@ -112,7 +114,7 @@ def create_player_state(hero_id: HeroId) -> PlayerState:
     return PlayerState(
         health_resource, mana_resource, consumable_inventory, list(data.abilities), item_inventory,
         data.new_level_abilities, data.hero_id, data.armor, data.dodge_chance, data.level_bonus, data.talents_state,
-        data.block_chance, 0.05)
+        data.block_chance, 0.05, enabled_portals)
 
 
 def create_warp_point(center_pos: Tuple[int, int], size: Tuple[int, int]) -> WarpPoint:

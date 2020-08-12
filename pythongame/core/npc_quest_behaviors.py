@@ -2,15 +2,17 @@ from pythongame.core.common import *
 from pythongame.core.common import NpcType, Millis, get_all_directions, ItemType, PeriodicTimer
 from pythongame.core.entity_creation import create_item_on_ground
 from pythongame.core.game_data import register_portrait_icon_sprite_path
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Quest, QuestGiverState, QuestId
+from pythongame.core.game_state import GameState, NonPlayerCharacter, QuestGiverState
 from pythongame.core.item_data import get_item_data_by_type
 from pythongame.core.item_data import plain_item_id
 from pythongame.core.item_effects import try_add_item_to_inventory
 from pythongame.core.npc_behaviors import AbstractNpcAction, register_conditional_npc_dialog_data, register_quest
 from pythongame.core.npc_behaviors import AbstractNpcMind, DialogOptionData
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
+from pythongame.core.quests import QuestId, Quest
 from pythongame.core.sound_player import play_sound
-from pythongame.scenes_game.game_ui_view import GameUiView
+from pythongame.core.world_entity import WorldEntity
+from pythongame.scenes.scenes_game.game_ui_view import GameUiView
 
 
 class GiveQuestNpcAction(AbstractNpcAction):
@@ -54,8 +56,8 @@ class CompleteQuestNpcAction(AbstractNpcAction):
             if reward_item_id:
                 did_add_item = try_add_item_to_inventory(game_state, reward_item_id)
                 if not did_add_item:
-                    game_state.items_on_ground.append(
-                        create_item_on_ground(reward_item_id, game_state.player_entity.get_position()))
+                    game_state.game_world.items_on_ground.append(
+                        create_item_on_ground(reward_item_id, game_state.game_world.player_entity.get_position()))
                 return "Quest completed! Reward gained: " + reward_item_id.name
             return "Quest completed!"
         else:
@@ -70,10 +72,10 @@ class CompleteQuestNpcAction(AbstractNpcAction):
 
 
 def _quest_on_hover(game_state: GameState, ui_view: GameUiView, boss_npc_type: NpcType, quest_item_id: ItemId):
-    bosses = [npc for npc in game_state.non_player_characters if npc.npc_type == boss_npc_type]
+    bosses = [npc for npc in game_state.game_world.non_player_characters if npc.npc_type == boss_npc_type]
     if bosses:
         position = bosses[0].world_entity.get_center_position()
-        world_area = game_state.entire_world_area
+        world_area = game_state.game_world.entire_world_area
         position_ratio = ((position[0] - world_area.x) / world_area.w,
                           (position[1] - world_area.y) / world_area.h)
         ui_view.set_minimap_highlight(position_ratio)

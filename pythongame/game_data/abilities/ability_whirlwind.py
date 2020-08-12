@@ -7,12 +7,13 @@ from pythongame.core.common import AbilityType, Sprite, \
 from pythongame.core.damage_interactions import deal_player_damage_to_enemy, DamageType
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, register_entity_sprite_map
-from pythongame.core.game_state import GameState, WorldEntity, Projectile, NonPlayerCharacter
+from pythongame.core.game_state import GameState, Projectile, NonPlayerCharacter
 from pythongame.core.math import get_position_from_center_position, translate_in_direction
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
 from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.core.visual_effects import VisualRect, create_visual_stun_text
+from pythongame.core.world_entity import WorldEntity
 
 BUFF_TYPE = BuffType.STUNNED_BY_WHIRLWIND
 PROJECTILE_SPRITE = Sprite.PROJECTILE_PLAYER_WHIRLWIND
@@ -27,13 +28,13 @@ WHIRLWIND_TALENT_STUN_DURATION = Millis(500)
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
-    player_entity = game_state.player_entity
+    player_entity = game_state.game_world.player_entity
     aoe_center_pos = translate_in_direction(player_entity.get_center_position(), player_entity.direction, 60)
     aoe_pos = get_position_from_center_position(aoe_center_pos, PROJECTILE_SIZE)
     projectile_speed = 0.1
     entity = WorldEntity(aoe_pos, PROJECTILE_SIZE, PROJECTILE_SPRITE, player_entity.direction, projectile_speed)
     projectile = Projectile(entity, create_projectile_controller(PROJECTILE_TYPE))
-    game_state.projectile_entities.append(projectile)
+    game_state.game_world.projectile_entities.append(projectile)
     has_lightfooted_upgrade = game_state.player_state.has_upgrade(HeroUpgradeId.MAGE_LIGHT_FOOTED)
     if not has_lightfooted_upgrade:
         game_state.player_state.gain_buff_effect(get_buff_effect(BuffType.RECOVERING_AFTER_ABILITY), Millis(300))
@@ -53,7 +54,7 @@ class ProjectileController(AbstractProjectileController):
         projectile_entity = projectile.world_entity
 
         if self.damage_timer.update_and_check_if_ready(time_passed):
-            for enemy in game_state.get_enemy_intersecting_with(projectile_entity):
+            for enemy in game_state.game_world.get_enemy_intersecting_with(projectile_entity):
                 damage_amount = 1
                 damage_was_dealt = deal_player_damage_to_enemy(game_state, enemy, damage_amount, DamageType.MAGIC)
                 if damage_was_dealt:
@@ -89,9 +90,9 @@ class Stunned(AbstractBuffEffect):
         buffed_npc.stun_status.add_one()
         buffed_entity.set_not_moving()
         effect_position = buffed_entity.get_center_position()
-        game_state.visual_effects.append(
+        game_state.game_world.visual_effects.append(
             VisualRect((250, 250, 50), effect_position, 30, 40, Millis(100), 1, buffed_entity))
-        game_state.visual_effects.append(create_visual_stun_text(buffed_entity))
+        game_state.game_world.visual_effects.append(create_visual_stun_text(buffed_entity))
 
     def apply_middle_effect(self, game_state: GameState, buffed_entity: WorldEntity, buffed_npc: NonPlayerCharacter,
                             time_passed: Millis):

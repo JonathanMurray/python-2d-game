@@ -6,7 +6,7 @@ from pythongame.core.consumable_effects import try_consume_consumable, Consumabl
 from pythongame.core.game_data import ABILITIES, CONSUMABLES
 from pythongame.core.game_state import GameState, PlayerUsedAbilityEvent
 from pythongame.core.sound_player import play_sound
-from pythongame.scenes_game.game_ui_view import InfoMessage
+from pythongame.scenes.scenes_game.game_ui_view import InfoMessage
 
 
 class PlayerControls:

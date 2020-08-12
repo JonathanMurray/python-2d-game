@@ -115,6 +115,10 @@ _item_affix_data_by_id: Dict[ItemAffixId, ItemSuffixData] = {
         ItemSuffixData("Furious", "of Fury", (1, 5), [StatModifierInterval(HeroStat.LIFE_ON_KILL, int_interval(1, 2))]),
     ItemAffixId.LIFE_ON_KILL_2:
         ItemSuffixData("Mad", "of Madness", (4, 9), [StatModifierInterval(HeroStat.LIFE_ON_KILL, int_interval(2, 4))]),
+    ItemAffixId.INCREASED_LOOT_RARE_OR_UNIQUE_CHANCE:
+        ItemSuffixData(None, "of Discovery", (1, 9),
+                       [StatModifierInterval(HeroStat.INCREASED_LOOT_RARE_OR_UNIQUE_CHANCE,
+                                             interval(0.15, 0.25, 0.01))]),
 
 }
 
@@ -180,8 +184,10 @@ def get_item_affix_data(affix_id: ItemAffixId) -> ItemSuffixData:
 
 
 def get_item_affixes_at_level(level: int) -> List[ItemAffixId]:
-    return [id for id in ItemAffixId
-            if _item_affix_data_by_id[id].level_interval[0] <= level <= _item_affix_data_by_id[id].level_interval[1]]
+    return [item_id for item_id in ItemAffixId
+            if _item_affix_data_by_id[item_id].level_interval[0]
+            <= level
+            <= _item_affix_data_by_id[item_id].level_interval[1]]
 
 
 def randomized_item_id(item_type: ItemType) -> ItemId:

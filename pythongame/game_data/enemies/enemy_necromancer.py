@@ -5,7 +5,7 @@ from pythongame.core.common import Millis, NpcType, Sprite, Direction, SoundId, 
 from pythongame.core.damage_interactions import deal_damage_to_player, DamageType, deal_npc_damage_to_npc
 from pythongame.core.entity_creation import create_npc
 from pythongame.core.game_data import NpcData
-from pythongame.core.game_state import GameState, NonPlayerCharacter, WorldEntity, Projectile
+from pythongame.core.game_state import GameState, NonPlayerCharacter, Projectile
 from pythongame.core.math import get_position_from_center_position, is_x_and_y_within_distance, \
     get_directions_to_position, translate_in_direction
 from pythongame.core.npc_behaviors import AbstractNpcMind, EnemySummonTrait, EnemyRandomWalkTrait
@@ -14,6 +14,7 @@ from pythongame.core.projectile_controllers import AbstractProjectileController,
     create_projectile_controller
 from pythongame.core.sound_player import play_sound
 from pythongame.core.visual_effects import VisualLine, VisualCircle
+from pythongame.core.world_entity import WorldEntity
 from pythongame.game_data.enemies.register_enemies_util import register_basic_enemy
 
 PROJECTILE_TYPE = ProjectileType.ENEMY_NECROMANCER
@@ -33,6 +34,8 @@ class NpcMind(AbstractNpcMind):
 
     def control_npc(self, game_state: GameState, npc: NonPlayerCharacter, player_entity: WorldEntity,
                     _is_player_invisible: bool, time_passed: Millis):
+        if npc.stun_status.is_stunned():
+            return
 
         self._summon_trait.update(npc, game_state, time_passed)
         self._random_walk_trait.update(npc, game_state, time_passed)
@@ -45,7 +48,7 @@ class NpcMind(AbstractNpcMind):
             self._healing_cooldown = self._random_healing_cooldown()
             necro_center_pos = npc.world_entity.get_center_position()
             nearby_hurt_enemies = [
-                e for e in game_state.non_player_characters
+                e for e in game_state.game_world.non_player_characters
                 if e.is_enemy
                    and is_x_and_y_within_distance(necro_center_pos, e.world_entity.get_center_position(), 200)
                    and e != npc and not e.health_resource.is_at_max()
@@ -55,7 +58,7 @@ class NpcMind(AbstractNpcMind):
                 healing_target.health_resource.gain(5)
                 healing_target_pos = healing_target.world_entity.get_center_position()
                 visual_line = VisualLine((80, 200, 150), necro_center_pos, healing_target_pos, Millis(350), 3)
-                game_state.visual_effects.append(visual_line)
+                game_state.game_world.visual_effects.append(visual_line)
                 play_sound(SoundId.ENEMY_NECROMANCER_HEAL)
 
         if self._time_since_shoot > self._shoot_cooldown:
@@ -72,7 +75,7 @@ class NpcMind(AbstractNpcMind):
             projectile_entity = WorldEntity(projectile_pos, PROJECTILE_SIZE, Sprite.NONE, npc.world_entity.direction,
                                             projectile_speed)
             projectile = Projectile(projectile_entity, create_projectile_controller(PROJECTILE_TYPE))
-            game_state.projectile_entities.append(projectile)
+            game_state.game_world.projectile_entities.append(projectile)
             play_sound(SoundId.ENEMY_ATTACK_NECRO)
 
     @staticmethod
@@ -99,24 +102,25 @@ class ProjectileController(AbstractProjectileController):
                                 Millis(150), 0, projectile.world_entity)
             tail = VisualCircle(self._color, projectile.world_entity.get_center_position(), 15, 1,
                                 Millis(400), 0)
-            game_state.visual_effects += [head, tail]
+            game_state.game_world.visual_effects += [head, tail]
 
     def apply_player_collision(self, game_state: GameState, projectile: Projectile):
         damage = random.randint(self._min_damage, self._max_damage)
         deal_damage_to_player(game_state, damage, DamageType.MAGIC, None)
-        game_state.visual_effects.append(VisualCircle(self._color, game_state.player_entity.get_center_position(),
-                                                      25, 50, Millis(100), 0))
+        game_state.game_world.visual_effects.append(
+            VisualCircle(self._color, game_state.game_world.player_entity.get_center_position(),
+                         25, 50, Millis(100), 0))
         projectile.has_collided_and_should_be_removed = True
 
     def apply_player_summon_collision(self, npc: NonPlayerCharacter, game_state: GameState, projectile: Projectile):
         damage = random.randint(self._min_damage, self._max_damage)
         deal_npc_damage_to_npc(game_state, npc, damage)
-        game_state.visual_effects.append(
+        game_state.game_world.visual_effects.append(
             VisualCircle(self._color, npc.world_entity.get_center_position(), 25, 50, Millis(100), 0))
         projectile.has_collided_and_should_be_removed = True
 
     def apply_wall_collision(self, game_state: GameState, projectile: Projectile):
-        game_state.visual_effects.append(
+        game_state.game_world.visual_effects.append(
             VisualCircle(self._color, projectile.world_entity.get_center_position(), 13, 26, Millis(100), 0))
         projectile.has_collided_and_should_be_removed = True
 
