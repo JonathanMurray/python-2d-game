@@ -129,6 +129,7 @@ from pythongame.game_data.neutral_npcs.neutral_npc_frog import register_frog_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_ninja import register_ninja_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_nomad import register_nomad_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_sorcerer import register_sorcerer_npc
+from pythongame.game_data.neutral_npcs.neutral_npc_talent_master import register_talent_master_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_warpstone_merchant import register_warpstone_merchant_npc
 from pythongame.game_data.neutral_npcs.neutral_npc_young_sorceress import register_young_sorceress_npc
 from pythongame.game_data.portals import register_portals
@@ -278,6 +279,7 @@ def register_all_game_data():
     register_warpstone_merchant_npc()
     register_challenge_starter_npc()
     register_frog_npc()
+    register_talent_master_npc()
 
     register_decorations()
     register_map_editor_icons()

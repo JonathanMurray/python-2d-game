@@ -6,6 +6,7 @@ from pythongame.core.enemy_target_selection import EnemyTarget, get_target
 from pythongame.core.game_data import CONSUMABLES
 from pythongame.core.game_data import NON_PLAYER_CHARACTERS
 from pythongame.core.game_state import GameState, NonPlayerCharacter, Projectile
+from pythongame.core.hero_upgrades import reset_talents
 from pythongame.core.item_data import create_item_description
 from pythongame.core.item_data import get_item_data_by_type
 from pythongame.core.item_effects import try_add_item_to_inventory
@@ -301,6 +302,24 @@ class BuyItemNpcAction(AbstractNpcAction):
         ui_view.remove_inventory_highlight()
 
 
+class ResetTalentsNpcAction(AbstractNpcAction):
+
+    def __init__(self, price: int):
+        self.price = price
+
+    def on_select(self, game_state: GameState) -> Optional[str]:
+        player_state = game_state.player_state
+        can_afford = player_state.money >= self.price
+        if not can_afford:
+            play_sound(SoundId.WARNING)
+            return "Not enough gold!"
+
+        player_state.modify_money(- self.price)
+        reset_talents(game_state)
+        play_sound(SoundId.EVENT_RESET_TALENT)
+        return "Talents reset"
+
+
 _npc_mind_constructors: Dict[NpcType, Type[AbstractNpcMind]] = {}
 
 _npc_dialog_data: Dict[NpcType, Callable[[GameState], DialogData]] = {}
@@ -405,3 +424,7 @@ def sell_item_option(item_id: ItemId, price: int, detail_body: str) -> DialogOpt
     return DialogOptionData(sell_prompt + name_formatter.format(item_name) + cost_formatter.format(price), "sell",
                             BuyItemNpcAction(item_id, price, item_name.lower()),
                             icon_sprite, item_name, detail_body)
+
+
+def reset_talents_option(price: int) -> DialogOptionData:
+    return DialogOptionData(f"> Reset talents [{price} gold]", "reset", ResetTalentsNpcAction(price))

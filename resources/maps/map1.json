@@ -2420,6 +2420,13 @@
         8175,
         1800
       ]
+    },
+    {
+      "npc_type": "NEUTRAL_TALENT_MASTER",
+      "position": [
+        -200,
+        -775
+      ]
     }
   ],
   "walls": [

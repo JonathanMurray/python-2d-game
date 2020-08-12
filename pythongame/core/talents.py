@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, Iterable
 
 from pythongame.core.common import UiIconSprite, HeroUpgradeId, HeroUpgrade
 
@@ -71,6 +71,15 @@ class TalentsState:
         tier.status = TalentTierStatus.PICKED
         tier.picked_index = option_index
         return option
+
+    # Resets all picked talents, and yields options that were previously picked
+    def reset(self) -> Iterable[HeroUpgrade]:
+        for (tier_index, tier) in enumerate(self.tiers):
+            if tier.status == TalentTierStatus.PICKED:
+                picked_option = self._config.get_option(tier_index, tier.picked_index)
+                tier.status = TalentTierStatus.PENDING
+                tier.picked_index = None
+                yield picked_option.upgrade
 
     def has_unpicked_talents(self):
         pending_tiers = [tier for tier in self.tiers if tier.status == TalentTierStatus.PENDING]
