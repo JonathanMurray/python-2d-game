@@ -9,7 +9,7 @@ from pythongame.core.damage_interactions import deal_player_damage_to_enemy, Dam
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     HEROES, ABILITIES
 from pythongame.core.game_state import GameState
-from pythongame.core.hero_upgrades import register_hero_upgrade_effect
+from pythongame.core.hero_upgrades import register_hero_upgrade_effect, AbstractHeroUpgradeEffect
 from pythongame.core.math import translate_in_direction
 from pythongame.core.visual_effects import VisualRect
 
@@ -48,8 +48,12 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
     return AbilityWasUsedSuccessfully()
 
 
-def _apply_upgrade(_game_state: GameState):
-    ABILITIES[ABILITY_TYPE].cooldown = ABILITY_SLASH_UPGRADED_COOLDOWN
+class UpgradeSwordSlashCooldown(AbstractHeroUpgradeEffect):
+    def apply(self, game_state: GameState):
+        ABILITIES[ABILITY_TYPE].cooldown = ABILITY_SLASH_UPGRADED_COOLDOWN
+
+    def revert(self, game_state: GameState):
+        ABILITIES[ABILITY_TYPE].cooldown = ABILITY_SLASH_COOLDOWN
 
 
 def register_sword_slash_ability():
@@ -61,4 +65,4 @@ def register_sword_slash_ability():
         ABILITY_TYPE,
         AbilityData("Slash", ui_icon_sprite, 1, ABILITY_SLASH_COOLDOWN, description, SoundId.ABILITY_SLASH))
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_slash.png")
-    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_SLASH_CD, _apply_upgrade)
+    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_SLASH_CD, UpgradeSwordSlashCooldown())

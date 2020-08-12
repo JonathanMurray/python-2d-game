@@ -6,7 +6,7 @@ from pythongame.core.game_data import Sprite, Direction, AbilityType, register_e
     register_portrait_icon_sprite_path, register_hero_data, HeroData, \
     InitialPlayerStateData, register_buff_text
 from pythongame.core.game_state import PlayerLevelBonus, GameState, Event, PlayerBlockedEvent
-from pythongame.core.hero_upgrades import register_hero_upgrade_effect, HeroUpgrade
+from pythongame.core.hero_upgrades import register_hero_upgrade_effect, HeroUpgrade, AbstractHeroUpgradeEffect
 from pythongame.core.item_data import randomized_item_id
 from pythongame.core.talents import TalentsConfig, TalentTierConfig, TalentTierOptionConfig
 from pythongame.core.view.image_loading import SpriteSheet
@@ -46,13 +46,17 @@ def register_hero_warrior():
     hero_data = HeroData(sprite, portrait_icon_sprite, _get_initial_player_state_warrior(), entity_speed,
                          PLAYER_ENTITY_SIZE, description)
     register_hero_data(HERO_ID, hero_data)
-    register_hero_upgrade_effect(HeroUpgradeId.WARRIOR_RETRIBUTION, _apply_retribution_talent)
+    register_hero_upgrade_effect(HeroUpgradeId.WARRIOR_RETRIBUTION, UpgradeRetribution())
     register_buff_effect(BUFF_RETRIBUTION, BuffedFromRetribution)
     register_buff_text(BUFF_RETRIBUTION, "Retribution")
 
 
-def _apply_retribution_talent(game_state: GameState):
-    game_state.player_state.modify_stat(HeroStat.BLOCK_CHANCE, BUFF_RETRIBUTION_BONUS_BLOCK_CHANCE)
+class UpgradeRetribution(AbstractHeroUpgradeEffect):
+    def apply(self, game_state: GameState):
+        game_state.player_state.modify_stat(HeroStat.BLOCK_CHANCE, BUFF_RETRIBUTION_BONUS_BLOCK_CHANCE)
+
+    def revert(self, game_state: GameState):
+        game_state.player_state.modify_stat(HeroStat.BLOCK_CHANCE, -BUFF_RETRIBUTION_BONUS_BLOCK_CHANCE)
 
 
 class BuffedFromRetribution(StatModifyingBuffEffect):

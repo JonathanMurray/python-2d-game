@@ -9,7 +9,7 @@ from pythongame.core.damage_interactions import deal_player_damage_to_enemy, Dam
 from pythongame.core.game_data import register_ability_data, AbilityData, UiIconSprite, \
     register_ui_icon_sprite_path, register_entity_sprite_map, ABILITIES
 from pythongame.core.game_state import GameState, Projectile, NonPlayerCharacter
-from pythongame.core.hero_upgrades import register_hero_upgrade_effect
+from pythongame.core.hero_upgrades import register_hero_upgrade_effect, AbstractHeroUpgradeEffect
 from pythongame.core.math import get_position_from_center_position, translate_in_direction
 from pythongame.core.projectile_controllers import create_projectile_controller, AbstractProjectileController, \
     register_projectile_controller
@@ -104,8 +104,12 @@ def _apply_ability(game_state: GameState) -> AbilityResult:
     return AbilityWasUsedSuccessfully()
 
 
-def _upgrade_fireball_mana_cost(_game_state: GameState):
-    ABILITIES[AbilityType.FIREBALL].mana_cost = FIREBALL_UPGRADED_MANA_COST
+class UpgradeFireballManaCost(AbstractHeroUpgradeEffect):
+    def apply(self, game_state: GameState):
+        ABILITIES[AbilityType.FIREBALL].mana_cost = FIREBALL_UPGRADED_MANA_COST
+
+    def revert(self, game_state: GameState):
+        ABILITIES[AbilityType.FIREBALL].mana_cost = FIREBALL_MANA_COST
 
 
 def register_fireball_ability():
@@ -130,4 +134,4 @@ def register_fireball_ability():
     register_entity_sprite_map(Sprite.PROJECTILE_PLAYER_FIREBALL, sprite_sheet, original_sprite_size,
                                scaled_sprite_size, indices_by_dir, (-9, -9))
     register_buff_effect(BUFF_TYPE, BurntByFireball)
-    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_FIREBALL_MANA_COST, _upgrade_fireball_mana_cost)
+    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_FIREBALL_MANA_COST, UpgradeFireballManaCost())

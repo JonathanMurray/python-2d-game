@@ -6,7 +6,7 @@ from pythongame.core.damage_interactions import deal_player_damage_to_enemy, Dam
 from pythongame.core.game_data import register_ability_data, AbilityData, register_ui_icon_sprite_path, \
     register_entity_sprite_initializer, register_buff_as_channeling, ABILITIES
 from pythongame.core.game_state import GameState, NonPlayerCharacter, Projectile, CameraShake
-from pythongame.core.hero_upgrades import register_hero_upgrade_effect
+from pythongame.core.hero_upgrades import register_hero_upgrade_effect, AbstractHeroUpgradeEffect
 from pythongame.core.math import get_position_from_center_position
 from pythongame.core.projectile_controllers import AbstractProjectileController, register_projectile_controller, \
     create_projectile_controller
@@ -74,9 +74,14 @@ class ProjectileController(AbstractProjectileController):
         # Projectile pierces enemies (so we don't mark projectile as destroyed)
 
 
-def _upgrade_arcane_fire_cooldown_and_mana_cost(_game_state: GameState):
-    ABILITIES[AbilityType.ARCANE_FIRE].cooldown = ARCANE_FIRE_UPGRADED_COOLDOWN
-    ABILITIES[AbilityType.ARCANE_FIRE].mana_cost = ARCANE_FIRE_UPGRADED_MANA_COST
+class UpgradeArcaneFireCooldownAndManaCost(AbstractHeroUpgradeEffect):
+    def apply(self, game_state: GameState):
+        ABILITIES[AbilityType.ARCANE_FIRE].cooldown = ARCANE_FIRE_UPGRADED_COOLDOWN
+        ABILITIES[AbilityType.ARCANE_FIRE].mana_cost = ARCANE_FIRE_UPGRADED_MANA_COST
+
+    def revert(self, game_state: GameState):
+        ABILITIES[AbilityType.ARCANE_FIRE].cooldown = ARCANE_FIRE_COOLDOWN
+        ABILITIES[AbilityType.ARCANE_FIRE].mana_cost = ARCANE_FIRE_MANA_COST
 
 
 def register_arcane_fire_ability():
@@ -96,4 +101,4 @@ def register_arcane_fire_ability():
     register_projectile_controller(ProjectileType.PLAYER_ARCANE_FIRE, ProjectileController)
     register_buff_as_channeling(BuffType.CHANNELING_ARCANE_FIRE)
     register_hero_upgrade_effect(HeroUpgradeId.ABILITY_ARCANE_FIRE_COOLDOWN,
-                                 _upgrade_arcane_fire_cooldown_and_mana_cost)
+                                 UpgradeArcaneFireCooldownAndManaCost())

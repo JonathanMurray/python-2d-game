@@ -531,6 +531,12 @@ class PlayerState:
         self.notify_talent_observers()
         return option.name, option.upgrade.get_upgrade_id()
 
+    def reset_talents(self) -> List[HeroUpgradeId]:
+        reset_upgrades = list(self._talents_state.reset())
+        self._upgrades = [u for u in self._upgrades if u not in reset_upgrades]
+        self.notify_talent_observers()
+        return [u.get_upgrade_id() for u in reset_upgrades]
+
     def notify_talent_observers(self):
         self.talents_were_updated.notify(self._talents_state)
 

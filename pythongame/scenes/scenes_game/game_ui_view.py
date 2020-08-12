@@ -449,6 +449,8 @@ class GameUiView:
 
     def on_talents_updated(self, talents_state: TalentsState):
         self._setup_talents_window(talents_state)
+        if talents_state.has_unpicked_talents() and not self.talents_toggle.is_open:
+            self.talents_toggle.highlighted = True
 
     def on_talent_was_unlocked(self, _event):
         if self.enabled_toggle != self.talents_toggle:

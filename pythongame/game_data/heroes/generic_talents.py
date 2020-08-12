@@ -1,40 +1,31 @@
+from typing import Union
+
 from pythongame.core.common import HeroUpgradeId, UiIconSprite, HeroStat
 from pythongame.core.game_state import GameState
-from pythongame.core.hero_upgrades import register_hero_upgrade_effect
+from pythongame.core.hero_upgrades import register_hero_upgrade_effect, AbstractHeroUpgradeEffect
 from pythongame.core.talents import TalentTierConfig, TalentTierOptionConfig
 
 
 def register_generic_talents():
-    register_hero_upgrade_effect(HeroUpgradeId.DAMAGE, _upgrade_damage)
-    register_hero_upgrade_effect(HeroUpgradeId.ARMOR, _upgrade_armor)
-    register_hero_upgrade_effect(HeroUpgradeId.MAX_HEALTH, _upgrade_max_health)
-    register_hero_upgrade_effect(HeroUpgradeId.MAX_MANA, _upgrade_max_mana)
-    register_hero_upgrade_effect(HeroUpgradeId.HEALTH_REGEN, _upgrade_health_regen)
-    register_hero_upgrade_effect(HeroUpgradeId.MANA_REGEN, _upgrade_mana_regen)
+    register_hero_upgrade_effect(HeroUpgradeId.DAMAGE, ModifyHeroStat(HeroStat.DAMAGE, 0.1))
+    register_hero_upgrade_effect(HeroUpgradeId.ARMOR, ModifyHeroStat(HeroStat.ARMOR, 1))
+    register_hero_upgrade_effect(HeroUpgradeId.MAX_HEALTH, ModifyHeroStat(HeroStat.MAX_HEALTH, 10))
+    register_hero_upgrade_effect(HeroUpgradeId.MAX_MANA, ModifyHeroStat(HeroStat.MAX_MANA, 10))
+    register_hero_upgrade_effect(HeroUpgradeId.HEALTH_REGEN, ModifyHeroStat(HeroStat.HEALTH_REGEN, 0.5))
+    register_hero_upgrade_effect(HeroUpgradeId.MANA_REGEN, ModifyHeroStat(HeroStat.MANA_REGEN, 0.5))
 
 
-def _upgrade_damage(game_state: GameState):
-    game_state.modify_hero_stat(HeroStat.DAMAGE, 0.1)
+class ModifyHeroStat(AbstractHeroUpgradeEffect):
 
+    def __init__(self, hero_stat: HeroStat, amount: Union[int, float]):
+        self.hero_stat = hero_stat
+        self.amount = amount
 
-def _upgrade_armor(game_state: GameState):
-    game_state.modify_hero_stat(HeroStat.ARMOR, 1)
+    def apply(self, game_state: GameState):
+        game_state.modify_hero_stat(self.hero_stat, self.amount)
 
-
-def _upgrade_max_health(game_state: GameState):
-    game_state.modify_hero_stat(HeroStat.MAX_HEALTH, 10)
-
-
-def _upgrade_max_mana(game_state: GameState):
-    game_state.modify_hero_stat(HeroStat.MAX_MANA, 10)
-
-
-def _upgrade_health_regen(game_state: GameState):
-    game_state.modify_hero_stat(HeroStat.HEALTH_REGEN, 0.5)
-
-
-def _upgrade_mana_regen(game_state: GameState):
-    game_state.modify_hero_stat(HeroStat.MANA_REGEN, 0.5)
+    def revert(self, game_state: GameState):
+        game_state.modify_hero_stat(self.hero_stat, -self.amount)
 
 
 TALENT_CHOICE_ARMOR_DAMAGE = TalentTierConfig(

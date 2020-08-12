@@ -9,7 +9,7 @@ from pythongame.core.game_data import register_ability_data, AbilityData, regist
     register_buff_text, ABILITIES
 from pythongame.core.game_state import GameState, NonPlayerCharacter, Event, BuffEventOutcome, \
     EnemyDiedEvent
-from pythongame.core.hero_upgrades import register_hero_upgrade_effect
+from pythongame.core.hero_upgrades import register_hero_upgrade_effect, AbstractHeroUpgradeEffect
 from pythongame.core.visual_effects import VisualCircle
 from pythongame.core.world_entity import WorldEntity
 
@@ -63,9 +63,14 @@ class BloodLust(StatModifyingBuffEffect):
             return BuffEventOutcome.change_remaining_duration(duration_increase)
 
 
-def _apply_upgrade(_game_state: GameState):
-    global has_blood_lust_duration_increase_upgrade
-    has_blood_lust_duration_increase_upgrade = True
+class UpgradeBloodlust(AbstractHeroUpgradeEffect):
+    def apply(self, game_state: GameState):
+        global has_blood_lust_duration_increase_upgrade
+        has_blood_lust_duration_increase_upgrade = True
+
+    def revert(self, game_state: GameState):
+        global has_blood_lust_duration_increase_upgrade
+        has_blood_lust_duration_increase_upgrade = False
 
 
 def register_bloodlust_ability():
@@ -84,4 +89,4 @@ def register_bloodlust_ability():
     register_ui_icon_sprite_path(ui_icon_sprite, "resources/graphics/icon_bloodlust.png")
     register_buff_effect(BUFF_TYPE, BloodLust)
     register_buff_text(BUFF_TYPE, "Bloodlust")
-    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_BLOODLUST_DURATION, _apply_upgrade)
+    register_hero_upgrade_effect(HeroUpgradeId.ABILITY_BLOODLUST_DURATION, UpgradeBloodlust())
