@@ -60,7 +60,7 @@ def _register_dialog():
         name=name,
         portrait_icon_sprite=UI_ICON_SPRITE,
         text_body="Greetings. Do you seek a new path in life? Anything is possible, for the right price.",
-        options=[reset_talents_option(30), bye_option],
+        options=[reset_talents_option(25), bye_option],
     )
 
     register_npc_dialog_data(NPC_TYPE, dialog)
