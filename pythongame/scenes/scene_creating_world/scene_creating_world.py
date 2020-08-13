@@ -24,8 +24,8 @@ class InitFlags:
                  map_file_path: Optional[str],
                  picked_hero: Optional[HeroId],
                  saved_player_state: Optional[SavedPlayerState],
-                 hero_start_level: int,
-                 start_money: int,
+                 hero_start_level: Optional[int],
+                 start_money: Optional[int],
                  character_file: Optional[str]):
         self.map_file_path = map_file_path
         self.picked_hero = picked_hero
