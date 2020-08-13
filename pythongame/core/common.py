@@ -185,6 +185,7 @@ class AbilityType(Enum):
     ITEM_ZULS_AEGIS = 100
     ITEM_LICH_ARMOR = 101
     ITEM_ROD_OF_LIGHTNING = 102
+    ITEM_WINGED_HELMET = 103
 
 
 class Sprite(Enum):
@@ -419,6 +420,7 @@ class BuffType(Enum):
     SHRINE_ARMOR = 101
     SHRINE_MAGIC_RESIST = 102
     SHRINE_MOVE_SPEED = 103
+    ITEM_WINGED_HELMET = 200
 
 
 class ItemType(Enum):
