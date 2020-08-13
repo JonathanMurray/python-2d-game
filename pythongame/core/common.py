@@ -183,6 +183,7 @@ class AbilityType(Enum):
     DASH = 17
     KILL_EVERYTHING = 18
     ITEM_ZULS_AEGIS = 100
+    ITEM_LICH_ARMOR = 101
 
 
 class Sprite(Enum):
