@@ -425,6 +425,7 @@ class BuffType(Enum):
     ITEM_WINGED_HELMET = 200
     ITEM_CANDLE = 201
     ITEM_WHIP = 202
+    ITEM_BLOOD_AMULET = 203
 
 
 class ItemType(Enum):
