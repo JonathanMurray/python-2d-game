@@ -184,6 +184,7 @@ class AbilityType(Enum):
     KILL_EVERYTHING = 18
     ITEM_ZULS_AEGIS = 100
     ITEM_LICH_ARMOR = 101
+    ITEM_ROD_OF_LIGHTNING = 102
 
 
 class Sprite(Enum):
