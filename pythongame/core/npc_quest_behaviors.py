@@ -5,13 +5,13 @@ from pythongame.core.game_data import register_portrait_icon_sprite_path
 from pythongame.core.game_state import GameState, NonPlayerCharacter, QuestGiverState
 from pythongame.core.item_data import get_item_data_by_type
 from pythongame.core.item_data import plain_item_id
-from pythongame.core.item_effects import try_add_item_to_inventory
 from pythongame.core.npc_behaviors import AbstractNpcAction, register_conditional_npc_dialog_data, register_quest
 from pythongame.core.npc_behaviors import AbstractNpcMind, DialogOptionData
 from pythongame.core.pathfinding.grid_astar_pathfinder import GlobalPathFinder
 from pythongame.core.quests import QuestId, Quest
 from pythongame.core.sound_player import play_sound
 from pythongame.core.world_entity import WorldEntity
+from pythongame.scenes.scenes_game.game_engine import GameEngine
 from pythongame.scenes.scenes_game.game_ui_view import GameUiView
 
 
@@ -23,8 +23,8 @@ class GiveQuestNpcAction(AbstractNpcAction):
         self.boss_npc_type = boss_npc_type
         self.quest_item_type = quest_item_type
 
-    def on_select(self, game_state: GameState) -> Optional[str]:
-        game_state.player_state.start_quest(self.quest)
+    def on_select(self, game_engine: GameEngine) -> Optional[str]:
+        game_engine.game_state.player_state.start_quest(self.quest)
         play_sound(SoundId.EVENT_ACCEPTED_QUEST)
         return "Quest accepted: " + self.quest.name
 
@@ -45,7 +45,8 @@ class CompleteQuestNpcAction(AbstractNpcAction):
         self.quest_item_type = quest_item_type
         self.reward_item_id = reward_item_id
 
-    def on_select(self, game_state: GameState) -> Optional[str]:
+    def on_select(self, game_engine: GameEngine) -> Optional[str]:
+        game_state = game_engine.game_state
         player_has_it = game_state.player_state.item_inventory.has_item_in_inventory(
             plain_item_id(self.quest_item_type))
         if player_has_it:
@@ -54,7 +55,7 @@ class CompleteQuestNpcAction(AbstractNpcAction):
             game_state.player_state.complete_quest(self.quest)
             reward_item_id = self.reward_item_id(game_state)
             if reward_item_id:
-                did_add_item = try_add_item_to_inventory(game_state, reward_item_id)
+                did_add_item = game_engine.try_add_item_to_inventory(reward_item_id)
                 if not did_add_item:
                     game_state.game_world.items_on_ground.append(
                         create_item_on_ground(reward_item_id, game_state.game_world.player_entity.get_position()))

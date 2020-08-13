@@ -182,6 +182,12 @@ class AbilityType(Enum):
     INFUSE_DAGGER = 16
     DASH = 17
     KILL_EVERYTHING = 18
+    ITEM_ZULS_AEGIS = 100
+    ITEM_LICH_ARMOR = 101
+    ITEM_ROD_OF_LIGHTNING = 102
+    ITEM_WINGED_HELMET = 103
+    ITEM_CANDLE = 104
+    ITEM_WHIP = 105
 
 
 class Sprite(Enum):
@@ -416,6 +422,10 @@ class BuffType(Enum):
     SHRINE_ARMOR = 101
     SHRINE_MAGIC_RESIST = 102
     SHRINE_MOVE_SPEED = 103
+    ITEM_WINGED_HELMET = 200
+    ITEM_CANDLE = 201
+    ITEM_WHIP = 202
+    ITEM_BLOOD_AMULET = 203
 
 
 class ItemType(Enum):

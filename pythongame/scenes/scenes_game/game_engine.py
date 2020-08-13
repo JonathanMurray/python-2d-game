@@ -1,16 +1,18 @@
+from typing import Dict
+
+from pythongame.core.abilities import ABILITIES, allocate_input_keys_for_abilities, KEYS_BY_ABILITY_TYPE
 from pythongame.core.buff_effects import AbstractBuffEffect, get_buff_effect
 from pythongame.core.common import *
 from pythongame.core.common import EngineEvent
 from pythongame.core.entity_creation import create_money_pile_on_ground, create_item_on_ground, \
     create_consumable_on_ground
-from pythongame.core.game_data import CONSUMABLES, NON_PLAYER_CHARACTERS, allocate_input_keys_for_abilities, \
-    NpcCategory, PORTALS, ABILITIES
+from pythongame.core.game_data import CONSUMABLES, NON_PLAYER_CHARACTERS, NpcCategory, PORTALS
 from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGround, LootableOnGround, BuffWithDuration, \
     EnemyDiedEvent, NonPlayerCharacter, Portal, PlayerLeveledUp, PlayerLearnedNewAbility, WarpPoint, Chest, \
     PlayerUnlockedNewTalent, AgentBuffsUpdate, Shrine
-from pythongame.core.item_data import ITEM_ENTITY_SIZE
+from pythongame.core.item_data import ITEM_ENTITY_SIZE, get_item_data_by_type
 from pythongame.core.item_data import randomized_item_id, get_item_data
-from pythongame.core.item_effects import create_item_effect, try_add_item_to_inventory
+from pythongame.core.item_effects import create_item_effect
 from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
 from pythongame.core.loot import LootEntry, MoneyLootEntry, ItemLootEntry, ConsumableLootEntry, AffixedItemLootEntry
 from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vectors, \
@@ -31,6 +33,7 @@ class GameEngine:
         self.info_message = info_message
         self.talent_was_unlocked = Observable()
         self.ability_was_clicked = Observable()
+        self.abilities_were_updated = Observable()
         self.consumable_was_clicked = Observable()
 
     def try_use_ability(self, ability_type: AbilityType):
@@ -58,10 +61,19 @@ class GameEngine:
         return did_switch_succeed
 
     def _handle_item_equip_event(self, event):
-        if isinstance(event, ItemWasDeactivated):
-            create_item_effect(event.item_id).apply_end_effect(self.game_state)
-        elif isinstance(event, ItemWasActivated):
-            create_item_effect(event.item_id).apply_start_effect(self.game_state)
+        player_state = self.game_state.player_state
+        item_id = event.item_id
+        item_data = get_item_data(item_id)
+        if isinstance(event, ItemWasActivated):
+            create_item_effect(item_id).apply_start_effect(self.game_state)
+            if item_data.active_ability_type:
+                player_state.set_active_item_ability(item_data.active_ability_type)
+                self.on_abilities_updated()
+        elif isinstance(event, ItemWasDeactivated):
+            create_item_effect(item_id).apply_end_effect(self.game_state)
+            if item_data.active_ability_type:
+                player_state.set_active_item_ability(None)
+                self.on_abilities_updated()
 
     def drag_consumable_between_inventory_slots(self, from_slot: int, to_slot: int):
         self.game_state.player_state.consumable_inventory.drag_consumable_between_inventory_slots(from_slot, to_slot)
@@ -95,13 +107,21 @@ class GameEngine:
 
     def _try_pick_up_item_from_ground(self, item: ItemOnGround):
         item_name = item.item_id.name
-        did_add_item = try_add_item_to_inventory(self.game_state, item.item_id)
+        did_add_item = self.try_add_item_to_inventory(item.item_id)
         if did_add_item:
             play_sound(SoundId.EVENT_PICKED_UP)
             self.game_state.game_world.items_on_ground.remove(item)
             self.info_message.set_message("You picked up " + item_name)
         else:
             self.info_message.set_message("No space for " + item_name)
+
+    def try_add_item_to_inventory(self, item_id: ItemId) -> bool:
+        item_effect = create_item_effect(item_id)
+        item_type = item_id.item_type
+        item_equipment_category = get_item_data_by_type(item_type).item_equipment_category
+        event = self.game_state.player_state.item_inventory.try_add_item(item_id, item_effect, item_equipment_category)
+        self._handle_item_equip_event(event)
+        return event is not None
 
     def fill_item_inventory(self, items: List[ItemId]):
         for slot_number, item_id in enumerate(items):
@@ -370,7 +390,7 @@ class GameEngine:
                              Millis(150), 2))
             self.info_message.set_message("You reached level " + str(self.game_state.player_state.level))
         if new_abilities:
-            allocate_input_keys_for_abilities(self.game_state.player_state.abilities)
+            self.on_abilities_updated()
         if len(new_abilities) == 1:
             self.info_message.enqueue_message("New ability: " + new_abilities[0])
         elif len(new_abilities) > 1:
@@ -378,6 +398,13 @@ class GameEngine:
         if did_unlock_new_talent:
             self.talent_was_unlocked.notify(None)
             self.info_message.enqueue_message("You can pick a talent!")
+
+    def on_abilities_updated(self):
+        abilities = self.game_state.player_state.abilities
+        allocate_input_keys_for_abilities(abilities)
+        ability_types_by_key_string: Dict[str, AbilityType] = {
+            KEYS_BY_ABILITY_TYPE[ability_type].key_string: ability_type for ability_type in abilities}
+        self.abilities_were_updated.notify(ability_types_by_key_string)
 
     def _is_npc_close_to_camera(self, npc: NonPlayerCharacter):
         camera_rect_with_margin = get_rect_with_increased_size_in_all_directions(

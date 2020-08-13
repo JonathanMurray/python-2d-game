@@ -21,8 +21,10 @@ def print_items():
         for item_type, item_data, item_level in entries:
             print("+" + "-" * 150)
             level_text = "level {:<10}".format(item_level) if item_level else " " * 16
+            unique_text = "{:<15}".format("(unique)" if item_data.is_unique else "")
             description_lines = create_item_description_for_type(item_type)
-            print("| " + "{:<25}".format(item_data.base_name) + level_text + ("\n| " + " " * 41).join(description_lines))
+            print("| " + "{:<25}".format(item_data.base_name) + level_text + unique_text + ("\n| " + " " * 56).join(
+                description_lines))
         print("+" + "-" * 150)
         print("")
 

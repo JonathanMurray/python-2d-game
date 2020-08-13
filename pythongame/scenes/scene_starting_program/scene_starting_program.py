@@ -8,11 +8,12 @@ from pythongame.scenes.scene_factory import AbstractSceneFactory
 
 class CommandlineFlags:
     def __init__(self, map_file_name: Optional[str], picked_hero: Optional[HeroId],
-                 hero_start_level: int, start_money: int):
+                 hero_start_level: Optional[int], start_money: Optional[int], save_file_name: Optional[str]):
         self.map_file_name = map_file_name
         self.chosen_hero_id = picked_hero
         self.hero_start_level = hero_start_level
         self.start_money = start_money
+        self.save_file_name = save_file_name
 
     def __repr__(self):
         return "(" + str(self.map_file_name) + ", " + str(self.chosen_hero_id) + ", " + \
@@ -36,8 +37,22 @@ class StartingProgramScene(AbstractScene):
         start_immediately_and_skip_hero_selection = (
                 self.cmd_flags.chosen_hero_id is not None
                 or self.cmd_flags.hero_start_level is not None
-                or self.cmd_flags.start_money is not None)
+                or self.cmd_flags.start_money is not None
+                or self.cmd_flags.save_file_name is not None)
         if start_immediately_and_skip_hero_selection:
+
+            if self.cmd_flags.save_file_name:
+                saved_player_state = self.save_file_handler.load_player_state_from_json_file(
+                    self.cmd_flags.save_file_name)
+                flags = InitFlags(
+                    map_file_path=map_file_path,
+                    picked_hero=None,
+                    saved_player_state=saved_player_state,
+                    hero_start_level=None,
+                    start_money=None,
+                    character_file=None)
+                return SceneTransition(self.scene_factory.creating_world_scene(flags))
+
             if self.cmd_flags.chosen_hero_id:
                 picked_hero = HeroId[self.cmd_flags.chosen_hero_id]
             else:

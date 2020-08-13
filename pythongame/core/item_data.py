@@ -11,7 +11,8 @@ class ItemData:
                  custom_description_lines: List[str],
                  base_stats: List[StatModifierInterval],
                  is_unique: bool,
-                 item_equipment_category: Optional[ItemEquipmentCategory] = None):
+                 item_equipment_category: Optional[ItemEquipmentCategory] = None,
+                 active_ability_type: Optional[AbilityType] = None):
         self.icon_sprite = icon_sprite
         self.entity_sprite = entity_sprite
         self.base_name = base_name
@@ -22,6 +23,7 @@ class ItemData:
         # "unique" items are also rendered differently in the inventory
         self.is_unique = is_unique
         self.item_equipment_category = item_equipment_category  # If category is None, the item can't be equipped
+        self.active_ability_type: Optional[AbilityType] = active_ability_type  # Some items give abilities when equipped
 
     def __repr__(self):
         return "ItemData(%s)" % self.base_name

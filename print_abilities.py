@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
+from pythongame.core.abilities import ABILITIES
 from pythongame.core.common import AbilityType
-from pythongame.core.game_data import ABILITIES
 from pythongame.register_game_data import register_all_game_data
 
 

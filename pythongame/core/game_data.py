@@ -1,41 +1,11 @@
 from typing import Set, Dict
 
-# We should probably not load image files in here!
-import pygame
-
 from pythongame.core.common import *
 from pythongame.core.common import UiIconSprite, PortraitIconSprite
 from pythongame.core.talents import TalentsConfig
 from pythongame.core.view.image_loading import SpriteInitializer, SpriteSheet, SpriteMapInitializer, Animation
 
 POTION_ENTITY_SIZE = (30, 30)
-
-
-class AbilityData:
-    def __init__(self, name: str, icon_sprite: UiIconSprite, mana_cost: int, cooldown: Millis, description: str,
-                 sound_id: Optional[SoundId]):
-        self.name = name
-        self.icon_sprite = icon_sprite
-        self.mana_cost = mana_cost
-        self.cooldown = cooldown
-        self.description = description
-        self.sound_id = sound_id
-
-
-class UserAbilityKey:
-    def __init__(self, key_string: str, pygame_key):
-        self.key_string = key_string
-        self.pygame_key = pygame_key
-
-    def __repr__(self):
-        return "(" + self.key_string + ", " + str(self.pygame_key) + ")"
-
-
-user_ability_keys = [UserAbilityKey("Q", pygame.K_q),
-                     UserAbilityKey("W", pygame.K_w),
-                     UserAbilityKey("E", pygame.K_e),
-                     UserAbilityKey("R", pygame.K_r),
-                     UserAbilityKey("T", pygame.K_t)]
 
 
 class NpcCategory(Enum):
@@ -174,10 +144,6 @@ consumable_data_by_type: Dict[ConsumableType, ConsumableData] = {}
 consumable_types_grouped_by_level: Dict[int, Set[ConsumableType]] = {}
 consumable_levels: Dict[ConsumableType, int] = {}
 
-ABILITIES: Dict[AbilityType, AbilityData] = {}
-
-KEYS_BY_ABILITY_TYPE: Dict[AbilityType, UserAbilityKey] = {}
-
 BUFF_TEXTS: Dict[BuffType, str] = {}
 
 CHANNELING_BUFFS: List[BuffType] = []
@@ -193,16 +159,6 @@ def register_npc_data(npc_type: NpcType, npc_data: NpcData):
 
 def register_wall_data(wall_type: WallType, wall_data: WallData):
     WALLS[wall_type] = wall_data
-
-
-def register_ability_data(ability_type: AbilityType, ability_data: AbilityData):
-    ABILITIES[ability_type] = ability_data
-
-
-def allocate_input_keys_for_abilities(abilities: List[AbilityType]):
-    KEYS_BY_ABILITY_TYPE.clear()
-    for i, ability in enumerate(abilities):
-        KEYS_BY_ABILITY_TYPE[ability] = user_ability_keys[i]
 
 
 def register_ui_icon_sprite_path(sprite: UiIconSprite, file_path: str):

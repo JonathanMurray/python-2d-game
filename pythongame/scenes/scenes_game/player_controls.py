@@ -1,9 +1,10 @@
+from pythongame.core.abilities import ABILITIES
 from pythongame.core.ability_effects import apply_ability_effect, AbilityFailedToExecute, \
     AbilityWasUsedSuccessfully
 from pythongame.core.common import AbilityType, SoundId, Millis
 from pythongame.core.consumable_effects import try_consume_consumable, ConsumableWasConsumed, \
     ConsumableFailedToBeConsumed
-from pythongame.core.game_data import ABILITIES, CONSUMABLES
+from pythongame.core.game_data import CONSUMABLES
 from pythongame.core.game_state import GameState, PlayerUsedAbilityEvent
 from pythongame.core.sound_player import play_sound
 from pythongame.scenes.scenes_game.game_ui_view import InfoMessage

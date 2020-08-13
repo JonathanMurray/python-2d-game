@@ -8,7 +8,6 @@ from pythongame.core.common import Millis, BuffType, get_random_hint, \
 from pythongame.core.game_data import HEROES
 from pythongame.core.game_state import GameState
 from pythongame.core.item_data import randomized_item_id
-from pythongame.core.item_effects import try_add_item_to_inventory
 from pythongame.core.sound_player import play_sound
 from pythongame.scenes.scene_factory import AbstractSceneFactory
 from pythongame.scenes.scenes_game.game_engine import GameEngine
@@ -17,8 +16,10 @@ from pythongame.scenes.scenes_game.game_ui_view import InfoMessage, GameUiView
 
 class StoryBehavior(AbstractWorldBehavior):
 
-    def __init__(self, scene_factory: AbstractSceneFactory, game_state: GameState, ui_view: GameUiView):
+    def __init__(self, scene_factory: AbstractSceneFactory, game_engine: GameEngine, game_state: GameState,
+                 ui_view: GameUiView):
         self.scene_factory = scene_factory
+        self.game_engine = game_engine
         self.game_state = game_state
         self.ui_view = ui_view
 
@@ -33,7 +34,7 @@ class StoryBehavior(AbstractWorldBehavior):
                 self.add_starting_item(item_id)
 
     def add_starting_item(self, item_id: ItemId):
-        try_add_item_to_inventory(self.game_state, item_id)
+        self.game_engine.try_add_item_to_inventory(item_id)
 
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:
         pass
@@ -120,7 +121,7 @@ class DungeonBehavior(AbstractWorldBehavior):
     def _recreate_main_world_engine_and_behavior(self, _: GameEngine) -> Tuple[GameEngine, AbstractWorldBehavior]:
         game_state = self.game_state_before_entering_dungeon
         engine = GameEngine(game_state, self.ui_view.info_message)
-        behavior = StoryBehavior(self.scene_factory, game_state, self.ui_view)
+        behavior = StoryBehavior(self.scene_factory, engine, game_state, self.ui_view)
         return engine, behavior
 
 
@@ -159,7 +160,7 @@ class ChallengeBehavior(AbstractWorldBehavior):
                 self._equip_item_on_startup(item_type)
 
     def _equip_item_on_startup(self, item_id):
-        try_add_item_to_inventory(self.game_state, item_id)
+        self.game_engine.try_add_item_to_inventory(item_id)
 
     def control(self, time_passed: Millis) -> Optional[SceneTransition]:
         self.total_time_played += time_passed

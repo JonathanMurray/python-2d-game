@@ -86,9 +86,9 @@ class SceneFactory(AbstractSceneFactory):
 
 class Main:
     def __init__(self, map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start_level: Optional[int],
-                 start_money: Optional[int]):
+                 start_money: Optional[int], save_file_name: Optional[str]):
 
-        cmd_flags = CommandlineFlags(map_file_name, chosen_hero_id, hero_start_level, start_money)
+        cmd_flags = CommandlineFlags(map_file_name, chosen_hero_id, hero_start_level, start_money, save_file_name)
 
         pygame.init()
 
@@ -176,6 +176,6 @@ class Main:
 
 
 def start(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start_level: Optional[int],
-          start_money: Optional[int]):
-    main = Main(map_file_name, chosen_hero_id, hero_start_level, start_money)
+          start_money: Optional[int], save_file_name: Optional[str]):
+    main = Main(map_file_name, chosen_hero_id, hero_start_level, start_money, save_file_name)
     main.main_loop()

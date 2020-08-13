@@ -1,6 +1,6 @@
 from typing import Dict, Union, List, Optional
 
-from pythongame.core.common import ItemType, Sprite, UiIconSprite, HeroStat
+from pythongame.core.common import ItemType, Sprite, UiIconSprite, HeroStat, AbilityType
 from pythongame.core.game_data import register_ui_icon_sprite_path, \
     register_entity_sprite_initializer
 from pythongame.core.item_data import ItemData, register_item_level, ITEM_ENTITY_SIZE
@@ -47,11 +47,13 @@ def register_custom_effect_item(
         custom_description: List[str],
         stat_modifier_intervals: List[StatModifierInterval],
         item_level: Optional[int] = None,
-        is_unique: bool = False):
+        is_unique: bool = False,
+        active_ability_type: Optional[AbilityType] = None):
     if item_level is not None:
         register_item_level(item_type, item_level)
     item_data = ItemData(ui_icon_sprite, sprite, name, custom_description, stat_modifier_intervals,
-                         is_unique=is_unique, item_equipment_category=item_equipment_category)
+                         is_unique=is_unique, item_equipment_category=item_equipment_category,
+                         active_ability_type=active_ability_type)
     register_custom_item_effect(item_type, custom_effect)
     register_ui_icon_sprite_path(ui_icon_sprite, image_file_path)
     register_entity_sprite_initializer(sprite, SpriteInitializer(image_file_path, ITEM_ENTITY_SIZE))

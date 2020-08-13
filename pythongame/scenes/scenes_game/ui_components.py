@@ -5,9 +5,10 @@ from typing import List, Tuple, Optional, Any, Iterable, Set, Callable, Union
 import pygame
 from pygame.rect import Rect
 
+from pythongame.core.abilities import AbilityData
 from pythongame.core.common import ConsumableType, AbilityType, PortraitIconSprite, HeroId, Millis, \
     PeriodicTimer, NpcType, PortalId, ItemId
-from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, AbilityData, ConsumableData, NpcData, \
+from pythongame.core.game_data import CONSUMABLES, ConsumableCategory, ConsumableData, NpcData, \
     NpcCategory
 from pythongame.core.game_state import PlayerState
 from pythongame.core.item_data import DescriptionLine
