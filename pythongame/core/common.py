@@ -186,6 +186,7 @@ class AbilityType(Enum):
     ITEM_LICH_ARMOR = 101
     ITEM_ROD_OF_LIGHTNING = 102
     ITEM_WINGED_HELMET = 103
+    ITEM_CANDLE = 104
 
 
 class Sprite(Enum):
@@ -421,6 +422,7 @@ class BuffType(Enum):
     SHRINE_MAGIC_RESIST = 102
     SHRINE_MOVE_SPEED = 103
     ITEM_WINGED_HELMET = 200
+    ITEM_CANDLE = 201
 
 
 class ItemType(Enum):
