@@ -16,14 +16,6 @@
         2500
       ],
       "item_name": "Gold Nugget"
-    },
-    {
-      "item_id": "ZULS_AEGIS~:ARMOR:3:BLOCK_AMOUNT:6:DAMAGE:0.12:MANA_ON_KILL:1~",
-      "position": [
-        -175,
-        -800
-      ],
-      "item_name": "Zul's Aegis"
     }
   ],
   "money_piles_on_ground": [],
