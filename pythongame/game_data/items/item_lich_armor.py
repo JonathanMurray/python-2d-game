@@ -42,7 +42,7 @@ def register_lich_armor_item():
     _register_ability()
     register_custom_effect_item(
         item_type=ItemType.LICH_ARMOR,
-        item_level=7,
+        item_level=8,
         ui_icon_sprite=UiIconSprite.ITEM_LICH_ARMOR,
         sprite=Sprite.ITEM_LICH_ARMOR,
         image_file_path="resources/graphics/item_lich_armor.png",
