@@ -68,8 +68,13 @@ class WorldEntity:
     def get_position(self) -> Tuple[int, int]:
         return int(self.x), int(self.y)
 
-    def add_to_speed_multiplier(self, amount):
+    def add_to_speed_multiplier(self, amount: float):
         self._speed_multiplier += amount
+        self._effective_speed = self._speed_multiplier * self._speed
+
+    def set_speed_multiplier(self, multiplier: float):
+        # Only call this method as part of setup
+        self._speed_multiplier = multiplier
         self._effective_speed = self._speed_multiplier * self._speed
 
     def get_speed_multiplier(self):

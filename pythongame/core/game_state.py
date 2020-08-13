@@ -679,6 +679,11 @@ class GameWorldState:
         self.player_entity.add_to_speed_multiplier(delta)
         self.notify_movement_speed_observers()
 
+    def set_hero_movement_speed(self, multiplier: float):
+        # Only call this method as part of setup
+        self.player_entity.set_speed_multiplier(multiplier)
+        self.notify_movement_speed_observers()
+
     def add_non_player_character(self, npc: NonPlayerCharacter):
         self.non_player_characters.append(npc)
 
