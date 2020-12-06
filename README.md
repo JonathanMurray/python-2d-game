@@ -113,6 +113,11 @@ or with a specific hero
 ./run.py --hero WARRIOR
 ```
 
+To start the game without it being fullscreen, run
+```
+./run.py --disable_fullscreen
+```
+
 There may be more flags to use for debugging purposes.
 
 ## Profiling the game:
