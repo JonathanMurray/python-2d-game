@@ -86,7 +86,7 @@ class SceneFactory(AbstractSceneFactory):
 
 class Main:
     def __init__(self, map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start_level: Optional[int],
-                 start_money: Optional[int], save_file_name: Optional[str]):
+                 start_money: Optional[int], save_file_name: Optional[str], fullscreen: bool):
 
         cmd_flags = CommandlineFlags(map_file_name, chosen_hero_id, hero_start_level, start_money, save_file_name)
 
@@ -94,7 +94,7 @@ class Main:
 
         print("Available display modes: " + str(pygame.display.list_modes()))
 
-        self.fullscreen = False  # TODO
+        self.fullscreen = fullscreen
         self.pygame_screen = self.setup_screen()
         images_by_sprite = load_images_by_sprite(ENTITY_SPRITE_INITIALIZERS)
         images_by_ui_sprite = load_images_by_ui_sprite(UI_ICON_SPRITE_PATHS, UI_ICON_SIZE)
@@ -176,6 +176,6 @@ class Main:
 
 
 def start(map_file_name: Optional[str], chosen_hero_id: Optional[str], hero_start_level: Optional[int],
-          start_money: Optional[int], save_file_name: Optional[str]):
-    main = Main(map_file_name, chosen_hero_id, hero_start_level, start_money, save_file_name)
+          start_money: Optional[int], save_file_name: Optional[str], fullscreen: bool):
+    main = Main(map_file_name, chosen_hero_id, hero_start_level, start_money, save_file_name, fullscreen)
     main.main_loop()
