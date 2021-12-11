@@ -14,7 +14,7 @@ from pythongame.game_data.abilities.ability_fireball import FIREBALL_TALENT_BURN
     FIREBALL_TALENT_BURN_DURATION, FIREBALL_UPGRADED_MANA_COST
 from pythongame.game_data.abilities.ability_whirlwind import WHIRLWIND_TALENT_STUN_DURATION
 from pythongame.game_data.heroes.generic_talents import TALENT_CHOICE_ARMOR_DAMAGE, TALENT_CHOICE_HEALTH_MANA, \
-    TALENT_CHOICE_HEALTH_MANA_REGEN
+    TALENT_CHOICE_HEALTH_MANA_REGEN, TALENT_CHOICE_MOVE_SPEED_MAGIC_RESIST
 
 HERO_ID = HeroId.MAGE
 
@@ -98,6 +98,7 @@ def _get_initial_player_state_mage() -> InitialPlayerStateData:
                                        UiIconSprite.ABILITY_ARCANE_FIRE),
                 TalentTierOptionConfig("Light-footed", "Lets you keep moving while casting Fireball and Whirlwind",
                                        HeroUpgradeId.MAGE_LIGHT_FOOTED, UiIconSprite.TALENT_LIGHT_FOOTED)),
+            9: TALENT_CHOICE_MOVE_SPEED_MAGIC_RESIST,
 
         })
     block_chance = 0.1

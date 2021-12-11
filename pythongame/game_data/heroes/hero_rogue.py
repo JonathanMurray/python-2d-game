@@ -11,7 +11,7 @@ from pythongame.game_data.abilities.ability_shiv import SHIV_UPGRADED_STEALTH_DA
     SHIV_TALENT_FULL_HEALTH_DAMAGE_MULTIPLIER
 from pythongame.game_data.abilities.ability_stealth import STEALTH_UPGRADED_MANA_COST
 from pythongame.game_data.heroes.generic_talents import TALENT_CHOICE_ARMOR_DAMAGE, TALENT_CHOICE_HEALTH_MANA, \
-    TALENT_CHOICE_HEALTH_MANA_REGEN
+    TALENT_CHOICE_HEALTH_MANA_REGEN, TALENT_CHOICE_MOVE_SPEED_MAGIC_RESIST
 
 HERO_ID = HeroId.ROGUE
 
@@ -99,6 +99,7 @@ def _get_initial_player_state_rogue() -> InitialPlayerStateData:
                                    "Dash gives +40% movement speed for 2 seconds",
                                    HeroUpgradeId.ABILITY_DASH_MOVEMENT_SPEED,
                                    UiIconSprite.ABILITY_DASH)),
+        9: TALENT_CHOICE_MOVE_SPEED_MAGIC_RESIST,
     })
     block_chance = 0.15
     return InitialPlayerStateData(

@@ -48,6 +48,8 @@ class HeroUpgradeId(Enum):
     MAX_MANA = 4
     HEALTH_REGEN = 5
     MANA_REGEN = 6
+    MOVE_SPEED = 7
+    MAGIC_RESIST = 8
     ABILITY_WHIRLWIND_STUN = 10
     ABILITY_FIREBALL_BURN = 11
     ABILITY_ENTANGLING_ROOTS_COOLDOWN = 12
@@ -945,6 +947,7 @@ class UiIconSprite(Enum):
     INVENTORY_TEMPLATE_NECK = 404
     INVENTORY_TEMPLATE_RING = 405
     TALENT_LIGHT_FOOTED = 500
+    TALENT_MOVE_SPEED = 501
 
 
 # Portraits that are shown in UI (player portrait and dialog portraits)

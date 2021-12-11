@@ -13,7 +13,7 @@ from pythongame.core.view.image_loading import SpriteSheet
 from pythongame.game_data.abilities.ability_bloodlust import BLOODLUST_UPGRADED_INCREASED_DURATION_FROM_KILL
 from pythongame.game_data.abilities.ability_sword_slash import ABILITY_SLASH_UPGRADED_COOLDOWN
 from pythongame.game_data.heroes.generic_talents import TALENT_CHOICE_ARMOR_DAMAGE, TALENT_CHOICE_HEALTH_MANA, \
-    TALENT_CHOICE_HEALTH_MANA_REGEN
+    TALENT_CHOICE_HEALTH_MANA_REGEN, TALENT_CHOICE_MOVE_SPEED_MAGIC_RESIST
 
 HERO_ID = HeroId.WARRIOR
 
@@ -133,6 +133,7 @@ def _get_initial_player_state_warrior() -> InitialPlayerStateData:
                                    " attack power for " + "{:.1f}".format(BUFF_RETRIBUTION_DURATION / 1000) + "s",
                                    RetributionHeroUpgrade(HeroUpgradeId.WARRIOR_RETRIBUTION),
                                    UiIconSprite.ITEM_SKULL_SHIELD)),
+        9: TALENT_CHOICE_MOVE_SPEED_MAGIC_RESIST,
     })
     block_chance = 0.2
     return InitialPlayerStateData(
