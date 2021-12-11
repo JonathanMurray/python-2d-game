@@ -120,7 +120,8 @@ class GameEngine:
         item_type = item_id.item_type
         item_equipment_category = get_item_data_by_type(item_type).item_equipment_category
         event = self.game_state.player_state.item_inventory.try_add_item(item_id, item_effect, item_equipment_category)
-        self._handle_item_equip_event(event)
+        if event is not None:
+            self._handle_item_equip_event(event)
         return event is not None
 
     def fill_item_inventory(self, items: List[ItemId]):
