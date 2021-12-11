@@ -22,9 +22,10 @@ BUFF_FROM_STEALTH = BuffType.AFTER_DASH
 BUFF_FROM_STEALTH_DURATION = Millis(7_000)
 BUFF_SPEED = BuffType.SPEED_BUFF_FROM_DASH
 BUFF_SPEED_DURATION = Millis(2000)
-LIFE_STEAL_BOOST = 0.1
 DAMAGE = 5
-DODGE_CHANCE_BOOST = 0.1
+FROM_STEALTH_DODGE_CHANCE_BOOST = 0.1
+FROM_STEALTH_LIFE_STEAL_BOOST = 0.15
+FROM_STEALTH_MAGIC_RESIST_CHANCE_BOOST = 0.2
 
 
 def _apply_ability(game_state: GameState) -> AbilityResult:
@@ -100,7 +101,9 @@ def _would_collide_with_wall(game_state: GameState, player_entity: WorldEntity, 
 class FromStealth(StatModifyingBuffEffect):
     def __init__(self):
         super().__init__(BUFF_FROM_STEALTH,
-                         {HeroStat.DODGE_CHANCE: DODGE_CHANCE_BOOST, HeroStat.LIFE_STEAL: LIFE_STEAL_BOOST})
+                         {HeroStat.DODGE_CHANCE: FROM_STEALTH_DODGE_CHANCE_BOOST,
+                          HeroStat.LIFE_STEAL: FROM_STEALTH_LIFE_STEAL_BOOST,
+                          HeroStat.MAGIC_RESIST_CHANCE: FROM_STEALTH_MAGIC_RESIST_CHANCE_BOOST})
 
 
 class IncreasedSpeedAfterDash(StatModifyingBuffEffect):
@@ -119,9 +122,10 @@ class IncreasedSpeedAfterDash(StatModifyingBuffEffect):
 def register_dash_ability():
     ui_icon_sprite = UiIconSprite.ABILITY_DASH
     register_ability_effect(ABILITY_TYPE, _apply_ability)
-    description = "Dash over an enemy, dealing " + str(DAMAGE) + " magic damage. [from stealth: gain +" + \
-                  "{:.0f}".format(DODGE_CHANCE_BOOST * 100) + "% dodge chance and +" + \
-                  "{:.0f}".format(LIFE_STEAL_BOOST * 100) + "% life steal for " + \
+    description = "Dash over an enemy, dealing " + str(DAMAGE) + " magic damage. [from stealth: gain " + \
+                  "+{:.0f}".format(FROM_STEALTH_DODGE_CHANCE_BOOST * 100) + "% dodge chance, " + \
+                  "+{:.0f}".format(FROM_STEALTH_LIFE_STEAL_BOOST * 100) + "% life steal, " + \
+                  "+{:.0f}".format(FROM_STEALTH_MAGIC_RESIST_CHANCE_BOOST * 100) + "% magic resist for " + \
                   "{:.0f}".format(BUFF_FROM_STEALTH_DURATION / 1000) + "s]"
     mana_cost = 12
     ability_data = AbilityData("Dash", ui_icon_sprite, mana_cost, Millis(4000), description, SoundId.ABILITY_DASH)
