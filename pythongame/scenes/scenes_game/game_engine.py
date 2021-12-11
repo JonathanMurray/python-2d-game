@@ -13,7 +13,7 @@ from pythongame.core.game_state import GameState, ItemOnGround, ConsumableOnGrou
 from pythongame.core.item_data import ITEM_ENTITY_SIZE, get_item_data_by_type
 from pythongame.core.item_data import randomized_item_id, get_item_data
 from pythongame.core.item_effects import create_item_effect
-from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated
+from pythongame.core.item_inventory import ItemWasDeactivated, ItemWasActivated, ItemActivationEvent
 from pythongame.core.loot import LootEntry, MoneyLootEntry, ItemLootEntry, ConsumableLootEntry, AffixedItemLootEntry
 from pythongame.core.math import boxes_intersect, rects_intersect, sum_of_vectors, \
     get_rect_with_increased_size_in_all_directions, translate_in_direction
@@ -60,7 +60,7 @@ class GameEngine:
         did_switch_succeed = len(item_equip_events) > 0
         return did_switch_succeed
 
-    def _handle_item_equip_event(self, event):
+    def _handle_item_equip_event(self, event: ItemActivationEvent):
         player_state = self.game_state.player_state
         item_id = event.item_id
         item_data = get_item_data(item_id)
@@ -322,7 +322,7 @@ class GameEngine:
             if visual_effect.attached_to_entity:
                 npcs = [e.world_entity for e in self.game_state.game_world.non_player_characters]
                 projectiles = [p.world_entity for p in self.game_state.game_world.projectile_entities]
-                if not visual_effect.attached_to_entity in npcs + projectiles + [
+                if visual_effect.attached_to_entity not in npcs + projectiles + [
                     self.game_state.game_world.player_entity]:
                     visual_effect.has_expired = True
 

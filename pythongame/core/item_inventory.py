@@ -26,6 +26,7 @@ ITEM_EQUIPMENT_CATEGORY_NAMES = {
 
 
 class ItemActivationEvent:
+    item_id: ItemId
     pass
 
 
